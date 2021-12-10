@@ -44,16 +44,22 @@ def get_v(l, b, num=3):
     return v
 
 
-def get_p(l, b, num=100):
+def get_p(l, b, num=100, dist_type="Gamma"):
     """
       Расчет вероятностей состояний для СМО M/G/1
-      :param l: интенсивность поступления заявок в СМО
-      :param b: нач. моменты времени обслуживания
-      :param num: число вероятностей состояний на выходе
-      :return: вероятности состояний
+      l: интенсивность поступления заявок в СМО
+      b: нач. моменты времени обслуживания
+      num: число вероятностей состояний на выходе
+      dist_type: тип распределения времени обслуживания
     """
-    gamma_param = rd.Gamma.get_mu_alpha(b)
-    q = q_calc.get_q_Gamma(l, gamma_param[0], gamma_param[1], num)
+
+    if dist_type == "Gamma":
+        gamma_param = rd.Gamma.get_mu_alpha(b)
+        q = q_calc.get_q_Gamma(l, gamma_param[0], gamma_param[1], num)
+    elif dist_type == "Uniform":
+        uniform_params = rd.Uniform_dist.get_params(b)
+        q = q_calc.get_q_uniform(l, uniform_params[0], uniform_params[1], num)
+
     p = [0.0] * num
     p[0] = 1 - l * b[0]
     for i in range(1, num):
@@ -69,6 +75,7 @@ if __name__ == '__main__':
     b1 = 0.9
     coev = 1.3
     num_of_jobs = 800000
+
     params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.H2_dist.calc_theory_moments(*params, 4)
     w_ch = get_w(l, b)
@@ -81,7 +88,42 @@ if __name__ == '__main__':
     w_im = smo.w
     p_im = smo.get_p()
 
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
+    print("\nH2. Значения начальных моментов времени ожидания заявок в системе:\n")
+
+    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
+    print("-" * 45)
+    for j in range(3):
+        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w_ch[j], w_im[j]))
+
+    v_ch = get_v(l, b)
+    v_im = smo.v
+
+    print("\nЗначения начальных моментов времени пребывания заявок в системе:\n")
+
+    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
+    print("-" * 45)
+    for j in range(3):
+        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_im[j]))
+
+    print("{0:^25s}".format("Вероятности состояний СМО"))
+    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+    print("-" * 32)
+    for i in range(11):
+        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_im[i]))
+
+    params = rd.Uniform_dist.get_params_by_mean_and_coev(b1, coev)
+    b = rd.Uniform_dist.calc_theory_moments(*params, 4)
+    w_ch = get_w(l, b)
+    p_ch = get_p(l, b, 100, dist_type="Uniform")
+
+    smo = smo_im.SmoIm(1)
+    smo.set_servers(params, "Uniform")
+    smo.set_sources(l, "M")
+    smo.run(num_of_jobs)
+    w_im = smo.w
+    p_im = smo.get_p()
+
+    print("\nUniform. Значения начальных моментов времени ожидания заявок в системе:\n")
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
     print("-" * 45)

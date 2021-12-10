@@ -3,6 +3,89 @@ import math, cmath
 from scipy import stats
 
 
+class Uniform_dist:
+    def __init__(self, params):
+        """
+        Принимает список параметров в следующей последовательности:
+        mean - среднее значение
+        half_interval - полуинтервал влево и вправо от среднего
+        """
+        self.mean = params[0]
+        self.half_interval = params[1]
+        self.type = 'Uniform'
+
+    def generate(self):
+        """
+        Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
+        Вызов из экземпляра класса
+        """
+        return self.generate_static(self.mean, self.half_interval)
+
+    @staticmethod
+    def generate_static(mean, half_interval):
+        """
+        Генерация псевдо-случайных чисел, подчиненных равномерному распределению
+        Статический метод
+        """
+        r = np.random.uniform(mean - half_interval, mean + half_interval)
+        return r
+
+    @staticmethod
+    def calc_theory_moments(mean, half_interval, num=3):
+        """
+        Метод вычисляет теоретические моменты
+        """
+        f = [0.0] * num
+        for i in range(num):
+            f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (2 * half_interval * (i + 2))
+        return f
+
+    @staticmethod
+    def get_params(moments):
+        """
+        Подбор параметров распределения по заданным начальным моментам.
+        """
+        D = moments[1] - moments[0] * moments[0]
+        mean = moments[0]
+        half_interval = math.sqrt(3 * D)
+
+        return [mean, half_interval]
+
+    @staticmethod
+    def get_params_by_mean_and_coev(f1, coev):
+        """
+        Подбор параметров распределения по среднему и коэфф вариации.
+        """
+        D = pow(coev * f1, 2)
+        half_interval = math.sqrt(3 * D)
+
+        return f1, half_interval
+
+    @staticmethod
+    def get_pdf(mean, half_interval, t):
+        a = mean - half_interval
+        b = mean + half_interval
+        if t < a or t > b:
+            return 0
+        return 1.0 / (b - a)
+
+    @staticmethod
+    def get_cdf(mean, half_interval, t):
+        a = mean - half_interval
+        b = mean + half_interval
+        if t < a:
+            return 0
+        if t > b:
+            return 1
+
+        return (t - a) / (b - a)
+
+    @staticmethod
+    def get_tail(mean, half_interval, t):
+
+        return 1.0 - Uniform_dist.get_cdf(mean, half_interval, t)
+
+
 class H2_dist:
     def __init__(self, params):
         """
