@@ -1,6 +1,7 @@
 import numpy as np
 import math, cmath
 from scipy import stats
+import scipy.special as sp
 
 
 class Uniform_dist:
@@ -516,6 +517,18 @@ class Pareto_dist:
         k = (a - 1) * f[0] / a
         return a, k
 
+    @staticmethod
+    def get_a_k_by_mean_and_coev(mean, coev):
+        """
+        Метод возвращает параметры a и K по среднему и коэффициенту вариации
+        """
+        d = pow(mean * coev, 2)
+        c = pow(mean, 2) / d
+        disc = 4 * (1 + c)
+        a = (2 + math.sqrt(disc)) / 2
+        k = (a - 1) * mean / a
+        return a, k
+
 
 class Erlang_dist:
     """
@@ -630,6 +643,12 @@ class Gamma:
     def __init__(self, params):
         self.mu = params[0]
         self.alpha = params[1]
+        self.is_corrective = False
+        self.g = []
+        if len(params) > 2:
+            self.is_corrective = True
+            for i in range(2, len(params)):
+                self.g.append(params[i])
         self.params = params
         self.type = 'Gamma'
 
@@ -645,6 +664,33 @@ class Gamma:
         mu = b[0] / d
         alpha = mu * b[0]
         return mu, alpha
+
+    @staticmethod
+    def get_params(b):
+        """
+        Статический метод аппроксимации параметров Гамма-распределения поправочным многочленом
+        :param b: список из произвольного числа начальных моментов
+        :return: список из параметров mu и alpha + g[j], j=0,N, где N - число моментов
+        """
+        d = b[1] - b[0] * b[0]
+        mu = b[0] / d
+        alpha = mu * b[0]
+        if len(b) > 2:
+            # подбор коэффициентов g
+            A = []
+            B = []
+            for i in range(len(b) + 1):
+                A.append([])
+                if i == 0:
+                    B.append(1)
+                else:
+                    B.append(b[i - 1])
+                for j in range(len(b) + 1):
+                    A[i].append(Gamma.get_gamma(alpha + i + j) / (pow(mu, i + j) * Gamma.get_gamma(alpha)))
+            g = np.linalg.solve(A, B)
+            return mu, alpha, g
+        else:
+            return mu, alpha
 
     @staticmethod
     def get_mu_alpha_by_mean_and_coev(mean, coev):
@@ -677,6 +723,22 @@ class Gamma:
         return mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / Gamma.get_gamma(alpha)
 
     @staticmethod
+    def get_f_corrective(mu, alpha, g, t):
+        """
+        Функция плотности вероятности Гамма-распределения с поправочным многочлненом
+        mu: параметр Гамма-распределения
+        alpha: параметр Гамма-распределения
+        g - массив поправочных коэффициентов
+        t: время
+        """
+        main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / Gamma.get_gamma(alpha)
+        summ = 0
+        for i in range(len(g)):
+            summ += g[i] * pow(t, i)
+
+        return main * summ
+
+    @staticmethod
     def calc_theory_moments(mu, alpha, count=3):
         """
         Вычисляет теоретические начальные моменты распределения. По умолчанию - первые три
@@ -692,6 +754,30 @@ class Gamma:
     @staticmethod
     def get_pls(mu, alpha, s):
         return math.pow(mu / (mu + s), alpha)
+
+    @staticmethod
+    def get_gamma_incomplete(x, z, e=1e-12):
+
+        return Gamma.get_gamma(x) - Gamma.get_gamma_small(x, z, e)
+
+    @staticmethod
+    def get_gamma_small(x, z, e=1e-12):
+        summ = 0
+        n = 0
+        while True:
+            elem = pow(-z, n) / (math.factorial(n) * (x + n))
+            summ += elem
+            if math.fabs(elem) < e:
+                break
+            n += 1
+        gamma = summ * pow(z, x)
+        return gamma
+
+    @staticmethod
+    def get_minus_gamma(x):
+        gamma = sp.gamma(x)
+        fraction = -math.pi / (x * math.sin(math.pi * x))
+        return fraction / gamma
 
     @staticmethod
     def get_gamma(x):
@@ -737,6 +823,9 @@ class Gamma:
 
 
 if __name__ == "__main__":
+
+    print(Gamma.get_minus_gamma(0.5))
+    print(Gamma.get_gamma(-0.5))
 
     b_coev = [0.3, 0.6, 0.8, 1.2, 2.5]
     print("\n")
