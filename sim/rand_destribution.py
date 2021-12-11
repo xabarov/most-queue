@@ -327,6 +327,17 @@ class H2_dist:
         return 1.0 - res
 
     @staticmethod
+    def get_pdf(params, t):
+        if t < 0:
+            return 0
+        y = [params[0], 1 - params[0]]
+        mu = [params[1], params[2]]
+        res = 0
+        for i in range(2):
+            res += y[i] * mu[i] * math.exp(-mu[i] * t)
+        return res
+
+    @staticmethod
     def get_tail(params, t):
         return 1.0 - H2_dist.get_cdf(params, t)
 
@@ -720,7 +731,15 @@ class Gamma:
         :param t: время
         :return: значение плотности Гамма-распределения
         """
-        return mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / Gamma.get_gamma(alpha)
+        fract = sp.gamma(alpha)
+        if math.fabs(fract) > 1e-12:
+            if math.fabs(mu * t) > 1e-12:
+                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
+            else:
+                main = 0
+        else:
+            main = 0
+        return main
 
     @staticmethod
     def get_f_corrective(mu, alpha, g, t):
@@ -731,7 +750,14 @@ class Gamma:
         g - массив поправочных коэффициентов
         t: время
         """
-        main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / Gamma.get_gamma(alpha)
+        fract = sp.gamma(alpha)
+        if math.fabs(fract) > 1e-12:
+            if math.fabs(mu * t) > 1e-12:
+                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
+            else:
+                main = 0
+        else:
+            main = 0
         summ = 0
         for i in range(len(g)):
             summ += g[i] * pow(t, i)
@@ -824,8 +850,36 @@ class Gamma:
 
 if __name__ == "__main__":
 
+    import matplotlib.pyplot as plt
+
     print(Gamma.get_minus_gamma(0.5))
     print(Gamma.get_gamma(-0.5))
+    b1 = 1
+    b = [0.0] * 4
+    b[0] = b1
+    b[1] = 5
+    b[2] = 75
+    b[3] = 300
+    mu, a, g = Gamma.get_params(b)
+    print(mu, a, g)
+    sko = math.sqrt(b[1] - pow(b[0], 2))
+    x = np.linspace(0.05, sko, 100)
+    y1 = []
+    y2 = []
+    y_h2 = []
+    params_H2 = H2_dist.get_params(b)
+    for i in range(len(x)):
+        y1.append(Gamma.get_f_corrective(mu, a, g, x[i]))
+        y2.append(Gamma.get_f(mu, a, x[i]))
+        y_h2.append(H2_dist.get_pdf(params_H2, x[i]))
+
+    fig, ax = plt.subplots()
+
+    ax.plot(x, y1, label="Плотность Гамма с поправочным многочленом")
+    ax.plot(x, y2, label="Плотность Гамма без поправочного многочлена")
+    ax.plot(x, y_h2, label="Плотность H2")
+    plt.legend()
+    plt.show()
 
     b_coev = [0.3, 0.6, 0.8, 1.2, 2.5]
     print("\n")
