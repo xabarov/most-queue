@@ -2,6 +2,7 @@ import numpy as np
 import math
 import passage_time
 from tqdm import tqdm
+import rand_destribution as rd
 
 
 class MGnCalc:

@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import passage_time
+import rand_destribution as rd
 
 
 class m_ph_n_prty:
@@ -207,13 +208,6 @@ class m_ph_n_prty:
                                                    self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=True)
         pass_time.calc()
 
-        # self.print_mrx(pass_time.Z[self.n][0])
-        # self.print_mrx(pass_time.Z[self.n+1][0])
-
-        # количество ПНЗ = n**2, поскольку соответствует всем возможным вариантам
-        # начала и окончания ПНЗ, т.е. переходам из всех микросостояний с яруса N = n (кроме последнего
-        # микросостояния, с него ПНЗ начаться не может) на ярус N = n-1
-
         self.pnz_num_ = self.n ** 2
 
         for j in range(self.pnz_num_):
@@ -337,25 +331,19 @@ class m_ph_n_prty:
         """
         self.b1[0][0, 0] = 0.0 + 0.0j
         self.b2[0][0, 0] = 0.0 + 0.0j
-        # x_max1 = 0.0 + 0.0j
-        # x_max2 = 0.0 + 0.0j
 
         x_ave1 = 0.0 + 0.0j
         x_ave2 = 0.0 + 0.0j
 
         iter = 0
         self.run_iterations_num_ = 0
-        # for i in range(self.N):
-        #     if math.fabs(self.x[i].real) > x_max1.real:
-        #         x_max1 = math.fabs(self.x[i].real)
-        #
         for i in range(self.N):
             x_ave1 += self.x[i]
         x_ave1 /= self.N
         while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter < self.max_iter:
-            # while math.fabs(x_max2.real - x_max1.real) >= self.e1 and iter < self.max_iter:
+            if self.verbose:
+                print("Start numeric iteration {0:d}".format(iter))
             iter += 1
-            # x_max2 = x_max1
             x_ave2 = x_ave1
             for j in range(1, self.N):  # по всем ярусам, кроме первого.
 
@@ -387,15 +375,12 @@ class m_ph_n_prty:
             self.t[0] = np.dot(self.x[0], t1B1)
             self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
 
-            # x_max1 = 0.0 + 0.0j
             x_ave1 = 0.0 + 0.0j
 
             for i in range(self.N):
                 x_ave1 += self.x[i]
             x_ave1 /= self.N
-            # for i in range(self.N):
-            #     if math.fabs(self.x[i].real) > x_max1.real:
-            #         x_max1 = math.fabs(self.x[i].real)
+
         self.run_iterations_num_ = iter
         self.calculate_p()
         self.calculate_y()
@@ -644,21 +629,20 @@ if __name__ == "__main__":
     import prty_calc
     import time
 
-    num_of_jobs = 800000
+    num_of_jobs = 800000  # число обсл заявок ИМ
 
+    is_cox = False  # использовать для аппроксимации ПНЗ распределение Кокса или Н2-распределение
+    max_iter = 100  # максимальное число итераций численного метода
     # Исследование влияния среднего времени пребывания заявок 2-го класса от коэффициента загрузки
-    n = 10  # количество каналов
+    n = 7  # количество каналов
     K = 2  # количество классов
-    # ros = [x*0.05 for x in range(8, 20)]
-    ros = 0.85
+    ros = 0.85  # коэффициент загрузки СМО
     bH_to_bL = 2  # время обслуживания класса H меньше L в это число раз
     lH_to_lL = 1.5  # интенсивность поступления заявок класса H ниже L в это число раз
     l_H = 1.0  # интенсивность вх потока заявок 1-го класса
     l_L = lH_to_lL * l_H  # интенсивность вх потока заявок 2-го класса
-    bH_coev = [0.63]
-    # bH_coev = 0.42
-    # n = [i for i in range(2, 3)]
-    iteration = 1
+    bH_coev = [0.63, 0.82]  # исследуемые коэффициенты вариации обсл заявок 1 класса
+    iteration = 1  # кол-во итераций ИМ для получения более точных оценок ИМ
 
     v1_im_mass = []
     v2_im_mass = []
@@ -695,7 +679,7 @@ if __name__ == "__main__":
 
         # расчет численным методом:
         tt_start = time.process_time()
-        tt = m_ph_n_prty(mu_L, cox_params[1], cox_params[2], cox_params[0], l_L, l_H, n=n)
+        tt = m_ph_n_prty(mu_L, cox_params[1], cox_params[2], cox_params[0], l_L, l_H, n=n, is_cox=is_cox, max_iter=max_iter)
         tt.run()
         tt_times.append(time.process_time() - tt_start)
 
@@ -728,7 +712,7 @@ if __name__ == "__main__":
         im_start = time.process_time()
 
         for i in range(iteration):
-            print("Start iteration: {0:d}".format(i + 1))
+            print("Start IM iteration: {0:d}".format(i + 1))
 
             smo = smo_im_prty.SmoImPrty(n, K, "PR")
             sources = []

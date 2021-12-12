@@ -1,6 +1,7 @@
 import time
 from tqdm import tqdm
-
+import rand_destribution as rd
+import math
 
 class SmoImPrty:
     """

@@ -252,32 +252,6 @@ class H2_dist:
                     f.append(moments[i] * complex(1, (i + 1) * e))
                 return H2_dist.get_params_clx(f)
 
-            # is_fit = False
-            # iter_num = 0
-            #
-            # while not is_fit and iter_num < max_param_fitting_iter:
-            #     e = 0.02*(iter_num+1)
-            #     f = [0.0] * 3
-            #     for i in range(3):
-            #         f[i] = complex(moments[i] / math.factorial(i + 1))
-            #     znam = (f[1] - f[0] ** 2)
-            #     c0 = (f[0] * f[2] - f[1] ** 2) / znam
-            #     c1 = (f[0] * f[1] - f[2]) / znam
-            #
-            #     d = pow(c1 / 2, 2) - c0
-            #
-            #     coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-            #
-            #     if math.fabs(d.real) < 0.01:
-            #         if verbose:
-            #             print("H2. D is close to 0. Multiply moments to (1+je), coev = {0:5.3f},"
-            #                   " e = {1:5.3f}. Iter = {2:d}".format(coev, e, iter_num))
-            #         for i in range(1, 3):
-            #             moments[i] *= complex(1, (i + 1) * e)
-            #     else:
-            #         is_fit = True
-            #     iter_num += 1
-
         res = [0, 0, 0]  # y1, mu1, mu2
         c1 = complex(c1)
         x1 = -c1 / 2 + cmath.sqrt(d)
@@ -286,21 +260,6 @@ class H2_dist:
         res[0] = y1
         res[1] = 1 / x1
         res[2] = 1 / x2
-
-        # else:
-        #     x1 = -c1 / 2 + math.pow(d, 0.5)
-        #     x2 = -c1 / 2 - math.pow(d, 0.5)
-        #     y1 = (f[0] - x2) / (x1 - x2)
-        #
-        #     res[0] = y1
-        #     if math.isclose(x1, 0):
-        #         res[1] = math.inf
-        #     else:
-        #         res[1] = 1 / x1
-        #     if math.isclose(x2, 0):
-        #         res[2] = math.inf
-        #     else:
-        #         res[2] = 1 / x2
 
         return res
 
@@ -398,17 +357,19 @@ class Cox_dist:
 
         # особые случаи:
         if abs(moments[1] - moments[0] * moments[0]) < 1e-3:
+            print("Cox get params. Special case 1")
             return 0.0, 1.0 / moments[0], 0.0
 
         if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < 1e-3:
+            print("Cox get params. Special case 2")
             return 1.0, 2.0 / moments[0], 2.0 / moments[0]
 
         for i in range(3):
             f[i] = moments[i] / math.factorial(i + 1)
 
-        d = pow(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - f[0] * f[0]) * (f[0] * f[2] - f[1] * f[1])
+        d = pow(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - pow(f[0], 2)) * (f[0] * f[2] - pow(f[1], 2))
         mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
-        mu2 /= 2.0 * (f[1] * f[1] - f[0] * f[2])
+        mu2 /= 2.0 * (pow(f[1], 2) - f[0] * f[2])
         mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
         y1 = (mu1 * f[0] - 1.0) * mu2 / mu1
 
@@ -855,11 +816,14 @@ if __name__ == "__main__":
     print(Gamma.get_minus_gamma(0.5))
     print(Gamma.get_gamma(-0.5))
     b1 = 1
+    coev = 1.3
     b = [0.0] * 4
+    alpha = 1 / (coev ** 2)
     b[0] = b1
-    b[1] = 5
-    b[2] = 75
-    b[3] = 300
+    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
+    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    b[3] = b[2] * b[0] * (1.0 + 6 / alpha)
+
     mu, a, g = Gamma.get_params(b)
     print(mu, a, g)
     sko = math.sqrt(b[1] - pow(b[0], 2))
