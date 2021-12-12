@@ -15,33 +15,28 @@ def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
     """
     pi = [0.0] * num
     w = get_w_param(a, mu, n, e, approx_distr)
-    A = []
-    B = []
-    for i in range(n+1):
-        A.append([])
-        B.append(0)
-        for j in range(n + 1):
-            A[i].append(0)
+    A = np.zeros((n + 1, n + 1))
+    B = np.zeros(n + 1)
 
     B[0] = 1
     for i in range(n):
-        A[0][i] = 1
+        A[0, i] = 1
 
-    A[0][n] = 1.0/(1.0-w)
+    A[0, n] = 1.0 / (1.0 - w)
 
     for k in range(1, n + 1):
         for j in range(k - 1, n):
-            A[k][j] = 0
+            A[k, j] = 0
             for i in range(j + 2 - k):
-                A[k][j] += pow(-1, i) * math.factorial(j + 1) * get_b0(a, k + i, mu, approx_distr) / (
+                A[k, j] += pow(-1, i) * math.factorial(j + 1) * get_b0(a, k + i, mu, approx_distr) / (
                         math.factorial(k) * math.factorial(i) * math.factorial(j + 1 - (k + i)))
 
-        A[k][n] = 0
+        A[k, n] = 0
         for i in range(n - k + 1):
-            A[k][n] += pow(-1, i) * math.factorial(n) * (get_b0(a, k + i, mu, approx_distr) - w) / (
+            A[k, n] += pow(-1, i) * math.factorial(n) * (get_b0(a, k + i, mu, approx_distr) - w) / (
                     math.factorial(k) * math.factorial(i) * math.factorial(n - k - i) * (n * (1 - w) - (k + i)))
-        A[k][n] = n*A[k][n]
-        A[k][k] = A[k][k]-1
+        A[k, n] = n * A[k, n]
+        A[k, k] = A[k, k] - 1
     pi_to_n = np.linalg.solve(A, B)
     for i in range(n + 1):
         pi[i] = pi_to_n[i]
@@ -51,7 +46,6 @@ def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
 
 
 def get_b0(a, j, mu, approx_distr="Gamma"):
-
     if approx_distr == "Gamma":
         v, alpha, g = rd.Gamma.get_params(a)
         summ = 0
@@ -159,7 +153,7 @@ if __name__ == '__main__':
     a1 = 1.0 / l
     n = 4
     ro = 0.8
-    b1 = ro*n/l
+    b1 = ro * n / l
     mu = 1 / b1
     a_coev = 1.6
 
@@ -199,7 +193,6 @@ if __name__ == '__main__':
     print("-" * 32)
     for i in range(11):
         print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_im[i]))
-
 
     # Pareto test
     alpha, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
