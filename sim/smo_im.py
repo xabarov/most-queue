@@ -66,6 +66,7 @@ class SmoIm:
             Эрланга                               'E'           [r, mu]
             Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
             Парето                                'Pa'         [alpha, K]
+            Детерминированное                      'D'         [b]
             Равномерное                         'Uniform'     [mean, half_interval]
         """
         for i in range(self.n):
@@ -81,6 +82,7 @@ class SmoIm:
         Эрланга                               'E'           [r, mu]
         Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
         Парето                                'Pa'         [alpha, K]
+        Детерминированное                      'D'         [b]
         Равномерное                         'Uniform'     [mean, half_interval]
         """
         self.source_params = params
@@ -102,6 +104,8 @@ class SmoIm:
             self.source = rd.Gamma(self.source_params)
         elif self.source_types == "Uniform":
             self.source = rd.Uniform_dist(self.source_params)
+        elif self.source_types == "D":
+            self.source = rd.Det_dist(self.source_params)
         else:
             raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform")
         self.arrival_time = self.source.generate()
@@ -117,6 +121,7 @@ class SmoIm:
         Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
         Парето                                'Pa'         [alpha, K]
         Равномерное                         'Uniform'     [mean, half_interval]
+        Детерминированное                      'D'         [b]
         """
         self.server_params = params
         self.server_types = types
@@ -438,8 +443,10 @@ class Server:
             self.dist = rd.Pareto_dist(params)
         elif types == "Uniform":
             self.dist = rd.Uniform_dist(params)
+        elif types == "D":
+            self.dist = rd.Det_dist(params)
         else:
-            raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Uniform")
+            raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Uniform, D")
         self.time_to_end_service = 1e10
         self.is_free = True
         self.tsk_on_service = None
@@ -466,9 +473,11 @@ class Server:
             self.warm_dist = rd.Pareto_dist(params)
         elif types == "Unifrorm":
             self.warm_dist = rd.Uniform_dist(params)
+        elif types == "D":
+            self.warm_dist = rd.Det_dist(params)
         else:
             raise SetSmoException(
-                "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform")
+                "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, D")
 
     def start_service(self, ts, ttek, is_warm=False):
 

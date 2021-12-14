@@ -420,6 +420,22 @@ class Cox_dist:
 
         return y1, mu1, mu2
 
+class Det_dist:
+    """Детерминированное"""
+    def __init__(self, b):
+        """
+        Принимает список параметров в следующей последовательности - alpha, K
+        """
+        self.b = b
+        self.type = 'D'
+
+    def generate(self):
+        return Det_dist.generate_static(self.b)
+
+    @staticmethod
+    def generate_static(b):
+        return b
+
 
 class Pareto_dist:
     "Распределение Парето"
