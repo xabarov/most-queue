@@ -10,7 +10,8 @@ class m_ph_n_prty:
     численным методом Такахаси-Таками на основе аппроксимации ПНЗ распределением Кокса второго порядка
     """
 
-    def __init__(self, mu_L, mu1_H, mu2_H, p_H, l_L, l_H, n, N=250, accuracy=1e-8, max_iter=300, is_cox=True,
+    def __init__(self, mu_L, mu1_H, mu2_H, p_H, l_L, l_H, n, N=250,
+                 accuracy=1e-8, max_iter=300, is_cox=True, approx_ee=0.1, approx_e=0.5, is_fitting=True,
                  verbose=True):
 
         """
@@ -39,6 +40,9 @@ class m_ph_n_prty:
         self.max_iter = max_iter
         self.is_cox = is_cox
         self.verbose = verbose
+        self.approx_ee = approx_ee
+        self.approx_e = approx_e
+        self.is_fitting = is_fitting
 
         self.busy_periods = []  # список из наборов начальных моментров ПНЗ B1, B2, ...
         self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
@@ -467,7 +471,7 @@ class m_ph_n_prty:
 
         for i in range(self.pnz_num_):
             if not self.is_cox:
-                h2_param = rd.H2_dist.get_params_clx(self.busy_periods[i])
+                h2_param = rd.H2_dist.get_params_clx(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
                 # h2_param = rd.H2_dist.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param[0])
                 m1_mass.append(h2_param[1])
@@ -476,7 +480,7 @@ class m_ph_n_prty:
                     print("Параметры для B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
                                                                                     h2_param[2]))
             else:
-                cox_params = rd.Cox_dist.get_params_clx(self.busy_periods[i])
+                cox_params = rd.Cox_dist.get_params(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
                 y1_mass.append(cox_params[0])
                 m1_mass.append(cox_params[1])
                 m2_mass.append(cox_params[2])
@@ -634,14 +638,14 @@ if __name__ == "__main__":
     is_cox = False  # использовать для аппроксимации ПНЗ распределение Кокса или Н2-распределение
     max_iter = 100  # максимальное число итераций численного метода
     # Исследование влияния среднего времени пребывания заявок 2-го класса от коэффициента загрузки
-    n = 7  # количество каналов
+    n = 4  # количество каналов
     K = 2  # количество классов
-    ros = 0.85  # коэффициент загрузки СМО
+    ros = 0.75  # коэффициент загрузки СМО
     bH_to_bL = 2  # время обслуживания класса H меньше L в это число раз
     lH_to_lL = 1.5  # интенсивность поступления заявок класса H ниже L в это число раз
     l_H = 1.0  # интенсивность вх потока заявок 1-го класса
     l_L = lH_to_lL * l_H  # интенсивность вх потока заявок 2-го класса
-    bH_coev = [0.63, 0.82]  # исследуемые коэффициенты вариации обсл заявок 1 класса
+    bH_coev = [0.32, 0.63, 0.85, 1.2, 1.5]  # исследуемые коэффициенты вариации обсл заявок 1 класса
     iteration = 1  # кол-во итераций ИМ для получения более точных оценок ИМ
 
     v1_im_mass = []
@@ -675,7 +679,7 @@ if __name__ == "__main__":
         v1_sum = 0
         v2_sum = 0
 
-        cox_params = rd.Cox_dist.get_params_clx(bH)
+        cox_params = rd.Cox_dist.get_params(bH)
 
         # расчет численным методом:
         tt_start = time.process_time()

@@ -202,20 +202,15 @@ class H2_dist:
             return res
 
     @staticmethod
-    def get_params_clx(moments, verbose=True, ee=0.001, is_fitting=True, max_param_fitting_iter=100):
+    def get_params_clx(moments, verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True):
         """
         Метод подбора параметров H2 распределения по заданным начальным моментам.
         Допускает комплексные значения параметров при коэффициенте вариации <1
         ee - точность проверки близости распределения к E1 и E2
+        e - множитель моментов
+        e_percent - процент повышения множителя e
         """
-        # f2_to_f1 = moments[1]/moments[0]
-        # digits = [i+1 for i in range(100)]
-        # for i in digits:
-        #     if math.fabs(f2_to_f1.real-i) < e:
-        #         print("H2 approx warning. Close to Erlang type. Add some small value to higher moments")
-        #         for j in range(len(moments)):
-        #             moments[j] *= complex(1, (j + 1) * e)
-        #         return H2_dist.get_params_clx(moments)
+
         f = [0.0] * 3
         for i in range(3):
             f[i] = complex(moments[i] / math.factorial(i + 1))
@@ -228,7 +223,6 @@ class H2_dist:
         if is_fitting:
             # проверка на близость распределения к экспоненциальному
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-            e = 0.02
             if math.fabs(coev.real - 1.0) < ee:
                 if verbose:
                     print("H2 is close to Exp. Multiply moments to (1+je), coev = {0:5.3f},"
@@ -237,10 +231,9 @@ class H2_dist:
                 for i in range(len(moments)):
                     f.append(moments[i] * complex(1, (i + 1) * e))
 
-                return H2_dist.get_params_clx(f)
+                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-            e = 0.02
 
             # проверка на близость распределения к Эрланга 2-го порядка
             if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < ee:
@@ -249,8 +242,11 @@ class H2_dist:
                           " e = {1:5.3f}.".format(coev, e))
                 f = []
                 for i in range(len(moments)):
+                    # if i == 0:
+                    #     f.append(moments[0])
+                    # else:
                     f.append(moments[i] * complex(1, (i + 1) * e))
-                return H2_dist.get_params_clx(f)
+                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
 
         res = [0, 0, 0]  # y1, mu1, mu2
         c1 = complex(c1)
@@ -349,76 +345,60 @@ class Cox_dist:
         return f
 
     @staticmethod
-    def get_params(moments):
+    def get_params(moments, ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True):
         """
         Метод вычисляет параметры распределения Кокса 2-го порядка по трем заданным начальным моментам [moments]
         """
         f = [0.0] * 3
 
-        # особые случаи:
-        if abs(moments[1] - moments[0] * moments[0]) < 1e-3:
-            print("Cox get params. Special case 1")
-            return 0.0, 1.0 / moments[0], 0.0
+        if is_fitting:
+            # проверка на близость распределения к экспоненциальному
+            coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+            if abs(moments[1] - moments[0] * moments[0]) < ee:
+                if verbose:
+                    print("Cox special 1. Multiply moments to (1+je), coev = {0:5.3f},"
+                          " e = {1:5.3f}.".format(coev, e))
+                f = []
+                for i in range(len(moments)):
+                    f.append(moments[i] * complex(1, (i + 1) * e))
 
-        if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < 1e-3:
-            print("Cox get params. Special case 2")
-            return 1.0, 2.0 / moments[0], 2.0 / moments[0]
+                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+
+            coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+
+            # проверка на близость распределения к Эрланга 2-го порядка
+            if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < ee:
+                if verbose:
+                    print("Cox special 2. Multiply moments to (1+je), coev = {0:5.3f},"
+                          " e = {1:5.3f}.".format(coev, e))
+                f = []
+                for i in range(len(moments)):
+                    # if i == 0:
+                    #     f.append(moments[0])
+                    # else:
+                    f.append(moments[i] * complex(1, (i + 1) * e))
+                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+
+        # # особые случаи:
+        # if abs(moments[1] - moments[0] * moments[0]) < ee:
+        #     print("Cox get params. Special case 1")
+        #     return 0.0, 1.0 / moments[0], 0.0
+        #
+        # if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < ee:
+        #     print("Cox get params. Special case 2")
+        #     return 1.0, 2.0 / moments[0], 2.0 / moments[0]
 
         for i in range(3):
             f[i] = moments[i] / math.factorial(i + 1)
 
-        d = pow(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - pow(f[0], 2)) * (f[0] * f[2] - pow(f[1], 2))
+        d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - np.power(f[0], 2)) * (f[0] * f[2] - np.power(f[1], 2))
         mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
-        mu2 /= 2.0 * (pow(f[1], 2) - f[0] * f[2])
+        mu2 /= 2.0 * (np.power(f[1], 2) - f[0] * f[2])
         mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
         y1 = (mu1 * f[0] - 1.0) * mu2 / mu1
 
         return y1, mu1, mu2
 
-    @staticmethod
-    def get_params_clx(moments, verbose=True, ee=0.02, max_param_fitting_iter=100, is_fitting=False):
-        """
-        Метод вычисляет параметры распределения Кокса 2-го порядка по трем заданным начальным моментам [moments]
-        """
-
-        if is_fitting:
-            is_fit = False
-            iter = 0
-            while not is_fit and iter < max_param_fitting_iter:
-                f = [0.0] * 3
-
-                for i in range(3):
-                    f[i] = moments[i] / math.factorial(i + 1)
-
-                d = pow(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - f[0] * f[0]) * (f[0] * f[2] - f[1] * f[1])
-                coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-                e = 0.02 * (iter + 1)
-                # проверка на близость распределения к экспоненциальному
-                if math.fabs(d.real) < ee:
-                    if verbose:
-                        print("Cox d is close to 0. Multiply all moments to (1+je), coev = {0:5.3f},"
-                              " e = {1:5.3f}. Iter = {2:d}".format(coev, e, iter))
-                    for i in range(1, 3):
-                        moments[i] *= complex(1, (i + 1) * e)
-                else:
-                    is_fit = True
-
-                iter += 1
-
-        else:
-            f = [0.0] * 3
-
-            for i in range(3):
-                f[i] = moments[i] / math.factorial(i + 1)
-
-            d = pow(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - f[0] * f[0]) * (f[0] * f[2] - f[1] * f[1])
-
-        mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
-        mu2 /= 2.0 * (f[1] * f[1] - f[0] * f[2])
-        mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
-        y1 = (mu1 * f[0] - 1.0) * mu2 / mu1
-
-        return y1, mu1, mu2
 
 class Det_dist:
     """Детерминированное"""
