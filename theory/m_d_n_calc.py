@@ -1,8 +1,6 @@
 import numpy as np
 import math
 import cmath
-import scipy
-import smo_im
 
 
 class M_D_n:
@@ -47,9 +45,7 @@ class M_D_n:
             A[self.n - 1, j] = self.n - j
 
         B[self.n - 1] = self.n - self.l * self.b
-        # A_inv = np.linalg.inv(A)
         p = np.linalg.lstsq(A, B, rcond=1e-8)
-        # p = np.linalg.solve(A, B)
         p_real = []
         for i in range(len(p[0])):
             p_real.append(p[0][i].real)
@@ -109,7 +105,7 @@ class M_D_n:
                 if math.fabs(z_new.real - z_old.real) < self.e:
                     is_close = True
                 z_old = z_new
-            z[m] = z_new
+            z[m] = z_old
         self.z_ = z
 
 
