@@ -86,6 +86,7 @@ class SmoImPrty:
         Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
         Парето                                'Pa'         [alpha, K]
         Равномерное                         'Uniform'     [mean, half_interval]
+        Детерминированное                      'D'         [b]
         """
         self.sources_params = sources
         self.is_set_source_params = True
@@ -108,8 +109,10 @@ class SmoImPrty:
                 self.sources.append(rd.Pareto_dist(params))
             elif source_type == "Uniform":
                 self.sources.append(rd.Uniform_dist(params))
+            elif self.source_types == "D":
+                self.sources.append(rd.Det_dist(params))
             else:
-                raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa")
+                raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
             self.arrival_time[i] = self.sources[i].generate()
             time.sleep(0.1)
 
@@ -126,6 +129,7 @@ class SmoImPrty:
         Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
         Парето                                'Pa'         [alpha, K]
         Равномерное                         'Uniform'     [mean, half_interval]
+        Детерминированное                      'D'         [b]
         """
         self.servers_params = servers_params
 
@@ -147,6 +151,7 @@ class SmoImPrty:
         Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
         Парето                                'Pa'         [alpha, K]
         Равномерное                         'Uniform'     [mean, half_interval]
+        Детерминированное                      'D'         [b]
         """
 
         self.is_warm_up_set = True
@@ -170,8 +175,10 @@ class SmoImPrty:
                 self.warm_up.append(rd.Pareto_dist(params))
             elif warm_up_type == "Uniform":
                 self.warm_up.append(rd.Uniform_dist(params))
+            elif warm_up_type == "D":
+                self.warm_up.append(rd.Det_dist(params))
             else:
-                raise SetSmoException("Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform")
+                raise SetSmoException("Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
 
     def calc_load(self):
 
@@ -223,6 +230,10 @@ class SmoImPrty:
             elif self.sources_params[i]['type'] == "Uniform":
                 f1 = self.sources_params[i]['type'][0]
                 l_sum += 1.0 / f1
+            
+            elif self.sources_params[i]['type'] == "D":
+                f1 = self.sources_params[i]['type']
+                l_sum += 1.0 / f1
 
             if self.servers_params[i]['type'] == "M":
                 mu = self.servers_params[i]['params']
@@ -249,7 +260,11 @@ class SmoImPrty:
             elif self.servers_params[i]['type'] == "Uniform":
                 f1 = self.servers_params[i]['params'][0]
                 b1_sr += 1.0 / f1
-
+            
+            elif self.servers_params[i]['type'] == "D":
+                f1 = self.servers_params[i]['type']
+                b1_sr += 1.0 / f1
+                
             elif self.servers_params[i]['type'] == "C":
                 y1 = self.servers_params[i]['params'][0]
                 y2 = 1.0 - y1

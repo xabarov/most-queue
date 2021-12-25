@@ -299,8 +299,8 @@ def get_v1_fj_invar(l, mu, n, r=100):
     mu_n = mu / n
 
     v1_fj2 = get_v1_fj2(l, mu)
-    v1_mmn = mmnr_calc.M_M_n_formula.getV(l, mu_n, n, r=r)
-    v1_mm2 = mmnr_calc.M_M_n_formula.getV(l, mu2, 2, r=r)
+    v1_mmn = mmnr_calc.M_M_n_formula.get_v(l, mu_n, n, r=r)[0]
+    v1_mm2 = mmnr_calc.M_M_n_formula.get_v(l, mu2, 2, r=r)[0]
 
     return v1_fj2 * v1_mmn / v1_mm2
 
@@ -672,4 +672,4 @@ if __name__ == "__main__":
     ax.set_xlabel("n")
 
     plt.legend()
-    plt.savefig("error_invar_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)
+    plt.show("error_invar_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)

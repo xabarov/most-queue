@@ -335,15 +335,27 @@ class m_ph_n_prty:
         """
         self.b1[0][0, 0] = 0.0 + 0.0j
         self.b2[0][0, 0] = 0.0 + 0.0j
+        
+        is_ave = False
 
-        x_ave1 = 0.0 + 0.0j
-        x_ave2 = 0.0 + 0.0j
+
 
         iter = 0
         self.run_iterations_num_ = 0
-        for i in range(self.N):
-            x_ave1 += self.x[i]
-        x_ave1 /= self.N
+        if is_ave:
+            x_ave1 = 0.0 + 0.0j
+            x_ave2 = 0.0 + 0.0j
+            for i in range(self.N):
+                x_ave1 += self.x[i]
+            x_ave1 /= self.N
+        else:
+
+            x_ave1 = 0.0
+            x_ave2 = 0.0
+            for i in range(self.N):
+                if self.x[i].real > x_ave1 :
+                    x_ave1 = self.x[i].real
+
         while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter < self.max_iter:
             if self.verbose:
                 print("Start numeric iteration {0:d}".format(iter))
@@ -379,11 +391,19 @@ class m_ph_n_prty:
             self.t[0] = np.dot(self.x[0], t1B1)
             self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
 
-            x_ave1 = 0.0 + 0.0j
 
-            for i in range(self.N):
-                x_ave1 += self.x[i]
-            x_ave1 /= self.N
+
+            if is_ave:
+                x_ave1 = 0.0 + 0.0j
+                for i in range(self.N):
+                    x_ave1 += self.x[i]
+                x_ave1 /= self.N
+
+            else:
+                x_ave1 = 0.0
+                for i in range(self.N):
+                    if self.x[i].real > x_ave1:
+                        x_ave1 = self.x[i].real
 
         self.run_iterations_num_ = iter
         self.calculate_p()
