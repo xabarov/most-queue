@@ -18,7 +18,7 @@ def get_lambda(min, max):
 
 def get_1ambda_max(b, n, ro_max=0.8):
     b1_max = getMaxMoments(n, b, len(b))[0]
-    return ro_max / b1_max
+    return (ro_max + ro_max / b1_max)/2.0
 
 
 def calc_error_percentage(real_val, est_val):
@@ -299,8 +299,8 @@ def get_v1_fj_invar(l, mu, n, r=100):
     mu_n = mu / n
 
     v1_fj2 = get_v1_fj2(l, mu)
-    v1_mmn = mmnr_calc.M_M_n_formula.get_v(l, mu_n, n, r=r)[0]
-    v1_mm2 = mmnr_calc.M_M_n_formula.get_v(l, mu2, 2, r=r)[0]
+    v1_mmn = mmnr_calc.M_M_n_formula.getV(l, mu_n, n, r=r)
+    v1_mm2 = mmnr_calc.M_M_n_formula.getV(l, mu2, 2, r=r)
 
     return v1_fj2 * v1_mmn / v1_mm2
 
@@ -672,4 +672,4 @@ if __name__ == "__main__":
     ax.set_xlabel("n")
 
     plt.legend()
-    plt.show("error_invar_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)
+    plt.savefig("error_invar_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)

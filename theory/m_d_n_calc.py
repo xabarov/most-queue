@@ -69,7 +69,7 @@ class M_D_n:
             summ = 0
             for j in range(1, k - self.n):
                 summ += self.q_[j] * self.p[k - j]
-            value = (self.p[k - self.n] - u * self.q_[k - self.n] - summ) / self.q_[0]
+            value = (self.p[k - n] - u * self.q_[k - n] - summ) / self.q_[0]
             if value < 0:
                 is_negative = True
             else:

@@ -140,10 +140,6 @@ class SmoIm:
         l = 0
         if self.source_types == "M":
             l = self.source_params
-        elif self.source_types == "D":
-            l = 1.00/self.source_params
-        elif self.source_types == "Uniform":
-            l = 1.00/self.source_params[0]
         elif self.source_types == "H":
             y1 = self.source_params[0]
             y2 = 1.0 - self.source_params[0]
@@ -184,10 +180,6 @@ class SmoIm:
         if self.server_types == "M":
             mu = self.server_params
             b1 = 1.0 / mu
-        elif self.server_types == "D":
-            b1 = self.source_params
-        elif self.server_types == "Uniform":
-            b1 = self.source_params[0]
 
         elif self.server_types == "H":
             y1 = self.server_params[0]
@@ -516,49 +508,21 @@ class Server:
 
 if __name__ == '__main__':
     import mmnr_calc
-    import m_d_n_calc
 
     n = 3
     l = 1.0
     r = 30
     ro = 0.8
     mu = l / (ro * n)
-    smo = SmoIm(n, buffer=r)
+    smo = SmoIm(n)
 
     smo.set_sources(l, 'M')
     smo.set_servers(mu, 'M')
 
     smo.run(100000)
 
-    w = mmnr_calc.M_M_n_formula.get_w(l, mu, n, r)
+    q = mmnr_calc.M_M_n_formula.getQ(l, mu, n, r)
 
-    w_im = smo.w
-
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w[j], w_im[j]))
+    print("\nТеоретическое значение среднего времени ожидания: {:5.3g}".format(q / l))
     print("\n\nДанные ИМ::\n")
     print(smo)
-    
-    smo = SmoIm(n)
-
-    smo.set_sources(l, 'M')
-    smo.set_servers(1.0/mu, 'D')
-
-    smo.run(100000)
-
-    mdn = m_d_n_calc.M_D_n(l, 1/mu, n)
-    p_ch = mdn.calc_p()
-    p_im = smo.get_p()
-
-    print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО M/D/{0:d}".format(n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
-    print("-" * 36)
