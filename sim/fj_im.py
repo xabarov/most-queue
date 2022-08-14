@@ -48,12 +48,12 @@ class SmoFJ(smo_im.SmoIm):
     Имитационная модель СМО Fork-Join, Split-Join
     """
 
-    def __init__(self, num_of_channels, k, is_SJ=False, is_Purge=False):
+    def __init__(self, num_of_channels, k, is_SJ=False, is_Purge=False, buffer=None):
         """
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         """
-        smo_im.SmoIm.__init__(self, num_of_channels)
+        smo_im.SmoIm.__init__(self, num_of_channels, buffer)
         self.k = k
         self.is_SJ = is_SJ
         self.is_Purge = is_Purge
@@ -84,32 +84,45 @@ class SmoFJ(smo_im.SmoIm):
         self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
 
-        self.served_subtask_in_task[Task.task_id] = 0
-        t = Task(self.n, self.ttek)
-        self.in_sys += 1
-        self.sub_task_in_sys += self.n
+        is_dropped = False
 
-        if not self.is_SJ:  # Fork-Join discipline
+        if self.buffer:  # ограниченная длина очереди
+            if not self.is_SJ:
+                if len(self.queue) + self.k - 1 > self.buffer + self.free_channels:
+                    self.dropped += 1
+                    is_dropped = True
+            else:
+                if self.free_channels == 0 and len(self.queue) + self.k - 1 > self.buffer:
+                    self.dropped += 1
+                    is_dropped = True
 
-            for i in range(self.n):
-                if self.free_channels == 0:
-                    self.queues[i].append(t.subtasks[i])
-                else:  # there are free channels:
-                    if self.servers[i].is_free:
+        if not is_dropped:
+            self.served_subtask_in_task[Task.task_id] = 0
+            t = Task(self.n, self.ttek)
+            self.in_sys += 1
+            self.sub_task_in_sys += self.n
+
+            if not self.is_SJ:  # Fork-Join discipline
+
+                for i in range(self.n):
+                    if self.free_channels == 0:
+                        self.queues[i].append(t.subtasks[i])
+                    else:  # there are free channels:
+                        if self.servers[i].is_free:
+                            self.servers[i].start_service(t.subtasks[i], self.ttek)
+                            self.free_channels -= 1
+                        else:
+                            self.queues[i].append(t.subtasks[i])
+
+            else:  # Split-Join discipline
+
+                if self.free_channels < self.n:
+                    for i in range(self.n):
+                        self.queue.append(t.subtasks[i])
+                else:
+                    for i in range(self.n):
                         self.servers[i].start_service(t.subtasks[i], self.ttek)
                         self.free_channels -= 1
-                    else:
-                        self.queues[i].append(t.subtasks[i])
-
-        else:  # Split-Join discipline
-
-            if self.free_channels < self.n:
-                for i in range(self.n):
-                    self.queue.append(t.subtasks[i])
-            else:
-                for i in range(self.n):
-                    self.servers[i].start_service(t.subtasks[i], self.ttek)
-                    self.free_channels -= 1
 
     def serving(self, c):
         """
@@ -180,18 +193,9 @@ class SmoFJ(smo_im.SmoIm):
         else:
             self.serving(num_of_server_earlier)
 
-    def run(self, total_served, verbose=True):
-
-        if verbose:
-            progress_bar = tqdm(range(total_served))
-            for i in progress_bar:
-                self.run_one_step()
-                progress_bar.update()
-
-            progress_bar.close()
-        else:
-            for i in range(total_served):
-                self.run_one_step()
+    def run(self, total_served):
+        for i in tqdm(range(total_served)):
+            self.run_one_step()
 
     def refresh_v_stat(self, new_a):
         for i in range(3):

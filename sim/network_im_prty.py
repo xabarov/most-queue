@@ -5,14 +5,14 @@ import math
 from smo_im_prty import Task
 import network_calc
 import time
-from tqdm import tqdm
+
 
 class NetworkPrty:
     """
     Имитационная модель СеМО с многоканальными узлами и приоритетами
     """
 
-    def __init__(self, k_num, L, R, n, prty, serv_params, nodes_prty, verbose=True):
+    def __init__(self, k_num, L, R, n, prty, serv_params, nodes_prty):
 
         self.k_num = k_num  # число классов
         self.L = L  # L[k] - вх интенсивности
@@ -24,8 +24,6 @@ class NetworkPrty:
         # serv_params[node][k][{'params':[...], 'type':'...'}]
         self.nodes_prty = nodes_prty  # [node][prty_numbers_in_new_order] перестановки исходных
         # номеров приоритетов по узлам
-
-        self.verbose = verbose
 
         self.smos = []
 
@@ -46,7 +44,7 @@ class NetworkPrty:
         for k in range(k_num):
             self.sources.append(rd.Exp_dist(L[k]))
             self.arrival_time.append(self.sources[k].generate())
-            time.sleep(0.01)
+            time.sleep(0.1)
             self.v_semo.append([0.0] * 3)
             self.w_semo.append([0.0] * 3)
 
@@ -133,11 +131,7 @@ class NetworkPrty:
                 self.smos[next_node].arrival(next_node_class, self.ttek, ts)
 
     def run(self, job_served):
-
-        if self.verbose:
-            print("\nRun network simulation. Please wait...")
-
-        for i in tqdm(range(job_served)):
+        while (sum(self.served) < job_served):
             self.run_one_step()
 
 

@@ -4,6 +4,35 @@ from scipy import stats
 import scipy.special as sp
 
 
+class Normal_dist:
+    def __init__(self, params):
+        """
+        Принимает список параметров в следующей последовательности:
+        mean - среднее значение
+        sko - СКО
+        """
+
+        self.mean = params[0]
+        self.sko = params[1]
+        self.type = 'Normal'
+
+    def generate(self):
+        """
+        Генерация псевдо-случайных чисел
+        """
+
+        return self.generate_static(self.mean, self.sko)
+
+    @staticmethod
+    def generate_static(mean, sko):
+        """
+        Генерация псевдо-случайных чисел
+        Статический метод
+        """
+
+        return np.random.normal(mean, sko)
+
+
 class Uniform_dist:
     def __init__(self, params):
         """
@@ -11,6 +40,7 @@ class Uniform_dist:
         mean - среднее значение
         half_interval - полуинтервал влево и вправо от среднего
         """
+
         self.mean = params[0]
         self.half_interval = params[1]
         self.type = 'Uniform'
@@ -20,6 +50,7 @@ class Uniform_dist:
         Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
         Вызов из экземпляра класса
         """
+
         return self.generate_static(self.mean, self.half_interval)
 
     @staticmethod
@@ -28,6 +59,7 @@ class Uniform_dist:
         Генерация псевдо-случайных чисел, подчиненных равномерному распределению
         Статический метод
         """
+
         r = np.random.uniform(mean - half_interval, mean + half_interval)
         return r
 
@@ -36,6 +68,7 @@ class Uniform_dist:
         """
         Метод вычисляет теоретические моменты
         """
+
         f = [0.0] * num
         for i in range(num):
             f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (2 * half_interval * (i + 2))
@@ -45,7 +78,9 @@ class Uniform_dist:
     def get_params(moments):
         """
         Подбор параметров распределения по заданным начальным моментам.
+        Возвращает среднее и полуинтервал
         """
+
         D = moments[1] - moments[0] * moments[0]
         mean = moments[0]
         half_interval = math.sqrt(3 * D)
@@ -55,8 +90,10 @@ class Uniform_dist:
     @staticmethod
     def get_params_by_mean_and_coev(f1, coev):
         """
-        Подбор параметров распределения по среднему и коэфф вариации.
+        Подбор параметров распределения по среднему и коэфф вариации
+        Возвращает среднее и полуинтервал
         """
+
         D = pow(coev * f1, 2)
         half_interval = math.sqrt(3 * D)
 
@@ -64,6 +101,10 @@ class Uniform_dist:
 
     @staticmethod
     def get_pdf(mean, half_interval, t):
+        """
+        Возвращает значение функции плотности распределения вероятностей СВ
+        """
+
         a = mean - half_interval
         b = mean + half_interval
         if t < a or t > b:
@@ -72,6 +113,10 @@ class Uniform_dist:
 
     @staticmethod
     def get_cdf(mean, half_interval, t):
+        """
+        Возвращает значение функции распределения СВ
+        """
+
         a = mean - half_interval
         b = mean + half_interval
         if t < a:
@@ -83,6 +128,9 @@ class Uniform_dist:
 
     @staticmethod
     def get_tail(mean, half_interval, t):
+        """
+        Возвращает значение ДФР
+        """
 
         return 1.0 - Uniform_dist.get_cdf(mean, half_interval, t)
 
@@ -92,6 +140,7 @@ class H2_dist:
         """
         Принимает список параметров в следующей последовательности - y1, mu1, mu2
         """
+
         self.y1 = params[0]
         self.m1 = params[1]
         self.m2 = params[2]
@@ -103,6 +152,7 @@ class H2_dist:
         Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
         Вызов из экземпляра класса
         """
+
         return self.generate_static(self.y1, self.m1, self.m2)
 
     @staticmethod
@@ -111,6 +161,7 @@ class H2_dist:
         Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
         Статический метод
         """
+
         r = np.random.rand()
         res = -np.log(np.random.rand())
         if r < y1:
@@ -155,7 +206,9 @@ class H2_dist:
         """
         Метод Алиева для подбора параметров H2 распределения по заданным начальным моментам.
         Подбирает параметры только принадлежащие множеству R (не комплексные)
+        Возвращает список с параметрами [y1, mu1, mu2]
         """
+
         v = moments[1] - moments[0] * moments[0]
         v = math.sqrt(v) / moments[0]
         res = [0.0] * 3
@@ -209,6 +262,7 @@ class H2_dist:
         ee - точность проверки близости распределения к E1 и E2
         e - множитель моментов
         e_percent - процент повышения множителя e
+        Возвращает список с параметрами [y1, mu1, mu2]
         """
 
         f = [0.0] * 3
@@ -231,7 +285,8 @@ class H2_dist:
                 for i in range(len(moments)):
                     f.append(moments[i] * complex(1, (i + 1) * e))
 
-                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                              is_fitting=is_fitting)
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -246,7 +301,8 @@ class H2_dist:
                     #     f.append(moments[0])
                     # else:
                     f.append(moments[i] * complex(1, (i + 1) * e))
-                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                              is_fitting=is_fitting)
 
         res = [0, 0, 0]  # y1, mu1, mu2
         c1 = complex(c1)
@@ -261,6 +317,11 @@ class H2_dist:
 
     @staticmethod
     def get_params_by_mean_and_coev(f1, coev, is_clx=False):
+        """
+        Подбор параметров H2 распределения по среднему и коэффициенту вариации
+        Возвращает список с параметрами [y1, mu1, mu2]
+        """
+
         f = [0, 0, 0]
         alpha = 1 / (coev ** 2)
         f[0] = f1
@@ -272,6 +333,9 @@ class H2_dist:
 
     @staticmethod
     def get_cdf(params, t):
+        """
+        Возвращает значение функции распределения СВ
+        """
         if t < 0:
             return 0
         y = [params[0], 1 - params[0]]
@@ -283,6 +347,9 @@ class H2_dist:
 
     @staticmethod
     def get_pdf(params, t):
+        """
+        Возвращает значение функции плотности распределения вероятностей СВ
+        """
         if t < 0:
             return 0
         y = [params[0], 1 - params[0]]
@@ -294,6 +361,9 @@ class H2_dist:
 
     @staticmethod
     def get_tail(params, t):
+        """
+        Возвращает значение ДФР
+        """
         return 1.0 - H2_dist.get_cdf(params, t)
 
 
@@ -348,6 +418,7 @@ class Cox_dist:
     def get_params(moments, ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True):
         """
         Метод вычисляет параметры распределения Кокса 2-го порядка по трем заданным начальным моментам [moments]
+        Возвращает список с параметрами [y1, mu1, mu2]
         """
         f = [0.0] * 3
 
@@ -362,7 +433,8 @@ class Cox_dist:
                 for i in range(len(moments)):
                     f.append(moments[i] * complex(1, (i + 1) * e))
 
-                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                           is_fitting=is_fitting)
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -377,7 +449,8 @@ class Cox_dist:
                     #     f.append(moments[0])
                     # else:
                     f.append(moments[i] * complex(1, (i + 1) * e))
-                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e*(1.0+e_percent), e_percent=e_percent, is_fitting=is_fitting)
+                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                           is_fitting=is_fitting)
 
         # # особые случаи:
         # if abs(moments[1] - moments[0] * moments[0]) < ee:
@@ -402,6 +475,7 @@ class Cox_dist:
 
 class Det_dist:
     """Детерминированное"""
+
     def __init__(self, b):
         """
         Принимает список параметров в следующей последовательности - alpha, K
@@ -435,7 +509,7 @@ class Pareto_dist:
     @staticmethod
     def get_pdf(t, a, k):
         """
-        Probability density function
+        Возвращает значение функции плотности распределения вероятностей СВ
         """
         if t < 0:
             return 0
@@ -444,14 +518,16 @@ class Pareto_dist:
     @staticmethod
     def get_cdf(params, t):
         """
-        Cumulative distribution function
+        Возвращает значение функции распределения СВ
+        params = [a, K]
         """
         return 1.0 - Pareto_dist.get_tail(params, t)
 
     @staticmethod
     def get_tail(params, t):
         """
-        Complementary cumulative distribution function (tail distribution)
+        Возвращает значение ДФР
+        params = [a, K]
         """
         if t < 0:
             return 0
@@ -461,6 +537,9 @@ class Pareto_dist:
 
     @staticmethod
     def calc_theory_moments(a, k, max_number=3):
+        """
+        Вычисление теоретических начальных моментов распределения по заданным параметрам [a, K]
+        """
         f = []
         for i in range(max_number):
             if a > i + 1:
@@ -472,6 +551,14 @@ class Pareto_dist:
     @staticmethod
     def generate_static(a, k):
         return k * math.pow(np.random.rand(), -1 / a)
+
+    @staticmethod
+    def get_params(f):
+        """
+        Метод возвращает параметры a и K по 2-м начальным моментам списка f
+        Добавлен для совместимости
+        """
+        return Pareto_dist.get_a_k(f)
 
     @staticmethod
     def get_a_k(f):
@@ -530,6 +617,9 @@ class Erlang_dist:
 
     @staticmethod
     def get_cdf(params, t):
+        """
+        Возвращает значение функции распределения СВ
+        """
         if t < 0:
             return 0
         r = params[0]
@@ -541,12 +631,16 @@ class Erlang_dist:
 
     @staticmethod
     def get_tail(params, t):
+        """
+        Возвращает значение ДФР
+        """
         return 1.0 - Erlang_dist.get_cdf(params, t)
 
     @staticmethod
     def calc_theory_moments(r, mu, count=3):
         """
         Вычисляет теоретические начальные моменты распределения. По умолчанию - первые три
+        r, mu - параметры распределения Эрланга
         """
         f = [0.0] * count
         for i in range(count):
@@ -560,6 +654,7 @@ class Erlang_dist:
     def get_params(f):
         """
         Метод вычисляет параметры распределения Эрланга по двум начальным моментам
+        Возвращает кортеж (r, mu) - параметры распределения Эрланга
         """
         r = int(math.floor(f[0] * f[0] / (f[1] - f[0] * f[0]) + 0.5))
         mu = r / f[0]
@@ -569,6 +664,7 @@ class Erlang_dist:
     def get_params_by_mean_and_coev(f1, coev):
         """
         Метод подбирает параметры распределения Эрланга по среднему и коэффициенту вариации
+        Возвращает кортеж (r, mu) - параметры распределения Эрланга
         """
         f = [0, 0]
         f[0] = f1
@@ -604,8 +700,7 @@ class Exp_dist:
 
 class Gamma:
     """
-    содержит статические методы для Гамма-распределения
-    get_mu_alpha - аппроксимация параметров mu и alpha по начальным моментам
+    Гамма-распределение
     """
 
     def __init__(self, params):
@@ -625,8 +720,8 @@ class Gamma:
         """
         Статический метод аппроксимации параметров mu и alpha Гамма-распределения
         по двум заданным начальным моментам в списке "b"
-        :param b: список из двух начальных моментов
-        :return: кортеж из параметров mu и alpha
+        b: список из двух начальных моментов
+        Возвращает кортеж из параметров mu и alpha
         """
         d = b[1] - b[0] * b[0]
         mu = b[0] / d
@@ -637,8 +732,8 @@ class Gamma:
     def get_params(b):
         """
         Статический метод аппроксимации параметров Гамма-распределения поправочным многочленом
-        :param b: список из произвольного числа начальных моментов
-        :return: список из параметров mu и alpha + g[j], j=0,N, где N - число моментов
+        b: список из произвольного числа начальных моментов
+        Возвращает список параметров mu и alpha и, если число начальных моментов больше двух, значения g[j], j=0,N, где N - число моментов
         """
         d = b[1] - b[0] * b[0]
         mu = b[0] / d
@@ -662,6 +757,9 @@ class Gamma:
 
     @staticmethod
     def get_mu_alpha_by_mean_and_coev(mean, coev):
+        """
+        Возвращает список параметров mu и alpha по заданным среднему и коэфф. вариации
+        """
         d = pow(mean * coev, 2)
         mu = mean / d
         alpha = mu * mean
@@ -677,7 +775,22 @@ class Gamma:
 
     @staticmethod
     def get_cdf(mu, alpha, t):
+        """
+        Возвращает значение функции распределения СВ
+        """
         return stats.gamma.cdf(mu * t, alpha)
+
+    @staticmethod
+    def get_pdf(mu, alpha, t):
+        """
+        Функция плотности вероятности Гамма-распределения
+        :param mu: параметр Гамма-распределения
+        :param alpha: параметр Гамма-распределения
+        :param t: время
+        :return: значение плотности Гамма-распределения
+        Добавлен для совместимости
+        """
+        return Gamma.get_f(mu, alpha, t)
 
     @staticmethod
     def get_f(mu, alpha, t):
@@ -724,6 +837,7 @@ class Gamma:
     @staticmethod
     def calc_theory_moments(mu, alpha, count=3):
         """
+        mu, alpha - параметры распределения
         Вычисляет теоретические начальные моменты распределения. По умолчанию - первые три
         """
         f = [0.0] * count
