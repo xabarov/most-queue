@@ -472,6 +472,20 @@ class Cox_dist:
 
         return y1, mu1, mu2
 
+    @staticmethod
+    def get_params_by_mean_and_coev(f1, coev):
+        """
+        Подбор параметров C2 распределения по среднему и коэффициенту вариации
+        Возвращает список с параметрами [y1, mu1, mu2]
+        """
+
+        f = [0, 0, 0]
+        alpha = 1 / (coev ** 2)
+        f[0] = f1
+        f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
+        f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
+
+        return Cox_dist.get_params(f)
 
 class Det_dist:
     """Детерминированное"""
