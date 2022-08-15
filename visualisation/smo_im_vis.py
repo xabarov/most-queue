@@ -29,11 +29,32 @@ import mmnr_calc
 import time
 import math
 
-COLORS = {"dark_teal": "#1de9b6", "dark_amber": "#ffd740", "dark_blue": "#448aff", "dark_cyan": "#4dd0e1",
-          "dark_lightgreen": "#8bc34a", "dark_pink": "#ff4081", "dark_purple": "#ab47bc", "dark_red": "#ff1744",
-          "dark_yellow": "#ffff00", "light_teal": "#1de9b6", "light_amber": "#ffd740", "light_blue": "#448aff", "light_cyan": "#4dd0e1",
-          "light_lightgreen": "#8bc34a", "light_pink": "#ff4081", "light_purple": "#ab47bc", "light_red": "#ff1744",
-          "light_yellow": "#ffff00"}
+COLORS = {"dark_amber.xml": (255, 215, 64, 255),
+          "dark_blue.xml": (68, 138, 255, 255),
+          "dark_cyan.xml": (77, 208, 225, 255),
+          "dark_lightgreen.xml": (139, 195, 74, 255),
+          "dark_pink.xml": (255, 64, 129, 255),
+          "dark_purple.xml": (171, 71, 188, 255),
+          "dark_red.xml": (255, 23, 68, 255),
+          "dark_teal.xml": (29, 233, 182, 255),
+          "dark_yellow.xml": (255, 255, 0, 255),
+          "light_amber.xml": (255, 196, 0, 255),
+          "light_blue.xml": (41, 121, 255, 255),
+          "light_blue_500.xml": (3, 169, 244, 255),
+          "light_cyan.xml": (0, 229, 255, 255),
+          "light_cyan_500.xml": (0, 188, 212, 255),
+          "light_lightgreen.xml": (100, 221, 23, 255),
+          "light_lightgreen_500.xml": (139, 195, 74, 255),
+          "light_orange.xml": (255, 61, 0, 255),
+          "light_pink.xml": (255, 64, 129, 255),
+          "light_pink_500.xml": (233, 30, 99, 255),
+          "light_purple.xml": (224, 64, 251, 255),
+          "light_purple_500.xml": (156, 39, 176, 255),
+          "light_red.xml": (255, 23, 68, 255),
+          "light_red_500.xml": (244, 67, 54, 255),
+          "light_teal.xml": (29, 233, 182, 255),
+          "light_teal_500.xml": (0, 150, 136, 255),
+          "light_yellow.xml": (255, 234, 0, 255)}
 
 
 class SmoThread(QtCore.QThread):
@@ -45,22 +66,33 @@ class SmoThread(QtCore.QThread):
         self.source_params = source_params
         self.server_params = server_params
         self.jobs_count = jobs_count
+        self.iters_to_end = jobs_count
         self.r = r
+        self.iters_left = 0
         self.is_running = False
+        self.is_smo_created = False
 
     def run(self):
         self.is_running = True
-        smo = smo_im.SmoIm(self.n, buffer=self.r)
 
-        smo.set_sources(self.source_params["params"], self.source_params["type"])
-        smo.set_servers(self.server_params["params"], self.server_params["type"])
+        if not self.is_smo_created:
+            self.smo = smo_im.SmoIm(self.n, buffer=self.r)
 
-        for i in range(self.jobs_count):
+            self.smo.set_sources(self.source_params["params"], self.source_params["type"])
+            self.smo.set_servers(self.server_params["params"], self.server_params["type"])
+
+            self.is_smo_created = True
+
+        delta = self.iters_left
+        for i in range(self.iters_to_end):
             if self.is_running:
-                print("Step {0:d} from {1:d}".format(i + 1, self.jobs_count))
-                smo.run_one_step()
-
-                w_im = smo.w
+                start_iter = i + 1 + delta
+                end_iter = self.jobs_count
+                print("Step {0:d} from {1:d}, remaining {2:d}".format(start_iter, end_iter, self.iters_to_end - 1))
+                self.smo.run_one_step()
+                self.iters_left += 1
+                self.iters_to_end -= 1
+                w_im = self.smo.w
 
                 # print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
                 #
@@ -71,8 +103,8 @@ class SmoThread(QtCore.QThread):
                 # print("\n\nДанные ИМ::\n")
                 # print(smo)
 
-                params = str(len(smo.queue))
-                for s in smo.servers:
+                params = str(len(self.smo.queue))
+                for s in self.smo.servers:
                     if s.is_free:
                         params += ",0"
                     else:
@@ -103,7 +135,9 @@ class QueueWidget(QWidget):
         qp.end()
 
     def drawLines(self, qp):
-        self.color = COLORS[self.theme.split(".")[0]]
+
+        self.queue_count = min(10, self.queue_count)
+        self.color = COLORS[self.theme]
         pen = QPen(Qt.black, 2, Qt.DashLine)
 
         width = self.width()
@@ -124,8 +158,8 @@ class QueueWidget(QWidget):
 
             if i >= self.queue_count - self.number_of_jobs and i != self.queue_count:
                 qp.setRenderHint(QPainter.Antialiasing)
-                qp.setPen(QPen(QColor(self.color), 1, Qt.SolidLine))
-                qp.setBrush(QBrush(QColor(self.color), Qt.SolidPattern))
+                qp.setPen(QPen(QColor(*self.color), 1, Qt.SolidLine))
+                qp.setBrush(QBrush(QColor(*self.color), Qt.SolidPattern))
                 qp.drawEllipse(x, paddings, step,
                                step)
             x += step
@@ -140,7 +174,6 @@ class ChannelsWidget(QWidget):
         self.channels_in_service = channels_in_service
         self.theme = theme
 
-
         self.initUI()
 
     def initUI(self):
@@ -153,21 +186,29 @@ class ChannelsWidget(QWidget):
         qp.end()
 
     def drawLines(self, qp):
-        self.color = COLORS[self.theme.split(".")[0]]
+        self.color = COLORS[self.theme]
         pen = QPen(Qt.black, 2, Qt.DashLine)
 
         width = self.width()
         height = self.height()
 
-        channel_height = int(height / (self.channels_count + (self.channels_count - 1) * 0.3))
-        channel_width = int(0.6 * width)
+        fract = 1.0/3
+
+        if self.channels_count != 1:
+            channel_height = int(height / (self.channels_count + (self.channels_count - 1) * fract))
+            x = 0
+        else:
+            channel_height = int(height * fract)
+            x = channel_height
+
+        channel_width = int(2*fract * width)
 
         paddings_left = int((width - channel_width) / 2)
         paddings_right = paddings_left + channel_width
 
         qp.setPen(pen)
 
-        x = 0
+
 
         for i in range(self.channels_count):
             qp.setPen(pen)
@@ -179,10 +220,17 @@ class ChannelsWidget(QWidget):
             if self.channels_in_service:
                 if self.channels_in_service[i] == 1:
                     qp.setRenderHint(QPainter.Antialiasing)
-                    qp.setPen(QPen(QColor(self.color), 1, Qt.SolidLine))
-                    qp.setBrush(QBrush(QColor(self.color), Qt.SolidPattern))
-                    qp.drawEllipse(paddings_left + int((channel_width - channel_height) / 2), x, channel_height,
-                                   channel_height)
+                    qp.setPen(QPen(QColor(*self.color), 1, Qt.SolidLine))
+                    qp.setBrush(QBrush(QColor(*self.color), Qt.SolidPattern))
+                    if channel_width > channel_height:
+                        delta = int((channel_width - channel_height) / 2)
+                        qp.drawEllipse(paddings_left + delta, x, min(channel_width, channel_height),
+                                       min(channel_width, channel_height))
+                    else:
+                        delta = int((channel_height - channel_width) / 2)
+                        qp.drawEllipse(paddings_left, x+ delta, min(channel_width, channel_height),
+                                       min(channel_width, channel_height))
+
 
             x += channel_height + int(0.3 * channel_height)
 
@@ -226,6 +274,68 @@ class SmoVisualizationWindow(QMainWindow):
         self.splash.finish(self)
 
         self.is_running = False
+        self.is_resume_mode = False
+
+    def change_server_params(self, server_type, server_coev):
+
+        if server_type == "M":
+            self.server_params["params"] = 1.0 / self.b1
+
+        elif server_type == "D":
+            self.server_params["params"] = self.b1
+        elif server_type == "Uniform":
+            self.server_params["params"] = [self.b1]
+
+        elif server_type == "H":
+
+            self.server_params["params"] = rd.H2_dist.get_params_by_mean_and_coev(self.b1, server_coev)
+
+        elif server_type == "Gamma":
+            self.server_params["params"] = rd.Gamma.get_mu_alpha_by_mean_and_coev(self.b1, server_coev)
+
+        elif server_type == "E":
+            self.server_params["params"] = rd.Erlang_dist.get_params_by_mean_and_coev(self.b1, server_coev)
+
+        elif server_type == "C":
+            self.server_params["params"] = rd.Cox_dist.get_params_by_mean_and_coev(self.b1, server_coev)
+
+        elif server_type == "Pa":
+            self.server_params["params"] = rd.Pareto_dist.get_a_k_by_mean_and_coev(self.b1, server_coev)
+
+        self.server_params["type"] = server_type
+
+        print("Новые параметры распр. времени обсл. потока:")
+        print("    ", self.server_params)
+
+    def change_source_params(self, source_type, source_coev):
+
+        if source_type == "M":
+            self.source_params["params"] = self.l
+
+        elif source_type == "D":
+            self.source_params["params"] = 1.0 / self.l
+        elif source_type == "Uniform":
+            self.source_params["params"] = [1.0 / self.l]
+
+        elif source_type == "H":
+            self.source_params["params"] = rd.H2_dist.get_params_by_mean_and_coev(1.0 / self.l, source_coev)
+
+        elif source_type == "Gamma":
+            self.source_params["params"] = rd.Gamma.get_mu_alpha_by_mean_and_coev(1.0 / self.l, source_coev)
+
+        elif source_type == "E":
+            self.source_params["params"] = rd.Erlang_dist.get_params_by_mean_and_coev(1.0 / self.l, source_coev)
+
+        elif source_type == "C":
+            self.source_params["params"] = rd.Cox_dist.get_params_by_mean_and_coev(1.0 / self.l, source_coev)
+
+        elif source_type == "Pa":
+            self.source_params["params"] = rd.Pareto_dist.get_a_k_by_mean_and_coev(1.0 / self.l, source_coev)
+
+        self.source_params["type"] = source_type
+
+        print("Новые параметры вх потока:")
+        print("    ", self.source_params)
 
     def change_ro(self, ro_new):
         if self.ro == ro_new:
@@ -275,13 +385,12 @@ class SmoVisualizationWindow(QMainWindow):
                 l = 1.0 / f1
 
         if self.server_params["type"] == "M":
-            self.server_params["params"] = l * self.n / ro_new
+            self.b1 = ro_new / (l * self.n)
+            self.server_params["params"] = 1.0 / self.b1
 
-        elif self.server_params["type"] == "D":
-            self.source_params["params"] = ro_new * self.n / l
-
-        elif self.server_params["type"] == "Uniform":
-            self.source_params["params"][0] = ro_new * self.n / l
+        elif self.server_params["type"] == "D" or self.server_params["type"] == "Uniform":
+            self.b1 = ro_new * self.n / l
+            self.server_params["params"] = self.b1
 
         elif self.server_params["type"] == "H":
             y1 = self.server_params["params"][0]
@@ -291,6 +400,8 @@ class SmoVisualizationWindow(QMainWindow):
 
             b = rd.H2_dist.calc_theory_moments(y1, mu1, mu2)
             b[0] = ro_new * self.n / l
+
+            self.b1 = b[0]
             coev = math.sqrt(b[1] - b[0] ** 2) / b[0]
             params_new = rd.H2_dist.get_params_by_mean_and_coev(b[0], coev)
             self.server_params["params"] = params_new
@@ -300,6 +411,8 @@ class SmoVisualizationWindow(QMainWindow):
             alpha = self.server_params["params"][1]
             b = rd.Gamma.calc_theory_moments(mu, alpha)
             b[0] = ro_new * self.n / l
+            self.b1 = b[0]
+
             coev = math.sqrt(b[1] - b[0] ** 2) / b[0]
             params_new = rd.Gamma.get_mu_alpha_by_mean_and_coev(b[0], coev)
             self.server_params["params"] = params_new
@@ -309,6 +422,8 @@ class SmoVisualizationWindow(QMainWindow):
             mu = self.server_params["params"][1]
             b = rd.Erlang_dist.calc_theory_moments(r, mu)
             b[0] = ro_new * self.n / l
+            self.b1 = b[0]
+
             coev = math.sqrt(b[1] - b[0] ** 2) / b[0]
             params_new = rd.Erlang_dist.get_params_by_mean_and_coev(b[0], coev)
             self.server_params["params"] = params_new
@@ -321,6 +436,9 @@ class SmoVisualizationWindow(QMainWindow):
 
             b = rd.Cox_dist.calc_theory_moments(y1, mu1, mu2)
             b[0] = ro_new * self.n / l
+
+            self.b1 = b[0]
+
             coev = math.sqrt(b[1] - b[0] ** 2) / b[0]
             params_new = rd.Cox_dist.get_params_by_mean_and_coev(b[0], coev)
             self.server_params["params"] = params_new
@@ -333,12 +451,14 @@ class SmoVisualizationWindow(QMainWindow):
                 k = self.server_params["params"][1]
                 b = rd.Pareto_dist.calc_theory_moments(a, k)
                 b[0] = ro_new * self.n / l
+
+                self.b1 = b[0]
+
                 coev = math.sqrt(b[1] - b[0] ** 2) / b[0]
                 params_new = rd.Pareto_dist.get_a_k_by_mean_and_coev(b[0], coev)
                 self.server_params["params"] = params_new
 
-        print("Server params: ", self.server_params)
-        print("Source params: ", self.source_params)
+        print("Коэфф загрузки изменен с {0:f} на {1:f}".format(self.ro, self.calc_ro()))
 
     def calc_ro(self):
         """
@@ -390,7 +510,7 @@ class SmoVisualizationWindow(QMainWindow):
 
         b1 = 0
         if self.server_params["type"] == "M":
-            mu = self.server_params
+            mu = self.server_params["params"]
             b1 = 1.0 / mu
         elif self.server_params["type"] == "D":
             b1 = self.source_params["params"]
@@ -430,19 +550,34 @@ class SmoVisualizationWindow(QMainWindow):
                 k = self.server_params["params"][1]
                 b1 = a * k / (a - 1)
 
+        self.l = l
+        self.b1 = b1
+
         return l * b1 / self.n
 
     def run(self):
-        self.sim_worker = SmoThread(self, self.n, self.source_params, self.server_params, self.jobs_count, self.r)
-        self.sim_worker.mysignal.connect(self.on_change)
 
-        self.sim_worker.started.connect(self.on_sim_started)
-        self.sim_worker.finished.connect(self.on_sim_finished)
+        self.pauseAct.setEnabled(True)
+        self.stopAct.setEnabled(True)
 
-        self.is_worker_created = True
+        if not self.is_resume_mode:
+            self.sim_worker = SmoThread(self, self.n, self.source_params, self.server_params, self.jobs_count, self.r)
+            self.sim_worker.mysignal.connect(self.on_change)
+
+            self.sim_worker.started.connect(self.on_sim_started)
+            self.sim_worker.finished.connect(self.on_sim_finished)
+
+        self.is_running = True
 
         if not self.sim_worker.isRunning():
             self.sim_worker.start()
+
+    def pause(self):
+        self.is_resume_mode = True
+
+        print("Try to pause simulattion...")
+        if self.is_running and self.sim_worker:
+            self.sim_worker.is_running = False
 
     def on_change(self, s):
         params = s.split(",")
@@ -467,11 +602,24 @@ class SmoVisualizationWindow(QMainWindow):
         print("Simulation finished")
 
     def stop(self):
+
+        self.pauseAct.setEnabled(False)
+        self.stopAct.setEnabled(False)
+
         print("Try to stop simulattion...")
-        if self.is_worker_created and self.sim_worker:
-            self.sim_worker.running = False  # Изменяем флаг выполнения
+        if self.is_running and self.sim_worker:
             self.sim_worker.is_running = False
-            # self.sim_worker.wait(5000)
+
+        self.is_resume_mode = False
+        channels_is_free = [0] * self.n
+        for i in range(self.n):
+            channels_is_free[i] = 0
+        # print(queue, channels_is_free)
+        self.queue.number_of_jobs = 0
+        self.queue.repaint()
+
+        self.channels.channels_in_service = channels_is_free
+        self.channels.repaint()
 
     def create_widgets(self):
 
@@ -508,9 +656,7 @@ class SmoVisualizationWindow(QMainWindow):
         Установка гифки на заставку
         """
         theme_type = self.theme_str.split('.')[0].split('_')[1]
-        if theme_type == "cyan_500":
-            theme_type = "cyan"
-        if theme_type == "cyan" or theme_type == "blue":
+        if theme_type == "cyan" or theme_type == "blue" or theme_type == "cyan_500":
             self.movie_gif = "icons/loading-63.gif"
         elif theme_type == "red" or theme_type == "yellow" or theme_type == "amber":
             self.movie_gif = "icons/loading-64.gif"
@@ -557,15 +703,14 @@ class SmoVisualizationWindow(QMainWindow):
         # else:
         #     self.icon_folder = "icons/dark_icons"
 
-        theme_type = self.theme_str.split('.')[0].split('_')[1]
-        if theme_type == "cyan_500":
-            theme_type = "cyan"
+        theme_type = self.theme_str.split('.')[0]
 
         self.icon_folder = "icons/" + theme_type
 
         self.exitAct.setIcon(QIcon(self.icon_folder + "/logout.png"))
         self.aboutAct.setIcon(QIcon(self.icon_folder + "/info.png"))
         self.runAct.setIcon(QIcon(self.icon_folder + "/play-button.png"))
+        self.pauseAct.setIcon(QIcon(self.icon_folder + "/pause.png"))
         self.stopAct.setIcon(QIcon(self.icon_folder + "/stop-button.png"))
         self.settingsappAct.setIcon(QIcon(self.icon_folder + "/settings.png"))
 
@@ -580,7 +725,10 @@ class SmoVisualizationWindow(QMainWindow):
         self.settingsappAct = QAction("Настройки приложения", self, enabled=True, triggered=self.showappSettings)
 
         self.runAct = QAction("Начать моделирование...", self, shortcut="Ctrl+R", triggered=self.run)
-        self.stopAct = QAction("Завершить моделирование...", self, shortcut="Ctrl+B", triggered=self.stop)
+        self.stopAct = QAction("Завершить моделирование...", self, shortcut="Ctrl+B", enabled=False,
+                               triggered=self.stop)
+        self.pauseAct = QAction("Приостановить моделирование...", self, shortcut="Ctrl+P", enabled=False,
+                                triggered=self.pause)
 
         self.set_icons()
 
@@ -595,6 +743,7 @@ class SmoVisualizationWindow(QMainWindow):
 
         self.simMenu = QMenu("&Моделирование", self)
         self.simMenu.addAction(self.runAct)
+        self.simMenu.addAction(self.pauseAct)
         self.simMenu.addAction(self.stopAct)
 
         self.settingsMenu = QMenu("Настройки", self)
@@ -618,6 +767,7 @@ class SmoVisualizationWindow(QMainWindow):
 
         toolBar = QToolBar("Панель инструментов", self)
         toolBar.addAction(self.runAct)
+        toolBar.addAction(self.pauseAct)
         toolBar.addAction(self.stopAct)
         toolBar.addSeparator()
         toolBar.addAction(self.settingsappAct)
@@ -631,6 +781,7 @@ class SmoVisualizationWindow(QMainWindow):
         """
         Показать осно с настройками приложения
         """
+        self.stop()
 
         if self.app_settings_set:
             self._settings_window = SettingsWindow(self, self.app_settings)
@@ -666,7 +817,12 @@ class SmoVisualizationWindow(QMainWindow):
 
             self.n = self.app_settings['n']
             self.r = self.app_settings['r']
+
             self.change_ro(self.app_settings['ro'])
+
+            self.change_source_params(self.app_settings["source"], self.app_settings["source_coev"])
+            self.change_server_params(self.app_settings["server"], self.app_settings["server_coev"])
+
             self.channels.channels_count = self.n
             self.channels.theme = self.app_settings['theme']
             self.channels.repaint()
@@ -695,6 +851,10 @@ class SmoVisualizationWindow(QMainWindow):
         self.app_settings["n"] = self.n
         self.app_settings["r"] = self.r
         self.app_settings["ro"] = self.ro
+        self.app_settings["source"] = "M"
+        self.app_settings["source_coev"] = 1.0
+        self.app_settings["server"] = "M"
+        self.app_settings["server_coev"] = 1.0
         self.app_settings_set = True
 
 
