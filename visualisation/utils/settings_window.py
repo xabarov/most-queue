@@ -89,6 +89,46 @@ class SettingsWindow(QWidget):
         self.formGroupBoxSim = QGroupBox("Настройки моделирования")
         layout_sim = QFormLayout()
 
+        self.model_type_combo = QComboBox()
+        self.model_type_combo_array = np.array(['FCFS один класс', 'PR', 'NP'])
+        self.model_type_combo.addItems(self.model_type_combo_array)
+        self.model_type_label = QLabel("Тип модели:")
+        if settings:
+            idx = np.where(self.model_type_combo_array == settings["model"])[0][0]
+            self.model_type_combo.setCurrentIndex(idx)
+
+        self.k_spin = QSpinBox()
+        self.k_spin.setMinimum(1)
+        self.k_spin.setMaximum(100)
+        if settings:
+            self.k_spin.setValue(settings['k'])
+        else:
+            self.k_spin.setValue(3)
+
+        self.k_label = QLabel("Число классов:")
+
+        if self.model_type_combo.currentText() == "PR" or self.model_type_combo.currentText() == "NP":
+            if self.k_spin:
+                self.k_spin.show()
+            if self.k_label:
+                self.k_label.show()
+        else:
+            if self.k_spin:
+                self.k_spin.hide()
+            if self.k_label:
+                self.k_label.hide()
+
+        self.model_type_combo.currentIndexChanged.connect(self.on_model_combo_change)
+
+        if self.model_type_combo.currentText() == "PR" or self.model_type_combo.currentText() == "NP":
+            if self.k_spin:
+                self.k_spin.show()
+            if self.k_label:
+                self.k_label.show()
+
+        layout_sim.addRow(self.model_type_label, self.model_type_combo)
+        layout_sim.addRow(self.k_label, self.k_spin)
+
         self.n_spin = QSpinBox()
         self.n_spin.setMinimum(1)
         self.n_spin.setMaximum(100)
@@ -229,6 +269,18 @@ class SettingsWindow(QWidget):
 
         self.resize(500, 500)
 
+    def on_model_combo_change(self):
+        if self.model_type_combo.currentText() == "PR" or self.model_type_combo.currentText() == "NP":
+            if self.k_spin:
+                self.k_spin.show()
+            if self.k_label:
+                self.k_label.show()
+        else:
+            if self.k_spin:
+                self.k_spin.hide()
+            if self.k_label:
+                self.k_label.hide()
+
     def on_server_combo_change(self):
         if self.server_combo.currentText() == "M":
             if self.server_coev_spin:
@@ -286,11 +338,17 @@ class SettingsWindow(QWidget):
         self.settings['n'] = self.n_spin.value()
         self.settings['r'] = self.r_spin.value()
         self.settings['ro'] = self.ro_spin.value()
+        self.settings['model'] = self.model_type_combo_array[self.model_type_combo.currentIndex()]
+        if self.settings['model']=="FCFS один класс":
+            self.settings['k'] = 1
+        else:
+            self.settings['k'] = self.k_spin.value()
         self.settings['source_coev'] = self.source_coev_spin.value()
         self.settings['source'] = self.source_combo_names[self.source_combo.currentIndex()]
         self.settings['server_coev'] = self.server_coev_spin.value()
         self.settings['server'] = self.server_combo_names[self.server_combo.currentIndex()]
         self.settings['speed'] = self.speed_slider.value()
+
 
         self.close()
 

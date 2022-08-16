@@ -14,6 +14,7 @@ from splash_screen import MovieSplashScreen
 
 qApp.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 import smo_im
+import smo_im_prty
 import time
 import math
 
@@ -44,14 +45,20 @@ COLORS = {"dark_amber.xml": (255, 215, 64, 255),
           "light_teal_500.xml": (0, 150, 136, 255),
           "light_yellow.xml": (255, 234, 0, 255)}
 
+COLOR_LIST = []
+for key in COLORS:
+    COLOR_LIST.append(COLORS[key])
 
 class SmoThread(QtCore.QThread):
     mysignal = QtCore.pyqtSignal(str)
 
-    def __init__(self, parent, n, source_params, server_params, jobs_count, r=None, speed=50):
+    def __init__(self, parent, n, source_params, server_params, jobs_count, r=None, k=3, model="FCFS один класс",
+                 speed=50):
         QtCore.QThread.__init__(self, parent)
 
         self.n = n
+        self.k = k
+        self.model_type = model
         self.source_params = source_params
         self.server_params = server_params
         self.jobs_count = jobs_count
@@ -74,10 +81,21 @@ class SmoThread(QtCore.QThread):
         self.is_running = True
 
         if not self.is_smo_created:
-            self.smo = smo_im.SmoIm(self.n, buffer=self.r)
+            if self.model_type == "FCFS один класс":
+                self.smo = smo_im.SmoIm(self.n, buffer=self.r)
 
-            self.smo.set_sources(self.source_params["params"], self.source_params["type"])
-            self.smo.set_servers(self.server_params["params"], self.server_params["type"])
+                self.smo.set_sources(self.source_params["params"], self.source_params["type"])
+                self.smo.set_servers(self.server_params["params"], self.server_params["type"])
+            else:
+                self.smo = smo_im_prty.SmoImPrty(self.n, self.k, self.model_type, buffer=self.r)
+                sources = []
+                servers_params = []
+                for j in range(self.k):
+                    sources.append({'type': self.source_params["type"], 'params': self.source_params["params"]})
+                    servers_params.append({'type': self.server_params["type"], 'params': self.server_params["params"]})
+
+                self.smo.set_sources(sources)
+                self.smo.set_servers(servers_params)
 
             self.is_smo_created = True
 
@@ -100,25 +118,37 @@ class SmoThread(QtCore.QThread):
                 #     print("{0:^16d}|{1:^15.5g}".format(j + 1, w_im[j]))
                 # print("\n\nДанные ИМ::\n")
                 # print(smo)
+                if self.model_type == "FCFS один класс":
+                    params = str(len(self.smo.queue)) + ","
+                else:
+                    params = ""
+                    for j in range(self.k):
+                        params += str(len(self.smo.queue[j])) + ","
 
-                params = str(len(self.smo.queue))
                 for s in self.smo.servers:
                     if s.is_free:
-                        params += ",0"
+                        params += "0,"
                     else:
-                        params += ",1"
+                        if self.model_type == "FCFS один класс":
+                            params += "1,"
+                        else:
+                            params += str(s.class_on_service + 1) + ","
+
                 self.mysignal.emit(params)
                 time.sleep(self.calc_speed_to_sleep(self.speed))
 
 
 class QueueWidget(QWidget):
 
-    def __init__(self, queue_count=10, number_of_jobs=0, theme="dark_blue.xml"):
+    def __init__(self, queue_count=10, number_of_jobs=0, theme="dark_blue.xml", k=1, model="FCFS один класс"):
         super().__init__()
 
         self.queue_count = queue_count
         self.number_of_jobs = number_of_jobs
         self.theme = theme
+
+        self.k = k
+        self.model = model
 
         self.initUI()
 
@@ -135,6 +165,7 @@ class QueueWidget(QWidget):
 
         # self.queue_count = min(10, self.queue_count)
         self.color = COLORS[self.theme]
+
         if "dark" in self.theme:
             pen_color = QColor("#F6F7F2")
         else:
@@ -152,30 +183,58 @@ class QueueWidget(QWidget):
         paddings = int((height - step) / 2)
         bottom = paddings + step
 
-        for i in range(self.queue_count + 1):
-            qp.setPen(pen)
-            qp.drawLine(x, paddings, x, bottom)
-            qp.drawLine(0, paddings, self.queue_count * step, paddings)
-            qp.drawLine(0, bottom, self.queue_count * step, bottom)
+        if self.k == 1:
+            for i in range(self.queue_count + 1):
+                qp.setPen(pen)
+                qp.drawLine(x, paddings, x, bottom)
+                qp.drawLine(0, paddings, self.queue_count * step, paddings)
+                qp.drawLine(0, bottom, self.queue_count * step, bottom)
 
-            if i >= self.queue_count - self.number_of_jobs and i != self.queue_count:
-                qp.setRenderHint(QPainter.Antialiasing)
-                qp.setPen(QPen(QColor(*self.color), 1, Qt.SolidLine))
-                qp.setBrush(QBrush(QColor(*self.color), Qt.SolidPattern))
-                qp.drawEllipse(x, paddings, step,
-                               step)
-            x += step
+                if i >= self.queue_count - self.number_of_jobs and i != self.queue_count:
+                    qp.setRenderHint(QPainter.Antialiasing)
+                    qp.setPen(QPen(QColor(*self.color), 1, Qt.SolidLine))
+                    qp.setBrush(QBrush(QColor(*self.color), Qt.SolidPattern))
+                    qp.drawEllipse(x, paddings, step,
+                                   step)
+
+                x += step
+        else:
+            jobs_paint = 0
+            for j in range(self.k):
+                for i in range(self.number_of_jobs[j]):
+                    if jobs_paint <= self.queue_count:
+                        qp.setPen(pen)
+                        qp.drawLine(self.queue_count * step - x, paddings, self.queue_count * step - x, bottom)
+                        qp.drawLine(self.queue_count * step - x, paddings, (self.queue_count - 1) * step - x, paddings)
+                        qp.drawLine(self.queue_count * step - x, bottom, (self.queue_count - 1) * step - x, bottom)
+
+                        qp.setRenderHint(QPainter.Antialiasing)
+                        qp.setPen(QPen(QColor(*COLOR_LIST[j+1]), 1, Qt.SolidLine))
+                        qp.setBrush(QBrush(QColor(*COLOR_LIST[j+1]), Qt.SolidPattern))
+                        qp.drawEllipse(self.queue_count * step - x, paddings, step,
+                                       step)
+                        jobs_paint += 1
+                        x += step
+
+            for job in range(self.queue_count - jobs_paint + 1):
+                qp.setPen(pen)
+                qp.drawLine(self.queue_count * step - x, paddings, self.queue_count * step - x, bottom)
+                qp.drawLine(self.queue_count * step - x, paddings, (self.queue_count - 1) * step - x, paddings)
+                qp.drawLine(self.queue_count * step - x, bottom, (self.queue_count - 1) * step - x, bottom)
+                x += step
 
 
 class ChannelsWidget(QWidget):
 
-    def __init__(self, channels_count=5, channels_in_service=None, theme="dark_blue.xml"):
+    def __init__(self, channels_count=5, channels_in_service=None, theme="dark_blue.xml", k=1, model="FCFS один класс"):
         super().__init__()
 
         self.channels_count = channels_count
         self.channels_in_service = channels_in_service
         self.theme = theme
 
+        self.k = k
+        self.model = model
         self.initUI()
 
     def initUI(self):
@@ -224,10 +283,16 @@ class ChannelsWidget(QWidget):
             qp.drawLine(paddings_right, x, paddings_right, x + channel_height)
 
             if self.channels_in_service:
-                if self.channels_in_service[i] == 1:
+                if self.channels_in_service[i] != 0:
+
+                    if self.k == 1:
+                        color_set = QColor(*self.color)
+                    else:
+                        color_set = QColor(*COLOR_LIST[self.channels_in_service[i]])
+
                     qp.setRenderHint(QPainter.Antialiasing)
-                    qp.setPen(QPen(QColor(*self.color), 1, Qt.SolidLine))
-                    qp.setBrush(QBrush(QColor(*self.color), Qt.SolidPattern))
+                    qp.setPen(QPen(color_set, 1, Qt.SolidLine))
+                    qp.setBrush(QBrush(color_set, Qt.SolidPattern))
                     if channel_width > channel_height:
                         delta = int((channel_width - channel_height) / 2)
                         qp.drawEllipse(paddings_left + delta, x, min(channel_width, channel_height),
@@ -260,6 +325,8 @@ class SmoVisualizationWindow(QMainWindow):
         server_params["params"] = mu
 
         self.n = n
+        self.k = 1
+        self.model_type = 'FCFS один класс'
         self.source_params = source_params
         self.server_params = server_params
         self.jobs_count = jobs_count
@@ -324,27 +391,37 @@ class SmoVisualizationWindow(QMainWindow):
         print("Новые параметры распр. времени обсл. потока:")
         print("    ", self.server_params)
 
-    def change_source_params(self, source_type, source_coev):
+    def change_source_params(self, source_type, source_coev, k_new=1, model='FCFS один класс'):
+
+        coev_mul = 1
+
+        if self.k != k_new:
+            coev_mul = self.k / k_new
 
         if source_type == "M":
-            self.source_params["params"] = self.l
+            self.source_params["params"] = self.l * coev_mul
 
         elif source_type == "D":
-            self.source_params["params"] = 1.0 / self.l
+            self.source_params["params"] = 1.0 / (self.l * coev_mul)
+
         elif source_type == "Uniform":
-            self.source_params["params"] = [1.0 / self.l]
+            self.source_params["params"] = [1.0 / (self.l * coev_mul)]
 
         elif source_type == "H":
-            self.source_params["params"] = rd.H2_dist.get_params_by_mean_and_coev(1.0 / self.l, source_coev)
+            self.source_params["params"] = rd.H2_dist.get_params_by_mean_and_coev(1.0 / (self.l * coev_mul),
+                                                                                  source_coev)
 
         elif source_type == "Gamma":
-            self.source_params["params"] = rd.Gamma.get_mu_alpha_by_mean_and_coev(1.0 / self.l, source_coev)
+            self.source_params["params"] = rd.Gamma.get_mu_alpha_by_mean_and_coev(1.0 / (self.l * coev_mul),
+                                                                                  source_coev)
 
         elif source_type == "E":
-            self.source_params["params"] = rd.Erlang_dist.get_params_by_mean_and_coev(1.0 / self.l, source_coev)
+            self.source_params["params"] = rd.Erlang_dist.get_params_by_mean_and_coev(1.0 / (self.l * coev_mul),
+                                                                                      source_coev)
 
         elif source_type == "Pa":
-            self.source_params["params"] = rd.Pareto_dist.get_a_k_by_mean_and_coev(1.0 / self.l, source_coev)
+            self.source_params["params"] = rd.Pareto_dist.get_a_k_by_mean_and_coev(1.0 / (self.l * coev_mul),
+                                                                                   source_coev)
 
         self.source_params["type"] = source_type
 
@@ -356,6 +433,7 @@ class SmoVisualizationWindow(QMainWindow):
             return
 
         l = 1.0
+
         if self.source_params["type"] == "M":
             l = self.source_params["params"]
         elif self.source_params["type"] == "D":
@@ -539,6 +617,7 @@ class SmoVisualizationWindow(QMainWindow):
         if not self.is_resume_mode:
             speed = self.app_settings["speed"]
             self.sim_worker = SmoThread(self, self.n, self.source_params, self.server_params, self.jobs_count, self.r,
+                                        self.k, self.model_type,
                                         speed)
             self.sim_worker.mysignal.connect(self.on_change)
 
@@ -559,18 +638,26 @@ class SmoVisualizationWindow(QMainWindow):
 
     def on_change(self, s):
         params = s.split(",")
-        queue = int(params[0])
+        if self.model_type == "FCFS один класс":
+            queue = int(params[0])
+        else:
+            queue = []
+            for j in range(self.k):
+                queue.append(int(params[j]))
         channels_is_free = [0] * self.n
         for i in range(self.n):
-            if int(params[i + 1]) == 0:
-                channels_is_free[i] = 0
-            else:
-                channels_is_free[i] = 1
+            channels_is_free[i] = int(params[i + self.k])
 
         self.queue.number_of_jobs = queue
+        self.queue.k = self.k
+        self.queue.model = self.model_type
+
         self.queue.repaint()
 
         self.channels.channels_in_service = channels_is_free
+        self.channels.k = self.k
+        self.channels.model = self.model_type
+
         self.channels.repaint()
 
     def on_sim_started(self):
@@ -593,9 +680,11 @@ class SmoVisualizationWindow(QMainWindow):
             channels_is_free[i] = 0
 
         self.queue.number_of_jobs = 0
+        self.queue.k = 1
         self.queue.repaint()
 
         self.channels.channels_in_service = channels_is_free
+        self.channels.k = 1
         self.channels.repaint()
 
     def create_widgets(self):
@@ -796,8 +885,12 @@ class SmoVisualizationWindow(QMainWindow):
 
             self.change_ro(self.app_settings['ro'])
 
-            self.change_source_params(self.app_settings["source"], self.app_settings["source_coev"])
+            self.change_source_params(self.app_settings["source"], self.app_settings["source_coev"],
+                                      self.app_settings['k'], self.app_settings['model'])
             self.change_server_params(self.app_settings["server"], self.app_settings["server_coev"])
+
+            self.k = self.app_settings['k']
+            self.model_type = self.app_settings['model']
 
             self.channels.channels_count = self.n
             channels_is_free = [0] * self.n
@@ -806,9 +899,11 @@ class SmoVisualizationWindow(QMainWindow):
 
             self.channels.theme = self.app_settings['theme']
             self.channels.channels_in_service = channels_is_free
+            self.channels.k = 1
             self.channels.repaint()
             self.queue.queue_count = self.r
             self.queue.theme = self.app_settings['theme']
+            self.queue.k = 1
             self.queue.repaint()
 
             QMessageBox.about(self, "Сохранение настроек приложения",
@@ -828,6 +923,7 @@ class SmoVisualizationWindow(QMainWindow):
         self.app_settings = {}
         self.app_settings["theme"] = self.theme_str
         self.app_settings["n"] = self.n
+        self.app_settings["k"] = self.k
         self.app_settings["r"] = self.r
         self.app_settings["ro"] = self.ro
         self.app_settings["source"] = "M"
@@ -835,6 +931,7 @@ class SmoVisualizationWindow(QMainWindow):
         self.app_settings["server"] = "M"
         self.app_settings["server_coev"] = 1.0
         self.app_settings["speed"] = 50
+        self.app_settings["model"] = 'FCFS один класс'
         self.app_settings_set = True
 
 
