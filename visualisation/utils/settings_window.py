@@ -1,8 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QImage, QPixmap, QPalette, QPainter
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QMessageBox, QMainWindow, QMenu, QAction, QCheckBox, QComboBox, \
-    qApp, QWidget, QGroupBox, QFormLayout, QLineEdit, QComboBox, QSpinBox, QVBoxLayout, QHBoxLayout, QPushButton, \
-    QDoubleSpinBox
+from PyQt5.QtWidgets import QLabel, QWidget, QGroupBox, QFormLayout, QLineEdit, QComboBox, QSpinBox, QVBoxLayout, QHBoxLayout, QPushButton, \
+    QDoubleSpinBox, QSlider
 from PyQt5.QtCore import Qt
 import numpy as np
 
@@ -18,7 +15,7 @@ class SettingsWindow(QWidget):
 
         # настройки темы
 
-        self.formGroupBoxGlobal = QGroupBox("Настройки приложения")
+        self.formGroupBoxGlobal = QGroupBox("Настройки оформления")
 
         layout_global = QFormLayout()
 
@@ -34,33 +31,47 @@ class SettingsWindow(QWidget):
                                 'dark_yellow.xml',
                                 'light_amber.xml',
                                 'light_blue.xml',
+                                'light_blue_500.xml',
                                 'light_cyan.xml',
                                 'light_cyan_500.xml',
                                 'light_lightgreen.xml',
+                                'light_lightgreen_500.xml',
+                                'light_orange.xml',
                                 'light_pink.xml',
+                                'light_pink_500.xml',
                                 'light_purple.xml',
+                                'light_purple_500.xml',
                                 'light_red.xml',
+                                'light_red_500.xml',
                                 'light_teal.xml',
+                                'light_teal_500.xml',
                                 'light_yellow.xml'])
 
-        self.themes_rus_names = np.array(['темно-янтарный',
-                                          'темно-синий',
-                                          'темно-голубой',
-                                          'темно-светло-зеленый',
-                                          'темно-розовый',
-                                          'темно фиолетовый',
-                                          'темно-красный',
-                                          'темно-бирюзовый',
-                                          'темно-желтый',
-                                          'светлый янтарь',
-                                          'светло-синий',
-                                          'светлый циан',
-                                          'светлый циан 500',
-                                          'светло-зеленый',
-                                          'светло-розовый',
-                                          'светло-фиолетовый',
-                                          'светло-красный',
-                                          'светло-бирюзовый',
+        self.themes_rus_names = np.array(['темно-янтарная',
+                                          'темно-синяя',
+                                          'темно-голубая',
+                                          'темно-светло-зеленая',
+                                          'темно-розовая',
+                                          'темно фиолетовая',
+                                          'темно-красная',
+                                          'темно-бирюзовая',
+                                          'темно-желтая',
+                                          'светлый янтарная',
+                                          'светло-синяя',
+                                          'светло-синяя-500',
+                                          'светло-голубая',
+                                          'светлый-голубая-500',
+                                          'светло-зеленая',
+                                          'светло-зеленая-500',
+                                          'светло-оранжевая',
+                                          'светло-розовая',
+                                          'светло-розовая-500',
+                                          'светло-фиолетовая',
+                                          'светло-фиолетовая-500',
+                                          'светло-красная',
+                                          'светло-красная-500',
+                                          'светло-бирюзовая',
+                                          'светло-бирюзовая-500',
                                           'светло-желтый'])
 
         self.theme_combo.addItems(self.themes_rus_names)
@@ -80,6 +91,7 @@ class SettingsWindow(QWidget):
 
         self.n_spin = QSpinBox()
         self.n_spin.setMinimum(1)
+        self.n_spin.setMaximum(100)
         if settings:
             self.n_spin.setValue(settings['n'])
         else:
@@ -112,7 +124,7 @@ class SettingsWindow(QWidget):
 
         self.source_combo = QComboBox()
         self.source_combo_names = np.array([
-            'M', 'H', 'C', 'Pa', 'Gamma', 'E'
+            'M', 'H', 'Pa', 'Gamma', 'E'
         ])
 
         self.source_combo.addItems(self.source_combo_names)
@@ -152,7 +164,7 @@ class SettingsWindow(QWidget):
 
         self.server_combo = QComboBox()
         self.server_combo_names = np.array([
-            'M', 'H', 'C', 'Pa', 'Gamma', 'E'
+            'M', 'H', 'Pa', 'Gamma', 'E'
         ])
 
         self.server_combo.addItems(self.server_combo_names)
@@ -185,6 +197,16 @@ class SettingsWindow(QWidget):
                 self.server_coev_spin.hide()
             if self.server_coev_label:
                 self.server_coev_label.hide()
+
+        self.speed_slider = QSlider(Qt.Horizontal)
+
+        self.speed_slider.setMinimum(0)
+        self.speed_slider.setMaximum(100)
+        if settings:
+            self.speed_slider.setValue(settings["speed"])
+
+        self.speed_label = QLabel("Скорость моделирования")
+        layout_sim.addRow(self.speed_label, self.speed_slider)
 
         self.formGroupBoxSim.setLayout(layout_sim)
 
@@ -268,6 +290,7 @@ class SettingsWindow(QWidget):
         self.settings['source'] = self.source_combo_names[self.source_combo.currentIndex()]
         self.settings['server_coev'] = self.server_coev_spin.value()
         self.settings['server'] = self.server_combo_names[self.server_combo.currentIndex()]
+        self.settings['speed'] = self.speed_slider.value()
 
         self.close()
 
