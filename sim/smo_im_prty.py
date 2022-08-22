@@ -8,7 +8,7 @@ class SmoImPrty:
     Имитационная модель СМО GI/G/n/r и GI/G/n с приоритетами
     """
 
-    def __init__(self, num_of_channels, num_of_classes, prty_type='No', buffer=None):
+    def __init__(self, num_of_channels, num_of_classes, prty_type='No', buffer=None, calc_next_event_time=False):
         """
         num_of_channels - количество каналов СМО
         num_of_classes - количство классов заявок
@@ -73,6 +73,9 @@ class SmoImPrty:
 
         self.warm_up = None
         self.is_warm_up_set = False
+
+        self.time_to_next_event = 0
+        self.is_next_calc = calc_next_event_time
 
     def set_sources(self, sources):
         """
@@ -281,6 +284,7 @@ class SmoImPrty:
                     b1_sr += a * k / (a - 1)
 
         return l_sum * b1_sr / (self.n * self.k)
+
 
     def arrival(self, k, moment=None, ts=None):
 
@@ -494,6 +498,26 @@ class SmoImPrty:
         self.queue[last_class] = self.queue[new_class]
         self.queue[new_class] = buf
 
+    def calc_time_to_next_event(self):
+        serv_earl = 1e10
+        arrival_earlier = 1e10
+
+        for kk in range(self.k):
+            if self.arrival_time[kk] < arrival_earlier:
+                arrival_earlier = self.arrival_time[kk]
+
+        for c in range(self.n):
+            if self.servers[c].time_to_end_service < serv_earl:
+                serv_earl = self.servers[c].time_to_end_service
+
+        # Key moment:
+
+        if arrival_earlier < serv_earl:
+            self.time_to_next_event = arrival_earlier - self.ttek
+
+        else:
+            self.time_to_next_event = serv_earl - self.ttek
+
     def run_one_step(self):
 
         num_of_server_earlier = -1
@@ -516,8 +540,13 @@ class SmoImPrty:
 
         if arrival_earlier < serv_earl:
             self.arrival(k_earlier)
+
         else:
             self.serving(num_of_server_earlier)
+
+        if self.is_next_calc:
+            self.calc_time_to_next_event()
+
 
     def run(self, total_served):
         # while self.total < total_served:

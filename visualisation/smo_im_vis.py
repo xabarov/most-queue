@@ -69,12 +69,12 @@ class SmoThread(QtCore.QThread):
         self.is_smo_created = False
         self.speed = speed
 
-    def calc_speed_to_sleep(self, speed):
+    def calc_speed_to_sleep(self, speed, time_to_next_event, factor=0.3):
 
         max_value = 3  # sec
         min_value = 0.1  # sec
         a = -math.log(min_value / max_value) / 100
-        delay = max_value * math.exp(-a * speed)
+        delay = max_value * math.exp(-a * factor*speed/time_to_next_event)
         return delay
 
     def run(self):
@@ -82,12 +82,12 @@ class SmoThread(QtCore.QThread):
 
         if not self.is_smo_created:
             if self.model_type == "FCFS один класс":
-                self.smo = smo_im.SmoIm(self.n, buffer=self.r)
+                self.smo = smo_im.SmoIm(self.n, buffer=self.r, calc_next_event_time=True)
 
                 self.smo.set_sources(self.source_params["params"], self.source_params["type"])
                 self.smo.set_servers(self.server_params["params"], self.server_params["type"])
             else:
-                self.smo = smo_im_prty.SmoImPrty(self.n, self.k, self.model_type, buffer=self.r)
+                self.smo = smo_im_prty.SmoImPrty(self.n, self.k, self.model_type, buffer=self.r, calc_next_event_time=True)
                 sources = []
                 servers_params = []
                 for j in range(self.k):
@@ -108,6 +108,8 @@ class SmoThread(QtCore.QThread):
                 self.smo.run_one_step()
                 self.iters_left += 1
                 self.iters_to_end -= 1
+
+                time_to_next_event = self.smo.time_to_next_event
                 # w_im = self.smo.w
 
                 # print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
@@ -135,7 +137,7 @@ class SmoThread(QtCore.QThread):
                             params += str(s.class_on_service + 1) + ","
 
                 self.mysignal.emit(params)
-                time.sleep(self.calc_speed_to_sleep(self.speed))
+                time.sleep(self.calc_speed_to_sleep(self.speed, time_to_next_event))
 
 
 class QueueWidget(QWidget):

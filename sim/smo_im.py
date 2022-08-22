@@ -8,10 +8,12 @@ class SmoIm:
     Имитационная модель СМО GI/G/n/r и GI/G/n
     """
 
-    def __init__(self, num_of_channels, buffer=None, verbose=True):
+    def __init__(self, num_of_channels, buffer=None, verbose=True, calc_next_event_time=False):
         """
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
+        verbose - вывод комментариев в процессе ИМ
+        calc_next_event_time - нужно ли осузествлять расчет времени для след события (используется для визуализации)
         """
         self.n = num_of_channels
         self.buffer = buffer
@@ -42,6 +44,9 @@ class SmoIm:
         self.arrived = 0  # кол-во поступивших заявок
         self.dropped = 0  # кол-во заявок, получивших отказ в обслуживании
         self.arrival_time = 0  # момент прибытия следущей заявки
+
+        self.time_to_next_event = 0
+        self.is_next_calc = calc_next_event_time
 
         self.queue = []  # очередь, класс заявок - Task
 
@@ -141,9 +146,9 @@ class SmoIm:
         if self.source_types == "M":
             l = self.source_params
         elif self.source_types == "D":
-            l = 1.00/self.source_params
+            l = 1.00 / self.source_params
         elif self.source_types == "Uniform":
-            l = 1.00/self.source_params[0]
+            l = 1.00 / self.source_params[0]
         elif self.source_types == "H":
             y1 = self.source_params[0]
             y2 = 1.0 - self.source_params[0]
@@ -278,6 +283,7 @@ class SmoIm:
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
+
         self.p[self.in_sys] += time_to_end - self.t_old
 
         self.ttek = time_to_end
@@ -307,6 +313,19 @@ class SmoIm:
             self.servers[c].start_service(que_ts, self.ttek)
             self.free_channels -= 1
 
+    def calc_next_event_time(self):
+
+        serv_earl = 1e10
+
+        for c in range(self.n):
+            if self.servers[c].time_to_end_service < serv_earl:
+                serv_earl = self.servers[c].time_to_end_service
+
+        if self.arrival_time < serv_earl:
+            self.time_to_next_event = self.arrival_time - self.ttek
+        else:
+            self.time_to_next_event = serv_earl - self.ttek
+
     def run_one_step(self):
 
         num_of_server_earlier = -1
@@ -323,6 +342,10 @@ class SmoIm:
             self.arrival()
         else:
             self.serving(num_of_server_earlier)
+
+        if self.is_next_calc:
+            self.calc_next_event_time()
+
 
     def run(self, total_served):
         if self.verbose:
@@ -542,15 +565,15 @@ if __name__ == '__main__':
         print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w[j], w_im[j]))
     print("\n\nДанные ИМ::\n")
     print(smo)
-    
+
     smo = SmoIm(n)
 
     smo.set_sources(l, 'M')
-    smo.set_servers(1.0/mu, 'D')
+    smo.set_servers(1.0 / mu, 'D')
 
     smo.run(100000)
 
-    mdn = m_d_n_calc.M_D_n(l, 1/mu, n)
+    mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
     p_ch = mdn.calc_p()
     p_im = smo.get_p()
 
