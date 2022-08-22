@@ -6,6 +6,11 @@ import numpy as np
 class Weibull:
     @staticmethod
     def get_params(t, num=2):
+        """
+        Подбор параметров распределения по начальным моментам распределения (по умолчанию двум)
+        При num>2 и соответствующем числе начальных моментов помимо параметров распределения k и T
+        возвращает значения g для поправочного многочлена
+        """
         # t - начальные моменты СВ
         a = t[1] / (t[0] * t[0])
         u0 = math.log(2 * a) / (2.0 * math.log(2))
@@ -66,3 +71,43 @@ class Weibull:
         for x in x_mass:
             res.append(1.0 - Weibull.get_tail_one_value(weibull_params, x))
         return res
+
+    @staticmethod
+    def get_params_by_mean_and_coev(f1, coev, num=2):
+        """
+        Подбор параметров распределения по среднему и коэффициенту вариации
+        Возвращает список с параметрами
+        """
+
+        f = [0, 0, 0]
+        alpha = 1 / (coev ** 2)
+        f[0] = f1
+        f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
+        f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
+
+        return Weibull.get_params(f, num)
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
+    mean = 1.0
+    coevs = [1.0, 2.1, 3.2]
+
+    fig, ax = plt.subplots()
+
+    for coev in coevs:
+        k, T = Weibull.get_params_by_mean_and_coev(mean, coev)
+
+        print("Параметры распределения Вейбулла при коэфф вариации {0:1.3f}: k = {1:1.3f} T = {2:1.3f}".format(coev, k,
+                                                                                                               T))
+
+        t = np.linspace(0, 3 * coevs[len(coevs)-1], 100)
+        dfr = Weibull.get_tail([k, T], t)
+
+        ax.plot(t, dfr, label="$\\nu$  = {0:1.1f}".format(coev))
+
+    ax.set_xlabel('t')
+    ax.set_ylabel('ДФР')
+    plt.legend()
+    plt.show()
