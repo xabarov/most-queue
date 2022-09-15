@@ -9,7 +9,10 @@ Install most_queue with pip
 ```bash
   pip install most_queue
 ```
-
+run the script from the directory where the file setup.py is located
+```bash
+  python setup.py sdist bdist_wheel
+```
 ## DESCRIPTION OF THE SOFTWARE PACKAGE
 most_queue consists of two packages. The first package ==.theory== contains programs that implement methods for calculating queuing theory models. The second package ==.sim== contains simulation programs. 
 ### Package .theory
@@ -47,7 +50,7 @@ most_queue consists of two packages. The first package ==.theory== contains prog
 | 7.  | flow_sum_im  | Simulation of flow summation | 
 
 ## Usage
-Examples package usage are presented in the folder [most_queue/tests](https://github.com/xabarov/mps/tree/main/most_queue/tests)
+Examples of package usage are presented in the folder [most_queue/tests](https://github.com/xabarov/mps/tree/main/most_queue/tests)
 
 ## Requirements
 * matplotlib>=3.5.2
