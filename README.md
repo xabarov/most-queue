@@ -46,6 +46,9 @@ most_queue consists of two packages. The first package ==.theory== contains prog
 | 6.  | smo_prty_im | Simulation of QS M/G/n with priorities  | 
 | 7.  | flow_sum_im  | Simulation of flow summation | 
 
+## Usage
+Examples package usage are presented in the folder "test"
+
 ## Requirements
 * matplotlib>=3.5.2
 * matplotlib-inline>=0.1.3
