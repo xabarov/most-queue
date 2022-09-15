@@ -47,7 +47,7 @@ most_queue consists of two packages. The first package ==.theory== contains prog
 | 7.  | flow_sum_im  | Simulation of flow summation | 
 
 ## Usage
-Examples package usage are presented in the folder "test"
+Examples package usage are presented in the folder "most_queue/tests"
 
 ## Requirements
 * matplotlib>=3.5.2
