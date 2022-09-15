@@ -9,7 +9,7 @@ Install most_queue with pip
 ```bash
   pip install most_queue
 ```
-run the script from the directory where the file setup.py is located
+Or run the script from the directory where the file setup.py is located
 ```bash
   python setup.py sdist bdist_wheel
 ```
