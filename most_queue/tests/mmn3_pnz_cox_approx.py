@@ -1,0 +1,79 @@
+from most_queue.sim import smo_im_prty
+from most_queue.theory import mmn_prty_pnz_approx
+from most_queue.theory.mmnr_calc import M_M_n_formula
+from most_queue.theory.mmn3_pnz_cox_approx import Mmn3_pnz_cox
+
+
+def test():
+    num_of_jobs = 200000
+    n = 2  # количество каналов
+    K = 3  # количество классов
+    mu_L = 1.3  # интенсивность обслуживания заявок 3-го класса
+    mu_M = 1.4  # интенсивность обслуживания заявок 2-го класса
+    mu_H = 1.5  # интенсивность обслуживания заявок 1-го класса
+    l_L = 0.7  # интенсивность вх потока заявок 3-го класса
+    l_M = 0.8  # интенсивность вх потока заявок 2-го класса
+    l_H = 0.9  # интенсивность вх потока заявок 1-го класса
+
+    l_sum = l_H + l_M + l_L
+    b1_H = 1 / mu_H
+    b1_L = 1 / mu_L
+    b1_M = 1 / mu_M
+    b_ave = (l_L / l_sum) * b1_L + (l_H / l_sum) * b1_H + (l_M / l_sum) * b1_M
+    ro = l_sum * b_ave / n
+
+    # задание ИМ:
+    smo = smo_im_prty.SmoImPrty(n, K, "PR")
+    sources = []
+    servers_params = []
+    l = [l_H, l_M, l_L]
+    mu = [mu_H, mu_M, mu_L]
+    for j in range(K):
+        sources.append({'type': 'M', 'params': l[j]})
+        servers_params.append({'type': 'M', 'params': mu[j]})
+
+    smo.set_sources(sources)
+    smo.set_servers(servers_params)
+
+    # запуск ИМ:
+    smo.run(num_of_jobs)
+
+    # получение результатов ИМ:
+    p = smo.get_p()
+    v_im = smo.v
+
+    # расчет численным методом:
+    tt = Mmn3_pnz_cox(mu_L, mu_M, mu_H, l_L, l_M, l_H)
+    tt_for_second = mmn_prty_pnz_approx.MMn_PRTY_PNZ_Cox_approx(2, mu_M, mu_H, l_M, l_H)
+    tt_for_second.run()
+
+    tt.run()
+    p_tt = tt.get_p()
+    v_tt = tt.get_low_class_v1()
+    v_2 = tt_for_second.get_second_class_v1()
+
+    v_1 = M_M_n_formula.get_v(l_H, mu_H, 2, 100)[0]
+
+    print("\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
+          "\nраспределением Кокса второго порядка и ИМ.")
+    print("Коэффициент загрузки: {0:^1.2f}".format(ro))
+    print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
+
+    print("{0:^25s}".format("Вероятности состояний для заявок 3-го класса"))
+    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+    print("-" * 32)
+    for i in range(11):
+        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[2][i]))
+
+    print("\n")
+    print("{0:^35s}".format("Средние времена пребывания в СМО"))
+    print("-" * 38)
+    print("{0:^10s}|{1:^15s}|{2:^15s}".format("N класса", "Числ", "ИМ"))
+    print("-" * 38)
+    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(0, v_1, v_im[0][0]))
+    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(1, v_2, v_im[1][0]))
+    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(2, v_tt, v_im[2][0]))
+
+
+if __name__ == "__main__":
+    test()
