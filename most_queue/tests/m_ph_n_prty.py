@@ -3,10 +3,15 @@ from most_queue.sim import smo_im_prty
 from most_queue.sim import rand_destribution as rd
 from most_queue.theory import prty_calc
 import time
-from most_queue.theory import m_ph_n_prty
+from most_queue.theory.m_ph_n_prty import m_ph_n_prty
 
 
 def test():
+    """
+    Тестирование расчета СМО M/PH, M/n с 2-мя классами заявок, абсолютным приоритетом
+    численным методом Такахаси-Таками на основе аппроксимации ПНЗ распределением Кокса второго порядка
+    Для верификации используем имитационное моделирование (ИМ).
+    """
     num_of_jobs = 800000  # число обсл заявок ИМ
 
     is_cox = False  # использовать для аппроксимации ПНЗ распределение Кокса или Н2-распределение
@@ -66,12 +71,12 @@ def test():
         p_tt = tt.get_p()
         v_tt = tt.get_low_class_v1()
         v2_tt_mass.append(v_tt)
-        print("{0:^25s}".format("Вероятности состояний для заявок 2-го класса"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], 0))
-        print("{0:^15.3f}|{1:^15.6g}|{2:^15.6g}|{3:^15d}".format(bH_coev[k], v2_tt_mass[k], 0, iter_num[k]))
+        # print("{0:^25s}".format("Вероятности состояний для заявок 2-го класса"))
+        # print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+        # print("-" * 32)
+        # for i in range(11):
+        #     print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], 0))
+        # print("{0:^15.3f}|{1:^15.6g}|{2:^15.6g}|{3:^15d}".format(bH_coev[k], v2_tt_mass[k], 0, iter_num[k]))
 
         mu_L = 1.0 / bL1
 

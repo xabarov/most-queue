@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 
 
 def test():
+    """
+    Тестирование аппроксимации Вейбулла
+    """
     mean = 1.0
     coevs = [1.0, 2.1, 3.2]
 
