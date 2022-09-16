@@ -26,14 +26,19 @@ def calc_error_percentage(real_val, est_val):
     return 100 * math.fabs(real_val - est_val) / max_val
 
 
-def getMaxMoments(n, b, num=3):
+def getMaxMoments(n, b, num=None):
     """
     Расчет начальных моментов максимума СВ.
     :param n: число одинаково распределенных СВ
     :param b: начальные моменты СВ
-    :param num: число нач. моментов СВ
+    :param num: число выходных нач. моментов максимума СВ, по умолчанию - на один меньше числа начальных моментов b
     :return: начальные моменты максимума СВ.
     """
+    if num:
+        num = min(len(b), num)
+    else:
+        num = len(b)
+
     f = [0] * num
     variance = b[1] - b[0] * b[0]
     coev = math.sqrt(variance) / b[0]

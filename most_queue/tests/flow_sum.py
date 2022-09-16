@@ -3,29 +3,41 @@ from most_queue.sim import flow_sum_im
 from most_queue.sim import rand_destribution as rd
 import matplotlib.pyplot as plt
 
-# Тестирование суммирования потоков
+
 def test():
+    """
+    Тестирование суммирования потоков
+    """
+
     # Задаем следующие параметры:
     n_nums = 10  # число суммируемых потоков
     coev = 0.74  # коэффициент вариации каждого потока
     mean = 1  # среднее каждого потока
     num_of_jobs = 400000  # количество заявок для ИМ
     is_semi = False  # True, если необходимо использовать метод семиинвариантов вместо H2
-    distr_im = "Gamma"
+    distr_im = "Gamma"  # распределение, используемое для ИМ
+
+    # число суммируемых потоков
     ns = [x + 2 for x in range(n_nums - 1)]
 
+    # начальные моменты суммируемых потоков. В нашем случае все потоки одинаково распределены
     a = []
     for i in range(n_nums):
         params1 = rd.Gamma.get_mu_alpha_by_mean_and_coev(mean, coev)
         a1 = rd.Gamma.calc_theory_moments(*params1, 4)
         a.append(a1)
 
+    # Численный расчет
     s = SummatorNumeric(a, is_semi=is_semi)
+    s.sum_flows()  # в  s._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    # i - кол-во суммируемых потоков, j - номер начального момента
+
+    # ИМ
     s_im = flow_sum_im.SummatorIM(a, distr=distr_im, num_of_jobs=num_of_jobs)
+    s_im.sum_flows()  # в  s_im._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    # i - кол-во суммируемых потоков, j - номер начального момента
 
-    s.sum_flows()
-    s_im.sum_flows()
-
+    # Расчет ошибок и отображение результатов
     coevs_im = s_im.coevs
     coevs_num = s.coevs
     errors1 = []
@@ -52,15 +64,19 @@ def test():
     fig, ax = plt.subplots()
     linestyles = ["solid", "dotted", "dashed", "dashdot"]
 
-    # ax.plot(ns, coevs_im, label="ИМ")
-    # ax.plot(ns, coevs_num, label="Числ")
-    #
-    # ax.plot(ns, s_im.a1_sum, label="ИМ a1", linestyle=linestyles[0])
-    # ax.plot(ns, s.a1_sum, label="Числ a1", linestyle=linestyles[1])
-    #
-    # ax.plot(ns, s_im.a2_sum, label="ИМ a2", linestyle=linestyles[2])
-    # ax.plot(ns, s.a2_sum, label="Числ a2", linestyle=linestyles[3])
+    ax.plot(ns, s_im.a1_sum, label="ИМ a1", linestyle=linestyles[0])
+    ax.plot(ns, s.a1_sum, label="Числ a1", linestyle=linestyles[1])
 
+    plt.legend()
+    str_title = "Среднее сумм-х потоков, %"
+    if is_semi:
+        str_title += ". Метод семиинвариантов"
+    else:
+        str_title += ". Метод H2"
+    plt.title(str_title)
+    plt.show()
+
+    fig, ax = plt.subplots()
     ax.plot(ns, errors1, label="error a1", linestyle=linestyles[0])
     ax.plot(ns, errors2, label="error a2", linestyle=linestyles[1])
     ax.plot(ns, errors_coev, label="error coev", linestyle=linestyles[2])
@@ -74,6 +90,6 @@ def test():
     plt.title(str_title)
     plt.show()
 
+
 if __name__ == "__main__":
     test()
-
