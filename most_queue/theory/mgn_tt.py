@@ -12,7 +12,7 @@ class MGnCalc:
     с произволиными коэффициентами вариации (>1, <=1)
     """
 
-    def __init__(self, n, l, b, N=150, accuracy=1e-6, dtype="c16"):
+    def __init__(self, n, l, b, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False):
 
         """
         n: число каналов
@@ -22,10 +22,18 @@ class MGnCalc:
         accuracy: точность, параметр для остановки итерации
         """
         self.dt = np.dtype(dtype)
-        self.N = N
+        if buffer:
+            self.R = buffer + n  # максимальное число заявок в сисетеме - очередь + каналы
+            self.N = self.R + 1  # число ярусов на один больше + нулевое состояние
+        else:
+            self.N = N
+            self.R = None  # для проверки задан ли буфер
+
         self.e1 = accuracy
         self.n = n
         self.b = b
+        self.verbose = verbose
+
         h2_params = rd.H2_dist.get_params_clx(b)
         # параметры H2-распределения:
         self.y = [h2_params[0], 1.0 - h2_params[0]]
@@ -248,6 +256,20 @@ class MGnCalc:
                 self.t[i][0, j] = 1.0 / self.cols[i]
         self.x[0] = 0.4
 
+    def norm_probs(self):
+        sum = 0
+        for i in range(self.N):
+            sum += self.p[i]
+
+        for i in range(self.N):
+            self.p[i] /= sum
+
+        if self.verbose:
+            sum = 0
+            for i in range(self.N):
+                sum += self.p[i]
+            print("Summ of probs = {0:.5f}".format(sum))
+
     def calculate_p(self):
         """
         После окончания итераций находим значения вероятностей p по найденным х
@@ -270,19 +292,36 @@ class MGnCalc:
         #        p0_min = p0_
 
         # version 2
-        f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
 
+        f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
         znam = self.n
+
         for j in range(1, self.n):
             prod1 = 1
             for i in range(j):
                 prod1 = np.dot(prod1, self.x[i])
             znam += np.dot((self.n - j), prod1)
 
+        if self.R:
+            prod2 = 1
+            for i in range(0, self.N):
+                prod2 *= self.x[i]
+            znam -= f1 * self.l * prod2
+
+
+
         self.p[0] = (self.n - self.l * f1) / znam
+
+        summ_p = self.p[0]
 
         for j in range(self.N - 1):
             self.p[j + 1] = np.dot(self.p[j], self.x[j])
+            summ_p += self.p[j + 1]
+
+        if self.verbose:
+            print("Summ of probs = {0:.5f}".format(summ_p))
+
+        self.norm_probs()
 
     def calculate_y(self):
         for i in range(self.N):
@@ -310,12 +349,15 @@ class MGnCalc:
         for i in range(self.N):
             if self.x[i].real > x_max1.real:
                 x_max1 = self.x[i]
+
         while math.fabs(x_max2.real - x_max1.real) >= self.e1:
             x_max2 = x_max1
             self.num_of_iter_ += 1
+
             for j in range(1, self.N):  # по всем ярусам, кроме первого.
 
                 G = np.linalg.inv(self.D[j] - self.C[j])
+
                 # b':
                 self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
 
@@ -334,8 +376,19 @@ class MGnCalc:
 
                 self.x[j] = (1.0 + 0.0j) / self.x[j]
 
-                self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                if self.R and j == (self.N - 1):
+                    tA = np.dot(self.t[j - 1], self.A[j - 1])
+                    tag = np.dot(tA, G)
+                    tag_sum = 0
+                    for t_i in range(tag.shape[1]):
+                        tag_sum += tag[0, t_i]
+                    self.z[j] = 1.0 / tag_sum
+                    self.t[j] = self.z[j] * tag
+
+                else:
+
+                    self.z[j] = np.dot(c, self.x[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 
@@ -349,8 +402,11 @@ class MGnCalc:
                 if self.x[i].real > x_max1.real:
                     x_max1 = self.x[i]
 
-            self.calculate_p()
-            self.calculate_y()
+            if self.verbose:
+                print("End iter # {0:d}".format(self.num_of_iter_))
+
+        self.calculate_p()
+        self.calculate_y()
 
     def calculate_c(self, j):
         """
@@ -487,8 +543,10 @@ if __name__ == "__main__":
     l = 1.0  # интенсивность вх потока
     ro = 0.8  # коэфф загрузки
     b1 = n * ro / l  # ср время обслуживания
-    num_of_jobs = 800000  # число обсл заявок ИМ
+    num_of_jobs = 1000000  # число обсл заявок ИМ
     b_coev = [0.42, 1.5]  # коэфф вариации времени обсл
+    buff = None
+    verbose = False
 
     for k in range(len(b_coev)):
 
@@ -499,7 +557,7 @@ if __name__ == "__main__":
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
         im_start = time.process_time()
-        smo = smo_im.SmoIm(n)
+        smo = smo_im.SmoIm(n, buffer=buff)
         smo.set_sources(l, 'M')
         gamma_params = rd.Gamma.get_mu_alpha([b[0], b[1]])
         smo.set_servers(gamma_params, 'Gamma')
@@ -511,7 +569,7 @@ if __name__ == "__main__":
         h2_params = rd.H2_dist.get_params_clx(b)
 
         tt_start = time.process_time()
-        tt = MGnCalc(n, l, b)
+        tt = MGnCalc(n, l, b, buffer=buff, verbose=verbose)
         tt.run()
         p_tt = tt.get_p()
         v_tt = tt.get_v()

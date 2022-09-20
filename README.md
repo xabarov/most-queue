@@ -1,7 +1,7 @@
 # most_queue
 Software package for calculation and simulation of queuing systems and networks
 
-![queue](http://github.createasocialcard.top/0qtc7wwr)
+![queue](https://disk.yandex.ru/i/ytdrP1SEgvr9lw)
 
 ## Authors
 - [xabarov](https://github.com/xabarov)
