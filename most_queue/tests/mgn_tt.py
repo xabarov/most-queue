@@ -15,12 +15,25 @@ def test():
 
     for k in range(len(b_coev)):
 
+        #  расчет начальных моментов времени обслуживания по заданному среднему и коэфф вариации
         b = [0.0] * 3
         alpha = 1 / (b_coev[k] ** 2)
         b[0] = b1
         b[1] = math.pow(b[0], 2) * (math.pow(b_coev[k], 2) + 1)
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
+        tt_start = time.process_time()
+        #  запуск метода Такахаси-Таками
+        tt = MGnCalc(n, l, b)
+        tt.run()
+        # получение результатов численных расчетов
+        p_tt = tt.get_p()
+        v_tt = tt.get_v()
+        tt_time = time.process_time() - tt_start
+        # также можно узнать сколько итераций потребовалось
+        num_of_iter = tt.num_of_iter_
+
+        # запуск ИМ для верификации результатов
         im_start = time.process_time()
         smo = smo_im.SmoIm(n)
         smo.set_sources(l, 'M')
@@ -31,15 +44,7 @@ def test():
         v_im = smo.v
         im_time = time.process_time() - im_start
 
-        h2_params = rd.H2_dist.get_params_clx(b)
-
-        tt_start = time.process_time()
-        tt = MGnCalc(n, l, b)
-        tt.run()
-        p_tt = tt.get_p()
-        v_tt = tt.get_v()
-        tt_time = time.process_time() - tt_start
-        num_of_iter = tt.num_of_iter_
+        # вывод результатов
 
         print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
               "ИМ - M/Gamma/{0:^2d}\nТакахаси-Таками - M/H2/{0:^2d}"
