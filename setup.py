@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='most-queue',
-      version='0.8',
+      version='0.9',
       description="Software package for calculation and simulation of queuing systems",
       author='Xabarov Roman',
       author_email='xabarov1985@gmail.com',

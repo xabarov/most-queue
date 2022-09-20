@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: most-queue
-Version: 0.8
+Version: 0.9
 Summary: Software package for calculation and simulation of queuing systems
 Home-page: https://github.com/xabarov/mps
 Author: Xabarov Roman
@@ -35,7 +35,7 @@ License-File: LICENSE
 # most_queue
 Software package for calculation and simulation of queuing systems and networks
 
-![queue](http://github.createasocialcard.top/0qtc7wwr)
+![queue](/assets/images/queue.jpg)
 
 ## Authors
 - [xabarov](https://github.com/xabarov)

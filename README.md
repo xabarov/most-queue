@@ -11,10 +11,7 @@ Install most-queue with pip
 ```bash
   pip install most-queue
 ```
-Or run from the directory dist
-```bash
-  pip install most_queue-0.7-py3-none-any.whl
-```
+
 ## DESCRIPTION OF THE SOFTWARE PACKAGE
 Most_queue consists of two packages:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
