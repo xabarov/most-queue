@@ -181,7 +181,7 @@ def network_prty_calc(R, b, n, L, prty, nodes_prty):
             g_PLS.append(F[0, 0])
 
         res['v'].append([])
-        res['v'][k] = diff5dots.diff5dots(g_PLS, h)
+        res['v'][k] = diff5dots(g_PLS, h)
         res['v'][k][0] = -res['v'][k][0]
         res['v'][k][2] = -res['v'][k][2]
 

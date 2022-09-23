@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: most-queue
-Version: 0.9
+Version: 0.11
 Summary: Software package for calculation and simulation of queuing systems
 Home-page: https://github.com/xabarov/mps
 Author: Xabarov Roman
@@ -45,10 +45,7 @@ Install most-queue with pip
 ```bash
   pip install most-queue
 ```
-Or run from the directory dist
-```bash
-  pip install most_queue-0.7-py3-none-any.whl
-```
+
 ## DESCRIPTION OF THE SOFTWARE PACKAGE
 Most_queue consists of two packages:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
