@@ -5,7 +5,8 @@ import math
 from most_queue.sim.smo_im_prty import Task
 from most_queue.theory import network_calc
 import time
-
+from tqdm import tqdm
+import sys
 
 class NetworkPrty:
     """
@@ -133,6 +134,8 @@ class NetworkPrty:
     def run(self, job_served):
         while (sum(self.served) < job_served):
             self.run_one_step()
+            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), job_served))
+            sys.stderr.flush()
 
 
 if __name__ == '__main__':

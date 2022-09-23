@@ -2,6 +2,8 @@ import time
 from tqdm import tqdm
 import most_queue.sim.rand_destribution as rd
 import math
+import sys
+
 
 class SmoImPrty:
     """
@@ -549,10 +551,10 @@ class SmoImPrty:
 
 
     def run(self, total_served):
-        # while self.total < total_served:
-        print("Start simulation. Please wait...")
-        for i in tqdm(range(total_served)):
+        while (sum(self.served) < total_served):
             self.run_one_step()
+            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), total_served))
+            sys.stderr.flush()
 
     def refresh_ppnz_stat(self, k, new_a):
         for i in range(3):
@@ -787,7 +789,7 @@ if __name__ == "__main__":
     k = 3
     l = [0.2, 0.3, 0.4]
     lsum = sum(l)
-    num_of_jobs = 1000000
+    num_of_jobs = 100000
     b1 = [0.45 * n, 0.9 * n, 1.35 * n]
     b2 = [0] * k
     coev = 0.577

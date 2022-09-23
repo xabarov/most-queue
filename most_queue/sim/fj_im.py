@@ -2,7 +2,7 @@ import most_queue.sim.rand_destribution as rd
 from most_queue.sim import smo_im
 import math
 from tqdm import tqdm
-
+import sys
 
 class SubTask:
     """
@@ -194,8 +194,10 @@ class SmoFJ(smo_im.SmoIm):
             self.serving(num_of_server_earlier)
 
     def run(self, total_served):
-        for i in tqdm(range(total_served)):
+        while (self.served < total_served):
             self.run_one_step()
+            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+            sys.stderr.flush()
 
     def refresh_v_stat(self, new_a):
         for i in range(3):
