@@ -2,22 +2,34 @@ import most_queue.sim.rand_destribution as rd
 import math
 from tqdm import tqdm
 import sys
+import time
 
 class SmoIm:
     """
     Имитационная модель СМО GI/G/n/r и GI/G/n
     """
 
-    def __init__(self, num_of_channels, buffer=None, verbose=True, calc_next_event_time=False):
+    def __init__(self, num_of_channels, buffer=None, verbose=True, calc_next_event_time=False, cuda=False):
         """
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         verbose - вывод комментариев в процессе ИМ
-        calc_next_event_time - нужно ли осузествлять расчет времени для след события (используется для визуализации)
+        calc_next_event_time - нужно ли осуществлять расчет времени для след события (используется для визуализации)
+        cuda - нужно ли использовать ускорение GPU при генерации заявок. Прирост в скорости небольшой, поэтому
+        по умолчанию cuda=False
+
+        Для запуска ИМ необходимо:
+        - вызвать конструктор с параметрами
+        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса SmoIm
+        - задать распределение обслуживания с помощью метода set_servers() экземпляра созданного класса SmoIm
+        - запустить ИМ с помощью метода run() экземпляра созданного класса SmoIm,
+        которому нужно передать число требуемых к обслуживанию заявок
+
         """
         self.n = num_of_channels
         self.buffer = buffer
         self.verbose = verbose  # выводить ли текстовые сообщения о работе
+        self.cuda = cuda  # использование CUDA при ИМ для генерации ПСЧ
 
         self.free_channels = self.n
         self.num_of_states = 100000
@@ -65,6 +77,7 @@ class SmoIm:
     def set_warm(self, params, types):
         """
             Задает тип и параметры распределения времени обслуживания с разогревом
+            --------------------------------------------------------------------
             Вид распределения                   Тип[types]     Параметры [params]
             Экспоненциальное                      'М'             [mu]
             Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
@@ -73,6 +86,7 @@ class SmoIm:
             Парето                                'Pa'         [alpha, K]
             Детерминированное                      'D'         [b]
             Равномерное                         'Uniform'     [mean, half_interval]
+            Нормальное                            'Norm'    [mean, standard_deviation]
         """
         for i in range(self.n):
             self.servers[i].set_warm(params, types)
@@ -80,6 +94,7 @@ class SmoIm:
     def set_sources(self, params, types):
         """
         Задает тип и параметры распределения интервала поступления заявок.
+        --------------------------------------------------------------------
         Вид распределения                   Тип[types]     Параметры [params]
         Экспоненциальное                      'М'             [mu]
         Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
@@ -89,6 +104,7 @@ class SmoIm:
         Парето                                'Pa'         [alpha, K]
         Детерминированное                      'D'         [b]
         Равномерное                         'Uniform'     [mean, half_interval]
+        Нормальное                            'Norm'    [mean, standard_deviation]
         """
         self.source_params = params
         self.source_types = types
@@ -109,10 +125,12 @@ class SmoIm:
             self.source = rd.Gamma(self.source_params)
         elif self.source_types == "Uniform":
             self.source = rd.Uniform_dist(self.source_params)
+        elif self.source_types == "Norm":
+            self.source = rd.Normal_dist(self.source_params)
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
-            raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform")
+            raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
         self.arrival_time = self.source.generate()
 
     def set_servers(self, params, types):
@@ -127,6 +145,7 @@ class SmoIm:
         Парето                                'Pa'         [alpha, K]
         Равномерное                         'Uniform'     [mean, half_interval]
         Детерминированное                      'D'         [b]
+        Нормальное                            'Norm'    [mean, standard_deviation]
         """
         self.server_params = params
         self.server_types = types
@@ -190,9 +209,9 @@ class SmoIm:
             mu = self.server_params
             b1 = 1.0 / mu
         elif self.server_types == "D":
-            b1 = self.source_params
+            b1 = self.server_params
         elif self.server_types == "Uniform":
-            b1 = self.source_params[0]
+            b1 = self.server_params[0]
 
         elif self.server_types == "H":
             y1 = self.server_params[0]
@@ -241,7 +260,13 @@ class SmoIm:
         self.in_sys += 1
         self.ttek = self.arrival_time
         self.t_old = self.ttek
-        self.arrival_time = self.ttek + self.source.generate()
+        if self.cuda:
+            self.arrival_time = self.ttek + self.source_random_vars[self.tek_source_num]
+            self.tek_source_num += 1
+            if self.tek_source_num == len(self.source_random_vars):
+                self.tek_source_num = 0
+        else:
+            self.arrival_time = self.ttek + self.source.generate()
 
         if self.free_channels == 0:
             if self.buffer == None:  # не задана длина очередиб т.е бесконечная очередь
@@ -346,12 +371,40 @@ class SmoIm:
         if self.is_next_calc:
             self.calc_next_event_time()
 
-
     def run(self, total_served):
-        while (self.served < total_served):
+        start = time.process_time()
+        if self.cuda:
+            from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32
+            import numpy as np
+            from numba import cuda
+            threads_per_block = 512
+            blocks = int(total_served / 512)
+            rng_states = create_xoroshiro128p_states(threads_per_block * blocks, seed=1)
+
+            # source:
+            source_out = np.zeros(threads_per_block * blocks, dtype=np.float32)
+            if self.source_types == "M":
+                rd.generate_m_jit[blocks, threads_per_block](rng_states, self.source_params, source_out)
+            elif self.source_types == "E":
+                rd.generate_e_jit[blocks, threads_per_block](rng_states, self.source_params[0],  self.source_params[1], source_out)
+            elif self.source_types == "H":
+                rd.generate_h2_jit[blocks, threads_per_block](rng_states, self.source_params[0],  self.source_params[1], self.source_params[2], source_out)
+            else:
+                for j in range(len(source_out)):
+                    source_out[j] = self.source.generate()
+
+            self.source_random_vars = source_out
+            self.tek_source_num = 0
+
+        # while (self.served < total_served):
+        #     self.run_one_step()
+        #     sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+        #     sys.stderr.flush()
+        print('\rStart simulation...')
+        for i in tqdm(range(total_served)):
             self.run_one_step()
-            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
-            sys.stderr.flush()
+
+        self.time_spent = time.process_time() - start
 
     def refresh_ppnz_stat(self, new_a):
         for i in range(3):
@@ -474,10 +527,12 @@ class Server:
             self.dist = rd.Pareto_dist(params)
         elif types == "Uniform":
             self.dist = rd.Uniform_dist(params)
+        elif types == "Norm":
+            self.dist = rd.Normal_dist(params)
         elif types == "D":
             self.dist = rd.Det_dist(params)
         else:
-            raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Uniform, D")
+            raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Norm, Uniform, D")
         self.time_to_end_service = 1e10
         self.is_free = True
         self.tsk_on_service = None
@@ -504,11 +559,13 @@ class Server:
             self.warm_dist = rd.Pareto_dist(params)
         elif types == "Unifrorm":
             self.warm_dist = rd.Uniform_dist(params)
+        elif types == "Norm":
+            self.warm_dist = rd.Normal_dist(params)
         elif types == "D":
             self.warm_dist = rd.Det_dist(params)
         else:
             raise SetSmoException(
-                "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, D")
+                "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
 
     def start_service(self, ts, ttek, is_warm=False):
 
@@ -543,20 +600,25 @@ if __name__ == '__main__':
 
     n = 3
     l = 1.0
-    r = 30
+    r = 100
     ro = 0.8
+    num_of_jobs = 300000
+    is_cuda = True
+
     mu = l / (ro * n)
-    smo = SmoIm(n, buffer=r)
+
+    smo = SmoIm(n, buffer=r, cuda=is_cuda)
 
     smo.set_sources(l, 'M')
     smo.set_servers(mu, 'M')
 
-    smo.run(100000)
+    smo.run(num_of_jobs)
 
     w = mmnr_calc.M_M_n_formula.get_w(l, mu, n, r)
 
     w_im = smo.w
 
+    print("Time spent ", smo.time_spent)
     print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
@@ -571,12 +633,13 @@ if __name__ == '__main__':
     smo.set_sources(l, 'M')
     smo.set_servers(1.0 / mu, 'D')
 
-    smo.run(100000)
+    smo.run(num_of_jobs)
 
     mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
     p_ch = mdn.calc_p()
     p_im = smo.get_p()
 
+    print("Time spent ", smo.time_spent)
     print("-" * 36)
     print("{0:^36s}".format("Вероятности состояний СМО M/D/{0:d}".format(n)))
     print("-" * 36)

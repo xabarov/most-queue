@@ -2,6 +2,62 @@ import numpy as np
 import math, cmath
 from scipy import stats
 import scipy.special as sp
+from numba import jit
+from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32
+from numba import cuda
+import math
+
+
+@cuda.jit
+def generate_h2_jit(rng_states, y1, mu1, mu2, out):
+    """
+    Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка
+    с помощью CUDA
+    """
+    thread_id = cuda.grid(1)
+
+    r = xoroshiro128p_uniform_float32(rng_states, thread_id)
+    t = xoroshiro128p_uniform_float32(rng_states, thread_id)
+    res = -math.log(t)
+    if r < y1:
+        if mu1 != 0:
+            res = res / mu1
+        else:
+            res = 1e10
+    else:
+        if mu2 != 0:
+            res = res / mu2
+        else:
+            res = 1e10
+
+    out[thread_id] = res
+
+
+@cuda.jit
+def generate_m_jit(rng_states, mu, out):
+    """
+    Генерация псевдо-случайных чисел, подчиненных экспоненциальному распределению
+    с помощью CUDA
+    """
+    thread_id = cuda.grid(1)
+
+    t = xoroshiro128p_uniform_float32(rng_states, thread_id)
+    res = -math.log(t) / mu
+    out[thread_id] = res
+
+@cuda.jit
+def generate_e_jit(rng_states, r, mu, out):
+    """
+    Генерация псевдо-случайных чисел, подчиненных распределнию Эрланга
+    с помощью CUDA
+    """
+    thread_id = cuda.grid(1)
+    res = 0
+    for i in range(r):
+        t = xoroshiro128p_uniform_float32(rng_states, thread_id)
+        res += -math.log(t) / mu
+
+    out[thread_id] = res
 
 
 class Normal_dist:
