@@ -45,6 +45,7 @@ def generate_m_jit(rng_states, mu, out):
     res = -math.log(t) / mu
     out[thread_id] = res
 
+
 @cuda.jit
 def generate_e_jit(rng_states, r, mu, out):
     """
@@ -543,6 +544,7 @@ class Cox_dist:
 
         return Cox_dist.get_params(f)
 
+
 class Det_dist:
     """Детерминированное"""
 
@@ -680,10 +682,11 @@ class Erlang_dist:
         """
         Генератор псевдо-случайных чисел. Статический метод
         """
-        res = 0
+        prod = 1
         for i in range(r):
-            res += -(1.0 / mu) * np.log(np.random.rand())
-        return res
+            prod *= np.random.rand()
+
+        return -(1.0 / mu) * np.log(prod)
 
     @staticmethod
     def get_cdf(params, t):
@@ -993,8 +996,12 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
 
-    print(Gamma.get_minus_gamma(0.5))
-    print(Gamma.get_gamma(-0.5))
+    r = 3
+    mu = 0.7
+    erl_gen = [Erlang_dist.generate_static(r, mu) for x in range(1000)]
+    print(sum(erl_gen) / len(erl_gen), Erlang_dist.calc_theory_moments(r, mu)[0])
+
+    print(Gamma.get_minus_gamma(0.5), Gamma.get_gamma(-0.5))
     b1 = 1
     coev = 1.3
     b = [0.0] * 4
