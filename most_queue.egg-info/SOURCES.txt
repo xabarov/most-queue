@@ -50,7 +50,6 @@ most_queue/theory/flow_sum.py
 most_queue/theory/generate_pareto_noise.py
 most_queue/theory/gi_m_1_calc.py
 most_queue/theory/gi_m_n_calc.py
-most_queue/theory/hyper_visor.py
 most_queue/theory/impatience_calc.py
 most_queue/theory/m_d_n_calc.py
 most_queue/theory/m_ph_n_prty.py
