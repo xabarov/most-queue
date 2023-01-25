@@ -42,6 +42,7 @@ Most_queue consists of two packages:
 | 22.  | batch_mm1 | Calculation of Queue M/M/1 with batch arrival |
 | 23.  | engset_model.py | Calculation of Queue M/M/1 with finite sources |
 | 24.  | generate_pareto_noise.py.py | Create noise by Pareto dist |
+| 25.  | network_viewer.py | Utility to view network structure |
 ### Package .sim
 | #  | Pakage name | Description |
 | ------------- | ------------- |------------- |
@@ -71,6 +72,7 @@ Examples of this library usage are in the [most_queue/tests](https://github.com/
 * PyQt5
 * qt-material
 * PySide2
+* networkx
 
 
 

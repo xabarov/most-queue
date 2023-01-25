@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='most-queue',
-      version='0.19',
+      version='0.20',
       description="Software package for calculation and simulation of queuing systems",
       author='Xabarov Roman',
       author_email='xabarov1985@gmail.com',
@@ -25,7 +25,8 @@ setup(name='most-queue',
             "tqdm-stubs",
             'PyQt5',
             'qt-material',
-            'PySide2'
+            'PySide2',
+            'networkx'
       ],
       include_package_data=True,
       zip_safe=False)

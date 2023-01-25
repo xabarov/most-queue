@@ -131,11 +131,17 @@ class NetworkPrty:
 
                 self.smos[next_node].arrival(next_node_class, self.ttek, ts)
 
-    def run(self, job_served):
-        while (sum(self.served) < job_served):
-            self.run_one_step()
-            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), job_served))
-            sys.stderr.flush()
+    def run(self, job_served, is_real_served=False):
+        if is_real_served:
+            while (sum(self.served) < job_served):
+                self.run_one_step()
+                sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), job_served))
+                sys.stderr.flush()
+        else:
+            print("Start simulation...\n")
+            for i in tqdm(range(job_served)):
+                self.run_one_step()
+
 
 
 if __name__ == '__main__':

@@ -61,6 +61,7 @@ most_queue/theory/mmn3_pnz_cox_approx.py
 most_queue/theory/mmn_prty_pnz_approx.py
 most_queue/theory/mmnr_calc.py
 most_queue/theory/network_calc.py
+most_queue/theory/network_viewer.py
 most_queue/theory/passage_time.py
 most_queue/theory/prty_calc.py
 most_queue/theory/q_poisson_arrival_calc.py
