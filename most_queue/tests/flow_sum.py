@@ -1,6 +1,6 @@
 from most_queue.theory.flow_sum import SummatorNumeric
-from most_queue.sim import flow_sum_im
-from most_queue.sim import rand_destribution as rd
+from .. sim import flow_sum_im
+from .. sim import rand_destribution as rd
 import matplotlib.pyplot as plt
 
 
