@@ -337,6 +337,29 @@ class MGnCalc:
             self.C.append(self.buildC(i))
             self.D.append(self.buildD(i))
 
+    def calc_g_matrices(self):
+        self.G = []
+        for j in range(0, self.N):
+            self.G.append(np.linalg.inv(self.D[j] - self.C[j]))
+
+    def calc_ag_matrices(self):
+        self.AG = [0]
+        for j in range(1, self.N):
+            self.AG.append(np.dot(self.A[j - 1], self.G[j]))
+
+    def calc_bg_matrices(self):
+        self.BG = [0]
+        for j in range(1, self.N):
+            if j != (self.N - 1):
+                self.BG.append(np.dot(self.B[j + 1], self.G[j]))
+            else:
+                self.BG.append(np.dot(self.B[j], self.G[j]))
+
+    def calc_support_matrices(self):
+        self.calc_g_matrices()
+        self.calc_ag_matrices()
+        self.calc_bg_matrices()
+
     def run(self):
         """
         Запускает расчет
@@ -345,6 +368,10 @@ class MGnCalc:
         self.b2[0][0, 0] = 0.0 + 0.0j
         x_max1 = 0.0 + 0.0j
         x_max2 = 0.0 + 0.0j
+
+        self.calc_support_matrices()
+
+
         self.num_of_iter_ = 0  # кол-во итераций алгоритма
         for i in range(self.N):
             if self.x[i].real > x_max1.real:
@@ -356,16 +383,14 @@ class MGnCalc:
 
             for j in range(1, self.N):  # по всем ярусам, кроме первого.
 
-                G = np.linalg.inv(self.D[j] - self.C[j])
-
                 # b':
-                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
+                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
+                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
                 else:
-                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
+                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
 
                 c = self.calculate_c(j)
 
@@ -378,7 +403,7 @@ class MGnCalc:
 
                 if self.R and j == (self.N - 1):
                     tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, G)
+                    tag = np.dot(tA, self.G[j])
                     tag_sum = 0
                     for t_i in range(tag.shape[1]):
                         tag_sum += tag[0, t_i]
@@ -394,7 +419,7 @@ class MGnCalc:
 
             t1B1 = np.dot(self.t[1], self.B[1])
             self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
+            self.t[0] = np.dot(self.t[0], self.G[0])
 
             x_max1 = 0.0 + 0.0j
 
