@@ -4,6 +4,7 @@ import passage_time
 from tqdm import tqdm
 from most_queue.sim import rand_destribution as rd
 
+
 class Mh2h2Warm:
     """
     Расчет СМО M/H2/n с H2-разогревом численным методом Такахаси-Таками.
