@@ -1,9 +1,9 @@
 import numpy as np
 import math
 from most_queue.sim import rand_destribution as rd
-from most_queue.theory import q_poisson_arrival_calc
-from most_queue.theory import sv_sum_calc
-from most_queue.theory import diff5dots
+import q_poisson_arrival_calc
+import sv_sum_calc
+import diff5dots
 
 
 def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):

@@ -1,7 +1,5 @@
-import numpy as np
-import math
-from most_queue.theory.diff5dots import diff5dots
-from most_queue.theory import sv_sum_calc
+from diff5dots import diff5dots
+import sv_sum_calc
 
 
 class Engset:

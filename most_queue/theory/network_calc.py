@@ -1,8 +1,9 @@
+from diff5dots import diff5dots
+from most_queue.sim import rand_destribution as rd
+
 import numpy as np
 import math
-from most_queue.theory.diff5dots import diff5dots
-from most_queue.theory import prty_calc
-from most_queue.sim import rand_destribution as rd
+import prty_calc
 
 
 def balance_equation(L, R):

@@ -1,7 +1,5 @@
-import most_queue.sim.rand_destribution as rd
-import math
-from tqdm import tqdm
-from most_queue.sim.smo_im import SmoIm, SetSmoException, Task
+from smo_im import SmoIm, Task
+
 import numpy as np
 
 

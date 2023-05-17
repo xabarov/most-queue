@@ -1,9 +1,5 @@
-import most_queue.sim.rand_destribution as rd
-import math
-from tqdm import tqdm
-import sys
-import time
-from most_queue.sim.smo_im import SmoIm, SetSmoException, Task
+import rand_destribution as rd
+from smo_im import SmoIm, SetSmoException, Task
 
 
 class QueueFiniteSourceSim(SmoIm):
@@ -318,4 +314,3 @@ if __name__ == '__main__':
     print("-" * 45)
     for j in range(3):
         print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v[j], v_im[j]))
-    print("\n\nДанные ИМ::\n")

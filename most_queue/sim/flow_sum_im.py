@@ -1,4 +1,4 @@
-import most_queue.sim.rand_destribution as rd
+import rand_destribution as rd
 from tqdm import tqdm
 import copy
 import math

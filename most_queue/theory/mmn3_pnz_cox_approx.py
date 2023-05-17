@@ -1,7 +1,7 @@
 import numpy as np
 import math
-from most_queue.theory import prty_calc
-from most_queue.theory import passage_time
+import prty_calc
+import passage_time
 from most_queue.sim import rand_destribution as rd
 
 class Mmn3_pnz_cox:
@@ -459,8 +459,8 @@ class Mmn3_pnz_cox:
 
 if __name__ == "__main__":
     from most_queue.sim import smo_im_prty
-    from most_queue.theory import mmn_prty_pnz_approx
-    from most_queue.theory.mmnr_calc import M_M_n_formula
+    import mmn_prty_pnz_approx
+    from mmnr_calc import M_M_n_formula
     from most_queue.sim import rand_destribution as rd
 
     num_of_jobs = 200000

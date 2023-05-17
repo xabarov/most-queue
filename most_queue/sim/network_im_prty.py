@@ -1,8 +1,8 @@
-from most_queue.sim.smo_im_prty import SmoImPrty
-import most_queue.sim.rand_destribution as rd
+from smo_im_prty import SmoImPrty
+import rand_destribution as rd
 import numpy as np
 import math
-from most_queue.sim.smo_im_prty import Task
+from smo_im_prty import Task
 from most_queue.theory import network_calc
 import time
 from tqdm import tqdm

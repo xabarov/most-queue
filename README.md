@@ -43,6 +43,7 @@ Most_queue consists of two packages:
 | 23.  | engset_model.py | Calculation of Queue M/M/1 with finite sources |
 | 24.  | generate_pareto_noise.py.py | Create noise by Pareto dist |
 | 25.  | network_viewer.py | Utility to view network structure |
+| 26.  | m_h2_h2warm.py | Multichannel queuing system with H2 service time and H2 warm-up. The system uses complex parameters, which allows you to calculate systems with arbitrary service time variation coefficients |
 ### Package .sim
 | #  | Pakage name | Description |
 | ------------- | ------------- |------------- |

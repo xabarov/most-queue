@@ -1,12 +1,12 @@
-import most_queue.sim.rand_destribution as rd
-from most_queue.theory import sv_sum_calc
-from most_queue.theory import mmnr_calc
-import math
-from most_queue.theory import mgn_tt
-import time
-from most_queue.sim.fj_im import SmoFJ
-from most_queue.theory import mg1_calc
+import mmnr_calc
+import mgn_tt
+import mg1_calc
+import sv_sum_calc
+
 import matplotlib.pyplot as plt
+from most_queue.sim import rand_destribution as rd
+import math
+import time
 
 
 def get_lambda(min, max):

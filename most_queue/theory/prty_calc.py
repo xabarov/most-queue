@@ -1,8 +1,9 @@
-import math
 from most_queue.sim import rand_destribution as rd
-from most_queue.theory import mgn_tt
-from most_queue.theory.diff5dots import diff5dots
-from most_queue.theory import mg1_calc
+from diff5dots import diff5dots
+
+import mg1_calc
+import mgn_tt
+import math
 
 
 def get_w1_pr(l, b):
@@ -82,12 +83,12 @@ def ppnz_calc(l, b, num=5):
         pnz.append(b[2] / math.pow(1 - ro, 4) + 3 * l * b[1] * b[1] / math.pow(1 - ro, 5))
     if num > 3:
         chisl = b[3] * math.pow(z, 4) + 6 * b[2] * l * pnz[1] * z * z + b[1] * (
-                    3 * math.pow(l * pnz[1], 2) + 4 * l * pnz[2] * z)
+                3 * math.pow(l * pnz[1], 2) + 4 * l * pnz[2] * z)
         pnz.append(chisl / (1 - ro))
     if num > 4:
         chisl = b[4] * math.pow(z, 5) + 10 * b[3] * l * pnz[1] * math.pow(z, 3) + \
                 b[2] * (15 * math.pow(l * pnz[1], 2) * z + 10 * l * pnz[2 * z * z]) + b[1] * (
-                            5 * l * pnz[3] * z + 10 * l * l * pnz[1] * pnz[2])
+                        5 * l * pnz[3] * z + 10 * l * l * pnz[1] * pnz[2])
         pnz.append(chisl / (1 - ro))
 
     return pnz

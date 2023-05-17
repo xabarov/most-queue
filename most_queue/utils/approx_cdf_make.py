@@ -2,7 +2,6 @@ import most_queue.sim.rand_destribution as rd
 import math
 from tqdm import tqdm
 import numpy as np
-import scipy
 import matplotlib.pyplot as plt
 
 

@@ -1,7 +1,7 @@
 import math
 from most_queue.sim import rand_destribution as rd
 from most_queue.sim import smo_im
-from most_queue.theory import q_poisson_arrival_calc as q_calc
+import q_poisson_arrival_calc as q_calc
 
 
 def get_w(l, b, num=3):

@@ -1,4 +1,6 @@
-from most_queue.theory.fj_calc import *
+from most_queue.theory import fj_calc
+from most_queue.sim.fj_im import SmoFJ
+import matplotlib.pyplot as plt
 
 
 def test():
@@ -63,12 +65,11 @@ def test():
         # расчет средних времен пребывания с помощью аппроксимаций. \
         # На вход каждого из методов - l, mu, nn (число каналов СМО)
 
-        v_varki.append(get_v1_fj_varki_merchant(l, mu, nn))
-        v_varma.append(get_v1_fj_varma(l, mu, nn))
-        v_nelson.append(get_v1_fj_nelson_tantawi(l, mu, nn))
+        v_varki.append(fj_calc.get_v1_fj_varki_merchant(l, mu, nn))
+        v_varma.append(fj_calc.get_v1_fj_varma(l, mu, nn))
+        v_nelson.append(fj_calc.get_v1_fj_nelson_tantawi(l, mu, nn))
 
         print(str_f_v.format(v_im[i], v_varki[i], v_varma[i], v_nelson[i]))
-
 
     # строим графики и сохраняем в текущую директорию:
 

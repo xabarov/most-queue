@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from most_queue.sim import rand_destribution as rd
-from most_queue.theory import passage_time
+import passage_time
 
 
 class MMn_PRTY_PNZ_Cox_approx:

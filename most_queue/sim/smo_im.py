@@ -1,7 +1,6 @@
-import most_queue.sim.rand_destribution as rd
+import rand_destribution as rd
 import math
 from tqdm import tqdm
-import sys
 import time
 
 class SmoIm:
@@ -603,7 +602,7 @@ if __name__ == '__main__':
     r = 100
     ro = 0.8
     num_of_jobs = 300000
-    is_cuda = True
+    is_cuda = False
 
     mu = l / (ro * n)
 

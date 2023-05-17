@@ -1,10 +1,10 @@
-import numpy as np
-import math, cmath
 from scipy import stats
-import scipy.special as sp
-from numba import jit
-from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32
+from numba.cuda.random import xoroshiro128p_uniform_float32
 from numba import cuda
+
+import numpy as np
+import cmath
+import scipy.special as sp
 import math
 
 

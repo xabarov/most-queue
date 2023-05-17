@@ -1,5 +1,5 @@
 from most_queue.sim import rand_destribution as rd
-from most_queue.theory.diff5dots import diff5dots
+from diff5dots import diff5dots
 from most_queue.sim import smo_im
 
 

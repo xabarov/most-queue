@@ -1,8 +1,8 @@
-import most_queue.sim.rand_destribution as rd
-from most_queue.sim.fj_im import SmoFJ as SmoFJ
-from most_queue.sim.fj_im import SubTask as SubTask
-from most_queue.sim.fj_im import Task as Task
-from most_queue.sim.smo_im import Server
+import rand_destribution as rd
+from fj_im import SmoFJ as SmoFJ
+from fj_im import SubTask as SubTask
+from fj_im import Task as Task
+from smo_im import Server
 from most_queue.theory import sv_sum_calc
 
 

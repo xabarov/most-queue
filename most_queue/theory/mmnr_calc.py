@@ -1,5 +1,5 @@
 import math
-from most_queue.theory import sv_sum_calc
+import sv_sum_calc
 from most_queue.sim import rand_destribution as rd
 
 class M_M_n_formula:

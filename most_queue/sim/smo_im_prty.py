@@ -1,9 +1,8 @@
-import time
-from tqdm import tqdm
-import most_queue.sim.rand_destribution as rd
-import math
-import sys
+from most_queue.sim import rand_destribution as rd
 
+import time
+import sys
+import math
 
 class SmoImPrty:
     """
@@ -793,7 +792,7 @@ class Server:
 if __name__ == "__main__":
     from most_queue.theory import prty_calc
     import math
-    from most_queue.sim import rand_destribution as rd
+    import rand_destribution as rd
 
     n = 5
     k = 3

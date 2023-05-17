@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from most_queue.theory import passage_time 
+import passage_time
 from most_queue.sim import rand_destribution as rd
 
 
@@ -650,7 +650,7 @@ class m_ph_n_prty:
 if __name__ == "__main__":
     from most_queue.sim import smo_im_prty
     from most_queue.sim import rand_destribution as rd
-    from most_queue.theory import prty_calc
+    import prty_calc
     import time
 
     num_of_jobs = 800000  # число обсл заявок ИМ
