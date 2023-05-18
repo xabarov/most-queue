@@ -133,21 +133,19 @@ class Mh2h2Warm:
 
     def calc_w_pls(self, s):
         w = 0
-        probs = calc_binom_probs(self.n + 1, self.y[0])
+        probs = calc_binom_probs(self.n + 1, self.y[0])  # вероятности попадания в состояния обслуживания
+        
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
         for k in range(1, self.n):
             for i in range(2):
                 w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
 
-        key_numbers = self.get_key_numbers(self.n)
+        key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
 
         for k in range(self.n, self.N):
-            # +, -, 30 21 12 03 для n=3 или (n,0) (n-1, 1),... в общем случае
-            # +, - states
-
-            # Если заявка попала в фазу разогрева, и каналы заняты. Также есть k-n заявок в очереди
-            # ей придется подождать окончание разогрева, обслуживание (
+            # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
+            # ей придется подождать окончание разогрева + обслуживание
             for i in range(2):
                 summ = 0
 
@@ -157,6 +155,7 @@ class Mh2h2Warm:
                         k - self.n + 1)
                 w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * summ
 
+            # попала в фазу обслуживания
             for i in range(2, self.n + 3):
                 w += self.Y[k][0, i] * pow(
                     self.pls(key_numbers[i - 2][0] * self.mu[0] + key_numbers[i - 2][1] * self.mu[1], s),
