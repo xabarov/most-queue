@@ -145,23 +145,25 @@ class Mh2h2Warm:
         key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
 
         for k in range(self.n, self.N):
+
+            # ПЛС микросостояний обслуживания
+            pls_of_service_state = [pow(
+                self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s),
+                k - self.n + 1) for j in range(len(probs))]
+
             # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
             # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
-            pls_service = 0  # ПЛС обслуживания
+            pls_service_total = 0  # ПЛС обслуживания усредненная по состояниям
 
             for j, p in enumerate(probs):
-                pls_service += p * pow(
-                    self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s),
-                    k - self.n + 1)
+                pls_service_total += p * pls_of_service_state[j]
 
             for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service
+                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
 
             # попала в фазу обслуживания
-            for i in range(2, self.n + 3):
-                w += self.Y[k][0, i] * pow(
-                    self.pls(key_numbers[i - 2][0] * self.mu[0] + key_numbers[i - 2][1] * self.mu[1], s),
-                    k - self.n + 1)
+            for i in range(len(probs)):
+                w += self.Y[k][0, i + 2] * pls_of_service_state[i]
         return w
 
     def calc_residual_b(self, mom_num):
