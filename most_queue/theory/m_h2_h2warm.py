@@ -6,6 +6,7 @@ from most_queue.sim import rand_destribution as rd
 from scipy import special
 from most_queue.utils.binom_probs import calc_binom_probs
 from diff5dots import diff5dots
+from scipy.misc import derivative
 
 
 class Mh2h2Warm:
@@ -164,6 +165,7 @@ class Mh2h2Warm:
             # попала в фазу обслуживания
             for i in range(len(probs)):
                 w += self.Y[k][0, i + 2] * pls_of_service_state[i]
+
         return w
 
     def calc_residual_b(self, mom_num):
@@ -213,15 +215,8 @@ class Mh2h2Warm:
             return w
 
         else:
-            dots_num = 4
-            ws = [0.0] * dots_num
-            s = 0.001
-            h = 0.001
-            for i in range(dots_num):
-                ws[i] = self.calc_w_pls(s)
-                s += h
-
-            w = diff5dots(ws, h)
+            for i in range(3):
+                w[i] = derivative(self.calc_w_pls, 0, dx=self.mu[0] * 1e-3, n=i + 1, order=9)
             return [-w[0].real, w[1].real, -w[2].real]
 
             # for k in range(3):
