@@ -1,7 +1,10 @@
+import numpy as np
+
 import rand_destribution as rd
 import math
 from tqdm import tqdm
 import time
+
 
 class SmoIm:
     """
@@ -72,8 +75,10 @@ class SmoIm:
         self.is_set_source_params = False
         self.is_set_server_params = False
         self.is_set_warm = False
+        self.is_start_warm = False
+        self.end_warm_time = 1e12
 
-    def set_warm(self, params, types):
+    def set_warm(self, params, types, is_only_first=False):
         """
             Задает тип и параметры распределения времени обслуживания с разогревом
             --------------------------------------------------------------------
@@ -86,9 +91,41 @@ class SmoIm:
             Детерминированное                      'D'         [b]
             Равномерное                         'Uniform'     [mean, half_interval]
             Нормальное                            'Norm'    [mean, standard_deviation]
+
+            is_only_first - True: Разогрев происходит только при прибытии первой заявки в пустую систему.
+                            В таком случае время разогрева - время обслуживания первой заявки
+                            False: Разогрев происходит для всей системы. Каналы не начинают обслуживания до тех пор,
+                            пока не закончится период разогрева
         """
-        for i in range(self.n):
-            self.servers[i].set_warm(params, types)
+        if is_only_first:
+            for i in range(self.n):
+                self.servers[i].set_warm(params, types)
+        else:
+            if types == "M":
+                self.warm_dist = rd.Exp_dist(params)
+            elif types == "H":
+                self.warm_dist = rd.H2_dist(params)
+            elif types == "E":
+                self.warm_dist = rd.Erlang_dist(params)
+            elif types == "Gamma":
+                self.warm_dist = rd.Gamma(params)
+            elif types == "C":
+                self.warm_dist = rd.Cox_dist(params)
+            elif types == "Pa":
+                self.warm_dist = rd.Pareto_dist(params)
+            elif types == "Unifrorm":
+                self.warm_dist = rd.Uniform_dist(params)
+            elif types == "Norm":
+                self.warm_dist = rd.Normal_dist(params)
+            elif types == "D":
+                self.warm_dist = rd.Det_dist(params)
+            else:
+                raise SetSmoException(
+                    "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
+
+        self.is_set_warm = True
+
+        self.is_only_first = is_only_first
 
     def set_sources(self, params, types):
         """
@@ -129,7 +166,8 @@ class SmoIm:
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
-            raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
+            raise SetSmoException(
+                "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
         self.arrival_time = self.source.generate()
 
     def set_servers(self, params, types):
@@ -247,6 +285,37 @@ class SmoIm:
 
         return l * b1 / self.n
 
+    def send_task_to_channel(self, is_warm_start):
+        # Отправляет заявку в канал обслуживания
+        # is_warm_start- нужен ли разогрев
+        for s in self.servers:
+            if s.is_free:
+                self.taked += 1
+
+                s.start_service(Task(self.ttek), self.ttek, is_warm_start)
+                self.free_channels -= 1
+
+                # Проверям, не наступил ли ПНЗ:
+                if self.free_channels == 0:
+                    if self.in_sys == self.n:
+                        self.start_ppnz = self.ttek
+
+                break
+
+    def send_task_to_queue(self):
+        if self.buffer == None:  # не задана длина очереди, т.е бесконечная очередь
+            new_tsk = Task(self.ttek)
+            new_tsk.start_waiting_time = self.ttek
+            self.queue.append(new_tsk)
+        else:
+            if len(self.queue) < self.buffer:
+                new_tsk = Task(self.ttek)
+                new_tsk.start_waiting_time = self.ttek
+                self.queue.append(new_tsk)
+            else:
+                self.dropped += 1
+                self.in_sys -= 1
+
     def arrival(self):
 
         """
@@ -268,37 +337,38 @@ class SmoIm:
             self.arrival_time = self.ttek + self.source.generate()
 
         if self.free_channels == 0:
-            if self.buffer == None:  # не задана длина очередиб т.е бесконечная очередь
-                new_tsk = Task(self.ttek)
-                new_tsk.start_waiting_time = self.ttek
-                self.queue.append(new_tsk)
-            else:
-                if len(self.queue) < self.buffer:
-                    new_tsk = Task(self.ttek)
-                    new_tsk.start_waiting_time = self.ttek
-                    self.queue.append(new_tsk)
-                else:
-                    self.dropped += 1
-                    self.in_sys -= 1
+            self.send_task_to_queue()
 
         else:  # there are free channels:
 
-            # check if its a warm phase:
-            is_warm_start = False
-            if len(self.queue) == 0 and self.free_channels == self.n and self.is_set_warm:
-                is_warm_start = True
+            # check if it's a warm phase:
+            if self.is_set_warm:
+                # Задан разогрев
+                if self.is_only_first:
+                    # Только первой заявки. Проверяем, не пустая ли система.
+                    # Если пустая - задаем is_warm_start
+                    if len(self.queue) == 0 and self.free_channels == self.n:
+                        is_warm_start = True
 
-            for s in self.servers:
-                if s.is_free:
-                    self.taked += 1
-                    s.start_service(Task(self.ttek), self.ttek, is_warm_start)
-                    self.free_channels -= 1
+                    self.send_task_to_channel(is_warm_start)
+                else:
+                    # Разогрев глобальный.
+                    if self.is_start_warm:
+                        # Уже в режиме разогрева
+                        self.send_task_to_queue()
+                    else:
+                        # Еще нет. Проверяем надо ли запускать разогрев
+                        if len(self.queue) == 0 and self.free_channels == self.n:
+                            self.is_start_warm = True
+                            self.end_warm_time = self.ttek + self.warm_dist.generate()
+                            # Отправляем заявку в очередь. После окончания времени разогрева она начнет обслуживаться
+                            self.send_task_to_queue()
+                        else:
+                            self.send_task_to_channel(False)
 
-                    # Проверям, не наступил ли ПНЗ:
-                    if self.free_channels == 0:
-                        if self.in_sys == self.n:
-                            self.start_ppnz = self.ttek
-                    break
+            else:
+                # Без разогрева. Отправляем заявку в канал обслуживания
+                self.send_task_to_channel(False)
 
     def serving(self, c):
         """
@@ -326,16 +396,18 @@ class SmoIm:
                 self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
 
         if len(self.queue) != 0:
+            self.send_head_of_queue_to_channel(c)
 
-            que_ts = self.queue.pop(0)
+    def send_head_of_queue_to_channel(self, channel_num):
+        que_ts = self.queue.pop(0)
 
-            if self.free_channels == 1:
-                self.start_ppnz = self.ttek
+        if self.free_channels == 1:
+            self.start_ppnz = self.ttek
 
-            self.taked += 1
-            que_ts.wait_time += self.ttek - que_ts.start_waiting_time
-            self.servers[c].start_service(que_ts, self.ttek)
-            self.free_channels -= 1
+        self.taked += 1
+        que_ts.wait_time += self.ttek - que_ts.start_waiting_time
+        self.servers[channel_num].start_service(que_ts, self.ttek)
+        self.free_channels -= 1
 
     def calc_next_event_time(self):
 
@@ -350,6 +422,21 @@ class SmoIm:
         else:
             self.time_to_next_event = serv_earl - self.ttek
 
+    def on_end_warming(self):
+
+        self.p[self.in_sys] += self.end_warm_time - self.t_old
+
+        self.ttek = self.end_warm_time
+        self.t_old = self.ttek
+
+        self.is_start_warm = False
+        self.end_warm_time = 1e12
+
+        # Отправляем n заявок из очереди в каналы
+        for i in range(self.n):
+            if len(self.queue) != 0:
+                self.send_head_of_queue_to_channel(i)
+
     def run_one_step(self):
 
         num_of_server_earlier = -1
@@ -360,15 +447,29 @@ class SmoIm:
                 serv_earl = self.servers[c].time_to_end_service
                 num_of_server_earlier = c
 
-        # Key moment:
+        if self.is_set_warm and not self.is_only_first:
+            # Задан глобальный разогрев. Нужно отслеживать в том числе момент окончания разогрева
+            times = [serv_earl, self.arrival_time, self.end_warm_time]
+            min_time_num = np.argmin(times)
+            if min_time_num == 0:
+                # Обслуживание. Точно не режим разогрева. Есть в каналах заявки
+                self.serving(num_of_server_earlier)
+            elif min_time_num == 1:
+                # Прибытие. Может быть в режиме разогрева. логика - внутри
+                self.arrival()
+            else:
+                self.on_end_warming()
 
-        if self.arrival_time < serv_earl:
-            self.arrival()
         else:
-            self.serving(num_of_server_earlier)
+            # Разогрев задан первой заявки или не задан вообще. Все штатно
 
-        if self.is_next_calc:
-            self.calc_next_event_time()
+            if self.arrival_time < serv_earl:
+                self.arrival()
+            else:
+                self.serving(num_of_server_earlier)
+
+            if self.is_next_calc:
+                self.calc_next_event_time()
 
     def run(self, total_served):
         start = time.process_time()
@@ -385,9 +486,11 @@ class SmoIm:
             if self.source_types == "M":
                 rd.generate_m_jit[blocks, threads_per_block](rng_states, self.source_params, source_out)
             elif self.source_types == "E":
-                rd.generate_e_jit[blocks, threads_per_block](rng_states, self.source_params[0],  self.source_params[1], source_out)
+                rd.generate_e_jit[blocks, threads_per_block](rng_states, self.source_params[0], self.source_params[1],
+                                                             source_out)
             elif self.source_types == "H":
-                rd.generate_h2_jit[blocks, threads_per_block](rng_states, self.source_params[0],  self.source_params[1], self.source_params[2], source_out)
+                rd.generate_h2_jit[blocks, threads_per_block](rng_states, self.source_params[0], self.source_params[1],
+                                                              self.source_params[2], source_out)
             else:
                 for j in range(len(source_out)):
                     source_out[j] = self.source.generate()
@@ -531,7 +634,8 @@ class Server:
         elif types == "D":
             self.dist = rd.Det_dist(params)
         else:
-            raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Norm, Uniform, D")
+            raise SetSmoException(
+                "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Norm, Uniform, D")
         self.time_to_end_service = 1e10
         self.is_free = True
         self.tsk_on_service = None

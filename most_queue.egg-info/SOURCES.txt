@@ -70,6 +70,7 @@ most_queue/theory/sv_sum_calc.py
 most_queue/theory/weibull.py
 most_queue/utils/__init__.py
 most_queue/utils/approx_cdf_make.py
+most_queue/utils/binom_probs.py
 most_queue/visualisation/__init__.py
 most_queue/visualisation/smo_im_vis.py
 most_queue/visualisation/utils/__init__.py

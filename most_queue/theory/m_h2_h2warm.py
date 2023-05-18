@@ -3,6 +3,9 @@ import math
 import passage_time
 from tqdm import tqdm
 from most_queue.sim import rand_destribution as rd
+from scipy import special
+from most_queue.utils.binom_probs import calc_binom_probs
+from diff5dots import diff5dots
 
 
 class Mh2h2Warm:
@@ -12,7 +15,8 @@ class Mh2h2Warm:
     с произвольными коэффициентами вариации (>1, <=1)
     """
 
-    def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False):
+    def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False,
+                 is_only_first=False):
 
         """
         n: число каналов
@@ -29,6 +33,8 @@ class Mh2h2Warm:
         else:
             self.N = N
             self.R = None  # для проверки задан ли буфер
+
+        self.is_only_first = is_only_first
 
         self.e1 = accuracy
         self.n = n
@@ -81,13 +87,23 @@ class Mh2h2Warm:
         self.Y = []
 
         for i in range(N):
-            if i < n + 1:
-                if i == 0:
-                    self.cols.append(1)  # 00 state
+
+            if self.is_only_first:
+                if i < n + 1:
+                    if i == 0:
+                        self.cols.append(1)  # 00 state
+                    else:
+                        self.cols.append(3 * i + 1)  # w1 w2 01 10
                 else:
-                    self.cols.append(3 * i + 1)  # w1 w2 01 10
+                    self.cols.append(3 * n + 1)
             else:
-                self.cols.append(3 * n + 1)
+                if i < n + 1:
+                    if i == 0:
+                        self.cols.append(1)  # 00 state
+                    else:
+                        self.cols.append(i + 3)  # w1 w2 01 10, w1 w2 20 11 02, ...
+                else:
+                    self.cols.append(n + 3)
 
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
@@ -106,24 +122,117 @@ class Mh2h2Warm:
             self.p[i] = self.p[i].real
         return self.p
 
+    def pls(self, mu, s):
+        return mu / (mu + s)
+
+    def get_key_numbers(self, level):
+        key_numbers = []
+        for i in range(level + 1):
+            key_numbers.append((self.n - i, i))
+        return key_numbers
+
+    def calc_w_pls(self, s):
+        w = 0
+        probs = calc_binom_probs(self.n + 1, self.y[0])
+        # Если заявка попала в фазу разогрева, хотя каналы свободны,
+        # ей придется подождать окончание разогрева
+        for k in range(1, self.n):
+            for i in range(2):
+                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
+
+        key_numbers = self.get_key_numbers(self.n)
+
+        for k in range(self.n, self.N):
+            # +, -, 30 21 12 03 для n=3 или (n,0) (n-1, 1),... в общем случае
+            # +, - states
+
+            # Если заявка попала в фазу разогрева, и каналы заняты. Также есть k-n заявок в очереди
+            # ей придется подождать окончание разогрева, обслуживание (
+            for i in range(2):
+                summ = 0
+
+                for j, p in enumerate(probs):
+                    summ += p * pow(
+                        self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s),
+                        k - self.n + 1)
+                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * summ
+
+            for i in range(2, self.n + 3):
+                w += self.Y[k][0, i] * pow(
+                    self.pls(key_numbers[i - 2][0] * self.mu[0] + key_numbers[i - 2][1] * self.mu[1], s),
+                    k - self.n + 1)
+        return w
+
+    def calc_residual_b(self, mom_num):
+        res = self.b[mom_num + 1] / (2.0 * self.b[mom_num])
+        return res
+
+    def calc_w_on_level(self, level, mom_num=0):
+
+        # first variant - on w1:
+
+        a = [np.math.factorial(i + 1) / pow(self.mu_w[0], i + 1) for i in range(3)]
+        b = [self.b[i] * (level - self.n + 1) for i in range(3)]
+
+        w_first = self.Y[level][0, 0] * Mh2h2Warm.binom_calc(a, b)[mom_num] / self.n
+
+        # second - on w2 state
+        a = [np.math.factorial(i + 1) / pow(self.mu_w[1], i + 1) for i in range(3)]
+        b = [self.b[i] * (level - self.n + 1) for i in range(3)]
+
+        w_sec = self.Y[level][0, 1] * Mh2h2Warm.binom_calc(a, b)[mom_num] / self.n
+
+        # third - not on warm state
+
+        w_third = (sum(self.Y[level][0, 2:])) * (self.b[mom_num] * (level - self.n + 1)) / self.n
+
+        return w_first + w_sec + w_third
+
     def get_w(self):
         """
         Возвращает три первых начальных момента времени ожидания в СМО
         """
         w = [0.0] * 3
 
-        for j in range(1, len(self.p) - self.n):
-            w[0] += j * self.p[self.n + j]
-        for j in range(2, len(self.p) - self.n):
-            w[1] += j * (j - 1) * self.p[self.n + j]
-        for j in range(3, len(self.p) - self.n):
-            w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
+        if self.is_only_first:
 
-        for j in range(3):
-            w[j] /= math.pow(self.l, j + 1)
-            w[j] = w[j].real
+            for j in range(1, len(self.p) - self.n):
+                w[0] += j * self.p[self.n + j]
+            for j in range(2, len(self.p) - self.n):
+                w[1] += j * (j - 1) * self.p[self.n + j]
+            for j in range(3, len(self.p) - self.n):
+                w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
 
-        return w
+            for j in range(3):
+                w[j] /= math.pow(self.l, j + 1)
+                w[j] = w[j].real
+
+            return w
+
+        else:
+            dots_num = 4
+            ws = [0.0] * dots_num
+            s = 0.001
+            h = 0.001
+            for i in range(dots_num):
+                ws[i] = self.calc_w_pls(s)
+                s += h
+
+            w = diff5dots(ws, h)
+            return [-w[0].real, w[1].real, -w[2].real]
+
+            # for k in range(3):
+            #
+            #     # Если заявка попала в фазу разогрева, хотя каналы свободны,
+            #     # ей придется подождать окончание разогрева
+            #     for i in range(1, self.n):
+            #         w[k] += np.math.factorial(i + 1) * (
+            #                 self.Y[i][0, 0] / pow(self.mu_w[0], i + 1) + self.Y[i][0, 1] / pow(self.mu_w[1], i + 1))
+            #
+            #     for i in range(self.n, self.N):
+            #         w[k] += self.calc_w_on_level(i, k)
+            #
+            # return w
 
     def get_b(self):
         b_plus_b_warm = [0.0] * 3
@@ -136,11 +245,12 @@ class Mh2h2Warm:
         Возвращает три первых начальных момента времени пребывания в СМО
         """
         v = [0.0] * 3
-        w = self.get_w()
-        b = self.get_b()
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+        if self.is_only_first:
+            w = self.get_w()
+            b = self.get_b()
+            v[0] = w[0] + b[0]
+            v[1] = w[1] + 2 * w[0] * b[0] + b[1]
+            v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
         return v
 
@@ -160,7 +270,7 @@ class Mh2h2Warm:
     def binom_calc(a, b, num=3):
         res = []
         if num > 0:
-            res.append(a + b)
+            res.append(a[0] + b[0])
         if num > 1:
             res.append(a[1] + 2 * a[0] * b[0] + b[1])
         if num > 2:
@@ -228,8 +338,6 @@ class Mh2h2Warm:
             self.B.append(self.buildB(i))
             self.C.append(self.buildC(i))
             self.D.append(self.buildD(i))
-
-        # self.calc_G_passage()
 
     def calc_g_matrices(self):
         self.G = []
@@ -372,7 +480,7 @@ class Mh2h2Warm:
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def buildA(self, num, is_v_calc=False):
+    def buildA(self, num):
         """
         Формирует матрицу А по заданному номеру яруса
         """
@@ -385,8 +493,6 @@ class Mh2h2Warm:
 
         output = np.zeros((row, col), dtype=self.dt)
 
-        if is_v_calc:
-            return output
         if num > self.n:
             output = self.A[self.n]
             return output
@@ -396,12 +502,19 @@ class Mh2h2Warm:
         else:
 
             if num < self.n:
-                # first block
-                self.insert_standart_A_into(output, self.l, self.y[0], 0, 0, level=num)
-                # second
-                self.insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
-                # third
-                self.insert_standart_A_into(output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
+                if self.is_only_first:
+                    # first block
+                    self.insert_standart_A_into(output, self.l, self.y[0], 0, 0, level=num)
+                    # second
+                    self.insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
+                    # third
+                    self.insert_standart_A_into(output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
+                else:
+                    # first block
+                    output[0, 0] = self.l
+                    output[1, 1] = self.l
+                    # second
+                    self.insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
             else:
                 for i in range(row):
                     output[i, i] = self.l
@@ -442,45 +555,56 @@ class Mh2h2Warm:
             return output
 
         if num == 1:
-            output[0, 0] = self.mu_w[0]
-            output[1, 0] = self.mu_w[1]
             output[2, 0] = self.mu[0]
             output[3, 0] = self.mu[1]
+
+            if self.is_only_first:
+                output[0, 0] = self.mu_w[0]
+                output[1, 0] = self.mu_w[1]
         else:
 
             if num < self.n + 1:
-                # first block
-                self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
-                # second
-                self.insert_standart_B_into(output, self.y, self.mu, num, num - 1, num - 1, self.n)
-                # third
-                self.insert_standart_B_into(output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
 
-                # warm block 1
-                for i in range(num):
-                    output[i, i + 2 * (num - 1)] = self.mu_w[0]
+                if self.is_only_first:
+                    # first block
+                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
+                    # second
+                    self.insert_standart_B_into(output, self.y, self.mu, num, num - 1, num - 1, self.n)
+                    # third
+                    self.insert_standart_B_into(output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
 
-                # warm block 2
-                for i in range(num):
-                    output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
+                    # warm block 1
+                    for i in range(num):
+                        output[i, i + 2 * (num - 1)] = self.mu_w[0]
+
+                    # warm block 2
+                    for i in range(num):
+                        output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
+                else:
+                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
 
             else:
-                # first block
-                self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
-                # second
-                self.insert_standart_B_into(output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
-                # third
-                self.insert_standart_B_into(output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
 
-                # warm block 1
-                for i in range(num - 1):
-                    output[i, i + 2 * (num - 1)] = self.mu_w[0] * self.y[0]
-                    output[i, i + 2 * (num - 1) + 1] = self.mu_w[0] * self.y[1]
+                if self.is_only_first:
+                    # first block
+                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
+                    # second
+                    self.insert_standart_B_into(output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
+                    # third
+                    self.insert_standart_B_into(output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
 
-                # warm block 2
-                for i in range(num - 1):
-                    output[i + num - 1, i + 2 * (num - 1)] = self.mu_w[1] * self.y[0]
-                    output[i + num - 1, i + 2 * (num - 1) + 1] = self.mu_w[1] * self.y[1]
+                    # warm block 1
+                    for i in range(num - 1):
+                        output[i, i + 2 * (num - 1)] = self.mu_w[0] * self.y[0]
+                        output[i, i + 2 * (num - 1) + 1] = self.mu_w[0] * self.y[1]
+
+                    # warm block 2
+                    for i in range(num - 1):
+                        output[i + num - 1, i + 2 * (num - 1)] = self.mu_w[1] * self.y[0]
+                        output[i + num - 1, i + 2 * (num - 1) + 1] = self.mu_w[1] * self.y[1]
+
+                else:
+                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
 
         return output
 
@@ -500,9 +624,16 @@ class Mh2h2Warm:
             output = self.C[self.n]
             return output
 
+        if not self.is_only_first:
+            if num > 0:
+                probs = calc_binom_probs(num + 1, self.y[0])
+                for i in range(len(probs)):
+                    output[0, 2 + i] = self.mu_w[0] * probs[i]
+                    output[1, 2 + i] = self.mu_w[1] * probs[i]
+
         return output
 
-    def buildD(self, num, is_v_calc=False):
+    def buildD(self, num):
         """
             Формирует матрицу D по заданному номеру яруса
         """
@@ -516,10 +647,7 @@ class Mh2h2Warm:
         output = np.zeros((row, col), dtype=self.dt)
 
         if num > self.n:
-            if is_v_calc:
-                output = self.buildD(self.n, is_v_calc=True)
-            else:
-                output = self.D[self.n]
+            output = self.D[self.n]
             return output
 
         for i in range(row):
@@ -549,17 +677,17 @@ class Mh2h2Warm:
 
 if __name__ == "__main__":
 
-    from sim import smo_im
-    from sim import rand_destribution as rd
+    import smo_im
+    from most_queue.sim import rand_destribution as rd
     import time
 
     n = 3  # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
-    b1 = n * 0.7  # ср время обслуживания
-    b1_warm = n * 0.9  # ср время разогрева
+    b1 = n * ro  # ср время обслуживания
+    b1_warm = n * 0.6  # ср время разогрева
     num_of_jobs = 1000000  # число обсл заявок ИМ
-    b_coev = [0.8, 1.5]  # коэфф вариации времени обсл
+    b_coev = [0.8]  # коэфф вариации времени обсл
     b_coev_warm = 1.2  # коэфф вариации времени разогрева
     buff = None
     verbose = False
@@ -589,7 +717,7 @@ if __name__ == "__main__":
         smo.set_warm(gamma_params_warm, 'Gamma')
         smo.run(num_of_jobs)
         p = smo.get_p()
-        v_im = smo.v  # .w -> wait times
+        w_im = smo.w  # .w -> wait times
         im_time = time.process_time() - im_start
 
         tt_start = time.process_time()
@@ -597,7 +725,8 @@ if __name__ == "__main__":
 
         tt.run()
         p_tt = tt.get_p()
-        v_tt = tt.get_v()  # .get_w() -> wait times
+        w_tt = tt.get_w()  # .get_w() -> wait times
+
         tt_time = time.process_time() - tt_start
         num_of_iter = tt.num_of_iter_
 
@@ -617,8 +746,8 @@ if __name__ == "__main__":
             print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
 
         print("\n")
-        print("{0:^25s}".format("Начальные моменты времени пребывания в СМО"))
+        print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
         print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
         print("-" * 32)
         for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, v_tt[i], v_im[i]))
+            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, w_tt[i], w_im[i]))
