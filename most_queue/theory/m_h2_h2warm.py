@@ -162,7 +162,7 @@ class Mh2h2Warm:
             probs_on_level = []
             for j in range(2, self.cols[from_level - 1]):
                 if from_level != 1:
-                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
+                    probs_on_level.append(b_matrix[i, j]/ sum(b_matrix[i, :]))
                 else:
                     probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
             probs.append(probs_on_level)
@@ -696,9 +696,9 @@ if __name__ == "__main__":
     ro = 0.7  # коэфф загрузки
     b1 = n * ro  # ср время обслуживания
     b1_warm = n * 0.2  # ср время разогрева
-    num_of_jobs = 3000000  # число обсл заявок ИМ
-    b_coev = [1.1]  # коэфф вариации времени обсл
-    b_coev_warm = 1.3  # коэфф вариации времени разогрева
+    num_of_jobs = 1000000  # число обсл заявок ИМ
+    b_coev = [0.34, 1.3]  # коэфф вариации времени обсл
+    b_coev_warm = [0.8, 1.2]  # коэфф вариации времени разогрева
     buff = None
     verbose = False
 
@@ -711,8 +711,8 @@ if __name__ == "__main__":
 
         b_w = [0.0] * 3
         b_w[0] = b1_warm
-        alpha = 1 / (b_coev_warm ** 2)
-        b_w[1] = math.pow(b_w[0], 2) * (math.pow(b_coev_warm, 2) + 1)
+        alpha = 1 / (b_coev_warm[k] ** 2)
+        b_w[1] = math.pow(b_w[0], 2) * (math.pow(b_coev_warm[k], 2) + 1)
         b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
 
         h2_params = rd.H2_dist.get_params_clx(b)
@@ -746,7 +746,7 @@ if __name__ == "__main__":
               "с комплексными параметрами\n"
               "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
         print(f'Коэффициент вариации времени обслуживания {b_coev[k]:0.3f}')
-        print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
+        print(f'Коэффициент вариации времени разогрева {b_coev_warm[k]:0.3f}')
         print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
         print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
         print("Время ИМ: {0:^5.3f} c".format(im_time))
