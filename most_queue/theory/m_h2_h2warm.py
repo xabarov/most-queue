@@ -12,7 +12,7 @@ from scipy.misc import derivative
 class Mh2h2Warm:
     """
     Расчет СМО M/H2/n с H2-разогревом численным методом Такахаси-Таками.
-    Используются комплексные параметры. Комплексные параметры позволяют аппроксимировать распределение времени обслуживания
+    Используются комплексные параметры, которые позволяют аппроксимировать распределение времени обслуживания
     с произвольными коэффициентами вариации (>1, <=1)
     """
 
@@ -162,7 +162,7 @@ class Mh2h2Warm:
             probs_on_level = []
             for j in range(2, self.cols[from_level - 1]):
                 if from_level != 1:
-                    probs_on_level.append(b_matrix[i, j]/ sum(b_matrix[i, :]))
+                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
                 else:
                     probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
             probs.append(probs_on_level)
