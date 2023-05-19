@@ -113,6 +113,8 @@ class Mh2h2Warm:
 
         self.build_matrices()
         self.initial_probabilities()
+        self.key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
+        self.down_probs = self.calc_down_probs(self.n + 1)
 
     def get_p(self):
         """
@@ -126,11 +128,51 @@ class Mh2h2Warm:
     def pls(self, mu, s):
         return mu / (mu + s)
 
+    def calc_passage_times(self):
+        pass_time = passage_time.passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
+        pass_time.calc()
+        print("\nЗначения матриц G:\n")
+
+        g_num = len(pass_time.G)
+        for i in range(g_num):
+
+            print("G{0:^1d}".format(i))
+
+            rows = pass_time.G[i].shape[0]
+            cols = pass_time.G[i].shape[1]
+            for j in range(rows):
+                for t in range(cols):
+                    if t == cols - 1:
+                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]))
+                    else:
+                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]), end=" ")
+
     def get_key_numbers(self, level):
         key_numbers = []
         for i in range(level + 1):
             key_numbers.append((self.n - i, i))
-        return key_numbers
+        return np.array(key_numbers, dtype=self.dt)
+
+    def calc_down_probs(self, from_level):
+        if from_level == self.n:
+            return np.eye(self.n + 1)
+        b_matrix = self.B[from_level]
+        probs = []
+        for i in range(2, self.cols[from_level - 1]):
+            probs_on_level = []
+            for j in range(2, self.cols[from_level - 1]):
+                if from_level != 1:
+                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
+                else:
+                    probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
+            probs.append(probs_on_level)
+        return np.array(probs, dtype=self.dt)
+
+    def matrix_pow(self, matrix, k):
+        res = np.eye(self.n + 1, dtype=self.dt)
+        for i in range(k):
+            res = np.dot(res, matrix)
+        return res
 
     def calc_w_pls(self, s):
         w = 0
@@ -143,55 +185,37 @@ class Mh2h2Warm:
             for i in range(2):
                 w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
 
-        key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-
         for k in range(self.n, self.N):
-
-            # ПЛС микросостояний обслуживания
-            pls_of_service_state = [pow(
-                self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s),
-                k - self.n + 1) for j in range(len(probs))]
 
             # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
             # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
-            pls_service_total = 0  # ПЛС обслуживания усредненная по состояниям
+            key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
 
-            for j, p in enumerate(probs):
-                pls_service_total += p * pls_of_service_state[j]
+            a = np.array(
+                [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
+                 range(self.n + 1)])
+
+            P = self.calc_down_probs(k)
+            Pa = np.transpose(self.matrix_pow(P * a, k - self.n))  # n+1 x n+1
+
+            aP_tilda = a * probs
+
+            pls_service_total = sum(np.dot(aP_tilda, Pa))
 
             for i in range(2):
                 w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
 
             # попала в фазу обслуживания
-            for i in range(len(probs)):
-                w += self.Y[k][0, i + 2] * pls_of_service_state[i]
+            Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
+            aPa = np.dot(a, Pa)
+            for i in range(self.n + 1):
+                w += Ys[i] * aPa[i]
 
         return w
 
     def calc_residual_b(self, mom_num):
         res = self.b[mom_num + 1] / (2.0 * self.b[mom_num])
         return res
-
-    def calc_w_on_level(self, level, mom_num=0):
-
-        # first variant - on w1:
-
-        a = [np.math.factorial(i + 1) / pow(self.mu_w[0], i + 1) for i in range(3)]
-        b = [self.b[i] * (level - self.n + 1) for i in range(3)]
-
-        w_first = self.Y[level][0, 0] * Mh2h2Warm.binom_calc(a, b)[mom_num] / self.n
-
-        # second - on w2 state
-        a = [np.math.factorial(i + 1) / pow(self.mu_w[1], i + 1) for i in range(3)]
-        b = [self.b[i] * (level - self.n + 1) for i in range(3)]
-
-        w_sec = self.Y[level][0, 1] * Mh2h2Warm.binom_calc(a, b)[mom_num] / self.n
-
-        # third - not on warm state
-
-        w_third = (sum(self.Y[level][0, 2:])) * (self.b[mom_num] * (level - self.n + 1)) / self.n
-
-        return w_first + w_sec + w_third
 
     def get_w(self):
         """
@@ -216,21 +240,8 @@ class Mh2h2Warm:
 
         else:
             for i in range(3):
-                w[i] = derivative(self.calc_w_pls, 0, dx=self.mu[0] * 1e-3, n=i + 1, order=9)
+                w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
             return [-w[0].real, w[1].real, -w[2].real]
-
-            # for k in range(3):
-            #
-            #     # Если заявка попала в фазу разогрева, хотя каналы свободны,
-            #     # ей придется подождать окончание разогрева
-            #     for i in range(1, self.n):
-            #         w[k] += np.math.factorial(i + 1) * (
-            #                 self.Y[i][0, 0] / pow(self.mu_w[0], i + 1) + self.Y[i][0, 1] / pow(self.mu_w[1], i + 1))
-            #
-            #     for i in range(self.n, self.N):
-            #         w[k] += self.calc_w_on_level(i, k)
-            #
-            # return w
 
     def get_b(self):
         b_plus_b_warm = [0.0] * 3
@@ -679,14 +690,15 @@ if __name__ == "__main__":
     from most_queue.sim import rand_destribution as rd
     import time
 
-    n = 3  # число каналов
+    n = 15
+    # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
     b1 = n * ro  # ср время обслуживания
-    b1_warm = n * 0.6  # ср время разогрева
-    num_of_jobs = 1000000  # число обсл заявок ИМ
-    b_coev = [0.8]  # коэфф вариации времени обсл
-    b_coev_warm = 1.2  # коэфф вариации времени разогрева
+    b1_warm = n * 0.2  # ср время разогрева
+    num_of_jobs = 3000000  # число обсл заявок ИМ
+    b_coev = [1.1]  # коэфф вариации времени обсл
+    b_coev_warm = 1.3  # коэфф вариации времени разогрева
     buff = None
     verbose = False
 
@@ -724,12 +736,13 @@ if __name__ == "__main__":
         tt.run()
         p_tt = tt.get_p()
         w_tt = tt.get_w()  # .get_w() -> wait times
+        print(w_tt)
 
         tt_time = time.process_time() - tt_start
         num_of_iter = tt.num_of_iter_
 
         print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
-              "ИМ - M/Gamma/{0:^2d}\nТакахаси-Таками - M/H2/{0:^2d}"
+              "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/H2/{0:^2d} c H2-разогревом "
               "с комплексными параметрами\n"
               "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
         print(f'Коэффициент вариации времени обслуживания {b_coev[k]:0.3f}')

@@ -4,12 +4,15 @@ import copy
 
 
 class passage_time_calc:
-    def __init__(self, A, B, C, D, is_clx=True, is_verbose=False):
+    def __init__(self, A, B, C, D, is_clx=True, is_verbose=False, l_tilda=None):
         self.A_input = A
         self.B_input = B
         self.C_input = C
         self.D_input = D
-        self.l_tilda = len(D) - 1  # номер яруса, с которого все матрицы одинаковые
+        if not l_tilda:
+            self.l_tilda = len(D) - 1  # номер яруса, с которого все матрицы одинаковые
+        else:
+            self.l_tilda = l_tilda
         self.e = 1e-9
         self.F = []
         self.Fr = []
