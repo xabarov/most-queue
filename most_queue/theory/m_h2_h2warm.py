@@ -173,13 +173,13 @@ class Mh2h2Warm:
 
             # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
             # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
-            key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
+            # key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
 
             a = np.array(
-                [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
+                [self.pls(self.key_numbers[j][0] * self.mu[0] + self.key_numbers[j][1] * self.mu[1], s) for j in
                  range(self.n + 1)])
 
-            P = self.calc_down_probs(k)
+            P = self.down_probs  # calc_down_probs(k)
             Pa = np.transpose(self.matrix_pow(P * a, k - self.n))  # n+1 x n+1
 
             aP_tilda = a * probs
