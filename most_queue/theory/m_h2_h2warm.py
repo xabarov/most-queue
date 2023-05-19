@@ -1,6 +1,5 @@
 import numpy as np
 import math
-import passage_time
 from tqdm import tqdm
 from most_queue.sim import rand_destribution as rd
 from scipy import special
@@ -24,8 +23,12 @@ class Mh2h2Warm:
         l: интенсивность вх. потока
         b: начальные моменты времени обслуживания
         b_warm: начальные моменты времени разогрева
+        buffer: максимальная длина очереди. Если не задана - бесконечная очередь
         N: число ярусов
         accuracy: точность, параметр для остановки итерации
+        dtype: 'c16' - с комплексными параметрами, float - float
+        verbose: отображать ли коммантарии во время расчета
+        is_only_first: разогрев только первой заявки. Заданное время разогрева - время обслуживания первой заявки
         """
         self.dt = np.dtype(dtype)
         if buffer:
@@ -127,25 +130,6 @@ class Mh2h2Warm:
 
     def pls(self, mu, s):
         return mu / (mu + s)
-
-    def calc_passage_times(self):
-        pass_time = passage_time.passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
-        pass_time.calc()
-        print("\nЗначения матриц G:\n")
-
-        g_num = len(pass_time.G)
-        for i in range(g_num):
-
-            print("G{0:^1d}".format(i))
-
-            rows = pass_time.G[i].shape[0]
-            cols = pass_time.G[i].shape[1]
-            for j in range(rows):
-                for t in range(cols):
-                    if t == cols - 1:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]))
-                    else:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]), end=" ")
 
     def get_key_numbers(self, level):
         key_numbers = []
@@ -260,6 +244,12 @@ class Mh2h2Warm:
             v[0] = w[0] + b[0]
             v[1] = w[1] + 2 * w[0] * b[0] + b[1]
             v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+
+        else:
+            w = self.get_w()
+            v[0] = w[0] + self.b[0]
+            v[1] = w[1] + 2 * w[0] * self.b[0] + self.b[1]
+            v[2] = w[2] + 3 * w[1] * self.b[0] + 3 * w[0] * self.b[1] + self.b[2]
 
         return v
 
@@ -727,7 +717,7 @@ if __name__ == "__main__":
         smo.set_warm(gamma_params_warm, 'Gamma')
         smo.run(num_of_jobs)
         p = smo.get_p()
-        w_im = smo.w  # .w -> wait times
+        v_im = smo.v  # .w -> wait times
         im_time = time.process_time() - im_start
 
         tt_start = time.process_time()
@@ -735,8 +725,8 @@ if __name__ == "__main__":
 
         tt.run()
         p_tt = tt.get_p()
-        w_tt = tt.get_w()  # .get_w() -> wait times
-        print(w_tt)
+        v_tt = tt.get_v()  # .get_w() -> wait times
+        print(v_tt)
 
         tt_time = time.process_time() - tt_start
         num_of_iter = tt.num_of_iter_
@@ -757,8 +747,8 @@ if __name__ == "__main__":
             print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
 
         print("\n")
-        print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
+        print("{0:^25s}".format("Начальные моменты времени пребывания в СМО"))
         print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
         print("-" * 32)
         for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, w_tt[i], w_im[i]))
+            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, v_tt[i], v_im[i]))
