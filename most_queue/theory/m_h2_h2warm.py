@@ -690,7 +690,7 @@ if __name__ == "__main__":
     from most_queue.sim import rand_destribution as rd
     import time
 
-    n = 15
+    n = 3
     # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
