@@ -10,3 +10,4 @@ PyQt5
 qt-material
 PySide2
 networkx
+colorama

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='most-queue',
-      version='1.16',
+      version='1.17',
       description="Software package for calculation and simulation of queuing systems",
       author='Xabarov Roman',
       author_email='xabarov1985@gmail.com',
@@ -26,7 +26,8 @@ setup(name='most-queue',
             'PyQt5',
             'qt-material',
             'PySide2',
-            'networkx'
+            'networkx',
+            'colorama'
       ],
       include_package_data=True,
       zip_safe=False)

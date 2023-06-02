@@ -4,7 +4,12 @@ import rand_destribution as rd
 import math
 from tqdm import tqdm
 import time
+import sys
 
+from colorama import init
+from colorama import Fore, Style
+
+init()
 
 class SmoIm:
     """
@@ -13,6 +18,7 @@ class SmoIm:
 
     def __init__(self, num_of_channels, buffer=None, verbose=True, calc_next_event_time=False, cuda=False):
         """
+        Конструктор
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         verbose - вывод комментариев в процессе ИМ
@@ -471,12 +477,11 @@ class SmoIm:
             if self.is_next_calc:
                 self.calc_next_event_time()
 
-    def run(self, total_served):
+    def run(self, total_served, is_real_served=False):
         start = time.process_time()
         if self.cuda:
-            from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32
+            from numba.cuda.random import create_xoroshiro128p_states
             import numpy as np
-            from numba import cuda
             threads_per_block = 512
             blocks = int(total_served / 512)
             rng_states = create_xoroshiro128p_states(threads_per_block * blocks, seed=1)
@@ -498,13 +503,26 @@ class SmoIm:
             self.source_random_vars = source_out
             self.tek_source_num = 0
 
-        # while (self.served < total_served):
-        #     self.run_one_step()
-        #     sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
-        #     sys.stderr.flush()
-        print('\rStart simulation...')
-        for i in tqdm(range(total_served)):
-            self.run_one_step()
+
+
+        if is_real_served:
+            served_old = 0
+            while self.served < total_served:
+                self.run_one_step()
+                if (self.served - served_old) % 5000 == 0:
+                    sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+                    sys.stderr.flush()
+                served_old = self.served
+        else:
+            print(Fore.GREEN + '\rStart simulation')
+            print(Style.RESET_ALL)
+            # print(Back.YELLOW + 'на желтом фоне')
+
+            for i in tqdm(range(total_served)):
+                self.run_one_step()
+
+            print(Fore.GREEN + '\rSimulation is finished')
+            print(Style.RESET_ALL)
 
         self.time_spent = time.process_time() - start
 
@@ -700,6 +718,7 @@ class Server:
 if __name__ == '__main__':
     from most_queue.theory import mmnr_calc
     from most_queue.theory import m_d_n_calc
+    from most_queue.utils.tables import times_print, probs_print
 
     n = 3
     l = 1.0
@@ -722,12 +741,9 @@ if __name__ == '__main__':
     w_im = smo.w
 
     print("Time spent ", smo.time_spent)
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w[j], w_im[j]))
+    times_print(w_im, w)
+
     print("\n\nДанные ИМ::\n")
     print(smo)
 
@@ -736,18 +752,13 @@ if __name__ == '__main__':
     smo.set_sources(l, 'M')
     smo.set_servers(1.0 / mu, 'D')
 
-    smo.run(num_of_jobs)
+    smo.run(num_of_jobs, is_real_served=False)
 
     mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
     p_ch = mdn.calc_p()
     p_im = smo.get_p()
 
     print("Time spent ", smo.time_spent)
-    print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО M/D/{0:d}".format(n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
-    print("-" * 36)
+
+    probs_print(p_im, p_ch, 10)
+
