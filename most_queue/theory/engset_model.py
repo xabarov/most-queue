@@ -123,6 +123,8 @@ class Engset:
 
 
 if __name__ == '__main__':
+    from most_queue.utils.tables import times_print
+
     lam = 0.3
     mu = 1.0
     m = 7

@@ -3,6 +3,7 @@ import math
 import prty_calc
 import passage_time
 from most_queue.sim import rand_destribution as rd
+import math
 
 class Mmn3_pnz_cox:
     """
@@ -462,6 +463,7 @@ if __name__ == "__main__":
     import mmn_prty_pnz_approx
     from mmnr_calc import M_M_n_formula
     from most_queue.sim import rand_destribution as rd
+    from most_queue.utils.tables import times_print, probs_print
 
     num_of_jobs = 200000
     n = 2  # количество каналов
@@ -518,10 +520,7 @@ if __name__ == "__main__":
     print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
 
     print("{0:^25s}".format("Вероятности состояний для заявок 3-го класса"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[2][i]))
+    probs_print(p[2], p_tt, 10)
 
     print("\n")
     print("{0:^35s}".format("Средние времена пребывания в СМО"))

@@ -112,6 +112,7 @@ class M_D_n:
 if __name__ == "__main__":
 
     from most_queue.sim import smo_im
+    from most_queue.utils.tables import probs_print
 
     l = 1.0  # интенсивность входного потока
     ro = 0.8  # коэффициент загрузки
@@ -129,11 +130,4 @@ if __name__ == "__main__":
     v_im = smo.v
     p_im = smo.get_p()
 
-    print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО M/D/{0:d}".format(n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
-    print("-" * 36)
+    probs_print(p_im, p_ch, 10)

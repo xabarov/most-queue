@@ -2,7 +2,15 @@ from most_queue.sim import rand_destribution as rd
 
 import time
 import sys
+from tqdm import tqdm
+
+from colorama import init
+from colorama import Fore, Style
+
 import math
+
+init()
+
 
 class SmoImPrty:
     """
@@ -126,7 +134,8 @@ class SmoImPrty:
             elif self.source_types == "D":
                 self.sources.append(rd.Det_dist(params))
             else:
-                raise SetSmoException("Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
+                raise SetSmoException(
+                    "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
             self.arrival_time[i] = self.sources[i].generate()
             time.sleep(0.1)
 
@@ -192,7 +201,8 @@ class SmoImPrty:
             elif warm_up_type == "D":
                 self.warm_up.append(rd.Det_dist(params))
             else:
-                raise SetSmoException("Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
+                raise SetSmoException(
+                    "Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
 
     def calc_load(self):
 
@@ -244,7 +254,7 @@ class SmoImPrty:
             elif self.sources_params[i]['type'] == "Uniform":
                 f1 = self.sources_params[i]['type'][0]
                 l_sum += 1.0 / f1
-            
+
             elif self.sources_params[i]['type'] == "D":
                 f1 = self.sources_params[i]['type']
                 l_sum += 1.0 / f1
@@ -274,11 +284,11 @@ class SmoImPrty:
             elif self.servers_params[i]['type'] == "Uniform":
                 f1 = self.servers_params[i]['params'][0]
                 b1_sr += 1.0 / f1
-            
+
             elif self.servers_params[i]['type'] == "D":
                 f1 = self.servers_params[i]['type']
                 b1_sr += 1.0 / f1
-                
+
             elif self.servers_params[i]['type'] == "C":
                 y1 = self.servers_params[i]['params'][0]
                 y2 = 1.0 - y1
@@ -295,7 +305,6 @@ class SmoImPrty:
                     b1_sr += a * k / (a - 1)
 
         return l_sum * b1_sr / (self.n * self.k)
-
 
     def arrival(self, k, moment=None, ts=None):
 
@@ -558,12 +567,23 @@ class SmoImPrty:
         if self.is_next_calc:
             self.calc_time_to_next_event()
 
+    def run(self, total_served, is_real_served=False):
+        if is_real_served:
 
-    def run(self, total_served):
-        while (sum(self.served) < total_served):
-            self.run_one_step()
-            sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), total_served))
-            sys.stderr.flush()
+            while sum(self.served) < total_served:
+                self.run_one_step()
+                sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), total_served))
+                sys.stderr.flush()
+
+        else:
+            print(Fore.GREEN + '\rStart simulation')
+            print(Style.RESET_ALL)
+
+            for i in tqdm(range(total_served)):
+                self.run_one_step()
+
+            print(Fore.GREEN + '\rSimulation is finished')
+            print(Style.RESET_ALL)
 
     def refresh_ppnz_stat(self, k, new_a):
         for i in range(3):
@@ -736,7 +756,8 @@ class Server:
             elif dist_type == "Uniform":
                 self.dist.append(rd.Uniform_dist(params))
             else:
-                raise SetSmoException("Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Gamma, Pa, Uniform")
+                raise SetSmoException(
+                    "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Gamma, Pa, Uniform")
         self.time_to_end_service = 1e10
         self.total_time_to_serve = 0
         # Сохранение типа дисциплины обслуживания необходимо для
@@ -793,6 +814,7 @@ if __name__ == "__main__":
     from most_queue.theory import prty_calc
     import math
     import rand_destribution as rd
+    from most_queue.utils.tables import times_print_with_classes
 
     n = 5
     k = 3
@@ -833,63 +855,12 @@ if __name__ == "__main__":
 
     smo.run(num_of_jobs)
 
-    # v_im = smo.v
-    # calc1pr = prty_calc.calc_pr1(l, b)
-    # v_ch = calc1pr['v']
-    #
-    # #w_ch = prty_calc.climov_w_pr_calc(l, b)
-    # # w_ch_1 = prty_calc.get_w1_pr(l, b)
-    # # for j in range(3):
-    # #     print("{:^15.3g}|".format(w_ch_1[j]), end="")
-    # # print("\n")
-    #
-    # for i in range(k):
-    #     print(" " * 5 + "|", end="")
-    #     print("{:^5s}|".format("ИМ"), end="")
-    #     for j in range(3):
-    #         print("{:^15.3g}|".format(v_im[i][j]), end="")
-    #     print("")
-    #     print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-    #
-    #     print(" " * 5 + "|", end="")
-    #     print("{:^5s}|".format("Р"), end="")
-    #     for j in range(3):
-    #         print("{:^15.3g}|".format(v_ch[i][j]), end="")
-    #     print("")
-    #     print("-" * 60)
-
     v_im = smo.v
 
     v_teor = prty_calc.get_v_prty_invar(l, b, n, 'PR')
 
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
+    times_print_with_classes(v_im, v_teor, is_w=False)
 
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_teor[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
     print("Относительный приоритет")
 
     smo = SmoImPrty(n, k, "NP")
@@ -908,29 +879,4 @@ if __name__ == "__main__":
 
     v_teor = prty_calc.get_v_prty_invar(l, b, n, 'NP')
 
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_teor[i][j]), end="")
-        print("")
-        print("-" * 60)
+    times_print_with_classes(v_im, v_teor, is_w=False)

@@ -150,6 +150,7 @@ class Ek_D_n:
 if __name__ == "__main__":
     from most_queue.sim import smo_im
     from most_queue.sim import rand_destribution as rd
+    from most_queue.utils.tables import probs_print
 
     ro = 0.8  # коэффициент загрузки
     a1 = 1  # среднее время между заявками вх потока
@@ -170,10 +171,6 @@ if __name__ == "__main__":
     p_im = smo.get_p()
 
     print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО E{0:d}/D/{1:d}".format(k, n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
-    print("-" * 36)
+    print("{0:^36s}".format("СМО E{0:d}/D/{1:d}".format(k, n)))
+
+    probs_print(p_im, p_ch, 10)

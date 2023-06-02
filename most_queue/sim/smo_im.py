@@ -11,6 +11,7 @@ from colorama import Fore, Style
 
 init()
 
+
 class SmoIm:
     """
     Имитационная модель СМО GI/G/n/r и GI/G/n
@@ -503,8 +504,6 @@ class SmoIm:
             self.source_random_vars = source_out
             self.tek_source_num = 0
 
-
-
         if is_real_served:
             served_old = 0
             while self.served < total_served:
@@ -516,7 +515,6 @@ class SmoIm:
         else:
             print(Fore.GREEN + '\rStart simulation')
             print(Style.RESET_ALL)
-            # print(Back.YELLOW + 'на желтом фоне')
 
             for i in tqdm(range(total_served)):
                 self.run_one_step()
@@ -747,6 +745,8 @@ if __name__ == '__main__':
     print("\n\nДанные ИМ::\n")
     print(smo)
 
+    print(f"M/D/{n}")
+
     smo = SmoIm(n)
 
     smo.set_sources(l, 'M')
@@ -761,4 +761,3 @@ if __name__ == '__main__':
     print("Time spent ", smo.time_spent)
 
     probs_print(p_im, p_ch, 10)
-

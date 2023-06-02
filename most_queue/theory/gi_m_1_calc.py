@@ -90,6 +90,7 @@ def get_w_param(a, mu, e=1e-10, approx_distr="Gamma"):
 if __name__ == '__main__':
 
     from most_queue.sim import smo_im
+    from most_queue.utils.tables import times_print, probs_print
 
     l = 1
     a1 = 1 / l
@@ -110,29 +111,16 @@ if __name__ == '__main__':
     v_im = smo.v
     p_im = smo.get_p()
 
-    print("\nGamma. Значения начальных моментов времени пребывания заявок в системе:\n")
+    print("\nGamma\n")
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_im[j]))
+    times_print(v_im, v_ch, is_w=False)
 
     w_ch = get_w(a, mu)
     w_im = smo.w
 
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
+    times_print(w_im, w_ch, is_w=True)
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w_ch[j], w_im[j]))
-
-    print("{0:^25s}".format("Вероятности состояний СМО"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_im[i]))
-
+    probs_print(p_im, p_ch, 10)
 
     # Pareto test
     alpha, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
@@ -147,25 +135,13 @@ if __name__ == '__main__':
     v_im = smo.v
     p_im = smo.get_p()
 
-    print("\nPareto. Значения начальных моментов времени пребывания заявок в системе:\n")
+    print("\nPareto\n")
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_im[j]))
+    times_print(v_im, v_ch, is_w=False)
 
     w_ch = get_w(a, mu, approx_distr="Pa")
     w_im = smo.w
 
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
+    times_print(w_im, w_ch, is_w=True)
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w_ch[j], w_im[j]))
-
-    print("{0:^25s}".format("Вероятности состояний СМО"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_im[i]))
+    probs_print(p_im, p_ch, 10)

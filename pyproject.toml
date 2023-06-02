@@ -1,6 +1,6 @@
 [project]
 name = "most_queue"
-version = "1.17"
+version = "1.20"
 authors = [
   { name="Xabarov Roman", email="xabarov1985@gmail.com" },
 ]

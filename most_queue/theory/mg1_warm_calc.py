@@ -29,6 +29,8 @@ def get_v(l, b, b_warm):
 
 
 if __name__ == '__main__':
+    from most_queue.utils.tables import times_print, probs_print
+
     l = 1
     b1 = 0.8
     b1_warm = 0.9
@@ -48,9 +50,4 @@ if __name__ == '__main__':
     v_ch = get_v(l, b, b_warm)
     v_im = smo.v
 
-    print("\nЗначения начальных моментов времени пребывания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_im[j]))
+    times_print(v_im, v_ch, False)

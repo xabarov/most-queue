@@ -4,6 +4,11 @@ import math
 import sys
 from tqdm import tqdm
 
+from colorama import init
+from colorama import Fore, Style
+
+init()
+
 class SubTask:
     """
     Позадача
@@ -193,9 +198,26 @@ class SmoFJ(smo_im.SmoIm):
         else:
             self.serving(num_of_server_earlier)
 
-    def run(self, total_served):
-        for i in tqdm(range(total_served)):
-            self.run_one_step()
+    def run(self, total_served, is_real_served=False):
+
+        if is_real_served:
+            served_old = 0
+            while self.served < total_served:
+                self.run_one_step()
+                if (self.served - served_old) % 5000 == 0:
+                    sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+                    sys.stderr.flush()
+                served_old = self.served
+        else:
+            print(Fore.GREEN + '\rStart simulation')
+            print(Style.RESET_ALL)
+            # print(Back.YELLOW + 'на желтом фоне')
+
+            for i in tqdm(range(total_served)):
+                self.run_one_step()
+
+            print(Fore.GREEN + '\rSimulation is finished')
+            print(Style.RESET_ALL)
 
     def refresh_v_stat(self, new_a):
         for i in range(3):
@@ -260,6 +282,7 @@ if __name__ == '__main__':
 
     from most_queue.theory import mg1_calc
     from most_queue.theory import fj_calc
+    from most_queue.utils.tables import times_print
 
     n = 3
     l = 1.0
@@ -284,13 +307,7 @@ if __name__ == '__main__':
     print("-" * 60)
     print("Коэфф вариации времени обслуживания: ", coev)
     print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Начальные моменты времени пребывания заявок в системе:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
-    print("-" * 60)
+    times_print(v_im, v_ch, is_w=False)
 
     coev = 0.8
     b1 = 0.5
@@ -309,10 +326,4 @@ if __name__ == '__main__':
 
     print("\n\nКоэфф вариации времени обслуживания: ", coev)
     print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Начальные моменты времени пребывания заявок в системе:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
-    print("-" * 60)
+    times_print(v_im, v_ch, is_w=False)

@@ -274,6 +274,7 @@ class QueueFiniteSourceSim(SmoIm):
 
 if __name__ == '__main__':
     from most_queue.theory.engset_model import Engset
+    from most_queue.utils.tables import probs_print, times_print
 
     lam = 0.9
     mu = 1.0
@@ -296,21 +297,7 @@ if __name__ == '__main__':
     p_im = smo.get_p()
     p_ch = engset.get_p()
 
-    print(f'Вероятности состояний системы')
-    header = "{0:^15s}|{1:^15s}|{2:^15s}".format('№', 'Числ', 'ИМ')
-    print('-' * len(header))
-    print(header)
-    print('-' * len(header))
-    for i in range(len(p_im)):
-        print("{0:^15d}|{1:^15.3f}|{2:^15.3f}".format(i, p_ch[i], p_im[i]))
-    print('-' * len(header))
-    print("{0:^15s}|{1:^15.3f}|{2:^15.3f}".format('Сумм', sum(p_ch), sum(p_im)))
-    print('-' * len(header))
+    probs_print(p_im, p_ch, 10)
 
     print("Time spent ", smo.time_spent)
-    print("\nЗначения начальных моментов времени пребывания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v[j], v_im[j]))
+    times_print(v_im, v, is_w=False)

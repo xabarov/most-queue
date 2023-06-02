@@ -8,6 +8,11 @@ import time
 from tqdm import tqdm
 import sys
 
+from colorama import init
+from colorama import Fore, Style
+
+init()
+
 class NetworkPrty:
     """
     Имитационная модель СеМО с многоканальными узлами и приоритетами
@@ -133,18 +138,27 @@ class NetworkPrty:
 
     def run(self, job_served, is_real_served=False):
         if is_real_served:
-            while (sum(self.served) < job_served):
+            while sum(self.served) < job_served:
                 self.run_one_step()
                 sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), job_served))
                 sys.stderr.flush()
         else:
-            print("Start simulation...\n")
+            print(Fore.GREEN + '\rStart simulation')
+            print(Style.RESET_ALL)
+            # print(Back.YELLOW + 'на желтом фоне')
+
             for i in tqdm(range(job_served)):
                 self.run_one_step()
+
+            print(Fore.GREEN + '\rSimulation is finished')
+            print(Style.RESET_ALL)
 
 
 
 if __name__ == '__main__':
+
+    from most_queue.utils.tables import times_print_with_classes
+
     k_num = 3
     n_num = 5
     n = [3, 2, 3, 4, 3]
@@ -204,7 +218,7 @@ if __name__ == '__main__':
     print("Количество каналов в узлах:")
     for nn in n:
         print("{0:^1d}".format(nn), end=" ")
-    print("\nКоэффициенты загрузки узлов :")
+    print("\nКоэффициенты загрузки узлов:")
     for load in loads:
         print("{0:^1.3f}".format(load), end=" ")
     print("\n")
@@ -212,33 +226,7 @@ if __name__ == '__main__':
     print("{0:^60s}".format("Относительный приоритет"))
 
     print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k_num):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_ch[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
+    times_print_with_classes(v_im, v_ch, is_w=False)
 
     prty = ['PR'] * n_num
     semo_im = NetworkPrty(k_num, L, R, n, prty, serv_params, nodes_prty)
@@ -252,32 +240,6 @@ if __name__ == '__main__':
 
     print("-" * 60)
     print("{0:^60s}".format("Абсолютный приоритет"))
-
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
     print("-" * 60)
 
-    for i in range(k_num):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_ch[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
+    times_print_with_classes(v_im, v_ch, is_w=False)

@@ -452,6 +452,7 @@ class MGnCalc:
 if __name__ == "__main__":
     from most_queue.sim import smo_im
     from most_queue.sim import rand_destribution as rd
+    from most_queue.utils.tables import times_print, probs_print
     import time
 
     n = 3  # число каналов
@@ -500,15 +501,6 @@ if __name__ == "__main__":
         print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
         print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
         print("Время работы ИМ: {0:^5.3f} c".format(im_time))
-        print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
+        probs_print(p, p_tt, 10)
 
-        print("\n")
-        print("{0:^25s}".format("Начальные моменты времени пребывания в СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, v_tt[i], v_im[i]))
+        times_print(v_im, v_tt, False)

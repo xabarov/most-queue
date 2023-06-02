@@ -301,9 +301,10 @@ class SmoFJDelta(SmoFJ):
 
 if __name__ == '__main__':
 
-    from  most_queue.theory import mg1_calc
+    from most_queue.theory import mg1_calc
     from most_queue.theory import fj_calc
     from most_queue.theory import mg1_warm_calc
+    from most_queue.utils.tables import times_print
 
     n = 3
     l = 1.0
@@ -335,13 +336,8 @@ if __name__ == '__main__':
     print("Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
     print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
     print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Начальные моменты времени пребывания заявок в системе:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
-    print("-" * 60)
+
+    times_print(v_im, v_ch, is_w=False)
 
     coev = 0.53
     b1 = 0.5
@@ -368,10 +364,5 @@ if __name__ == '__main__':
     print("Коэффициент загрузки: {:4.3f}".format(ro))
     print("Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
     print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
-    print("Начальные моменты времени пребывания заявок в системе:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
-    print("-" * 60)
+
+    times_print(v_im, v_ch, is_w=False)

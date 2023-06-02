@@ -600,6 +600,8 @@ class MMn_PRTY_PNZ_Cox_approx:
 if __name__ == "__main__":
     from most_queue.sim import rand_destribution as rd
     from most_queue.sim import smo_im_prty
+    from most_queue.utils.tables import probs_print, times_print
+
 
     num_of_jobs = 100000
     n = 3  # количество каналов
@@ -647,10 +649,7 @@ if __name__ == "__main__":
     print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
 
     print("{0:^25s}".format("Вероятности состояний для заявок 2-го класса"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[1][i]))
+    probs_print(p[1], p_tt, 10)
 
     print("\n")
     print("{0:^25s}".format("Среднее время пребывания в СМО заявок 2-го класса"))
