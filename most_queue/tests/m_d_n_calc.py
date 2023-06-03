@@ -1,4 +1,4 @@
-from most_queue.sim import smo_im
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.m_d_n_calc import M_D_n
 
 
@@ -20,22 +20,22 @@ def test():
 
     # для верификации используем ИМ.
     # создаем экземпляр класса ИМ, передаем число каналов обслуживания
-    smo = smo_im.SmoIm(n)
+    qs = QueueingSystemSimulator(n)
 
     # задаем входной поток. Методу нужно передать параметры распределения и тип распределения.
-    smo.set_sources(l, "M")
+    qs.set_sources(l, "M")
 
     # задаем каналы обслуживания. На вход параметры (в нашем случае время обслуживания)
     # и тип распределения - D (детерминированное).
-    smo.set_servers(b, "D")
+    qs.set_servers(b, "D")
 
     # запускаем ИМ:
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
     # получаем список начальных моментов времени пребывания в СМО
-    v_im = smo.v
+    v_sim = qs.v
     # получаем распределение вероятностей состояний СМО
-    p_im = smo.get_p()
+    p_sim = qs.get_p()
 
     # Вывод результатов
     print("-" * 36)
@@ -44,7 +44,7 @@ def test():
     print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
     print("-" * 36)
     for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
+        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_sim[i]))
     print("-" * 36)
 
 

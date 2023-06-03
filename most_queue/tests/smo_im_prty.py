@@ -1,7 +1,7 @@
-from most_queue.sim.smo_im_prty import SmoImPrty
-from most_queue.theory import prty_calc
+from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
+from most_queue.theory import priority_calc
 from most_queue.sim import rand_destribution as rd
-
+from most_queue.utils.tables import probs_print, times_print_with_classes
 
 def test():
     """
@@ -52,7 +52,7 @@ def test():
 
     # при создании ИМ передаем число каналов, число классов и тип приоритета.
     # PR - абсолютный с дообслуживанием заявок
-    smo = SmoImPrty(n, k, "PR")
+    qs = PriorityQueueSimulator(n, k, "PR")
 
     # для задания источников заявок и каналов обслуживания нужно задать набор словарей с полями
     # type - тип распределения,
@@ -65,94 +65,41 @@ def test():
         sources.append({'type': 'M', 'params': l[j]})
         servers_params.append({'type': 'Gamma', 'params': params[j]})
 
-    smo.set_sources(sources)
-    smo.set_servers(servers_params)
+    qs.set_sources(sources)
+    qs.set_servers(servers_params)
 
     # запуск ИМ
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
     # получение начальных моментов времени пребывания
 
-    v_im = smo.v
+    v_sim = qs.v
 
     # расчет их же методом инвариантов отношения (для сравнения)
-    v_teor = prty_calc.get_v_prty_invar(l, b, n, 'PR')
+    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'PR')
 
-    # вывод результатов
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
+    times_print_with_classes(v_sim, v_teor, False)
 
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_teor[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
     print("Относительный приоритет")
 
     # Тоже самое для относительного приоритета (NP)
-    smo = SmoImPrty(n, k, "NP")
+    qs = PriorityQueueSimulator(n, k, "NP")
     sources = []
     servers_params = []
     for j in range(k):
         sources.append({'type': 'M', 'params': l[j]})
         servers_params.append({'type': 'Gamma', 'params': params[j]})
 
-    smo.set_sources(sources)
-    smo.set_servers(servers_params)
+    qs.set_sources(sources)
+    qs.set_servers(servers_params)
 
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
-    v_im = smo.v
+    v_sim = qs.v
 
-    v_teor = prty_calc.get_v_prty_invar(l, b, n, 'NP')
+    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
 
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_teor[i][j]), end="")
-        print("")
-        print("-" * 60)
-
+    times_print_with_classes(v_sim, v_teor, False)
 
 if __name__ == "__main__":
     test()

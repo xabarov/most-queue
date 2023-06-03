@@ -1,7 +1,7 @@
 import math
-from most_queue.sim import smo_im_prty
+from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.sim import rand_destribution as rd
-from most_queue.theory import prty_calc
+from most_queue.theory import priority_calc
 import time
 from most_queue.theory.m_ph_n_prty import m_ph_n_prty
 
@@ -89,7 +89,7 @@ def test():
         L = [l_H, l_L]
 
         invar_start = time.process_time()
-        v = prty_calc.get_v_prty_invar(L, b, n=n, type='PR', num=2)
+        v = priority_calc.get_v_prty_invar(L, b, n=n, type='PR', num=2)
         v2_invar_mass.append(v[1][0])
         invar_times.append(time.process_time() - invar_start)
 
@@ -98,7 +98,7 @@ def test():
         for i in range(iteration):
             print("Start IM iteration: {0:d}".format(i + 1))
 
-            smo = smo_im_prty.SmoImPrty(n, K, "PR")
+            qs = PriorityQueueSimulator(n, K, "PR")
             sources = []
             servers_params = []
             l = [l_H, l_L]
@@ -108,15 +108,15 @@ def test():
             servers_params.append({'type': 'Gamma', 'params': gamma_params})
             servers_params.append({'type': 'M', 'params': mu_L})
 
-            smo.set_sources(sources)
-            smo.set_servers(servers_params)
+            qs.set_sources(sources)
+            qs.set_servers(servers_params)
 
             # запуск ИМ:
-            smo.run(num_of_jobs)
+            qs.run(num_of_jobs)
 
             # получение результатов ИМ:
-            p = smo.get_p()
-            v_im = smo.v
+            p = qs.get_p()
+            v_im = qs.v
             v1_sum += v_im[0][0]
             v2_sum += v_im[1][0]
 

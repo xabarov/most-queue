@@ -1,7 +1,7 @@
 import mmnr_calc
 import mgn_tt
 import mg1_calc
-import sv_sum_calc
+import convolution_sum_calc
 
 import matplotlib.pyplot as plt
 from most_queue.sim import rand_destribution as rd
@@ -304,8 +304,8 @@ def get_v1_fj_invar(l, mu, n, r=100):
     mu_n = mu / n
 
     v1_fj2 = get_v1_fj2(l, mu)
-    v1_mmn = mmnr_calc.M_M_n_formula.get_v(l, mu_n, n, r=r)[0]
-    v1_mm2 = mmnr_calc.M_M_n_formula.get_v(l, mu2, 2, r=r)[0]
+    v1_mmn = mmnr_calc.MMnr_calc.get_v(l, mu_n, n, r=r)[0]
+    v1_mm2 = mmnr_calc.MMnr_calc.get_v(l, mu2, 2, r=r)[0]
 
     return v1_fj2 * v1_mmn / v1_mm2
 
@@ -407,13 +407,13 @@ def get_data(n_min=2, n_max=15, coev_min=0.2, coev_max=3, num_of_coevs=20,
             l = get_1ambda_max(b, ns[nn])
 
             t_im_start = time.process_time()
-            smo = SmoFJ(ns[nn], ns[nn], False)
+            qs = ForkJoinSim(ns[nn], ns[nn], False)
             params = rd.Gamma.get_mu_alpha(b)
-            smo.set_sources(l, 'M')
-            smo.set_servers(params, 'Gamma')
-            smo.run(num_of_jobs)
-            v = smo.v
-            v1_im[nn].append(smo.v[moment])
+            qs.set_sources(l, 'M')
+            qs.set_servers(params, 'Gamma')
+            qs.run(num_of_jobs)
+            v = qs.v
+            v1_im[nn].append(qs.v[moment])
             im_times[nn].append(time.process_time() - t_im_start)
 
             t_fj_start = time.process_time()
@@ -505,13 +505,13 @@ def get_data(n_min=2, n_max=15, coev_min=0.2, coev_max=3, num_of_coevs=20,
             l = get_1ambda_max(b, ns[nn])
 
             t_im_start = time.process_time()
-            smo = SmoFJ(ns[nn], ns[nn], False)
+            qs = ForkJoinSim(ns[nn], ns[nn], False)
             params = rd.Gamma.get_mu_alpha(b)
-            smo.set_sources(l, 'M')
-            smo.set_servers(params, 'Gamma')
-            smo.run(num_of_jobs)
-            v = smo.v
-            v1_im[nn].append(smo.v[moment])
+            qs.set_sources(l, 'M')
+            qs.set_servers(params, 'Gamma')
+            qs.run(num_of_jobs)
+            v = qs.v
+            v1_im[nn].append(qs.v[moment])
             im_times[nn].append(time.process_time() - t_im_start)
 
             t_fj_start = time.process_time()
@@ -576,7 +576,7 @@ def get_data(n_min=2, n_max=15, coev_min=0.2, coev_max=3, num_of_coevs=20,
 
 if __name__ == "__main__":
     import numpy as np
-    from most_queue.sim.fj_im import SmoFJ
+    from most_queue.sim.fj_sim import ForkJoinSim
 
     n = [x for x in range(2, 15)]
     mu = 1.0
@@ -598,12 +598,12 @@ if __name__ == "__main__":
     print(str_f.format("ИМ", "Инвар", "Varki", "Varma", "Nelson"))
     i = 0
     for nn in n:
-        smo = SmoFJ(nn, nn, False)
+        qs = ForkJoinSim(nn, nn, False)
 
-        smo.set_sources(l, 'M')
-        smo.set_servers(mu, 'M')
-        smo.run(num_of_jobs)
-        v = smo.v
+        qs.set_sources(l, 'M')
+        qs.set_servers(mu, 'M')
+        qs.run(num_of_jobs)
+        v = qs.v
         v1_inv = get_v1_fj_invar(l, mu, nn, 100)
         v_im.append(v[0])
         v_inv.append(v1_inv)

@@ -1,6 +1,7 @@
-from most_queue.sim import smo_im
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.sim import rand_destribution as rd
 from most_queue.theory.ek_d_n_calc import Ek_D_n
+from most_queue.utils.tables import probs_print
 
 
 def test():
@@ -43,29 +44,22 @@ def test():
 
     # для верификации используем ИМ.
     # создаем экземпляр класса ИМ, передаем число каналов обслуживания
-    smo = smo_im.SmoIm(n)
+    qs = QueueingSystemSimulator(n)
 
     # задаем входной поток. Методу нужно передать параметры распределения списком и тип распределения. E - Эрланг
-    smo.set_sources([k, l], "E")
+    qs.set_sources([k, l], "E")
     # задаем каналы обслуживания. На вход время обслуживания и тип распределения - D.
-    smo.set_servers(b, "D")
+    qs.set_servers(b, "D")
 
     # запускаем ИМ:
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
     # получаем параметры - начальные моменты времени пребывания и распределение веротяностей состояния системы
-    v_im = smo.v
-    p_im = smo.get_p()
+    v_sim = qs.v
+    p_sim = qs.get_p()
 
     # выводим полученные значения:
-    print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО E{0:d}/D/{1:d}".format(k, n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_im[i]))
-    print("-" * 36)
+    probs_print(p_sim, p_ch, 10)
 
 
 if __name__ == "__main__":

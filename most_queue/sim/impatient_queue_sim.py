@@ -1,5 +1,5 @@
 import rand_destribution as rd
-from smo_im import SmoIm, SetSmoException, Task
+from qs_sim import QueueingSystemSimulator, QueueSystemException, Task
 
 
 class ImpatientTask(Task):
@@ -11,7 +11,7 @@ class ImpatientTask(Task):
         return f'Task # {self.id}\nArrival moment: {self.arr_time:8.3f}\nMoment to leave: {self.moment_to_leave:8.3f}'
 
 
-class SmoImpatientSim(SmoIm):
+class ImpatientQueueSim(QueueingSystemSimulator):
     def __init__(self, num_of_channels, buffer=None, verbose=True):
         super().__init__(num_of_channels, buffer, verbose)
 
@@ -53,7 +53,7 @@ class SmoImpatientSim(SmoIm):
         elif self.impatience_types == "D":
             self.impatience = rd.Det_dist(self.impatience_params)
         else:
-            raise SetSmoException(
+            raise QueueSystemException(
                 "Неправильно задан тип распределения нетерпения заявок. Варианты М, Н, Е, С, D, Pa, Uniform")
 
     def arrival(self):
@@ -175,15 +175,15 @@ if __name__ == '__main__':
 
     v1 = impatience_calc.get_v1(l, mu, gamma)
 
-    smo = SmoImpatientSim(n)
+    qs = ImpatientQueueSim(n)
 
-    smo.set_sources(l, 'M')
-    smo.set_servers(mu, 'M')
-    smo.set_impatiens(gamma, 'M')
+    qs.set_sources(l, 'M')
+    qs.set_servers(mu, 'M')
+    qs.set_impatiens(gamma, 'M')
 
-    smo.run(n_jobs)
+    qs.run(n_jobs)
 
-    v1_im = smo.v[0]
+    v1_im = qs.v[0]
 
     print("\nЗначения среднего времени пребывания заявок в системе:\n")
 

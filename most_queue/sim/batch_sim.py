@@ -1,9 +1,9 @@
-from smo_im import SmoIm, Task
+from qs_sim import QueueingSystemSimulator, Task
 
 import numpy as np
 
 
-class SmoBatchSim(SmoIm):
+class QueueingSystemBatchSim(QueueingSystemSimulator):
     def __init__(self, num_of_channels, batch_prob, buffer=None, verbose=True):
         super().__init__(num_of_channels, buffer, verbose)
 
@@ -101,14 +101,14 @@ if __name__ == '__main__':
 
     v1 = batch_calc.get_v1()
 
-    smo = SmoBatchSim(n, ls)
+    qs = QueueingSystemBatchSim(n, ls)
 
-    smo.set_sources(lam, 'M')
-    smo.set_servers(mu, 'M')
+    qs.set_sources(lam, 'M')
+    qs.set_servers(mu, 'M')
 
-    smo.run(n_jobs)
+    qs.run(n_jobs)
 
-    v1_im = smo.v[0]
+    v1_im = qs.v[0]
 
     print("\nЗначения среднего времени пребывания заявок в системе:\n")
 

@@ -1,6 +1,6 @@
 from most_queue.sim import rand_destribution as rd
 from diff5dots import diff5dots
-from most_queue.sim import smo_im
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 
 
 def get_v(l, b, b_warm):
@@ -41,13 +41,13 @@ if __name__ == '__main__':
     b_warm_params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
     b_warm = rd.H2_dist.calc_theory_moments(*b_params, 4)
 
-    smo = smo_im.SmoIm(1)
-    smo.set_servers(b_params, "H")
-    smo.set_warm(b_warm_params, "H")
-    smo.set_sources(l, "M")
-    smo.run(100000)
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers(b_params, "H")
+    qs.set_warm(b_warm_params, "H")
+    qs.set_sources(l, "M")
+    qs.run(100000)
 
     v_ch = get_v(l, b, b_warm)
-    v_im = smo.v
+    v_im = qs.v
 
     times_print(v_im, v_ch, False)

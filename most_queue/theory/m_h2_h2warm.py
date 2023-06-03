@@ -1,11 +1,13 @@
+from tqdm import tqdm
+from scipy import special
+from scipy.misc import derivative
+
+from most_queue.utils.binom_probs import calc_binom_probs
+from most_queue.sim import rand_destribution as rd
+from diff5dots import diff5dots
+
 import numpy as np
 import math
-from tqdm import tqdm
-from most_queue.sim import rand_destribution as rd
-from scipy import special
-from most_queue.utils.binom_probs import calc_binom_probs
-from diff5dots import diff5dots
-from scipy.misc import derivative
 
 
 class Mh2h2Warm:
@@ -676,7 +678,7 @@ class Mh2h2Warm:
 
 if __name__ == "__main__":
 
-    import smo_im
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
     from most_queue.sim import rand_destribution as rd
     import time
     from most_queue.utils.tables import times_print, probs_print
@@ -709,16 +711,16 @@ if __name__ == "__main__":
         h2_params = rd.H2_dist.get_params_clx(b)
 
         im_start = time.process_time()
-        smo = smo_im.SmoIm(n, buffer=buff)
-        smo.set_sources(l, 'M')
+        qs = QueueingSystemSimulator(n, buffer=buff)
+        qs.set_sources(l, 'M')
 
         gamma_params = rd.Gamma.get_mu_alpha(b)
         gamma_params_warm = rd.Gamma.get_mu_alpha(b_w)
-        smo.set_servers(gamma_params, 'Gamma')
-        smo.set_warm(gamma_params_warm, 'Gamma')
-        smo.run(num_of_jobs)
-        p = smo.get_p()
-        v_im = smo.v  # .w -> wait times
+        qs.set_servers(gamma_params, 'Gamma')
+        qs.set_warm(gamma_params_warm, 'Gamma')
+        qs.run(num_of_jobs)
+        p = qs.get_p()
+        v_im = qs.v  # .w -> wait times
         im_time = time.process_time() - im_start
 
         tt_start = time.process_time()

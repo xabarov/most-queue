@@ -111,7 +111,7 @@ class M_D_n:
 
 if __name__ == "__main__":
 
-    from most_queue.sim import smo_im
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
     from most_queue.utils.tables import probs_print
 
     l = 1.0  # интенсивность входного потока
@@ -123,11 +123,11 @@ if __name__ == "__main__":
     mdn = M_D_n(l, b, n)
     p_ch = mdn.calc_p()
 
-    smo = smo_im.SmoIm(n)
-    smo.set_sources(l, "M")
-    smo.set_servers(b, "D")
-    smo.run(num_of_jobs)
-    v_im = smo.v
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(n)
+    qs.set_sources(l, "M")
+    qs.set_servers(b, "D")
+    qs.run(num_of_jobs)
+    v_im = qs.v
+    p_im = qs.get_p()
 
     probs_print(p_im, p_ch, 10)

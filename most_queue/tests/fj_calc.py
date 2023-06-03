@@ -1,5 +1,5 @@
 from most_queue.theory import fj_calc
-from most_queue.sim.fj_im import SmoFJ
+from most_queue.sim.fj_sim import ForkJoinSim
 import matplotlib.pyplot as plt
 
 
@@ -32,7 +32,7 @@ def test():
     l = ro / b[0]  # интенсивность вх потока
 
     # массивы для накопления средних времен пребывания в СМО
-    v_im = []
+    v_sim = []
     v_varma = []
     v_varki = []
     v_nelson = []
@@ -46,21 +46,21 @@ def test():
         # создаем экземпляр класса ИМ, передаем число каналов обслуживания
         # ИМ поддерживает СМО типа Fork-Join (n, k). В нашем случае k = n
 
-        smo = SmoFJ(nn, nn, False)
+        qs = ForkJoinSim(nn, nn, False)
 
         # задаем входной поток. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
-        smo.set_sources(l, 'M')
+        qs.set_sources(l, 'M')
 
         # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
-        smo.set_servers(mu, 'M')
+        qs.set_servers(mu, 'M')
 
         # запускаем ИМ
-        smo.run(num_of_jobs)
+        qs.run(num_of_jobs)
 
         # получаем список начальных моментов времени пребывания заявок в СМО и сохраняем
         # в массив только среднее (первый нач момент)
-        v = smo.v
-        v_im.append(v[0])
+        v = qs.v
+        v_sim.append(v[0])
 
         # расчет средних времен пребывания с помощью аппроксимаций. \
         # На вход каждого из методов - l, mu, nn (число каналов СМО)
@@ -69,7 +69,7 @@ def test():
         v_varma.append(fj_calc.get_v1_fj_varma(l, mu, nn))
         v_nelson.append(fj_calc.get_v1_fj_nelson_tantawi(l, mu, nn))
 
-        print(str_f_v.format(v_im[i], v_varki[i], v_varma[i], v_nelson[i]))
+        print(str_f_v.format(v_sim[i], v_varki[i], v_varma[i], v_nelson[i]))
 
     # строим графики и сохраняем в текущую директорию:
 
@@ -77,7 +77,7 @@ def test():
 
     linestyles = ["solid", "dotted", "dashed", "dashdot"]
 
-    ax.plot(n, v_im, label="ИМ", linestyle=linestyles[0])
+    ax.plot(n, v_sim, label="ИМ", linestyle=linestyles[0])
     ax.plot(n, v_varki, label="Varki", linestyle=linestyles[1])
     ax.plot(n, v_varma, label="Varma", linestyle=linestyles[2])
     ax.plot(n, v_nelson, label="Nelson", linestyle=linestyles[3])
@@ -93,10 +93,10 @@ def test():
     v_varma_err = []
     v_varki_err = []
 
-    for i in range(len(v_im)):
-        v_varma_err.append(100 * (v_varma[i] - v_im[i]) / v_im[i])
-        v_varki_err.append(100 * (v_varki[i] - v_im[i]) / v_im[i])
-        v_nelson_err.append(100 * (v_nelson[i] - v_im[i]) / v_im[i])
+    for i in range(len(v_sim)):
+        v_varma_err.append(100 * (v_varma[i] - v_sim[i]) / v_sim[i])
+        v_varki_err.append(100 * (v_varki[i] - v_sim[i]) / v_sim[i])
+        v_nelson_err.append(100 * (v_nelson[i] - v_sim[i]) / v_sim[i])
 
     fig, ax = plt.subplots()
     ax.plot(n, v_varki_err, label="Varki", linestyle=linestyles[0])

@@ -1,6 +1,6 @@
 import math
 from most_queue.sim import rand_destribution as rd
-from most_queue.sim import smo_im
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 import q_poisson_arrival_calc as q_calc
 
 
@@ -89,17 +89,17 @@ if __name__ == '__main__':
     w_ch = get_w(l, b)
     p_ch = get_p(l, b, 100)
 
-    smo = smo_im.SmoIm(1)
-    smo.set_servers(params, "H")
-    smo.set_sources(l, "M")
-    smo.run(num_of_jobs)
-    w_im = smo.w
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers(params, "H")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_im = qs.w
+    p_im = qs.get_p()
 
     times_print(w_im, w_ch, True)
 
     v_ch = get_v(l, b)
-    v_im = smo.v
+    v_im = qs.v
 
     times_print(v_im, v_ch, False)
 
@@ -110,17 +110,17 @@ if __name__ == '__main__':
     w_ch = get_w(l, b)
     p_ch = get_p(l, b, 100, dist_type="Uniform")
 
-    smo = smo_im.SmoIm(1)
-    smo.set_servers(params, "Uniform")
-    smo.set_sources(l, "M")
-    smo.run(num_of_jobs)
-    w_im = smo.w
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers(params, "Uniform")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_im = qs.w
+    p_im = qs.get_p()
 
     times_print(w_im, w_ch, True)
 
     v_ch = get_v(l, b)
-    v_im = smo.v
+    v_im = qs.v
 
     times_print(v_im, v_ch, False)
 
@@ -131,17 +131,17 @@ if __name__ == '__main__':
     w_ch = get_w(l, b)
     p_ch = get_p(l, b, 100, dist_type="Pa")
 
-    smo = smo_im.SmoIm(1)
-    smo.set_servers([a, K], "Pa")
-    smo.set_sources(l, "M")
-    smo.run(num_of_jobs)
-    w_im = smo.w
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers([a, K], "Pa")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_im = qs.w
+    p_im = qs.get_p()
 
     times_print(w_im, w_ch, True)
 
     v_ch = get_v(l, b)
-    v_im = smo.v
+    v_im = qs.v
 
     times_print(v_im, v_ch, False)
 

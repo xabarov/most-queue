@@ -12,7 +12,7 @@ from colorama import Fore, Style
 init()
 
 
-class SmoIm:
+class QueueingSystemSimulator:
     """
     Имитационная модель СМО GI/G/n/r и GI/G/n
     """
@@ -29,9 +29,9 @@ class SmoIm:
 
         Для запуска ИМ необходимо:
         - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса SmoIm
-        - задать распределение обслуживания с помощью метода set_servers() экземпляра созданного класса SmoIm
-        - запустить ИМ с помощью метода run() экземпляра созданного класса SmoIm,
+        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса QueueSystemSimulator
+        - задать распределение обслуживания с помощью метода set_servers() экземпляра класса QueueSystemSimulator
+        - запустить ИМ с помощью метода run() экземпляра созданного класса QueueSystemSimulator,
         которому нужно передать число требуемых к обслуживанию заявок
 
         """
@@ -127,7 +127,7 @@ class SmoIm:
             elif types == "D":
                 self.warm_dist = rd.Det_dist(params)
             else:
-                raise SetSmoException(
+                raise QueueSystemException(
                     "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
 
         self.is_set_warm = True
@@ -173,7 +173,7 @@ class SmoIm:
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
-            raise SetSmoException(
+            raise QueueSystemException(
                 "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
         self.arrival_time = self.source.generate()
 
@@ -589,7 +589,7 @@ class SmoIm:
         return res
 
 
-class SetSmoException(Exception):
+class QueueSystemException(Exception):
 
     def __str__(self, text):
         return text
@@ -650,7 +650,7 @@ class Server:
         elif types == "D":
             self.dist = rd.Det_dist(params)
         else:
-            raise SetSmoException(
+            raise QueueSystemException(
                 "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Norm, Uniform, D")
         self.time_to_end_service = 1e10
         self.is_free = True
@@ -683,7 +683,7 @@ class Server:
         elif types == "D":
             self.warm_dist = rd.Det_dist(params)
         else:
-            raise SetSmoException(
+            raise QueueSystemException(
                 "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
 
     def start_service(self, ts, ttek, is_warm=False):
@@ -723,41 +723,40 @@ if __name__ == '__main__':
     r = 100
     ro = 0.8
     num_of_jobs = 300000
-    is_cuda = False
 
     mu = l / (ro * n)
 
-    smo = SmoIm(n, buffer=r, cuda=is_cuda)
+    qs = QueueingSystemSimulator(n, buffer=r)
 
-    smo.set_sources(l, 'M')
-    smo.set_servers(mu, 'M')
+    qs.set_sources(l, 'M')
+    qs.set_servers(mu, 'M')
 
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
-    w = mmnr_calc.M_M_n_formula.get_w(l, mu, n, r)
+    w = mmnr_calc.MMnr_calc.get_w(l, mu, n, r)
 
-    w_im = smo.w
+    w_im = qs.w
 
-    print("Time spent ", smo.time_spent)
+    print("Time spent ", qs.time_spent)
 
     times_print(w_im, w)
 
     print("\n\nДанные ИМ::\n")
-    print(smo)
+    print(qs)
 
     print(f"M/D/{n}")
 
-    smo = SmoIm(n)
+    qs = QueueingSystemSimulator(n)
 
-    smo.set_sources(l, 'M')
-    smo.set_servers(1.0 / mu, 'D')
+    qs.set_sources(l, 'M')
+    qs.set_servers(1.0 / mu, 'D')
 
-    smo.run(num_of_jobs, is_real_served=False)
+    qs.run(num_of_jobs, is_real_served=False)
 
     mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
     p_ch = mdn.calc_p()
-    p_im = smo.get_p()
+    p_im = qs.get_p()
 
-    print("Time spent ", smo.time_spent)
+    print("Time spent ", qs.time_spent)
 
     probs_print(p_im, p_ch, 10)

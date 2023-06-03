@@ -1,14 +1,14 @@
 import math
-import sv_sum_calc
+from most_queue.theory import convolution_sum_calc as csc
 from most_queue.sim import rand_destribution as rd
 
-class M_M_n_formula:
+class MMnr_calc:
 
     @staticmethod
     def getPI(l, mu, n, r):
 
         ro = l / mu
-        p = M_M_n_formula.get_p(l, mu, n, r)
+        p = MMnr_calc.get_p(l, mu, n, r)
 
         chisl = math.pow(ro, n + r) * p[0]
         znam = math.factorial(n) * math.pow(n, r)
@@ -17,7 +17,7 @@ class M_M_n_formula:
     @staticmethod
     def getQ(l, mu, n, r):
         ro = l / mu
-        p = M_M_n_formula.get_p(l, mu, n, r)
+        p = MMnr_calc.get_p(l, mu, n, r)
         sum = 0
         for i in range(1, r + 1):
             sum += i * math.pow(ro / n, i)
@@ -25,7 +25,7 @@ class M_M_n_formula:
 
     @staticmethod
     def get_qs(l, mu, n, r, q_num=3):
-        p = M_M_n_formula.get_p(l, mu, n, r)
+        p = MMnr_calc.get_p(l, mu, n, r)
         q_s = []
         for k in range(1, q_num + 1):
             summ = 0
@@ -36,7 +36,7 @@ class M_M_n_formula:
 
     @staticmethod
     def get_w(l, mu, n, r, num=3):
-        qs = M_M_n_formula.get_qs(l, mu, n, r, q_num=num)
+        qs = MMnr_calc.get_qs(l, mu, n, r, q_num=num)
         w = [0] * num
         for k in range(num):
             w[k] = qs[k] / pow(l, k + 1)
@@ -44,9 +44,9 @@ class M_M_n_formula:
 
     @staticmethod
     def get_v(l, mu, n, r):
-        w = M_M_n_formula.get_w(l, mu, n, r)
+        w = MMnr_calc.get_w(l, mu, n, r)
         b = rd.Exp_dist.calc_theory_moments(mu)
-        v = sv_sum_calc.get_moments(w, b)
+        v = csc.get_moments(w, b)
         return v
 
     @staticmethod

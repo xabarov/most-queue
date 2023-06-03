@@ -1,6 +1,8 @@
+from most_queue.sim import rand_destribution as rd
+
 import numpy as np
 import math
-from most_queue.sim import rand_destribution as rd
+
 import q_poisson_arrival_calc
 import sv_sum_calc
 import diff5dots
@@ -146,8 +148,7 @@ def get_w_param(a, mu, n, e=1e-10, approx_distr="Gamma"):
 
 
 if __name__ == '__main__':
-
-    from most_queue.sim import smo_im
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
     from most_queue.utils.tables import times_print, probs_print
 
     l = 1.0
@@ -165,19 +166,19 @@ if __name__ == '__main__':
     v_ch = get_v(a, mu, n)
     p_ch = get_p(a, mu, n)
 
-    smo = smo_im.SmoIm(n)
-    smo.set_sources([v, alpha], "Gamma")
-    smo.set_servers(mu, "M")
-    smo.run(num_of_jobs)
-    v_im = smo.v
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(n)
+    qs.set_sources([v, alpha], "Gamma")
+    qs.set_servers(mu, "M")
+    qs.run(num_of_jobs)
+    v_im = qs.v
+    p_im = qs.get_p()
 
     print("Gamma\n")
 
     times_print(v_im, v_ch, is_w=False)
 
     w_ch = get_w(a, mu, n)
-    w_im = smo.w
+    w_im = qs.w
 
     times_print(w_im, w_ch, is_w=True)
 
@@ -189,19 +190,19 @@ if __name__ == '__main__':
     v_ch = get_v(a, mu, n, approx_distr="Pa")
     p_ch = get_p(a, mu, n, approx_distr="Pa")
 
-    smo = smo_im.SmoIm(n)
-    smo.set_sources([alpha, K], "Pa")
-    smo.set_servers(mu, "M")
-    smo.run(num_of_jobs)
-    v_im = smo.v
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(n)
+    qs.set_sources([alpha, K], "Pa")
+    qs.set_servers(mu, "M")
+    qs.run(num_of_jobs)
+    v_im = qs.v
+    p_im = qs.get_p()
 
     print("Pareto\n")
 
     times_print(v_im, v_ch, is_w=False)
 
     w_ch = get_w(a, mu, n, approx_distr="Pa")
-    w_im = smo.w
+    w_im = qs.w
 
     times_print(w_im, w_ch, is_w=True)
 

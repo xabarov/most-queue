@@ -1,4 +1,4 @@
-from most_queue.sim import flow_sum_im
+from most_queue.sim import flow_sum_sim
 
 import copy
 import matplotlib.pyplot as plt
@@ -241,7 +241,7 @@ if __name__ == "__main__":
         a.append(a1)
 
     s = SummatorNumeric(a, is_semi=is_semi)
-    s_im = flow_sum_im.SummatorIM(a, distr=distr_im, num_of_jobs=num_of_jobs)
+    s_im = flow_sum_sim.FlowSumSim(a, distr=distr_im, num_of_jobs=num_of_jobs)
 
     s.sum_flows()
     s_im.sum_flows()

@@ -450,7 +450,7 @@ class MGnCalc:
 
 
 if __name__ == "__main__":
-    from most_queue.sim import smo_im
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
     from most_queue.sim import rand_destribution as rd
     from most_queue.utils.tables import times_print, probs_print
     import time
@@ -473,13 +473,13 @@ if __name__ == "__main__":
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
         im_start = time.process_time()
-        smo = smo_im.SmoIm(n, buffer=buff)
-        smo.set_sources(l, 'M')
+        qs = QueueingSystemSimulator(n, buffer=buff)
+        qs.set_sources(l, 'M')
         gamma_params = rd.Gamma.get_mu_alpha([b[0], b[1]])
-        smo.set_servers(gamma_params, 'Gamma')
-        smo.run(num_of_jobs)
-        p = smo.get_p()
-        v_im = smo.v
+        qs.set_servers(gamma_params, 'Gamma')
+        qs.run(num_of_jobs)
+        p = qs.get_p()
+        v_im = qs.v
         im_time = time.process_time() - im_start
 
         h2_params = rd.H2_dist.get_params_clx(b)

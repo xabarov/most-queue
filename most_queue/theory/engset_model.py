@@ -1,5 +1,5 @@
 from diff5dots import diff5dots
-import sv_sum_calc
+from most_queue.theory import convolution_sum_calc
 
 
 class Engset:
@@ -119,7 +119,7 @@ class Engset:
         """
         w = self.get_w()
         b = [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
-        return sv_sum_calc.get_moments(w, b)
+        return convolution_sum_calc.get_moments(w, b)
 
 
 if __name__ == '__main__':

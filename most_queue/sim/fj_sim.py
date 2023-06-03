@@ -1,5 +1,5 @@
 import rand_destribution as rd
-from most_queue.sim import smo_im
+from qs_sim import QueueingSystemSimulator
 import math
 import sys
 from tqdm import tqdm
@@ -48,7 +48,7 @@ class Task:
         return res
 
 
-class SmoFJ(smo_im.SmoIm):
+class ForkJoinSim(QueueingSystemSimulator):
     """
     Имитационная модель СМО Fork-Join, Split-Join
     """
@@ -58,7 +58,7 @@ class SmoFJ(smo_im.SmoIm):
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         """
-        smo_im.SmoIm.__init__(self, num_of_channels, buffer)
+        QueueingSystemSimulator.__init__(self, num_of_channels, buffer)
         self.k = k
         self.is_SJ = is_SJ
         self.is_Purge = is_Purge
@@ -272,7 +272,7 @@ class SmoFJ(smo_im.SmoIm):
         return res
 
 
-class SetSmoException(Exception):
+class QueueingSystemException(Exception):
 
     def __str__(self, text):
         return text
@@ -291,11 +291,11 @@ if __name__ == '__main__':
     params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.H2_dist.calc_theory_moments(*params, 4)
 
-    smo = SmoFJ(n, n, True)
-    smo.set_sources(l, 'M')
-    smo.set_servers(params, 'H')
-    smo.run(100000)
-    v_im = smo.v
+    qs = ForkJoinSim(n, n, True)
+    qs.set_sources(l, 'M')
+    qs.set_servers(params, 'H')
+    qs.run(100000)
+    v_im = qs.v
 
     b_max = fj_calc.getMaxMoments(n, b, 4)
     ro = l * b_max[0]
@@ -314,11 +314,11 @@ if __name__ == '__main__':
     params = rd.Erlang_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.Erlang_dist.calc_theory_moments(*params, 4)
 
-    smo = SmoFJ(n, n, True)
-    smo.set_sources(l, 'M')
-    smo.set_servers(params, 'E')
-    smo.run(100000)
-    v_im = smo.v
+    qs = ForkJoinSim(n, n, True)
+    qs.set_sources(l, 'M')
+    qs.set_servers(params, 'E')
+    qs.run(100000)
+    v_im = qs.v
 
     b_max = fj_calc.getMaxMoments(n, b, 4)
     ro = l * b_max[0]

@@ -148,7 +148,7 @@ class Ek_D_n:
 
 
 if __name__ == "__main__":
-    from most_queue.sim import smo_im
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
     from most_queue.sim import rand_destribution as rd
     from most_queue.utils.tables import probs_print
 
@@ -163,12 +163,12 @@ if __name__ == "__main__":
     ekdn = Ek_D_n(l, k, b, n)
     p_ch = ekdn.calc_p()
 
-    smo = smo_im.SmoIm(n)
-    smo.set_sources([k, l], "E")
-    smo.set_servers(b, "D")
-    smo.run(num_of_jobs)
-    v_im = smo.v
-    p_im = smo.get_p()
+    qs = QueueingSystemSimulator(n)
+    qs.set_sources([k, l], "E")
+    qs.set_servers(b, "D")
+    qs.run(num_of_jobs)
+    v_im = qs.v
+    p_im = qs.get_p()
 
     print("-" * 36)
     print("{0:^36s}".format("СМО E{0:d}/D/{1:d}".format(k, n)))

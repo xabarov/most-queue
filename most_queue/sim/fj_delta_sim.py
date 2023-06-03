@@ -1,9 +1,10 @@
+from fj_sim import ForkJoinSim
+from fj_sim import SubTask as SubTask
+from fj_sim import Task as Task
+from qs_sim import Server
+from most_queue.theory import convolution_sum_calc
+
 import rand_destribution as rd
-from fj_im import SmoFJ as SmoFJ
-from fj_im import SubTask as SubTask
-from fj_im import Task as Task
-from smo_im import Server
-from most_queue.theory import sv_sum_calc
 
 
 class ServerWarmUp(Server):
@@ -39,7 +40,7 @@ class ServerWarmUp(Server):
                 elif self.dist.type == 'Gamma':
                     b = rd.Gamma.calc_theory_moments(*self.dist.params)
 
-                f_summ = sv_sum_calc.get_moments(b, self.delta)
+                f_summ = convolution_sum_calc.get_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = rd.Gamma.get_mu_alpha(f_summ)
@@ -56,7 +57,7 @@ class SubTaskDelta(SubTask):
         self.future_arr_time = 0
 
 
-class SmoFJDelta(SmoFJ):
+class ForkJoinSimDelta(ForkJoinSim):
     """
     Имитационная модель СМО Fork-Join, Split-Join
     """
@@ -66,7 +67,7 @@ class SmoFJDelta(SmoFJ):
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         """
-        SmoFJ.__init__(self, num_of_channels, num_of_parts, is_SJ, buffer)
+        ForkJoinSim.__init__(self, num_of_channels, num_of_parts, is_SJ, buffer)
         self.delta = delta
         self.subtask_arr_queue = []
         self.serv_task_id = -1
@@ -126,7 +127,7 @@ class SmoFJDelta(SmoFJ):
                 if not isinstance(self.delta, list):
                     t.subtasks[i].future_arr_time = self.ttek + i * self.delta
                 else:
-                    b_delta = sv_sum_calc.get_self_concolution(self.delta, i)
+                    b_delta = convolution_sum_calc.get_self_concolution(self.delta, i)
                     params_delta = rd.Gamma.get_mu_alpha(b_delta)
                     t.subtasks[i].future_arr_time = self.ttek + rd.Gamma.generate_static(*params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
@@ -301,7 +302,6 @@ class SmoFJDelta(SmoFJ):
 
 if __name__ == '__main__':
 
-    from most_queue.theory import mg1_calc
     from most_queue.theory import fj_calc
     from most_queue.theory import mg1_warm_calc
     from most_queue.utils.tables import times_print
@@ -317,11 +317,11 @@ if __name__ == '__main__':
     b_delta = rd.H2_dist.calc_theory_moments(*delta_params)
     b = rd.H2_dist.calc_theory_moments(*b_params, 4)
 
-    smo = SmoFJDelta(n, n, b_delta, True)
-    smo.set_sources(l, 'M')
-    smo.set_servers(b_params, 'H')
-    smo.run(100000)
-    v_im = smo.v
+    qs = ForkJoinSimDelta(n, n, b_delta, True)
+    qs.set_sources(l, 'M')
+    qs.set_servers(b_params, 'H')
+    qs.run(100000)
+    v_im = qs.v
 
     b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
     b_max = fj_calc.getMaxMoments(n, b, 4)
@@ -349,11 +349,11 @@ if __name__ == '__main__':
     b_params = rd.Erlang_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.Erlang_dist.calc_theory_moments(*b_params, 4)
 
-    smo = SmoFJDelta(n, n, b_delta, True)
-    smo.set_sources(l, 'M')
-    smo.set_servers(b_params, 'E')
-    smo.run(100000)
-    v_im = smo.v
+    qs = ForkJoinSimDelta(n, n, b_delta, True)
+    qs.set_sources(l, 'M')
+    qs.set_servers(b_params, 'E')
+    qs.run(100000)
+    v_im = qs.v
 
     b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
     b_max = fj_calc.getMaxMoments(n, b, 4)

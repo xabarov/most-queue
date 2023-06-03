@@ -1,17 +1,19 @@
 from most_queue.theory.m_h2_h2warm import Mh2h2Warm
-from most_queue.sim import smo_im
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.sim import rand_destribution as rd
+
+from most_queue.utils.tables import probs_print, times_print
 
 import math
 import time
 
 
 def test():
-    n = 3  # число каналов
+    n = 5  # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
     b1 = n * 0.7  # ср время обслуживания
-    b1_warm = n * 0.9  # ср время разогрева
+    b1_warm = n * 0.1  # ср время разогрева
     num_of_jobs = 1000000  # число обсл заявок ИМ
     b_coev = [0.8, 1.5]  # коэфф вариации времени обсл
     b_coev_warm = 1.2  # коэфф вариации времени разогрева
@@ -32,16 +34,16 @@ def test():
         b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
 
         im_start = time.process_time()
-        smo = smo_im.SmoIm(n, buffer=buff)
-        smo.set_sources(l, 'M')
+        qs = QueueingSystemSimulator(n, buffer=buff)
+        qs.set_sources(l, 'M')
 
         gamma_params = rd.Gamma.get_mu_alpha(b)
         gamma_params_warm = rd.Gamma.get_mu_alpha(b_w)
-        smo.set_servers(gamma_params, 'Gamma')
-        smo.set_warm(gamma_params_warm, 'Gamma')
-        smo.run(num_of_jobs)
-        p = smo.get_p()
-        v_im = smo.v
+        qs.set_servers(gamma_params, 'Gamma')
+        qs.set_warm(gamma_params_warm, 'Gamma')
+        qs.run(num_of_jobs)
+        p = qs.get_p()
+        v_sim = qs.v
         im_time = time.process_time() - im_start
 
         tt_start = time.process_time()
@@ -63,18 +65,8 @@ def test():
         print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
         print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
         print("Время ИМ: {0:^5.3f} c".format(im_time))
-        print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
-
-        print("\n")
-        print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, v_tt[i], v_im[i]))
+        probs_print(p, p_tt, 10)
+        times_print(v_sim, v_tt, False)
 
 
 if __name__ == '__main__':

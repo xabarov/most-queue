@@ -1,8 +1,8 @@
 import rand_destribution as rd
-from smo_im import SmoIm, SetSmoException, Task
+from qs_sim import QueueingSystemSimulator, QueueSystemException, Task
 
 
-class QueueFiniteSourceSim(SmoIm):
+class QueueingFiniteSourceSim(QueueingSystemSimulator):
     """
     Имитационная модель СМО GI/G/n/r и GI/G/n с конечным числом источников заявок
     """
@@ -19,9 +19,9 @@ class QueueFiniteSourceSim(SmoIm):
 
         Для запуска ИМ необходимо:
         - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса SmoIm
-        - задать распределение обслуживания с помощью метода set_servers() экземпляра созданного класса SmoIm
-        - запустить ИМ с помощью метода run() экземпляра созданного класса SmoIm,
+        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса QueueingFiniteSourceSim
+        - задать распределение обслуживания с помощью метода set_servers() экземпляра QueueingFiniteSourceSim
+        - запустить ИМ с помощью метода run() экземпляра созданного класса QueueingFiniteSourceSim,
         которому нужно передать число требуемых к обслуживанию заявок
 
         """
@@ -74,7 +74,7 @@ class QueueFiniteSourceSim(SmoIm):
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
-            raise SetSmoException(
+            raise QueueSystemException(
                 "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
 
         self.arrival_times = [self.source.generate() for i in range(self.m)]
@@ -286,18 +286,18 @@ if __name__ == '__main__':
     engset = Engset(lam, mu, m)
     v = engset.get_v()
 
-    smo = QueueFiniteSourceSim(n, m)
+    qs = QueueingFiniteSourceSim(n, m)
 
-    smo.set_sources(lam, 'M')
-    smo.set_servers(mu, 'M')
+    qs.set_sources(lam, 'M')
+    qs.set_servers(mu, 'M')
 
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
-    v_im = smo.v
-    p_im = smo.get_p()
+    v_im = qs.v
+    p_im = qs.get_p()
     p_ch = engset.get_p()
 
     probs_print(p_im, p_ch, 10)
 
-    print("Time spent ", smo.time_spent)
+    print("Time spent ", qs.time_spent)
     times_print(v_im, v, is_w=False)

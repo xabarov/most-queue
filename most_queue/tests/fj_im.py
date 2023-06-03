@@ -1,6 +1,6 @@
 from most_queue.theory import mg1_calc
 from most_queue.theory import fj_calc
-from most_queue.sim.fj_im import SmoFJ
+from most_queue.sim.fj_sim import ForkJoinSim
 from most_queue.sim import rand_destribution as rd
 
 
@@ -35,20 +35,20 @@ def test():
     # ИМ поддерживает СМО типа Fork-Join (n, k). В нашем случае k = n
     # Для задания СМО Split-Join необходимо передать третий параметр True, иначе по умаолчанию - Fork-Join
 
-    smo = SmoFJ(n, n, True)
+    qs = ForkJoinSim(n, n, True)
 
     # задаем входной поток. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
-    smo.set_sources(l, 'M')
+    qs.set_sources(l, 'M')
 
     # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения.
     # H - гиперэкспоненциальное второго параядка
-    smo.set_servers(params, 'H')
+    qs.set_servers(params, 'H')
 
     # запускаем ИМ
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
     # получаем список начальных моментов времени пребывания заявок в СМО
-    v_im = smo.v
+    v_sim = qs.v
 
     # расчет начальных моментов распределения максимума с помощью метода fj_calc.getMaxMoments.
     # На вход число каналов, список начальных моментов
@@ -68,8 +68,8 @@ def test():
     print("-" * 60)
     print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
     print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
+    for j in range(min(len(v_ch), len(v_sim))):
+        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_sim[j]))
     print("-" * 60)
 
     # тоже для коэфф вариации < 1 (аппроксимируем распределением Эрланга)
@@ -78,11 +78,11 @@ def test():
     params = rd.Erlang_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.Erlang_dist.calc_theory_moments(*params, 4)
 
-    smo = SmoFJ(n, n, True)
-    smo.set_sources(l, 'M')
-    smo.set_servers(params, 'E')
-    smo.run(num_of_jobs)
-    v_im = smo.v
+    qs = ForkJoinSim(n, n, True)
+    qs.set_sources(l, 'M')
+    qs.set_servers(params, 'E')
+    qs.run(num_of_jobs)
+    v_sim = qs.v
 
     b_max = fj_calc.getMaxMoments(n, b)
     ro = l * b_max[0]
@@ -94,8 +94,8 @@ def test():
     print("-" * 60)
     print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
     print("-" * 60)
-    for j in range(min(len(v_ch), len(v_im))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_im[j]))
+    for j in range(min(len(v_ch), len(v_sim))):
+        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_sim[j]))
     print("-" * 60)
 
 

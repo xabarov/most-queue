@@ -12,7 +12,7 @@ import math
 init()
 
 
-class SmoImPrty:
+class PriorityQueueSimulator:
     """
     Имитационная модель СМО GI/G/n/r и GI/G/n с приоритетами
     """
@@ -26,14 +26,14 @@ class SmoImPrty:
             PR  -  preemptive resume, с дообслуживанием прерванной заявки
             RS  -  preemptive repeat with resampling, обслуживание заново с новой случайной длительностью
             RW  - preemptive repeat without resampling, обслуживание заново с прежней длительностью
-            NP  - non preemptive, относиттельный приоритет
+            NP  - non preemptive, относительный приоритет
         buffer - максимальная длина очереди
 
         Для запуска ИМ необходимо:
         - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса SmoImPrty
-        - задать распределение обслуживания с помощью метода set_servers() экземпляра созданного класса SmoImPrty
-        - запустить ИМ с помощью метода run() экземпляра созданного класса SmoImPrty,
+        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса PriorityQueueSimulator
+        - задать распределение обслуживания с помощью метода set_servers() экземпляра класса PriorityQueueSimulator
+        - запустить ИМ с помощью метода run() экземпляра созданного класса PriorityQueueSimulator,
         которому нужно передать число требуемых к обслуживанию заявок
 
         """
@@ -134,7 +134,7 @@ class SmoImPrty:
             elif self.source_types == "D":
                 self.sources.append(rd.Det_dist(params))
             else:
-                raise SetSmoException(
+                raise QueueingSystemException(
                     "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
             self.arrival_time[i] = self.sources[i].generate()
             time.sleep(0.1)
@@ -201,7 +201,7 @@ class SmoImPrty:
             elif warm_up_type == "D":
                 self.warm_up.append(rd.Det_dist(params))
             else:
-                raise SetSmoException(
+                raise QueueingSystemException(
                     "Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
 
     def calc_load(self):
@@ -320,7 +320,7 @@ class SmoImPrty:
             new_tsk = ts
             new_tsk.in_node_class_num = k
             new_tsk.arr_time = moment
-            new_tsk.wait_time = 0  # в текущем узле обнуляем время ожидания. Общее время ожидания - ts.wait_semo
+            new_tsk.wait_time = 0  # в текущем узле обнуляем время ожидания. Общее время ожидания - ts.wait_network
             new_tsk.is_pr = False
             new_tsk.start_waiting_time = -1
             new_tsk.time_to_end_service = 0
@@ -389,7 +389,7 @@ class SmoImPrty:
                             is_found_weekier = True
                             if moment:
                                 self.queue[dropped_tsk.in_node_class_num].append(dropped_tsk)
-                                c.start_service(new_tsk, self.ttek, is_semo=True)
+                                c.start_service(new_tsk, self.ttek, is_network=True)
                             else:
                                 self.queue[dropped_tsk.k].append(dropped_tsk)
                                 c.start_service(new_tsk, self.ttek)
@@ -420,7 +420,7 @@ class SmoImPrty:
             if self.free_channels == self.n and self.is_warm_up_set == True:
                 self.taked[k] += 1
                 if moment:
-                    self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k], is_semo=True)
+                    self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k], is_network=True)
                 else:
                     self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k])
                 self.free_channels -= 1
@@ -429,7 +429,7 @@ class SmoImPrty:
                     if s.is_free:
                         self.taked[k] += 1
                         if moment:
-                            s.start_service(new_tsk, self.ttek, is_semo=True)
+                            s.start_service(new_tsk, self.ttek, is_network=True)
                         else:
                             s.start_service(new_tsk, self.ttek)
                         self.free_channels -= 1
@@ -440,15 +440,15 @@ class SmoImPrty:
                     self.start_ppnz = self.ttek
                     self.class_ppnz_started = k
 
-    def serving(self, c, is_semo=False):
+    def serving(self, c, is_network=False):
         """
         Дейтсвия по поступлению заявки на обслуживание
         с - номер канала
-        is_semo - является ли СМО частью СеМО
+        is_network - является ли СМО частью СеМО
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
-        if is_semo:
+        if is_network:
             k = end_ts.in_node_class_num
         else:
             k = end_ts.k
@@ -488,9 +488,9 @@ class SmoImPrty:
 
                     self.taked[kk] += 1
                     que_ts.wait_time += self.ttek - que_ts.start_waiting_time
-                    if is_semo:
-                        que_ts.wait_semo += self.ttek - que_ts.start_waiting_time
-                        self.servers[c].start_service(que_ts, self.ttek, is_semo=True)
+                    if is_network:
+                        que_ts.wait_network += self.ttek - que_ts.start_waiting_time
+                        self.servers[c].start_service(que_ts, self.ttek, is_network=True)
                     else:
                         self.servers[c].start_service(que_ts, self.ttek)
 
@@ -510,7 +510,7 @@ class SmoImPrty:
                 que_ts.wait_time += self.ttek - que_ts.start_waiting_time
                 self.servers[c].start_service(que_ts, self.ttek)
                 self.free_channels -= 1
-        if is_semo:
+        if is_network:
             return end_ts
 
     def swop_queue(self, last_class, new_class):
@@ -685,7 +685,7 @@ class SmoImPrty:
         return res
 
 
-class SetSmoException(Exception):
+class QueueingSystemException(Exception):
 
     def __str__(self, text):
         return text
@@ -697,14 +697,14 @@ class Task:
     """
     id = 0
 
-    def __init__(self, k, arr_time, is_semo=False):
+    def __init__(self, k, arr_time, is_network=False):
         """
         arr_time: Момент прибытия в СМО
         k - номер класса
         """
-        if is_semo:
-            self.arr_semo = arr_time
-            self.wait_semo = 0
+        if is_network:
+            self.arr_network = arr_time
+            self.wait_network = 0
             self.in_node_class_num = -1
 
         self.arr_time = arr_time
@@ -756,7 +756,7 @@ class Server:
             elif dist_type == "Uniform":
                 self.dist.append(rd.Uniform_dist(params))
             else:
-                raise SetSmoException(
+                raise QueueingSystemException(
                     "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Gamma, Pa, Uniform")
         self.time_to_end_service = 1e10
         self.total_time_to_serve = 0
@@ -769,10 +769,10 @@ class Server:
         Server.id += 1
         self.id = Server.id
 
-    def start_service(self, ts, ttek, warm_up=None, is_semo=False):
+    def start_service(self, ts, ttek, warm_up=None, is_network=False):
 
         self.tsk_on_service = ts
-        if is_semo:
+        if is_network:
             self.class_on_service = ts.in_node_class_num
         else:
             self.class_on_service = ts.k
@@ -811,7 +811,7 @@ class Server:
 
 
 if __name__ == "__main__":
-    from most_queue.theory import prty_calc
+    from most_queue.theory import priority_calc
     import math
     import rand_destribution as rd
     from most_queue.utils.tables import times_print_with_classes
@@ -843,40 +843,40 @@ if __name__ == "__main__":
           "\nКоэффициент вариации времени обслуживания: " + str(coev) + "\n")
     print("Абсолютный приоритет")
 
-    smo = SmoImPrty(n, k, "PR")
+    qs = PriorityQueueSimulator(n, k, "PR")
     sources = []
     servers_params = []
     for j in range(k):
         sources.append({'type': 'M', 'params': l[j]})
         servers_params.append({'type': 'Gamma', 'params': params[j]})
 
-    smo.set_sources(sources)
-    smo.set_servers(servers_params)
+    qs.set_sources(sources)
+    qs.set_servers(servers_params)
 
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
-    v_im = smo.v
+    v_im = qs.v
 
-    v_teor = prty_calc.get_v_prty_invar(l, b, n, 'PR')
+    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'PR')
 
     times_print_with_classes(v_im, v_teor, is_w=False)
 
     print("Относительный приоритет")
 
-    smo = SmoImPrty(n, k, "NP")
+    qs = PriorityQueueSimulator(n, k, "NP")
     sources = []
     servers_params = []
     for j in range(k):
         sources.append({'type': 'M', 'params': l[j]})
         servers_params.append({'type': 'Gamma', 'params': params[j]})
 
-    smo.set_sources(sources)
-    smo.set_servers(servers_params)
+    qs.set_sources(sources)
+    qs.set_servers(servers_params)
 
-    smo.run(num_of_jobs)
+    qs.run(num_of_jobs)
 
-    v_im = smo.v
+    v_im = qs.v
 
-    v_teor = prty_calc.get_v_prty_invar(l, b, n, 'NP')
+    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
 
     times_print_with_classes(v_im, v_teor, is_w=False)

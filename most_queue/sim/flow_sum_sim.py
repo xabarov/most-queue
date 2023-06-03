@@ -4,7 +4,7 @@ import copy
 import math
 
 
-class SummatorIM:
+class FlowSumSim:
 
     def __init__(self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000):
         self.n = len(a)
@@ -43,17 +43,17 @@ class SummatorIM:
                 print("Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(i + 1, n - 1,
                                                                                                     distr_str))
             if self.distr == "Gamma":
-                f1 = SummatorIM.sum_2_Gamma_flows_im(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                     num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Gamma_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
+                                                  num_of_moments=self.num_of_moments)
             elif self.distr == "H":
-                f1 = SummatorIM.sum_2_H2_flows_im(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                  num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_H2_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
+                                               num_of_moments=self.num_of_moments)
             elif self.distr == "Pa":
-                f1 = SummatorIM.sum_2_Pa_flows_im(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                  num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Pa_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
+                                               num_of_moments=self.num_of_moments)
             else:
-                f1 = SummatorIM.sum_2_Erlang_flows_im(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                      num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Erlang_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
+                                                   num_of_moments=self.num_of_moments)
 
             self.flows_.append(f1)
             self.coevs.append(self.get_coev(f1))
@@ -72,7 +72,7 @@ class SummatorIM:
         self.result_flow = self.a[0]
 
     @staticmethod
-    def sum_2_H2_flows_im(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_H2_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
         """
         суммирование двух потоков c коэффициентами вариации > 1
         Аппроксимация H2-распределением
@@ -118,7 +118,7 @@ class SummatorIM:
         return coev
 
     @staticmethod
-    def sum_2_Pa_flows_im(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Pa_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
         """
         суммирование двух потоков
         Аппроксимация Pa-распределением
@@ -158,7 +158,7 @@ class SummatorIM:
         return f
 
     @staticmethod
-    def sum_2_Erlang_flows_im(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
 
         params1 = rd.Erlang_dist.get_params(a1)
         arr1 = rd.Erlang_dist(params1)
@@ -192,7 +192,7 @@ class SummatorIM:
         return f
 
     @staticmethod
-    def sum_2_Gamma_flows_im(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Gamma_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
         """
         суммирование двух потоков c коэффициентами вариации > 1
         Аппроксимация H2-распределением
@@ -255,11 +255,11 @@ class SummatorIM:
                                                                                                     distr_str))
 
             if disr == "Gamma":
-                f1 = SummatorIM.sum_2_Gamma_flows_im(a[0], a[1])
+                f1 = FlowSumSim.sum_2_Gamma_flows(a[0], a[1])
             elif disr == "H":
-                f1 = SummatorIM.sum_2_H2_flows_im(a[0], a[1])
+                f1 = FlowSumSim.sum_2_H2_flows(a[0], a[1])
             else:
-                f1 = SummatorIM.sum_2_Erlang_flows_im(a[0], a[1])
+                f1 = FlowSumSim.sum_2_Erlang_flows(a[0], a[1])
 
             f = []
             for j in range(len(a) - 2):

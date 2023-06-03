@@ -1,8 +1,9 @@
 import most_queue.sim.rand_destribution as rd
 import numpy as np
 from most_queue.theory import network_calc
-from most_queue.sim.network_im_prty import NetworkPrty
+from most_queue.sim.priority_network import PriorityNetwork
 
+from most_queue.utils.tables import probs_print, times_print_with_classes
 
 def test():
     """
@@ -73,13 +74,13 @@ def test():
     # "NP" - относительный приоритет. Также доступны абсолютные ("PR", "RW", "RS") и без приоритета "No"
 
     # Создаем экземпляр модели СеМО
-    semo_im = NetworkPrty(k_num, L, R, n, prty, serv_params, nodes_prty)
+    qn = PriorityNetwork(k_num, L, R, n, prty, serv_params, nodes_prty)
 
     #  Запуск ИМ:
-    semo_im.run(jobs_num)
+    qn.run(jobs_num)
 
     #  Получение нач. моментов пребывания в СеМО
-    v_im = semo_im.v_semo
+    v_im = qn.v_semo
 
     #  Получение нач. моментов пребывания в СеМО с помощью метода инвариантов отношения
     semo_calc = network_calc.network_prty_calc(R, b, n, L, prty, nodes_prty)
@@ -104,42 +105,14 @@ def test():
     print("-" * 60)
     print("{0:^60s}".format("Относительный приоритет"))
 
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k_num):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_ch[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
-
+    times_print_with_classes(v_im, v_ch, False)
     #  Теперь для абсолютного приоритета:
     prty = ['PR'] * n_num
-    semo_im = NetworkPrty(k_num, L, R, n, prty, serv_params, nodes_prty)
+    qn = PriorityNetwork(k_num, L, R, n, prty, serv_params, nodes_prty)
 
-    semo_im.run(jobs_num)
+    qn.run(jobs_num)
 
-    v_im = semo_im.v_semo
+    v_im = qn.v_semo
 
     semo_calc = network_calc.network_prty_calc(R, b, n, L, prty, nodes_prty)
     v_ch = semo_calc['v']
@@ -147,34 +120,7 @@ def test():
     print("-" * 60)
     print("{0:^60s}".format("Абсолютный приоритет"))
 
-    print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^10s}| ".format('№ кл'), end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(3):
-        s = str(j + 1)
-        print("{:^15s}|".format(s), end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k_num):
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("ИМ"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_im[i][j]), end="")
-        print("")
-        print("{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
-
-        print(" " * 5 + "|", end="")
-        print("{:^5s}|".format("Р"), end="")
-        for j in range(3):
-            print("{:^15.3g}|".format(v_ch[i][j]), end="")
-        print("")
-        print("-" * 60)
-
-    print("\n")
+    times_print_with_classes(v_im, v_ch, False)
 
 
 if __name__ == "__main__":

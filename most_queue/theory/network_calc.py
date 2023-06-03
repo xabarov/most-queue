@@ -3,7 +3,7 @@ from most_queue.sim import rand_destribution as rd
 
 import numpy as np
 import math
-import prty_calc
+from most_queue.theory import priority_calc
 
 
 def balance_equation(L, R):
@@ -139,7 +139,7 @@ def network_prty_calc(R, b, n, L, prty, nodes_prty):
             b_sr[j] /= k_num
 
         res['loads'][i] = l_sum * b_sr[0] / n[i]
-        res['v_node'].append(prty_calc.get_v_prty_invar(l_order[i], b_order[i], n[i], prty[i]))
+        res['v_node'].append(priority_calc.get_v_prty_invar(l_order[i], b_order[i], n[i], prty[i]))
         for k in range(k_num):
             res['v_node'][i][nodes_prty[i][k]] = res['v_node'][i][k]
 
