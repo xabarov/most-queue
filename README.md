@@ -1,5 +1,5 @@
 # most_queue
-Software package for calculation and simulation of queuing systems and networks
+Python package for calculation and simulation of queuing systems and networks
 
 ## Authors
 - [xabarov](https://github.com/xabarov)
@@ -10,13 +10,13 @@ Install most-queue with pip
   pip install most-queue
 ```
 
-## DESCRIPTION OF THE SOFTWARE PACKAGE
-Most_queue consists of two packages:
+## DESCRIPTION
+Most_queue consists of two main parts:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
  - **.sim** contains simulation programs. 
 
 ### Package .theory
-| #  | Pakage name | Description |
+| #  | Package name | Description |
 | ------------- | ------------- |------------- |
 | 1. | diff5dots  | Numerical calculation of the derivative of a function |
 | 2.  | fj_calc | Numerical calculation of the initial moments of the random variables maximum distribution  | 
@@ -33,9 +33,9 @@ Most_queue consists of two packages:
 | 13.  | mmnr_calc | Calculation of Queue M/M/n/r |
 | 14.  | network_calc | Calculation of queuing network with priorities in nodes |
 | 15.  | passage_time | Calculation of the initial transition times between arbitrary tiers of the Markov chain |
-| 16.  | prty_calc | A set of functions for calculating Queue with priorities (single-channel, multi-channel). The multichannel calculation is carried out by the method of relation invariants|
+| 16.  | priority_calc | A set of functions for calculating Queue with priorities (single-channel, multi-channel). The multichannel calculation is carried out by the method of relation invariants|
 | 17.  | student_stat | Calculation of confidence probability, confidence intervals for random variable with unknown RMS based on Student's t-distribution. |
-| 18.  | sv_sum_calc | Calculate the initial moments of sums of random variables |
+| 18.  | convolution_sum_calc | Calculate the initial moments of sums of random variables |
 | 19.  | weibull | Selection of Weibull distribution parameters, calculation of CDF, PDF, Tail values |
 | 20.  | flow_sum | Flow summation, numerical calculation |
 | 21.  | impatience_calc | Calculation of M/M/1 with exponential impatience |
@@ -45,35 +45,23 @@ Most_queue consists of two packages:
 | 25.  | network_viewer.py | Utility to view network structure |
 | 26.  | m_h2_h2warm.py | Multichannel queuing system with H2 service time and H2 warm-up. The system uses complex parameters, which allows you to calculate systems with arbitrary service time variation coefficients |
 ### Package .sim
-| #  | Pakage name | Description |
+| #  | Package name | Description |
 | ------------- | ------------- |------------- |
-| 1.  | fj_delta_im | Simulation of Queue fork-join with a delay in the start of processing between channels | 
-| 2.  | fj_im | Simulation of Queue with fork-join process | 
-| 3.  | network_im_prty | Simulation of queuing network with priorities in nodes | 
-| 4.  | rand_destribution | A set of functions and classes designed to generate a PRNG and select parameters for distributions H2, C2, Ek, Pa, Gamma | 
-| 5.  | smo_im | Simulation of Queue GI/G/m/n  | 
-| 6.  | smo_prty_im | Simulation of Queue GI/G/m/n  with priorities  | 
-| 7.  | flow_sum_im  | Simulation of flow summation | 
-| 8.  | smo_impatient_im.py | Simulation of Queue GI/G/m/n with impatience | 
-| 9.  | smo_batch_sim.py | Simulation of Queue GI/G/m/n with batch arrival | 
+| 1.  | fj_delta_sim | Simulation of Queue fork-join with a delay in the start of processing between channels | 
+| 2.  | fj_sim | Simulation of Queue with fork-join process | 
+| 3.  | priority_network | Simulation of queuing network with priorities in nodes | 
+| 4.  | rand_distribution | A set of functions and classes designed to generate a PRNG and select parameters for distributions H2, C2, Ek, Pa, Gamma | 
+| 5.  | qs_sim | Simulation of Queue GI/G/m/n  | 
+| 6.  | priority_queue_sim | Simulation of Queue GI/G/m/n  with priorities  | 
+| 7.  | flow_sum_sim  | Simulation of flow summation | 
+| 8.  | impatient_sim.py | Simulation of Queue GI/G/m/n with impatience | 
+| 9.  | batch_sim.py | Simulation of Queue GI/G/m/n with batch arrival | 
 | 10.  | queue_finite_source_sim.py | Simulation of Queue GI/G/m/n with finite sources | 
 
 ## Usage
-Examples of this library usage are in the [most_queue/tests](https://github.com/xabarov/mps/tree/main/most_queue/tests)
+Look here for examples
 
-## Requirements
-* matplotlib
-* matplotlib-inline
-* numba
-* numpy
-* pandas
-* scipy
-* tqdm
-* tqdm-stubs
-* PyQt5
-* qt-material
-* PySide2
-* networkx
+
 
 
 
