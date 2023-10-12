@@ -19,7 +19,6 @@ class QueueingSystemSimulator:
 
     def __init__(self, num_of_channels, buffer=None, verbose=True, calc_next_event_time=False, cuda=False):
         """
-        Конструктор
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         verbose - вывод комментариев в процессе ИМ
@@ -29,9 +28,9 @@ class QueueingSystemSimulator:
 
         Для запуска ИМ необходимо:
         - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса QueueSystemSimulator
-        - задать распределение обслуживания с помощью метода set_servers() экземпляра класса QueueSystemSimulator
-        - запустить ИМ с помощью метода run() экземпляра созданного класса QueueSystemSimulator,
+        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса SmoIm
+        - задать распределение обслуживания с помощью метода set_servers() экземпляра созданного класса SmoIm
+        - запустить ИМ с помощью метода run() экземпляра созданного класса SmoIm,
         которому нужно передать число требуемых к обслуживанию заявок
 
         """
@@ -81,11 +80,21 @@ class QueueingSystemSimulator:
 
         self.is_set_source_params = False
         self.is_set_server_params = False
+
+        # Warm-UP
         self.is_set_warm = False
         self.is_start_warm = False
-        self.end_warm_time = 1e12
+        self.end_warm_time = 1e16
+        # Cold
+        self.is_set_cold = False
+        self.is_start_cold = False
+        self.end_cold_time = 1e16
+        # Delay
+        self.is_set_cold_delay = False
+        self.is_start_cold_delay = False
+        self.end_cold_delay_time = 1e16
 
-    def set_warm(self, params, types, is_only_first=False):
+    def set_warm(self, params, types):
         """
             Задает тип и параметры распределения времени обслуживания с разогревом
             --------------------------------------------------------------------
@@ -98,41 +107,116 @@ class QueueingSystemSimulator:
             Детерминированное                      'D'         [b]
             Равномерное                         'Uniform'     [mean, half_interval]
             Нормальное                            'Norm'    [mean, standard_deviation]
-
-            is_only_first - True: Разогрев происходит только при прибытии первой заявки в пустую систему.
-                            В таком случае время разогрева - время обслуживания первой заявки
-                            False: Разогрев происходит для всей системы. Каналы не начинают обслуживания до тех пор,
-                            пока не закончится период разогрева
         """
-        if is_only_first:
-            for i in range(self.n):
-                self.servers[i].set_warm(params, types)
+        if types == "M":
+            self.warm_dist = rd.Exp_dist(params)
+        elif types == "H":
+            self.warm_dist = rd.H2_dist(params)
+        elif types == "E":
+            self.warm_dist = rd.Erlang_dist(params)
+        elif types == "Gamma":
+            self.warm_dist = rd.Gamma(params)
+        elif types == "C":
+            self.warm_dist = rd.Cox_dist(params)
+        elif types == "Pa":
+            self.warm_dist = rd.Pareto_dist(params)
+        elif types == "Unifrorm":
+            self.warm_dist = rd.Uniform_dist(params)
+        elif types == "Norm":
+            self.warm_dist = rd.Normal_dist(params)
+        elif types == "D":
+            self.warm_dist = rd.Det_dist(params)
         else:
-            if types == "M":
-                self.warm_dist = rd.Exp_dist(params)
-            elif types == "H":
-                self.warm_dist = rd.H2_dist(params)
-            elif types == "E":
-                self.warm_dist = rd.Erlang_dist(params)
-            elif types == "Gamma":
-                self.warm_dist = rd.Gamma(params)
-            elif types == "C":
-                self.warm_dist = rd.Cox_dist(params)
-            elif types == "Pa":
-                self.warm_dist = rd.Pareto_dist(params)
-            elif types == "Unifrorm":
-                self.warm_dist = rd.Uniform_dist(params)
-            elif types == "Norm":
-                self.warm_dist = rd.Normal_dist(params)
-            elif types == "D":
-                self.warm_dist = rd.Det_dist(params)
-            else:
-                raise QueueSystemException(
-                    "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
+            raise SetSmoException(
+                "Неправильно задан тип распределения времени разогрева. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
 
         self.is_set_warm = True
 
-        self.is_only_first = is_only_first
+    def set_cold(self, params, types):
+        """
+        Задает тип и параметры распределения времени охлаждения
+        --------------------------------------------------------------------
+        Вид распределения                   Тип[types]     Параметры [params]
+        Экспоненциальное                      'М'             [mu]
+        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
+        Эрланга                               'E'           [r, mu]
+        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
+        Парето                                'Pa'         [alpha, K]
+        Детерминированное                      'D'         [b]
+        Равномерное                         'Uniform'     [mean, half_interval]
+        Нормальное                            'Norm'    [mean, standard_deviation]
+
+
+        """
+
+        if types == "M":
+            self.cold_dist = rd.Exp_dist(params)
+        elif types == "H":
+            self.cold_dist = rd.H2_dist(params)
+        elif types == "E":
+            self.cold_dist = rd.Erlang_dist(params)
+        elif types == "Gamma":
+            self.cold_dist = rd.Gamma(params)
+        elif types == "C":
+            self.cold_dist = rd.Cox_dist(params)
+        elif types == "Pa":
+            self.cold_dist = rd.Pareto_dist(params)
+        elif types == "Unifrorm":
+            self.cold_dist = rd.Uniform_dist(params)
+        elif types == "Norm":
+            self.cold_dist = rd.Normal_dist(params)
+        elif types == "D":
+            self.cold_dist = rd.Det_dist(params)
+        else:
+            raise SetSmoException(
+                "Неправильно задан тип распределения времени охлаждения. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
+
+        self.is_set_cold = True
+
+    def set_cold_delay(self, params, types):
+        """
+        Задает тип и параметры распределения времени задержки начала охлаждения
+        --------------------------------------------------------------------
+        Вид распределения                   Тип[types]     Параметры [params]
+        Экспоненциальное                      'М'             [mu]
+        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
+        Эрланга                               'E'           [r, mu]
+        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
+        Парето                                'Pa'         [alpha, K]
+        Детерминированное                      'D'         [b]
+        Равномерное                         'Uniform'     [mean, half_interval]
+        Нормальное                            'Norm'    [mean, standard_deviation]
+
+
+        """
+
+        if not self.is_set_cold:
+            raise SetSmoException(
+                "Необходимо сперва задать время охлаждения. Используйте метод set_cold()")
+
+        if types == "M":
+            self.cold_delay_dist = rd.Exp_dist(params)
+        elif types == "H":
+            self.cold_delay_dist = rd.H2_dist(params)
+        elif types == "E":
+            self.cold_delay_dist = rd.Erlang_dist(params)
+        elif types == "Gamma":
+            self.cold_delay_dist = rd.Gamma(params)
+        elif types == "C":
+            self.cold_delay_dist = rd.Cox_dist(params)
+        elif types == "Pa":
+            self.cold_delay_dist = rd.Pareto_dist(params)
+        elif types == "Unifrorm":
+            self.cold_delay_dist = rd.Uniform_dist(params)
+        elif types == "Norm":
+            self.cold_delay_dist = rd.Normal_dist(params)
+        elif types == "D":
+            self.cold_delay_dist = rd.Det_dist(params)
+        else:
+            raise SetSmoException(
+                "Неправильно задан тип распределения времени задержки начала охлаждения. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
+
+        self.is_set_cold_delay = True
 
     def set_sources(self, params, types):
         """
@@ -173,7 +257,7 @@ class QueueingSystemSimulator:
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
-            raise QueueSystemException(
+            raise SetSmoException(
                 "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
         self.arrival_time = self.source.generate()
 
@@ -348,34 +432,49 @@ class QueueingSystemSimulator:
 
         else:  # there are free channels:
 
-            # check if it's a warm phase:
+            if self.is_set_cold:
+                if self.is_start_cold:
+                    # Еще не закончено охлаждение. В очередь
+                    self.send_task_to_queue()
+                    return
+
+            if self.is_set_cold_delay:
+                if self.is_start_cold_delay:
+                    # Заявка пришла раньше окончания времени задержки начала охлаждения
+                    self.is_start_cold_delay = False
+                    self.end_cold_delay_time = 1e16
+                    self.send_task_to_channel(False)
+                    return
+
             if self.is_set_warm:
                 # Задан разогрев
-                if self.is_only_first:
-                    # Только первой заявки. Проверяем, не пустая ли система.
-                    # Если пустая - задаем is_warm_start
-                    if len(self.queue) == 0 and self.free_channels == self.n:
-                        is_warm_start = True
 
-                    self.send_task_to_channel(is_warm_start)
+                # Проверяем разогрев. К этому моменту система точно не в режиме охлаждения
+                # и не в состоянии задержки начала охлаждения.
+                # Значит либо:
+                # 1. В режиме разогрева -> отправляем заявку в очередь
+                # 2. Она пустая и была выклюбчена после охлаждения. Запускаем разогрев
+                # 3. Не пустая и разогретая -> тогда оправляем на обслуживание
+                if self.is_start_warm:
+                    # 1. В режиме разогрева -> отправляем заявку в очередь
+                    self.send_task_to_queue()
                 else:
-                    # Разогрев глобальный.
-                    if self.is_start_warm:
-                        # Уже в режиме разогрева
+                    if len(self.queue) == 0 and self.free_channels == self.n:
+                        # 2. Она пустая и была выклюбчена после охлаждения. Запускаем разогрев
+                        self.start_warm()
+                        # Отправляем заявку в очередь
                         self.send_task_to_queue()
                     else:
-                        # Еще нет. Проверяем надо ли запускать разогрев
-                        if len(self.queue) == 0 and self.free_channels == self.n:
-                            self.is_start_warm = True
-                            self.end_warm_time = self.ttek + self.warm_dist.generate()
-                            # Отправляем заявку в очередь. После окончания времени разогрева она начнет обслуживаться
-                            self.send_task_to_queue()
-                        else:
-                            self.send_task_to_channel(False)
+                        # 3. Не пустая и разогретая -> тогда оправляем на обслуживание
+                        self.send_task_to_channel(False)
 
             else:
                 # Без разогрева. Отправляем заявку в канал обслуживания
                 self.send_task_to_channel(False)
+
+    def start_warm(self):
+        self.is_start_warm = True
+        self.end_warm_time = self.ttek + self.warm_dist.generate()
 
     def serving(self, c):
         """
@@ -401,6 +500,18 @@ class QueueingSystemSimulator:
                 # Конец ПНЗ
                 self.ppnz_moments += 1
                 self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
+
+        if self.is_set_cold:
+            if len(self.queue) == 0 and self.free_channels == self.n:
+                # Система стала пустой.
+                # 1. Если задана задержка начала охлаждения - разыгрываем время ее окончания
+                # 2. Если нет - запускаем охлаждение
+                if self.is_set_cold_delay:
+                    self.is_start_cold_delay = True
+                    self.end_cold_delay_time = self.ttek + self.cold_delay_dist.generate()
+                else:
+                    self.is_start_cold = True
+                    self.end_cold_time = self.ttek + self.cold_dist.generate()
 
         if len(self.queue) != 0:
             self.send_head_of_queue_to_channel(c)
@@ -437,12 +548,45 @@ class QueueingSystemSimulator:
         self.t_old = self.ttek
 
         self.is_start_warm = False
-        self.end_warm_time = 1e12
+        self.end_warm_time = 1e16
 
         # Отправляем n заявок из очереди в каналы
         for i in range(self.n):
             if len(self.queue) != 0:
                 self.send_head_of_queue_to_channel(i)
+
+    def on_end_cold(self):
+        self.p[self.in_sys] += self.end_cold_time - self.t_old
+
+        self.ttek = self.end_cold_time
+        self.t_old = self.ttek
+
+        self.is_start_cold = False
+        self.end_cold_time = 1e16
+
+        if self.is_set_warm:
+            if len(self.queue) != 0:
+                # Запускаем разогрев только если в очереди скопились заявки.
+                self.start_warm()
+        else:
+            # Отправляем n заявок из очереди в каналы
+            for i in range(self.n):
+                if len(self.queue) != 0:
+                    self.send_head_of_queue_to_channel(i)
+
+    def on_end_cold_delay(self):
+        self.p[self.in_sys] += self.end_cold_delay_time - self.t_old
+
+        self.ttek = self.end_cold_delay_time
+        self.t_old = self.ttek
+
+        self.is_start_cold_delay = False
+        self.end_cold_delay_time = 1e16
+
+        # Запускаем процесс охлаждения
+        self.is_start_cold = True
+        self.end_cold_time = self.ttek + self.cold_dist.generate()
+
 
     def run_one_step(self):
 
@@ -454,35 +598,34 @@ class QueueingSystemSimulator:
                 serv_earl = self.servers[c].time_to_end_service
                 num_of_server_earlier = c
 
-        if self.is_set_warm and not self.is_only_first:
-            # Задан глобальный разогрев. Нужно отслеживать в том числе момент окончания разогрева
-            times = [serv_earl, self.arrival_time, self.end_warm_time]
-            min_time_num = np.argmin(times)
-            if min_time_num == 0:
-                # Обслуживание. Точно не режим разогрева. Есть в каналах заявки
-                self.serving(num_of_server_earlier)
-            elif min_time_num == 1:
-                # Прибытие. Может быть в режиме разогрева. логика - внутри
-                self.arrival()
-            else:
-                self.on_end_warming()
-
+        # Задан глобальный разогрев. Нужно отслеживать в том числе момент окончания разогрева
+        times = [serv_earl, self.arrival_time, self.end_warm_time, self.end_cold_time, self.end_cold_delay_time]
+        min_time_num = np.argmin(times)
+        if min_time_num == 0:
+            # Обслуживание. Точно не режим разогрева. Есть в каналах заявки
+            self.serving(num_of_server_earlier)
+        elif min_time_num == 1:
+            # Прибытие. Может быть в режиме разогрева. логика - внутри
+            self.arrival()
+        elif min_time_num == 2:
+            # конец разогрева
+            self.on_end_warming()
+        elif min_time_num == 3:
+            # конец охлаждения
+            self.on_end_cold()
         else:
-            # Разогрев задан первой заявки или не задан вообще. Все штатно
+            # конец задержки начала охлаждения
+            self.on_end_cold_delay()
 
-            if self.arrival_time < serv_earl:
-                self.arrival()
-            else:
-                self.serving(num_of_server_earlier)
-
-            if self.is_next_calc:
-                self.calc_next_event_time()
+        if self.is_next_calc:
+            self.calc_next_event_time()
 
     def run(self, total_served, is_real_served=False):
         start = time.process_time()
         if self.cuda:
-            from numba.cuda.random import create_xoroshiro128p_states
+            from numba.cuda.random import create_xoroshiro128p_states, xoroshiro128p_uniform_float32
             import numpy as np
+            from numba import cuda
             threads_per_block = 512
             blocks = int(total_served / 512)
             rng_states = create_xoroshiro128p_states(threads_per_block * blocks, seed=1)
@@ -504,6 +647,10 @@ class QueueingSystemSimulator:
             self.source_random_vars = source_out
             self.tek_source_num = 0
 
+        # while (self.served < total_served):
+        #     self.run_one_step()
+        #     sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+        #     sys.stderr.flush()
         if is_real_served:
             served_old = 0
             while self.served < total_served:
@@ -589,7 +736,7 @@ class QueueingSystemSimulator:
         return res
 
 
-class QueueSystemException(Exception):
+class SetSmoException(Exception):
 
     def __str__(self, text):
         return text
@@ -650,7 +797,7 @@ class Server:
         elif types == "D":
             self.dist = rd.Det_dist(params)
         else:
-            raise QueueSystemException(
+            raise SetSmoException(
                 "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Pa, Norm, Uniform, D")
         self.time_to_end_service = 1e10
         self.is_free = True
@@ -683,7 +830,7 @@ class Server:
         elif types == "D":
             self.warm_dist = rd.Det_dist(params)
         else:
-            raise QueueSystemException(
+            raise SetSmoException(
                 "Неправильно задан тип распределения времени обсл с разогревом. Варианты М, Н, Е, С, Pa, Uniform, Norm, D")
 
     def start_service(self, ts, ttek, is_warm=False):

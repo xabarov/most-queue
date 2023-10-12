@@ -53,12 +53,15 @@ most_queue/theory/gi_m_n_calc.py
 most_queue/theory/impatience_calc.py
 most_queue/theory/m_d_n_calc.py
 most_queue/theory/m_h2_h2warm.py
+most_queue/theory/m_h2_n_with_h2_cold_and_h2_warmup.py
 most_queue/theory/m_ph_n_prty.py
 most_queue/theory/mg1_calc.py
 most_queue/theory/mg1_warm_calc.py
 most_queue/theory/mgn_tt.py
+most_queue/theory/mgn_with_h2_delay_cold_warm.py
 most_queue/theory/mmn3_pnz_cox_approx.py
 most_queue/theory/mmn_prty_pnz_approx.py
+most_queue/theory/mmn_with_h2_cold_and_h2_warmup.py
 most_queue/theory/mmnr_calc.py
 most_queue/theory/network_calc.py
 most_queue/theory/network_viewer.py

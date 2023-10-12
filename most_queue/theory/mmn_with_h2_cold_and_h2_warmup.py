@@ -9,21 +9,21 @@ from diff5dots import diff5dots
 from scipy.misc import derivative
 
 
-class Mh2h2Warm:
+class MMn_H2warm_H2cold:
     """
-    Расчет СМО M/H2/n с H2-разогревом численным методом Такахаси-Таками.
+    Расчет СМО M/M/n с H2-разогревом и H2-охлаждением численным методом Такахаси-Таками.
     Используются комплексные параметры. Комплексные параметры позволяют аппроксимировать распределение времени обслуживания
     с произвольными коэффициентами вариации (>1, <=1)
     """
 
-    def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False,
-                 is_only_first=False):
+    def __init__(self, l, mu, b_warm, b_cold, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False):
 
         """
         n: число каналов
         l: интенсивность вх. потока
-        b: начальные моменты времени обслуживания
+        mu: интенсивность обслуживания
         b_warm: начальные моменты времени разогрева
+        b_cold: начальные моменты времени охлаждения
         N: число ярусов
         accuracy: точность, параметр для остановки итерации
         """
@@ -35,22 +35,11 @@ class Mh2h2Warm:
             self.N = N
             self.R = None  # для проверки задан ли буфер
 
-        self.is_only_first = is_only_first
-
         self.e1 = accuracy
         self.n = n
-        self.b = b
+        self.mu = mu
         self.verbose = verbose
         self.l = l
-
-        if self.dt == 'c16':
-            h2_params_service = rd.H2_dist.get_params_clx(b)
-        else:
-            h2_params_service = rd.H2_dist.get_params(b)
-
-        # параметры H2-распределения:
-        self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
-        self.mu = [h2_params_service[1], h2_params_service[2]]
 
         self.b_warm = b_warm
         if self.dt == 'c16':
@@ -59,6 +48,14 @@ class Mh2h2Warm:
             h2_params_warm = rd.H2_dist.get_params(b_warm)
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
+
+        self.b_cold = b_cold
+        if self.dt == 'c16':
+            h2_params_cold = rd.H2_dist.get_params_clx(b_cold)
+        else:
+            h2_params_cold = rd.H2_dist.get_params(b_cold)
+        self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
+        self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
@@ -89,22 +86,13 @@ class Mh2h2Warm:
 
         for i in range(N):
 
-            if self.is_only_first:
-                if i < n + 1:
-                    if i == 0:
-                        self.cols.append(1)  # 00 state
-                    else:
-                        self.cols.append(3 * i + 1)  # w1 w2 01 10
+            if i < n + 1:
+                if i == 0:
+                    self.cols.append(3)  # 0 state normal + 0_cold_1 + 0_cold_2
                 else:
-                    self.cols.append(3 * n + 1)
+                    self.cols.append(5)  # i_warm_1 + i_warm_2 i state normal + i_cold_1 + i_cold_2...
             else:
-                if i < n + 1:
-                    if i == 0:
-                        self.cols.append(1)  # 00 state
-                    else:
-                        self.cols.append(i + 3)  # w1 w2 01 10, w1 w2 20 11 02, ...
-                else:
-                    self.cols.append(n + 3)
+                self.cols.append(5)
 
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
@@ -176,8 +164,6 @@ class Mh2h2Warm:
 
     def calc_w_pls(self, s):
         w = 0
-        # вероятности попадания в состояния обслуживания, вычисляются с помощью биноминального распределения
-        probs = calc_binom_probs(self.n + 1, self.y[0])
 
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
@@ -185,37 +171,39 @@ class Mh2h2Warm:
             for i in range(2):
                 w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
 
+        # Если заявка попала в фазу охлаждения, хотя каналы свободны,
+        # ей придется подождать окончание охлаждения и разогрева
+        for k in range(0, self.n):
+            if k == 0:
+                for i in range(2):
+                    w += self.Y[k][0, i + 1] * self.pls(self.mu_c[i], s)
+            else:
+                for c_phase in range(2):
+                    for w_phase in range(2):
+                        w += self.Y[k][0, 3 + c_phase] * self.pls(self.mu_c[c_phase], s) * self.y_w[
+                            w_phase] * self.pls(self.mu_w[w_phase], s)
+
         for k in range(self.n, self.N):
 
-            # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
-            # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
-            key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-
-            a = np.array(
-                [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
-                 range(self.n + 1)])
-
-            P = self.calc_down_probs(k)
-            Pa = np.transpose(self.matrix_pow(P * a, k - self.n))  # n+1 x n+1
-
-            aP_tilda = a * probs
-
-            pls_service_total = sum(np.dot(aP_tilda, Pa))
-
-            for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
-
             # попала в фазу обслуживания
-            Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
-            aPa = np.dot(a, Pa)
-            for i in range(self.n + 1):
-                w += Ys[i] * aPa[i]
+            pls_service_total = 1
+            for i in range(k + 1 - self.n):
+                # подождать окончание k+1-n обслуживаний
+                pls_service_total *= self.pls(self.mu*self.n, s)
+            w += self.Y[k][0, 2] * pls_service_total
+
+            # попала в фазу разогрева - разогрев + обслуживание
+
+            w += self.Y[k][0, 0] * pls_service_total * self.pls(self.mu_w[0], s)
+            w += self.Y[k][0, 1] * pls_service_total * self.pls(self.mu_w[1], s)
+
+            # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
+            for c_phase in range(2):
+                for w_phase in range(2):
+                    w += self.Y[k][0, 3 + c_phase] * pls_service_total * self.pls(self.mu_c[c_phase], s) * self.y_w[
+                        w_phase] * self.pls(self.mu_w[w_phase], s)
 
         return w
-
-    def calc_residual_b(self, mom_num):
-        res = self.b[mom_num + 1] / (2.0 * self.b[mom_num])
-        return res
 
     def get_w(self):
         """
@@ -223,25 +211,12 @@ class Mh2h2Warm:
         """
         w = [0.0] * 3
 
-        if self.is_only_first:
+        for i in range(3):
+            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.mu, n=i + 1, order=9)
+        return [-w[0].real, w[1].real, -w[2].real]
 
-            for j in range(1, len(self.p) - self.n):
-                w[0] += j * self.p[self.n + j]
-            for j in range(2, len(self.p) - self.n):
-                w[1] += j * (j - 1) * self.p[self.n + j]
-            for j in range(3, len(self.p) - self.n):
-                w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
-
-            for j in range(3):
-                w[j] /= math.pow(self.l, j + 1)
-                w[j] = w[j].real
-
-            return w
-
-        else:
-            for i in range(3):
-                w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return [-w[0].real, w[1].real, -w[2].real]
+    def get_b(self):
+        return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
 
     def get_v(self):
         """
@@ -249,7 +224,7 @@ class Mh2h2Warm:
         """
         v = [0.0] * 3
         w = self.get_w()
-        b = self.b
+        b = self.get_b()
         v[0] = w[0] + b[0]
         v[1] = w[1] + 2 * w[0] * b[0] + b[1]
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
@@ -499,46 +474,22 @@ class Mh2h2Warm:
             output = self.A[self.n]
             return output
         if num == 0:
+            # to warm phase
             output[0, 0] = self.l * self.y_w[0]
             output[0, 1] = self.l * self.y_w[1]
+            # cold phase
+            output[1, 3] = self.l
+            output[2, 4] = self.l
         else:
 
-            if num < self.n:
-                if self.is_only_first:
-                    # first block
-                    self.insert_standart_A_into(output, self.l, self.y[0], 0, 0, level=num)
-                    # second
-                    self.insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
-                    # third
-                    self.insert_standart_A_into(output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
-                else:
-                    # first block
-                    output[0, 0] = self.l
-                    output[1, 1] = self.l
-                    # second
-                    self.insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
-            else:
-                for i in range(row):
-                    output[i, i] = self.l
+            for i in range(row):
+                output[i, i] = self.l
 
         return output
 
-    def insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
-        col = level
-        for i in range(col):
-            if level <= n:
-                mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
-                mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
-            else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
-                if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
-                if i != level - 1:
-                    mass[i + + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
-
     def buildB(self, num):
         """
-            Формирует матрицу B по заданному номеру яруса
+        Формирует матрицу B по заданному номеру яруса
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -557,62 +508,24 @@ class Mh2h2Warm:
             return output
 
         if num == 1:
-            output[2, 0] = self.mu[0]
-            output[3, 0] = self.mu[1]
+            # normal serving
+            output[2, 1] = self.mu * self.y_c[0]
+            output[2, 2] = self.mu * self.y_c[1]
 
-            if self.is_only_first:
-                output[0, 0] = self.mu_w[0]
-                output[1, 0] = self.mu_w[1]
         else:
-
             if num < self.n + 1:
 
-                if self.is_only_first:
-                    # first block
-                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
-                    # second
-                    self.insert_standart_B_into(output, self.y, self.mu, num, num - 1, num - 1, self.n)
-                    # third
-                    self.insert_standart_B_into(output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
-
-                    # warm block 1
-                    for i in range(num):
-                        output[i, i + 2 * (num - 1)] = self.mu_w[0]
-
-                    # warm block 2
-                    for i in range(num):
-                        output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
-                else:
-                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                output[2, 2] = self.mu * num
 
             else:
 
-                if self.is_only_first:
-                    # first block
-                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
-                    # second
-                    self.insert_standart_B_into(output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
-                    # third
-                    self.insert_standart_B_into(output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
-
-                    # warm block 1
-                    for i in range(num - 1):
-                        output[i, i + 2 * (num - 1)] = self.mu_w[0] * self.y[0]
-                        output[i, i + 2 * (num - 1) + 1] = self.mu_w[0] * self.y[1]
-
-                    # warm block 2
-                    for i in range(num - 1):
-                        output[i + num - 1, i + 2 * (num - 1)] = self.mu_w[1] * self.y[0]
-                        output[i + num - 1, i + 2 * (num - 1) + 1] = self.mu_w[1] * self.y[1]
-
-                else:
-                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                output[2, 2] = self.mu * self.n
 
         return output
 
     def buildC(self, num):
         """
-            Формирует матрицу C по заданному номеру яруса
+        Формирует матрицу C по заданному номеру яруса
         """
         if num < self.n:
             col = self.cols[num]
@@ -626,13 +539,20 @@ class Mh2h2Warm:
             output = self.C[self.n]
             return output
 
-        if not self.is_only_first:
-            if num > 0:
-                probs = calc_binom_probs(num + 1, self.y[0])
-                print(probs)
-                for i in range(len(probs)):
-                    output[0, 2 + i] = self.mu_w[0] * probs[i]
-                    output[1, 2 + i] = self.mu_w[1] * probs[i]
+        if num == 0:
+            # cold serving
+            output[1, 0] = self.mu_c[0]
+            output[2, 0] = self.mu_c[1]
+        else:
+            # cold serving
+            output[3, 0] = self.mu_c[0] * self.y_w[0]
+            output[3, 1] = self.mu_c[0] * self.y_w[1]
+            output[4, 0] = self.mu_c[1] * self.y_w[0]
+            output[4, 1] = self.mu_c[1] * self.y_w[1]
+
+            # warmup end
+            output[0, 2] = self.mu_w[0]
+            output[1, 2] = self.mu_w[1]
 
         return output
 
@@ -688,74 +608,76 @@ if __name__ == "__main__":
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
     b1 = n * ro  # ср время обслуживания
+    mu = 1.0 / b1
     b1_warm = n * 0.4  # ср время разогрева
-    num_of_jobs = 300000  # число обсл заявок ИМ
-    b_coev = [1.1]  # коэфф вариации времени обсл
+    b1_cold = n * 0.3  # ср время охлаждения
+    num_of_jobs = 1000000  # число обсл заявок ИМ
     b_coev_warm = 1.3  # коэфф вариации времени разогрева
+    b_coev_cold = 1.2  # коэфф вариации времени охлаждения
     buff = None
     verbose = False
 
-    for k in range(len(b_coev)):
-        b = [0.0] * 3
-        alpha = 1 / (b_coev[k] ** 2)
-        b[0] = b1
-        b[1] = math.pow(b[0], 2) * (math.pow(b_coev[k], 2) + 1)
-        b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    b_w = [0.0] * 3
+    b_w[0] = b1_warm
+    alpha = 1 / (b_coev_warm ** 2)
+    b_w[1] = math.pow(b_w[0], 2) * (math.pow(b_coev_warm, 2) + 1)
+    b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
 
-        b_w = [0.0] * 3
-        b_w[0] = b1_warm
-        alpha = 1 / (b_coev_warm ** 2)
-        b_w[1] = math.pow(b_w[0], 2) * (math.pow(b_coev_warm, 2) + 1)
-        b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
+    b_c = [0.0] * 3
+    b_c[0] = b1_cold
+    alpha = 1 / (b_coev_cold ** 2)
+    b_c[1] = math.pow(b_c[0], 2) * (math.pow(b_coev_cold, 2) + 1)
+    b_c[2] = b_c[1] * b_c[0] * (1.0 + 2 / alpha)
 
-        h2_params = rd.H2_dist.get_params_clx(b)
+    im_start = time.process_time()
+    smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
+    smo.set_sources(l, 'M')
 
-        im_start = time.process_time()
-        smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
-        smo.set_sources(l, 'M')
+    gamma_params_warm = rd.Gamma.get_mu_alpha(b_w)
+    gamma_params_cold = rd.Gamma.get_mu_alpha(b_c)
 
-        gamma_params = rd.Gamma.get_mu_alpha(b)
-        gamma_params_warm = rd.Gamma.get_mu_alpha(b_w)
-        smo.set_servers(gamma_params, 'Gamma')
-        smo.set_warm(gamma_params_warm, 'Gamma')
-        smo.run(num_of_jobs)
-        p = smo.get_p()
-        w_im = smo.w  # .w -> wait times
-        im_time = time.process_time() - im_start
+    smo.set_servers(mu, 'M')
+    smo.set_warm(gamma_params_warm, 'Gamma')
+    smo.set_cold(gamma_params_cold, 'Gamma')
 
-        tt_start = time.process_time()
-        tt = Mh2h2Warm(l, b, b_w, n, buffer=buff, verbose=verbose)
+    smo.run(num_of_jobs)
+    p = smo.get_p()
+    w_im = smo.w  # .w -> wait times
+    im_time = time.process_time() - im_start
 
-        for i in range(5):
-            print(f"Matrix A[{i}]")
-            tt.print_mrx(tt.A[i])
+    tt_start = time.process_time()
+    tt = MMn_H2warm_H2cold(l, mu, b_w, b_c, n, buffer=buff, verbose=verbose)
 
-        tt.run()
-        p_tt = tt.get_p()
-        w_tt = tt.get_w()  # .get_w() -> wait times
-        print(w_tt)
+    for i in range(5):
+        print(f"Matrix C[{i}]")
+        tt.print_mrx(tt.C[i])
 
-        tt_time = time.process_time() - tt_start
-        num_of_iter = tt.num_of_iter_
+    tt.run()
+    p_tt = tt.get_p()
+    w_tt = tt.get_w()  # .get_w() -> wait times
+    # print(w_tt)
 
-        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
-              "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/H2/{0:^2d} c H2-разогревом "
-              "с комплексными параметрами\n"
-              "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
-        print(f'Коэффициент вариации времени обслуживания {b_coev[k]:0.3f}')
-        print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
-        print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
-        print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
-        print("Время ИМ: {0:^5.3f} c".format(im_time))
-        print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
+    tt_time = time.process_time() - tt_start
+    num_of_iter = tt.num_of_iter_
 
-        print("\n")
-        print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, w_tt[i], w_im[i]))
+    print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
+          "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/M/{0:^2d} c H2-разогревом и H2-охлаждением "
+          "с комплексными параметрами\n"
+          "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
+    print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
+    print(f'Коэффициент вариации времени охлаждения {b_coev_cold:0.3f}')
+    print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
+    print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
+    print("Время ИМ: {0:^5.3f} c".format(im_time))
+    print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
+    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+    print("-" * 32)
+    for i in range(11):
+        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
+
+    print("\n")
+    print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
+    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+    print("-" * 32)
+    for i in range(3):
+        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, w_tt[i], w_im[i]))

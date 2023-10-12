@@ -198,8 +198,6 @@ class MGnCalc:
                 prod2 *= self.x[i]
             znam -= f1 * self.l * prod2
 
-
-
         self.p[0] = (self.n - self.l * f1) / znam
 
         summ_p = self.p[0]
