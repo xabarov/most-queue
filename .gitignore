@@ -18,6 +18,7 @@ lib/
 lib64/
 parts/
 sdist/
+pkg/
 var/
 wheels/
 share/python-wheels/
@@ -148,7 +149,7 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
-
+most_queue/theory/doctest-output
 # Cython debug symbols
 cython_debug/
 

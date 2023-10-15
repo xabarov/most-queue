@@ -136,6 +136,31 @@ class MGnH2ServingColdWarmDelay:
     def pls(self, mu, s):
         return mu / (mu + s)
 
+    def get_cold_prob(self):
+        """
+        Возвращает вероятность нахождения в состоянии охлаждения
+        """
+        p_cold = 0
+        for k in range(self.N):
+            p_cold += self.Y[k][0, -1] + self.Y[k][0, -2]
+        return p_cold.real
+
+    def get_warmup_prob(self):
+        """
+        Возвращает вероятность нахождения в состоянии разогрева
+        """
+        p_warmup = 0
+        for k in range(1, self.N):
+            p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
+        return p_warmup.real
+
+    def get_cold_delay_prob(self):
+        """
+        Возвращает вероятность нахождения в состоянии задержки начала охлаждения
+        """
+        p_cold_delay = self.Y[0][0, 1] + self.Y[0][0, 2]
+        return p_cold_delay.real
+
     def calc_passage_times(self):
         pass_time = passage_time.passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
         pass_time.calc()
@@ -208,6 +233,8 @@ class MGnH2ServingColdWarmDelay:
                         w += self.Y[k][0, cold_pos + c_phase] * self.pls(self.mu_c[c_phase], s) * self.y_w[
                             w_phase] * self.pls(self.mu_w[w_phase], s)
 
+        P = self.calc_down_probs(n + 1)
+
         for k in range(self.n, self.N):
 
             # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
@@ -218,30 +245,53 @@ class MGnH2ServingColdWarmDelay:
                 [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
                  range(self.n + 1)])
 
-            P = self.calc_down_probs(k)
-            Pa = np.transpose(self.matrix_pow(P * a, k - self.n))  # n+1 x n+1
+            if k == n:
+                # переходы вниз считать не нужно
+                # попала в фазу обслуживания
+                for i in range(self.n + 1):
+                    w += self.Y[k][0, i + 2] * a[i]
 
-            aP_tilda = a * probs
+                # Взвешанное по биномиальным вероятностям обслуживание
+                waits_service_on_level_before = a
 
-            pls_service_total = sum(np.dot(aP_tilda, Pa))
+                pls_service_total = sum(a*probs) # взвешенные по вероятностям перехода из состояния разогрева
+                # попала в фазу разогрева
+                for i in range(2):
+                    w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
 
-            for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
+                # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
+                cold_pos = self.n + 3
 
-            # попала в фазу обслуживания
-            Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
-            aPa = np.dot(a, Pa)
-            for i in range(self.n + 1):
-                w += Ys[i] * aPa[i]
+                for c_phase in range(2):
+                    for w_phase in range(2):
+                        w += self.Y[k][0, cold_pos + c_phase] * pls_service_total * self.pls(self.mu_c[c_phase],
+                                                                                             s) * \
+                             self.y_w[
+                                 w_phase] * self.pls(self.mu_w[w_phase], s)
 
-            # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
-            cold_pos = self.n + 3
+            else:
 
-            for c_phase in range(2):
-                for w_phase in range(2):
-                    w += self.Y[k][0, cold_pos + c_phase] * pls_service_total * self.pls(self.mu_c[c_phase], s) * \
-                         self.y_w[
-                             w_phase] * self.pls(self.mu_w[w_phase], s)
+                Pa = np.dot(P, waits_service_on_level_before.T)  # вектор - условные вероятности + время на предыдущем слое
+                aPa = a * Pa  # вектор размерности числа состояний. Каждый элемент - обслуживание в случае нахожения в данной позиции
+                waits_service_on_level_before = aPa
+
+                # попала в фазу обслуживания
+                for i in range(self.n + 1):
+                    w += self.Y[k][0, i + 2] * aPa[i]
+
+                pls_service_total = sum(aPa*probs) # взвешенные по вероятностям перехода из состояния разогрева
+
+                for i in range(2):
+                    w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
+
+                # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
+                cold_pos = self.n + 3
+
+                for c_phase in range(2):
+                    for w_phase in range(2):
+                        w += self.Y[k][0, cold_pos + c_phase] * pls_service_total * self.pls(self.mu_c[c_phase], s) * \
+                             self.y_w[
+                                 w_phase] * self.pls(self.mu_w[w_phase], s)
 
         return w
 
@@ -615,10 +665,10 @@ class MGnH2ServingColdWarmDelay:
             output[3, 0] = self.mu_c[0]
             output[4, 0] = self.mu_c[1]
             # delay to cold
-            output[1, 3] = self.mu_c_delay[0]*self.y_c_delay[0]
-            output[1, 4] = self.mu_c_delay[0] * self.y_c_delay[1]
-            output[2, 3] = self.mu_c_delay[1] * self.y_c_delay[0]
-            output[2, 4] = self.mu_c_delay[1] * self.y_c_delay[1]
+            output[1, 3] = self.mu_c_delay[0] * self.y_c[0]
+            output[1, 4] = self.mu_c_delay[0] * self.y_c[1]
+            output[2, 3] = self.mu_c_delay[1] * self.y_c[0]
+            output[2, 4] = self.mu_c_delay[1] * self.y_c[1]
         else:
             probs = calc_binom_probs(num + 1, self.y[0])
             # warm up
@@ -626,12 +676,11 @@ class MGnH2ServingColdWarmDelay:
                 output[0, 2 + i] = self.mu_w[0] * probs[i]
                 output[1, 2 + i] = self.mu_w[1] * probs[i]
             # cold
-            cold_pos_tek = num + 3
-            output[cold_pos_tek, 0] = self.mu_c[0] * self.y_w[0]
-            output[cold_pos_tek, 1] = self.mu_c[0] * self.y_w[1]
+            output[-2, 0] = self.mu_c[0] * self.y_w[0]
+            output[-2, 1] = self.mu_c[0] * self.y_w[1]
 
-            output[cold_pos_tek + 1, 0] = self.mu_c[1] * self.y_w[0]
-            output[cold_pos_tek + 1, 1] = self.mu_c[1] * self.y_w[1]
+            output[-1, 0] = self.mu_c[1] * self.y_w[0]
+            output[-1, 1] = self.mu_c[1] * self.y_w[1]
 
         return output
 
@@ -683,7 +732,7 @@ if __name__ == "__main__":
     from most_queue.sim import rand_destribution as rd
     import time
 
-    n = 15  # число каналов
+    n = 7  # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.7  # коэфф загрузки
     b1 = n * ro  # ср время обслуживания
@@ -692,9 +741,9 @@ if __name__ == "__main__":
     b1_cold_delay = n * 0.12  # ср время задежки начала охлаждения
     num_of_jobs = 1000000  # число обсл заявок ИМ
     b_coev = [1.1]  # коэфф вариации времени обсл
-    b_coev_warm = 0.74  # коэфф вариации времени разогрева
-    b_coev_cold = 0.42  # коэфф вариации времени охлаждения
-    b_coev_cold_delay = 0.52  # коэфф вариации времени задержки начала охлаждения
+    b_coev_warm = 1.3  # коэфф вариации времени разогрева
+    b_coev_cold = 1.42  # коэфф вариации времени охлаждения
+    b_coev_cold_delay = 1.52  # коэфф вариации времени задержки начала охлаждения
     buff = None
     verbose = False
 
@@ -724,6 +773,20 @@ if __name__ == "__main__":
         b_d[2] = b_d[1] * b_d[0] * (1.0 + 2 / alpha)
 
         h2_params = rd.H2_dist.get_params_clx(b)
+        tt_start = time.process_time()
+        tt = MGnH2ServingColdWarmDelay(l, b, b_w, b_c, b_d, n, buffer=buff, verbose=verbose)
+
+        # for i in range(5):
+        #     print(f"Matrix C[{i}]")
+        #     tt.print_mrx(tt.C[i])
+
+        tt.run()
+        p_tt = tt.get_p()
+        w_tt = tt.get_w()  # .get_w() -> wait times
+        # print(w_tt)
+
+        tt_time = time.process_time() - tt_start
+        num_of_iter = tt.num_of_iter_
 
         im_start = time.process_time()
         smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
@@ -744,20 +807,7 @@ if __name__ == "__main__":
         w_im = smo.w  # .w -> wait times
         im_time = time.process_time() - im_start
 
-        tt_start = time.process_time()
-        tt = MGnH2ServingColdWarmDelay(l, b, b_w, b_c, b_d, n, buffer=buff, verbose=verbose)
 
-        # for i in range(5):
-        #     print(f"Matrix A[{i}]")
-        #     tt.print_mrx(tt.A[i])
-
-        tt.run()
-        p_tt = tt.get_p()
-        w_tt = tt.get_w()  # .get_w() -> wait times
-        print(w_tt)
-
-        tt_time = time.process_time() - tt_start
-        num_of_iter = tt.num_of_iter_
 
         print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
               "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/H2/{0:^2d} c H2-разогревом, H2-охлаждением"

@@ -80,7 +80,7 @@ if __name__ == '__main__':
     from most_queue.utils.tables import times_print, probs_print
 
     l = 1
-    b1 = 0.9
+    b1 = 0.7
     coev = 1.6
     num_of_jobs = 800000
 

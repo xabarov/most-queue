@@ -16,7 +16,7 @@ class MMn_H2warm_H2cold:
     с произвольными коэффициентами вариации (>1, <=1)
     """
 
-    def __init__(self, l, mu, b_warm, b_cold, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False):
+    def __init__(self, l, mu, b_warm, b_cold, n, buffer=None, N=150, accuracy=1e-8, dtype="c16", verbose=False):
 
         """
         n: число каналов
@@ -101,8 +101,6 @@ class MMn_H2warm_H2cold:
 
         self.build_matrices()
         self.initial_probabilities()
-        self.key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-        self.down_probs = self.calc_down_probs(self.n + 1)
 
     def get_p(self):
         """
@@ -116,92 +114,56 @@ class MMn_H2warm_H2cold:
     def pls(self, mu, s):
         return mu / (mu + s)
 
-    def calc_passage_times(self):
-        pass_time = passage_time.passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
-        pass_time.calc()
-        print("\nЗначения матриц G:\n")
-
-        g_num = len(pass_time.G)
-        for i in range(g_num):
-
-            print("G{0:^1d}".format(i))
-
-            rows = pass_time.G[i].shape[0]
-            cols = pass_time.G[i].shape[1]
-            for j in range(rows):
-                for t in range(cols):
-                    if t == cols - 1:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]))
-                    else:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]), end=" ")
-
-    def get_key_numbers(self, level):
-        key_numbers = []
-        for i in range(level + 1):
-            key_numbers.append((self.n - i, i))
-        return np.array(key_numbers, dtype=self.dt)
-
-    def calc_down_probs(self, from_level):
-        if from_level == self.n:
-            return np.eye(self.n + 1)
-        b_matrix = self.B[from_level]
-        probs = []
-        for i in range(2, self.cols[from_level - 1]):
-            probs_on_level = []
-            for j in range(2, self.cols[from_level - 1]):
-                if from_level != 1:
-                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
-                else:
-                    probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
-            probs.append(probs_on_level)
-        return np.array(probs, dtype=self.dt)
-
-    def matrix_pow(self, matrix, k):
-        res = np.eye(self.n + 1, dtype=self.dt)
-        for i in range(k):
-            res = np.dot(res, matrix)
-        return res
-
     def calc_w_pls(self, s):
         w = 0
+
+        # вычислим ПЛС заранее
+        mu_pls = self.pls(self.mu, s)
+        mu_w_pls = np.array([self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
+        mu_c_pls = np.array([self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
+
+        # Комбо переходов: охлаждение + разогрев
+        # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
+        c_to_w = np.zeros((2, 2), dtype=self.dt)
+        for c_phase in range(2):
+            for w_phase in range(2):
+                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
         for k in range(1, self.n):
             for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
+                w += self.Y[k][0, i] * mu_w_pls[i]
 
         # Если заявка попала в фазу охлаждения, хотя каналы свободны,
         # ей придется подождать окончание охлаждения и разогрева
         for k in range(0, self.n):
             if k == 0:
                 for i in range(2):
-                    w += self.Y[k][0, i + 1] * self.pls(self.mu_c[i], s)
+                    w += self.Y[k][0, i + 1] * mu_c_pls[i]
             else:
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, 3 + c_phase] * self.pls(self.mu_c[c_phase], s) * self.y_w[
-                            w_phase] * self.pls(self.mu_w[w_phase], s)
+                        w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase]
 
+        pls_service_total = 1.0
         for k in range(self.n, self.N):
 
             # попала в фазу обслуживания
-            pls_service_total = 1
-            for i in range(k + 1 - self.n):
-                # подождать окончание k+1-n обслуживаний
-                pls_service_total *= self.pls(self.mu*self.n, s)
+            # подождать окончание k+1-n обслуживаний
+            pls_service_total *= mu_pls
+
             w += self.Y[k][0, 2] * pls_service_total
 
             # попала в фазу разогрева - разогрев + обслуживание
 
-            w += self.Y[k][0, 0] * pls_service_total * self.pls(self.mu_w[0], s)
-            w += self.Y[k][0, 1] * pls_service_total * self.pls(self.mu_w[1], s)
+            w += self.Y[k][0, 0] * mu_w_pls[0] * pls_service_total
+            w += self.Y[k][0, 1] * mu_w_pls[1] * pls_service_total
 
             # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
             for c_phase in range(2):
                 for w_phase in range(2):
-                    w += self.Y[k][0, 3 + c_phase] * pls_service_total * self.pls(self.mu_c[c_phase], s) * self.y_w[
-                        w_phase] * self.pls(self.mu_w[w_phase], s)
+                    w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase] * pls_service_total
 
         return w
 
@@ -230,6 +192,24 @@ class MMn_H2warm_H2cold:
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
         return v
+
+    def get_cold_prob(self):
+        """
+        Возвращает вероятность нахождения в состоянии охлаждения
+        """
+        p_cold = 0
+        for k in range(self.N):
+            p_cold += self.Y[k][0, -1] + self.Y[k][0, -2]
+        return p_cold.real
+
+    def get_warmup_prob(self):
+        """
+        Возвращает вероятность нахождения в состоянии разогрева
+        """
+        p_warmup = 0
+        for k in range(1, self.N):
+            p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
+        return p_warmup.real
 
     def print_mrx(self, mrx):
         row = mrx.shape[0]
@@ -287,7 +267,7 @@ class MMn_H2warm_H2cold:
         p0_max = 1.0
         p0_min = 0.0
 
-        while math.fabs(1.0 - p_sum) > 1e-6:
+        while math.fabs(1.0 - p_sum.real) > 1e-6:
             p0_ = (p0_max + p0_min) / 2.0
             p_sum = p0_
             self.p[0] = p0_
@@ -424,7 +404,7 @@ class MMn_H2warm_H2cold:
                     x_max1 = self.x[i]
 
             if self.verbose:
-                print("End iter # {0:d}".format(self.num_of_iter_))
+                print(f"End iter # {self.num_of_iter_:d}, x_max: {x_max1}")
 
         self.calculate_p()
         self.calculate_y()
@@ -604,18 +584,18 @@ if __name__ == "__main__":
     from most_queue.sim import rand_destribution as rd
     import time
 
-    n = 4  # число каналов
+    n = 1  # число каналов
     l = 1.0  # интенсивность вх потока
-    ro = 0.7  # коэфф загрузки
-    b1 = n * ro  # ср время обслуживания
+    ro = 0.2  # коэфф загрузки
+    b1 = n * ro / l  # ср время обслуживания
     mu = 1.0 / b1
-    b1_warm = n * 0.4  # ср время разогрева
-    b1_cold = n * 0.3  # ср время охлаждения
+    b1_warm = n * 0.3 / l  # ср время разогрева
+    b1_cold = n * 0.0001 / l  # ср время охлаждения
     num_of_jobs = 1000000  # число обсл заявок ИМ
-    b_coev_warm = 1.3  # коэфф вариации времени разогрева
-    b_coev_cold = 1.2  # коэфф вариации времени охлаждения
+    b_coev_warm = 1.2  # коэфф вариации времени разогрева
+    b_coev_cold = 1.3  # коэфф вариации времени охлаждения
     buff = None
-    verbose = False
+    verbose = True
 
     b_w = [0.0] * 3
     b_w[0] = b1_warm
@@ -646,11 +626,11 @@ if __name__ == "__main__":
     im_time = time.process_time() - im_start
 
     tt_start = time.process_time()
-    tt = MMn_H2warm_H2cold(l, mu, b_w, b_c, n, buffer=buff, verbose=verbose)
+    tt = MMn_H2warm_H2cold(l, mu, b_w, b_c, n, buffer=buff, verbose=verbose, accuracy=1e-14)
 
-    for i in range(5):
-        print(f"Matrix C[{i}]")
-        tt.print_mrx(tt.C[i])
+    # for i in range(5):
+    #     print(f"Matrix C[{i}]")
+    #     tt.print_mrx(tt.C[i])
 
     tt.run()
     p_tt = tt.get_p()
@@ -667,6 +647,10 @@ if __name__ == "__main__":
     print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
     print(f'Коэффициент вариации времени охлаждения {b_coev_cold:0.3f}')
     print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
+    print(
+        f"Вероятность нахождения в состоянии разогрева\n\tИМ: {smo.get_warmup_prob():0.3f}\n\tЧисл: {tt.get_warmup_prob():0.3f}")
+    print(
+        f"Вероятность нахождения в состоянии охлаждения\n\tИМ: {smo.get_cold_prob():0.3f}\n\tЧисл: {tt.get_cold_prob():0.3f}")
     print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
     print("Время ИМ: {0:^5.3f} c".format(im_time))
     print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
