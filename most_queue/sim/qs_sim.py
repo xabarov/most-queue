@@ -1,6 +1,6 @@
 import numpy as np
 
-import rand_destribution as rd
+import most_queue.sim.rand_destribution as rd
 import math
 from tqdm import tqdm
 import time
@@ -38,6 +38,8 @@ class QueueingSystemSimulator:
         self.buffer = buffer
         self.verbose = verbose  # выводить ли текстовые сообщения о работе
         self.cuda = cuda  # использование CUDA при ИМ для генерации ПСЧ
+
+        self.generator = np.random.default_rng()
 
         self.free_channels = self.n
         self.num_of_states = 100000
@@ -85,14 +87,26 @@ class QueueingSystemSimulator:
         self.is_set_warm = False
         self.is_start_warm = False
         self.end_warm_time = 1e16
+        self.warm_prob = 0
+        self.warm_start_mom = 0
+        self.warm_starts_times = 0
+        self.warm_after_cold_starts = 0
         # Cold
         self.is_set_cold = False
         self.is_start_cold = False
         self.end_cold_time = 1e16
+        self.cold_start_mom = 0
+        self.cold_prob = 0
+        self.cold_starts_times = 0
         # Delay
         self.is_set_cold_delay = False
         self.is_start_cold_delay = False
         self.end_cold_delay_time = 1e16
+        self.cold_delay_start_mom = 0
+        self.cold_delay_prob = 0
+        self.cold_delay_starts_times = 0
+
+        self.zero_wait_arrivals_num = 0
 
     def set_warm(self, params, types):
         """
@@ -108,22 +122,23 @@ class QueueingSystemSimulator:
             Равномерное                         'Uniform'     [mean, half_interval]
             Нормальное                            'Norm'    [mean, standard_deviation]
         """
+
         if types == "M":
-            self.warm_dist = rd.Exp_dist(params)
+            self.warm_dist = rd.Exp_dist(params, generator=self.generator)
         elif types == "H":
-            self.warm_dist = rd.H2_dist(params)
+            self.warm_dist = rd.H2_dist(params, generator=self.generator)
         elif types == "E":
-            self.warm_dist = rd.Erlang_dist(params)
+            self.warm_dist = rd.Erlang_dist(params, generator=self.generator)
         elif types == "Gamma":
-            self.warm_dist = rd.Gamma(params)
+            self.warm_dist = rd.Gamma(params, generator=self.generator)
         elif types == "C":
-            self.warm_dist = rd.Cox_dist(params)
+            self.warm_dist = rd.Cox_dist(params, generator=self.generator)
         elif types == "Pa":
-            self.warm_dist = rd.Pareto_dist(params)
+            self.warm_dist = rd.Pareto_dist(params, generator=self.generator)
         elif types == "Unifrorm":
-            self.warm_dist = rd.Uniform_dist(params)
+            self.warm_dist = rd.Uniform_dist(params, generator=self.generator)
         elif types == "Norm":
-            self.warm_dist = rd.Normal_dist(params)
+            self.warm_dist = rd.Normal_dist(params, generator=self.generator)
         elif types == "D":
             self.warm_dist = rd.Det_dist(params)
         else:
@@ -150,21 +165,21 @@ class QueueingSystemSimulator:
         """
 
         if types == "M":
-            self.cold_dist = rd.Exp_dist(params)
+            self.cold_dist = rd.Exp_dist(params, generator=self.generator)
         elif types == "H":
-            self.cold_dist = rd.H2_dist(params)
+            self.cold_dist = rd.H2_dist(params, generator=self.generator)
         elif types == "E":
-            self.cold_dist = rd.Erlang_dist(params)
+            self.cold_dist = rd.Erlang_dist(params, generator=self.generator)
         elif types == "Gamma":
-            self.cold_dist = rd.Gamma(params)
+            self.cold_dist = rd.Gamma(params, generator=self.generator)
         elif types == "C":
-            self.cold_dist = rd.Cox_dist(params)
+            self.cold_dist = rd.Cox_dist(params, generator=self.generator)
         elif types == "Pa":
-            self.cold_dist = rd.Pareto_dist(params)
+            self.cold_dist = rd.Pareto_dist(params, generator=self.generator)
         elif types == "Unifrorm":
-            self.cold_dist = rd.Uniform_dist(params)
+            self.cold_dist = rd.Uniform_dist(params, generator=self.generator)
         elif types == "Norm":
-            self.cold_dist = rd.Normal_dist(params)
+            self.cold_dist = rd.Normal_dist(params, generator=self.generator)
         elif types == "D":
             self.cold_dist = rd.Det_dist(params)
         else:
@@ -195,21 +210,21 @@ class QueueingSystemSimulator:
                 "Необходимо сперва задать время охлаждения. Используйте метод set_cold()")
 
         if types == "M":
-            self.cold_delay_dist = rd.Exp_dist(params)
+            self.cold_delay_dist = rd.Exp_dist(params, generator=self.generator)
         elif types == "H":
-            self.cold_delay_dist = rd.H2_dist(params)
+            self.cold_delay_dist = rd.H2_dist(params, generator=self.generator)
         elif types == "E":
-            self.cold_delay_dist = rd.Erlang_dist(params)
+            self.cold_delay_dist = rd.Erlang_dist(params, generator=self.generator)
         elif types == "Gamma":
-            self.cold_delay_dist = rd.Gamma(params)
+            self.cold_delay_dist = rd.Gamma(params, generator=self.generator)
         elif types == "C":
-            self.cold_delay_dist = rd.Cox_dist(params)
+            self.cold_delay_dist = rd.Cox_dist(params, generator=self.generator)
         elif types == "Pa":
-            self.cold_delay_dist = rd.Pareto_dist(params)
+            self.cold_delay_dist = rd.Pareto_dist(params, generator=self.generator)
         elif types == "Unifrorm":
-            self.cold_delay_dist = rd.Uniform_dist(params)
+            self.cold_delay_dist = rd.Uniform_dist(params, generator=self.generator)
         elif types == "Norm":
-            self.cold_delay_dist = rd.Normal_dist(params)
+            self.cold_delay_dist = rd.Normal_dist(params, generator=self.generator)
         elif types == "D":
             self.cold_delay_dist = rd.Det_dist(params)
         else:
@@ -239,21 +254,21 @@ class QueueingSystemSimulator:
         self.is_set_source_params = True
 
         if self.source_types == "M":
-            self.source = rd.Exp_dist(self.source_params)
+            self.source = rd.Exp_dist(self.source_params, generator=self.generator)
         elif self.source_types == "H":
-            self.source = rd.H2_dist(self.source_params)
+            self.source = rd.H2_dist(self.source_params, generator=self.generator)
         elif self.source_types == "E":
-            self.source = rd.Erlang_dist(self.source_params)
+            self.source = rd.Erlang_dist(self.source_params, generator=self.generator)
         elif self.source_types == "C":
-            self.source = rd.Cox_dist(self.source_params)
+            self.source = rd.Cox_dist(self.source_params, generator=self.generator)
         elif self.source_types == "Pa":
-            self.source = rd.Pareto_dist(self.source_params)
+            self.source = rd.Pareto_dist(self.source_params, generator=self.generator)
         elif self.source_types == "Gamma":
-            self.source = rd.Gamma(self.source_params)
+            self.source = rd.Gamma(self.source_params, generator=self.generator)
         elif self.source_types == "Uniform":
-            self.source = rd.Uniform_dist(self.source_params)
+            self.source = rd.Uniform_dist(self.source_params, generator=self.generator)
         elif self.source_types == "Norm":
-            self.source = rd.Normal_dist(self.source_params)
+            self.source = rd.Normal_dist(self.source_params, generator=self.generator)
         elif self.source_types == "D":
             self.source = rd.Det_dist(self.source_params)
         else:
@@ -281,7 +296,7 @@ class QueueingSystemSimulator:
         self.is_set_server_params = True
 
         for i in range(self.n):
-            self.servers.append(Server(self.server_params, self.server_types))
+            self.servers.append(Server(self.server_params, self.server_types, generator=self.generator))
 
     def calc_load(self):
 
@@ -376,14 +391,18 @@ class QueueingSystemSimulator:
 
         return l * b1 / self.n
 
-    def send_task_to_channel(self, is_warm_start):
+    def send_task_to_channel(self, is_warm_start=False):
         # Отправляет заявку в канал обслуживания
         # is_warm_start- нужен ли разогрев
         for s in self.servers:
             if s.is_free:
+                tsk = Task(self.ttek)
+                tsk.wai_time = 0
                 self.taked += 1
+                self.refresh_w_stat(tsk.wai_time)
+                self.zero_wait_arrivals_num += 1
 
-                s.start_service(Task(self.ttek), self.ttek, is_warm_start)
+                s.start_service(tsk, self.ttek, is_warm_start)
                 self.free_channels -= 1
 
                 # Проверям, не наступил ли ПНЗ:
@@ -443,7 +462,8 @@ class QueueingSystemSimulator:
                     # Заявка пришла раньше окончания времени задержки начала охлаждения
                     self.is_start_cold_delay = False
                     self.end_cold_delay_time = 1e16
-                    self.send_task_to_channel(False)
+                    self.cold_delay_prob += self.ttek - self.cold_delay_start_mom
+                    self.send_task_to_channel()
                     return
 
             if self.is_set_warm:
@@ -459,22 +479,36 @@ class QueueingSystemSimulator:
                     # 1. В режиме разогрева -> отправляем заявку в очередь
                     self.send_task_to_queue()
                 else:
-                    if len(self.queue) == 0 and self.free_channels == self.n:
-                        # 2. Она пустая и была выклюбчена после охлаждения. Запускаем разогрев
+                    if self.free_channels == self.n:
+                        # 2. Она пустая и была выключена после охлаждения. Запускаем разогрев
                         self.start_warm()
                         # Отправляем заявку в очередь
                         self.send_task_to_queue()
                     else:
                         # 3. Не пустая и разогретая -> тогда оправляем на обслуживание
-                        self.send_task_to_channel(False)
+                        self.send_task_to_channel()
 
             else:
                 # Без разогрева. Отправляем заявку в канал обслуживания
-                self.send_task_to_channel(False)
+                self.send_task_to_channel()
 
     def start_warm(self):
         self.is_start_warm = True
+        self.warm_start_mom = self.ttek
+        self.warm_starts_times += 1
         self.end_warm_time = self.ttek + self.warm_dist.generate()
+
+    def start_cold(self):
+        self.is_start_cold = True
+        self.cold_start_mom = self.ttek
+        self.cold_starts_times += 1
+        self.end_cold_time = self.ttek + self.cold_dist.generate()
+
+    def start_cold_delay(self):
+        self.is_start_cold_delay = True
+        self.cold_delay_start_mom = self.ttek
+        self.cold_delay_starts_times += 1
+        self.end_cold_delay_time = self.ttek + self.cold_delay_dist.generate()
 
     def serving(self, c):
         """
@@ -492,26 +526,27 @@ class QueueingSystemSimulator:
         self.total += 1
         self.free_channels += 1
         self.refresh_v_stat(self.ttek - end_ts.arr_time)
-        self.refresh_w_stat(end_ts.wait_time)
+        # self.refresh_w_stat(end_ts.wait_time)
+
         self.in_sys -= 1
 
+        # ПНЗ
         if len(self.queue) == 0 and self.free_channels == 1:
             if self.in_sys == self.n - 1:
                 # Конец ПНЗ
                 self.ppnz_moments += 1
                 self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
 
+        # COLD
         if self.is_set_cold:
             if len(self.queue) == 0 and self.free_channels == self.n:
                 # Система стала пустой.
                 # 1. Если задана задержка начала охлаждения - разыгрываем время ее окончания
                 # 2. Если нет - запускаем охлаждение
                 if self.is_set_cold_delay:
-                    self.is_start_cold_delay = True
-                    self.end_cold_delay_time = self.ttek + self.cold_delay_dist.generate()
+                    self.start_cold_delay()
                 else:
-                    self.is_start_cold = True
-                    self.end_cold_time = self.ttek + self.cold_dist.generate()
+                    self.start_cold()
 
         if len(self.queue) != 0:
             self.send_head_of_queue_to_channel(c)
@@ -524,12 +559,14 @@ class QueueingSystemSimulator:
 
         self.taked += 1
         que_ts.wait_time += self.ttek - que_ts.start_waiting_time
+        self.refresh_w_stat(que_ts.wait_time)
+
         self.servers[channel_num].start_service(que_ts, self.ttek)
         self.free_channels -= 1
 
     def calc_next_event_time(self):
 
-        serv_earl = 1e10
+        serv_earl = 1e16
 
         for c in range(self.n):
             if self.servers[c].time_to_end_service < serv_earl:
@@ -547,6 +584,8 @@ class QueueingSystemSimulator:
         self.ttek = self.end_warm_time
         self.t_old = self.ttek
 
+        self.warm_prob += self.ttek - self.warm_start_mom
+
         self.is_start_warm = False
         self.end_warm_time = 1e16
 
@@ -561,13 +600,17 @@ class QueueingSystemSimulator:
         self.ttek = self.end_cold_time
         self.t_old = self.ttek
 
+        self.cold_prob += self.ttek - self.cold_start_mom
+
         self.is_start_cold = False
         self.end_cold_time = 1e16
 
         if self.is_set_warm:
             if len(self.queue) != 0:
                 # Запускаем разогрев только если в очереди скопились заявки.
+                self.warm_after_cold_starts += 1
                 self.start_warm()
+
         else:
             # Отправляем n заявок из очереди в каналы
             for i in range(self.n):
@@ -580,18 +623,18 @@ class QueueingSystemSimulator:
         self.ttek = self.end_cold_delay_time
         self.t_old = self.ttek
 
+        self.cold_delay_prob += self.ttek - self.cold_delay_start_mom
+
         self.is_start_cold_delay = False
         self.end_cold_delay_time = 1e16
 
         # Запускаем процесс охлаждения
-        self.is_start_cold = True
-        self.end_cold_time = self.ttek + self.cold_dist.generate()
-
+        self.start_cold()
 
     def run_one_step(self):
 
         num_of_server_earlier = -1
-        serv_earl = 1e10
+        serv_earl = 1e16
 
         for c in range(self.n):
             if self.servers[c].time_to_end_service < serv_earl:
@@ -602,10 +645,10 @@ class QueueingSystemSimulator:
         times = [serv_earl, self.arrival_time, self.end_warm_time, self.end_cold_time, self.end_cold_delay_time]
         min_time_num = np.argmin(times)
         if min_time_num == 0:
-            # Обслуживание. Точно не режим разогрева. Есть в каналах заявки
+            # Обслуживание
             self.serving(num_of_server_earlier)
         elif min_time_num == 1:
-            # Прибытие. Может быть в режиме разогрева. логика - внутри
+            # Прибытие
             self.arrival()
         elif min_time_num == 2:
             # конец разогрева
@@ -671,17 +714,35 @@ class QueueingSystemSimulator:
 
         self.time_spent = time.process_time() - start
 
+    def get_warmup_prob(self):
+
+        return self.warm_prob / self.ttek
+
+    def get_cold_prob(self):
+
+        return self.cold_prob / self.ttek
+
+    def get_cold_delay_prob(self):
+
+        return self.cold_delay_prob / self.ttek
+
     def refresh_ppnz_stat(self, new_a):
+
         for i in range(3):
             self.ppnz[i] = self.ppnz[i] * (1.0 - (1.0 / self.ppnz_moments)) + math.pow(new_a, i + 1) / self.ppnz_moments
 
     def refresh_v_stat(self, new_a):
+
         for i in range(3):
             self.v[i] = self.v[i] * (1.0 - (1.0 / self.served)) + math.pow(new_a, i + 1) / self.served
 
     def refresh_w_stat(self, new_a):
+
         for i in range(3):
             self.w[i] = self.w[i] * (1.0 - (1.0 / self.taked)) + math.pow(new_a, i + 1) / self.taked
+
+        # for i in range(3):
+        #     self.w[i] = self.w[i] * (1.0 - (1.0 / self.served)) + math.pow(new_a, i + 1) / self.served
 
     def get_p(self):
         """
@@ -754,7 +815,7 @@ class Task:
         """
         self.arr_time = arr_time
 
-        self.start_waiting_time = -1
+        self.start_waiting_time = 0
 
         self.wait_time = 0
 
@@ -773,27 +834,27 @@ class Server:
     """
     id = 0
 
-    def __init__(self, params, types):
+    def __init__(self, params, types, generator=None):
         """
         params - параметры распределения
         types -  тип распределения
         """
         if types == "M":
-            self.dist = rd.Exp_dist(params)
+            self.dist = rd.Exp_dist(params, generator=generator)
         elif types == "H":
-            self.dist = rd.H2_dist(params)
+            self.dist = rd.H2_dist(params, generator=generator)
         elif types == "E":
-            self.dist = rd.Erlang_dist(params)
+            self.dist = rd.Erlang_dist(params, generator=generator)
         elif types == "C":
-            self.dist = rd.Cox_dist(params)
+            self.dist = rd.Cox_dist(params, generator=generator)
         elif types == "Gamma":
-            self.dist = rd.Gamma(params)
+            self.dist = rd.Gamma(params, generator=generator)
         elif types == "Pa":
-            self.dist = rd.Pareto_dist(params)
+            self.dist = rd.Pareto_dist(params, generator=generator)
         elif types == "Uniform":
-            self.dist = rd.Uniform_dist(params)
+            self.dist = rd.Uniform_dist(params, generator=generator)
         elif types == "Norm":
-            self.dist = rd.Normal_dist(params)
+            self.dist = rd.Normal_dist(params, generator=generator)
         elif types == "D":
             self.dist = rd.Det_dist(params)
         else:
@@ -809,24 +870,24 @@ class Server:
         self.types_warm = None
         self.warm_dist = None
 
-    def set_warm(self, params, types):
+    def set_warm(self, params, types, generator=None):
 
         if types == "M":
-            self.warm_dist = rd.Exp_dist(params)
+            self.warm_dist = rd.Exp_dist(params, generator=generator)
         elif types == "H":
-            self.warm_dist = rd.H2_dist(params)
+            self.warm_dist = rd.H2_dist(params, generator=generator)
         elif types == "E":
-            self.warm_dist = rd.Erlang_dist(params)
+            self.warm_dist = rd.Erlang_dist(params, generator=generator)
         elif types == "Gamma":
-            self.warm_dist = rd.Gamma(params)
+            self.warm_dist = rd.Gamma(params, generator=generator)
         elif types == "C":
-            self.warm_dist = rd.Cox_dist(params)
+            self.warm_dist = rd.Cox_dist(params, generator=generator)
         elif types == "Pa":
-            self.warm_dist = rd.Pareto_dist(params)
+            self.warm_dist = rd.Pareto_dist(params, generator=generator)
         elif types == "Unifrorm":
-            self.warm_dist = rd.Uniform_dist(params)
+            self.warm_dist = rd.Uniform_dist(params, generator=generator)
         elif types == "Norm":
-            self.warm_dist = rd.Normal_dist(params)
+            self.warm_dist = rd.Normal_dist(params, generator=generator)
         elif types == "D":
             self.warm_dist = rd.Det_dist(params)
         else:

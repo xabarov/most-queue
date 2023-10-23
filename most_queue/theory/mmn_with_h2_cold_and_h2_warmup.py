@@ -1,12 +1,11 @@
 import numpy as np
 import math
-import passage_time
 from tqdm import tqdm
 from most_queue.sim import rand_destribution as rd
 from scipy import special
 from most_queue.utils.binom_probs import calc_binom_probs
-from diff5dots import diff5dots
 from scipy.misc import derivative
+from itertools import chain
 
 
 class MMn_H2warm_H2cold:
@@ -46,6 +45,7 @@ class MMn_H2warm_H2cold:
             h2_params_warm = rd.H2_dist.get_params_clx(b_warm)
         else:
             h2_params_warm = rd.H2_dist.get_params(b_warm)
+
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
@@ -118,7 +118,7 @@ class MMn_H2warm_H2cold:
         w = 0
 
         # вычислим ПЛС заранее
-        mu_pls = self.pls(self.mu, s)
+        mu_pls = self.pls(self.mu * self.n, s)
         mu_w_pls = np.array([self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
         mu_c_pls = np.array([self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
 
@@ -129,6 +129,8 @@ class MMn_H2warm_H2cold:
             for w_phase in range(2):
                 c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
+        # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
+        w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
         for k in range(1, self.n):
@@ -140,7 +142,8 @@ class MMn_H2warm_H2cold:
         for k in range(0, self.n):
             if k == 0:
                 for i in range(2):
-                    w += self.Y[k][0, i + 1] * mu_c_pls[i]
+                    # Переход в [0] состояние, а из него -> в разогрев
+                    w += self.Y[k][0, i + 1] * mu_c_pls[i] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
             else:
                 for c_phase in range(2):
                     for w_phase in range(2):
@@ -174,7 +177,8 @@ class MMn_H2warm_H2cold:
         w = [0.0] * 3
 
         for i in range(3):
-            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.mu, n=i + 1, order=9)
+            min_mu = min(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'), [self.mu]))
+            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
         return [-w[0].real, w[1].real, -w[2].real]
 
     def get_b(self):
@@ -234,6 +238,14 @@ class MMn_H2warm_H2cold:
             res.append(a[2] + 3 * a[1] * b[0] + 3 * b[1] * a[0] + b[2])
         return res
 
+    def calc_source_coev(self):
+
+        return 1.0
+
+    def calc_serv_coev(self):
+
+        return 1.0
+
     def initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
@@ -242,7 +254,11 @@ class MMn_H2warm_H2cold:
         for i in range(self.N):
             for j in range(self.cols[i]):
                 self.t[i][0, j] = 1.0 / self.cols[i]
-        self.x[0] = 0.4
+
+        ro = self.l / (self.mu * self.n)
+        va = self.calc_source_coev()
+        vb = self.calc_serv_coev()
+        self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
 
     def norm_probs(self):
         summ = 0
@@ -283,8 +299,11 @@ class MMn_H2warm_H2cold:
         self.norm_probs()
 
     def calculate_y(self):
+        # sum_y = 0.0
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
+            # sum_y += np.sum(self.Y[i])
+        # print("Sum Y: ", sum_y)
 
     def build_matrices(self):
         """
@@ -369,7 +388,7 @@ class MMn_H2warm_H2cold:
                 if self.dt == 'c16':
                     self.x[j] = (1.0 + 0.0j) / self.x[j]
                 else:
-                    self.x[j] = (1.0) / self.x[j]
+                    self.x[j] = 1.0 / self.x[j]
 
                 if self.R and j == (self.N - 1):
                     tA = np.dot(self.t[j - 1], self.A[j - 1])
@@ -488,7 +507,7 @@ class MMn_H2warm_H2cold:
             return output
 
         if num == 1:
-            # normal serving
+            # to cold phase
             output[2, 1] = self.mu * self.y_c[0]
             output[2, 2] = self.mu * self.y_c[1]
 
@@ -587,15 +606,15 @@ if __name__ == "__main__":
     n = 1  # число каналов
     l = 1.0  # интенсивность вх потока
     ro = 0.2  # коэфф загрузки
-    b1 = n * ro / l  # ср время обслуживания
+    b1 = 0.001  # n * ro / l  # ср время обслуживания
     mu = 1.0 / b1
     b1_warm = n * 0.3 / l  # ср время разогрева
     b1_cold = n * 0.0001 / l  # ср время охлаждения
-    num_of_jobs = 1000000  # число обсл заявок ИМ
-    b_coev_warm = 1.2  # коэфф вариации времени разогрева
-    b_coev_cold = 1.3  # коэфф вариации времени охлаждения
+    num_of_jobs = 100000  # число обсл заявок ИМ
+    b_coev_warm = 1.01  # коэфф вариации времени разогрева
+    b_coev_cold = 1.01  # коэфф вариации времени охлаждения
     buff = None
-    verbose = True
+    verbose = False
 
     b_w = [0.0] * 3
     b_w[0] = b1_warm
@@ -639,6 +658,11 @@ if __name__ == "__main__":
 
     tt_time = time.process_time() - tt_start
     num_of_iter = tt.num_of_iter_
+
+    print('warms starts', smo.warm_starts_times)
+    print('warms after cold starts', smo.warm_after_cold_starts)
+    print('cold starts', smo.cold_starts_times)
+    print("zero wait arrivals num", smo.zero_wait_arrivals_num)
 
     print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
           "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/M/{0:^2d} c H2-разогревом и H2-охлаждением "

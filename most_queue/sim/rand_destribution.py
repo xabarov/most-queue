@@ -62,7 +62,7 @@ def generate_e_jit(rng_states, r, mu, out):
 
 
 class Normal_dist:
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности:
         mean - среднее значение
@@ -72,26 +72,28 @@ class Normal_dist:
         self.mean = params[0]
         self.sko = params[1]
         self.type = 'Normal'
+        self.generator = generator
 
     def generate(self):
         """
         Генерация псевдо-случайных чисел
         """
 
-        return self.generate_static(self.mean, self.sko)
+        return self.generate_static(self.mean, self.sko, self.generator)
 
     @staticmethod
-    def generate_static(mean, sko):
+    def generate_static(mean, sko, generator=None):
         """
         Генерация псевдо-случайных чисел
         Статический метод
         """
-
+        if generator:
+            return generator.normal(mean, sko)
         return np.random.normal(mean, sko)
 
 
 class Uniform_dist:
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности:
         mean - среднее значение
@@ -101,6 +103,7 @@ class Uniform_dist:
         self.mean = params[0]
         self.half_interval = params[1]
         self.type = 'Uniform'
+        self.generator = generator
 
     def generate(self):
         """
@@ -108,17 +111,17 @@ class Uniform_dist:
         Вызов из экземпляра класса
         """
 
-        return self.generate_static(self.mean, self.half_interval)
+        return self.generate_static(self.mean, self.half_interval, self.generator)
 
     @staticmethod
-    def generate_static(mean, half_interval):
+    def generate_static(mean, half_interval, generator=None):
         """
         Генерация псевдо-случайных чисел, подчиненных равномерному распределению
         Статический метод
         """
-
-        r = np.random.uniform(mean - half_interval, mean + half_interval)
-        return r
+        if generator:
+            return generator.uniform(mean - half_interval, mean + half_interval)
+        return np.random.uniform(mean - half_interval, mean + half_interval)
 
     @staticmethod
     def calc_theory_moments(mean, half_interval, num=3):
@@ -193,7 +196,7 @@ class Uniform_dist:
 
 
 class H2_dist:
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности - y1, mu1, mu2
         """
@@ -203,6 +206,7 @@ class H2_dist:
         self.m2 = params[2]
         self.params = params
         self.type = 'H'
+        self.generator = generator
 
     def generate(self):
         """
@@ -210,17 +214,22 @@ class H2_dist:
         Вызов из экземпляра класса
         """
 
-        return self.generate_static(self.y1, self.m1, self.m2)
+        return self.generate_static(self.y1, self.m1, self.m2, self.generator)
 
     @staticmethod
-    def generate_static(y1, m1, m2):
+    def generate_static(y1, m1, m2, generator=None):
         """
         Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
         Статический метод
         """
 
-        r = np.random.rand()
-        res = -np.log(np.random.rand())
+        if generator:
+            r = generator.random()
+            res = -np.log(generator.random())
+        else:
+            r = np.random.rand()
+            res = -np.log(np.random.rand())
+
         if r < y1:
             if m1 != 0:
                 res = res / m1
@@ -429,7 +438,7 @@ class Cox_dist:
     Распределение Кокса 2-го порядка
     """
 
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности - y1, mu1, mu2
         """
@@ -438,22 +447,30 @@ class Cox_dist:
         self.m2 = params[2]
         self.params = params
         self.type = 'C'
+        self.generator = generator
 
     def generate(self):
         """
         Генерация псевдо-случайных чисел, подчиненных распределению Кокса 2-го порядка. Вызов из экземпляра класса
         """
-        return self.generate_static(self.y1, self.m1, self.m2)
+        return self.generate_static(self.y1, self.m1, self.m2, self.generator)
 
     @staticmethod
-    def generate_static(y1, m1, m2):
+    def generate_static(y1, m1, m2, generator):
         """
         Генерация псевдо-случайных чисел, подчиненных распределению Кокса 2-го порядка. Статический метод
         """
-        r = np.random.rand()
-        res = (-1.0 / m1) * np.log(np.random.rand())
+        if generator:
+            r = generator.random()
+            res = (-1.0 / m1) * np.log(generator.random())
+        else:
+            r = np.random.rand()
+            res = (-1.0 / m1) * np.log(np.random.rand())
         if r < y1:
-            res = res + (-1.0 / m2) * np.log(np.random.rand())
+            if generator:
+                res = res + (-1.0 / m2) * np.log(generator.random())
+            else:
+                res = res + (-1.0 / m2) * np.log(np.random.rand())
         return res
 
     @staticmethod
@@ -566,7 +583,7 @@ class Det_dist:
 class Pareto_dist:
     "Распределение Парето"
 
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности - alpha, K
         """
@@ -574,9 +591,10 @@ class Pareto_dist:
         self.k = params[1]
         self.params = params
         self.type = 'Pa'
+        self.generator = generator
 
     def generate(self):
-        return Pareto_dist.generate_static(self.a, self.k)
+        return Pareto_dist.generate_static(self.a, self.k, self.generator)
 
     @staticmethod
     def get_pdf(t, a, k):
@@ -621,7 +639,9 @@ class Pareto_dist:
         return f
 
     @staticmethod
-    def generate_static(a, k):
+    def generate_static(a, k, generator=None):
+        if generator:
+            return k * math.pow(generator.random(), -1 / a)
         return k * math.pow(np.random.rand(), -1 / a)
 
     @staticmethod
@@ -662,7 +682,7 @@ class Erlang_dist:
     Распределение Эрланга r-го порядка
     """
 
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         """"
         Принимает список параметров в следующей последовательности - r, mu
         """
@@ -670,21 +690,25 @@ class Erlang_dist:
         self.mu = params[1]
         self.params = params
         self.type = 'E'
+        self.generator = generator
 
     def generate(self):
         """
         Генератор псевдо-случайных чисел
         """
-        return self.generate_static(self.r, self.mu)
+        return self.generate_static(self.r, self.mu, self.generator)
 
     @staticmethod
-    def generate_static(r, mu):
+    def generate_static(r, mu, generator=None):
         """
         Генератор псевдо-случайных чисел. Статический метод
         """
         prod = 1
         for i in range(r):
-            prod *= np.random.rand()
+            if generator:
+                prod *= generator.random()
+            else:
+                prod *= np.random.rand()
 
         return -(1.0 / mu) * np.log(prod)
 
@@ -750,17 +774,18 @@ class Exp_dist:
         Экспоненциальное распределение
     """
 
-    def __init__(self, mu):
+    def __init__(self, mu, generator=None):
         self.erl = Erlang_dist([1, mu])
         self.params = mu
         self.type = 'M'
+        self.generator = generator
 
     def generate(self):
         return self.erl.generate()
 
     @staticmethod
-    def generate_static(mu):
-        return Erlang_dist.generate_static(1, mu)
+    def generate_static(mu, generator=None):
+        return Erlang_dist.generate_static(1, mu, generator)
 
     @staticmethod
     def calc_theory_moments(mu, count=3):
@@ -776,7 +801,7 @@ class Gamma:
     Гамма-распределение
     """
 
-    def __init__(self, params):
+    def __init__(self, params, generator=None):
         self.mu = params[0]
         self.alpha = params[1]
         self.is_corrective = False
@@ -787,6 +812,7 @@ class Gamma:
                 self.g.append(params[i])
         self.params = params
         self.type = 'Gamma'
+        self.generator = generator
 
     @staticmethod
     def get_mu_alpha(b):
@@ -839,11 +865,13 @@ class Gamma:
         return mu, alpha
 
     def generate(self):
-        return self.generate_static(self.mu, self.alpha)
+        return self.generate_static(self.mu, self.alpha, self.generator)
 
     @staticmethod
-    def generate_static(mu, alpha):
+    def generate_static(mu, alpha, generator=None):
         theta = 1 / mu
+        if generator:
+            return generator.gamma(alpha, theta)
         return np.random.gamma(alpha, theta)
 
     @staticmethod

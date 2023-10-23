@@ -32,8 +32,9 @@ if __name__ == '__main__':
     from most_queue.utils.tables import times_print, probs_print
 
     l = 1
-    b1 = 0.8
-    b1_warm = 0.9
+    ro = 0.2  # коэфф загрузки
+    b1 = n * ro / l  # ср время обслуживания
+    b1_warm = n * 0.3 / l  # ср время разогрева
     coev = 1.3
     b_params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
     b = rd.H2_dist.calc_theory_moments(*b_params, 4)
