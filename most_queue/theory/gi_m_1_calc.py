@@ -1,7 +1,7 @@
 import math
-from most_queue.sim import rand_destribution as rd
-import q_poisson_arrival_calc
-from most_queue.theory import convolution_sum_calc
+from sim import rand_destribution as rd
+from theory import q_poisson_arrival_calc
+from theory.convolution_sum_calc import get_moments_minus
 
 
 def get_pi(a, mu, num=100, e=1e-10, approx_distr="Gamma"):
@@ -37,7 +37,7 @@ def get_v(a, mu, num=3, e=1e-10, approx_distr="Gamma"):
 def get_w(a, mu, num=3, e=1e-10, approx_distr="Gamma"):
     v = get_v(a, mu, num, e, approx_distr)
     b = [1.0 / mu, 2.0 / pow(mu, 2), 6.0 / pow(mu, 3), 24.0 / pow(mu, 4)]
-    w = sv_sum_calc.get_moments_minus(v, b, num)
+    w = get_moments_minus(v, b, num)
 
     return w
 
@@ -86,62 +86,3 @@ def get_w_param(a, mu, e=1e-10, approx_distr="Gamma"):
 
     return 0
 
-
-if __name__ == '__main__':
-
-    from most_queue.sim import qs_sim
-    from most_queue.utils.tables import times_print, probs_print
-
-    l = 1
-    a1 = 1 / l
-    b1 = 0.9
-    mu = 1 / b1
-    a_coev = 1.6
-    num_of_jobs = 800000
-
-    v, alpha = rd.Gamma.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = rd.Gamma.calc_theory_moments(v, alpha)
-    v_ch = get_v(a, mu)
-    p_ch = get_p(a, mu)
-
-    qs = qs_sim.QueueingSystemSimulator(1)
-    qs.set_sources([v, alpha], "Gamma")
-    qs.set_servers(mu, "M")
-    qs.run(num_of_jobs)
-    v_im = qs.v
-    p_im = qs.get_p()
-
-    print("\nGamma\n")
-
-    times_print(v_im, v_ch, is_w=False)
-
-    w_ch = get_w(a, mu)
-    w_im = qs.w
-
-    times_print(w_im, w_ch, is_w=True)
-
-    probs_print(p_im, p_ch, 10)
-
-    # Pareto test
-    alpha, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
-    a = rd.Pareto_dist.calc_theory_moments(alpha, K)
-    v_ch = get_v(a, mu, approx_distr="Pa")
-    p_ch = get_p(a, mu, approx_distr="Pa")
-
-    qs = qs_sim.QueueingSystemSimulator(1)
-    qs.set_sources([alpha, K], "Pa")
-    qs.set_servers(mu, "M")
-    qs.run(num_of_jobs)
-    v_im = qs.v
-    p_im = qs.get_p()
-
-    print("\nPareto\n")
-
-    times_print(v_im, v_ch, is_w=False)
-
-    w_ch = get_w(a, mu, approx_distr="Pa")
-    w_im = qs.w
-
-    times_print(w_im, w_ch, is_w=True)
-
-    probs_print(p_im, p_ch, 10)

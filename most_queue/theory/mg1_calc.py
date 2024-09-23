@@ -1,7 +1,7 @@
 import math
-from most_queue.sim import rand_destribution as rd
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-import q_poisson_arrival_calc as q_calc
+from sim import rand_destribution as rd
+from sim.qs_sim import QueueingSystemSimulator
+from theory import q_poisson_arrival_calc as q_calc
 
 
 def get_w(l, b, num=3):
@@ -76,74 +76,4 @@ def get_p(l, b, num=100, dist_type="Gamma"):
     return p
 
 
-if __name__ == '__main__':
-    from most_queue.utils.tables import times_print, probs_print
-
-    l = 1
-    b1 = 0.7
-    coev = 1.6
-    num_of_jobs = 800000
-
-    params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
-    b = rd.H2_dist.calc_theory_moments(*params, 4)
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100)
-
-    qs = QueueingSystemSimulator(1)
-    qs.set_servers(params, "H")
-    qs.set_sources(l, "M")
-    qs.run(num_of_jobs)
-    w_im = qs.w
-    p_im = qs.get_p()
-
-    times_print(w_im, w_ch, True)
-
-    v_ch = get_v(l, b)
-    v_im = qs.v
-
-    times_print(v_im, v_ch, False)
-
-    probs_print(p_im, p_ch, 10)
-
-    params = rd.Uniform_dist.get_params_by_mean_and_coev(b1, coev)
-    b = rd.Uniform_dist.calc_theory_moments(*params, 4)
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100, dist_type="Uniform")
-
-    qs = QueueingSystemSimulator(1)
-    qs.set_servers(params, "Uniform")
-    qs.set_sources(l, "M")
-    qs.run(num_of_jobs)
-    w_im = qs.w
-    p_im = qs.get_p()
-
-    times_print(w_im, w_ch, True)
-
-    v_ch = get_v(l, b)
-    v_im = qs.v
-
-    times_print(v_im, v_ch, False)
-
-    probs_print(p_im, p_ch, 10)
-
-    a, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(b1, coev)
-    b = rd.Pareto_dist.calc_theory_moments(a, K, 4)
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100, dist_type="Pa")
-
-    qs = QueueingSystemSimulator(1)
-    qs.set_servers([a, K], "Pa")
-    qs.set_sources(l, "M")
-    qs.run(num_of_jobs)
-    w_im = qs.w
-    p_im = qs.get_p()
-
-    times_print(w_im, w_ch, True)
-
-    v_ch = get_v(l, b)
-    v_im = qs.v
-
-    times_print(v_im, v_ch, False)
-
-    probs_print(p_im, p_ch, 10)
 

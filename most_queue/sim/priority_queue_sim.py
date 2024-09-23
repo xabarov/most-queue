@@ -1,4 +1,4 @@
-from most_queue.sim import rand_destribution as rd
+from sim import rand_destribution as rd
 
 import time
 import sys
@@ -810,73 +810,4 @@ class Server:
         return res
 
 
-if __name__ == "__main__":
-    from most_queue.theory import priority_calc
-    import math
-    import rand_destribution as rd
-    from most_queue.utils.tables import times_print_with_classes
 
-    n = 5
-    k = 3
-    l = [0.2, 0.3, 0.4]
-    lsum = sum(l)
-    num_of_jobs = 100000
-    b1 = [0.45 * n, 0.9 * n, 1.35 * n]
-    b2 = [0] * k
-    coev = 0.577
-
-    for i in range(k):
-        b2[i] = (b1[i] ** 2) * (1 + coev ** 2)
-    b_sr = sum(b1) / k
-    ro = lsum * b_sr / n
-    params = []
-    for i in range(k):
-        params.append(rd.Gamma.get_mu_alpha([b1[i], b2[i]]))
-
-    b = []
-    for j in range(k):
-        b.append(rd.Gamma.calc_theory_moments(params[j][0], params[j][1], 4))
-
-    print("\nСравнение данных ИМ и результатов расчета методом инвариантов отношения (Р) \n"
-          "времени пребывания в многоканальной СМО с приоритетами")
-    print("Число каналов: " + str(n) + "\nЧисло классов: " + str(k) + "\nКоэффициент загрузки: {0:<1.2f}".format(ro) +
-          "\nКоэффициент вариации времени обслуживания: " + str(coev) + "\n")
-    print("Абсолютный приоритет")
-
-    qs = PriorityQueueSimulator(n, k, "PR")
-    sources = []
-    servers_params = []
-    for j in range(k):
-        sources.append({'type': 'M', 'params': l[j]})
-        servers_params.append({'type': 'Gamma', 'params': params[j]})
-
-    qs.set_sources(sources)
-    qs.set_servers(servers_params)
-
-    qs.run(num_of_jobs)
-
-    v_im = qs.v
-
-    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'PR')
-
-    times_print_with_classes(v_im, v_teor, is_w=False)
-
-    print("Относительный приоритет")
-
-    qs = PriorityQueueSimulator(n, k, "NP")
-    sources = []
-    servers_params = []
-    for j in range(k):
-        sources.append({'type': 'M', 'params': l[j]})
-        servers_params.append({'type': 'Gamma', 'params': params[j]})
-
-    qs.set_sources(sources)
-    qs.set_servers(servers_params)
-
-    qs.run(num_of_jobs)
-
-    v_im = qs.v
-
-    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
-
-    times_print_with_classes(v_im, v_teor, is_w=False)

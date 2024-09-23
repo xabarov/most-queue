@@ -1,5 +1,5 @@
 import math
-import most_queue.sim.rand_destribution as rd
+import sim.rand_destribution as rd
 import numpy as np
 
 

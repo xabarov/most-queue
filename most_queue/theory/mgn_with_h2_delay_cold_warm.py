@@ -1,9 +1,9 @@
 import numpy as np
 import math
 from tqdm import tqdm
-from most_queue.sim import rand_destribution as rd
+from sim import rand_destribution as rd
 from scipy import special
-from most_queue.utils.binom_probs import calc_binom_probs
+from utils.binom_probs import calc_binom_probs
 from scipy.misc import derivative
 from itertools import chain
 
@@ -743,121 +743,3 @@ class MGnH2ServingColdWarmDelay:
 
         return output
 
-
-if __name__ == "__main__":
-
-    from most_queue.sim import qs_sim
-    from most_queue.sim import rand_destribution as rd
-    import time
-
-    n = 1  # число каналов
-    l = 1.0  # интенсивность вх потока
-    ro = 0.2  # коэфф загрузки
-    b1 = n * ro  # ср время обслуживания
-    b1_warm = n * 0.15 / l  # ср время разогрева
-    b1_cold = n * 0.15 / l  # ср время охлаждения
-    b1_cold_delay = n * 0.15 / l  # ср время задежки начала охлаждения
-    num_of_jobs = 300000  # число обсл заявок ИМ
-    b_coev = [1.1]  # коэфф вариации времени обсл
-    b_coev_warm = 1.01  # коэфф вариации времени разогрева
-    b_coev_cold = 1.01  # коэфф вариации времени охлаждения
-    b_coev_cold_delay = 1.01  # коэфф вариации времени задержки начала охлаждения
-    buff = None
-    verbose = False
-
-    for k in range(len(b_coev)):
-        b = [0.0] * 3
-        alpha = 1 / (b_coev[k] ** 2)
-        b[0] = b1
-        b[1] = math.pow(b[0], 2) * (math.pow(b_coev[k], 2) + 1)
-        b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-
-        b_w = [0.0] * 3
-        b_w[0] = b1_warm
-        alpha = 1 / (b_coev_warm ** 2)
-        b_w[1] = math.pow(b_w[0], 2) * (math.pow(b_coev_warm, 2) + 1)
-        b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
-
-        b_c = [0.0] * 3
-        b_c[0] = b1_cold
-        alpha = 1 / (b_coev_cold ** 2)
-        b_c[1] = math.pow(b_c[0], 2) * (math.pow(b_coev_cold, 2) + 1)
-        b_c[2] = b_c[1] * b_c[0] * (1.0 + 2 / alpha)
-
-        b_d = [0.0] * 3
-        b_d[0] = b1_cold_delay
-        alpha = 1 / (b_coev_cold_delay ** 2)
-        b_d[1] = math.pow(b_d[0], 2) * (math.pow(b_coev_cold_delay, 2) + 1)
-        b_d[2] = b_d[1] * b_d[0] * (1.0 + 2 / alpha)
-
-        h2_params = rd.H2_dist.get_params_clx(b)
-        tt_start = time.process_time()
-        tt = MGnH2ServingColdWarmDelay(l, b, b_w, b_c, b_d, n, buffer=buff, verbose=verbose)
-
-        # for i in range(5):
-        #     print(f"Matrix C[{i}]")
-        #     tt.print_mrx(tt.C[i])
-
-        tt.run()
-        p_tt = tt.get_p()
-        w_tt = tt.get_w()  # .get_w() -> wait times
-        # print(w_tt)
-
-        tt_time = time.process_time() - tt_start
-        num_of_iter = tt.num_of_iter_
-
-        im_start = time.process_time()
-        smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
-        smo.set_sources(l, 'M')
-
-        gamma_params = rd.Gamma.get_mu_alpha(b)
-        gamma_params_warm = rd.Gamma.get_mu_alpha(b_w)
-        gamma_params_cold = rd.Gamma.get_mu_alpha(b_c)
-        gamma_params_cold_delay = rd.Gamma.get_mu_alpha(b_d)
-
-        smo.set_servers(gamma_params, 'Gamma')
-        smo.set_warm(gamma_params_warm, 'Gamma')
-        smo.set_cold(gamma_params_cold, 'Gamma')
-        smo.set_cold_delay(gamma_params_cold_delay, 'Gamma')
-
-        smo.run(num_of_jobs)
-        p = smo.get_p()
-        w_im = smo.w  # .w -> wait times
-        im_time = time.process_time() - im_start
-
-        print('warms starts', smo.warm_starts_times)
-        print('warms after cold starts', smo.warm_after_cold_starts)
-        print('cold starts', smo.cold_starts_times)
-        print("zero wait arrivals num", smo.zero_wait_arrivals_num)
-
-        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
-              "ИМ - M/Gamma/{0:^2d} с Gamma разогревом\nТакахаси-Таками - M/H2/{0:^2d} c H2-разогревом, H2-охлаждением"
-              "\n и H2-задержкой начала времени охдаждения "
-              "с комплексными параметрами\n"
-              "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
-        print(f'Коэффициент вариации времени обслуживания {b_coev[k]:0.3f}')
-        print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
-        print(f'Коэффициент вариации времени охлаждения {b_coev_cold:0.3f}')
-        print(f'Коэффициент вариации времени задержки начала охлаждения {b_coev_cold_delay:0.3f}')
-        print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
-        print(
-            f"Вероятность нахождения в состоянии разогрева\n\tИМ: {smo.get_warmup_prob():0.3f}\n\tЧисл: {tt.get_warmup_prob():0.3f}")
-        print(
-            f"Вероятность нахождения в состоянии охлаждения\n\tИМ: {smo.get_cold_prob():0.3f}\n\tЧисл: {tt.get_cold_prob():0.3f}")
-        print(
-            f"Вероятность нахождения в состоянии задежки охлаждения\n\tИМ: {smo.get_cold_delay_prob():0.3f}\n\tЧисл: {tt.get_cold_delay_prob():0.3f}")
-
-        print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
-        print("Время ИМ: {0:^5.3f} c".format(im_time))
-        print("{0:^25s}".format("Первые 10 вероятностей состояний СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[i]))
-
-        print("\n")
-        print("{0:^25s}".format("Начальные моменты времени ожидания в СМО"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-        print("-" * 32)
-        for i in range(3):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i + 1, w_tt[i], w_im[i]))

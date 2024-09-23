@@ -1,8 +1,8 @@
-from most_queue.sim import rand_destribution as rd
-from diff5dots import diff5dots
+from sim import rand_destribution as rd
+from theory.diff5dots import diff5dots
 
-import mg1_calc
-import mgn_tt
+from theory import mg1_calc
+from theory import mgn_tt
 import math
 
 

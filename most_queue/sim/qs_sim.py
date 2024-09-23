@@ -1,6 +1,6 @@
 import numpy as np
 
-import most_queue.sim.rand_destribution as rd
+import sim.rand_destribution as rd
 import math
 from tqdm import tqdm
 import time
@@ -921,50 +921,4 @@ class Server:
         return res
 
 
-if __name__ == '__main__':
-    from most_queue.theory import mmnr_calc
-    from most_queue.theory import m_d_n_calc
-    from most_queue.utils.tables import times_print, probs_print
 
-    n = 3
-    l = 1.0
-    r = 100
-    ro = 0.8
-    num_of_jobs = 300000
-
-    mu = l / (ro * n)
-
-    qs = QueueingSystemSimulator(n, buffer=r)
-
-    qs.set_sources(l, 'M')
-    qs.set_servers(mu, 'M')
-
-    qs.run(num_of_jobs)
-
-    w = mmnr_calc.MMnr_calc.get_w(l, mu, n, r)
-
-    w_im = qs.w
-
-    print("Time spent ", qs.time_spent)
-
-    times_print(w_im, w)
-
-    print("\n\nДанные ИМ::\n")
-    print(qs)
-
-    print(f"M/D/{n}")
-
-    qs = QueueingSystemSimulator(n)
-
-    qs.set_sources(l, 'M')
-    qs.set_servers(1.0 / mu, 'D')
-
-    qs.run(num_of_jobs, is_real_served=False)
-
-    mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
-    p_ch = mdn.calc_p()
-    p_im = qs.get_p()
-
-    print("Time spent ", qs.time_spent)
-
-    probs_print(p_im, p_ch, 10)

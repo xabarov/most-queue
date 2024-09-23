@@ -1,9 +1,9 @@
-from diff5dots import diff5dots
-from most_queue.sim import rand_destribution as rd
+from theory.diff5dots import diff5dots
+from sim import rand_destribution as rd
 
 import numpy as np
 import math
-from most_queue.theory import priority_calc
+from theory import priority_calc
 
 
 def balance_equation(L, R):

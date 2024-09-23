@@ -1,5 +1,5 @@
 import rand_destribution as rd
-from qs_sim import QueueingSystemSimulator, QueueSystemException, Task
+from qs_sim import QueueingSystemSimulator, Task, SetSmoException
 
 
 class ImpatientTask(Task):
@@ -53,7 +53,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         elif self.impatience_types == "D":
             self.impatience = rd.Det_dist(self.impatience_params)
         else:
-            raise QueueSystemException(
+            raise SetSmoException(
                 "Неправильно задан тип распределения нетерпения заявок. Варианты М, Н, Е, С, D, Pa, Uniform")
 
     def arrival(self):
@@ -163,30 +163,4 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         print(f'Task {num_of_task_earlier} is earlier to leave at {moment_to_leave_earlier:8.3f}')
 
 
-if __name__ == '__main__':
-    from most_queue.theory import impatience_calc
 
-    n = 1
-    l = 1.0
-    ro = 0.8
-    n_jobs = 300000
-    mu = l / (ro * n)
-    gamma = 0.2
-
-    v1 = impatience_calc.get_v1(l, mu, gamma)
-
-    qs = ImpatientQueueSim(n)
-
-    qs.set_sources(l, 'M')
-    qs.set_servers(mu, 'M')
-    qs.set_impatiens(gamma, 'M')
-
-    qs.run(n_jobs)
-
-    v1_im = qs.v[0]
-
-    print("\nЗначения среднего времени пребывания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(1, v1, v1_im))

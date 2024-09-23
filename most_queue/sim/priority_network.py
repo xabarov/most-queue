@@ -3,7 +3,7 @@ import rand_destribution as rd
 import numpy as np
 import math
 from priority_queue_sim import Task
-from most_queue.theory import network_calc
+from theory import network_calc
 import time
 from tqdm import tqdm
 import sys
@@ -155,91 +155,3 @@ class PriorityNetwork:
             print(Style.RESET_ALL)
 
 
-if __name__ == '__main__':
-
-    from most_queue.utils.tables import times_print_with_classes
-
-    k_num = 3
-    n_num = 5
-    n = [3, 2, 3, 4, 3]
-    R = []
-    b = []  # k, node, j
-    for i in range(k_num):
-        R.append(np.matrix([
-            [1, 0, 0, 0, 0, 0],
-            [0, 0.4, 0.6, 0, 0, 0],
-            [0, 0, 0, 0.6, 0.4, 0],
-            [0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1]
-        ]))
-    L = [0.1, 0.3, 0.4]
-    nodes_prty = []
-    jobs_num = 100000
-    serv_params = []
-    h2_params = []
-    for m in range(n_num):
-        nodes_prty.append([])
-        for j in range(k_num):
-            if m % 2 == 0:
-                nodes_prty[m].append(j)
-            else:
-                nodes_prty[m].append(k_num - j - 1)
-
-        b1 = 0.9 * n[m] / sum(L)
-        coev = 1.2
-        h2_params.append(rd.H2_dist.get_params_by_mean_and_coev(b1, coev))
-
-        serv_params.append([])
-        for i in range(k_num):
-            serv_params[m].append({'type': 'H', 'params': h2_params[m]})
-
-    for k in range(k_num):
-        b.append([])
-        for m in range(n_num):
-            b[k].append(rd.H2_dist.calc_theory_moments(*h2_params[m], 4))
-
-    prty = ['NP'] * n_num
-    qn = PriorityNetwork(k_num, L, R, n, prty, serv_params, nodes_prty)
-
-    qn.run(jobs_num)
-
-    v_sim = qn.v_network
-
-    calc_res = network_calc.network_prty_calc(R, b, n, L, prty, nodes_prty)
-    v_ch = calc_res['v']
-    loads = calc_res['loads']
-
-    print("\n")
-    print("-" * 60)
-    print("{0:^60s}\n{1:^60s}".format("Сравнение данных ИМ и результатов расчета времени пребывания",
-                                      "в СеМО с многоканальными узлами и приоритетами"))
-    print("-" * 60)
-    print("Количество каналов в узлах:")
-    for nn in n:
-        print("{0:^1d}".format(nn), end=" ")
-    print("\nКоэффициенты загрузки узлов:")
-    for load in loads:
-        print("{0:^1.3f}".format(load), end=" ")
-    print("\n")
-    print("-" * 60)
-    print("{0:^60s}".format("Относительный приоритет"))
-
-    print("-" * 60)
-    times_print_with_classes(v_sim, v_ch, is_w=False)
-
-    prty = ['PR'] * n_num
-    qn = PriorityNetwork(k_num, L, R, n, prty, serv_params, nodes_prty)
-
-    qn.run(jobs_num)
-
-    v_sim = qn.v_network
-
-    calc_res = network_calc.network_prty_calc(R, b, n, L, prty, nodes_prty)
-    v_ch = calc_res['v']
-
-    print("-" * 60)
-    print("{0:^60s}".format("Абсолютный приоритет"))
-    print("-" * 60)
-
-    times_print_with_classes(v_sim, v_ch, is_w=False)

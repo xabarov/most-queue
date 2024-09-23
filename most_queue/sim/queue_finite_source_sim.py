@@ -272,32 +272,3 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         return res
 
 
-if __name__ == '__main__':
-    from most_queue.theory.engset_model import Engset
-    from most_queue.utils.tables import probs_print, times_print
-
-    lam = 0.9
-    mu = 1.0
-    m = 4
-    n = 1
-
-    num_of_jobs = 1000000
-
-    engset = Engset(lam, mu, m)
-    v = engset.get_v()
-
-    qs = QueueingFiniteSourceSim(n, m)
-
-    qs.set_sources(lam, 'M')
-    qs.set_servers(mu, 'M')
-
-    qs.run(num_of_jobs)
-
-    v_im = qs.v
-    p_im = qs.get_p()
-    p_ch = engset.get_p()
-
-    probs_print(p_im, p_ch, 10)
-
-    print("Time spent ", qs.time_spent)
-    times_print(v_im, v, is_w=False)

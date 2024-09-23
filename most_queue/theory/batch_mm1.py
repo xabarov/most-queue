@@ -79,22 +79,3 @@ class BatchMM1:
     def get_v1(self):
         return self.get_N() / (self.l * self.lam)
 
-
-if __name__ == '__main__':
-
-    ls = [0.2, 0.3, 0.1, 0.2, 0.2]
-    moments = [0.0, 0.0]
-    for j in range(len(moments)):
-        for i in range(len(ls)):
-            moments[j] += pow(i + 1, j + 1)
-        moments[j] /= len(ls)
-
-    lam = 0.7
-    ro = 0.8
-    mu = lam * moments[0] / ro
-
-    batch = BatchMM1(lam, mu, ls, tol=1e-15)
-
-    ps = batch.get_p()
-    print(ps)
-    print(sum(ps))

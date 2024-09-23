@@ -24,7 +24,7 @@ class passage_time_calc:
         self.is_clx = is_clx
         n_l_max = D[self.l_tilda].shape[0]
         if is_clx:
-            self.G_l_tilda = np.zeros((n_l_max, n_l_max), dtype="complex_")
+            self.G_l_tilda = np.zeros((n_l_max, n_l_max), dtype='complex64')
         else:
             self.G_l_tilda = np.zeros((n_l_max, n_l_max))
         self.Gr_tilda = []
@@ -129,7 +129,7 @@ class passage_time_calc:
         b_cols = self.B[self.l_tilda].shape[1]
         if self.is_clx:
             self.G_l_tilda = np.eye(b_rows, b_cols,
-                                    dtype="complex_")  # присвоить первоначальное значение G = B не работает !!!
+                                    dtype='complex64')  # присвоить первоначальное значение G = B не работает !!!
         else:
             self.G_l_tilda = np.eye(b_rows, b_cols)
         max_elem = self.G_l_tilda.max()
@@ -178,7 +178,7 @@ class passage_time_calc:
         G1 = B1 + np.dot(L1, G) + np.dot(F1, np.dot(G, G))
 
         # if self.is_clx:
-        #     G1 = np.array(np.eye(B1.shape[0], B1.shape[1]), dtype="complex_") # присвоить первоначальное значение G = B не работает !!!
+        #     G1 = np.array(np.eye(B1.shape[0], B1.shape[1]), dtype='complex64') # присвоить первоначальное значение G = B не работает !!!
         # else:
         #     G1 = np.array(np.eye(B1.shape[0], B1.shape[1]))
 
@@ -209,7 +209,7 @@ class passage_time_calc:
 
         # if self.is_clx:
         #     G2 = np.array(np.eye(B2.shape[0], B2.shape[1]),
-        #                    dtype="complex_")  # присвоить первоначальное значение G = B не работает !!!
+        #                    dtype='complex64')  # присвоить первоначальное значение G = B не работает !!!
         # else:
         #     G2 = np.array(np.eye(B2.shape[0], B2.shape[1]))
         #
@@ -320,7 +320,7 @@ class passage_time_calc:
             # if i!=self.l_tilda-1:
             #     if self.is_clx:
             #         G1 = np.array(np.eye(B1.shape[0], B1.shape[1]),
-            #                        dtype="complex_")  # присвоить первоначальное значение G = B не работает !!!
+            #                        dtype='complex64')  # присвоить первоначальное значение G = B не работает !!!
             #     else:
             #         G1 = np.array(np.eye(B1.shape[0], B1.shape[1]))
 
@@ -399,7 +399,7 @@ class passage_time_calc:
             self.Z.append([])
             for r in range(3):
                 if self.is_clx:
-                    self.Z[i].append(np.zeros((rows, cols), dtype="complex_"))
+                    self.Z[i].append(np.zeros((rows, cols), dtype='complex64'))
                 else:
                     self.Z[i].append(np.zeros((rows, cols)))
                 for j in range(rows):
@@ -418,7 +418,7 @@ class passage_time_calc:
         Z = []
         for r in range(3):
             if self.is_clx:
-                Z.append(np.zeros((rows, cols), dtype="complex_"))
+                Z.append(np.zeros((rows, cols), dtype='complex64'))
             else:
                 Z.append(np.zeros((rows, cols)))
             for j in range(rows):
@@ -563,8 +563,8 @@ class passage_time_calc:
 
 if __name__ == '__main__':
 
-    from most_queue.theory import prty_calc
-    from most_queue.sim import rand_destribution as rd
+    from theory import priority_calc
+    from sim import rand_destribution as rd
 
     print("\nСМО типа M/H2/1. Для одноканальной СМО passage time является ПНЗ. \n"
           "Сравним значения начальных моментов, полученных методом Ньютса \n"
@@ -587,24 +587,24 @@ if __name__ == '__main__':
     mu2 = h2_params_clx[2]
 
     A = []
-    A.append(np.array([[l * y1, l * y2]], dtype="complex_"))
-    A.append(np.array([[l, 0], [0, l]], dtype="complex_"))
-    A.append(np.array([[l, 0], [0, l]], dtype="complex_"))
+    A.append(np.array([[l * y1, l * y2]], dtype='complex64'))
+    A.append(np.array([[l, 0], [0, l]], dtype='complex64'))
+    A.append(np.array([[l, 0], [0, l]], dtype='complex64'))
 
     B = []
-    B.append(np.array([[0]], dtype="complex_"))
-    B.append(np.array([[mu1], [mu2]], dtype="complex_"))
-    B.append(np.array([[mu1 * y1, mu1 * y2], [mu2 * y1, mu2 * y2]], dtype="complex_"))
+    B.append(np.array([[0]], dtype='complex64'))
+    B.append(np.array([[mu1], [mu2]], dtype='complex64'))
+    B.append(np.array([[mu1 * y1, mu1 * y2], [mu2 * y1, mu2 * y2]], dtype='complex64'))
 
     C = []
-    C.append(np.array([[0]], dtype="complex_"))
-    C.append(np.array([[0, 0], [0, 0]], dtype="complex_"))
-    C.append(np.array([[0, 0], [0, 0]], dtype="complex_"))
+    C.append(np.array([[0]], dtype='complex64'))
+    C.append(np.array([[0, 0], [0, 0]], dtype='complex64'))
+    C.append(np.array([[0, 0], [0, 0]], dtype='complex64'))
 
     D = []
-    D.append(np.array([[l]], dtype="complex_"))
-    D.append(np.array([[l + mu1, 0], [0, l + mu2]], dtype="complex_"))
-    D.append(np.array([[l + mu1, 0], [0, l + mu2]], dtype="complex_"))
+    D.append(np.array([[l]], dtype='complex64'))
+    D.append(np.array([[l + mu1, 0], [0, l + mu2]], dtype='complex64'))
+    D.append(np.array([[l + mu1, 0], [0, l + mu2]], dtype='complex64'))
 
     pass_time = passage_time_calc(A, B, C, D)
 
@@ -661,7 +661,7 @@ if __name__ == '__main__':
         neuts_moments.append(
             pass_time.Z[1][r][0, 0] * pass_time.G[2][0, 0] + pass_time.Z[1][r][1, 0] * pass_time.G[2][0, 1])
 
-    pnz = prty_calc.ppnz_calc(l, b, 3)
+    pnz = priority_calc.ppnz_calc(l, b, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -747,7 +747,7 @@ if __name__ == '__main__':
     for r in range(3):
         neuts_moments.append(pass_time.Z[1][r][0, 0])
 
-    pnz = prty_calc.ppnz_calc(l, b, 3)
+    pnz = priority_calc.ppnz_calc(l, b, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -767,28 +767,28 @@ if __name__ == '__main__':
     mu = l / (ro * n)
 
     A = []
-    A.append(np.array([[l]], dtype="complex_"))
-    A.append(np.array([[l]], dtype="complex_"))
-    A.append(np.array([[l]], dtype="complex_"))
-    A.append(np.array([[l]], dtype="complex_"))
+    A.append(np.array([[l]], dtype='complex64'))
+    A.append(np.array([[l]], dtype='complex64'))
+    A.append(np.array([[l]], dtype='complex64'))
+    A.append(np.array([[l]], dtype='complex64'))
 
     B = []
-    B.append(np.array([[0]], dtype="complex_"))
-    B.append(np.array([[mu]], dtype="complex_"))
-    B.append(np.array([[2 * mu]], dtype="complex_"))
-    B.append(np.array([[3 * mu]], dtype="complex_"))
+    B.append(np.array([[0]], dtype='complex64'))
+    B.append(np.array([[mu]], dtype='complex64'))
+    B.append(np.array([[2 * mu]], dtype='complex64'))
+    B.append(np.array([[3 * mu]], dtype='complex64'))
 
     C = []
-    C.append(np.array([[0]], dtype="complex_"))
-    C.append(np.array([[0]], dtype="complex_"))
-    C.append(np.array([[0]], dtype="complex_"))
-    C.append(np.array([[0]], dtype="complex_"))
+    C.append(np.array([[0]], dtype='complex64'))
+    C.append(np.array([[0]], dtype='complex64'))
+    C.append(np.array([[0]], dtype='complex64'))
+    C.append(np.array([[0]], dtype='complex64'))
 
     D = []
-    D.append(np.array([[l]], dtype="complex_"))
-    D.append(np.array([[l + mu]], dtype="complex_"))
-    D.append(np.array([[l + 2 * mu]], dtype="complex_"))
-    D.append(np.array([[l + 3 * mu]], dtype="complex_"))
+    D.append(np.array([[l]], dtype='complex64'))
+    D.append(np.array([[l + mu]], dtype='complex64'))
+    D.append(np.array([[l + 2 * mu]], dtype='complex64'))
+    D.append(np.array([[l + 3 * mu]], dtype='complex64'))
 
     pass_time = passage_time_calc(A, B, C, D)
 
@@ -836,7 +836,7 @@ if __name__ == '__main__':
     for j in range(3):
         b_mom[j] = math.factorial(j + 1) / pow(3 * mu, j + 1)
 
-    pnz = prty_calc.ppnz_calc(l, b_mom, 3)
+    pnz = priority_calc.ppnz_calc(l, b_mom, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -863,7 +863,7 @@ if __name__ == '__main__':
     #     b_mom[j] = math.factorial(j + 1) / pow(2 * mu_H, j + 1)
     #
     #
-    # pnz = prty_calc.ppnz_calc(l_H, b_mom, 3)
+    # pnz = priority_calc.ppnz_calc(l_H, b_mom, 3)
     #
     # param_cox = rd.Cox_dist.get_params(pnz)
     #

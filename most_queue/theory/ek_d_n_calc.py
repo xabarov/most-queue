@@ -147,30 +147,4 @@ class Ek_D_n:
         self.z_ = z
 
 
-if __name__ == "__main__":
-    from most_queue.sim.qs_sim import QueueingSystemSimulator
-    from most_queue.sim import rand_destribution as rd
-    from most_queue.utils.tables import probs_print
 
-    ro = 0.8  # коэффициент загрузки
-    a1 = 1  # среднее время между заявками вх потока
-    n = 4  # число каналов
-    coev_a = 0.56  # коэффициент вариации вх потока
-    num_of_jobs = 800000  # количество заявок для ИМ
-
-    k, l = rd.Erlang_dist.get_params_by_mean_and_coev(a1, coev_a)
-    b = a1 * n * ro
-    ekdn = Ek_D_n(l, k, b, n)
-    p_ch = ekdn.calc_p()
-
-    qs = QueueingSystemSimulator(n)
-    qs.set_sources([k, l], "E")
-    qs.set_servers(b, "D")
-    qs.run(num_of_jobs)
-    v_im = qs.v
-    p_im = qs.get_p()
-
-    print("-" * 36)
-    print("{0:^36s}".format("СМО E{0:d}/D/{1:d}".format(k, n)))
-
-    probs_print(p_im, p_ch, 10)

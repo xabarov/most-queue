@@ -1,4 +1,4 @@
-import most_queue.sim.rand_destribution as rd
+import sim.rand_destribution as rd
 import numpy as np
 
 
@@ -36,6 +36,9 @@ def get_samples(moments, num=1000, is_cummulative=True, memory_factor=0.5, min_v
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    
+    import matplotlib
+    matplotlib.use('TkAgg')
 
     num = 1000
     moments = [1, 100]

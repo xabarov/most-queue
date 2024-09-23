@@ -1,9 +1,10 @@
 import numpy as np
 import math
-import prty_calc
-import passage_time
-from most_queue.sim import rand_destribution as rd
+from theory import priority_calc
+from theory import passage_time
+from sim import rand_destribution as rd
 import math
+
 
 class Mmn3_pnz_cox:
     """
@@ -12,7 +13,6 @@ class Mmn3_pnz_cox:
     """
 
     def __init__(self, mu_L, mu_M, mu_H, l_L, l_M, l_H, N=150, accuracy=1e-6, dtype="c16"):
-
         """
         l_L, l_M, l_H: интенсивности вх. потока заявок с низким, средним и высоким приоритетами
         mu_L, mu_M, mu_H: интенсивности обслуживания заявок с низким, средним и высоким приоритетами
@@ -77,7 +77,7 @@ class Mmn3_pnz_cox:
         for j in range(3):
             b_mom[j] = math.factorial(j + 1) / math.pow(2 * mu_H, j + 1)
 
-        pnz = prty_calc.ppnz_calc(l_H, b_mom, 3)
+        pnz = priority_calc.ppnz_calc(l_H, b_mom, 3)
 
         param_cox = rd.Cox_dist.get_params(pnz)
 
@@ -92,20 +92,26 @@ class Mmn3_pnz_cox:
         A = []
         A.append(np.array([[l_H, l_M]], dtype=self.dt))
         A.append(np.array([[l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
-        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
-        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
+        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [
+                 l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
+        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [
+                 l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
 
         B = []
         B.append(np.array([[0]], dtype=self.dt))
         B.append(np.array([[mu_H], [mu_M]], dtype=self.dt))
-        B.append(np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt))
-        B.append(np.array([[0, 0, t1, 0], [0, 0, t2, 0], [0, 0, mu_M, mu_H], [0, 0, 0, 2 * mu_M]], dtype=self.dt))
+        B.append(
+            np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt))
+        B.append(np.array([[0, 0, t1, 0], [0, 0, t2, 0], [
+                 0, 0, mu_M, mu_H], [0, 0, 0, 2 * mu_M]], dtype=self.dt))
 
         C = []
         C.append(np.array([[0]], dtype=self.dt))
         C.append(np.array([[0, 0], [0, 0]], dtype=self.dt))
-        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
-        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
+        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [
+                 0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
+        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [
+                 0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
 
         D = []
         for i in range(len(C)):
@@ -143,7 +149,7 @@ class Mmn3_pnz_cox:
 
         for j in range(6):
             coev = math.sqrt(self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2)) / \
-                   self.busy_periods[j][0].real
+                self.busy_periods[j][0].real
             self.busy_periods_coevs.append(coev.real)
 
         # pp - список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
@@ -242,7 +248,8 @@ class Mmn3_pnz_cox:
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
+                    self.b2[j] = np.dot(
+                        self.t[j + 1], np.dot(self.B[j + 1], G))
                 else:
                     self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
 
@@ -256,7 +263,8 @@ class Mmn3_pnz_cox:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                    np.dot(self.x[j], self.b2[j])
 
             self.x[0] = 1.0 / self.z[1]
 
@@ -458,75 +466,3 @@ class Mmn3_pnz_cox:
         return output
 
 
-if __name__ == "__main__":
-    from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-    import mmn_prty_pnz_approx
-    from mmnr_calc import M_M_n_formula
-    from most_queue.sim import rand_destribution as rd
-    from most_queue.utils.tables import times_print, probs_print
-
-    num_of_jobs = 200000
-    n = 2  # количество каналов
-    K = 3  # количество классов
-    mu_L = 1.3  # интенсивность обслуживания заявок 3-го класса
-    mu_M = 1.4  # интенсивность обслуживания заявок 2-го класса
-    mu_H = 1.5  # интенсивность обслуживания заявок 1-го класса
-    l_L = 0.7  # интенсивность вх потока заявок 3-го класса
-    l_M = 0.8  # интенсивность вх потока заявок 2-го класса
-    l_H = 0.9  # интенсивность вх потока заявок 1-го класса
-
-    l_sum = l_H + l_M + l_L
-    b1_H = 1 / mu_H
-    b1_L = 1 / mu_L
-    b1_M = 1 / mu_M
-    b_ave = (l_L / l_sum) * b1_L + (l_H / l_sum) * b1_H + (l_M / l_sum) * b1_M
-    ro = l_sum * b_ave / n
-
-    # задание ИМ:
-    qs = PriorityQueueSimulator(n, K, "PR")
-    sources = []
-    servers_params = []
-    l = [l_H, l_M, l_L]
-    mu = [mu_H, mu_M, mu_L]
-    for j in range(K):
-        sources.append({'type': 'M', 'params': l[j]})
-        servers_params.append({'type': 'M', 'params': mu[j]})
-
-    qs.set_sources(sources)
-    qs.set_servers(servers_params)
-
-    # запуск ИМ:
-    qs.run(num_of_jobs)
-
-    # получение результатов ИМ:
-    p = qs.get_p()
-    v_im = qs.v
-
-    # расчет численным методом:
-    tt = Mmn3_pnz_cox(mu_L, mu_M, mu_H, l_L, l_M, l_H)
-    tt_for_second = mmn_prty_pnz_approx.MMn_PRTY_PNZ_Cox_approx(2, mu_M, mu_H, l_M, l_H)
-    tt_for_second.run()
-
-    tt.run()
-    p_tt = tt.get_p()
-    v_tt = tt.get_low_class_v1()
-    v_2 = tt_for_second.get_second_class_v1()
-
-    v_1 = M_M_n_formula.get_v(l_H, mu_H, 2, 100)[0]
-
-    print("\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
-          "\nраспределением Кокса второго порядка и ИМ.")
-    print("Коэффициент загрузки: {0:^1.2f}".format(ro))
-    print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
-
-    print("{0:^25s}".format("Вероятности состояний для заявок 3-го класса"))
-    probs_print(p[2], p_tt, 10)
-
-    print("\n")
-    print("{0:^35s}".format("Средние времена пребывания в СМО"))
-    print("-" * 38)
-    print("{0:^10s}|{1:^15s}|{2:^15s}".format("N класса", "Числ", "ИМ"))
-    print("-" * 38)
-    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(0, v_1, v_im[0][0]))
-    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(1, v_2, v_im[1][0]))
-    print("{0:^10d}|{1:^15.3g}|{2:^15.3g}".format(2, v_tt, v_im[2][0]))

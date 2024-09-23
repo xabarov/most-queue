@@ -1,9 +1,13 @@
-from most_queue.sim import flow_sum_sim
+from sim import flow_sum_sim
 
 import copy
 import matplotlib.pyplot as plt
-import most_queue.sim.rand_destribution as rd
+import sim.rand_destribution as rd
 import math
+
+import matplotlib
+matplotlib.use('TkAgg')
+
 
 class SummatorNumeric:
 

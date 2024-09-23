@@ -1,5 +1,5 @@
 import math
-from most_queue.sim import rand_destribution as rd
+from sim import rand_destribution as rd
 import scipy.spatial as sc
 
 

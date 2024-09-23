@@ -1,6 +1,7 @@
 import math
-from most_queue.theory import convolution_sum_calc as csc
-from most_queue.sim import rand_destribution as rd
+from theory import convolution_sum_calc as csc
+from sim import rand_destribution as rd
+
 
 class MMnr_calc:
 

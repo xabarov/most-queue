@@ -2,7 +2,7 @@ from fj_sim import ForkJoinSim
 from fj_sim import SubTask as SubTask
 from fj_sim import Task as Task
 from qs_sim import Server
-from most_queue.theory import convolution_sum_calc
+from sim_utils import get_conv_moments, get_self_concolution_moments
 
 import rand_destribution as rd
 
@@ -40,7 +40,7 @@ class ServerWarmUp(Server):
                 elif self.dist.type == 'Gamma':
                     b = rd.Gamma.calc_theory_moments(*self.dist.params)
 
-                f_summ = convolution_sum_calc.get_moments(b, self.delta)
+                f_summ = get_conv_moments.get_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = rd.Gamma.get_mu_alpha(f_summ)
@@ -127,7 +127,7 @@ class ForkJoinSimDelta(ForkJoinSim):
                 if not isinstance(self.delta, list):
                     t.subtasks[i].future_arr_time = self.ttek + i * self.delta
                 else:
-                    b_delta = convolution_sum_calc.get_self_concolution(self.delta, i)
+                    b_delta = get_self_concolution_moments(self.delta, i)
                     params_delta = rd.Gamma.get_mu_alpha(b_delta)
                     t.subtasks[i].future_arr_time = self.ttek + rd.Gamma.generate_static(*params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
@@ -300,69 +300,3 @@ class ForkJoinSimDelta(ForkJoinSim):
         return res
 
 
-if __name__ == '__main__':
-
-    from most_queue.theory import fj_calc
-    from most_queue.theory import mg1_warm_calc
-    from most_queue.utils.tables import times_print
-
-    n = 3
-    l = 1.0
-    b1 = 0.35
-    coev = 1.2
-    b1_delta = 0.1
-    b_params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
-
-    delta_params = rd.H2_dist.get_params_by_mean_and_coev(b1_delta, coev)
-    b_delta = rd.H2_dist.calc_theory_moments(*delta_params)
-    b = rd.H2_dist.calc_theory_moments(*b_params, 4)
-
-    qs = ForkJoinSimDelta(n, n, b_delta, True)
-    qs.set_sources(l, 'M')
-    qs.set_servers(b_params, 'H')
-    qs.run(100000)
-    v_im = qs.v
-
-    b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
-    b_max = fj_calc.getMaxMoments(n, b, 4)
-    ro = l * b_max[0]
-    v_ch = mg1_warm_calc.get_v(l, b_max, b_max_warm)
-
-    print("\n")
-    print("-" * 60)
-    print("{:^60s}".format('СМО Split-Join c задержкой начала обслуживания'))
-    print("-" * 60)
-    print("Коэфф вариации времени обслуживания: ", coev)
-    print("Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
-    print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
-
-    times_print(v_im, v_ch, is_w=False)
-
-    coev = 0.53
-    b1 = 0.5
-
-    b1_delta = 0.1
-    delta_params = rd.Erlang_dist.get_params_by_mean_and_coev(b1_delta, coev)
-    b_delta = rd.Erlang_dist.calc_theory_moments(*delta_params)
-
-    b_params = rd.Erlang_dist.get_params_by_mean_and_coev(b1, coev)
-    b = rd.Erlang_dist.calc_theory_moments(*b_params, 4)
-
-    qs = ForkJoinSimDelta(n, n, b_delta, True)
-    qs.set_sources(l, 'M')
-    qs.set_servers(b_params, 'E')
-    qs.run(100000)
-    v_im = qs.v
-
-    b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
-    b_max = fj_calc.getMaxMoments(n, b, 4)
-    ro = l * b_max[0]
-    v_ch = mg1_warm_calc.get_v(l, b_max, b_max_warm)
-
-    print("\n\nКоэфф вариации времени обслуживания: ", coev)
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
-    print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
-
-    times_print(v_im, v_ch, is_w=False)

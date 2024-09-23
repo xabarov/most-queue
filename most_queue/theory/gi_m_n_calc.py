@@ -1,11 +1,10 @@
-from most_queue.sim import rand_destribution as rd
+from sim import rand_destribution as rd
 
 import numpy as np
 import math
 
-import q_poisson_arrival_calc
-import sv_sum_calc
-import diff5dots
+from theory.convolution_sum_calc import get_moments
+from theory import diff5dots
 
 
 def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
@@ -73,7 +72,7 @@ def get_b0(a, j, mu, approx_distr="Gamma"):
 def get_v(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
     w = get_w(a, mu, n, num, e, approx_distr)
     b = [1 / mu, 2 / pow(mu, 2), 6 / pow(mu, 3), 24 / pow(mu, 4)]
-    v = sv_sum_calc.get_moments(w, b, len(w))
+    v = get_moments(w, b, len(w))
     return v
 
 
@@ -146,64 +145,3 @@ def get_w_param(a, mu, n, e=1e-10, approx_distr="Gamma"):
 
     return 0
 
-
-if __name__ == '__main__':
-    from most_queue.sim.qs_sim import QueueingSystemSimulator
-    from most_queue.utils.tables import times_print, probs_print
-
-    l = 1.0
-    a1 = 1.0 / l
-    n = 4
-    ro = 0.8
-    b1 = ro * n / l
-    mu = 1 / b1
-    a_coev = 1.6
-
-    num_of_jobs = 800000
-
-    v, alpha = rd.Gamma.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = rd.Gamma.calc_theory_moments(v, alpha)
-    v_ch = get_v(a, mu, n)
-    p_ch = get_p(a, mu, n)
-
-    qs = QueueingSystemSimulator(n)
-    qs.set_sources([v, alpha], "Gamma")
-    qs.set_servers(mu, "M")
-    qs.run(num_of_jobs)
-    v_im = qs.v
-    p_im = qs.get_p()
-
-    print("Gamma\n")
-
-    times_print(v_im, v_ch, is_w=False)
-
-    w_ch = get_w(a, mu, n)
-    w_im = qs.w
-
-    times_print(w_im, w_ch, is_w=True)
-
-    probs_print(p_im, p_ch, 10)
-
-    # Pareto test
-    alpha, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
-    a = rd.Pareto_dist.calc_theory_moments(alpha, K)
-    v_ch = get_v(a, mu, n, approx_distr="Pa")
-    p_ch = get_p(a, mu, n, approx_distr="Pa")
-
-    qs = QueueingSystemSimulator(n)
-    qs.set_sources([alpha, K], "Pa")
-    qs.set_servers(mu, "M")
-    qs.run(num_of_jobs)
-    v_im = qs.v
-    p_im = qs.get_p()
-
-    print("Pareto\n")
-
-    times_print(v_im, v_ch, is_w=False)
-
-    w_ch = get_w(a, mu, n, approx_distr="Pa")
-    w_im = qs.w
-
-    times_print(w_im, w_ch, is_w=True)
-
-    probs_print(p_im, p_ch, 10)
