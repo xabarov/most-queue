@@ -60,7 +60,81 @@ Most_queue consists of two main parts:
 | 10.  | queue_finite_source_sim.py | Simulation of QS GI/G/m/n with finite sources | 
 
 ## Usage
-Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/tests) for examples
+- Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/pytests) for examples
+
+- As an example, we will provide the code for сomparison of calculation results by the Takahashi-Takami and Simulation.
+
+```python
+
+    import math
+    from most_queue.sim.qs_sim import QueueingSystemSimulator
+    from most_queue.sim import rand_destribution as rd
+    import time
+    from most_queue.theory.mgn_tt import MGnCalc
+    from most_queue.utils.tables import probs_print, times_print
+  
+    n = 3  # number of channels
+    l = 1.0  # input flow intensity
+    ro = 0.8  # utilization
+    b1 = n * ro / l  # mean service time
+    num_of_jobs = 300000  # num of simulation jobs
+    b_coev = 1.5  # service time coefficient of variation
+
+
+    #  Calculation of initial moments of service time based on a given average and coefficient of variation
+    b = [0.0] * 3
+    alpha = 1 / (b_coev ** 2)
+    b[0] = b1
+    b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
+    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+
+    tt_start = time.process_time()
+
+    #  Run of the Takahashi-Takami method
+    tt = MGnCalc(n, l, b)
+    tt.run()
+
+    # obtaining results of numerical calculations
+
+    p_tt = tt.get_p()
+    v_tt = tt.get_v()
+    tt_time = time.process_time() - tt_start
+
+    # You can also find out how many iterations were required
+    num_of_iter = tt.num_of_iter_
+
+    # Run simulation to verify results
+    im_start = time.process_time()
+
+    qs = QueueingSystemSimulator(n)
+
+    # we set the input flow of jobs. M is exponential with intensity l
+    qs.set_sources(l, 'M')
+
+    # We set the parameters of the service channels using Gamma distribution.
+    # Select the distribution parameters
+    gamma_params = rd.Gamma.get_mu_alpha([b[0], b[1]])
+    qs.set_servers(gamma_params, 'Gamma')
+
+    # Run simulation
+    qs.run(num_of_jobs)
+
+    # Get sim results
+    p = qs.get_p()
+    v_sim = qs.v
+    im_time = time.process_time() - im_start
+
+    print("\nComparison of calculation results by the Takahashi-Takami and simulation.\n"
+          "Sim- M/Gamma/{0:^2d}\nTT- M/H2/{0:^2d}"
+          "Utilization: {1:^1.2f}\nService time coef of variation: {2:^1.2f}\n".format(n, ro, b_coev))
+    print("T-T iterations num: {0:^4d}".format(num_of_iter))
+    print("TT run time: {0:^5.3f} c".format(tt_time))
+    print("Sim run time: {0:^5.3f} c".format(im_time))
+    probs_print(p, p_tt, 10)
+
+    times_print(v_sim, v_tt, False)
+      
+```
 
 
 
