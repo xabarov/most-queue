@@ -1,16 +1,4 @@
-import math
-from sim.qs_sim import QueueingSystemSimulator
-from sim import rand_destribution as rd
-import time
-from theory.mgn_tt import MGnCalc
-from utils.tables import probs_print, times_print
-
-
-import numpy as np
-
-
-def test_mgn_tt():
-    """
+"""
     Тестирование метода Такахаси-Таками для расчета СМО М/H2/n
 
     При коэфф вариации времени обслуживания < 1 параметры аппроксимирующего Н2-распределения
@@ -18,21 +6,35 @@ def test_mgn_tt():
 
     Для верификации используется ИМ
 
+"""
+import math
+import time
+
+from sim import rand_destribution as rd
+from sim.qs_sim import QueueingSystemSimulator
+from theory.mgn_tt import MGnCalc
+from utils.tables import probs_print, times_print
+
+
+def test_mgn_tt():
     """
+    Тестирование метода Такахаси-Таками для расчета СМО М/H2/n
+    """
+
     n = 3  # число каналов
     l = 1.0  # интенсивность вх потока
-    ro = 0.8  # коэфф загрузки
+    ro = 0.7  # коэфф загрузки
     b1 = n * ro / l  # ср время обслуживания
-    num_of_jobs = 300000  # число обсл заявок ИМ
-    b_coev = [1.5]  # два варианта коэфф вариации времени обсл, запустим расчет и ИМ для каждого из них
+    num_of_jobs = 1000000  # число обсл заявок ИМ
+    # два варианта коэфф вариации времени обсл, запустим расчет и ИМ для каждого из них
+    b_coev_mass = [0.8, 1.2]
 
-    for k in range(len(b_coev)):
-
+    for b_coev in b_coev_mass:
         #  расчет начальных моментов времени обслуживания по заданному среднему и коэфф вариации
         b = [0.0] * 3
-        alpha = 1 / (b_coev[k] ** 2)
+        alpha = 1 / (b_coev ** 2)
         b[0] = b1
-        b[1] = math.pow(b[0], 2) * (math.pow(b_coev[k], 2) + 1)
+        b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
         tt_start = time.process_time()
@@ -69,20 +71,17 @@ def test_mgn_tt():
 
         # вывод результатов
 
-        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
-              "ИМ - M/Gamma/{0:^2d}\nТакахаси-Таками - M/H2/{0:^2d}"
-              "с комплексными параметрами\n"
-              "Коэффициент загрузки: {1:^1.2f}\nКоэффициент вариации времени обслуживания: {2:^1.2f}\n".format(n, ro,
-                                                                                                               b_coev[
-                                                                                                                   k]))
-        print("Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
-        print("Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
-        print("Время работы ИМ: {0:^5.3f} c".format(im_time))
+        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.")
+        print(
+            f"ИМ - M/Gamma/{n:^2d}\nТакахаси-Таками - M/H2/{n:^2d} с комплексными параметрами")
+        print(f"Коэффициент загрузки: {ro:^1.2f}")
+        print(f"Коэффициент вариации времени обслуживания: {b_coev:^1.2f}")
+        print(
+            f"Количество итераций алгоритма Такахаси-Таками: {num_of_iter:^4d}")
+        print(f"Время работы алгоритма Такахаси-Таками: {tt_time:^5.3f} c")
+        print(f"Время работы ИМ: {im_time:^5.3f} c")
         probs_print(p, p_tt, 10)
 
         times_print(v_sim, v_tt, False)
-        
+
         assert 100*abs(v_tt[0] - v_sim[0])/max(v_tt[0], v_sim[0]) < 10
-
-
-

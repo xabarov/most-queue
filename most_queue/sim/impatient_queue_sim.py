@@ -1,5 +1,7 @@
 import rand_destribution as rd
-from qs_sim import QueueingSystemSimulator, Task, SetSmoException
+from qs_sim import QueueingSystemSimulator, Task
+
+from sim.utils.exceptions import QsSourseSettingException
 
 
 class ImpatientTask(Task):
@@ -53,11 +55,10 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         elif self.impatience_types == "D":
             self.impatience = rd.Det_dist(self.impatience_params)
         else:
-            raise SetSmoException(
+            raise QsSourseSettingException(
                 "Неправильно задан тип распределения нетерпения заявок. Варианты М, Н, Е, С, D, Pa, Uniform")
 
     def arrival(self):
-
         """
         Действия по прибытию заявки в СМО.
         """
@@ -96,7 +97,8 @@ class ImpatientQueueSim(QueueingSystemSimulator):
             for s in self.servers:
                 if s.is_free:
                     self.taked += 1
-                    s.start_service(ImpatientTask(self.ttek, moment_to_leave), self.ttek, is_warm_start)
+                    s.start_service(ImpatientTask(
+                        self.ttek, moment_to_leave), self.ttek, is_warm_start)
                     self.free_channels -= 1
 
                     # Проверям, не наступил ли ПНЗ:
@@ -160,7 +162,5 @@ class ImpatientQueueSim(QueueingSystemSimulator):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
-        print(f'Task {num_of_task_earlier} is earlier to leave at {moment_to_leave_earlier:8.3f}')
-
-
-
+        print(f'Task {num_of_task_earlier} is earlier to leave at {
+              moment_to_leave_earlier:8.3f}')

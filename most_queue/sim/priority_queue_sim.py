@@ -1,13 +1,12 @@
-from sim import rand_destribution as rd
-
-import time
+import math
 import sys
+import time
+
+from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from colorama import init
-from colorama import Fore, Style
-
-import math
+from sim import rand_destribution as rd
+from sim.utils.exceptions import QsSourseSettingException
 
 init()
 
@@ -134,7 +133,7 @@ class PriorityQueueSimulator:
             elif self.source_types == "D":
                 self.sources.append(rd.Det_dist(params))
             else:
-                raise QueueingSystemException(
+                raise QsSourseSettingException(
                     "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
             self.arrival_time[i] = self.sources[i].generate()
             time.sleep(0.1)
@@ -201,7 +200,7 @@ class PriorityQueueSimulator:
             elif warm_up_type == "D":
                 self.warm_up.append(rd.Det_dist(params))
             else:
-                raise QueueingSystemException(
+                raise QsSourseSettingException(
                     "Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
 
     def calc_load(self):
@@ -685,10 +684,7 @@ class PriorityQueueSimulator:
         return res
 
 
-class QueueingSystemException(Exception):
 
-    def __str__(self, text):
-        return text
 
 
 class Task:
@@ -756,7 +752,7 @@ class Server:
             elif dist_type == "Uniform":
                 self.dist.append(rd.Uniform_dist(params))
             else:
-                raise QueueingSystemException(
+                raise QsSourseSettingException(
                     "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Gamma, Pa, Uniform")
         self.time_to_end_service = 1e10
         self.total_time_to_serve = 0
