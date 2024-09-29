@@ -102,55 +102,55 @@ class QueueingSystemSimulator:
 
         self.time_spent = 0
 
-    def set_warm(self, params, types):
+    def set_warm(self, params, kendall_notation):
         """
-            Задает тип и параметры распределения времени обслуживания с разогревом
             --------------------------------------------------------------------
-            Вид распределения                   Тип[types]     Параметры [params]
-            Экспоненциальное                      'М'             [mu]
-            Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-            Эрланга                               'E'           [r, mu]
-            Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-            Парето                                'Pa'         [alpha, K]
-            Детерминированное                      'D'         [b]
-            Равномерное                         'Uniform'     [mean, half_interval]
-            Нормальное                            'Norm'    [mean, standard_deviation]
+            Distribution                    kendall_notation    params
+            --------------------------------------------------------------------
+            Exponential                           'М'             [mu]
+            Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+            Erlang                                'E'           [r, mu]
+            Cox 2nd order                         'C'         [y1, mu1, mu2]
+            Pareto                                'Pa'         [alpha, K]
+            Deterministic                         'D'         [b]
+            Uniform                            'Uniform'     [mean, half_interval]
+            Gaussian                             'Norm'    [mean, standard_deviation]
         """
-        dist = create_distribution(params, types, self.generator)
+        dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
 
-    def set_cold(self, params, types):
+    def set_cold(self, params, kendall_notation):
         """
         Задает тип и параметры распределения времени охлаждения
         --------------------------------------------------------------------
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Детерминированное                      'D'         [b]
-        Равномерное                         'Uniform'     [mean, half_interval]
-        Нормальное                            'Norm'    [mean, standard_deviation]
-
-
+        Distribution                    kendall_notation    params
+        --------------------------------------------------------------------
+        Exponential                           'М'             [mu]
+        Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+        Erlang                                'E'           [r, mu]
+        Cox 2nd order                         'C'         [y1, mu1, mu2]
+        Pareto                                'Pa'         [alpha, K]
+        Deterministic                         'D'         [b]
+        Uniform                            'Uniform'     [mean, half_interval]
+        Gaussian                             'Norm'    [mean, standard_deviation]
         """
-        dist = create_distribution(params, types, self.generator)
+        dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_phase.set_dist(dist)
 
-    def set_cold_delay(self, params, types):
+    def set_cold_delay(self, params, kendall_notation):
         """
         Задает тип и параметры распределения времени задержки начала охлаждения
         --------------------------------------------------------------------
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Детерминированное                      'D'         [b]
-        Равномерное                         'Uniform'     [mean, half_interval]
-        Нормальное                            'Norm'    [mean, standard_deviation]
+        Distribution                    kendall_notation    params
+        --------------------------------------------------------------------
+        Exponential                           'М'             [mu]
+        Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+        Erlang                                'E'           [r, mu]
+        Cox 2nd order                         'C'         [y1, mu1, mu2]
+        Pareto                                'Pa'         [alpha, K]
+        Deterministic                         'D'         [b]
+        Uniform                            'Uniform'     [mean, half_interval]
+        Gaussian                             'Norm'    [mean, standard_deviation]
 
 
         """
@@ -159,7 +159,7 @@ class QueueingSystemSimulator:
             raise QsSourseSettingException(
                 "Необходимо сперва задать время охлаждения. Используйте метод set_cold()")
 
-        dist = create_distribution(params, types, self.generator)
+        dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)
 
     def set_sources(self, params, types):

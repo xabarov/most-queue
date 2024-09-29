@@ -1,4 +1,3 @@
-
 def get_conv_moments(a, b, num=3):
     num = min(num, 3)
     res = [0] * num

@@ -10,6 +10,18 @@ from sim.utils.exceptions import QsSourseSettingException
 
 def create_distribution(params, kendall_notation: str, generator):
     """ Creates distribution from random_distributions 
+    
+    --------------------------------------------------------------------
+    Distribution                    kendall_notation    params
+    --------------------------------------------------------------------
+    Exponential                           'М'             [mu]
+    Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+    Erlang                                'E'           [r, mu]
+    Cox 2nd order                         'C'         [y1, mu1, mu2]
+    Pareto                                'Pa'         [alpha, K]
+    Deterministic                         'D'         [b]
+    Uniform                            'Uniform'     [mean, half_interval]
+    Gaussian                             'Norm'    [mean, standard_deviation]
 
     Args:
         params (_type_): params of distribution. 

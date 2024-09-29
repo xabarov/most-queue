@@ -1,6 +1,5 @@
-import rand_destribution as rd
-from qs_sim import QueueingSystemSimulator, Task
-
+import sim.rand_destribution as rd
+from sim.qs_sim import QueueingSystemSimulator, Task
 from sim.utils.exceptions import QsSourseSettingException
 
 
@@ -79,7 +78,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
                 new_tsk.start_waiting_time = self.ttek
                 self.queue.append(new_tsk)
             else:
-                if len(self.queue) < self.buffer:
+                if self.queue.size() < self.buffer:
                     new_tsk = ImpatientTask(self.ttek, moment_to_leave)
                     new_tsk.start_waiting_time = self.ttek
                     self.queue.append(new_tsk)
@@ -91,7 +90,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
             # check if its a warm phase:
             is_warm_start = False
-            if len(self.queue) == 0 and self.free_channels == self.n and self.is_set_warm:
+            if self.queue.size() == 0 and self.free_channels == self.n and self.warm_phase.is_set:
                 is_warm_start = True
 
             for s in self.servers:
@@ -110,13 +109,13 @@ class ImpatientQueueSim(QueueingSystemSimulator):
     def drop_task(self, num_of_task_in_queue, moment_to_leave_earlier):
         self.ttek = moment_to_leave_earlier
         new_queue = []
-        for i, tsk in enumerate(self.queue):
+        for i, tsk in enumerate(self.queue.queue):
             if i != num_of_task_in_queue:
                 new_queue.append(tsk)
             else:
-                end_ts = self.queue[i]
+                end_ts = self.queue.queue[i]
 
-        self.queue = new_queue
+        self.queue.queue = new_queue
         self.in_sys -= 1
         self.dropped += 1
         self.served += 1
@@ -136,7 +135,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
         num_of_task_earlier = -1
         moment_to_leave_earlier = 1e10
-        for i, tsk in enumerate(self.queue):
+        for i, tsk in enumerate(self.queue.queue):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
@@ -158,7 +157,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         super().__str__(is_short)
         num_of_task_earlier = -1
         moment_to_leave_earlier = 1e10
-        for i, tsk in enumerate(self.queue):
+        for i, tsk in enumerate(self.queue.queue):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i

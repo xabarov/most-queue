@@ -1,10 +1,12 @@
-from fj_sim import ForkJoinSim
-from fj_sim import SubTask as SubTask
-from fj_sim import Task as Task
-from qs_sim import Server
-from sim_utils import get_conv_moments, get_self_concolution_moments
-
-import rand_destribution as rd
+"""
+ForkJoin Queue with delta
+"""
+import sim.rand_destribution as rd
+from sim.fj_sim import ForkJoinSim
+from sim.fj_sim import SubTask as SubTask
+from sim.fj_sim import Task as Task
+from sim.qs_sim import Server
+from sim.utils.sim_utils import get_conv_moments, get_self_concolution_moments
 
 
 class ServerWarmUp(Server):
@@ -40,11 +42,12 @@ class ServerWarmUp(Server):
                 elif self.dist.type == 'Gamma':
                     b = rd.Gamma.calc_theory_moments(*self.dist.params)
 
-                f_summ = get_conv_moments.get_moments(b, self.delta)
+                f_summ = get_conv_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = rd.Gamma.get_mu_alpha(f_summ)
-                self.time_to_end_service = ttek + rd.Gamma.generate_static(*params)
+                self.time_to_end_service = ttek + \
+                    rd.Gamma.generate_static(*params)
 
 
 class SubTaskDelta(SubTask):
@@ -67,7 +70,8 @@ class ForkJoinSimDelta(ForkJoinSim):
         num_of_channels - количество каналов СМО
         buffer - максимальная длина очереди
         """
-        ForkJoinSim.__init__(self, num_of_channels, num_of_parts, is_SJ, buffer)
+        ForkJoinSim.__init__(self, num_of_channels,
+                             num_of_parts, is_SJ, buffer)
         self.delta = delta
         self.subtask_arr_queue = []
         self.serv_task_id = -1
@@ -87,11 +91,11 @@ class ForkJoinSimDelta(ForkJoinSim):
 
         if self.buffer:  # ограниченная длина очереди
             if not self.is_SJ:
-                if len(self.queue) + self.k - 1 > self.buffer + self.free_channels:
+                if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
                     is_dropped = True
             else:
-                if self.free_channels == 0 and len(self.queue) + self.k - 1 > self.buffer:
+                if self.free_channels == 0 and self.queue.size() + self.k - 1 > self.buffer:
                     self.dropped += 1
                     is_dropped = True
 
@@ -129,7 +133,8 @@ class ForkJoinSimDelta(ForkJoinSim):
                 else:
                     b_delta = get_self_concolution_moments(self.delta, i)
                     params_delta = rd.Gamma.get_mu_alpha(b_delta)
-                    t.subtasks[i].future_arr_time = self.ttek + rd.Gamma.generate_static(*params_delta)
+                    t.subtasks[i].future_arr_time = self.ttek + \
+                        rd.Gamma.generate_static(*params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):
@@ -188,11 +193,12 @@ class ForkJoinSimDelta(ForkJoinSim):
 
             if self.served_subtask_in_task[end_ts.task_id] == self.k:
                 self.served += 1
-                self.refresh_v_stat(self.ttek - self.first_subtask_arr_time[end_ts.task_id])
+                self.refresh_v_stat(
+                    self.ttek - self.first_subtask_arr_time[end_ts.task_id])
                 self.in_sys -= 1
 
-            if len(self.queue) != 0:
-                que_ts = self.queue.pop(0)
+            if self.queue.size() != 0:
+                que_ts = self.queue.pop()
                 self.servers[c].start_service(que_ts, self.ttek)
                 self.free_channels -= 1
 
@@ -203,30 +209,34 @@ class ForkJoinSimDelta(ForkJoinSim):
                 self.refresh_v_stat(self.ttek - end_ts.arr_time)
                 self.in_sys -= 1
 
-                if len(self.queue) != 0:
+                if self.queue.size() != 0:
 
-                    new_task_id = self.queue[0].task_id
+                    new_task_id = self.queue.queue[0].task_id
 
-                    brothers = [q for q in range(len(self.queue)) if self.queue[q].task_id == new_task_id]
+                    brothers = [q for q in range(
+                        self.queue.size()) if self.queue.queue[q].task_id == new_task_id]
                     for q in brothers:
-                        que_ts = self.queue[q]
+                        que_ts = self.queue.queue[q]
                         for serv in self.servers:
                             if serv.is_free:
                                 serv.start_service(que_ts, self.ttek)
                                 self.free_channels -= 1
                                 break
-                    self.queue = [q for q in self.queue if q.task_id != new_task_id]
+                    self.queue.queue = [
+                        q for q in self.queue.queue if q.task_id != new_task_id]
             else:
-                if len(self.queue) != 0:
-                    brothers = [q for q in range(len(self.queue)) if self.queue[q].task_id == end_ts.task_id]
+                if self.queue.size() != 0:
+                    brothers = [q for q in range(
+                        self.queue.size()) if self.queue.queue[q].task_id == end_ts.task_id]
                     for q in brothers:
-                        que_ts = self.queue[q]
+                        que_ts = self.queue.queue[q]
                         for serv in self.servers:
                             if serv.is_free:
                                 serv.start_service(que_ts, self.ttek)
                                 self.free_channels -= 1
                                 break
-                    self.queue = [q for q in self.queue if q.task_id != end_ts.task_id]
+                    self.queue.queue = [
+                        q for q in self.queue.queue if q.task_id != end_ts.task_id]
 
     def run_one_step(self):
 
@@ -263,7 +273,8 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def __str__(self, is_short=False):
 
-        res = "Queueing system " + self.source_types + "/" + self.server_types + "/" + str(self.n)
+        res = "Queueing system " + self.source_types + \
+            "/" + self.server_types + "/" + str(self.n)
         if self.buffer != None:
             res += "/" + str(self.buffer)
         if self.is_SJ:
@@ -295,8 +306,6 @@ class ForkJoinSimDelta(ForkJoinSim):
 
             for c in range(self.n):
                 res += str(self.servers[c])
-            res += "\nQueue Count " + str(len(self.queue)) + "\n"
+            res += "\nQueue Count " + str(self.queue.size()) + "\n"
 
         return res
-
-

@@ -1,11 +1,14 @@
-import rand_destribution as rd
-from qs_sim import QueueingSystemSimulator
+"""
+ForkJoin Queue
+"""
 import math
 import sys
+
+from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from colorama import init
-from colorama import Fore, Style
+import sim.rand_destribution as rd
+from sim.qs_sim import QueueingSystemSimulator
 
 init()
 
@@ -93,11 +96,12 @@ class ForkJoinSim(QueueingSystemSimulator):
 
         if self.buffer:  # ограниченная длина очереди
             if not self.is_SJ:
-                if len(self.queue) + self.k - 1 > self.buffer + self.free_channels:
+                
+                if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
                     is_dropped = True
             else:
-                if self.free_channels == 0 and len(self.queue) + self.k - 1 > self.buffer:
+                if self.free_channels == 0 and self.queue.size() + self.k - 1 > self.buffer:
                     self.dropped += 1
                     is_dropped = True
 
@@ -175,9 +179,9 @@ class ForkJoinSim(QueueingSystemSimulator):
                 self.refresh_v_stat(self.ttek - end_ts.arr_time)
                 self.in_sys -= 1
 
-                if len(self.queue) != 0:
+                if self.queue.size() != 0:
                     for i in range(self.n):
-                        que_ts = self.queue.pop(0)
+                        que_ts = self.queue.pop()
                         self.servers[i].start_service(que_ts, self.ttek)
                         self.free_channels -= 1
 
@@ -267,7 +271,7 @@ class ForkJoinSim(QueueingSystemSimulator):
 
             for c in range(self.n):
                 res += str(self.servers[c])
-            res += "\nQueue Count " + str(len(self.queue)) + "\n"
+            res += "\nQueue Count " + str(self.queue.size()) + "\n"
 
         return res
 
