@@ -62,16 +62,66 @@ Most_queue consists of two main parts:
 ## Usage
 - Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/pytests) for examples
 
+- Simple example: numeric calc for M/G/1 QS. Run simulation for verification
+
+```python
+
+import numpy as np
+
+from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.rand_distribution import H2_dist, Pareto_dist, Uniform_dist
+from most_queue.sim.qs_sim import QueueingSystemSimulator
+from most_queue.theory.mg1_calc import get_p, get_v, get_w
+
+
+"""
+Test QS M/G/1
+"""
+arrival_lambda = 1  # arrival intensity
+b1 = 0.7  # mean serving time
+coev = 1.2  # standard deviation of serving time
+num_of_jobs = 1000000  # jobs num for simulation
+
+# get of parameters of the approximating H2-distribution for service time [y1, mu1, mu2]:
+params = H2_dist.get_params_by_mean_and_coev(b1, coev)
+b = H2_dist.calc_theory_moments(*params, 4)
+
+# get wait moments, sojourn time, probs by numeric calc
+w_ch = get_w(arrival_lambda, b)
+v_ch = get_v(arrival_lambda, b)
+p_ch = get_p(arrival_lambda, b, 100)
+
+# run simulation for verification
+qs = QueueingSystemSimulator(1)  # 1 - num of channels
+
+qs.set_servers(params, "H") 
+qs.set_sources(arrival_lambda, "M")
+
+qs.run(num_of_jobs)
+
+# get sim results
+w_sim = qs.w
+p_sim = qs.get_p()
+v_sim = qs.v
+
+print("M/H2/1")
+
+times_print(w_sim, w_ch, True)
+times_print(v_sim, v_ch, False)
+probs_print(p_sim, p_ch, 10)
+
+```
+
 - As an example, we will provide the code for сomparison of calculation results by the Takahashi-Takami and Simulation.
 
 ```python
 
     import math
     from most_queue.sim.qs_sim import QueueingSystemSimulator
-    from most_queue.sim import rand_destribution as rd
+    from most_queue.rand_distribution import Gamma
     import time
     from most_queue.theory.mgn_tt import MGnCalc
-    from most_queue.utils.tables import probs_print, times_print
+    from most_queue.general_utils.tables import probs_print, times_print
   
     n = 3  # number of channels
     l = 1.0  # input flow intensity
@@ -113,7 +163,7 @@ Most_queue consists of two main parts:
 
     # We set the parameters of the service channels using Gamma distribution.
     # Select the distribution parameters
-    gamma_params = rd.Gamma.get_mu_alpha([b[0], b[1]])
+    gamma_params = Gamma.get_mu_alpha([b[0], b[1]])
     qs.set_servers(gamma_params, 'Gamma')
 
     # Run simulation
