@@ -8,12 +8,15 @@ Python package for calculation and simulation of queuing systems (QS) and networ
 Install most-queue with pip
 ```bash
   pip install most-queue
+  pip install -r requirements.txt
 ```
 
 ## DESCRIPTION
 Most_queue consists of two main parts:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
  - **.sim** contains simulation programs. 
+ - **.tests** contains tests. 
+
 
 ### Package .theory
 | #   | Package name                      | Description                                                                                                                                                                                                                                                |
@@ -60,7 +63,8 @@ Most_queue consists of two main parts:
 | 10.  | queue_finite_source_sim.py | Simulation of QS GI/G/m/n with finite sources | 
 
 ## Usage
-- Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/pytests) for examples
+- Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/tests) for examples
+- Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/tutorials) for jupyter tutorials
 
 - Simple example: numeric calc for M/G/1 QS. Run simulation for verification
 
