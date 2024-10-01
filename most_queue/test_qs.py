@@ -9,6 +9,7 @@ from sim.qs_sim import QueueingSystemSimulator
 from theory import m_d_n_calc, mmnr_calc, priority_calc
 from theory.m_ph_n_prty import m_ph_n_prty
 from theory.mgn_tt import MGnCalc
+from theory.mg1_calc import get_p, get_v, get_w
 from utils.tables import probs_print, times_print
 
 
@@ -27,9 +28,9 @@ def test_sim():
     qs = QueueingSystemSimulator(n, buffer=r)
 
     # задаем вх поток - параметры и тип распределения.
-    qs.set_sources(l, 'M')
+    qs.set_sources(l, "M")
     # задаем распределение обслуживания - параметры и тип распределения.
-    qs.set_servers(mu, 'M')
+    qs.set_servers(mu, "M")
 
     # запуск ИМ - передаем кол-во заявок для обслуживания
     qs.run(1000000)
@@ -51,8 +52,8 @@ def test_sim():
 
     qs = QueueingSystemSimulator(n)
 
-    qs.set_sources(l, 'M')
-    qs.set_servers(1.0 / mu, 'D')
+    qs.set_sources(l, "M")
+    qs.set_servers(1.0 / mu, "D")
 
     qs.run(1000000)
 
@@ -86,7 +87,7 @@ def test_mgn_tt():
     for b_coev in b_coev_mass:
         #  расчет начальных моментов времени обслуживания по заданному среднему и коэфф вариации
         b = [0.0] * 3
-        alpha = 1 / (b_coev ** 2)
+        alpha = 1 / (b_coev**2)
         b[0] = b1
         b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
@@ -108,12 +109,12 @@ def test_mgn_tt():
         qs = QueueingSystemSimulator(n, buffer_type="deque")
 
         # задаем вх поток заявок. М - экспоненциальный с интенсивностью l
-        qs.set_sources(l, 'M')
+        qs.set_sources(l, "M")
 
         # задаем параметры каналов обслуживания Гамма-распределением.
         # Параметры распределения подбираем с помощью метода библиотеки random_distribution
         gamma_params = rd.Gamma.get_mu_alpha([b[0], b[1]])
-        qs.set_servers(gamma_params, 'Gamma')
+        qs.set_servers(gamma_params, "Gamma")
 
         # Запуск ИМ
         qs.run(num_of_jobs)
@@ -127,18 +128,18 @@ def test_mgn_tt():
 
         print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.")
         print(
-            f"ИМ - M/Gamma/{n:^2d}\nТакахаси-Таками - M/H2/{n:^2d} с комплексными параметрами")
+            f"ИМ - M/Gamma/{n:^2d}\nТакахаси-Таками - M/H2/{n:^2d} с комплексными параметрами"
+        )
         print(f"Коэффициент загрузки: {ro:^1.2f}")
         print(f"Коэффициент вариации времени обслуживания: {b_coev:^1.2f}")
-        print(
-            f"Количество итераций алгоритма Такахаси-Таками: {num_of_iter:^4d}")
+        print(f"Количество итераций алгоритма Такахаси-Таками: {num_of_iter:^4d}")
         print(f"Время работы алгоритма Такахаси-Таками: {tt_time:^5.3f} c")
         print(f"Время работы ИМ: {im_time:^5.3f} c")
         probs_print(p, p_tt, 10)
 
         times_print(v_sim, v_tt, False)
 
-        assert 100*abs(v_tt[0] - v_sim[0])/max(v_tt[0], v_sim[0]) < 10
+        assert 100 * abs(v_tt[0] - v_sim[0]) / max(v_tt[0], v_sim[0]) < 10
 
 
 def test_m_ph_n_prty():
@@ -197,8 +198,17 @@ def test_m_ph_n_prty():
 
         # расчет численным методом:
         tt_start = time.process_time()
-        tt = m_ph_n_prty(mu_L, cox_params[1], cox_params[2], cox_params[0], l_L, l_H, n=n, is_cox=is_cox,
-                         max_iter=max_iter)
+        tt = m_ph_n_prty(
+            mu_L,
+            cox_params[1],
+            cox_params[2],
+            cox_params[0],
+            l_L,
+            l_H,
+            n=n,
+            is_cox=is_cox,
+            max_iter=max_iter,
+        )
         tt.run()
         tt_times.append(time.process_time() - tt_start)
 
@@ -224,7 +234,7 @@ def test_m_ph_n_prty():
         L = [l_H, l_L]
 
         invar_start = time.process_time()
-        v = priority_calc.get_v_prty_invar(L, b, n=n, type='PR', num=2)
+        v = priority_calc.get_v_prty_invar(L, b, n=n, type="PR", num=2)
         v2_invar_mass.append(v[1][0])
         invar_times.append(time.process_time() - invar_start)
 
@@ -238,10 +248,10 @@ def test_m_ph_n_prty():
             servers_params = []
             l = [l_H, l_L]
 
-            sources.append({'type': 'M', 'params': l_H})
-            sources.append({'type': 'M', 'params': l_L})
-            servers_params.append({'type': 'Gamma', 'params': gamma_params})
-            servers_params.append({'type': 'M', 'params': mu_L})
+            sources.append({"type": "M", "params": l_H})
+            sources.append({"type": "M", "params": l_L})
+            servers_params.append({"type": "Gamma", "params": gamma_params})
+            servers_params.append({"type": "M", "params": mu_L})
 
             qs.set_sources(sources)
             qs.set_servers(servers_params)
@@ -261,31 +271,119 @@ def test_m_ph_n_prty():
         v2_im_mass.append(v2)
         im_times.append(time.process_time() - im_start)
 
-    print("\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
-          "\nраспределением Кокса второго порядка и ИМ.")
+    print(
+        "\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
+        "\nраспределением Кокса второго порядка и ИМ."
+    )
     print("ro: {0:1.2f}".format(ros))
     print("n : {0:d}".format(n))
     print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
 
     print("\n")
-    print("{0:^35s}".format(
-        "Средние времена пребывания в СМО для заявок 2-го класса"))
+    print("{0:^35s}".format("Средние времена пребывания в СМО для заявок 2-го класса"))
     print("-" * 128)
-    print("{0:^15s}|{1:^15s}|{5:^15s}|{2:^15s}|{3:^15s}|{5:^15s}|{4:^15s}|{5:^15s}".format("coev", "Числ",
-                                                                                           "Кол-во итер алг", "ИМ",
-                                                                                           "Инвар", "t, c"))
+    print(
+        "{0:^15s}|{1:^15s}|{5:^15s}|{2:^15s}|{3:^15s}|{5:^15s}|{4:^15s}|{5:^15s}".format(
+            "coev", "Числ", "Кол-во итер алг", "ИМ", "Инвар", "t, c"
+        )
+    )
     print("-" * 128)
     for k in range(len(bH_coev)):
-        print("{0:^15.3f}|{1:^15.6g}|{2:^15.6g}|{3:^15d}|{4:^15.6g}|{5:^15.6g}|{6:^15.6g}|{7:^15.6g}".format(
-            bH_coev[k],
-            v2_tt_mass[k], tt_times[k], iter_num[k],
-            v2_im_mass[k], im_times[k],
-            v2_invar_mass[k], invar_times[k]
-        ))
+        print(
+            "{0:^15.3f}|{1:^15.6g}|{2:^15.6g}|{3:^15d}|{4:^15.6g}|{5:^15.6g}|{6:^15.6g}|{7:^15.6g}".format(
+                bH_coev[k],
+                v2_tt_mass[k],
+                tt_times[k],
+                iter_num[k],
+                v2_im_mass[k],
+                im_times[k],
+                v2_invar_mass[k],
+                invar_times[k],
+            )
+        )
+
+
+def test_mg1():
+    """
+    Тестирование расчета СМО M/G/1
+    Для верификации используем имитационное моделирование (ИМ).
+    """
+    l = 1  # интенсивность входного потока
+    b1 = 0.7  # среднее время обслуживания
+    coev = 1.2  # коэфф вариации времени обслуживания
+    num_of_jobs = 1000000  # количество заявок для ИМ
+
+    # подбор параметров аппроксимирующего H2-распределения для времени обслуживания [y1, mu1, mu2]:
+    params = rd.H2_dist.get_params_by_mean_and_coev(b1, coev)
+    b = rd.H2_dist.calc_theory_moments(*params, 4)
+
+    # вычисление численными методами
+    w_ch = get_w(l, b)
+    p_ch = get_p(l, b, 100)
+    v_ch = get_v(l, b)
+
+    # запуск ИМ для верификации результатов
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers(params, "H")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_sim = qs.w
+    p_sim = qs.get_p()
+    v_sim = qs.v
+
+    # вывод результатов
+    print("M/H2/1")
+
+    times_print(w_sim, w_ch, True)
+    times_print(v_sim, v_ch, False)
+    probs_print(p_sim, p_ch, 10)
+
+    # Тоже самое, но для других распределений времени обслуживания
+    print("Uniform")
+    params = rd.Uniform_dist.get_params_by_mean_and_coev(b1, coev)
+    b = rd.Uniform_dist.calc_theory_moments(*params, 4)
+    w_ch = get_w(l, b)
+    p_ch = get_p(l, b, 100, dist_type="Uniform")
+    v_ch = get_v(l, b)
+
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers(params, "Uniform")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_sim = qs.w
+    p_sim = qs.get_p()
+    v_sim = qs.v
+
+    times_print(w_sim, w_ch, True)
+    times_print(v_sim, v_ch, False)
+    probs_print(p_sim, p_ch, 10)
+
+    print("Pareto")
+
+    a, K = rd.Pareto_dist.get_a_k_by_mean_and_coev(b1, coev)
+    b = rd.Pareto_dist.calc_theory_moments(a, K, 4)
+    w_ch = get_w(l, b)
+    p_ch = get_p(l, b, 100, dist_type="Pa")
+    v_ch = get_v(l, b)
+
+    qs = QueueingSystemSimulator(1)
+    qs.set_servers([a, K], "Pa")
+    qs.set_sources(l, "M")
+    qs.run(num_of_jobs)
+    w_sim = qs.w
+    p_sim = qs.get_p()
+    v_sim = qs.v
+
+    assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
+
+    times_print(w_sim, w_ch, True)
+    times_print(v_sim, v_ch, False)
+    probs_print(p_sim, p_ch, 10)
 
 
 if __name__ == "__main__":
 
     # test_sim()
-    test_mgn_tt()
+    # test_mgn_tt()
+    test_mg1()
     # test_m_ph_n_prty()

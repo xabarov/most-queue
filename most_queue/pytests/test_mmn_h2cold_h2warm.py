@@ -68,9 +68,9 @@ def test_mmn_h2cold_h2_warm():
     tt_time = time.process_time() - tt_start
     num_of_iter = tt.num_of_iter_
 
-    print('warms starts', smo.warm_starts_times)
+    print('warms starts', smo.warm_phase.starts_times)
     print('warms after cold starts', smo.warm_after_cold_starts)
-    print('cold starts', smo.cold_starts_times)
+    print('cold starts', smo.cold_phase.starts_times)
     print("zero wait arrivals num", smo.zero_wait_arrivals_num)
 
     print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"

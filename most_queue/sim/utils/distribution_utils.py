@@ -49,7 +49,7 @@ def create_distribution(params, kendall_notation: str, generator):
         dist = rd.Cox_dist(params, generator=generator)
     elif kendall_notation == "Pa":
         dist = rd.Pareto_dist(params, generator=generator)
-    elif kendall_notation == "Unifrorm":
+    elif kendall_notation == "Uniform":
         dist = rd.Uniform_dist(params, generator=generator)
     elif kendall_notation == "Norm":
         dist = rd.Normal_dist(params, generator=generator)
