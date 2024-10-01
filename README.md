@@ -1,5 +1,9 @@
 # most_queue
-Python package for calculation and simulation of queuing systems (QS) and networks
+Python package for calculation and simulation of queueing systems (QS) and networks. 
+Queueing theory. Numerical methods. 
+
+Пакет python для расчета и моделирования систем массового обслуживания (СМО) и сетей (СеМО).
+Теория массового обслуживания. Численные методы.
 
 ## Authors
 - [xabarov](https://github.com/xabarov)
