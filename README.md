@@ -16,7 +16,7 @@ Most_queue consists of two main parts:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
  - **.sim** contains simulation programs. 
  - **.tests** contains tests. 
-
+ - **.rand_distribution** - A set of functions and classes designed to generate a random values and select parameters for distributions like H2, C2, Ek, Pa, Gamma 
 
 ### Package .theory
 | #   | Package name                      | Description                                                                                                                                                                                                                                                |
@@ -54,13 +54,12 @@ Most_queue consists of two main parts:
 | 1.  | fj_delta_sim               | Simulation of QS fork-join with a delay in the start of processing between channels | 
 | 2.  | fj_sim                     | Simulation of QS with fork-join process | 
 | 3.  | priority_network           | Simulation of queuing network with priorities in nodes | 
-| 4.  | rand_distribution          | A set of functions and classes designed to generate a PRNG and select parameters for distributions H2, C2, Ek, Pa, Gamma | 
-| 5.  | qs_sim                     | Simulation of QS GI/G/m/n  | 
-| 6.  | priority_queue_sim         | Simulation of QS GI/G/m/n  with priorities  | 
-| 7.  | flow_sum_sim               | Simulation of flow summation | 
-| 8.  | impatient_sim.py           | Simulation of QS GI/G/m/n with impatience | 
-| 9.  | batch_sim.py               | Simulation of QS GI/G/m/n with batch arrival | 
-| 10.  | queue_finite_source_sim.py | Simulation of QS GI/G/m/n with finite sources | 
+| 4.  | qs_sim                     | Simulation of QS GI/G/m/n  | 
+| 5.  | priority_queue_sim         | Simulation of QS GI/G/m/n  with priorities  | 
+| 6.  | flow_sum_sim               | Simulation of flow summation | 
+| 7.  | impatient_sim.py           | Simulation of QS GI/G/m/n with impatience | 
+| 8.  | batch_sim.py               | Simulation of QS GI/G/m/n with batch arrival | 
+| 9.  | queue_finite_source_sim.py | Simulation of QS GI/G/m/n with finite sources | 
 
 ## Usage
 - Look [here](https://github.com/xabarov/most-queue/tree/main/most_queue/tests) for examples
