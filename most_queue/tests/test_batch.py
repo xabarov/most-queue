@@ -1,41 +1,50 @@
+from most_queue.general_utils.tables import times_print
 from most_queue.sim.batch_sim import QueueingSystemBatchSim
 from most_queue.theory.batch_mm1 import BatchMM1
 
 
+def calc_mean_batch_size(batch_probs):
+    """
+    Calc mean batch size 
+    batch_probs - probs of batch size 1, 2, .. len(batch_probs)
+    """
+    mean = 0
+    for i, prob in enumerate(batch_probs):
+        mean += (i + 1)*prob
+    return mean
+
+
 def test_batch_mm1():
-    ls = [0.2, 0.3, 0.1, 0.2, 0.2]
-    moments = [0.0, 0.0]
-    for j in range(len(moments)):
-        for i in range(len(ls)):
-            moments[j] += pow(i + 1, j + 1)
-        moments[j] /= len(ls)
+    """
+    Test QS Mx/M/1/infinite with batch arrivals
+    """
 
-    n = 1
-    lam = 0.7
-    ro = 0.8
-    mu = lam * moments[0] / ro
-    n_jobs = 300000
+    # probs of batch size 1, 2, .. 5
+    batch_probs = [0.2, 0.3, 0.1, 0.2, 0.2]
+    mean_batch_size = calc_mean_batch_size(batch_probs)
 
-    batch_calc = BatchMM1(lam, mu, ls)
+    n = 1   # one channel
+    lam = 0.7  # arrival intensity
+    ro = 0.7  # QS utilization factor
+    mu = lam * mean_batch_size / ro  # serving intensity
+    n_jobs = 500000  # jobs to serve in QS simulation
+
+    batch_calc = BatchMM1(lam, mu, batch_probs)
 
     v1 = batch_calc.get_v1()
 
-    qs = QueueingSystemBatchSim(n, ls)
+    qs = QueueingSystemBatchSim(n, batch_probs)
 
     qs.set_sources(lam, 'M')
     qs.set_servers(mu, 'M')
 
-    qs.run(n_jobs)
+    qs.run(n_jobs, is_real_served=True)
 
     v1_im = qs.v[0]
+    
+    times_print(v1_im, v1, False) # prints 2.6556 and approx 2.5-2.7
 
-    print("\nЗначения среднего времени пребывания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(1, v1, v1_im))
-
-    assert 100*abs(v1 - v1_im)/max(v1, v1_im) < 5.0
+    assert v1 - v1_im < 0.2
 
 
 if __name__ == "__main__":

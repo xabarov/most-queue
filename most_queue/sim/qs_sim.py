@@ -501,30 +501,28 @@ class QueueingSystemSimulator:
             # конец задержки начала охлаждения
             self.on_end_cold_delay()
 
-    def run(self, total_served, is_real_served=False):
+    def run(self, total_served, is_real_served=True):
         """
         Run simulation process
         """
         start = time.process_time()
+        
+        print(Fore.GREEN + '\rStart simulation')
 
         if is_real_served:
-            served_old = 0
+            tek = 0
             while self.served < total_served:
                 self.run_one_step()
-                if (self.served - served_old) % 5000 == 0:
-                    sys.stderr.write(
-                        f'\rStart simulation. Job served: {self.served}/{total_served}')
-                    sys.stderr.flush()
-                served_old = self.served
+                if tek % 5000 == 0:
+                    print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW + f'{self.served}/{total_served}', end='')
+                tek += 1
+            print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW + f'{self.served}/{total_served}')
         else:
-            print(Fore.GREEN + '\rStart simulation')
-            print(Style.RESET_ALL)
-
             for i in tqdm(range(total_served)):
                 self.run_one_step()
 
-            print(Fore.GREEN + '\rSimulation is finished')
-            print(Style.RESET_ALL)
+        print(Fore.GREEN + '\rSimulation is finished')
+        print(Style.RESET_ALL)
 
         self.time_spent = time.process_time() - start
 

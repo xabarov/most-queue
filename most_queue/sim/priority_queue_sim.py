@@ -545,24 +545,26 @@ class PriorityQueueSimulator:
         if self.is_next_calc:
             self.calc_time_to_next_event()
 
-    def run(self, total_served, is_real_served=False):
-        if is_real_served:
+    def run(self, total_served, is_real_served=True):
 
+        print(Fore.GREEN + '\rStart simulation')
+        if is_real_served:
+            tek = 0
             while sum(self.served) < total_served:
                 self.run_one_step()
-                sys.stderr.write('\rStart simulation. Job served: %d/%d' %
-                                 (sum(self.served), total_served))
-                sys.stderr.flush()
+                if tek % 5000 == 0:
+                    print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW +
+                          f'{sum(self.served)}/{total_served}', end='')
+                tek += 1
+            print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW +
+                  f'{sum(self.served)}/{total_served}')
 
         else:
-            print(Fore.GREEN + '\rStart simulation')
-            print(Style.RESET_ALL)
-
             for i in tqdm(range(total_served)):
                 self.run_one_step()
 
-            print(Fore.GREEN + '\rSimulation is finished')
-            print(Style.RESET_ALL)
+        print(Fore.GREEN + '\rSimulation is finished')
+        print(Style.RESET_ALL)
 
     def refresh_ppnz_stat(self, k, new_a):
         for i in range(3):

@@ -3,7 +3,7 @@ import numpy as np
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.rand_distribution import H2_dist, Pareto_dist, Uniform_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mg1_calc import get_w, get_v, get_p
+from most_queue.theory.mg1_calc import get_p, get_v, get_w
 
 
 def test_mg1():

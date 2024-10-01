@@ -1,8 +1,9 @@
-import numpy as np
-from most_queue.theory.weibull import Weibull
-import matplotlib.pyplot as plt
-
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+from most_queue.theory.utils.weibull import Weibull
+
 matplotlib.use('TkAgg')
 
 

@@ -1,8 +1,13 @@
-from theory.fj_calc import get_v1_fj_varki_merchant, get_v1_fj_nelson_tantawi, get_v1_fj_varma
-from sim.fj_sim import ForkJoinSim
+import matplotlib
 import matplotlib.pyplot as plt
 
-import matplotlib
+from most_queue.sim.fj_sim import ForkJoinSim
+from most_queue.theory.fj_calc import (
+    get_v1_fj_nelson_tantawi,
+    get_v1_fj_varki_merchant,
+    get_v1_fj_varma,
+)
+
 matplotlib.use('TkAgg')
 
 

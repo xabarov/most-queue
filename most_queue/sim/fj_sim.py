@@ -170,9 +170,7 @@ class ForkJoinSim(QueueingSystemSimulator):
             while self.served < total_served:
                 self.run_one_step()
                 if (self.served - served_old) % 5000 == 0:
-                    sys.stderr.write(
-                        '\rStart simulation. Job served: %d/%d' % (self.served, total_served))
-                    sys.stderr.flush()
+                    print(f'\rStart simulation. Job served: {self.served}/{total_served}')
                 served_old = self.served
         else:
             print(Fore.GREEN + '\rStart simulation')

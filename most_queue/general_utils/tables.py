@@ -1,5 +1,4 @@
-from colorama import init
-from colorama import Fore, Back, Style
+from colorama import Back, Fore, Style, init
 
 init()
 
@@ -16,11 +15,21 @@ def times_print(sim_moments, calc_moments, is_w=True):
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
     print("-" * 45)
-    for j in range(min(len(sim_moments), len(calc_moments))):
-        calc_mom = calc_moments[j].real if isinstance(calc_moments[j], complex) else calc_moments[j]
-        sim_mom =  sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
+    if isinstance(sim_moments, list):
+        for j in range(min(len(sim_moments), len(calc_moments))):
+            calc_mom = calc_moments[j].real if isinstance(
+                calc_moments[j], complex) else calc_moments[j]
+            sim_mom = sim_moments[j].real if isinstance(
+                sim_moments[j], complex) else sim_moments[j]
+            print(
+                Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW + f"{calc_mom:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{sim_mom:^15.5g}")
+    else:
+        calc_mom = calc_moments.real if isinstance(
+            calc_moments, complex) else calc_moments
+        sim_mom = sim_moments.real if isinstance(
+            sim_moments, complex) else sim_moments
         print(
-            Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW  + f"{calc_mom:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{sim_mom:^15.5g}")
+            Fore.CYAN + f"{1:^15d}|" + Fore.YELLOW + f"{calc_mom:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{sim_mom:^15.5g}")
 
     print(Style.RESET_ALL)
 
@@ -68,14 +77,16 @@ def times_print_with_classes(sim_moments, calc_moments, is_w=True):
         print(Fore.CYAN + " " * 5 + "|", end="")
         print(Fore.CYAN + "{:^5s}|".format("ИМ"), end="")
         for j in range(size):
-            print(Fore.YELLOW + "{:^15.3g}".format(sim_moments[i][j]) + Fore.CYAN + "|", end="")
+            print(
+                Fore.YELLOW + "{:^15.3g}".format(sim_moments[i][j]) + Fore.CYAN + "|", end="")
         print("")
         print(Fore.CYAN + "{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
 
         print(Fore.CYAN + " " * 5 + "|", end="")
         print(Fore.CYAN + "{:^5s}|".format("Р"), end="")
         for j in range(size):
-            print(Fore.YELLOW + "{:^15.3g}".format(calc_moments[i][j]) + Fore.CYAN + "|", end="")
+            print(
+                Fore.YELLOW + "{:^15.3g}".format(calc_moments[i][j]) + Fore.CYAN + "|", end="")
         print("")
         print(Fore.CYAN + "-" * 60)
 

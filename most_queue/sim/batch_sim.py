@@ -8,15 +8,27 @@ from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 class QueueingSystemBatchSim(QueueingSystemSimulator):
     """
-    QS with batch arrival
+    QS with batch arrivals
     """
-    def __init__(self, num_of_channels, batch_prob, buffer=None, verbose=True):
+
+    def __init__(self, num_of_channels,
+                 batch_prob,
+                 buffer=None, verbose=True):
+        """
+        Args:
+            num_of_channels: 
+            batch_prob: list[float], probs of batch size 1, 2, .. len(batch_probs)
+            buffer: Optional(int, None) : length of queueu
+        """
         super().__init__(num_of_channels, buffer, verbose)
 
         self.batch_prob = batch_prob
         self.calc_cdf_prob()
 
     def calc_cdf_prob(self):
+        """
+        Calcs CDF of batch probs distribution
+        """
         summ = 0
         self.batch_cdf = []
         for p in self.batch_prob:
@@ -25,7 +37,7 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
 
     def arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        Actions upon arrival of job to QS
         """
 
         p = np.random.random()
