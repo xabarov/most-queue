@@ -1,4 +1,7 @@
-# most_queue
+# MostQueue
+
+![Queue](assets/queue6.jpg)
+
 Python package for calculation and simulation of queueing systems (QS) and networks. 
 Queueing theory. Numerical methods. 
 
