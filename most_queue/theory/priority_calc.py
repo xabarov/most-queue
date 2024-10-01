@@ -1,9 +1,11 @@
-from sim import rand_destribution as rd
-from theory.diff5dots import diff5dots
-
-from theory import mg1_calc
-from theory import mgn_tt
 import math
+
+from most_queue.rand_distribution import Gamma
+from most_queue.theory.utils.diff5dots import diff5dots
+
+from most_queue.theory.mg1_calc import get_p, get_w
+from most_queue.theory.mgn_tt import MGnCalc
+
 
 
 def get_w1_pr(l, b):
@@ -281,7 +283,7 @@ def get_w_mg1_bp(l, b):
             b_sr[i] += b[k][i]
         b_sr[i] /= num_of_classes
 
-    w_k = mg1_calc.get_w(l_sum, b_sr)
+    w_k = get_w(l_sum, b_sr)
 
     w = []
     for k in range(num_of_classes):
@@ -384,16 +386,16 @@ def get_w_np(l, b, num=3):
         steps = 5
 
         if j != num_of_cl - 1:
-            b_b_param = rd.Gamma.get_mu_alpha(b_b)
+            b_b_param = Gamma.get_mu_alpha(b_b)
         else:
             b_b_param = 0
 
-        b_k_param = rd.Gamma.get_mu_alpha(b[j])
+        b_k_param = Gamma.get_mu_alpha(b[j])
 
         nu_a_PNZ = ppnz_calc(la, b_a)
 
         if j != 0:
-            nu_a_param = rd.Gamma.get_mu_alpha(nu_a_PNZ)
+            nu_a_param = Gamma.get_mu_alpha(nu_a_PNZ)
         else:
             nu_a_param = 0
 
@@ -403,7 +405,7 @@ def get_w_np(l, b, num=3):
             s = h * c
 
             if j != 0:
-                nu_a = rd.Gamma.get_pls(*nu_a_param, s)
+                nu_a = Gamma.get_pls(*nu_a_param, s)
                 summ = s + la - la * nu_a
             else:
                 summ = s
@@ -411,9 +413,9 @@ def get_w_np(l, b, num=3):
             chisl = (1 - ro) * summ
 
             if j != len(l) - 1:
-                chisl += lb * (1 - rd.Gamma.get_pls(*b_b_param, summ))
+                chisl += lb * (1 - Gamma.get_pls(*b_b_param, summ))
 
-            znam = l[j] * rd.Gamma.get_pls(*b_k_param, summ) - l[j] + s
+            znam = l[j] * Gamma.get_pls(*b_k_param, summ) - l[j] + s
 
             w_pls.append(chisl / znam)
 
@@ -472,7 +474,7 @@ def get_w_prty_invar(l, b, n, type='NP', N=150, num=3):
     for k in range(k_num):
         l_sum += l[k]
 
-    p1 = mg1_calc.get_p(l_sum, b_sr, N)
+    p1 = get_p(l_sum, b_sr, N)
     q1 = 0
     for i in range(1, N):
         q1 += (i - 1) * p1[i]
@@ -488,7 +490,7 @@ def get_w_prty_invar(l, b, n, type='NP', N=150, num=3):
     for k in range(k_num):
         l_sum += l[k]
 
-    tt_n = mgn_tt.MGnCalc(n, l_sum, b_sr)
+    tt_n = MGnCalc(n, l_sum, b_sr)
     tt_n.run()
     p_n = tt_n.get_p()
     qn = 0
@@ -526,7 +528,7 @@ def get_w_MxGn_no_pr(l, b, n):
             b_sr[j] += b[k][j]
         b_sr[j] /= num_of_mom
 
-    tt = mgn_tt.MGnCalc(n, l_sum, b_sr)
+    tt = MGnCalc(n, l_sum, b_sr)
     tt.run()
     w = []
     w_k = tt.get_w()

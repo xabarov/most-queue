@@ -1,8 +1,10 @@
+import os
+
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import matplotlib.pyplot as plt
 from graphviz import Digraph
-import os
+
 
 def create_DG(network, engine='networkx', graphviz_format='png', colorize_source_and_drain=True):
     """

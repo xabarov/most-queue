@@ -1,11 +1,11 @@
-import numpy as np
 import math
-from tqdm import tqdm
-from sim import rand_destribution as rd
-from scipy import special
-from utils.binom_probs import calc_binom_probs
-from scipy.misc import derivative
 from itertools import chain
+
+import numpy as np
+from scipy.misc import derivative
+
+from most_queue.rand_distribution import H2_dist
+from most_queue.theory.utils.binom_probs import calc_binom_probs
 
 
 class MGnH2ServingColdWarmDelay:
@@ -46,9 +46,9 @@ class MGnH2ServingColdWarmDelay:
         self.w_pls_dt = w_pls_dt
 
         if self.dt == 'c16':
-            h2_params_service = rd.H2_dist.get_params_clx(b)
+            h2_params_service = H2_dist.get_params_clx(b)
         else:
-            h2_params_service = rd.H2_dist.get_params(b)
+            h2_params_service = H2_dist.get_params(b)
 
         # параметры H2-распределения:
 
@@ -59,27 +59,27 @@ class MGnH2ServingColdWarmDelay:
         # Разогрев
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = rd.H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2_dist.get_params_clx(b_warm)
         else:
-            h2_params_warm = rd.H2_dist.get_params(b_warm)
+            h2_params_warm = H2_dist.get_params(b_warm)
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
         # Охлаждение
         self.b_cold = b_cold
         if self.dt == 'c16':
-            h2_params_cold = rd.H2_dist.get_params_clx(b_cold)
+            h2_params_cold = H2_dist.get_params_clx(b_cold)
         else:
-            h2_params_cold = rd.H2_dist.get_params(b_cold)
+            h2_params_cold = H2_dist.get_params(b_cold)
         self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
         self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
 
         # Задержка начала охлаждения
         self.b_cold_delay = b_cold_delay
         if self.dt == 'c16':
-            h2_params_cold_delay = rd.H2_dist.get_params_clx(b_cold_delay)
+            h2_params_cold_delay = H2_dist.get_params_clx(b_cold_delay)
         else:
-            h2_params_cold_delay = rd.H2_dist.get_params(b_cold_delay)
+            h2_params_cold_delay = H2_dist.get_params(b_cold_delay)
         self.y_c_delay = [h2_params_cold_delay[0], 1.0 - h2_params_cold_delay[0]]
         self.mu_c_delay = [h2_params_cold_delay[1], h2_params_cold_delay[2]]
 
@@ -314,6 +314,7 @@ class MGnH2ServingColdWarmDelay:
                 dx = self.w_pls_dt
             w[i] = derivative(self.calc_w_pls, 0, dx=dx, n=i + 1, order=9)
 
+        w = [w_moment.real if isinstance(w_moment, complex) else w_moment for w_moment in w]
         return [-w[0].real, w[1].real, -w[2].real]
 
     def get_v(self):
@@ -327,6 +328,7 @@ class MGnH2ServingColdWarmDelay:
         v[1] = w[1] + 2 * w[0] * b[0] + b[1]
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
+        v = [v_moment.real if isinstance(v_moment, complex) else v_moment for v_moment in v]
         return v
 
     def print_mrx(self, mrx):

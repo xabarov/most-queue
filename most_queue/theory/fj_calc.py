@@ -1,19 +1,18 @@
-from theory import mmnr_calc
-from theory import mgn_tt
-from theory import mg1_calc
-
-import matplotlib.pyplot as plt
-from sim import rand_destribution as rd
 import math
-import time
 
-from theory.convolution_sum_calc import get_moments, get_self_concolution
+import numpy as np
+
+from most_queue.general_utils.conv import get_moments, get_self_conv_moments
+from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist
+from most_queue.theory.mg1_calc import get_v, get_w
+from most_queue.theory.mgn_tt import MGnCalc
+from most_queue.theory.mmnr_calc import MMnr_calc
 
 
 def get_lambda(min, max):
     l = np.random.randn()
-    while l < min or l > max: \
-            l = np.random.randn()
+    while l < min or l > max:
+        l = np.random.randn()
     return l
 
 
@@ -55,25 +54,27 @@ def getMaxMoments(n, b, num=None):
     if len(b) >= 3:
 
         if coev < 1:
-            params = rd.Erlang_dist.get_params(b)
+            params = Erlang_dist.get_params(b)
 
             for j in range(10):
-                p = g[j] * dfr_Erl_Mult(params, a_big[j], n) * math.exp(a_big[j])
+                p = g[j] * dfr_Erl_Mult(params, a_big[j],
+                                        n) * math.exp(a_big[j])
                 f[0] += p
                 for i in range(1, num):
                     p = p * a_big[j]
                     f[i] += p
         else:
-            params = rd.H2_dist.get_params(b)
+            params = H2_dist.get_params(b)
 
             for j in range(10):
-                p = g[j] * dfr_H2_Mult(params, a_big[j], n) * math.exp(a_big[j])
+                p = g[j] * dfr_H2_Mult(params, a_big[j],
+                                       n) * math.exp(a_big[j])
                 f[0] += p
                 for i in range(1, num):
                     p = p * a_big[j]
                     f[i] += p
     else:
-        params = rd.Gamma.get_mu_alpha(b)
+        params = Gamma.get_mu_alpha(b)
 
         for j in range(10):
             p = g[j] * dfr_Gamma_Mult(params, a_big[j], n) * math.exp(a_big[j])
@@ -106,10 +107,11 @@ def getMaxMomentsDelta(n, b, num=3, delta=0):
          9.91182721961E-13]
 
     if delta:
-        params = rd.Gamma.get_mu_alpha(b)
+        params = Gamma.get_mu_alpha(b)
 
         for j in range(10):
-            p = g[j] * dfr_Gamma_Mult(params, a_big[j], n, delta) * math.exp(a_big[j])
+            p = g[j] * dfr_Gamma_Mult(params, a_big[j],
+                                      n, delta) * math.exp(a_big[j])
             f[0] += p
             for i in range(1, num):
                 p = p * a_big[j]
@@ -127,11 +129,11 @@ def dfr_H2_Mult(params, t, n, delta=None):
     res = 1.0
     if not delta:
         for i in range(n):
-            res *= rd.H2_dist.get_cdf(params, t)
+            res *= H2_dist.get_cdf(params, t)
     else:
         if not isinstance(delta, list):
             for i in range(n):
-                res *= rd.H2_dist.get_cdf(params, t - i * delta)
+                res *= H2_dist.get_cdf(params, t - i * delta)
     return 1.0 - res
 
 
@@ -139,11 +141,11 @@ def dfr_Erl_Mult(params, t, n, delta=None):
     res = 1.0
     if not delta:
         for i in range(n):
-            res *= rd.Erlang_dist.get_cdf(params, t)
+            res *= Erlang_dist.get_cdf(params, t)
     else:
         if not isinstance(delta, list):
             for i in range(n):
-                res *= rd.Erlang_dist.get_cdf(params, t - i * delta)
+                res *= Erlang_dist.get_cdf(params, t - i * delta)
     return 1.0 - res
 
 
@@ -151,19 +153,19 @@ def dfr_Gamma_Mult(params, t, n, delta=None):
     res = 1.0
     if not delta:
         for i in range(n):
-            res *= rd.Gamma.get_cdf(*params, t)
+            res *= Gamma.get_cdf(*params, t)
     else:
         if not isinstance(delta, list):
             for i in range(n):
-                res *= rd.Gamma.get_cdf(*params, t - i * delta)
+                res *= Gamma.get_cdf(*params, t - i * delta)
         else:
-            b = rd.Gamma.calc_theory_moments(*params)
+            b = Gamma.calc_theory_moments(*params)
 
             for i in range(n):
-                b_delta = get_self_concolution(delta, i)
+                b_delta = get_self_conv_moments(delta, i)
                 b_summ = get_moments(b, b_delta)
-                params_summ = rd.Gamma.get_mu_alpha(b_summ)
-                res *= rd.Gamma.get_cdf(*params_summ, t)
+                params_summ = Gamma.get_mu_alpha(b_summ)
+                res *= Gamma.get_cdf(*params_summ, t)
 
     return 1.0 - res
 
@@ -209,13 +211,15 @@ def get_v1_fj_nelson_nk(l, mu, n, k):
         summ = 0
 
         for i in range(2, n + 1):
-            summ += get_W(n, 1, i) * (11 * get_Hn(i) + 4 * ro * (get_Hn(2) - get_Hn(i))) / get_Hn(2)
+            summ += get_W(n, 1, i) * (11 * get_Hn(i) + 4 * ro *
+                                      (get_Hn(2) - get_Hn(i))) / get_Hn(2)
 
         res += coeff * summ
     else:
         summ = 0
         for i in range(k, n + 1):
-            summ += get_W(n, k, i) * (11 * get_Hn(i) + 4 * ro * (get_Hn(2) - get_Hn(i))) / get_Hn(2)
+            summ += get_W(n, k, i) * (11 * get_Hn(i) + 4 * ro *
+                                      (get_Hn(2) - get_Hn(i))) / get_Hn(2)
         res = coeff * summ
 
     return res
@@ -238,7 +242,8 @@ def get_v1_varma_nk(l, mu, n, k):
     ro = l / mu
 
     for i in range(k, n + 1):
-        summ += get_W(n, k, i) * (get_Hn(i) + (get_V(i) - get_Hn(i) * ro)) / (l - mu)
+        summ += get_W(n, k, i) * (get_Hn(i) +
+                                  (get_V(i) - get_Hn(i) * ro)) / (l - mu)
 
     return summ
 
@@ -257,7 +262,7 @@ def get_A(n, k, i):
 def get_W(n, k, i):
     summ = 0
     for j in range(k, i + 1):
-        summ += combination(n, j) * get_A(n.j.i)
+        summ += combination(n, j) * get_A(n, j, i)
 
     return summ
 
@@ -305,8 +310,8 @@ def get_v1_fj_invar(l, mu, n, r=100):
     mu_n = mu / n
 
     v1_fj2 = get_v1_fj2(l, mu)
-    v1_mmn = mmnr_calc.MMnr_calc.get_v(l, mu_n, n, r=r)[0]
-    v1_mm2 = mmnr_calc.MMnr_calc.get_v(l, mu2, 2, r=r)[0]
+    v1_mmn = MMnr_calc.get_v(l, mu_n, n, r=r)[0]
+    v1_mm2 = MMnr_calc.get_v(l, mu2, 2, r=r)[0]
 
     return v1_fj2 * v1_mmn / v1_mm2
 
@@ -319,15 +324,15 @@ def get_v1_fj_invar_sj(l, mu, n):
     b1_sjn = getMaxMoments(n, [1 / mu_n, 2 / pow(mu_n, 2), 6 / pow(mu_n, 3)])
     b1_sj2 = getMaxMoments(n, [1 / mu2, 2 / pow(mu2, 2), 6 / pow(mu2, 3)])
 
-    w_sjn = mg1_calc.get_w(l, b1_sjn)
-    w_sj2 = mg1_calc.get_w(l, b1_sj2)
+    w_sjn = get_w(l, b1_sjn)
+    w_sj2 = get_w(l, b1_sj2)
 
     return v1_fj2 * w_sjn[0] / w_sj2[0]
 
 
 def get_v_fj_max(l, b, n, num_of_moments=3):
     # get v of individual branch:
-    v_branch = mg1_calc.get_v(l, b, num_of_moments)
+    v_branch = get_v(l, b, num_of_moments)
     v_max = getMaxMoments(n, v_branch, num_of_moments - 1)
 
     return v_max
@@ -346,7 +351,7 @@ def get_v_fj_invar_tt(l, b, n):
 
     v1_fj2 = get_v1_fj2(l, 1.0 / b[0])
 
-    tt2 = mgn_tt.MGnCalc(n, l, b2)
+    tt2 = MGnCalc(n, l, b2)
     tt2.run()
     w_tt2 = tt2.get_w()
 
@@ -357,7 +362,7 @@ def get_v_fj_invar_tt(l, b, n):
     bn[1] = math.pow(bn[0], 2) * (math.pow(coev, 2) + 1)
     bn[2] = bn[1] * bn[0] * (1.0 + 2 / alpha)
 
-    ttn = mgn_tt.MGnCalc(n, l, bn)
+    ttn = MGnCalc(n, l, bn)
     ttn.run()
     w_ttn = tt2.get_w()
 
@@ -365,212 +370,3 @@ def get_v_fj_invar_tt(l, b, n):
         v.append(v1_fj2 * w_ttn[i] / w_tt2[i])
 
     return v
-
-
-def get_data(n_min=2, n_max=15, coev_min=0.2, coev_max=3, num_of_coevs=20,
-             num_of_jobs=500000, moment=0):
-    """
-    Расчет зависимостей точности и времени моделирования от n и coev
-    """
-
-    coevs = np.linspace(coev_min, coev_max, num_of_coevs)
-    ns = [x for x in range(n_min, n_max + 1)]
-
-    linestyles = ["solid", "dotted", "dashed", "dashdot"]
-
-    # зависимость от coev
-
-    v1_im = []
-    im_times = []
-    v1_fj = []
-    fj_times = []
-    fj_errors = []
-
-    # inicialize ml_errors:
-    for nn in range(len(ns)):
-        fj_errors.append([])
-        fj_times.append([])
-        for j in range(len(coevs)):
-            fj_errors[nn].append(0)
-            fj_times[nn].append(0)
-
-    for nn in range(len(ns)):
-        v1_im.append([])
-        im_times.append([])
-        v1_fj.append([])
-
-        for j in range(len(coevs)):
-            b = [0, 0, 0]
-            b[0] = 1
-            alpha = 1 / (coevs[j] ** 2)
-            b[1] = math.pow(b[0], 2) * (math.pow(coevs[j], 2) + 1)
-            b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-            l = get_1ambda_max(b, ns[nn])
-
-            t_im_start = time.process_time()
-            qs = ForkJoinSim(ns[nn], ns[nn], False)
-            params = rd.Gamma.get_mu_alpha(b)
-            qs.set_sources(l, 'M')
-            qs.set_servers(params, 'Gamma')
-            qs.run(num_of_jobs)
-            v = qs.v
-            v1_im[nn].append(qs.v[moment])
-            im_times[nn].append(time.process_time() - t_im_start)
-
-            t_fj_start = time.process_time()
-            v_fj = get_v_fj_invar_tt(l, b, ns[nn])[moment]
-            fj_times[nn][j] = time.process_time() - t_fj_start
-            fj_errors[nn][j] = calc_error_percentage(v1_im[nn][j], v_fj)
-
-        # make plots for error
-
-        fig, ax = plt.subplots()
-
-        tek_style = 0
-
-        ax.plot(coevs, fj_errors[nn], label="Инвар", linestyle=linestyles[tek_style])
-        tek_style += 1
-
-        ax.set_ylabel("error, %")
-        ax.set_xlabel("c")
-
-        plt.legend()
-        plt.savefig("invar_error_from_coev_with_n = " + str(ns[nn]) + ".png")
-
-        # make plots for time
-
-        fig, ax = plt.subplots()
-
-        tek_style = 0
-
-        ax.plot(coevs, fj_times[nn], label="Инвар", linestyle=linestyles[tek_style])
-        tek_style += 1
-        if tek_style == 4:
-            tek_style = 0
-
-        ax.plot(coevs, im_times[nn], label="ИМ")
-
-        ax.set_ylabel("t, с")
-        ax.set_xlabel("c")
-
-        plt.legend()
-        plt.savefig("time_from_coev_with_n = " + str(ns[nn]) + ".png")
-
-        # make txt
-
-        file = open("error_from_coev_with_n = " + str(ns[nn]) + ".txt", 'w')
-        head = "coev;e;"
-        head += "t_im;t_fj\n"
-
-        file.write(head)
-        size = len(coevs)
-        for i in range(size):
-            data_str = str(coevs[i]) + ";"
-            data_str += str(fj_errors[nn][i]) + ";"
-
-            data_str += str(im_times[nn][i]) + ";"
-
-            data_str += str(fj_times[nn][i]) + "\n"
-
-            file.write(data_str)
-
-        file.close()
-
-    # зависимость от coev
-
-    v1_im = []
-    im_times = []
-    v1_fj = []
-    fj_times = []
-    fj_errors = []
-
-    # inicialize ml_errors:
-    for j in range(len(coevs)):
-        fj_errors.append([])
-        fj_times.append([])
-        for nn in range(len(ns)):
-            fj_errors[j].append(0)
-            fj_times[j].append(0)
-
-    for j in range(len(coevs)):
-        v1_im.append([])
-        im_times.append([])
-        v1_fj.append([])
-
-        for nn in range(len(ns)):
-            b = [0, 0, 0]
-            b[0] = 1
-            alpha = 1 / (coevs[j] ** 2)
-            b[1] = math.pow(b[0], 2) * (math.pow(coevs[j], 2) + 1)
-            b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-            l = get_1ambda_max(b, ns[nn])
-
-            t_im_start = time.process_time()
-            qs = ForkJoinSim(ns[nn], ns[nn], False)
-            params = rd.Gamma.get_mu_alpha(b)
-            qs.set_sources(l, 'M')
-            qs.set_servers(params, 'Gamma')
-            qs.run(num_of_jobs)
-            v = qs.v
-            v1_im[nn].append(qs.v[moment])
-            im_times[nn].append(time.process_time() - t_im_start)
-
-            t_fj_start = time.process_time()
-            v_fj = get_v_fj_invar_tt(l, b, ns[nn])[moment]
-            fj_times[nn][j] = time.process_time() - t_fj_start
-            fj_errors[nn][j] = calc_error_percentage(v1_im[nn][j], v_fj)
-
-        # make plots for error
-
-        fig, ax = plt.subplots()
-
-        tek_style = 0
-
-        ax.plot(ns, fj_errors[j], label="Инвар", linestyle=linestyles[tek_style])
-        tek_style += 1
-
-        ax.set_ylabel("error, %")
-        ax.set_xlabel("c")
-
-        plt.legend()
-        plt.savefig("invar_error_from_n_with_coev = " + str(coevs[j]) + ".png")
-
-        # make plots for time
-
-        fig, ax = plt.subplots()
-
-        tek_style = 0
-
-        ax.plot(ns, fj_times[j], label="Инвар", linestyle=linestyles[tek_style])
-        tek_style += 1
-        if tek_style == 4:
-            tek_style = 0
-
-        ax.plot(ns, im_times[j], label="ИМ")
-
-        ax.set_ylabel("t, с")
-        ax.set_xlabel("c")
-
-        plt.legend()
-        plt.savefig("time_from_n_with_coev = " + str(coevs[j]) + ".png")
-
-        # make txt
-
-        file = open("error_from_n_with_coev = " + str(coevs[j]) + ".txt", 'w')
-        head = "n;e;"
-        head += "t_im;t_fj\n"
-
-        file.write(head)
-        size = len(ns)
-        for i in range(size):
-            data_str = str(ns[i]) + ";"
-            data_str += str(fj_errors[j][i]) + ";"
-
-            data_str += str(im_times[j][i]) + ";"
-
-            data_str += str(fj_times[j][i]) + "\n"
-
-            file.write(data_str)
-
-        file.close()
-

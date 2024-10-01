@@ -1,15 +1,13 @@
-from priority_queue_sim import PriorityQueueSimulator
-import rand_destribution as rd
-import numpy as np
 import math
-from priority_queue_sim import Task
-from theory import network_calc
-import time
-from tqdm import tqdm
 import sys
+import time
 
-from colorama import init
-from colorama import Fore, Style
+import numpy as np
+from colorama import Fore, Style, init
+from tqdm import tqdm
+
+from most_queue.sim.priority_queue_sim import PriorityQueueSimulator, Task
+from most_queue.rand_distribution import Exp_dist
 
 init()
 
@@ -27,9 +25,11 @@ class PriorityNetwork:
         self.n_num = len(n)  # количество узлов
         self.nodes = n  # n[i] - количество каналов в узлах
         self.prty = prty  # prty[n] - тип приоритета в узле. 'PR', 'NP'
-        self.serv_params = serv_params  # начальные моменты и типы распределений времени обслуживания по узлам, классам
+        # начальные моменты и типы распределений времени обслуживания по узлам, классам
+        self.serv_params = serv_params
         # serv_params[node][k][{'params':[...], 'type':'...'}]
-        self.nodes_prty = nodes_prty  # [node][prty_numbers_in_new_order] перестановки исходных
+        # [node][prty_numbers_in_new_order] перестановки исходных
+        self.nodes_prty = nodes_prty
         # номеров приоритетов по узлам
 
         self.smos = []
@@ -49,7 +49,7 @@ class PriorityNetwork:
         self.v_network = []
         self.w_network = []
         for k in range(k_num):
-            self.sources.append(rd.Exp_dist(L[k]))
+            self.sources.append(Exp_dist(L[k]))
             self.arrival_time.append(self.sources[k].generate())
             time.sleep(0.1)
             self.v_network.append([0.0] * 3)
@@ -74,12 +74,12 @@ class PriorityNetwork:
     def refresh_v_stat(self, k, new_a):
         for i in range(3):
             self.v_network[k][i] = self.v_network[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / \
-                                   self.served[k]
+                self.served[k]
 
     def refresh_w_stat(self, k, new_a):
         for i in range(3):
             self.w_network[k][i] = self.w_network[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / \
-                                   self.served[k]
+                self.served[k]
 
     def run_one_step(self):
         num_of_serv_ch_earlier = -1  # номер канала узла, мин время до окончания обслуживания
@@ -106,7 +106,8 @@ class PriorityNetwork:
             self.arrived[num_of_k_earlier] += 1
             self.in_sys[num_of_k_earlier] += 1
 
-            self.arrival_time[num_of_k_earlier] = self.ttek + self.sources[num_of_k_earlier].generate()
+            self.arrival_time[num_of_k_earlier] = self.ttek + \
+                self.sources[num_of_k_earlier].generate()
 
             next_node = self.play_next_node(num_of_k_earlier, -1)
 
@@ -120,7 +121,8 @@ class PriorityNetwork:
 
         else:
             self.ttek = serving_earlier
-            ts = self.smos[num_of_node_earlier].serving(num_of_serv_ch_earlier, True)
+            ts = self.smos[num_of_node_earlier].serving(
+                num_of_serv_ch_earlier, True)
 
             real_class = ts.k
             next_node = self.play_next_node(real_class, num_of_node_earlier)
@@ -138,10 +140,13 @@ class PriorityNetwork:
                 self.smos[next_node].arrival(next_node_class, self.ttek, ts)
 
     def run(self, job_served, is_real_served=False):
+        """
+        Run simulation
+        """
         if is_real_served:
             while sum(self.served) < job_served:
                 self.run_one_step()
-                sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), job_served))
+                sys.stderr.write(f'\rStart simulation. Job served: {sum(self.served)}/{job_served}')
                 sys.stderr.flush()
         else:
             print(Fore.GREEN + '\rStart simulation')
@@ -153,5 +158,3 @@ class PriorityNetwork:
 
             print(Fore.GREEN + '\rSimulation is finished')
             print(Style.RESET_ALL)
-
-

@@ -1,5 +1,5 @@
-import rand_destribution as rd
-from qs_sim import QueueingSystemSimulator, QueueSystemException, Task
+from most_queue.sim.utils.distribution_utils import create_distribution
+from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 
 class QueueingFiniteSourceSim(QueueingSystemSimulator):
@@ -7,7 +7,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
     Имитационная модель СМО GI/G/n/r и GI/G/n с конечным числом источников заявок
     """
 
-    def __init__(self, num_of_channels, m, buffer=None, verbose=True, calc_next_event_time=False, cuda=False):
+    def __init__(self, num_of_channels, m, buffer=None, verbose=True):
         """
         num_of_channels - количество каналов СМО
         m - число источников заявок, каждый источник заявок имеет одинаковый закон распределения интервалов поступления заявок в систему
@@ -28,8 +28,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         self.m = m
         self.sources_left = m  # сколько источников готовы посылать заявки
 
-        super().__init__(num_of_channels, buffer=buffer, verbose=verbose, calc_next_event_time=calc_next_event_time,
-                         cuda=cuda)
+        super().__init__(num_of_channels, buffer=buffer, verbose=verbose)
 
         self.arrival_times = []
         self.arrived_num = -1
@@ -55,32 +54,11 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
         self.is_set_source_params = True
 
-        if self.source_types == "M":
-            self.source = rd.Exp_dist(self.source_params)
-        elif self.source_types == "H":
-            self.source = rd.H2_dist(self.source_params)
-        elif self.source_types == "E":
-            self.source = rd.Erlang_dist(self.source_params)
-        elif self.source_types == "C":
-            self.source = rd.Cox_dist(self.source_params)
-        elif self.source_types == "Pa":
-            self.source = rd.Pareto_dist(self.source_params)
-        elif self.source_types == "Gamma":
-            self.source = rd.Gamma(self.source_params)
-        elif self.source_types == "Uniform":
-            self.source = rd.Uniform_dist(self.source_params)
-        elif self.source_types == "Norm":
-            self.source = rd.Normal_dist(self.source_params)
-        elif self.source_types == "D":
-            self.source = rd.Det_dist(self.source_params)
-        else:
-            raise QueueSystemException(
-                "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Norm, Uniform")
+        self.source = create_distribution(params, types, self.generator)
 
         self.arrival_times = [self.source.generate() for i in range(self.m)]
 
     def arrival(self):
-
         """
         Действия по прибытию заявки в СМО.
         """
@@ -111,7 +89,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
             # check if its a warm phase:
             is_warm_start = False
-            if len(self.queue) == 0 and self.free_channels == self.n and self.is_set_warm:
+            if len(self.queue) == 0 and self.free_channels == self.n and self.warm_phase.is_set:
                 is_warm_start = True
 
             for s in self.servers:
@@ -132,7 +110,6 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         с - номер канала
         """
         self.sources_left += 1
-
 
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
@@ -162,7 +139,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
         if len(self.queue) != 0:
 
-            que_ts = self.queue.pop(0)
+            que_ts = self.queue.pop()
 
             if self.free_channels == 1:
                 self.start_ppnz = self.ttek
@@ -215,9 +192,6 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         else:
             self.serving(num_of_server_earlier)
 
-        if self.is_next_calc:
-            self.calc_next_event_time()
-
     def get_p(self):
         """
         Возвращает список с вероятностями состояний СМО
@@ -230,14 +204,15 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def __str__(self, is_short=False):
 
-        res = "Queueing system " + self.source_types + "/" + self.server_types + "/" + str(self.n)
+        res = "Queueing system " + self.source_types + \
+            "/" + self.server_types + "/" + str(self.n)
         if self.buffer != None:
             res += "/" + str(self.buffer)
         res += "\n"
         res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
         res += "Current Time " + "{0:8.3f}".format(self.ttek) + "\n"
         for i, a in enumerate(self.arrival_times):
-            res += "Arrival Time of Source {0}: " + "{1:8.3f}".format(i + 1, a) + "\n"
+            res += f"Arrival Time of Source {i + 1}: {a:8.3f}\n"
 
         res += "Sojourn moments:\n"
         for i in range(3):
@@ -267,8 +242,6 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
             res += "\n"
             for c in range(self.n):
                 res += str(self.servers[c])
-            res += "\nQueue Count " + str(len(self.queue)) + "\n"
+            res += "\nQueue Count " + str(self.queue.size()) + "\n"
 
         return res
-
-

@@ -1,7 +1,8 @@
 import math
-from sim import rand_destribution as rd
-from theory import q_poisson_arrival_calc
-from theory.convolution_sum_calc import get_moments_minus
+
+from most_queue.general_utils.conv import get_moments_minus
+from most_queue.rand_distribution import Gamma, Pareto_dist
+from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 
 
 def get_pi(a, mu, num=100, e=1e-10, approx_distr="Gamma"):
@@ -13,9 +14,9 @@ def get_pi(a, mu, num=100, e=1e-10, approx_distr="Gamma"):
     """
     pi = [0.0] * num
 
-    v, alpha = rd.Gamma.get_mu_alpha(a)
+    v, alpha = Gamma.get_mu_alpha(a)
 
-    q = q_poisson_arrival_calc.get_q_Gamma(mu, v, alpha)
+    q = get_q_Gamma(mu, v, alpha)
     summ = 0
     w = get_w_param(a, mu, e, approx_distr)
     for i in range(len(q)):
@@ -58,12 +59,12 @@ def get_w_param(a, mu, e=1e-10, approx_distr="Gamma"):
     w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
     if approx_distr == "Gamma":
-        v, alpha, g = rd.Gamma.get_params(a)
+        v, alpha, g = Gamma.get_params(a)
         while True:
             summ = 0
             for i in range(len(g)):
                 summ += (g[i] / pow(mu * (1.0 - w_old) + v, i)) * (
-                            rd.Gamma.get_gamma(alpha + i) / rd.Gamma.get_gamma(alpha))
+                            Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
             left = pow(v / (mu * (1.0 - w_old) + v), alpha)
             w_new = left * summ
             if math.fabs(w_new - w_old) < e:
@@ -72,10 +73,10 @@ def get_w_param(a, mu, e=1e-10, approx_distr="Gamma"):
         return w_new
 
     elif approx_distr == "Pa":
-        alpha, K = rd.Pareto_dist.get_a_k(a)
+        alpha, K = Pareto_dist.get_a_k(a)
         while True:
             left = alpha * pow(K * mu * (1.0 - w_old), alpha)
-            w_new = left * rd.Gamma.get_gamma_incomplete(-alpha, K * mu * (1.0 - w_old))
+            w_new = left * Gamma.get_gamma_incomplete(-alpha, K * mu * (1.0 - w_old))
             if math.fabs(w_new - w_old) < e:
                 break
             w_old = w_new

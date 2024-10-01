@@ -1,6 +1,6 @@
 [project]
 name = "most_queue"
-version = "1.34"
+version = "1.41"
 authors = [
   { name="Xabarov Roman", email="xabarov1985@gmail.com" },
 ]
@@ -15,4 +15,4 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/xabarov/mps"
+"Homepage" = "https://github.com/xabarov/most-queue"

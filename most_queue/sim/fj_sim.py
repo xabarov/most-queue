@@ -7,48 +7,10 @@ import sys
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-import sim.rand_destribution as rd
-from sim.qs_sim import QueueingSystemSimulator
+from most_queue.sim.qs_sim import QueueingSystemSimulator
+from most_queue.sim.utils.tasks import ForkJoinTask
 
 init()
-
-class SubTask:
-    """
-    Позадача
-    """
-    sub_task_id = 0
-
-    def __init__(self, arr_time, task_id):
-        self.arr_time = arr_time
-        self.task_id = task_id
-        self.id = SubTask.sub_task_id
-        SubTask.sub_task_id += 1
-
-    def __str__(self):
-        res = "\tSubTask #" + str(self.id) + " parent Task #" + str(self.task_id) + "\n"
-        res += "\t\tArrival time: " + str(self.arr_time) + "\n"
-        return res
-
-
-class Task:
-    """
-    Задача, состоящая из subtask_num подзадач
-    """
-    task_id = 0
-
-    def __init__(self, subtask_num, arr_time):
-        self.subtask_num = subtask_num
-        self.arr_time = arr_time
-        self.subtasks = []
-        for i in range(subtask_num):
-            self.subtasks.append(SubTask(arr_time, Task.task_id))
-        self.id = Task.task_id
-        Task.task_id += 1
-
-    def __str__(self):
-        res = "\tTask #" + str(self.id) + "\n"
-        res += "\t\tArrival time: " + str(self.arr_time) + "\n"
-        return res
 
 
 class ForkJoinSim(QueueingSystemSimulator):
@@ -73,7 +35,6 @@ class ForkJoinSim(QueueingSystemSimulator):
             self.queues.append([])
 
     def calc_load(self):
-
         """
         вычисляет коэффициент загрузки СМО
         """
@@ -81,7 +42,6 @@ class ForkJoinSim(QueueingSystemSimulator):
         pass
 
     def arrival(self):
-
         """
         Действия по прибытию заявки в СМО.
         """
@@ -96,7 +56,7 @@ class ForkJoinSim(QueueingSystemSimulator):
 
         if self.buffer:  # ограниченная длина очереди
             if not self.is_SJ:
-                
+
                 if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
                     is_dropped = True
@@ -106,8 +66,8 @@ class ForkJoinSim(QueueingSystemSimulator):
                     is_dropped = True
 
         if not is_dropped:
-            self.served_subtask_in_task[Task.task_id] = 0
-            t = Task(self.n, self.ttek)
+            self.served_subtask_in_task[ForkJoinTask.task_id] = 0
+            t = ForkJoinTask(self.n, self.ttek)
             self.in_sys += 1
             self.sub_task_in_sys += self.n
 
@@ -118,7 +78,8 @@ class ForkJoinSim(QueueingSystemSimulator):
                         self.queues[i].append(t.subtasks[i])
                     else:  # there are free channels:
                         if self.servers[i].is_free:
-                            self.servers[i].start_service(t.subtasks[i], self.ttek)
+                            self.servers[i].start_service(
+                                t.subtasks[i], self.ttek)
                             self.free_channels -= 1
                         else:
                             self.queues[i].append(t.subtasks[i])
@@ -209,7 +170,8 @@ class ForkJoinSim(QueueingSystemSimulator):
             while self.served < total_served:
                 self.run_one_step()
                 if (self.served - served_old) % 5000 == 0:
-                    sys.stderr.write('\rStart simulation. Job served: %d/%d' % (self.served, total_served))
+                    sys.stderr.write(
+                        '\rStart simulation. Job served: %d/%d' % (self.served, total_served))
                     sys.stderr.flush()
                 served_old = self.served
         else:
@@ -225,7 +187,8 @@ class ForkJoinSim(QueueingSystemSimulator):
 
     def refresh_v_stat(self, new_a):
         for i in range(3):
-            self.v[i] = self.v[i] * (1.0 - (1.0 / self.served)) + math.pow(new_a, i + 1) / self.served
+            self.v[i] = self.v[i] * (1.0 - (1.0 / self.served)) + \
+                math.pow(new_a, i + 1) / self.served
 
     def get_p(self):
         """
@@ -239,7 +202,8 @@ class ForkJoinSim(QueueingSystemSimulator):
 
     def __str__(self, is_short=False):
 
-        res = "Queueing system " + self.source_types + "/" + self.server_types + "/" + str(self.n)
+        res = "Queueing system " + self.source_types + \
+            "/" + self.server_types + "/" + str(self.n)
         if self.buffer != None:
             res += "/" + str(self.buffer)
         if self.is_SJ:
@@ -274,10 +238,3 @@ class ForkJoinSim(QueueingSystemSimulator):
             res += "\nQueue Count " + str(self.queue.size()) + "\n"
 
         return res
-
-
-class QueueingSystemException(Exception):
-
-    def __str__(self, text):
-        return text
-

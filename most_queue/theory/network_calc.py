@@ -1,9 +1,10 @@
-from theory.diff5dots import diff5dots
-from sim import rand_destribution as rd
+import math
 
 import numpy as np
-import math
-from theory import priority_calc
+
+from most_queue.theory.utils.diff5dots import diff5dots
+from most_queue.theory.priority_calc import get_v_prty_invar
+from most_queue.rand_distribution import Gamma
 
 
 def balance_equation(L, R):
@@ -139,7 +140,7 @@ def network_prty_calc(R, b, n, L, prty, nodes_prty):
             b_sr[j] /= k_num
 
         res['loads'][i] = l_sum * b_sr[0] / n[i]
-        res['v_node'].append(priority_calc.get_v_prty_invar(l_order[i], b_order[i], n[i], prty[i]))
+        res['v_node'].append(get_v_prty_invar(l_order[i], b_order[i], n[i], prty[i]))
         for k in range(k_num):
             res['v_node'][i][nodes_prty[i][k]] = res['v_node'][i][k]
 
@@ -169,12 +170,12 @@ def network_prty_calc(R, b, n, L, prty, nodes_prty):
 
         gamma_mu_alpha = []
         for i in range(nodes):
-            gamma_mu_alpha.append(rd.Gamma.get_mu_alpha([res['v_node'][i][k][0], res['v_node'][i][k][1]]))
+            gamma_mu_alpha.append(Gamma.get_mu_alpha([res['v_node'][i][k][0], res['v_node'][i][k][1]]))
 
         g_PLS = []
         for i in range(4):
             for j in range(nodes):
-                N[j, j] = rd.Gamma.get_pls(*gamma_mu_alpha[j], s[i])
+                N[j, j] = Gamma.get_pls(*gamma_mu_alpha[j], s[i])
             G = np.dot(N, Q)
             FF = I - G
             F = np.linalg.inv(FF)

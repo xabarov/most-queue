@@ -1,10 +1,18 @@
-import rand_destribution as rd
-from tqdm import tqdm
+"""
+Input flows sum simulation
+"""
 import copy
 import math
 
+from tqdm import tqdm
+
+from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist, Pareto_dist
+
 
 class FlowSumSim:
+    """
+    Input flows sum simulation
+    """
 
     def __init__(self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000):
         self.n = len(a)
@@ -80,10 +88,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        y1_mus = rd.H2_dist.get_params(a1)
-        arr1 = rd.H2_dist(y1_mus)
-        y2_mus = rd.H2_dist.get_params(a2)
-        arr2 = rd.H2_dist(y2_mus)
+        y1_mus = H2_dist.get_params(a1)
+        arr1 = H2_dist(y1_mus)
+        y2_mus = H2_dist.get_params(a2)
+        arr2 = H2_dist(y2_mus)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -126,10 +134,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        a_K = rd.Pareto_dist.get_a_k(a1)
-        arr1 = rd.Pareto_dist(a_K)
-        b_M = rd.Pareto_dist.get_a_k(a2)
-        arr2 = rd.Pareto_dist(b_M)
+        a_K = Pareto_dist.get_a_k(a1)
+        arr1 = Pareto_dist(a_K)
+        b_M = Pareto_dist.get_a_k(a2)
+        arr2 = Pareto_dist(b_M)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -160,10 +168,10 @@ class FlowSumSim:
     @staticmethod
     def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
 
-        params1 = rd.Erlang_dist.get_params(a1)
-        arr1 = rd.Erlang_dist(params1)
-        params2 = rd.Erlang_dist.get_params(a2)
-        arr2 = rd.Erlang_dist(params2)
+        params1 = Erlang_dist.get_params(a1)
+        arr1 = Erlang_dist(params1)
+        params2 = Erlang_dist.get_params(a2)
+        arr2 = Erlang_dist(params2)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -200,10 +208,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        params1 = rd.Gamma.get_mu_alpha(a1)
-        arr1 = rd.Gamma(params1)
-        params2 = rd.Gamma.get_mu_alpha(a2)
-        arr2 = rd.Gamma(params2)
+        params1 = Gamma.get_mu_alpha(a1)
+        arr1 = Gamma(params1)
+        params2 = Gamma.get_mu_alpha(a2)
+        arr2 = Gamma(params2)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()

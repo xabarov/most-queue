@@ -1,12 +1,11 @@
-import numpy as np
 import math
-from theory import passage_time
-from tqdm import tqdm
-from sim import rand_destribution as rd
-from scipy import special
-from utils.binom_probs import calc_binom_probs
-from theory.diff5dots import diff5dots
+
+import numpy as np
 from scipy.misc import derivative
+
+from most_queue.theory.utils.passage_time import passage_time_calc
+from most_queue.rand_distribution import H2_dist
+from most_queue.theory.utils.binom_probs import calc_binom_probs
 
 
 class Mh2h2Warm:
@@ -44,9 +43,9 @@ class Mh2h2Warm:
         self.l = l
 
         if self.dt == 'c16':
-            h2_params_service = rd.H2_dist.get_params_clx(b)
+            h2_params_service = H2_dist.get_params_clx(b)
         else:
-            h2_params_service = rd.H2_dist.get_params(b)
+            h2_params_service = H2_dist.get_params(b)
 
         # параметры H2-распределения:
         self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
@@ -54,9 +53,9 @@ class Mh2h2Warm:
 
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = rd.H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2_dist.get_params_clx(b_warm)
         else:
-            h2_params_warm = rd.H2_dist.get_params(b_warm)
+            h2_params_warm = H2_dist.get_params(b_warm)
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
@@ -129,7 +128,7 @@ class Mh2h2Warm:
         return mu / (mu + s)
 
     def calc_passage_times(self):
-        pass_time = passage_time.passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
+        pass_time = passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
         pass_time.calc()
         print("\nЗначения матриц G:\n")
 
@@ -241,7 +240,7 @@ class Mh2h2Warm:
         else:
             for i in range(3):
                 w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return [-w[0].real, w[1].real, -w[2].real]
+            return [-w[0], w[1].real, -w[2]]
 
     def get_v(self):
         """

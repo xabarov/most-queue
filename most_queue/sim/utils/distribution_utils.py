@@ -4,13 +4,23 @@ Utils for distribution from random_distributions
 """
 import math
 
-import sim.rand_destribution as rd
-from sim.utils.exceptions import QsSourseSettingException
+from most_queue.rand_distribution import (
+    Cox_dist,
+    Det_dist,
+    Erlang_dist,
+    Exp_dist,
+    Gamma,
+    H2_dist,
+    Normal_dist,
+    Pareto_dist,
+    Uniform_dist,
+)
+from most_queue.sim.utils.exceptions import QsSourseSettingException
 
 
 def create_distribution(params, kendall_notation: str, generator):
     """ Creates distribution from random_distributions 
-    
+
     --------------------------------------------------------------------
     Distribution                    kendall_notation    params
     --------------------------------------------------------------------
@@ -38,23 +48,23 @@ def create_distribution(params, kendall_notation: str, generator):
     """
     dist = None
     if kendall_notation == "M":
-        dist = rd.Exp_dist(params, generator=generator)
+        dist = Exp_dist(params, generator=generator)
     elif kendall_notation == "H":
-        dist = rd.H2_dist(params, generator=generator)
+        dist = H2_dist(params, generator=generator)
     elif kendall_notation == "E":
-        dist = rd.Erlang_dist(params, generator=generator)
+        dist = Erlang_dist(params, generator=generator)
     elif kendall_notation == "Gamma":
-        dist = rd.Gamma(params, generator=generator)
+        dist = Gamma(params, generator=generator)
     elif kendall_notation == "C":
-        dist = rd.Cox_dist(params, generator=generator)
+        dist = Cox_dist(params, generator=generator)
     elif kendall_notation == "Pa":
-        dist = rd.Pareto_dist(params, generator=generator)
+        dist = Pareto_dist(params, generator=generator)
     elif kendall_notation == "Uniform":
-        dist = rd.Uniform_dist(params, generator=generator)
+        dist = Uniform_dist(params, generator=generator)
     elif kendall_notation == "Norm":
-        dist = rd.Normal_dist(params, generator=generator)
+        dist = Normal_dist(params, generator=generator)
     elif kendall_notation == "D":
-        dist = rd.Det_dist(params)
+        dist = Det_dist(params)
     else:
         raise QsSourseSettingException(
             "Incorrect distribution type specified. Options \
@@ -63,8 +73,8 @@ def create_distribution(params, kendall_notation: str, generator):
     return dist
 
 
-def calc_qs_load(source_types: str, source_params, 
-              server_types: str, server_params, n) -> float:
+def calc_qs_load(source_types: str, source_params,
+                 server_types: str, server_params, n) -> float:
     """Calculates the utilization (load factor) of the QS
 
     Args:

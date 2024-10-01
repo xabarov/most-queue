@@ -1,7 +1,9 @@
-import numpy as np
 import math
-from theory import passage_time
-from sim import rand_destribution as rd
+
+import numpy as np
+
+from most_queue.theory.utils.passage_time import passage_time_calc
+from most_queue.rand_distribution import Cox_dist, H2_dist
 
 
 class m_ph_n_prty:
@@ -208,7 +210,7 @@ class m_ph_n_prty:
             self.C_for_busy.append(self.build_C_for_busy_periods(i))
             self.D_for_busy.append(self.build_D_for_busy_periods(i))
 
-        pass_time = passage_time.passage_time_calc(self.A_for_busy, self.B_for_busy,
+        pass_time = passage_time_calc(self.A_for_busy, self.B_for_busy,
                                                    self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=True)
         pass_time.calc()
 
@@ -491,8 +493,8 @@ class m_ph_n_prty:
 
         for i in range(self.pnz_num_):
             if not self.is_cox:
-                h2_param = rd.H2_dist.get_params_clx(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
-                # h2_param = rd.H2_dist.get_params(self.busy_periods[i])
+                h2_param = H2_dist.get_params_clx(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
+                # h2_param = H2_dist.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param[0])
                 m1_mass.append(h2_param[1])
                 m2_mass.append(h2_param[2])
@@ -500,7 +502,7 @@ class m_ph_n_prty:
                     print("Параметры для B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
                                                                                     h2_param[2]))
             else:
-                cox_params = rd.Cox_dist.get_params(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
+                cox_params = Cox_dist.get_params(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
                 y1_mass.append(cox_params[0])
                 m1_mass.append(cox_params[1])
                 m2_mass.append(cox_params[2])

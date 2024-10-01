@@ -3,7 +3,7 @@ QS with batch arrival
 """
 import numpy as np
 
-from sim.qs_sim import QueueingSystemSimulator, Task
+from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 
 class QueueingSystemBatchSim(QueueingSystemSimulator):

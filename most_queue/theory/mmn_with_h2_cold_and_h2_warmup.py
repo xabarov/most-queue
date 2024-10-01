@@ -1,11 +1,10 @@
-import numpy as np
 import math
-from tqdm import tqdm
-from sim import rand_destribution as rd
-from scipy import special
-from utils.binom_probs import calc_binom_probs
-from scipy.misc import derivative
 from itertools import chain
+
+import numpy as np
+from scipy.misc import derivative
+
+from most_queue.rand_distribution import H2_dist
 
 
 class MMn_H2warm_H2cold:
@@ -42,18 +41,18 @@ class MMn_H2warm_H2cold:
 
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = rd.H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2_dist.get_params_clx(b_warm)
         else:
-            h2_params_warm = rd.H2_dist.get_params(b_warm)
+            h2_params_warm = H2_dist.get_params(b_warm)
 
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
         self.b_cold = b_cold
         if self.dt == 'c16':
-            h2_params_cold = rd.H2_dist.get_params_clx(b_cold)
+            h2_params_cold = H2_dist.get_params_clx(b_cold)
         else:
-            h2_params_cold = rd.H2_dist.get_params(b_cold)
+            h2_params_cold = H2_dist.get_params(b_cold)
         self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
         self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
 
@@ -179,7 +178,7 @@ class MMn_H2warm_H2cold:
         for i in range(3):
             min_mu = min(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'), [self.mu]))
             w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
-        return [-w[0].real, w[1].real, -w[2].real]
+        return [-w[0], w[1], -w[2]]
 
     def get_b(self):
         return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]

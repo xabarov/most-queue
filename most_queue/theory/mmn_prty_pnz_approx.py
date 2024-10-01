@@ -1,7 +1,9 @@
-import numpy as np
 import math
-from sim import rand_destribution as rd
-from theory import passage_time
+
+import numpy as np
+
+from most_queue.theory.utils.passage_time import passage_time_calc
+from most_queue.rand_distribution import Cox_dist
 
 
 class MMn_PRTY_PNZ_Cox_approx:
@@ -31,7 +33,7 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.mu_H = mu_H
         self.busy_period = self.get_pnz_markov()
         self.busy_coev = self.get_busy_coev()
-        self.param_cox = rd.Cox_dist.get_params(self.busy_period)
+        self.param_cox = Cox_dist.get_params(self.busy_period)
         self.y1_cox = self.param_cox[0]
         self.mu1_cox = self.param_cox[1]
         self.mu2_cox = self.param_cox[2]
@@ -276,7 +278,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                     output[i, i] = sumA + sumB + sumC
             D.append(output)
 
-        pass_time = passage_time.passage_time_calc(A, B, C, D, is_clx=True)
+        pass_time = passage_time_calc(A, B, C, D, is_clx=True)
         pass_time.calc()
 
         # Z_gap = pass_time.Z_gap_calc(10,0)

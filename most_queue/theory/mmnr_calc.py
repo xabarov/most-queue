@@ -1,6 +1,7 @@
 import math
-from theory import convolution_sum_calc as csc
-from sim import rand_destribution as rd
+
+from most_queue.general_utils.conv import get_moments
+from most_queue.rand_distribution import Exp_dist
 
 
 class MMnr_calc:
@@ -46,8 +47,8 @@ class MMnr_calc:
     @staticmethod
     def get_v(l, mu, n, r):
         w = MMnr_calc.get_w(l, mu, n, r)
-        b = rd.Exp_dist.calc_theory_moments(mu)
-        v = csc.get_moments(w, b)
+        b = Exp_dist.calc_theory_moments(mu)
+        v = get_moments(w, b)
         return v
 
     @staticmethod

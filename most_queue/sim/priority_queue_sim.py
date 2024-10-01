@@ -2,11 +2,11 @@ import math
 import sys
 import time
 
+import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from sim import rand_destribution as rd
-from sim.utils.exceptions import QsSourseSettingException
+from most_queue.sim.utils.distribution_utils import create_distribution
 
 init()
 
@@ -70,12 +70,14 @@ class PriorityQueueSimulator:
         self.ttek = 0  # текущее время моделирования
         self.total = 0
 
-        self.taked = [0] * self.k  # количество заявок, принятых на обслуживание
+        # количество заявок, принятых на обслуживание
+        self.taked = [0] * self.k
         self.served = [0] * self.k  # количество заявок, обслуженных системой
         self.in_sys = [0] * self.k  # кол-во заявок в системе
         self.t_old = [0.0] * self.k  # момент предыдущего события
         self.arrived = [0] * self.k  # кол-во поступивших заявок
-        self.dropped = [0] * self.k  # кол-во заявок, получивших отказ в обслуживании
+        # кол-во заявок, получивших отказ в обслуживании
+        self.dropped = [0] * self.k
         self.arrival_time = [0.0] * self.k  # момент прибытия следущей заявки
 
         self.servers = []  # каналы обслуживания, список с классами Server
@@ -92,6 +94,8 @@ class PriorityQueueSimulator:
 
         self.time_to_next_event = 0
         self.is_next_calc = calc_next_event_time
+
+        self.generator = np.random.default_rng()
 
     def set_sources(self, sources):
         """
@@ -116,25 +120,9 @@ class PriorityQueueSimulator:
             source_type = sources[i]['type']
             params = sources[i]['params']
 
-            if source_type == "M":
-                self.sources.append(rd.Exp_dist(params))
-            elif source_type == "H":
-                self.sources.append(rd.H2_dist(params))
-            elif source_type == "E":
-                self.sources.append(rd.Erlang_dist(params))
-            elif source_type == "Gamma":
-                self.sources.append(rd.Erlang_dist(params))
-            elif source_type == "C":
-                self.sources.append(rd.Cox_dist(params))
-            elif source_type == "Pa":
-                self.sources.append(rd.Pareto_dist(params))
-            elif source_type == "Uniform":
-                self.sources.append(rd.Uniform_dist(params))
-            elif self.source_types == "D":
-                self.sources.append(rd.Det_dist(params))
-            else:
-                raise QsSourseSettingException(
-                    "Неправильно задан тип распределения источника. Варианты М, Н, Е, С, Pa, Uniform, D")
+            self.sources.append(create_distribution(
+                params, source_type, self.generator))
+
             self.arrival_time[i] = self.sources[i].generate()
             time.sleep(0.1)
 
@@ -158,7 +146,8 @@ class PriorityQueueSimulator:
         self.is_set_server_params = True
 
         for i in range(self.n):
-            self.servers.append(Server(self.servers_params, self.prty_type))
+            self.servers.append(
+                Server(self.servers_params, self.prty_type, self.generator))
             time.sleep(0.1)
 
     def set_warm_up(self, warm_up_params):
@@ -183,28 +172,10 @@ class PriorityQueueSimulator:
             warm_up_type = warm_up_params[i]['type']
             params = warm_up_params[i]['params']
 
-            if warm_up_type == "M":
-                self.warm_up.append(rd.Exp_dist(params))
-            elif warm_up_type == "H":
-                self.warm_up.append(rd.H2_dist(params))
-            elif warm_up_type == "E":
-                self.warm_up.append(rd.Erlang_dist(params))
-            elif warm_up_type == "Gamma":
-                self.warm_up.append(rd.Gamma(params))
-            elif warm_up_type == "C":
-                self.warm_up.append(rd.Cox_dist(params))
-            elif warm_up_type == "Pa":
-                self.warm_up.append(rd.Pareto_dist(params))
-            elif warm_up_type == "Uniform":
-                self.warm_up.append(rd.Uniform_dist(params))
-            elif warm_up_type == "D":
-                self.warm_up.append(rd.Det_dist(params))
-            else:
-                raise QsSourseSettingException(
-                    "Неправильно задан тип распределения разогрева. Варианты М, Н, Е, С, Pa, Uniform, D")
+            self.warm_up.append(create_distribution(
+                params, warm_up_type, self.generator))
 
     def calc_load(self):
-
         """
         Вычисляет коэффициент загрузки СМО
         """
@@ -306,7 +277,6 @@ class PriorityQueueSimulator:
         return l_sum * b1_sr / (self.n * self.k)
 
     def arrival(self, k, moment=None, ts=None):
-
         """
         Действия по прибытию заявки в СМО.
         k - номер класса прибывшей заявки
@@ -319,7 +289,8 @@ class PriorityQueueSimulator:
             new_tsk = ts
             new_tsk.in_node_class_num = k
             new_tsk.arr_time = moment
-            new_tsk.wait_time = 0  # в текущем узле обнуляем время ожидания. Общее время ожидания - ts.wait_network
+            # в текущем узле обнуляем время ожидания. Общее время ожидания - ts.wait_network
+            new_tsk.wait_time = 0
             new_tsk.is_pr = False
             new_tsk.start_waiting_time = -1
             new_tsk.time_to_end_service = 0
@@ -370,9 +341,10 @@ class PriorityQueueSimulator:
                             self.taked[k] += 1
 
                             if k != self.class_ppnz_started and self.class_ppnz_started != -1 and self.in_sys[
-                                k] == self.n:
+                                    k] == self.n:
                                 self.ppnz_moments[self.class_ppnz_started] += 1
-                                self.refresh_ppnz_stat(self.class_ppnz_started, self.ttek - self.start_ppnz)
+                                self.refresh_ppnz_stat(
+                                    self.class_ppnz_started, self.ttek - self.start_ppnz)
                                 self.start_ppnz = self.ttek
                                 self.class_ppnz_started = k
 
@@ -381,14 +353,17 @@ class PriorityQueueSimulator:
                             if self.prty_type == 'PR':
                                 dropped_tsk.time_to_end_service = time_to_end - self.ttek
                             elif self.prty_type == "RS":
-                                dropped_tsk.time_to_end_service = c.dist[k].generate()
+                                dropped_tsk.time_to_end_service = c.dist[k].generate(
+                                )
                             elif self.prty_type == "RW":
                                 dropped_tsk.time_to_end_service = total_time
 
                             is_found_weekier = True
                             if moment:
-                                self.queue[dropped_tsk.in_node_class_num].append(dropped_tsk)
-                                c.start_service(new_tsk, self.ttek, is_network=True)
+                                self.queue[dropped_tsk.in_node_class_num].append(
+                                    dropped_tsk)
+                                c.start_service(
+                                    new_tsk, self.ttek, is_network=True)
                             else:
                                 self.queue[dropped_tsk.k].append(dropped_tsk)
                                 c.start_service(new_tsk, self.ttek)
@@ -419,16 +394,19 @@ class PriorityQueueSimulator:
             if self.free_channels == self.n and self.is_warm_up_set == True:
                 self.taked[k] += 1
                 if moment:
-                    self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k], is_network=True)
+                    self.servers[0].start_service(
+                        new_tsk, self.ttek, self.warm_up[k], is_network=True)
                 else:
-                    self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k])
+                    self.servers[0].start_service(
+                        new_tsk, self.ttek, self.warm_up[k])
                 self.free_channels -= 1
             else:
                 for s in self.servers:
                     if s.is_free:
                         self.taked[k] += 1
                         if moment:
-                            s.start_service(new_tsk, self.ttek, is_network=True)
+                            s.start_service(new_tsk, self.ttek,
+                                            is_network=True)
                         else:
                             s.start_service(new_tsk, self.ttek)
                         self.free_channels -= 1
@@ -489,7 +467,8 @@ class PriorityQueueSimulator:
                     que_ts.wait_time += self.ttek - que_ts.start_waiting_time
                     if is_network:
                         que_ts.wait_network += self.ttek - que_ts.start_waiting_time
-                        self.servers[c].start_service(que_ts, self.ttek, is_network=True)
+                        self.servers[c].start_service(
+                            que_ts, self.ttek, is_network=True)
                     else:
                         self.servers[c].start_service(que_ts, self.ttek)
 
@@ -571,7 +550,8 @@ class PriorityQueueSimulator:
 
             while sum(self.served) < total_served:
                 self.run_one_step()
-                sys.stderr.write('\rStart simulation. Job served: %d/%d' % (sum(self.served), total_served))
+                sys.stderr.write('\rStart simulation. Job served: %d/%d' %
+                                 (sum(self.served), total_served))
                 sys.stderr.flush()
 
         else:
@@ -587,15 +567,19 @@ class PriorityQueueSimulator:
     def refresh_ppnz_stat(self, k, new_a):
         for i in range(3):
             self.ppnz[k][i] = self.ppnz[k][i] * (1.0 - (1.0 / self.ppnz_moments[k])) + \
-                              math.pow(new_a, i + 1) / self.ppnz_moments[k]
+                math.pow(new_a, i + 1) / self.ppnz_moments[k]
 
     def refresh_v_stat(self, k, new_a):
         for i in range(3):
-            self.v[k][i] = self.v[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
+            self.v[k][i] = self.v[k][i] * \
+                (1.0 - (1.0 / self.served[k])) + \
+                math.pow(new_a, i + 1) / self.served[k]
 
     def refresh_w_stat(self, k, new_a):
         for i in range(3):
-            self.w[k][i] = self.w[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
+            self.w[k][i] = self.w[k][i] * \
+                (1.0 - (1.0 / self.served[k])) + \
+                math.pow(new_a, i + 1) / self.served[k]
 
     def get_p(self):
         """
@@ -649,7 +633,8 @@ class PriorityQueueSimulator:
         for kk in range(self.k):
             res += "\nClass " + str(kk + 1) + "\n"
             if not is_short:
-                res += "\tArrival time: " + "{0:.3f}\n".format(self.arrival_time[kk])
+                res += "\tArrival time: " + \
+                    "{0:.3f}\n".format(self.arrival_time[kk])
             res += "\tSojourn moments:\n"
             for i in range(3):
                 res += "\t{0:8.4g}\t".format(self.v[kk][i])
@@ -679,12 +664,11 @@ class PriorityQueueSimulator:
             else:
                 res += str(self.servers[c]) + "\n"
                 for kk in range(self.k):
-                    res += "Queue # " + str(kk + 1) + " count " + str(len(self.queue[kk])) + "\n"
+                    res += "Queue # " + \
+                        str(kk + 1) + " count " + \
+                        str(len(self.queue[kk])) + "\n"
 
         return res
-
-
-
 
 
 class Task:
@@ -715,9 +699,11 @@ class Task:
 
     def __str__(self, tab=''):
         res = "Task #" + str(self.id) + "  Class: " + str(self.k + 1) + "\n"
-        res += tab + "\tArrival moment: " + "{0:8.3f}".format(self.arr_time) + "\n"
+        res += tab + "\tArrival moment: " + \
+            "{0:8.3f}".format(self.arr_time) + "\n"
         if self.time_to_end_service != 0:
-            res += "{0:s}\tEnd service moment: {1:.3f}\n".format(tab, self.time_to_end_service)
+            res += "{0:s}\tEnd service moment: {1:.3f}\n".format(
+                tab, self.time_to_end_service)
         return res
 
 
@@ -727,33 +713,20 @@ class Server:
     """
     id = 0
 
-    def __init__(self, server_params, prty_type):
+    def __init__(self, server_params, prty_type, generator):
         """
         server_params - словарь, содержащий ключи
         params - параметры распределения
         types -  тип распределения
         """
         self.dist = []  # для каждого класса заявок - свой тип распределения
+        self.generator = generator
         for i in range(len(server_params)):
             dist_type = server_params[i]['type']
             params = server_params[i]['params']
-            if dist_type == "M":
-                self.dist.append(rd.Exp_dist(params))
-            elif dist_type == "H":
-                self.dist.append(rd.H2_dist(params))
-            elif dist_type == "Gamma":
-                self.dist.append(rd.Gamma(params))
-            elif dist_type == "E":
-                self.dist.append(rd.Erlang_dist(params))
-            elif dist_type == "C":
-                self.dist.append(rd.Cox_dist(params))
-            elif dist_type == "Pa":
-                self.dist.append(rd.Pareto_dist(params))
-            elif dist_type == "Uniform":
-                self.dist.append(rd.Uniform_dist(params))
-            else:
-                raise QsSourseSettingException(
-                    "Неправильно задан тип распределения сервера. Варианты М, Н, Е, С, Gamma, Pa, Uniform")
+            self.dist.append(create_distribution(
+                params, dist_type, self.generator))
+
         self.time_to_end_service = 1e10
         self.total_time_to_serve = 0
         # Сохранение типа дисциплины обслуживания необходимо для
@@ -781,7 +754,8 @@ class Server:
                 self.time_to_end_service = ttek + ts.time_to_end_service
                 self.tsk_on_service.time_to_end_service = self.time_to_end_service
             else:
-                self.total_time_to_serve = self.dist[self.class_on_service].generate()
+                self.total_time_to_serve = self.dist[self.class_on_service].generate(
+                )
                 self.time_to_end_service = ttek + self.total_time_to_serve
                 self.tsk_on_service.time_to_end_service = self.time_to_end_service
         self.is_free = False
@@ -804,6 +778,3 @@ class Server:
             res += "\tTask on service:\n"
             res += "\t\t" + str(self.tsk_on_service.__str__("\t"))
         return res
-
-
-

@@ -1,10 +1,10 @@
-from sim import rand_destribution as rd
-
-import numpy as np
 import math
 
-from theory.convolution_sum_calc import get_moments
-from theory import diff5dots
+import numpy as np
+
+from most_queue.general_utils.conv import get_moments
+from most_queue.theory.utils.diff5dots import diff5dots
+from most_queue.rand_distribution import Gamma, Pareto_dist
 
 
 def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
@@ -48,19 +48,19 @@ def get_pi(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
 
 def get_b0(a, j, mu, approx_distr="Gamma"):
     if approx_distr == "Gamma":
-        v, alpha, g = rd.Gamma.get_params(a)
+        v, alpha, g = Gamma.get_params(a)
         summ = 0
         for i in range(len(g)):
             summ += (g[i] / pow(mu * j + v, i)) * (
-                    rd.Gamma.get_gamma(alpha + i) / rd.Gamma.get_gamma(alpha))
+                    Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
         left = pow(v / (mu * j + v), alpha)
         b0 = left * summ
         return b0
 
     elif approx_distr == "Pa":
-        alpha, K = rd.Pareto_dist.get_a_k(a)
+        alpha, K = Pareto_dist.get_a_k(a)
         left = alpha * pow(K * mu * j, alpha)
-        b0 = left * rd.Gamma.get_gamma_incomplete(-alpha, K * mu * j)
+        b0 = left * Gamma.get_gamma_incomplete(-alpha, K * mu * j)
         return b0
 
     else:
@@ -90,7 +90,7 @@ def get_w(a, mu, n, num=100, e=1e-10, approx_distr="Gamma"):
     for i in range(5):
         pls.append(get_w_pls(n, mu, pn, w_param, s))
         s += h
-    w = diff5dots.diff5dots(pls, h)
+    w = diff5dots(pls, h)
     w[0] = - w[0]
     w[2] = - w[2]
     return w
@@ -117,12 +117,12 @@ def get_w_param(a, mu, n, e=1e-10, approx_distr="Gamma"):
     w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
     if approx_distr == "Gamma":
-        v, alpha, g = rd.Gamma.get_params(a)
+        v, alpha, g = Gamma.get_params(a)
         while True:
             summ = 0
             for i in range(len(g)):
                 summ += (g[i] / pow(mu * n * (1.0 - w_old) + v, i)) * (
-                        rd.Gamma.get_gamma(alpha + i) / rd.Gamma.get_gamma(alpha))
+                        Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
             left = pow(v / (mu * n * (1.0 - w_old) + v), alpha)
             w_new = left * summ
             if math.fabs(w_new - w_old) < e:
@@ -131,10 +131,10 @@ def get_w_param(a, mu, n, e=1e-10, approx_distr="Gamma"):
         return w_new
 
     elif approx_distr == "Pa":
-        alpha, K = rd.Pareto_dist.get_a_k(a)
+        alpha, K = Pareto_dist.get_a_k(a)
         while True:
             left = alpha * pow(K * mu * n * (1.0 - w_old), alpha)
-            w_new = left * rd.Gamma.get_gamma_incomplete(-alpha, K * mu * n * (1.0 - w_old))
+            w_new = left * Gamma.get_gamma_incomplete(-alpha, K * mu * n * (1.0 - w_old))
             if math.fabs(w_new - w_old) < e:
                 break
             w_old = w_new

@@ -1,9 +1,10 @@
+import math
+
 import numpy as np
-import math
-from theory import priority_calc
-from theory import passage_time
-from sim import rand_destribution as rd
-import math
+
+from most_queue.theory.utils.passage_time import passage_time_calc
+from most_queue.theory.priority_calc import ppnz_calc
+from most_queue.rand_distribution import Cox_dist
 
 
 class Mmn3_pnz_cox:
@@ -65,6 +66,8 @@ class Mmn3_pnz_cox:
         self.build_matrices()
         self.initial_probabilities()
 
+        self.iter_num_ = 0
+
     def calc_busy_periods(self):
 
         l_M = self.l_M
@@ -77,9 +80,9 @@ class Mmn3_pnz_cox:
         for j in range(3):
             b_mom[j] = math.factorial(j + 1) / math.pow(2 * mu_H, j + 1)
 
-        pnz = priority_calc.ppnz_calc(l_H, b_mom, 3)
+        pnz = ppnz_calc(l_H, b_mom, 3)
 
-        param_cox = rd.Cox_dist.get_params(pnz)
+        param_cox = Cox_dist.get_params(pnz)
 
         y1_cox = param_cox[0]
         mu1_cox = param_cox[1]
@@ -133,7 +136,7 @@ class Mmn3_pnz_cox:
                     c_sum += C[i][row, j]
                 D[i][row, row] = a_sum + b_sum + c_sum
 
-        pass_time = passage_time.passage_time_calc(A, B, C, D)
+        pass_time = passage_time_calc(A, B, C, D)
 
         pass_time.calc()
 
@@ -394,7 +397,7 @@ class Mmn3_pnz_cox:
         t12 = []
 
         for i in range(6):
-            cox_param = rd.Cox_dist.get_params(self.busy_periods[i])
+            cox_param = Cox_dist.get_params(self.busy_periods[i])
             y1 = cox_param[0]
             mu1 = cox_param[1]
             mu2 = cox_param[2]
@@ -464,5 +467,3 @@ class Mmn3_pnz_cox:
             output[i, i] = sumA + sumB + sumC
 
         return output
-
-

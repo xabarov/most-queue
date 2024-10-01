@@ -1,7 +1,8 @@
-import numpy as np
 import math
-from tqdm import tqdm
-from sim import rand_destribution as rd
+
+import numpy as np
+
+from most_queue.rand_distribution import H2_dist
 
 
 class MGnCalc:
@@ -33,7 +34,7 @@ class MGnCalc:
         self.b = b
         self.verbose = verbose
 
-        h2_params = rd.H2_dist.get_params_clx(b)
+        h2_params = H2_dist.get_params_clx(b)
         # параметры H2-распределения:
         self.y = [h2_params[0], 1.0 - h2_params[0]]
         self.l = l

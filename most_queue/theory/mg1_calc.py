@@ -1,7 +1,7 @@
 import math
-from sim import rand_destribution as rd
-from sim.qs_sim import QueueingSystemSimulator
-from theory import q_poisson_arrival_calc as q_calc
+
+from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma, get_q_Pareto, get_q_uniform
+from most_queue.rand_distribution import Gamma, Pareto_dist, Uniform_dist
 
 
 def get_w(l, b, num=3):
@@ -54,14 +54,14 @@ def get_p(l, b, num=100, dist_type="Gamma"):
     """
 
     if dist_type == "Gamma":
-        gamma_param = rd.Gamma.get_mu_alpha(b)
-        q = q_calc.get_q_Gamma(l, gamma_param[0], gamma_param[1], num)
+        gamma_param = Gamma.get_mu_alpha(b)
+        q = get_q_Gamma(l, gamma_param[0], gamma_param[1], num)
     elif dist_type == "Uniform":
-        uniform_params = rd.Uniform_dist.get_params(b)
-        q = q_calc.get_q_uniform(l, uniform_params[0], uniform_params[1], num)
+        uniform_params = Uniform_dist.get_params(b)
+        q = get_q_uniform(l, uniform_params[0], uniform_params[1], num)
     elif dist_type == "Pa":
-        alpha, K = rd.Pareto_dist.get_a_k(b)
-        q = q_calc.get_q_Pareto(l, alpha, K, num)
+        alpha, K = Pareto_dist.get_a_k(b)
+        q = get_q_Pareto(l, alpha, K, num)
     else:
         print("Error in get_p. Unknown type of distribution")
         return 0

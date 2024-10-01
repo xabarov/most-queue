@@ -1,6 +1,5 @@
-import sim.rand_destribution as rd
-from sim.qs_sim import QueueingSystemSimulator, Task
-from sim.utils.exceptions import QsSourseSettingException
+from most_queue.sim.utils.distribution_utils import create_distribution
+from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 
 class ImpatientTask(Task):
@@ -18,6 +17,9 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
         self.impatience_params = None
         self.impatience_types = None
+        
+        self.impatience = None
+        self.is_set_impatience_params = False
 
     def set_impatiens(self, params, types):
         """
@@ -37,25 +39,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
         self.is_set_impatience_params = True
 
-        if self.impatience_types == "M":
-            self.impatience = rd.Exp_dist(self.impatience_params)
-        elif self.impatience_types == "H":
-            self.impatience = rd.H2_dist(self.impatience_params)
-        elif self.impatience_types == "E":
-            self.impatience = rd.Erlang_dist(self.impatience_params)
-        elif self.impatience_types == "C":
-            self.impatience = rd.Cox_dist(self.impatience_params)
-        elif self.impatience_types == "Pa":
-            self.impatience = rd.Pareto_dist(self.impatience_params)
-        elif self.impatience_types == "Gamma":
-            self.impatience = rd.Gamma(self.impatience_params)
-        elif self.impatience_types == "Uniform":
-            self.impatience = rd.Uniform_dist(self.impatience_params)
-        elif self.impatience_types == "D":
-            self.impatience = rd.Det_dist(self.impatience_params)
-        else:
-            raise QsSourseSettingException(
-                "Неправильно задан тип распределения нетерпения заявок. Варианты М, Н, Е, С, D, Pa, Uniform")
+        self.impatience = create_distribution(params, types, self.generator)
 
     def arrival(self):
         """
@@ -161,5 +145,4 @@ class ImpatientQueueSim(QueueingSystemSimulator):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
-        print(f'Task {num_of_task_earlier} is earlier to leave at {
-              moment_to_leave_earlier:8.3f}')
+        return f'Task {num_of_task_earlier} is earlier to leave at {moment_to_leave_earlier:8.3f}'

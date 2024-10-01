@@ -1,63 +1,10 @@
 """
 ForkJoin Queue with delta
 """
-import sim.rand_destribution as rd
-from sim.fj_sim import ForkJoinSim
-from sim.fj_sim import SubTask as SubTask
-from sim.fj_sim import Task as Task
-from sim.qs_sim import Server
-from sim.utils.sim_utils import get_conv_moments, get_self_concolution_moments
-
-
-class ServerWarmUp(Server):
-    """
-    Канал обслуживания
-    """
-    id = 0
-
-    def __init__(self, params, types, delta=None):
-        """
-        params - параметры распределения
-        types -  тип распределения
-        """
-        Server.__init__(self, params, types)
-        self.delta = delta
-
-    def start_service(self, ts, ttek, isWarmUp=False):
-
-        Server.start_service(self, ts, ttek)
-        if isWarmUp:
-            if not isinstance(self.delta, dict):
-                self.time_to_end_service = ttek + self.dist.generate() + self.delta
-            else:
-                b = [0, 0, 0]
-                if self.dist.type == 'M':
-                    b = rd.Exp_dist.calc_theory_moments(self.dist.params)
-                elif self.dist.type == 'H':
-                    b = rd.H2_dist.calc_theory_moments(*self.dist.params)
-                elif self.dist.type == 'C':
-                    b = rd.Cox_dist.calc_theory_moments(*self.dist.params)
-                elif self.dist.type == 'Pa':
-                    b = rd.Pareto_dist.calc_theory_moments(*self.dist.params)
-                elif self.dist.type == 'Gamma':
-                    b = rd.Gamma.calc_theory_moments(*self.dist.params)
-
-                f_summ = get_conv_moments(b, self.delta)
-                # variance = f_summ[1] - math.pow(f_summ[0], 2)
-                # coev = math.sqrt(variance)/f_summ[0]
-                params = rd.Gamma.get_mu_alpha(f_summ)
-                self.time_to_end_service = ttek + \
-                    rd.Gamma.generate_static(*params)
-
-
-class SubTaskDelta(SubTask):
-    """
-    Позадача
-    """
-
-    def __init__(self, arr_time, task_id):
-        SubTask.__init__(self, arr_time, task_id)
-        self.future_arr_time = 0
+from most_queue.general_utils.conv import get_self_conv_moments
+from most_queue.rand_distribution import Gamma
+from most_queue.sim.fj_sim import ForkJoinSim
+from most_queue.sim.utils.tasks import ForkJoinTask
 
 
 class ForkJoinSimDelta(ForkJoinSim):
@@ -100,8 +47,8 @@ class ForkJoinSimDelta(ForkJoinSim):
                     is_dropped = True
 
         if not is_dropped:
-            self.served_subtask_in_task[Task.task_id] = 0
-            t = Task(self.k, self.ttek)
+            self.served_subtask_in_task[ForkJoinTask.task_id] = 0
+            t = ForkJoinTask(self.k, self.ttek)
             self.first_subtask_arr_time[t.id] = self.ttek
 
             self.in_sys += 1
@@ -131,10 +78,10 @@ class ForkJoinSimDelta(ForkJoinSim):
                 if not isinstance(self.delta, list):
                     t.subtasks[i].future_arr_time = self.ttek + i * self.delta
                 else:
-                    b_delta = get_self_concolution_moments(self.delta, i)
-                    params_delta = rd.Gamma.get_mu_alpha(b_delta)
+                    b_delta = get_self_conv_moments(self.delta, i)
+                    params_delta = Gamma.get_mu_alpha(b_delta)
                     t.subtasks[i].future_arr_time = self.ttek + \
-                        rd.Gamma.generate_static(*params_delta)
+                        Gamma.generate_static(*params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):
