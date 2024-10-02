@@ -8,63 +8,64 @@ from most_queue.theory.ek_d_n_calc import Ek_D_n
 
 def test_EkDn():
     """
-    Тестирование численного расчета многоканальной системы Ek/D/n
-    с детерминированным обслуживанием
+    Testing the numerical calculation of the multichannel Ek/D/n system
+    with deterministic service
 
-    Для вызова - используйте класс Ek_D_n пакета most_queue.theory.ek_d_n_calc
-    Для верификации используем имитационное моделирование (ИМ).
-
+    For calling - use the Ek_D_n class of the most_queue.theory.ek_d_n_calc package
+    For verification, we use simulation modeling (sim).
     """
 
-    ro = 0.7  # коэффициент загрузки СМО
-    num_of_jobs = 300000  # количество заявок для ИМ. Чем больше, тем выше точночть ИМ
-    n = 2  # число каналов
+    ro = 0.7  # utilization factor
+    num_of_jobs = 300000  # for sim
+    channels_num = 2
 
-    # при создании экземпляра класса Ek_D_n нужно передать 4 параметра:
-    # - l , k - параметры распределения Эрланга вх потока
-    # - b - время обслуживания (детерминированное)
-    # - n - число каналов обслуживания
+    # When creating an instance of the Ek_D_n class, you need to pass 4 parameters:
+    # - l , k - Erlang distribution parameters of the input stream
+    # - b - service time (deterministic)
+    # - n - number of service channels
 
-    # Подберем параметры k и l аппроксимирующего распределения по среднему значению и коэфф вариации
-    # с помощью метода most_queue.sim.rand_distribution.Erlang_dist.get_params_by_mean_and_coev()
+    # Let us select the parameters k and l of the approximating distribution
+    # based on the mean value and the coefficient of variation
+    # using the Erlang_dist.get_params_by_mean_and_coev() method
 
-    a1 = 1  # среднее время между заявками вх потока
-    coev_a = 0.56  # коэффициент вариации вх потока
+    a1 = 1  # average time between requests in the input stream
+    coev_a = 0.56  # coefficient of variation of input flow
     k, l = Erlang_dist.get_params_by_mean_and_coev(a1, coev_a)
 
-    # время обслуживания определим на основе заданного коэффициента загрузки
-    # В вашем случае параметры l, k, b и n могут быть заданы непосредственно.
-    # Обязательно проверьте, чтобы коэфф загрузки СМО не превышал 1.0
+    # service time will be determined based on the specified utilization factor
+    # In your case, the parameters l, k, b and n can be specified directly.
+    # Be sure to check that the load factor of the QS does not exceed 1.0
 
-    b = a1 * n * ro
+    b = a1 * channels_num * ro
 
-    # создаем экземпляр класса для численного расчета
-    ekdn = Ek_D_n(l, k, b, n)
+    # create an instance of the class for numerical calculation
+    ekdn = Ek_D_n(l, k, b, channels_num)
 
-    # запускаем расчет вероятностей состояний СМО
+    # start calculating the probabilities of the QS states
     p_ch = ekdn.calc_p()
 
-    # для верификации используем ИМ.
-    # создаем экземпляр класса ИМ, передаем число каналов обслуживания
-    qs = QueueingSystemSimulator(n)
+    # for verification we use IM.
+    # create an instance of the IM class, pass the number of service channels
+    qs = QueueingSystemSimulator(channels_num)
 
-    # задаем входной поток. Методу нужно передать параметры распределения списком и тип распределения. E - Эрланг
+    # we set the input stream. The method needs to be passed the distribution parameters as a list and the distribution type. E - Erlang
     qs.set_sources([k, l], "E")
-    # задаем каналы обслуживания. На вход время обслуживания и тип распределения - D.
+    # we set the service channels. The input is the service time and the distribution type - D.
     qs.set_servers(b, "D")
 
-    # запускаем ИМ:
+    # run simulation
     qs.run(num_of_jobs)
 
-    # получаем параметры - начальные моменты времени пребывания и распределение веротяностей состояния системы
+    # obtain parameters - initial moments (3) of sojourn time and probability distribution of the system state
     v_sim = qs.v
+
+    print(f'v_sim: {v_sim}')
     p_sim = qs.get_p()
 
-    # выводим полученные значения:
     probs_print(p_sim, p_ch, 10)
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
-    
+
     assert abs(p_sim[0] - p_ch[0]) < 0.001
 
 

@@ -33,3 +33,30 @@ class QsPhase:
         """
         self.dist = dist
         self.is_set = True
+
+    def start(self, ttek):
+        """
+        Start period
+        ttek - current system time
+        """
+
+        self.is_start = True
+        self.start_mom = ttek
+        self.starts_times += 1
+        self.end_time = ttek + self.dist.generate()
+
+    def end(self, ttek):
+        """
+        Start period
+        ttek - current system time
+        """
+        self.prob += ttek - self.start_mom
+
+        self.is_start = False
+        self.end_time = 1e16
+
+    def get_prob(self, ttek):
+        """
+        Get probability of be in phase
+        """
+        return self.prob/ttek

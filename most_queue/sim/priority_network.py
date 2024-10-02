@@ -6,8 +6,8 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator, Task
 from most_queue.rand_distribution import Exp_dist
+from most_queue.sim.priority_queue_sim import PriorityQueueSimulator, Task
 
 init()
 
@@ -139,15 +139,22 @@ class PriorityNetwork:
 
                 self.smos[next_node].arrival(next_node_class, self.ttek, ts)
 
-    def run(self, job_served, is_real_served=False):
+    def run(self, job_served, is_real_served=True):
         """
         Run simulation
         """
         if is_real_served:
-            while sum(self.served) < job_served:
-                self.run_one_step()
-                sys.stderr.write(f'\rStart simulation. Job served: {sum(self.served)}/{job_served}')
-                sys.stderr.flush()
+            last_percent = 0
+
+            with tqdm(total=100, unit='jobs') as pbar:
+                while sum(self.served) < job_served:
+                    self.run_one_step()
+                    percent = int(100*(sum(self.served)/job_served))
+                    if last_percent != percent:
+                        last_percent = percent
+                        pbar.update(1)
+                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
+                                             Fore.YELLOW + f'{sum(self.served)}/{job_served}' + Fore.LIGHTGREEN_EX)
         else:
             print(Fore.GREEN + '\rStart simulation')
             print(Style.RESET_ALL)

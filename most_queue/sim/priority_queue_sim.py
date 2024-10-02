@@ -549,15 +549,18 @@ class PriorityQueueSimulator:
 
         print(Fore.GREEN + '\rStart simulation')
         if is_real_served:
-            tek = 0
-            while sum(self.served) < total_served:
-                self.run_one_step()
-                if tek % 5000 == 0:
-                    print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW +
-                          f'{sum(self.served)}/{total_served}', end='')
-                tek += 1
-            print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW +
-                  f'{sum(self.served)}/{total_served}')
+
+            last_percent = 0
+
+            with tqdm(total=100, unit='jobs') as pbar:
+                while sum(self.served) < total_served:
+                    self.run_one_step()
+                    percent = int(100*(sum(self.served)/total_served))
+                    if last_percent != percent:
+                        last_percent = percent
+                        pbar.update(1)
+                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
+                                             Fore.YELLOW + f'{sum(self.served)}/{total_served}' + Fore.LIGHTGREEN_EX)
 
         else:
             for i in tqdm(range(total_served)):

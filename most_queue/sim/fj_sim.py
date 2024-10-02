@@ -163,15 +163,22 @@ class ForkJoinSim(QueueingSystemSimulator):
         else:
             self.serving(num_of_server_earlier)
 
-    def run(self, total_served, is_real_served=False):
+    def run(self, total_served, is_real_served=True):
 
         if is_real_served:
-            served_old = 0
-            while self.served < total_served:
-                self.run_one_step()
-                if (self.served - served_old) % 5000 == 0:
-                    print(f'\rStart simulation. Job served: {self.served}/{total_served}')
-                served_old = self.served
+            
+            last_percent = 0
+
+            with tqdm(total=100, unit='jobs') as pbar:
+                while self.served < total_served:
+                    self.run_one_step()
+                    percent = int(100*(self.served/total_served))
+                    if last_percent != percent:
+                        last_percent = percent
+                        pbar.update(1)
+                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
+                                             Fore.YELLOW + f'{self.served}/{total_served}' + Fore.LIGHTGREEN_EX)
+                        
         else:
             print(Fore.GREEN + '\rStart simulation')
             print(Style.RESET_ALL)

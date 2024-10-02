@@ -419,15 +419,15 @@ def test_all():
     
 if __name__ == "__main__":
     
-    test_all()
-    # ro = 0.7
-    # n_stat = run_n(b1_service=10.0, coev_service=1.2,
-    #                     b1_warm=3.1, coev_warm=0.87,
-    #                     b1_cold=4.1, coev_cold=1.1,
-    #                     b1_cold_delay=3.71, coev_cold_delay=1.2,
-    #                     num_of_jobs=300000,
-    #                     n_min=1, n_max=10, ro=ro, w_pls_dt=1e-3,
-    #                     stable_w_pls=True, sim_ave=1)
+    # test_all()
+    ro = 0.7
+    n_stat = run_n(b1_service=10.0, coev_service=1.2,
+                        b1_warm=3.1, coev_warm=0.87,
+                        b1_cold=4.1, coev_cold=1.1,
+                        b1_cold_delay=3.71, coev_cold_delay=1.2,
+                        num_of_jobs=300000,
+                        n_min=1, n_max=10, ro=ro, w_pls_dt=1e-3,
+                        stable_w_pls=True, sim_ave=1)
     
-    # print_table(n_stat)
-    # make_plot(n_stat, param_name='n', mode='abs')
+    print_table(n_stat)
+    make_plot(n_stat, param_name='n', mode='abs')

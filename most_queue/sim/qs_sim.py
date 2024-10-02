@@ -1,8 +1,7 @@
 """
-    Имитационная модель СМО GI/G/n/r и GI/G/n
+    Simulation model of QS GI/G/n/r and GI/G/n
 """
 import math
-import sys
 import time
 
 import numpy as np
@@ -10,18 +9,23 @@ from colorama import Fore, Style, init
 from tqdm import tqdm
 
 from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
-from most_queue.sim.utils.exceptions import QsSourseSettingException, QsWrongQueueTypeException
+from most_queue.sim.utils.exceptions import (
+    QsSourseSettingException,
+    QsWrongQueueTypeException,
+)
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
+from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import Task
+
 
 init()
 
 
 class QueueingSystemSimulator:
     """
-    Имитационная модель СМО GI/G/n/r и GI/G/n
+    Simulation model of QS GI/G/n/r and GI/G/n
     """
 
     def __init__(self, num_of_channels,
@@ -29,61 +33,75 @@ class QueueingSystemSimulator:
                  verbose=True,
                  buffer_type="list"):
         """
-        num_of_channels - количество каналов СМО
-        buffer - максимальная длина очереди
-        verbose - вывод комментариев в процессе ИМ
+        num_of_channels - number of QS channels
+        buffer - maximum queue length
+        verbose - output comments during the IM process
 
-        Для запуска ИМ необходимо:
-        - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() 
-        - задать распределение обслуживания с помощью метода set_servers() 
-        - запустить ИМ с помощью метода run()
-        которому нужно передать число требуемых к обслуживанию заявок
+        To start the simulation, you need to:
+        - call the constructor with parameters
+        - set the input arrival distribution using the set_sorces() method
+        - set the service distribution using the set_servers() method
+        - start the simulation using the run() method
+        to which you need to pass the number of job required for servicing
+
+        Supported distributions params
+
+        --------------------------------------------------------------------
+            Distribution                    kendall_notation    params
+            --------------------------------------------------------------------
+            Exponential                           'М'             [mu]
+            Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+            Erlang                                'E'           [r, mu]
+            Cox 2nd order                         'C'         [y1, mu1, mu2]
+            Pareto                                'Pa'         [alpha, K]
+            Deterministic                         'D'         [b]
+            Uniform                            'Uniform'     [mean, half_interval]
+            Gaussian                             'Norm'    [mean, standard_deviation]
 
         """
         self.n = num_of_channels
         self.buffer = buffer
-        self.verbose = verbose  # выводить ли текстовые сообщения о работе
+        self.verbose = verbose
 
         self.generator = np.random.default_rng()
 
         self.free_channels = self.n
         self.num_of_states = 100000
-        self.load = 0  # коэффициент загрузки системы
+        self.load = 0  # utilization factor
 
-        # для отслеживания длины периода непрерывной занятости каналов:
+        # to track the length of the continuous channel occupancy period:
         self.start_ppnz = 0
         self.ppnz = [0, 0, 0]
         self.ppnz_moments = 0
 
-        self.ttek = 0  # текущее время моделирования
+        self.ttek = 0  # current simulation time
         self.total = 0
 
-        self.w = [0, 0, 0]  # начальные моменты времени ожидания в СМО
-        self.v = [0, 0, 0]  # начальные моменты времени пребывания в СМО
+        self.w = [0, 0, 0]  # initial moments of waiting time in the QS
+        self.v = [0, 0, 0]  # initial moments of sojourn time in the QS
 
-        # вероятности состояний СМО (нахождения в ней j заявок):
+        # probabilities of the QS states:
         self.p = [0.0] * self.num_of_states
 
-        self.taked = 0  # количество заявок, принятых на обслуживание
-        self.served = 0  # количество заявок, обслуженных системой
-        self.in_sys = 0  # кол-во заявок в системе
-        self.t_old = 0  # момент предыдущего события
-        self.arrived = 0  # кол-во поступивших заявок
-        self.dropped = 0  # кол-во заявок, получивших отказ в обслуживании
-        self.arrival_time = 0  # момент прибытия следущей заявки
+        self.taked = 0  # number of job accepted for service
+        self.served = 0  # number of job serviced by the system
+        self.in_sys = 0  # number of job in the system
+        self.t_old = 0  # time of the previous event
+        self.arrived = 0  # number of job received
+        self.dropped = 0  # number of job denied service
+        self.arrival_time = 0  # time of arrival of the next job
 
         self.time_to_next_event = 0
 
-        # очередь, класс заявок - Task
+        # queue of jobs: class - Task
         if buffer_type == "list":
             self.queue = QsQueueList()
         elif buffer_type == "deque":
             self.queue = QsQueueDeque()
         else:
-            raise QsWrongQueueTypeException("Неизвестный тип очереди")
+            raise QsWrongQueueTypeException("Unknown queue type")
 
-        self.servers = []  # каналы обслуживания, список с классами Server
+        self.servers = []  # service channels, list of Server's
 
         self.source = None
         self.source_params = None
@@ -106,78 +124,37 @@ class QueueingSystemSimulator:
 
     def set_warm(self, params, kendall_notation):
         """
-            --------------------------------------------------------------------
-            Distribution                    kendall_notation    params
-            --------------------------------------------------------------------
-            Exponential                           'М'             [mu]
-            Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
-            Erlang                                'E'           [r, mu]
-            Cox 2nd order                         'C'         [y1, mu1, mu2]
-            Pareto                                'Pa'         [alpha, K]
-            Deterministic                         'D'         [b]
-            Uniform                            'Uniform'     [mean, half_interval]
-            Gaussian                             'Norm'    [mean, standard_deviation]
+            Sets the type and parameters of the warm-up time distribution
+            See supported params and types in __init__
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
 
     def set_cold(self, params, kendall_notation):
         """
-        Задает тип и параметры распределения времени охлаждения
-        --------------------------------------------------------------------
-        Distribution                    kendall_notation    params
-        --------------------------------------------------------------------
-        Exponential                           'М'             [mu]
-        Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
-        Erlang                                'E'           [r, mu]
-        Cox 2nd order                         'C'         [y1, mu1, mu2]
-        Pareto                                'Pa'         [alpha, K]
-        Deterministic                         'D'         [b]
-        Uniform                            'Uniform'     [mean, half_interval]
-        Gaussian                             'Norm'    [mean, standard_deviation]
+            Sets the type and parameters of the cooling time distribution
+            See supported params and types in __init__
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_phase.set_dist(dist)
 
     def set_cold_delay(self, params, kendall_notation):
         """
-        Задает тип и параметры распределения времени задержки начала охлаждения
-        --------------------------------------------------------------------
-        Distribution                    kendall_notation    params
-        --------------------------------------------------------------------
-        Exponential                           'М'             [mu]
-        Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
-        Erlang                                'E'           [r, mu]
-        Cox 2nd order                         'C'         [y1, mu1, mu2]
-        Pareto                                'Pa'         [alpha, K]
-        Deterministic                         'D'         [b]
-        Uniform                            'Uniform'     [mean, half_interval]
-        Gaussian                             'Norm'    [mean, standard_deviation]
-
-
+        Sets the type and parameters of the distribution of the cooling start delay time
+        See supported params and types in __init__
         """
 
         if not self.cold_phase.is_set:
             raise QsSourseSettingException(
-                "Необходимо сперва задать время охлаждения. Используйте метод set_cold()")
+                "You must first set the cooling time. Use the set_cold() method.")
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)
 
     def set_sources(self, params, types):
         """
-        Задает тип и параметры распределения интервала поступления заявок.
-        --------------------------------------------------------------------
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Гамма-распределение                   'Gamma'       [mu, alpha]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Детерминированное                      'D'         [b]
-        Равномерное                         'Uniform'     [mean, half_interval]
-        Нормальное                            'Norm'    [mean, standard_deviation]
+        Specifies the type and parameters of the distribution of the arrival interval.
+        See supported params and types in __init__
         """
         self.source_params = params
         self.source_types = types
@@ -190,17 +167,8 @@ class QueueingSystemSimulator:
 
     def set_servers(self, params, types):
         """
-        Задает тип и параметры распределения времени обслуживания.
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Гамма-распределение                   'Gamma'       [mu, alpha]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Равномерное                         'Uniform'     [mean, half_interval]
-        Детерминированное                      'D'         [b]
-        Нормальное                            'Norm'    [mean, standard_deviation]
+        Specifies the type and parameters of service time distribution.
+        See supported params and types in __init__
         """
         self.server_params = params
         self.server_types = types
@@ -212,7 +180,7 @@ class QueueingSystemSimulator:
 
     def calc_load(self):
         """
-        Вычисляет коэффициент загрузки СМО
+        Calculates the load factor of the QS
         """
 
         return calc_qs_load(self.source_types,
@@ -222,8 +190,8 @@ class QueueingSystemSimulator:
 
     def send_task_to_channel(self, is_warm_start=False):
         """
-        Отправляет заявку в канал обслуживания
-        is_warm_start- нужен ли разогрев
+        Sends a job to the service channel
+        is_warm_start - is warming up needed
         """
         for s in self.servers:
             if s.is_free:
@@ -247,7 +215,7 @@ class QueueingSystemSimulator:
         """
         Send Task to Queue
         """
-        if self.buffer is None:  # не задана длина очереди, т.е бесконечная очередь
+        if self.buffer is None:  # queue length is not specified, i.e. infinite queue
             new_tsk = Task(self.ttek)
             new_tsk.start_waiting_time = self.ttek
             self.queue.append(new_tsk)
@@ -262,7 +230,7 @@ class QueueingSystemSimulator:
 
     def arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        Actions upon arrival of the job by the QS.
         """
 
         self.arrived += 1
@@ -280,13 +248,13 @@ class QueueingSystemSimulator:
 
             if self.cold_phase.is_set:
                 if self.cold_phase.is_start:
-                    # Еще не закончено охлаждение. В очередь
+                    # Cooling is not finished yet. In queue
                     self.send_task_to_queue()
                     return
 
             if self.cold_delay_phase.is_set:
                 if self.cold_delay_phase.is_start:
-                    # Заявка пришла раньше окончания времени задержки начала охлаждения
+                    # The job was received before the end of the cooling start delay time
                     self.cold_delay_phase.is_start = False
                     self.cold_delay_phase.end_time = 1e16
                     self.cold_delay_phase.prob += self.ttek - self.cold_delay_phase.start_mom
@@ -294,63 +262,34 @@ class QueueingSystemSimulator:
                     return
 
             if self.warm_phase.is_set:
-                # Задан разогрев
+                # Warm-up set
 
-                # Проверяем разогрев. К этому моменту система точно не в режиме охлаждения
-                # и не в состоянии задержки начала охлаждения.
-                # Значит либо:
-                # 1. В режиме разогрева -> отправляем заявку в очередь
-                # 2. Она пустая и была выклюбчена после охлаждения. Запускаем разогрев
-                # 3. Не пустая и разогретая -> тогда оправляем на обслуживание
+                # Check warm-up. By this point the system is definitely not in cooling mode
+                # and not in the cooling start delay state.
+                # So either:
+                # 1. In warm-up mode -> send the job to the queue
+                # 2. It is empty and was turned off after cooling. Start warm-up
+                # 3. Not empty and warmed up -> then send it for maintenance
                 if self.warm_phase.is_start:
-                    # 1. В режиме разогрева -> отправляем заявку в очередь
+                    # 1. In warm-up mode -> send the job to the queue
                     self.send_task_to_queue()
                 else:
                     if self.free_channels == self.n:
-                        # 2. Она пустая и была выключена после охлаждения. Запускаем разогрев
-                        self.start_warm()
-                        # Отправляем заявку в очередь
+                        # 2. It is empty and was turned off after cooling. We start warm-up
+                        self.warm_phase.start(self.ttek)
+                        # to queue
                         self.send_task_to_queue()
                     else:
-                        # 3. Не пустая и разогретая -> тогда оправляем на обслуживание
+                        # 3. Not empty and warmed up -> then we send it for servicing
                         self.send_task_to_channel()
 
             else:
-                # Без разогрева. Отправляем заявку в канал обслуживания
+                # No warm-up. Send a job to the service channel
                 self.send_task_to_channel()
-
-    def start_warm(self):
-        """
-        Start WarmUp Period
-        """
-        self.warm_phase.is_start = True
-        self.warm_phase.start_mom = self.ttek
-        self.warm_phase.starts_times += 1
-        self.warm_phase.end_time = self.ttek + self.warm_phase.dist.generate()
-
-    def start_cold(self):
-        """
-        Start Cold Period
-        """
-        self.cold_phase.is_start = True
-        self.cold_phase.start_mom = self.ttek
-        self.cold_phase.starts_times += 1
-        self.cold_phase.end_time = self.ttek + self.cold_phase.dist.generate()
-
-    def start_cold_delay(self):
-        """
-        Start Cold Delay Period
-        """
-        self.cold_delay_phase.is_start = True
-        self.cold_delay_phase.start_mom = self.ttek
-        self.cold_delay_phase.starts_times += 1
-        self.cold_delay_phase.end_time = self.ttek + \
-            self.cold_delay_phase.dist.generate()
 
     def serving(self, c):
         """
-        Дейтсвия по поступлению заявки на обслуживание
-        с - номер канала
+        Actions upon receipt of a service job with - channel number
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
@@ -363,27 +302,26 @@ class QueueingSystemSimulator:
         self.total += 1
         self.free_channels += 1
         self.refresh_v_stat(self.ttek - end_ts.arr_time)
-        # self.refresh_w_stat(end_ts.wait_time)
 
         self.in_sys -= 1
 
-        # ПНЗ
+        # BUSY PERIOD
         if self.queue.size() == 0 and self.free_channels == 1:
             if self.in_sys == self.n - 1:
-                # Конец ПНЗ
+                # busy period ends
                 self.ppnz_moments += 1
                 self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
 
         # COLD
         if self.cold_phase.is_set:
             if self.queue.size() == 0 and self.free_channels == self.n:
-                # Система стала пустой.
-                # 1. Если задана задержка начала охлаждения - разыгрываем время ее окончания
-                # 2. Если нет - запускаем охлаждение
+                # The system has become empty.
+                # 1. If a delay in the start of cooling is set, we play the time of its end
+                # 2. If not, we start cooling
                 if self.cold_delay_phase.is_set:
-                    self.start_cold_delay()
+                    self.cold_delay_phase.start(self.ttek)
                 else:
-                    self.start_cold()
+                    self.cold_phase.start(self.ttek)
 
         if self.queue.size() != 0:
             self.send_head_of_queue_to_channel(c)
@@ -414,12 +352,9 @@ class QueueingSystemSimulator:
         self.ttek = self.warm_phase.end_time
         self.t_old = self.ttek
 
-        self.warm_phase.prob += self.ttek - self.warm_phase.start_mom
+        self.warm_phase.end(self.ttek)
 
-        self.warm_phase.is_start = False
-        self.warm_phase.end_time = 1e16
-
-        # Отправляем n заявок из очереди в каналы
+        # Send n jobs from the queue to the channels
         for i in range(self.n):
             if self.queue.size() != 0:
                 self.send_head_of_queue_to_channel(i)
@@ -433,19 +368,16 @@ class QueueingSystemSimulator:
         self.ttek = self.cold_phase.end_time
         self.t_old = self.ttek
 
-        self.cold_phase.prob += self.ttek - self.cold_phase.start_mom
-
-        self.cold_phase.is_start = False
-        self.cold_phase.end_time = 1e16
+        self.cold_phase.end(self.ttek)
 
         if self.warm_phase.is_set:
             if self.queue.size() != 0:
-                # Запускаем разогрев только если в очереди скопились заявки.
+                # We start warming up only if there are jobs accumulated in the queue.
                 self.warm_after_cold_starts += 1
-                self.start_warm()
+                self.warm_phase.start(self.ttek)
 
         else:
-            # Отправляем n заявок из очереди в каналы
+            # Send n jobs from the queue to the channels
             for i in range(self.n):
                 if self.queue.size() != 0:
                     self.send_head_of_queue_to_channel(i)
@@ -459,13 +391,10 @@ class QueueingSystemSimulator:
         self.ttek = self.cold_delay_phase.end_time
         self.t_old = self.ttek
 
-        self.cold_delay_phase.prob += self.ttek - self.cold_delay_phase.start_mom
+        self.cold_delay_phase.end(self.ttek)
 
-        self.cold_delay_phase.is_start = False
-        self.cold_delay_phase.end_time = 1e16
-
-        # Запускаем процесс охлаждения
-        self.start_cold()
+        # Start the cooling process
+        self.cold_phase.start(self.ttek)
 
     def run_one_step(self):
         """
@@ -480,25 +409,25 @@ class QueueingSystemSimulator:
                 serv_earl = self.servers[c].time_to_end_service
                 num_of_server_earlier = c
 
-        # Задан глобальный разогрев. Нужно отслеживать
-        # в том числе момент окончания разогрева
+        # Global warm-up is set. Need to track
+        # including the moment of warm-up end
         times = [serv_earl, self.arrival_time, self.warm_phase.end_time,
                  self.cold_phase.end_time, self.cold_delay_phase.end_time]
         min_time_num = np.argmin(times)
         if min_time_num == 0:
-            # Обслуживание
+            # Serving
             self.serving(num_of_server_earlier)
         elif min_time_num == 1:
-            # Прибытие
+            # Arrival
             self.arrival()
         elif min_time_num == 2:
-            # конец разогрева
+            # Warm-up ends
             self.on_end_warming()
         elif min_time_num == 3:
-            # конец охлаждения
+            # Cold ends
             self.on_end_cold()
         else:
-            # конец задержки начала охлаждения
+            # Delay cold ends
             self.on_end_cold_delay()
 
     def run(self, total_served, is_real_served=True):
@@ -506,17 +435,23 @@ class QueueingSystemSimulator:
         Run simulation process
         """
         start = time.process_time()
-        
+
         print(Fore.GREEN + '\rStart simulation')
 
         if is_real_served:
-            tek = 0
-            while self.served < total_served:
-                self.run_one_step()
-                if tek % 5000 == 0:
-                    print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW + f'{self.served}/{total_served}', end='')
-                tek += 1
-            print(Fore.MAGENTA + '\rJob served: ' + Fore.YELLOW + f'{self.served}/{total_served}')
+
+            last_percent = 0
+
+            with tqdm(total=100, unit='jobs') as pbar:
+                while self.served < total_served:
+                    self.run_one_step()
+                    percent = int(100*(self.served/total_served))
+                    if last_percent != percent:
+                        last_percent = percent
+                        pbar.update(1)
+                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
+                                             Fore.YELLOW + f'{self.served}/{total_served}' + Fore.LIGHTGREEN_EX)
+
         else:
             for i in tqdm(range(total_served)):
                 self.run_one_step()
@@ -530,54 +465,42 @@ class QueueingSystemSimulator:
         """
         Returns probability of the system being in the warm-up phase
         """
-
-        return self.warm_phase.prob / self.ttek
+        return self.warm_phase.get_prob(self.ttek)
 
     def get_cold_prob(self):
         """
         Returns probability of the system being in the cold phase
         """
-
-        return self.cold_phase.prob / self.ttek
+        return self.cold_phase.get_prob(self.ttek)
 
     def get_cold_delay_prob(self):
         """
         Returns probability of the system being in the delay cold phase
         """
-
-        return self.cold_delay_phase.prob / self.ttek
+        return self.cold_delay_phase.get_prob(self.ttek)
 
     def refresh_ppnz_stat(self, new_a):
         """
         Updating statistics of the busy period 
         """
-
-        for i in range(3):
-            self.ppnz[i] = self.ppnz[i] * (1.0 - (1.0 / self.ppnz_moments)) + \
-                math.pow(new_a, i + 1) / self.ppnz_moments
+        self.ppnz = refresh_moments_stat(self.ppnz, new_a, self.ppnz_moments)
 
     def refresh_v_stat(self, new_a):
         """
         Updating statistics of sojourn times
         """
-
-        for i in range(3):
-            self.v[i] = self.v[i] * (1.0 - (1.0 / self.served)) + \
-                math.pow(new_a, i + 1) / self.served
+        self.v = refresh_moments_stat(self.v, new_a, self.served)
 
     def refresh_w_stat(self, new_a):
         """
         Updating statistics of wait times
         """
-
-        for i in range(3):
-            self.w[i] = self.w[i] * (1.0 - (1.0 / self.taked)) + \
-                math.pow(new_a, i + 1) / self.taked
+        self.w = refresh_moments_stat(self.w, new_a, self.taked)
 
     def get_p(self):
         """
-        Возвращает список с вероятностями состояний СМО
-        p[j] - вероятность того, что в СМО в случайный момент времени будет ровно j заявок
+        Returns a list with probabilities of QS states
+        p[j] - the probability that there will be exactly j jobs in the QS at a random moment in time
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.num_of_states):
