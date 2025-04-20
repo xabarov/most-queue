@@ -1,4 +1,4 @@
-# MostQueue
+# Queueing systems. Simulation and numerical methods of queuing theory
 
 ![Queue](assets/queue6.jpg)
 
