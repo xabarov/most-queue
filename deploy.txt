@@ -1,0 +1,3 @@
+1. Change version in pyproject.toml and setup.py
+2. hatch build
+3. upload to PyPI: twine upload dist/*

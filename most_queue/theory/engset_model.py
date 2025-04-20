@@ -1,10 +1,13 @@
+"""
+Calculation of the Engset model for M/M/1 with a finite number of sources.
+"""
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.general_utils.conv import get_moments
 
 
 class Engset:
     """
-    Расчет СМО М\М\1 с конечным числом источников m
+    Calculation of the Engset model for M/M/1 with a finite number of sources.
     """
 
     def __init__(self, lam, mu, m):

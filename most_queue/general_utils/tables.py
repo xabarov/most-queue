@@ -1,19 +1,27 @@
-from colorama import Back, Fore, Style, init
+from colorama import Fore, Style, init
 
 init()
 
 
 def times_print(sim_moments, calc_moments, is_w=True):
-    if is_w:
-        spec = 'ожидания'
-    else:
-        spec = 'пребывания'
+    """
+    Prints the initial moments of waiting or sojourn time in the system.
+     Args:
+         sim_moments (list): List of simulated moments.
+         calc_moments (list): List of calculated moments.
+         is_w (bool, optional): If True, prints waiting time moments. Otherwise, prints sojourn time moments. Defaults to True.
 
-    header = f'\rНачальные моменты времени {spec} заявок в системе:'
+    """
+    if is_w:
+        spec = 'waiting'
+    else:
+        spec = 'soujorn'
+
+    header = f'Initial moments of {spec} time in the system'
 
     print(Fore.CYAN + f'\r{header}')
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
+    print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", "Num", "Sim"))
     print("-" * 45)
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments))):
@@ -35,10 +43,17 @@ def times_print(sim_moments, calc_moments, is_w=True):
 
 
 def probs_print(p_sim, p_ch, size=10):
+    """
+    Prints the probabilities of states.
+    :param p_sim: Simulated probabilities
+    :param p_ch: Calculated probabilities
+    :param size: Number of states to print
+    :return: None
+    """
     print(Fore.CYAN + "-" * 36)
-    print("{0:^36s}".format("Вероятности состояний"))
+    print("{0:^36s}".format("Probabilities of states"))
     print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
+    print("{0:^4s}|{1:^15s}|{2:^15s}".format("#", "Num", "Sim"))
     print("-" * 36)
     size = min(len(p_sim), len(p_ch), size)
     for i in range(size):
@@ -50,20 +65,29 @@ def probs_print(p_sim, p_ch, size=10):
 
 
 def times_print_with_classes(sim_moments, calc_moments, is_w=True):
-    if is_w:
-        spec = 'ожидания'
-    else:
-        spec = 'пребывания'
+    """
+    Print moments with classes
+     :param sim_moments: Simulated moments
+     :param calc_moments: Calculated moments
+     :param is_w: If True, print waiting time, else print sojourn time
+      :return: None
 
-    header = f'Начальные моменты времени {spec} заявок в системе'
+    """
+    if is_w:
+        spec = 'waiting'
+    else:
+        spec = 'soujorn'
+
+    header = f'Initial moments of {spec} time in the system'
+
     k_num = len(sim_moments)
     size = len(sim_moments[0])
 
     print(Fore.CYAN + f'{header:^60s}')
 
     print("-" * 60)
-    print("{0:^11s}|{1:^47s}|".format('', 'Номер начального момента'))
-    print("{0:^11s}| ".format('№ кл'), end="")
+    print("{0:^11s}|{1:^47s}|".format('', 'Number of moment'))
+    print("{0:^11s}| ".format('Cls'), end="")
     print("-" * 45 + " |")
 
     print(" " * 11 + "|", end="")
@@ -75,7 +99,7 @@ def times_print_with_classes(sim_moments, calc_moments, is_w=True):
 
     for i in range(k_num):
         print(Fore.CYAN + " " * 5 + "|", end="")
-        print(Fore.CYAN + "{:^5s}|".format("ИМ"), end="")
+        print(Fore.CYAN + "{:^5s}|".format("Sim"), end="")
         for j in range(size):
             print(
                 Fore.YELLOW + "{:^15.3g}".format(sim_moments[i][j]) + Fore.CYAN + "|", end="")
@@ -83,7 +107,7 @@ def times_print_with_classes(sim_moments, calc_moments, is_w=True):
         print(Fore.CYAN + "{:^5s}".format(str(i + 1)) + "|" + "-" * 54)
 
         print(Fore.CYAN + " " * 5 + "|", end="")
-        print(Fore.CYAN + "{:^5s}|".format("Р"), end="")
+        print(Fore.CYAN + "{:^5s}|".format("Num"), end="")
         for j in range(size):
             print(
                 Fore.YELLOW + "{:^15.3g}".format(calc_moments[i][j]) + Fore.CYAN + "|", end="")

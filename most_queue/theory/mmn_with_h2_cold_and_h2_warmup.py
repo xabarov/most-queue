@@ -15,7 +15,6 @@ class MMn_H2warm_H2cold:
     """
 
     def __init__(self, l, mu, b_warm, b_cold, n, buffer=None, N=150, accuracy=1e-8, dtype="c16", verbose=False):
-
         """
         n: число каналов
         l: интенсивность вх. потока
@@ -89,7 +88,8 @@ class MMn_H2warm_H2cold:
                 if i == 0:
                     self.cols.append(3)  # 0 state normal + 0_cold_1 + 0_cold_2
                 else:
-                    self.cols.append(5)  # i_warm_1 + i_warm_2 i state normal + i_cold_1 + i_cold_2...
+                    # i_warm_1 + i_warm_2 i state normal + i_cold_1 + i_cold_2...
+                    self.cols.append(5)
             else:
                 self.cols.append(5)
 
@@ -118,18 +118,22 @@ class MMn_H2warm_H2cold:
 
         # вычислим ПЛС заранее
         mu_pls = self.pls(self.mu * self.n, s)
-        mu_w_pls = np.array([self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
-        mu_c_pls = np.array([self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
+        mu_w_pls = np.array(
+            [self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
+        mu_c_pls = np.array(
+            [self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
         # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
         c_to_w = np.zeros((2, 2), dtype=self.dt)
         for c_phase in range(2):
             for w_phase in range(2):
-                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
+                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * \
+                    self.y_w[w_phase] * mu_w_pls[w_phase]
 
         # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
-        w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+        w += self.Y[0][0, 0] * \
+            (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
         for k in range(1, self.n):
@@ -142,11 +146,13 @@ class MMn_H2warm_H2cold:
             if k == 0:
                 for i in range(2):
                     # Переход в [0] состояние, а из него -> в разогрев
-                    w += self.Y[k][0, i + 1] * mu_c_pls[i] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+                    w += self.Y[k][0, i + 1] * mu_c_pls[i] * \
+                        (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
             else:
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase]
+                        w += self.Y[k][0, 3 + c_phase] * \
+                            c_to_w[c_phase, w_phase]
 
         pls_service_total = 1.0
         for k in range(self.n, self.N):
@@ -165,7 +171,8 @@ class MMn_H2warm_H2cold:
             # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
             for c_phase in range(2):
                 for w_phase in range(2):
-                    w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase] * pls_service_total
+                    w += self.Y[k][0, 3 + c_phase] * \
+                        c_to_w[c_phase, w_phase] * pls_service_total
 
         return w
 
@@ -176,8 +183,10 @@ class MMn_H2warm_H2cold:
         w = [0.0] * 3
 
         for i in range(3):
-            min_mu = min(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'), [self.mu]))
-            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
+            min_mu = min(chain(np.array(self.mu_w).astype('float'),
+                         np.array(self.mu_c).astype('float'), [self.mu]))
+            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 /
+                              min_mu, n=i + 1, order=9)
         return [-w[0], w[1], -w[2]]
 
     def get_b(self):
@@ -401,7 +410,8 @@ class MMn_H2warm_H2cold:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                        np.dot(self.x[j], self.b2[j])
 
             if self.dt == 'c16':
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
@@ -594,8 +604,3 @@ class MMn_H2warm_H2cold:
             output[i, i] = sumA + sumB + sumC
 
         return output
-
-
-
-
-    

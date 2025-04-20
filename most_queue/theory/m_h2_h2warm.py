@@ -10,9 +10,8 @@ from most_queue.theory.utils.binom_probs import calc_binom_probs
 
 class Mh2h2Warm:
     """
-    Расчет СМО M/H2/n с H2-разогревом численным методом Такахаси-Таками.
-    Используются комплексные параметры. Комплексные параметры позволяют аппроксимировать распределение времени обслуживания
-    с произвольными коэффициентами вариации (>1, <=1)
+    Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+    Use complex parameters. Complex parameters allow to approximate the service time distribution with arbitrary coefficients of variation (>1, <=1).
     """
 
     def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False,

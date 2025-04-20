@@ -8,24 +8,24 @@ from most_queue.theory.mg1_calc import get_p, get_v, get_w
 
 def test_mg1():
     """
-    Тестирование расчета СМО M/G/1
-    Для верификации используем имитационное моделирование (ИМ).
+    Testing the M/G/1 queueing system calculation
+    For verification, we use simulation modeling (IM).
     """
-    l = 1  # интенсивность входного потока
-    b1 = 0.7  # среднее время обслуживания
-    coev = 1.2  # коэфф вариации времени обслуживания
-    num_of_jobs = 1000000  # количество заявок для ИМ
+    l = 1  # input flow intensity
+    b1 = 0.7  # average service time
+    coev = 1.2  # coefficient of variation of service time
+    num_of_jobs = 1000000  # number of jobs for IM
 
-    # подбор параметров аппроксимирующего H2-распределения для времени обслуживания [y1, mu1, mu2]:
+    # selecting parameters of the approximating H2-distribution for service time [y1, mu1, mu2]:
     params = H2_dist.get_params_by_mean_and_coev(b1, coev)
     b = H2_dist.calc_theory_moments(*params, 4)
 
-    # вычисление численными методами
+    # calculation using numerical methods
     w_ch = get_w(l, b)
     p_ch = get_p(l, b, 100)
     v_ch = get_v(l, b)
 
-    # запуск ИМ для верификации результатов
+    # running IM for verification of results
     qs = QueueingSystemSimulator(1)
     qs.set_servers(params, "H")
     qs.set_sources(l, "M")
@@ -34,14 +34,14 @@ def test_mg1():
     p_sim = qs.get_p()
     v_sim = qs.v
 
-    # вывод результатов
+    # outputting the results
     print("M/H2/1")
 
     times_print(w_sim, w_ch, True)
     times_print(v_sim, v_ch, False)
     probs_print(p_sim, p_ch, 10)
 
-    # Тоже самое, но для других распределений времени обслуживания
+    # The same for other distributions of service time
     print("Uniform")
     params = Uniform_dist.get_params_by_mean_and_coev(b1, coev)
     b = Uniform_dist.calc_theory_moments(*params, 4)

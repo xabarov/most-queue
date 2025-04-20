@@ -17,7 +17,6 @@ class MGnH2ServingColdWarmDelay:
 
     def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None, N=150, accuracy=1e-6, dtype="c16",
                  verbose=False, stable_w_pls=False, w_pls_dt=1e-3):
-
         """
         n: число каналов
         l: интенсивность вх. потока
@@ -80,7 +79,8 @@ class MGnH2ServingColdWarmDelay:
             h2_params_cold_delay = H2_dist.get_params_clx(b_cold_delay)
         else:
             h2_params_cold_delay = H2_dist.get_params(b_cold_delay)
-        self.y_c_delay = [h2_params_cold_delay[0], 1.0 - h2_params_cold_delay[0]]
+        self.y_c_delay = [h2_params_cold_delay[0],
+                          1.0 - h2_params_cold_delay[0]]
         self.mu_c_delay = [h2_params_cold_delay[1], h2_params_cold_delay[2]]
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
@@ -114,9 +114,11 @@ class MGnH2ServingColdWarmDelay:
 
             if i < n + 1:
                 if i == 0:
-                    self.cols.append(5)  # 00 state + cold_delay_1 + cold_delay_2 + cold_1 + cold_2
+                    # 00 state + cold_delay_1 + cold_delay_2 + cold_1 + cold_2
+                    self.cols.append(5)
                 else:
-                    self.cols.append(i + 5)  # w1 w2 + normal H2 states + cold1 + cold2
+                    # w1 w2 + normal H2 states + cold1 + cold2
+                    self.cols.append(i + 5)
             else:
                 self.cols.append(n + 5)
 
@@ -196,18 +198,22 @@ class MGnH2ServingColdWarmDelay:
         w = 0
 
         # вычислим ПЛС заранее
-        mu_w_pls = np.array([self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
-        mu_c_pls = np.array([self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
+        mu_w_pls = np.array(
+            [self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
+        mu_c_pls = np.array(
+            [self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
         # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
         c_to_w = np.zeros((2, 2), dtype=self.dt)
         for c_phase in range(2):
             for w_phase in range(2):
-                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
+                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * \
+                    self.y_w[w_phase] * mu_w_pls[w_phase]
 
         # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
-        w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+        w += self.Y[0][0, 0] * \
+            (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
 
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
@@ -223,15 +229,18 @@ class MGnH2ServingColdWarmDelay:
                 # Поэтому у Y смещение + 3
                 for i in range(2):
                     # Переход в [0] состояние, а из него -> в разогрев
-                    w += self.Y[k][0, i + 3] * mu_c_pls[i] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+                    w += self.Y[k][0, i + 3] * mu_c_pls[i] * \
+                        (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
             else:
                 cold_pos = k + 3
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, cold_pos + c_phase] * c_to_w[c_phase, w_phase]
+                        w += self.Y[k][0, cold_pos + c_phase] * \
+                            c_to_w[c_phase, w_phase]
 
         P = self.calc_down_probs(self.n + 1)
-        key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
+        # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
+        key_numbers = self.get_key_numbers(self.n)
         a = np.array(
             [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
              range(self.n + 1)])
@@ -255,7 +264,8 @@ class MGnH2ServingColdWarmDelay:
                 # Взвешанное по биномиальным вероятностям обслуживание
                 waits_service_on_level_before = a
 
-                pls_service_total = sum(a * probs)  # взвешенные по вероятностям перехода из состояния разогрева
+                # взвешенные по вероятностям перехода из состояния разогрева
+                pls_service_total = sum(a * probs)
                 # попала в фазу разогрева
                 for i in range(2):
                     w += self.Y[k][0, i] * mu_w_pls[i] * pls_service_total
@@ -265,13 +275,16 @@ class MGnH2ServingColdWarmDelay:
 
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, cold_pos + c_phase] * pls_service_total * c_to_w[c_phase, w_phase]
+                        w += self.Y[k][0, cold_pos + c_phase] * \
+                            pls_service_total * c_to_w[c_phase, w_phase]
 
             else:
 
                 Pa_before = np.dot(P,
-                                   waits_service_on_level_before.T)  # вектор - условные вероятности * w на предыдущем слое
-                aPa_before = a * Pa_before  # вектор размерности числа состояний стандартного обслуживания.
+                                   # вектор - условные вероятности * w на предыдущем слое
+                                   waits_service_on_level_before.T)
+                # вектор размерности числа состояний стандартного обслуживания.
+                aPa_before = a * Pa_before
                 # Каждый элемент - обслуживание в случае нахожения в данной позиции
 
                 waits_service_on_level_before = aPa_before
@@ -291,7 +304,8 @@ class MGnH2ServingColdWarmDelay:
 
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, cold_pos + c_phase] * c_to_w[c_phase, w_phase] * pls_service_total
+                        w += self.Y[k][0, cold_pos + c_phase] * \
+                            c_to_w[c_phase, w_phase] * pls_service_total
 
         return w
 
@@ -307,14 +321,15 @@ class MGnH2ServingColdWarmDelay:
         for i in range(3):
             if self.stable_w_pls:
                 max_mu = np.max(list(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'),
-                                   np.array(self.mu).astype('float'))))
+                                           np.array(self.mu).astype('float'))))
 
                 dx = self.w_pls_dt / max_mu
             else:
                 dx = self.w_pls_dt
             w[i] = derivative(self.calc_w_pls, 0, dx=dx, n=i + 1, order=9)
 
-        w = [w_moment.real if isinstance(w_moment, complex) else w_moment for w_moment in w]
+        w = [w_moment.real if isinstance(
+            w_moment, complex) else w_moment for w_moment in w]
         return [-w[0].real, w[1].real, -w[2].real]
 
     def get_v(self):
@@ -328,7 +343,8 @@ class MGnH2ServingColdWarmDelay:
         v[1] = w[1] + 2 * w[0] * b[0] + b[1]
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
-        v = [v_moment.real if isinstance(v_moment, complex) else v_moment for v_moment in v]
+        v = [v_moment.real if isinstance(
+            v_moment, complex) else v_moment for v_moment in v]
         return v
 
     def print_mrx(self, mrx):
@@ -514,7 +530,8 @@ class MGnH2ServingColdWarmDelay:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                        np.dot(self.x[j], self.b2[j])
 
             if self.dt == 'c16':
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
@@ -604,7 +621,8 @@ class MGnH2ServingColdWarmDelay:
                 output[0, 0] = self.l
                 output[1, 1] = self.l
                 # second
-                self.insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
+                self.insert_standart_A_into(
+                    output, self.l, self.y[0], 2, 2, level=num + 1)
                 # cold block
                 output[-2, -2] = self.l
                 output[-1, -1] = self.l
@@ -621,11 +639,14 @@ class MGnH2ServingColdWarmDelay:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
+                mass[i + left_pos, i +
+                     bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
                 if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
+                    mass[i + left_pos, i + bottom_pos +
+                         1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:
-                    mass[i + + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
+                    mass[i + + left_pos + 1, i +
+                         bottom_pos] = (i + 1) * mu[1] * y[0]
 
     def buildB(self, num):
         """
@@ -658,9 +679,11 @@ class MGnH2ServingColdWarmDelay:
         else:
 
             if num < self.n + 1:
-                self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                self.insert_standart_B_into(
+                    output, self.y, self.mu, 2, 2, num, self.n)
             else:
-                self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                self.insert_standart_B_into(
+                    output, self.y, self.mu, 2, 2, num, self.n)
 
         return output
 
@@ -744,4 +767,3 @@ class MGnH2ServingColdWarmDelay:
             output[i, i] = sumA + sumB + sumC
 
         return output
-
