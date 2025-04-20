@@ -1,6 +1,6 @@
 import numpy as np
 
-from most_queue.general_utils.tables import probs_print, times_print_with_classes
+from most_queue.general_utils.tables import times_print_with_classes
 from most_queue.rand_distribution import H2_dist
 from most_queue.sim.priority_network import PriorityNetwork
 from most_queue.theory import network_calc

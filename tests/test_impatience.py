@@ -1,5 +1,3 @@
-import numpy as np
-
 from most_queue.sim.impatient_queue_sim import ImpatientQueueSim
 from most_queue.theory import impatience_calc
 
@@ -18,7 +16,7 @@ def test_impatience():
 
     qs.set_sources(l, 'M')
     qs.set_servers(mu, 'M')
-    qs.set_impatiens(gamma, 'M')
+    qs.set_impatience(gamma, 'M')
 
     qs.run(n_jobs)
 

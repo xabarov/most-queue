@@ -1,5 +1,5 @@
 """
-QS with batch arrival
+Queueing system with batch arrivals.
 """
 import numpy as np
 
@@ -8,17 +8,17 @@ from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 class QueueingSystemBatchSim(QueueingSystemSimulator):
     """
-    QS with batch arrivals
+    Queueing system with batch arrivals.
     """
 
     def __init__(self, num_of_channels,
                  batch_prob,
                  buffer=None, verbose=True):
         """
-        Args:
-            num_of_channels: 
-            batch_prob: list[float], probs of batch size 1, 2, .. len(batch_probs)
-            buffer: Optional(int, None) : length of queueu
+        :param num_of_channels: int : number of channels (servers)
+        :param batch_prob: list : probabilities for different batch sizes
+        :param buffer: Optional(int, None) : length of queueu
+        :param verbose: bool : if True prints info about simulation process
         """
         super().__init__(num_of_channels, buffer, verbose)
 
@@ -52,7 +52,7 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
 
         self.arrival_time = self.ttek + self.source.generate()
 
-        for tsk in range(batch_size):
+        for _tsk in range(batch_size):
             self.arrived += 1
             self.p[self.in_sys] += self.arrival_time - self.t_old
 

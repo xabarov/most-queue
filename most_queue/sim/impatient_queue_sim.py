@@ -1,38 +1,65 @@
+"""
+Simulation model for queueing systems with impatient tasks
+"""
+from colorama import Fore, Style, init
+
+from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.sim.utils.distribution_utils import create_distribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
+from most_queue.sim.utils.tasks import ImpatientTask
 
-
-class ImpatientTask(Task):
-    def __init__(self, arr_time, moment_to_leave):
-        super().__init__(arr_time)
-        self.moment_to_leave = moment_to_leave
-
-    def __str__(self):
-        return f'Task # {self.id}\nArrival moment: {self.arr_time:8.3f}\nMoment to leave: {self.moment_to_leave:8.3f}'
-
+init()
 
 class ImpatientQueueSim(QueueingSystemSimulator):
+    """
+    Queueing system with impatient tasks
+
+    """
+
     def __init__(self, num_of_channels, buffer=None, verbose=True):
+        """
+        :param num_of_channels: int
+            Number of channels in the system.
+        :param buffer: int or None
+            Buffer size. If None, then infinite buffer.
+        :param verbose: bool
+            If True, then print information about simulation process.
+
+        To start the simulation, you need to:
+        - call the constructor with parameters
+        - set the input arrival distribution using the set_sorces() method
+        - set the service distribution using the set_servers() method
+        - set the impatience distribution using the set_impatience() method
+        - start the simulation using the run() method
+        to which you need to pass the number of job required for servicing
+
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
+
+        """
         super().__init__(num_of_channels, buffer, verbose)
 
         self.impatience_params = None
         self.impatience_types = None
-        
+
         self.impatience = None
         self.is_set_impatience_params = False
 
-    def set_impatiens(self, params, types):
+    def set_impatience(self, params, types):
         """
-        Задает тип и параметры распределения интервала нетерпения заявок.
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Гамма-распределение                   'Gamma'       [mu, alpha]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Детерминированное                      'D'         [b]
-        Равномерное                         'Uniform'     [mean, half_interval]
+        set impatience parameters and types
+        :param params: list
+            List of lists with parameters for each type of impatience.
+        :param types: list
+            List of strings with types of impatience.
+
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         self.impatience_params = params
         self.impatience_types = types
@@ -43,7 +70,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
     def arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        Actions on arrival of a task.
         """
 
         self.arrived += 1
@@ -57,7 +84,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         moment_to_leave = self.ttek + self.impatience.generate()
 
         if self.free_channels == 0:
-            if self.buffer == None:  # не задана длина очереди, т.е бесконечная очередь
+            if self.buffer is None:  # не задана длина очереди, т.е бесконечная очередь
                 new_tsk = ImpatientTask(self.ttek, moment_to_leave)
                 new_tsk.start_waiting_time = self.ttek
                 self.queue.append(new_tsk)
@@ -90,11 +117,15 @@ class ImpatientQueueSim(QueueingSystemSimulator):
                             self.start_busy = self.ttek
                     break
 
-    def drop_task(self, num_of_task_in_queue, moment_to_leave_earlier):
+    def drop_task(self, num_of_task_earlier, moment_to_leave_earlier):
+        """
+        Drop a task from the queue and update statistics.
+        """
         self.ttek = moment_to_leave_earlier
         new_queue = []
+        end_ts = None
         for i, tsk in enumerate(self.queue.queue):
-            if i != num_of_task_in_queue:
+            if i != num_of_task_earlier:
                 new_queue.append(tsk)
             else:
                 end_ts = self.queue.queue[i]
@@ -103,11 +134,16 @@ class ImpatientQueueSim(QueueingSystemSimulator):
         self.in_sys -= 1
         self.dropped += 1
         self.served += 1
-        self.refresh_v_stat(self.ttek - end_ts.arr_time)
-        end_ts.wait_time = self.ttek - end_ts.arr_time
-        self.refresh_w_stat(end_ts.wait_time)
+        
+        if end_ts is not None:
+            self.refresh_v_stat(self.ttek - end_ts.arr_time)
+            end_ts.wait_time = self.ttek - end_ts.arr_time
+            self.refresh_w_stat(end_ts.wait_time)
 
     def run_one_step(self):
+        """
+        Run one step of the simulation.
+        """
 
         num_of_server_earlier = -1
         serv_earl = 1e10
@@ -138,6 +174,11 @@ class ImpatientQueueSim(QueueingSystemSimulator):
                 self.drop_task(num_of_task_earlier, moment_to_leave_earlier)
 
     def __str__(self, is_short=False):
+        """
+        Returns a string representation of the system.
+         If `is_short` is True, it returns a short version of the string.
+         Otherwise, it returns a detailed version of the string.
+        """
         super().__str__(is_short)
         num_of_task_earlier = -1
         moment_to_leave_earlier = 1e10
@@ -145,4 +186,4 @@ class ImpatientQueueSim(QueueingSystemSimulator):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
-        return f'Task {num_of_task_earlier} is earlier to leave at {moment_to_leave_earlier:8.3f}'
+        return f'{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL} is earlier to leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}'

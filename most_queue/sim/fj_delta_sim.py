@@ -12,13 +12,16 @@ class ForkJoinSimDelta(ForkJoinSim):
     Имитационная модель СМО Fork-Join, Split-Join
     """
 
-    def __init__(self, num_of_channels, num_of_parts, delta, is_SJ=False, buffer=None):
+    def __init__(self, num_of_channels, num_of_parts, delta, is_sj=False, buffer=None):
         """
-        num_of_channels - количество каналов СМО
-        buffer - максимальная длина очереди
+        :param num_of_channels: int : количество каналов СМО
+        :param num_of_parts: int : количество частей на которые разбивается задача
+        :param delta: float : параметр модели Fork-Join с дельта-разбиением
+        :param is_sj: bool : если True, то используется модель Split-Join, иначе - Fork-Join
+        :param buffer: Optional(int, None) : максимальная длина очереди
         """
         ForkJoinSim.__init__(self, num_of_channels,
-                             num_of_parts, is_SJ, buffer)
+                             num_of_parts, is_sj, buffer)
         self.delta = delta
         self.subtask_arr_queue = []
         self.serv_task_id = -1
@@ -26,7 +29,7 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def task_arrival(self):
         """
-            Действия по прибытию заявки в СМО.
+        Действия по прибытию заявки в СМО.
         """
 
         self.arrived += 1
@@ -37,7 +40,7 @@ class ForkJoinSimDelta(ForkJoinSim):
         is_dropped = False
 
         if self.buffer:  # ограниченная длина очереди
-            if not self.is_SJ:
+            if not self.is_sj:
                 if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
                     is_dropped = True
@@ -54,7 +57,7 @@ class ForkJoinSimDelta(ForkJoinSim):
             self.in_sys += 1
             self.sub_task_in_sys += 1
 
-            if not self.is_SJ:  # Fork-Join discipline
+            if not self.is_sj:  # Fork-Join discipline
 
                 if self.free_channels == 0:
                     self.queue.append(t.subtasks[0])
@@ -85,6 +88,9 @@ class ForkJoinSimDelta(ForkJoinSim):
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):
+        """
+        Действия по прибытию подзадачи в СМО.
+        """
 
         subtsk = self.subtask_arr_queue.pop(subtask_num)
         self.p[self.in_sys] += subtsk.future_arr_time - self.t_old
@@ -99,7 +105,7 @@ class ForkJoinSimDelta(ForkJoinSim):
         if not is_dropped:
             self.sub_task_in_sys += 1
 
-            if not self.is_SJ:  # Fork-Join discipline
+            if not self.is_sj:  # Fork-Join discipline
 
                 if self.free_channels == 0:
                     self.queue.append(subtsk)
@@ -136,7 +142,7 @@ class ForkJoinSimDelta(ForkJoinSim):
         self.total += 1
         self.free_channels += 1
 
-        if not self.is_SJ:
+        if not self.is_sj:
 
             if self.served_subtask_in_task[end_ts.task_id] == self.k:
                 self.served += 1
@@ -186,6 +192,9 @@ class ForkJoinSimDelta(ForkJoinSim):
                         q for q in self.queue.queue if q.task_id != end_ts.task_id]
 
     def run_one_step(self):
+        """
+        Runs one step of simulation.
+        """
 
         num_of_server_earlier = -1
         serv_earl = 1e10
@@ -198,9 +207,9 @@ class ForkJoinSimDelta(ForkJoinSim):
         subtask_arr_time_earl = 1e10
         num_of_subtask_earl = -1
 
-        for c in range(len(self.subtask_arr_queue)):
-            if self.subtask_arr_queue[c].future_arr_time < subtask_arr_time_earl:
-                subtask_arr_time_earl = self.subtask_arr_queue[c].future_arr_time
+        for c, subtask in enumerate(self.subtask_arr_queue):
+            if subtask.future_arr_time < subtask_arr_time_earl:
+                subtask_arr_time_earl = subtask.future_arr_time
                 num_of_subtask_earl = c
 
         is_task_arr = False
@@ -219,37 +228,42 @@ class ForkJoinSimDelta(ForkJoinSim):
             self.serving(num_of_server_earlier)
 
     def __str__(self, is_short=False):
+        """
+        Returns string representation of the system
+         :param is_short: bool : if True returns short version of string
+         :return: str : string representation of the system
+        """
 
         res = "Queueing system " + self.source_types + \
             "/" + self.server_types + "/" + str(self.n)
-        if self.buffer != None:
+        if self.buffer is not None:
             res += "/" + str(self.buffer)
-        if self.is_SJ:
+        if self.is_sj:
             res += '| Split-Join'
         else:
             res += '| Fork-Join'
 
         res += "\n"
         # res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
-        res += "Current Time " + "{0:8.3f}".format(self.ttek) + "\n"
-        res += "Arrival Time: " + "{0:8.3f}".format(self.arrival_time) + "\n"
+        res += f"Current Time {self.ttek:8.3f}\n"
+        res += f"Arrival Time: {self.arrival_time:8.3f}\n"
 
         res += "Sojourn moments:\n"
         for i in range(3):
-            res += "\t" + "{0:8.4f}".format(self.v[i])
+            res += f"\t{self.v[i]:8.4f}"
         res += "\n"
 
         if not is_short:
             res += "Stationary prob:\n"
             res += "\t"
             for i in range(10):
-                res += "{0:6.5f}".format(self.p[i] / self.ttek) + "   "
+                res += f"{self.p[i] / self.ttek:6.5f}   "
             res += "\n"
-            res += "Arrived: " + str(self.arrived) + "\n"
-            if self.buffer != None:
-                res += "Dropped: " + str(self.dropped) + "\n"
-            res += "Served: " + str(self.served) + "\n"
-            res += "In System:" + str(self.in_sys) + "\n"
+            res += f"Arrived: {self.arrived}\n"
+            if self.buffer is not None:
+                res += f"Dropped: {self.dropped}\n"
+            res += f"Served: {self.served}\n"
+            res += f"In System: {self.in_sys}\n"
 
             for c in range(self.n):
                 res += str(self.servers[c])

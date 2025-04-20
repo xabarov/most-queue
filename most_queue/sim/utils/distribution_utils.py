@@ -4,6 +4,8 @@ Utils for distribution from random_distributions
 """
 import math
 
+from colorama import Fore, Style
+
 from most_queue.rand_distribution import (
     Cox_dist,
     Det_dist,
@@ -18,6 +20,29 @@ from most_queue.rand_distribution import (
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 
 
+def print_supported_distributions():
+    """ Prints supported distributions """
+    print(f"{Fore.GREEN}Supported distributions:{Style.RESET_ALL}")
+    separator = f"{Fore.BLUE}--------------------------------------------------------------------{Style.RESET_ALL}"
+    
+    table = (
+        f"{separator}\n"
+        f"{Fore.CYAN}Distribution                    {Fore.YELLOW}kendall_notation    params{Style.RESET_ALL}\n"
+        f"{separator}\n"
+        f"{Fore.MAGENTA}Exponential                           {Fore.GREEN}М{Style.RESET_ALL}             {Fore.RED}mu{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Hyperexponential of the 2nd order     {Fore.GREEN}Н{Style.RESET_ALL}         {Fore.RED}y1, mu1, mu2{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Erlang                                {Fore.GREEN}E{Style.RESET_ALL}           {Fore.RED}r, mu{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Cox 2nd order                         {Fore.GREEN}C{Style.RESET_ALL}         {Fore.RED}y1, mu1, mu2{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Pareto                                {Fore.GREEN}Pa{Style.RESET_ALL}         {Fore.RED}alpha, K{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Deterministic                         {Fore.GREEN}D{Style.RESET_ALL}         {Fore.RED}b{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Uniform                            {Fore.GREEN}Uniform{Style.RESET_ALL}     {Fore.RED}mean, half_interval{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Gaussian                             {Fore.GREEN}Norm{Style.RESET_ALL}    {Fore.RED}mean, standard_deviation{Style.RESET_ALL}\n"
+        f"{separator}"
+    )
+    
+    print(table)
+    
+    
 def create_distribution(params, kendall_notation: str, generator):
     """ Creates distribution from random_distributions 
 
@@ -172,3 +197,8 @@ def calc_qs_load(source_types: str, source_params,
             b1 = a * k / (a - 1)
 
     return l * b1 / n
+
+
+if __name__ == "__main__":
+    # Example usage
+    print_supported_distributions()

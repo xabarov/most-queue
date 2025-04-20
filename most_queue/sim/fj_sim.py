@@ -2,7 +2,6 @@
 ForkJoin Queue
 """
 import math
-import sys
 
 from colorama import Fore, Style, init
 from tqdm import tqdm
@@ -15,35 +14,39 @@ init()
 
 class ForkJoinSim(QueueingSystemSimulator):
     """
-    Имитационная модель СМО Fork-Join, Split-Join
+    Simulation of a ForkJoin Queueing System (Fork-Join, Split-Join)
     """
 
-    def __init__(self, num_of_channels, k, is_SJ=False, is_Purge=False, buffer=None):
+    def __init__(self, num_of_channels, k, is_sj=False, is_purge=False, buffer=None):
         """
-        num_of_channels - количество каналов СМО
-        buffer - максимальная длина очереди
+        :param num_of_channels: int : number of channels in the system
+        :param k: int : number of parts a task is split into
+        :param is_sj: bool : if True, then Split-Join model is used, otherwise Fork-Join model is used
+        :param buffer: Optional(int, None) : maximum length of the queue
+        :param is_purge: bool : if True, then Purge model is used
+
         """
         QueueingSystemSimulator.__init__(self, num_of_channels, buffer)
         self.k = k
-        self.is_SJ = is_SJ
-        self.is_Purge = is_Purge
+        self.is_sj = is_sj
+        self.is_purge = is_purge
         self.served_subtask_in_task = {}
         self.sub_task_in_sys = 0
 
         self.queues = []
-        for i in range(num_of_channels):
+        for _ in range(num_of_channels):
             self.queues.append([])
 
     def calc_load(self):
         """
-        вычисляет коэффициент загрузки СМО
+        calculates the load of the system.
         """
 
         pass
 
     def arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        action on arrival of a task in the system.
         """
 
         self.arrived += 1
@@ -55,7 +58,7 @@ class ForkJoinSim(QueueingSystemSimulator):
         is_dropped = False
 
         if self.buffer:  # ограниченная длина очереди
-            if not self.is_SJ:
+            if not self.is_sj:
 
                 if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
@@ -71,7 +74,7 @@ class ForkJoinSim(QueueingSystemSimulator):
             self.in_sys += 1
             self.sub_task_in_sys += self.n
 
-            if not self.is_SJ:  # Fork-Join discipline
+            if not self.is_sj:  # Fork-Join discipline
 
                 for i in range(self.n):
                     if self.free_channels == 0:
@@ -96,8 +99,8 @@ class ForkJoinSim(QueueingSystemSimulator):
 
     def serving(self, c):
         """
-        Дейтсвия по поступлению заявки на обслуживание
-        с - номер канала
+        Action when a service is completed on channel c.
+        :param c: int : number of channel where service is completed.
         """
         time_to_end = self.servers[c].time_to_end_service
         self.p[self.in_sys] += time_to_end - self.t_old
@@ -109,11 +112,11 @@ class ForkJoinSim(QueueingSystemSimulator):
         self.free_channels += 1
         self.sub_task_in_sys -= 1
 
-        if not self.is_SJ:
+        if not self.is_sj:
 
             if self.served_subtask_in_task[end_ts.task_id] == self.k:
 
-                if self.is_Purge:
+                if self.is_purge:
                     # найти все остальные подзадачи в СМО и выкинуть
                     task_id = end_ts.task_id
                     for i in range(self.n):
@@ -147,6 +150,11 @@ class ForkJoinSim(QueueingSystemSimulator):
                         self.free_channels -= 1
 
     def run_one_step(self):
+        """
+        Run one step of the simulation.
+         If there is an arrival before the earliest service completion time,
+         then process the arrival. Otherwise, process the earliest service completion.
+        """
 
         num_of_server_earlier = -1
         serv_earl = 1e10
@@ -164,9 +172,12 @@ class ForkJoinSim(QueueingSystemSimulator):
             self.serving(num_of_server_earlier)
 
     def run(self, total_served, is_real_served=True):
+        """
+        Run simulation until total_served tasks are served.
+        """
 
         if is_real_served:
-            
+
             last_percent = 0
 
             with tqdm(total=100) as pbar:
@@ -178,7 +189,7 @@ class ForkJoinSim(QueueingSystemSimulator):
                         pbar.update(1)
                         pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
                                              Fore.YELLOW + f'{self.served}/{total_served}' + Fore.LIGHTGREEN_EX)
-                        
+
         else:
             print(Fore.GREEN + '\rStart simulation')
             print(Style.RESET_ALL)
@@ -197,8 +208,7 @@ class ForkJoinSim(QueueingSystemSimulator):
 
     def get_p(self):
         """
-        Возвращает список с вероятностями состояний СМО
-        p[j] - вероятность того, что в СМО в случайный момент времени будет ровно j заявок
+        Get probabilities of states for Fork-Join model
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.num_of_states):
@@ -206,37 +216,42 @@ class ForkJoinSim(QueueingSystemSimulator):
         return res
 
     def __str__(self, is_short=False):
+        """
+        Prints the model of the queueing system
+        :param is_short: bool : if True, then short information about the model of the queueing system is returned
+        :return: str : string representation of the model of the queueing system
+        """
 
         res = "Queueing system " + self.source_types + \
             "/" + self.server_types + "/" + str(self.n)
-        if self.buffer != None:
+        if self.buffer is not None:
             res += "/" + str(self.buffer)
-        if self.is_SJ:
+        if self.is_sj:
             res += '| Split-Join'
         else:
             res += '| Fork-Join'
 
         res += "\n"
         # res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
-        res += "Current Time " + "{0:8.3f}".format(self.ttek) + "\n"
-        res += "Arrival Time: " + "{0:8.3f}".format(self.arrival_time) + "\n"
+        res += f"Current Time {self.ttek:8.3f}\n"
+        res += f"Arrival Time: {self.arrival_time:8.3f}\n"
 
         res += "Sojourn moments:\n"
         for i in range(3):
-            res += "\t" + "{0:8.4f}".format(self.v[i])
+            res += f"\t{self.v[i]:8.4f}"
         res += "\n"
 
         if not is_short:
             res += "Stationary prob:\n"
             res += "\t"
             for i in range(10):
-                res += "{0:6.5f}".format(self.p[i] / self.ttek) + "   "
+                res += f"{self.p[i] / self.ttek:6.5f}   "
             res += "\n"
-            res += "Arrived: " + str(self.arrived) + "\n"
-            if self.buffer != None:
-                res += "Dropped: " + str(self.dropped) + "\n"
-            res += "Served: " + str(self.served) + "\n"
-            res += "In System:" + str(self.in_sys) + "\n"
+            res += f"Arrived: {self.arrived}\n"
+            if self.buffer is not None:
+                res += f"Dropped: {self.dropped}\n"
+            res += f"Served: {self.served}\n"
+            res += f"In System: {self.in_sys}\n"
 
             for c in range(self.n):
                 res += str(self.servers[c])

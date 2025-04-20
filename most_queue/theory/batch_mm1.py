@@ -1,5 +1,3 @@
-import math
-
 """
 Calculation of M/M/1 QS with batch arrival 
 """
@@ -36,10 +34,10 @@ class BatchMM1:
         """
         Initial moments of the number of jobs in the batch
         """
-        moments = [0.0, 0.0]
-        for j, mom in enumerate(moments):
-            for i, prob in enumerate(self.ls):
-                moments[j] += pow(i + 1, j + 1)*prob
+        moments = [0.0] * len(self.ls)
+        for i, prob in enumerate(self.ls):
+            for j in range(len(moments)):
+                moments[j] += pow(i + 1, j + 1) * prob
         return moments
 
     def calc_L(self):

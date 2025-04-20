@@ -1,6 +1,4 @@
-import numpy as np
-
-from most_queue.general_utils.tables import probs_print, times_print_with_classes
+from most_queue.general_utils.tables import times_print_with_classes
 from most_queue.rand_distribution import Gamma
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.theory import priority_calc
@@ -73,7 +71,7 @@ def test_sim():
 
     # запуск ИМ
     qs.run(num_of_jobs)
-
+    
     # получение начальных моментов времени пребывания
 
     v_sim = qs.v

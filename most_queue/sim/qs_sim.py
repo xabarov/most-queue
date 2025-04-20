@@ -42,19 +42,11 @@ class QueueingSystemSimulator:
         - start the simulation using the run() method
         to which you need to pass the number of job required for servicing
 
-        Supported distributions params
-
-        --------------------------------------------------------------------
-            Distribution                    kendall_notation    params
-            --------------------------------------------------------------------
-            Exponential                           'М'             [mu]
-            Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
-            Erlang                                'E'           [r, mu]
-            Cox 2nd order                         'C'         [y1, mu1, mu2]
-            Pareto                                'Pa'         [alpha, K]
-            Deterministic                         'D'         [b]
-            Uniform                            'Uniform'     [mean, half_interval]
-            Gaussian                             'Norm'    [mean, standard_deviation]
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
 
         """
         self.n = num_of_channels
@@ -123,6 +115,12 @@ class QueueingSystemSimulator:
     def set_warm(self, params, kendall_notation):
         """
         Set the type and parameters of the warm-up time distribution
+
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
@@ -130,6 +128,11 @@ class QueueingSystemSimulator:
     def set_cold(self, params, kendall_notation):
         """
         Set the type and parameters of the cooling time distribution
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_phase.set_dist(dist)
@@ -137,6 +140,11 @@ class QueueingSystemSimulator:
     def set_cold_delay(self, params, kendall_notation):
         """
         Set the type and parameters of the cooling start delay time distribution
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
 
         if not self.cold_phase.is_set:
@@ -149,6 +157,11 @@ class QueueingSystemSimulator:
     def set_sources(self, params, types):
         """
         Specifies the type and parameters of source time distribution.
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         self.source_params = params
         self.source_types = types
@@ -162,6 +175,11 @@ class QueueingSystemSimulator:
     def set_servers(self, params, types):
         """
         Specifies the type and parameters of service time distribution.
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         self.server_params = params
         self.server_types = types
@@ -443,7 +461,8 @@ class QueueingSystemSimulator:
                         last_percent = percent
                         pbar.update(1)
                         pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{self.served}/{total_served}' + Fore.LIGHTGREEN_EX)
+                                             Fore.YELLOW + f'{self.served}/{total_served}' +
+                                             Fore.LIGHTGREEN_EX)
 
         else:
             for _ in tqdm(range(total_served)):

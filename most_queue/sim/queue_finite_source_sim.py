@@ -1,29 +1,38 @@
-from most_queue.sim.utils.distribution_utils import create_distribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
+"""
+Simulating a queueing system with finite number of sources.
+"""
+from colorama import Fore, Style, init
 
+from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
+from most_queue.sim.utils.distribution_utils import create_distribution
+
+init()
 
 class QueueingFiniteSourceSim(QueueingSystemSimulator):
     """
-    Имитационная модель СМО GI/G/n/r и GI/G/n с конечным числом источников заявок
+    Simulating a queueing system with finite number of sources.
     """
 
     def __init__(self, num_of_channels, m, buffer=None, verbose=True):
         """
-        num_of_channels - количество каналов СМО
-        m - число источников заявок, каждый источник заявок имеет одинаковый закон распределения интервалов поступления заявок в систему
-        buffer - максимальная длина очереди
-        verbose - вывод комментариев в процессе ИМ
-        calc_next_event_time - нужно ли осуществлять расчет времени для след события (используется для визуализации)
-        cuda - нужно ли использовать ускорение GPU при генерации заявок. Прирост в скорости небольшой, поэтому
-        по умолчанию cuda=False
+        num_of_channels - number of channels in the system.
+        m - number of sources.
+        buffer - maximum length of the queue.
+        verbose - print comments during simulation.
+        
+        To start the simulation, you need to:
+        - call the constructor with parameters
+        - set the input arrival distribution using the set_sorces() method
+        - set the service distribution using the set_servers() method
+        - start the simulation using the run() method
+        to which you need to pass the number of job required for servicing
 
-        Для запуска ИМ необходимо:
-        - вызвать конструктор с параметрами
-        - задать вх поток с помощью метода set_sorces() экземпляра созданного класса QueueingFiniteSourceSim
-        - задать распределение обслуживания с помощью метода set_servers() экземпляра QueueingFiniteSourceSim
-        - запустить ИМ с помощью метода run() экземпляра созданного класса QueueingFiniteSourceSim,
-        которому нужно передать число требуемых к обслуживанию заявок
-
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
+            
         """
         self.m = m
         self.sources_left = m  # сколько источников готовы посылать заявки
@@ -36,18 +45,16 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def set_sources(self, params, types):
         """
-        Задает тип и параметры распределения интервала поступления заявок для каждого из источников
-        --------------------------------------------------------------------
-        Вид распределения                   Тип[types]     Параметры [params]
-        Экспоненциальное                      'М'             [mu]
-        Гиперэкспоненциальное 2-го порядка    'Н'         [y1, mu1, mu2]
-        Гамма-распределение                   'Gamma'       [mu, alpha]
-        Эрланга                               'E'           [r, mu]
-        Кокса 2-го порядка                    'C'         [y1, mu1, mu2]
-        Парето                                'Pa'         [alpha, K]
-        Детерминированное                      'D'         [b]
-        Равномерное                         'Uniform'     [mean, half_interval]
-        Нормальное                            'Norm'    [mean, standard_deviation]
+        Set source parameters and types
+        :param params: list of lists, where each sublist contains parameters for a source distribution
+        :param types: list of strings, where each string specifies the type of distribution for a source
+        :return: None
+
+        See supported distributions params in the README.md file or use
+            ``` 
+            from most_queue.sim.utils.distribution_utils import print_supported_distributions
+            print_supported_distributions()
+            ```
         """
         self.source_params = params
         self.source_types = types
@@ -60,7 +67,8 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        Action on arrival of a request to the queue.
+        :return: None
         """
 
         self.arrived += 1
@@ -106,8 +114,8 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def serving(self, c):
         """
-        Дейтсвия по поступлению заявки на обслуживание
-        с - номер канала
+        Action when the service is completed.
+        c - channel number.
         """
         self.sources_left += 1
 
@@ -149,25 +157,12 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
             self.servers[c].start_service(que_ts, self.ttek)
             self.free_channels -= 1
 
-    def calc_next_event_time(self):
-
-        serv_earl = 1e10
-        arr_earl = 1e10
-
-        for c in range(self.n):
-            if self.servers[c].time_to_end_service < serv_earl:
-                serv_earl = self.servers[c].time_to_end_service
-
-        for a in self.arrival_times:
-            if a < arr_earl:
-                arr_earl = a
-
-        if arr_earl < serv_earl:
-            self.time_to_next_event = arr_earl - self.ttek
-        else:
-            self.time_to_next_event = serv_earl - self.ttek
 
     def run_one_step(self):
+        """
+        Run one step of the simulation.
+         This method is called repeatedly until the end of the simulation.
+        """
 
         num_of_server_earlier = -1
         serv_earl = 1e10
@@ -194,8 +189,9 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def get_p(self):
         """
-        Возвращает список с вероятностями состояний СМО
-        p[j] - вероятность того, что в СМО в случайный момент времени будет ровно j заявок
+        Get probabilities of states.
+        Returns list with probabilities of states.
+        p[j] - probability that in random moment of time there will be exactly j requests in the system
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.m+1):
@@ -203,45 +199,46 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         return res
 
     def __str__(self, is_short=False):
+        """
+        Representation of the queueing system
+        :param is_short: if True then return short representation
+        :return: string with information about the queueing system
+        """
 
-        res = "Queueing system " + self.source_types + \
-            "/" + self.server_types + "/" + str(self.n)
-        if self.buffer != None:
-            res += "/" + str(self.buffer)
-        res += "\n"
-        res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
-        res += "Current Time " + "{0:8.3f}".format(self.ttek) + "\n"
+        res = f"{Fore.GREEN}Queueing system {self.source_types}/{self.server_types}/{self.n}{Style.RESET_ALL}\n"
+        if self.buffer is not None:
+            res += f"{Fore.GREEN}/ {self.buffer}{Style.RESET_ALL}\n"
+        res += f"{Fore.YELLOW}Load: {self.calc_load():4.3f}{Style.RESET_ALL}\n"
+        res += f"{Fore.YELLOW}Current Time {self.ttek:8.3f}{Style.RESET_ALL}\n"
         for i, a in enumerate(self.arrival_times):
             res += f"Arrival Time of Source {i + 1}: {a:8.3f}\n"
 
-        res += "Sojourn moments:\n"
+        res += f"{Fore.CYAN}Sojourn moments:{Style.RESET_ALL}\n"
         for i in range(3):
-            res += "\t" + "{0:8.4f}".format(self.v[i])
-        res += "\n"
+            res += f"\t{self.v[i]:8.4f}\n"
 
-        res += "Wait moments:\n"
+        res += f"{Fore.CYAN}Wait moments:{Style.RESET_ALL}\n"
         for i in range(3):
-            res += "\t" + "{0:8.4f}".format(self.w[i])
-        res += "\n"
+            res += f"\t{self.w[i]:8.4f}\n"
 
         if not is_short:
-            res += "Stationary prob:\n"
+            res += f"{Fore.MAGENTA}Stationary prob:{Style.RESET_ALL}\n"
             res += "\t"
             for i in range(10):
-                res += "{0:6.5f}".format(self.p[i] / self.ttek) + "   "
+                res += f"{self.p[i] / self.ttek:6.5f}{Style.RESET_ALL}   "
             res += "\n"
-            res += "Arrived: " + str(self.arrived) + "\n"
-            if self.buffer != None:
-                res += "Dropped: " + str(self.dropped) + "\n"
-            res += "Taken: " + str(self.taked) + "\n"
-            res += "Served: " + str(self.served) + "\n"
-            res += "In System:" + str(self.in_sys) + "\n"
-            res += "Busy moments:" + "\n"
+            res += f"{Fore.MAGENTA}Arrived: {self.arrived}{Style.RESET_ALL}\n"
+            if self.buffer is not None:
+                res += f"{Fore.MAGENTA}Dropped: {self.dropped}{Style.RESET_ALL}\n"
+            res += f"{Fore.MAGENTA}Taken: {self.taked}{Style.RESET_ALL}\n"
+            res += f"{Fore.MAGENTA}Served: {self.served}{Style.RESET_ALL}\n"
+            res += f"{Fore.MAGENTA}In System: {self.in_sys}{Style.RESET_ALL}\n"
+            res += f"{Fore.MAGENTA}Busy moments:{Style.RESET_ALL}\n"
             for j in range(3):
-                res += "\t{0:8.4f}".format(self.busy[j]) + "    "
+                res += f"\t{self.busy[j]:8.4f}{Style.RESET_ALL}    "
             res += "\n"
             for c in range(self.n):
                 res += str(self.servers[c])
-            res += "\nQueue Count " + str(self.queue.size()) + "\n"
+            res += "\nQueue Count {self.queue.size()}{Style.RESET_ALL}\n"
 
         return res

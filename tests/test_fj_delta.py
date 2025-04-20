@@ -20,6 +20,7 @@ def test_fj_delta():
     b = H2_dist.calc_theory_moments(*b_params, 4)
 
     qs = ForkJoinSimDelta(n, n, b_delta, True)
+    
     qs.set_sources(l, 'M')
     qs.set_servers(b_params, 'H')
     qs.run(100000)
