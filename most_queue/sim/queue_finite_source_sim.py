@@ -101,7 +101,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
                     # Проверям, не наступил ли ПНЗ:
                     if self.free_channels == 0:
                         if self.in_sys == self.n:
-                            self.start_ppnz = self.ttek
+                            self.start_busy = self.ttek
                     break
 
     def serving(self, c):
@@ -134,15 +134,15 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         if len(self.queue) == 0 and self.free_channels == 1:
             if self.in_sys == self.n - 1:
                 # Конец ПНЗ
-                self.ppnz_moments += 1
-                self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
+                self.busy_moments += 1
+                self.refresh_busy_stat(self.ttek - self.start_busy)
 
         if len(self.queue) != 0:
 
             que_ts = self.queue.pop()
 
             if self.free_channels == 1:
-                self.start_ppnz = self.ttek
+                self.start_busy = self.ttek
 
             self.taked += 1
             que_ts.wait_time += self.ttek - que_ts.start_waiting_time
@@ -236,9 +236,9 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
             res += "Taken: " + str(self.taked) + "\n"
             res += "Served: " + str(self.served) + "\n"
             res += "In System:" + str(self.in_sys) + "\n"
-            res += "PPNZ moments:" + "\n"
+            res += "Busy moments:" + "\n"
             for j in range(3):
-                res += "\t{0:8.4f}".format(self.ppnz[j]) + "    "
+                res += "\t{0:8.4f}".format(self.busy[j]) + "    "
             res += "\n"
             for c in range(self.n):
                 res += str(self.servers[c])

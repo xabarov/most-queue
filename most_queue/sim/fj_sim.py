@@ -169,7 +169,7 @@ class ForkJoinSim(QueueingSystemSimulator):
             
             last_percent = 0
 
-            with tqdm(total=100, unit='jobs') as pbar:
+            with tqdm(total=100) as pbar:
                 while self.served < total_served:
                     self.run_one_step()
                     percent = int(100*(self.served/total_served))

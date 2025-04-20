@@ -45,11 +45,11 @@ class PriorityQueueSimulator:
         self.load = 0  # коэффициент загрузки системы
 
         # для отслеживания длины периода непрерывной занятости каналов:
-        self.start_ppnz = -1
-        self.ppnz_moments = [0] * self.k
-        self.ppnz = []
+        self.start_busy = -1
+        self.busy_moments = [0] * self.k
+        self.busy = []
         self.queue = []
-        self.class_ppnz_started = -1
+        self.class_busy_started = -1
         self.w = []  # начальные моменты времени ожидания в СМО
         self.v = []  # начальные моменты времени пребывания в СМО
         # вероятности состояний СМО (нахождения в ней j заявок):
@@ -62,7 +62,7 @@ class PriorityQueueSimulator:
                 self.queue.append([])
 
         for i in range(self.k):
-            self.ppnz.append([0, 0, 0])
+            self.busy.append([0, 0, 0])
             self.w.append([0, 0, 0])
             self.v.append([0, 0, 0])
             self.p.append([0.0] * self.num_of_states)
@@ -340,13 +340,13 @@ class PriorityQueueSimulator:
                             dropped_tsk = c.end_service()
                             self.taked[k] += 1
 
-                            if k != self.class_ppnz_started and self.class_ppnz_started != -1 and self.in_sys[
+                            if k != self.class_busy_started and self.class_busy_started != -1 and self.in_sys[
                                     k] == self.n:
-                                self.ppnz_moments[self.class_ppnz_started] += 1
-                                self.refresh_ppnz_stat(
-                                    self.class_ppnz_started, self.ttek - self.start_ppnz)
-                                self.start_ppnz = self.ttek
-                                self.class_ppnz_started = k
+                                self.busy_moments[self.class_busy_started] += 1
+                                self.refresh_busy_stat(
+                                    self.class_busy_started, self.ttek - self.start_busy)
+                                self.start_busy = self.ttek
+                                self.class_busy_started = k
 
                             dropped_tsk.start_waiting_time = self.ttek
                             dropped_tsk.is_pr = True
@@ -414,8 +414,8 @@ class PriorityQueueSimulator:
             # Проверям, не наступил ли ПНЗ:
             if self.free_channels == 0:
                 if self.in_sys[k] == self.n:
-                    self.start_ppnz = self.ttek
-                    self.class_ppnz_started = k
+                    self.start_busy = self.ttek
+                    self.class_busy_started = k
 
     def serving(self, c, is_network=False):
         """
@@ -442,10 +442,10 @@ class PriorityQueueSimulator:
         self.in_sys[k] -= 1
 
         if len(self.queue[k]) == 0 and self.free_channels == 1:
-            if self.in_sys[k] == self.n - 1 and self.class_ppnz_started != -1:
+            if self.in_sys[k] == self.n - 1 and self.class_busy_started != -1:
                 # Конец ПНЗ
-                self.ppnz_moments[k] += 1
-                self.refresh_ppnz_stat(k, self.ttek - self.start_ppnz)
+                self.busy_moments[k] += 1
+                self.refresh_busy_stat(k, self.ttek - self.start_busy)
 
         if self.prty_type != "No":
 
@@ -460,8 +460,8 @@ class PriorityQueueSimulator:
                     que_ts = self.queue[kk].pop(0)
 
                     if self.free_channels == 1 and kk != end_ts.k:
-                        self.start_ppnz = self.ttek
-                        self.class_ppnz_started = kk
+                        self.start_busy = self.ttek
+                        self.class_busy_started = kk
 
                     self.taked[kk] += 1
                     que_ts.wait_time += self.ttek - que_ts.start_waiting_time
@@ -481,8 +481,8 @@ class PriorityQueueSimulator:
                 que_ts = self.queue.pop(0)
 
                 if self.free_channels == 1 and k != end_ts.k:
-                    self.start_ppnz[k] = self.ttek
-                    self.class_ppnz_started = k
+                    self.start_busy[k] = self.ttek
+                    self.class_busy_started = k
 
                 self.taked[k] += 1
                 que_ts.wait_time += self.ttek - que_ts.start_waiting_time
@@ -552,7 +552,7 @@ class PriorityQueueSimulator:
 
             last_percent = 0
 
-            with tqdm(total=100, unit='jobs') as pbar:
+            with tqdm(total=100) as pbar:
                 while sum(self.served) < total_served:
                     self.run_one_step()
                     percent = int(100*(sum(self.served)/total_served))
@@ -569,10 +569,10 @@ class PriorityQueueSimulator:
         print(Fore.GREEN + '\rSimulation is finished')
         print(Style.RESET_ALL)
 
-    def refresh_ppnz_stat(self, k, new_a):
+    def refresh_busy_stat(self, k, new_a):
         for i in range(3):
-            self.ppnz[k][i] = self.ppnz[k][i] * (1.0 - (1.0 / self.ppnz_moments[k])) + \
-                math.pow(new_a, i + 1) / self.ppnz_moments[k]
+            self.busy[k][i] = self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k])) + \
+                math.pow(new_a, i + 1) / self.busy_moments[k]
 
     def refresh_v_stat(self, k, new_a):
         for i in range(3):
@@ -659,9 +659,9 @@ class PriorityQueueSimulator:
                 res += "\tTaken: " + str(self.taked[kk]) + "\n"
                 res += "\tServed: " + str(self.served[kk]) + "\n"
                 res += "\tIn System:" + str(self.in_sys[kk]) + "\n"
-                res += "\tPPNZ moments:\n\t"
+                res += "\tBusy moments:\n\t"
                 for j in range(3):
-                    res += "{0:8.4g}    ".format(self.ppnz[kk][j])
+                    res += "{0:8.4g}    ".format(self.busy[kk][j])
                 res += "\n"
         for c in range(self.n):
             if self.servers[c].is_free:

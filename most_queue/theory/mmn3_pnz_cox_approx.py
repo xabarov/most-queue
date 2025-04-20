@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 from most_queue.theory.utils.passage_time import passage_time_calc
-from most_queue.theory.priority_calc import ppnz_calc
+from most_queue.theory.priority_calc import busy_calc
 from most_queue.rand_distribution import Cox_dist
 
 
@@ -80,7 +80,7 @@ class Mmn3_pnz_cox:
         for j in range(3):
             b_mom[j] = math.factorial(j + 1) / math.pow(2 * mu_H, j + 1)
 
-        pnz = ppnz_calc(l_H, b_mom, 3)
+        pnz = busy_calc(l_H, b_mom, 3)
 
         param_cox = Cox_dist.get_params(pnz)
 

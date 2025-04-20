@@ -87,7 +87,7 @@ class ImpatientQueueSim(QueueingSystemSimulator):
                     # Проверям, не наступил ли ПНЗ:
                     if self.free_channels == 0:
                         if self.in_sys == self.n:
-                            self.start_ppnz = self.ttek
+                            self.start_busy = self.ttek
                     break
 
     def drop_task(self, num_of_task_in_queue, moment_to_leave_earlier):

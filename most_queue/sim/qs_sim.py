@@ -1,7 +1,6 @@
 """
-    Simulation model of QS GI/G/n/r and GI/G/n
+Simulation model of QS GI/G/n/r and GI/G/n
 """
-import math
 import time
 
 import numpy as np
@@ -18,7 +17,6 @@ from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import Task
-
 
 init()
 
@@ -70,9 +68,9 @@ class QueueingSystemSimulator:
         self.load = 0  # utilization factor
 
         # to track the length of the continuous channel occupancy period:
-        self.start_ppnz = 0
-        self.ppnz = [0, 0, 0]
-        self.ppnz_moments = 0
+        self.start_busy = 0
+        self.busy = [0, 0, 0]
+        self.busy_moments = 0
 
         self.ttek = 0  # current simulation time
         self.total = 0
@@ -124,24 +122,21 @@ class QueueingSystemSimulator:
 
     def set_warm(self, params, kendall_notation):
         """
-            Sets the type and parameters of the warm-up time distribution
-            See supported params and types in __init__
+        Set the type and parameters of the warm-up time distribution
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
 
     def set_cold(self, params, kendall_notation):
         """
-            Sets the type and parameters of the cooling time distribution
-            See supported params and types in __init__
+        Set the type and parameters of the cooling time distribution
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_phase.set_dist(dist)
 
     def set_cold_delay(self, params, kendall_notation):
         """
-        Sets the type and parameters of the distribution of the cooling start delay time
-        See supported params and types in __init__
+        Set the type and parameters of the cooling start delay time distribution
         """
 
         if not self.cold_phase.is_set:
@@ -153,8 +148,7 @@ class QueueingSystemSimulator:
 
     def set_sources(self, params, types):
         """
-        Specifies the type and parameters of the distribution of the arrival interval.
-        See supported params and types in __init__
+        Specifies the type and parameters of source time distribution.
         """
         self.source_params = params
         self.source_types = types
@@ -168,7 +162,6 @@ class QueueingSystemSimulator:
     def set_servers(self, params, types):
         """
         Specifies the type and parameters of service time distribution.
-        See supported params and types in __init__
         """
         self.server_params = params
         self.server_types = types
@@ -207,7 +200,7 @@ class QueueingSystemSimulator:
                 # Проверям, не наступил ли ПНЗ:
                 if self.free_channels == 0:
                     if self.in_sys == self.n:
-                        self.start_ppnz = self.ttek
+                        self.start_busy = self.ttek
 
                 break
 
@@ -309,8 +302,8 @@ class QueueingSystemSimulator:
         if self.queue.size() == 0 and self.free_channels == 1:
             if self.in_sys == self.n - 1:
                 # busy period ends
-                self.ppnz_moments += 1
-                self.refresh_ppnz_stat(self.ttek - self.start_ppnz)
+                self.busy_moments += 1
+                self.refresh_busy_stat(self.ttek - self.start_busy)
 
         # COLD
         if self.cold_phase.is_set:
@@ -333,7 +326,7 @@ class QueueingSystemSimulator:
         que_ts = self.queue.pop()
 
         if self.free_channels == 1:
-            self.start_ppnz = self.ttek
+            self.start_busy = self.ttek
 
         self.taked += 1
         que_ts.wait_time += self.ttek - que_ts.start_waiting_time
@@ -442,7 +435,7 @@ class QueueingSystemSimulator:
 
             last_percent = 0
 
-            with tqdm(total=100, unit='jobs') as pbar:
+            with tqdm(total=100) as pbar:
                 while self.served < total_served:
                     self.run_one_step()
                     percent = int(100*(self.served/total_served))
@@ -453,7 +446,7 @@ class QueueingSystemSimulator:
                                              Fore.YELLOW + f'{self.served}/{total_served}' + Fore.LIGHTGREEN_EX)
 
         else:
-            for i in tqdm(range(total_served)):
+            for _ in tqdm(range(total_served)):
                 self.run_one_step()
 
         print(Fore.GREEN + '\rSimulation is finished')
@@ -479,11 +472,11 @@ class QueueingSystemSimulator:
         """
         return self.cold_delay_phase.get_prob(self.ttek)
 
-    def refresh_ppnz_stat(self, new_a):
+    def refresh_busy_stat(self, new_a):
         """
         Updating statistics of the busy period 
         """
-        self.ppnz = refresh_moments_stat(self.ppnz, new_a, self.ppnz_moments)
+        self.busy = refresh_moments_stat(self.busy, new_a, self.busy_moments)
 
     def refresh_v_stat(self, new_a):
         """
@@ -500,7 +493,8 @@ class QueueingSystemSimulator:
     def get_p(self):
         """
         Returns a list with probabilities of QS states
-        p[j] - the probability that there will be exactly j jobs in the QS at a random moment in time
+        p[j] - the probability that there will be exactly j jobs 
+        in the QS at a random moment in time
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.num_of_states):
@@ -539,9 +533,9 @@ class QueueingSystemSimulator:
             res += f"Taken: {self.taked}\n"
             res += f"Served: {self.served}\n"
             res += f"In System: {self.in_sys}\n"
-            res += "PPNZ moments:\n"
+            res += "Busy moments:\n"
             for j in range(3):
-                res += f"\t{self.ppnz[j]:8.4f}"
+                res += f"\t{self.busy[j]:8.4f}"
             res += "\n"
             for c in range(self.n):
                 res += str(self.servers[c])

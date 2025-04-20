@@ -89,5 +89,5 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
                         # Проверям, не наступил ли ПНЗ:
                         if self.free_channels == 0:
                             if self.in_sys == self.n:
-                                self.start_ppnz = self.ttek
+                                self.start_busy = self.ttek
                         break

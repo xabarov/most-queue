@@ -565,7 +565,7 @@ class passage_time_calc:
 if __name__ == '__main__':
 
     from most_queue.rand_distribution import H2_dist, Cox_dist
-    from most_queue.theory.priority_calc import ppnz_calc
+    from most_queue.theory.priority_calc import busy_calc
 
     print("\nСМО типа M/H2/1. Для одноканальной СМО passage time является ПНЗ. \n"
           "Сравним значения начальных моментов, полученных методом Ньютса \n"
@@ -662,7 +662,7 @@ if __name__ == '__main__':
         neuts_moments.append(
             pass_time.Z[1][r][0, 0] * pass_time.G[2][0, 0] + pass_time.Z[1][r][1, 0] * pass_time.G[2][0, 1])
 
-    pnz = ppnz_calc(l, b, 3)
+    pnz = busy_calc(l, b, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -748,7 +748,7 @@ if __name__ == '__main__':
     for r in range(3):
         neuts_moments.append(pass_time.Z[1][r][0, 0])
 
-    pnz = ppnz_calc(l, b, 3)
+    pnz = busy_calc(l, b, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -837,7 +837,7 @@ if __name__ == '__main__':
     for j in range(3):
         b_mom[j] = math.factorial(j + 1) / pow(3 * mu, j + 1)
 
-    pnz = ppnz_calc(l, b_mom, 3)
+    pnz = busy_calc(l, b_mom, 3)
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Ньютс", "ПНЗ"))
     print("-" * 45)
@@ -864,7 +864,7 @@ if __name__ == '__main__':
     #     b_mom[j] = math.factorial(j + 1) / pow(2 * mu_H, j + 1)
     #
     #
-    # pnz = ppnz_calc(l_H, b_mom, 3)
+    # pnz = busy_calc(l_H, b_mom, 3)
     #
     # param_cox = Cox_dist.get_params(pnz)
     #

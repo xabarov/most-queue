@@ -146,7 +146,7 @@ class PriorityNetwork:
         if is_real_served:
             last_percent = 0
 
-            with tqdm(total=100, unit='jobs') as pbar:
+            with tqdm(total=100) as pbar:
                 while sum(self.served) < job_served:
                     self.run_one_step()
                     percent = int(100*(sum(self.served)/job_served))

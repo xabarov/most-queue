@@ -67,7 +67,7 @@ def get_w1_np(l, b):
     return w1
 
 
-def ppnz_calc(l, b, num=5):
+def busy_calc(l, b, num=5):
     """
     Вычисляет начальные моменты периода непрерывной занятости для СМО M/G/1
     По умолчанию - первые три.
@@ -126,7 +126,7 @@ def climov_w_pr_calc(l, b):
     return w
 
 
-def ppnz_calc_warm_up(l, f, pnz, num=5):
+def busy_calc_warm_up(l, f, pnz, num=5):
     """
     Вычисляет начальные моменты периода непрерывной занятости с разогревом для СМО M/G/1
     По умолчанию - первые три.
@@ -181,7 +181,7 @@ def calc_pr1(l, b, num=3):
     v = []
     h = []
 
-    pi_j.append(ppnz_calc(l[0], b[0]))
+    pi_j.append(busy_calc(l[0], b[0]))
 
     # Формула Полячека - Хинчина. Заявки первого
     # класса не прерываются
@@ -203,19 +203,19 @@ def calc_pr1(l, b, num=3):
 
     for j in range(1, num_of_cl):
         pi_j.append([0.0] * (num + 1))
-        h.append(ppnz_calc_warm_up(L[j - 1], b[j], pi_j[j - 1]))
+        h.append(busy_calc_warm_up(L[j - 1], b[j], pi_j[j - 1]))
 
         pi_j_i.append([])
         for k in range(j + 1):
             pi_j_i[j].append([])
 
-        pi_j_i[j][j] = ppnz_calc(l[j], h[j])
+        pi_j_i[j][j] = busy_calc(l[j], h[j])
 
         for i in range(j):
             if j == 1:
-                pi_j_i[j][i] = ppnz_calc_warm_up(l[j], pi_j[0], pi_j_i[j][j])
+                pi_j_i[j][i] = busy_calc_warm_up(l[j], pi_j[0], pi_j_i[j][j])
             else:
-                pi_j_i[j][i] = ppnz_calc_warm_up(l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
+                pi_j_i[j][i] = busy_calc_warm_up(l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
 
         for moment in range(num + 1):
             summ = 0
@@ -392,7 +392,7 @@ def get_w_np(l, b, num=3):
 
         b_k_param = Gamma.get_mu_alpha(b[j])
 
-        nu_a_PNZ = ppnz_calc(la, b_a)
+        nu_a_PNZ = busy_calc(la, b_a)
 
         if j != 0:
             nu_a_param = Gamma.get_mu_alpha(nu_a_PNZ)
