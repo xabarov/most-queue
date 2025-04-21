@@ -12,31 +12,16 @@ init()
 class ImpatientQueueSim(QueueingSystemSimulator):
     """
     Queueing system with impatient tasks
-
     """
 
     def __init__(self, num_of_channels, buffer=None, verbose=True):
         """
-        :param num_of_channels: int
-            Number of channels in the system.
-        :param buffer: int or None
-            Buffer size. If None, then infinite buffer.
-        :param verbose: bool
-            If True, then print information about simulation process.
+        Initialize the queueing system with impatient tasks.
+        The system can have a finite or infinite buffer. 
 
-        To start the simulation, you need to:
-        - call the constructor with parameters
-        - set the input arrival distribution using the set_sorces() method
-        - set the service distribution using the set_servers() method
-        - set the impatience distribution using the set_impatience() method
-        - start the simulation using the run() method
-        to which you need to pass the number of job required for servicing
-
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param num_of_channels: int : number of channels in the system
+        :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
+        :param verbose: bool : whether to print detailed information during simulation  
 
         """
         super().__init__(num_of_channels, buffer, verbose)
@@ -49,17 +34,11 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
     def set_impatience(self, params, types):
         """
-        set impatience parameters and types
-        :param params: list
-            List of lists with parameters for each type of impatience.
-        :param types: list
-            List of strings with types of impatience.
+        Set the impatience distribution for tasks.
 
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the impatience distribution
+        :param types: list : types of the impatience distribution (e.g. 'exp', 'norm')
+
         """
         self.impatience_params = params
         self.impatience_types = types

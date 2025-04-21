@@ -29,9 +29,9 @@ class ForkJoinSim(QueueingSystemSimulator):
     New jobs are not allowed to enter the system, until current job has finished.
     
     There are mainly two versions of (n, k) fork-join queues: 
-        The purging one removes all the remaining sub-tasks of a job from both sub-queues
-            and service stations once it receives the job’s k the answer.
-        As a contrast, the non-purging one keeps queuing and executing remaining sub-tasks
+    The purging one removes all the remaining sub-tasks of a job from both sub-queues
+    and service stations once it receives the job’s k the answer.
+    As a contrast, the non-purging one keeps queuing and executing remaining sub-tasks
     """
 
     def __init__(self, num_of_channels, k, is_sj=False, is_purge=False, buffer=None):

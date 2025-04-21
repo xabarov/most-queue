@@ -6,7 +6,7 @@ import numpy as np
 from most_queue.general_utils.tables import times_print
 from most_queue.rand_distribution import Erlang_dist, H2_dist
 from most_queue.sim.fj_delta_sim import ForkJoinSimDelta
-from most_queue.theory import fj_calc, mg1_warm_calc
+from most_queue.theory import fj_calc
 
 
 def test_fj_delta():
@@ -31,10 +31,10 @@ def test_fj_delta():
     qs.run(100000)
     v_im = qs.v
 
-    b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
-    b_max = fj_calc.getMaxMoments(n, b, 4)
-    ro = l * b_max[0]
-    v_ch = mg1_warm_calc.get_v(l, b_max, b_max_warm)
+    sj_delta = fj_calc.SplitJoinCalc(l, n, b)
+
+    v_ch = sj_delta.get_v_delta(b_delta)
+    ro = sj_delta.get_ro()
 
     print("\n")
     print("-" * 60)
@@ -65,11 +65,11 @@ def test_fj_delta():
     qs.set_servers(b_params, 'E')
     qs.run(100000)
     v_im = qs.v
+    
+    sj_delta = fj_calc.SplitJoinCalc(l, n, b)
 
-    b_max_warm = fj_calc.getMaxMomentsDelta(n, b, 4, b_delta)
-    b_max = fj_calc.getMaxMoments(n, b, 4)
-    ro = l * b_max[0]
-    v_ch = mg1_warm_calc.get_v(l, b_max, b_max_warm)
+    v_ch = sj_delta.get_v_delta(b_delta)
+    ro = sj_delta.get_ro()
 
     print("\n\nCoefficient of variation of service time: ", coev)
     print(f"Load coefficient: {ro:.3f}")

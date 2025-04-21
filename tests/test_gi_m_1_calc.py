@@ -2,82 +2,72 @@ import numpy as np
 
 from most_queue.rand_distribution import Gamma, Pareto_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.gi_m_1_calc import get_p, get_v, get_w
-
+from most_queue.theory.gi_m_1_calc import GI_M_1
+from most_queue.general_utils.tables import times_print, probs_print
 
 def test_gi_m_1():
     """
-    Тестирование расчета СМО GI/M/1
-    Для верификации используем имитационное моделирование (ИМ).
+    Test of GI/M/1 queueing system calculation.
+    For verification, we use simulation 
     """
 
-    l = 1  # интенсивность вх потока
-    a1 = 1 / l  # средний интревал между заявками
-    b1 = 0.9  # среднее время обслуживания
-    mu = 1 / b1  # интенсивность обслуживания
-    a_coev = 1.6  # коэфф вариации вх потока
-    num_of_jobs = 300000  # количество заявок для ИМ. Чем больше, тем выше точночть ИМ
+    l = 1  # input intensity of the incoming stream
+    a1 = 1 / l  # average interval between requests
+    b1 = 0.9  # average service time
+    mu = 1 / b1  # service intensity
+    a_coev = 1.6  # coefficient of variation in the input stream
+    num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
 
-    # расчет параметров аппроксимирующего Гамма-распределения для вх птокоа по заданным среднему и коэфф вариации
+    # calculation of parameters approximating Gamma-distribution for the incoming stream based on the given average and coefficient of variation
     v, alpha = Gamma.get_mu_alpha_by_mean_and_coev(a1, a_coev)
     a = Gamma.calc_theory_moments(v, alpha)
 
-    # расчет начальных моментов времени пребывания и ожидания в СМО
-    v_ch = get_v(a, mu)
-    w_ch = get_w(a, mu)
+    # calculation of initial moments of time spent and waiting in the queueing system
+    gm1_calc = GI_M_1(a, mu)
+    v_ch = gm1_calc.get_v()
+    w_ch = gm1_calc.get_w()
 
-    # расчет вероятностей состояний СМО
-    p_ch = get_p(a, mu)
+    # calculation of probabilities of states in the queueing system
+    p_ch = gm1_calc.get_p()
 
-    # для верификации используем ИМ.
-    # создаем экземпляр класса ИМ, передаем число каналов обслуживания
+    # for verification, we use sim.
+    # create an instance of the sim class and pass the number of service channels
     qs = QueueingSystemSimulator(1)
 
-    # задаем входной поток. Методу нужно передать параметры распределения списком и тип распределения.
+    # set the input stream. The method needs to be passed parameters of distribution as a list and type of distribution.
     qs.set_sources([v, alpha], "Gamma")
 
-    # задаем каналы обслуживания. На вход параметры (в нашем случае интенсивность обслуживания)
-    # и тип распределения - М (экспоненциальное).
+    # set the service channels. Parameters (in our case, the service intensity)
+    # and type of distribution - M (exponential).
     qs.set_servers(mu, "M")
 
-    # запускаем ИМ:
+    # start IM:
     qs.run(num_of_jobs)
 
-    # получаем список начальных моментов времени пребывания и ожидания в СМО
+    # get the list of initial moments of time spent and waiting in the queueing system
     v_sim = qs.v
     w_sim = qs.w
 
-    # получаем распределение вероятностей состояний СМО
+    # get the distribution of probabilities of states in the queueing system
     p_sim = qs.get_p()
 
-    # Вывод результатов
-    print("\nGamma. Значения начальных моментов времени пребывания заявок в системе:\n")
+    # Output results
+    print("\nGamma\n")
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_sim[j]))
+    times_print(v_sim, v_ch, False)
+    probs_print(p_sim, p_ch)
 
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w_ch[j], w_sim[j]))
-
-    print("{0:^25s}".format("Вероятности состояний СМО"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_sim[i]))
-
-    # Тоже для распределения Парето
+    # Also for Pareto distribution
 
     alpha, K = Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
     a = Pareto_dist.calc_theory_moments(alpha, K)
-    v_ch = get_v(a, mu, approx_distr="Pa")
-    w_ch = get_w(a, mu, approx_distr="Pa")
-    p_ch = get_p(a, mu, approx_distr="Pa")
+    
+    gm1_calc = GI_M_1(a, mu, approx_distr="Pa")
+    v_ch = gm1_calc.get_v()
+    w_ch = gm1_calc.get_w()
+
+    # calculation of probabilities of system states
+    p_ch = gm1_calc.get_p()
 
     qs = QueueingSystemSimulator(1)
     qs.set_sources([alpha, K], "Pa")
@@ -91,25 +81,10 @@ def test_gi_m_1():
     assert np.allclose(np.array(w_sim), np.array(w_ch), rtol=30e-1)
     assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), rtol=1e-1)
 
-    print("\nPareto. Значения начальных моментов времени пребывания заявок в системе:\n")
+    print("\nPareto\n")
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, v_ch[j], v_sim[j]))
-
-    print("\nЗначения начальных моментов времени ожидания заявок в системе:\n")
-
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    for j in range(3):
-        print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(j + 1, w_ch[j], w_sim[j]))
-
-    print("{0:^25s}".format("Вероятности состояний СМО"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_ch[i], p_sim[i]))
+    times_print(v_sim, v_ch, False)
+    probs_print(p_sim, p_ch)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+"""
+Calculation of the GI/M/1 queueing system 
+"""
 import math
 
 from most_queue.general_utils.conv import get_moments_minus
@@ -5,85 +8,123 @@ from most_queue.rand_distribution import Gamma, Pareto_dist
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 
 
-def get_pi(a, mu, num=100, e=1e-10, approx_distr="Gamma"):
+class GI_M_1:
     """
-    Вычисление вероятностей состояний СМО
-    a - список начальных моментов распределения интервало рекуррентного вх потока заявок
-    mu - интенсивность обслуживания
-    num - число вероятностей
+    Calculation of the GI/M/1 queueing system 
     """
-    pi = [0.0] * num
 
-    v, alpha = Gamma.get_mu_alpha(a)
-
-    q = get_q_Gamma(mu, v, alpha)
-    summ = 0
-    w = get_w_param(a, mu, e, approx_distr)
-    for i in range(len(q)):
-        summ += q[i] * pow(w, i)
-    pi[0] = 1.0 - summ
-    for k in range(1, num):
-        pi[k] = (1.0 - w) * pow(w, k)
-    return pi
-
-
-def get_v(a, mu, num=3, e=1e-10, approx_distr="Gamma"):
-    w_param = get_w_param(a, mu, e, approx_distr)
-    v = [0.0] * num
-    for k in range(num):
-        v[k] = math.factorial(k + 1) / pow(mu * (1 - w_param), k + 1)
-    return v
+    def __init__(self, a: list[float], mu: float, tolerance: float = 1e-10, approx_distr="Gamma"):
+        """
+        a - list of initial moments of the distribution of inter-renewal intervals of arrival
+        mu - service intensity
+        approx_distr - distribution approximation method ("Gamma", "Pareto")
+        """
+        self.a = a
+        self.mu = mu
+        self.e = tolerance
+        self.approx_distr = approx_distr
+        
+        self.w_param =  self._get_w_param()
+        
+        self.v = None
+        self.w = None
+        self.pi = None
 
 
-def get_w(a, mu, num=3, e=1e-10, approx_distr="Gamma"):
-    v = get_v(a, mu, num, e, approx_distr)
-    b = [1.0 / mu, 2.0 / pow(mu, 2), 6.0 / pow(mu, 3), 24.0 / pow(mu, 4)]
-    w = get_moments_minus(v, b, num)
+    def get_pi(self, num=100):
+        """
+        Calculation of the probabilities of states before arrival of GI/M/1 queueing system.
+        params:
+        num - number of states to calculate
+        """
+        
+        pi = [0.0] * num
 
-    return w
+        v, alpha = Gamma.get_mu_alpha(self.a)
 
+        qs = get_q_Gamma(self.mu, v, alpha)
+        summ = 0
+        for i, q in enumerate(qs):
+            summ += q * pow(self.w_param, i)
+        pi[0] = 1.0 - summ
+        for k in range(1, num):
+            pi[k] = (1.0 - self.w_param) * pow(self.w_param, k)
+        return pi
 
-def get_p(a, mu, num=100, e=1e-10, approx_distr="Gamma"):
-    ro = 1.0 / (a[0] * mu)
-    p = [0.0] * num
-    p[0] = 1 - ro
-    w_param = get_w_param(a, mu, e, approx_distr)
-    for i in range(1, num):
-        p[i] = ro * (1.0 - w_param) * pow(w_param, i - 1)
-    return p
+    def get_v(self, num=3):
+        """
+        Calculation of the soujourn time initial moments
+        num - number of moments
+        e - accuracy
+        approx_distr - approximation distribution for the arrival process
+        """
+        v = [0.0] * num
+        for k in range(num):
+            v[k] = math.factorial(k + 1) / pow(self.mu * (1 - self.w_param), k + 1)
+        return v
 
+    def get_w(self, num=3):
+        """
+        Calculation of the initial moments of the waiting time
+         num - number of moments
+        """
+        
+        if self.v is None:
+            self.v = self.get_v(num)
+            
+        b = [1.0 / self.mu, 2.0 /
+             pow(self.mu, 2), 6.0 / pow(self.mu, 3), 24.0 / pow(self.mu, 4)]
+        w = get_moments_minus(self.v, b, num)
 
-def get_w_param(a, mu, e=1e-10, approx_distr="Gamma"):
-    ro = 1.0 / (a[0] * mu)
-    coev_a = math.sqrt(a[1] - pow(a[0], 2)) / a[0]
-    w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
+        return w
 
-    if approx_distr == "Gamma":
-        v, alpha, g = Gamma.get_params(a)
-        while True:
-            summ = 0
-            for i in range(len(g)):
-                summ += (g[i] / pow(mu * (1.0 - w_old) + v, i)) * (
-                            Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
-            left = pow(v / (mu * (1.0 - w_old) + v), alpha)
-            w_new = left * summ
-            if math.fabs(w_new - w_old) < e:
-                break
-            w_old = w_new
-        return w_new
+    def get_p(self, num=100):
+        """
+        Calculation of probabilities of QS states
+        num - number of states
+        """
+        ro = 1.0 / (self.a[0] * self.mu)
+        p = [0.0] * num
+        p[0] = 1 - ro
+        for i in range(1, num):
+            p[i] = ro * (1.0 - self.w_param) * pow(self.w_param, i - 1)
+        return p
 
-    elif approx_distr == "Pa":
-        alpha, K = Pareto_dist.get_a_k(a)
-        while True:
-            left = alpha * pow(K * mu * (1.0 - w_old), alpha)
-            w_new = left * Gamma.get_gamma_incomplete(-alpha, K * mu * (1.0 - w_old))
-            if math.fabs(w_new - w_old) < e:
-                break
-            w_old = w_new
-        return w_new
+    def _get_w_param(self) -> float:
+        """
+        Calculate w_warm parameter
+        """
+        ro = 1.0 / (self.a[0] * self.mu)
+        coev_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
+        w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
-    else:
-        print("w_param calc. Unknown type of distr_type")
+        if self.approx_distr == "Gamma":
+            v, alpha, qs = Gamma.get_params(self.a)
+            while True:
+                summ = 0
+                for i, q in enumerate(qs):
+                    summ += (q / pow(self.mu * (1.0 - w_old) + v, i)) * (
+                        Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
+                left = pow(v / (self.mu * (1.0 - w_old) + v), alpha)
+                w_new = left * summ
+                if math.fabs(w_new - w_old) < self.e:
+                    break
+                w_old = w_new
+            return w_new
 
-    return 0
+        elif self.approx_distr == "Pa":
+            alpha, K = Pareto_dist.get_a_k(self.a)
+            while True:
+                left = alpha * pow(K * self.mu * (1.0 - w_old), alpha)
+                w_new = left * \
+                    Gamma.get_gamma_incomplete(-alpha,
+                                               K * self.mu * (1.0 - w_old))
+                if math.fabs(w_new - w_old) < self.e:
+                    break
+                w_old = w_new
+            return w_new
 
+        else:
+            print("w_param calc. Unknown type of distr_type")
+
+        return 0

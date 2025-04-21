@@ -14,7 +14,7 @@ def test_engset():
 
     ps = engset.get_p()
 
-    print(f'Вероятности состояний системы')
+    print('Вероятности состояний системы')
     header = "{0:^15s}|{1:^15s}".format('№', 'p')
     print('-' * len(header))
     print(header)
@@ -38,7 +38,7 @@ def test_engset():
 
     print(f'v1 = {v1:3.3f}, w1 = {w1:3.3f}')
 
-    print(f'Начальные моменты ожидания и пребывания')
+    print('Начальные моменты ожидания и пребывания')
     header = "{0:^15s}|{1:^15s}|{2:^15s}".format('№', 'w', 'v')
     print('-' * len(header))
     print(header)

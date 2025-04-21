@@ -8,7 +8,8 @@ from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
 
 class QueueingSystemBatchSim(QueueingSystemSimulator):
     """
-    Queueing system with batch arrivals.
+    Queueing system with batch arrivals GI[x]/G/c/m
+
     """
     def __init__(self, num_of_channels,
                  batch_prob,

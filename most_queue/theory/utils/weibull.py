@@ -1,17 +1,28 @@
 import math
-import rand_distribution as rd
+import most_queue.rand_distribution as rd
 import numpy as np
 
 
 class Weibull:
+    """
+    Class for working with the Weibull distribution
+    """
     @staticmethod
     def get_params(t, num=2):
         """
-        Подбор параметров распределения по начальным моментам распределения (по умолчанию двум)
-        При num>2 и соответствующем числе начальных моментов помимо параметров распределения k и T
-        возвращает значения g для поправочного многочлена
+        Parameter selection for the distribution based on initial moments of the distribution (default is two)
+        When num>2 and with an appropriate number of initial moments, in addition to the parameters of the distribution k and T
+        it returns values of g for the correction polynomial
+        
+        params:
+            t: initial moments of the random variable
+            num: number of initial moments
+
+       return:
+            k, T: parameters of the Weibull distribution
+            g: coefficients of the correction polynomial (if num>2)
+
         """
-        # t - начальные моменты СВ
         a = t[1] / (t[0] * t[0])
         u0 = math.log(2 * a) / (2.0 * math.log(2))
         ee = 1e-6
@@ -45,6 +56,15 @@ class Weibull:
 
     @staticmethod
     def get_tail_one_value(weibull_params, x):
+        """
+        Calculate the tail probability of a Weibull distribution at a given value.
+         Args:
+             weibull_params (list): A list containing the parameters of the Weibull distribution.
+             x (float): The value at which to calculate the tail probability.
+         Returns:
+             float: The tail probability at the given value.
+
+        """
         p = 0
         k = weibull_params[0]
         T = weibull_params[1]
@@ -60,6 +80,15 @@ class Weibull:
 
     @staticmethod
     def get_tail(weibull_params, x_mass):
+        """
+        Calculate the tail probability of a Weibull distribution for a given set of values.
+         Args:
+             weibull_params (list): A list containing the parameters of the Weibull distribution.
+             x_mass (list): A list of values at which to calculate the tail probabilities.
+         Returns:
+             list: The tail probabilities at the given values.
+
+        """
         res = []
         for x in x_mass:
             res.append(Weibull.get_tail_one_value(weibull_params, x))
@@ -67,6 +96,15 @@ class Weibull:
 
     @staticmethod
     def get_cdf(weibull_params, x_mass):
+        """
+        Calculate the cumulative distribution function (CDF) of a Weibull distribution for a given set of values.
+         Args:
+             weibull_params (list): A list containing the parameters of the Weibull distribution.
+             x_mass (list): A list of values at which to calculate the CDFs.
+         Returns:
+             list: The CDFs at the given values.
+
+        """
         res = []
         for x in x_mass:
             res.append(1.0 - Weibull.get_tail_one_value(weibull_params, x))
@@ -75,8 +113,12 @@ class Weibull:
     @staticmethod
     def get_params_by_mean_and_coev(f1, coev, num=2):
         """
-        Подбор параметров распределения по среднему и коэффициенту вариации
-        Возвращает список с параметрами
+        Subselect parameters of Weibull distribution by the given mean and coefficient of variation.
+         Args:
+             f1 (float): The first parameter of the Weibull distribution.
+             coev (float): The coefficient of variation.
+         Returns:
+             list: A list of parameters of the Weibull distribution.
         """
 
         f = [0, 0, 0]

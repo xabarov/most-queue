@@ -8,6 +8,12 @@ matplotlib.use('TkAgg')
 
 
 def print_table(experiments_stat):
+    """
+    Prints a table comparing the results of the Takahashi-Takami method and simulation modeling for different queueing systems.
+    :param experiments_stat: A list of dictionaries containing the results of the experiments.
+    :type experiments_stat: list[dict]
+    :return: None
+    """
     for stat in experiments_stat:
         print("\nComparison of calculation results by the Takahashi-Takami method and simulation modeling.\n"
               "M/H2/{0:^2d} with H2-warm-up, H2-cooling and H2-cooling delay"
@@ -43,16 +49,32 @@ def print_table(experiments_stat):
 
 
 def dump_stat(experiments_stat, save_name='run_stat.json'):
+    """
+    Dump the results of experiments to a JSON file.
+    :param experiments_stat: A list of dictionaries containing the results of the experiments.
+    :param save_name: The name of the file to save the results to. Defaults to 'run_stat.json'.
+    """
     with open(save_name, 'w') as f:
         json.dump(experiments_stat, f)
 
 
 def load_stat(stat_name):
+    """
+    Load the results of experiments from a JSON file.
+    :param stat_name: The name of the file to load the results from.
+    :return: A list of dictionaries containing the results of the experiments.
+    """
     with open(stat_name, 'r') as f:
         return json.load(f)
 
 
 def calc_moments_by_mean_and_coev(mean, coev):
+    """
+    Calculate the initial three moments (mean, variance, and skewness) based on the mean and coefficient of variation.
+    :param mean: The mean value of the distribution.
+    :param coev: The coefficient of variation (standard deviation divided by the mean).
+    :return: A list containing the calculated moments [mean, variance, skewness].
+    """
     b = [0.0] * 3
     alpha = 1 / (coev ** 2)
     b[0] = mean
@@ -65,17 +87,11 @@ def make_plot(experiments_stat, w_moments_num=0,
               param_name="ro", mode='error'):
     """
     Build plot for wait times initial moments
-    experiments_stat: experimental data
-    w_moments_num: number of the initial moment, 0 corresponds to the first
-    param_name - X axis parameter name.
-                Supports:
-                    "ro" - utilization factor,
-                    "n" - number of channels,
-                    "delay_mean" - cooling delay mean time
-                    "coev" - cooling delay coefficient of variation
-
-    mode - 'error' or 'abs' - set 'abs' if you need to build a dependency for absolute values.
-                              'error' - for relative ones
+    :param experiments_stat: list of experiment statistics
+    :param w_moments_num: number of moment to plot (0 - mean, 1 - variance, 2 - skewness)
+    :param param_name: name of parameter to use for x-axis
+    :param mode: 'error' or 'mass' - whether to plot errors or mass values
+    :return: figure and axis objects
     """
     fig, ax = plt.subplots()
     w_sim_mass = []
@@ -102,8 +118,8 @@ def make_plot(experiments_stat, w_moments_num=0,
         ax.plot(xs, errors)
         ax.set_ylabel(r"$\varepsilon$, %")
     else:
-        ax.plot(xs, w_sim_mass, label="ИМ")
-        ax.plot(xs, w_tt_mass, label="Числ")
+        ax.plot(xs, w_sim_mass, label="Sim")
+        ax.plot(xs, w_tt_mass, label="Calc")
         ax.set_ylabel(r"$\omega_{1}$")
         plt.legend()
 

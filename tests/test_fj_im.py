@@ -3,14 +3,8 @@ Testing the Fork-Join and Split-Join systems
 """
 from most_queue.rand_distribution import Erlang_dist, H2_dist
 from most_queue.sim.fj_sim import ForkJoinSim
-from most_queue.theory import fj_calc, mg1_calc
-from most_queue.theory.fj_calc import (
-    get_v1_fj_nelson_nk,
-    get_v1_fj_nelson_tantawi,
-    get_v1_fj_varma,
-    get_v1_varma_nk,
-)
-
+from most_queue.theory.fj_calc import ForkJoinMarkovianCalc, SplitJoinCalc
+from most_queue.general_utils.tables import times_print
 
 def test_fj_sim():
     """
@@ -42,8 +36,10 @@ def test_fj_sim():
     # Get a first initial moment of sojourn time 
     v1_sim = qs.v[0]
     
-    vi_varma = get_v1_fj_varma(l, mu, n)
-    vi_nelson_tantawi = get_v1_fj_nelson_tantawi(l, mu, n)
+    fj_calc_markov = ForkJoinMarkovianCalc(l, mu, n)
+    
+    vi_varma = fj_calc_markov.get_v1_fj_varma()
+    vi_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_tantawi()
     
     print(f"\nAverage sojourn time in Fork-Join ({n}, {n}):")
     
@@ -80,8 +76,10 @@ def test_fj_sim():
     # Get a first initial moment of sojourn time 
     v1_sim = qs.v[0]
     
-    vi_varma = get_v1_varma_nk(l, mu, n, k)
-    vi_nelson_tantawi = get_v1_fj_nelson_nk(l, mu, n, k)
+    fj_calc_markov = ForkJoinMarkovianCalc(l, mu, n, k)
+    
+    vi_varma = fj_calc_markov.get_v1_varma_nk()
+    vi_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_nk()
     
     print(f"\nAverage sojourn time in Fork-Join ({n}, {k}):")
     
@@ -147,11 +145,12 @@ def test_sj_sim():
 
     # Calculate the initial moments of the distribution maximum using the method fj_calc.getMaxMoments.
     # The input is the number of servers and the list of initial moments
-    b_max = fj_calc.getMaxMoments(n, b)
-    ro = l * b_max[0]
+    
+    sj_calc = SplitJoinCalc(l, n, b)
+    v_ch = sj_calc.get_v()
+    ro = sj_calc.get_ro()
 
     # Further calculation as in a regular M/G/1 queueing system with initial moments of the distribution maximum of the random variable
-    v_ch = mg1_calc.get_v(l, b_max)
 
     print("\n")
     print("-" * 60)
@@ -159,13 +158,7 @@ def test_sj_sim():
     print("-" * 60)
     print(f"Coefficient of variation of service time: {coev}")
     print(f"Utilization coefficient: {ro:.3f}")
-    print("Initial moments of sojourn time:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("Moment", "Calc", "Sim"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_sim))):
-        print(f"{j + 1:^16d}|{v_ch[j]:^20.5g}|{v_sim[j]:^20.5g}")
-    print("-" * 60)
+    times_print(v_sim, v_ch, False)
 
     # Also for a coefficient of variation < 1 (approximating the distribution with Erlang)
     coev = 0.8
@@ -179,21 +172,15 @@ def test_sj_sim():
     qs.run(num_of_jobs)
     v_sim = qs.v
 
-    b_max = fj_calc.getMaxMoments(n, b)
-    ro = l * b_max[0]
-    v_ch = mg1_calc.get_v(l, b_max)
+    sj_calc = SplitJoinCalc(l, n, b)
+    v_ch = sj_calc.get_v()
+    ro = sj_calc.get_ro()
 
     print(f"Coefficient of variation of service time: {coev}")
     print(f"Utilization coefficient: {ro:.3f}")
-    print("Initial moments of sojourn time:")
-    print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("Moment", "Calc", "Sim"))
-    print("-" * 60)
-    for j in range(min(len(v_ch), len(v_sim))):
-        print(f"{j + 1:^16d}|{v_ch[j]:^20.5g}|{v_sim[j]:^20.5g}")
-    print("-" * 60)
+    times_print(v_sim, v_ch, False)
     
     assert 100*abs(v_ch[0] - v_sim[0])/max(v_ch[0], v_sim[0]) < 10
 
 if __name__ == "__main__":
-    test_fj_sim()
+    test_sj_sim()

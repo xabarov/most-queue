@@ -39,11 +39,6 @@ class PriorityQueueSimulator:
         - start the simulation using the run() method
         to which you need to pass the number of job required for servicing
 
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
         """
 
         self.n = num_of_channels

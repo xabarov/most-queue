@@ -31,23 +31,11 @@ class QueueingSystemSimulator:
                  verbose=True,
                  buffer_type="list"):
         """
-        num_of_channels - number of QS channels
-        buffer - maximum queue length
-        verbose - output comments during the IM process
-
-        To start the simulation, you need to:
-        - call the constructor with parameters
-        - set the input arrival distribution using the set_sorces() method
-        - set the service distribution using the set_servers() method
-        - start the simulation using the run() method
-        to which you need to pass the number of job required for servicing
-
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
-
+        Initialize the queueing system with GI/G/n/r or GI/G/n model.
+        :param num_of_channels: int : number of channels in the system
+        :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
+        :param verbose: bool : whether to print detailed information during simulation
+        :param buffer_type: str : type of the buffer, "list" or "deque"
         """
         self.n = num_of_channels
         self.buffer = buffer
@@ -116,11 +104,9 @@ class QueueingSystemSimulator:
         """
         Set the type and parameters of the warm-up time distribution
 
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the warm-up time distribution
+        :param kendall_notation: str : Kendall notation for the warm-up time distribution
+
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
@@ -128,11 +114,8 @@ class QueueingSystemSimulator:
     def set_cold(self, params, kendall_notation):
         """
         Set the type and parameters of the cooling time distribution
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the cooling time distribution
+        :param kendall_notation: str : Kendall notation for the cooling time distribution
         """
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_phase.set_dist(dist)
@@ -140,11 +123,8 @@ class QueueingSystemSimulator:
     def set_cold_delay(self, params, kendall_notation):
         """
         Set the type and parameters of the cooling start delay time distribution
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the cooling start delay time distribution
+        :param kendall_notation: str : Kendall notation for the cooling start delay time distribution
         """
 
         if not self.cold_phase.is_set:
@@ -157,11 +137,9 @@ class QueueingSystemSimulator:
     def set_sources(self, params, types):
         """
         Specifies the type and parameters of source time distribution.
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the source time distribution
+        :param types: list : types of source time distribution 
+
         """
         self.source_params = params
         self.source_types = types
@@ -175,11 +153,8 @@ class QueueingSystemSimulator:
     def set_servers(self, params, types):
         """
         Specifies the type and parameters of service time distribution.
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        :param params: list : parameters for the service time distribution
+        :param types: list : types of service time distribution 
         """
         self.server_params = params
         self.server_types = types
