@@ -4,7 +4,8 @@
 
 A Python package for simulating and analyzing queueing systems (QS) and networks. 
 
-![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Fissues?label=issues)
+![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftutorials?style=flat&label=tutorials&color=%23f1c40f&link=https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftutorials)
+
 ![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftests?style=flat&label=examples&color=%23e67e22)
 ![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftutorials?style=flat&label=tutorials&color=%23f1c40f)
 
