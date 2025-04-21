@@ -23,7 +23,7 @@ Key Features:
 - Network traffic analysis.
 
 ## Contributing
-Contributions are welcome! If you find any issues or have suggestions, please open an [issue](https://github.com/xabarov/most-queue/issues). Your pull requests are also appreciated.
+Contributions are welcome! If you find any issues or have suggestions, please open an [issue](https://github.com/xabarov/most-queue/issues). Your pull requests are also appreciated. You can write me at [xabarov1985@gmail.com](mailto:xabarov1985@gmail.com) 
 
 ## Roadmap
 - Expand support for more queueing models.
@@ -40,9 +40,9 @@ Install most-queue with pip
 ### Description of the Project
 
 Most_queue consists of two main parts:
- - **.theory** contains programs that implement methods for calculating queuing theory models. 
- - **.sim** contains simulation programs. 
-### Package .theory
+ - **most_queue.theory** contains programs that implement methods for calculating queuing theory models. 
+ - **most_queue.sim** contains simulation programs. 
+### Package most_queue.theory
 
 | #   | Kendall Notations | Package Name                      | Description      | Example | Tutorial |
 |-----|-------------------|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
@@ -68,7 +68,7 @@ Most_queue consists of two main parts:
 | 20.  | -               | network_viewer                 | Utility to view network structure        | | |
 | 21.  | M/G/1           | priority_calc                     | A set of functions for calculating QS with priorities (single-channel, multi-channel). The multichannel calculation is carried out by the method of relation      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
 
-### Package .sim
+### Package most_queue.sim
 
 | #   | Kendall Notations | Package Name               | Description    | Example | Tutorial   |
 |-----|-------------------|----------------------------|-------------------------------------------------------------------------------------------------|-------------------|-------------------|
