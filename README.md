@@ -1,17 +1,39 @@
-# Queueing systems. Simulation and numerical methods of Queuing theory
+# Queueing Systems: Simulation & Numerical Methods
 
 ![Queue](assets/queue6.jpg)
 
-Python package for calculation and simulation of queueing systems (QS) and networks. 
+A Python package for simulating and analyzing queueing systems (QS) and networks. 
 
-MOST (MOCT,  Массовое обслуживание стационарные задачи) stands for “Mass Service Steady-State Problems” and refers to tasks within queueing theory that involve large-scale service systems operating under steady-state conditions. 
-- [Рыжиков Ю. И. Вычислительные методы. – БХВ-Петербург, 2007.](https://www.litres.ru/book/uriy-ryzhikov/vychislitelnye-metody-uchebnoe-posobie-644835/)
+![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Fissues?label=issues)
+![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftests?style=flat&label=examples&color=%23e67e22)
+![Static Badge](https://img.shields.io/badge/https%3A%2F%2Fgithub.com%2Fxabarov%2Fmost-queue%2Ftree%2Fmain%2Ftutorials?style=flat&label=tutorials&color=%23f1c40f)
 
-Queueing theory. Numerical methods. 
+## About
+This repository focuses on solving steady-state problems in queueing theory.
+
+Key Features:
+- Simulate various types of queueing systems and networks.
+- Numerical methods for solving queueing theory problems.
+- Analyze system performance metrics such as waiting times, soujourn times, load factor and etc.
 
 
-## Authors
-- [xabarov](https://github.com/xabarov)
+## Use Cases
+- Modeling cloud computing infrastructure.
+- Designing efficient call centers.
+- Optimizing transportation systems.
+- Network traffic analysis.
+
+## Contributing
+Contributions are welcome! If you find any issues or have suggestions, please open an [issue](https://github.com/xabarov/most-queue/issues). Your pull requests are also appreciated.
+
+## Roadmap
+- Expand support for more queueing models.
+- Implement advanced numerical solution methods.
+
+---
+
+
+
 
 ## Installation
 Install most-queue with pip
@@ -19,50 +41,53 @@ Install most-queue with pip
   pip install most-queue
 ```
 
-## DESCRIPTION
+### Description of the Project
+
 Most_queue consists of two main parts:
  - **.theory** contains programs that implement methods for calculating queuing theory models. 
  - **.sim** contains simulation programs. 
 ### Package .theory
-| #   | Package name                      | Description                                                                                                                                                                                                                                                |
-|-----|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1.  | batch_mm1                         |        Calculation of M/M/1 QS with batch arrival                                                                                                                                                                                              |
-| 2. | ek_d_n_calc  | Numerical calculation of a multi-channel system Ek/D/n |
-| 3. | engset_model |   Calculation of the Engset model for M/M/1 with a finite number of sources.    |
-| 4. | fj_calc    | Numerical calculation of the initial moments of the random variables maximum distribution    | 
-| 5.  | gi_m_1_calc                       | Numerical calculation of QS GI/M/1    |
-| 6.  | gi_m_n_calc                       | Numerical calculation of QS GI/M/n    |
-| 7. | impatience_calc                   | Calculation of M/M/1 with exponential impatience    |
-| 8.  | m_d_n_calc                        | Numerical calculation of QS M/D/n    |
-| 9.  | m_h2_h2_warm                        | Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.   |
-| 10.  | m_ph_n_prty   | Numerical calculation of QS M/Ph/n with 2 classes and PR - priority. Based on the approximation of busy periods    |
-| 11.  | mg1_calc                          | Numerical calculation of QS M/G/1    |
-| 12.  | mg1_warm_calc                     | Numerical calculation of QS M/G/1 with "warm-up"    |
-| 13. | mgn_tt                            | Numerical calculation of QS M/H2/n by the Takahashi-Takami method with complex parameters when approximating the serving time by the H2 distribution       |
-| 14. | mgn_with_h2_delay_cold_warm.py    | Multichannel queuing system with H2 serving time, H2 warm-up, H2 cold delay and H2 cold (vacations). The system uses complex parameters, which allows you to calculate systems with arbitrary serving, warm-up, cold-delay and cold variation coefficients |
-| 15. | mmn_prty_pnz_approx               | Calculation of QS M/M/2 with 2 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of the busy period by the Cox distribution  |
-| 16. | mmn_with_h2_cold_h2_warmup.py     | Multichannel queuing system with exp serving time, H2 warm-up and H2 cold (vacations). The system uses complex parameters, which allows to calculate systems with arbitrary warm-up and cold variation coefficients    |
-| 17. | mmn3_pnz_cox_approx               | Calculation of QS M/M/2 with 3 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of busy period by the Cox distribution      |
-| 18. | mmnr_calc                         | Calculation of QS M/M/n/r     |
-| 19. | network_calc                      | Calculation of queuing network with priorities in nodes     |
-| 20. | network_viewer.py                 | Utility to view network structure        |
-| 21. | priority_calc                     | A set of functions for calculating QS with priorities (single-channel, multi-channel). The multichannel calculation is carried out by the method of relation     |
 
+| #   | Kendall Notations | Package Name                      | Description      | Example | Tutorial |
+|-----|-------------------|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
+| 1.  | M<sup>x</sup>/M/1          | batch_mm1                         | Solving for the of M<sup>x</sup>/M/1 QS with batch arrival    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_batch.py) |  |
+| 2. | Ek/D/n           | ek_d_n_calc                       | Numerical calculation of a multi-channel system Ek/D/n   | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_ek_d_n.py) | |
+| 3. | M/M/1/N          | engset_model                      | Solving for the Engset model for M/M/1 with a finite number of sources.     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_engset.py) | |
+| 4. | M/M/K/Fork-Join       | fj_calc                           | Solving for Fork-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_im.py) |  |
+| 5.  | GI/M/1          | gi_m_1_calc                       | Solving for QS GI/M/1     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_gi_m_1.py) | |
+| 6.  | GI/M/n          | gi_m_n_calc                       | Solving for QS GI/M/n      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_gi_m_n.py) | |
+| 7.  | M/M/1/D         | impatience_calc                   | Solving for M/M/1 with exponential impatience     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_impatience.py) | |
+| 8.  | M/D/n           | m_d_n_calc                        | Solving for QS M/D/n        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_d_n_calc.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/queue_sim.ipynb)  |
+| 9.  | M/H2/n          | m_h2_h2warm                      | Numerical calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_h2_h2warm.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/m_h2_h2warm.ipynb)|
+| 10.  | M/Ph/n/PR     | m_ph_n_prty                       | Numerical calculation of QS M/Ph/n with 2 classes and PR - priority. Based on the approximation of busy periods            | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_ph_n_prty.py) | |
+| 11.  | M/G/1           | mg1_calc                          | Solving for QS M/G/1        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mg1_calc.py) | |
+| 12.  | M/G/1          | mg1_warm_calc                     | Solving for QS M/G/1 with "warm-up"       |  | |
+| 13.  | M/H2/n         | mgn_tt                            | Numerical calculation of QS M/H2/n by the Takahashi-Takami method with complex parameters when approximating the serving time by the H2 distribution    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_tt.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/mgn_takahasi_takami.ipynb) |
+| 14.  | M/Ph/n         | mgn_with_h2_delay_cold_warm    | Multichannel queuing system with H2 serving time, H2 warm-up, H2 cold delay and H2 cold (vacations). The system uses complex parameters, which allows you to calculate systems with arbitrary serving, warm-up, cold-delay and cold variation coefficients | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_with_h2_delay_cold_warm.py) | |
+| 15.  | M/M/K/PR           | mmn_prty_pnz_approx               | Numerical calculation of QS M/M/2 with 2 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of the busy period by the Cox distribution      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_prty_pnz_approx.py) | |
+| 16.  | M/M/K          | mmn_with_h2_cold_h2_warmup  | Multichannel queuing system with exp serving time, H2 warm-up and H2 cold (vacations). The system uses complex parameters, which allows to calculate systems with arbitrary warm-up and cold variation coefficients    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_h2cold_h2warm.py) | |
+| 17.  | M/M/2/PR           | mmn3_pnz_cox_approx               | Numerical calculation of QS M/M/2 with 3 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of busy period by the Cox distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn3_pnz_cox_approx.py) | |
+| 18.  | M/M/n/r         | mmnr_calc                         | Solving for QS M/M/n/r        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_test.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/queue_sim.ipynb) |
+| 19.  | General Network | network_calc                      | Numerical calculation of queuing network with priorities in nodes      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_im_prty.py) | |
+| 20.  | -               | network_viewer                 | Utility to view network structure        | | |
+| 21.  | M/G/1           | priority_calc                     | A set of functions for calculating QS with priorities (single-channel, multi-channel). The multichannel calculation is carried out by the method of relation      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
 
 ### Package .sim
-| #  | Package name               | Description |
-| ------------- |----------------------------|------------- |
-| 1. | batch_sim                   | Simulation of QS in a batch system |
-| 2.  | fj_delta_sim               | Simulation of QS fork-join with a delay in the start of processing between channels | 
-| 3.  | fj_sim                     | Simulation of QS with fork-join process |
-| 4.  | flow_sum_sim               | Simulation of flow summation | 
-| 5.  | impatient_sim.py           | Simulation of QS GI/G/m/n with impatience | 
-| 6.  | priority_network           | Simulation of queuing network with priorities in nodes | 
-| 7.  | priority_queue_sim         | Simulation of QS GI/G/m/n  with priorities  | 
-| 8.  | qs_sim                     | Simulation of QS GI/G/m/n  | 
-| 9.  | queue_finite_source_sim.py | Simulation of QS GI/G/m/n with finite sources | 
 
-## Usage
+| #   | Kendall Notations | Package Name               | Description    | Example | Tutorial   |
+|-----|-------------------|----------------------------|-------------------------------------------------------------------------------------------------|-------------------|-------------------|
+| 1.  | M<sup>x</sup>/M/c          | batch_sim                   | Simulation of QS in a batch system    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_batch.py) |  |
+| 2.  | M/G/c/Fork-Join       | fj_delta_sim               | Simulation of QS fork-join with a delay in the start of processing between channels             | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_delta.py) |  |
+| 3.  | M/M/c           | fj_sim                     | Simulation of QS with fork-join process     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_im.py) |  |
+| 4.  | -           | flow_sum_sim               | Simulation of flow summation      |  |  |
+| 5.  | GI/G/c      | impatient_queue_sim           | Simulation of QS GI/G/m/n with impatience      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_impatience.py) |  |
+| 6.  | QN     | priority_network           | Simulation of queuing network with priorities in nodes     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_im_prty.py) |  |
+| 7.  | GI/G/m/n/Pri   | priority_queue_sim         | Simulation of QS GI/G/m/n with priorities   | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
+| 8.  | GI/G/m/n       | qs_sim                     | Simulation of QS GI/G/m/n     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_test.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/mgn_takahasi_takami.ipynb) |
+| 9.  | GI/G/m/n/N     | queue_finite_source_sim | Simulation of QS GI/G/m/n with finite sources      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_engset.py) |  |
+
+
+### Usage
 - Look [here](https://github.com/xabarov/most-queue/tree/main/tests) for examples
 - Look [here](https://github.com/xabarov/most-queue/tree/main/tutorials) for jupyter tutorials
 
@@ -203,8 +228,7 @@ v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
 times_print_with_classes(v_sim, v_teor, False)
 ```
 
-
-
-
+### References
+- Ryzhikov Y.I. *Computational Methods*. BHV-Petersburg, 2007. [(Link)](https://www.litres.ru/book/uriy-ryzhikov/vychislitelnye-metody-uchebnoe-posobie-644835/)
 
 
