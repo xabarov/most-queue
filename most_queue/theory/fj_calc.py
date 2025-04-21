@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import scipy.special as sp
 
 from most_queue.general_utils.conv import get_moments, get_self_conv_moments
 from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist
@@ -227,11 +228,11 @@ def get_v1_fj_nelson_nk(l, mu, n, k):
 
 def get_V(n):
     Vn = 0
-    for i in range(1, n + 1):
-        elem = combination(n, i) * pow(-1, i - 1)
+    for r in range(1, n + 1):
+        elem = sp.binom(n, r) * pow(-1, r - 1)
         summ2 = 0
-        for j in range(1, i + 1):
-            summ2 += combination(i, j) * factorial(j - 1) / pow(i, j + 1)
+        for m in range(1, r + 1):
+            summ2 += sp.binom(r, m) * factorial(m - 1) / pow(r, m + 1)
         elem *= summ2
         Vn += elem
     return Vn
@@ -242,8 +243,11 @@ def get_v1_varma_nk(l, mu, n, k):
     ro = l / mu
 
     for i in range(k, n + 1):
-        summ += get_W(n, k, i) * (get_Hn(i) +
-                                  (get_V(i) - get_Hn(i) * ro)) / (l - mu)
+        Hn = get_Hn(i)
+        Vn = get_V(i)
+        delta_ro = (Vn - Hn)*ro
+
+        summ += get_W(n, k, i) * (Hn + delta_ro) / (mu - l)
 
     return summ
 
@@ -254,7 +258,7 @@ def get_A(n, k, i):
     else:
         summ = 0
         for j in range(1, i - k + 1):
-            summ += combination(n - i + j, j) * get_A(n, k, i - j)
+            summ += sp.binom(n - i + j, j) * get_A(n, k, i - j)
 
         return (-1) * summ
 
@@ -262,7 +266,7 @@ def get_A(n, k, i):
 def get_W(n, k, i):
     summ = 0
     for j in range(k, i + 1):
-        summ += combination(n, j) * get_A(n, j, i)
+        summ += sp.binom(n, j) * get_A(n, j, i)
 
     return summ
 
@@ -290,10 +294,6 @@ def get_Hn(n):
     for i in range(1, n + 1):
         summ += 1 / i
     return summ
-
-
-def combination(n, i):
-    return factorial(n) / (factorial(i) * factorial(n - i))
 
 
 def factorial(n):
@@ -370,3 +370,22 @@ def get_v_fj_invar_tt(l, b, n):
         v.append(v1_fj2 * w_ttn[i] / w_tt2[i])
 
     return v
+
+
+def test_Hk_Vk():
+    """
+    Testing the calculation of Hk and Vk
+    """
+    print("| K | Hk | Vk |\n")
+    print("|---|----|----|\n")
+    for k in (x for x in range(2, 21)):
+        hk = get_Hn(k)
+        vk = get_V(k)
+        print(f"| {k} | {hk} | {vk} |\n")
+
+
+
+
+
+
+

@@ -1,24 +1,28 @@
 """
 ForkJoin Queue with delta
 """
+from colorama import Fore, Style, init
+
 from most_queue.general_utils.conv import get_self_conv_moments
 from most_queue.rand_distribution import Gamma
 from most_queue.sim.fj_sim import ForkJoinSim
 from most_queue.sim.utils.tasks import ForkJoinTask
 
+init()
+
 
 class ForkJoinSimDelta(ForkJoinSim):
     """
-    Имитационная модель СМО Fork-Join, Split-Join
+    Simulation of ForkJoin queue with delta.
     """
 
-    def __init__(self, num_of_channels, num_of_parts, delta, is_sj=False, buffer=None):
+    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, is_sj=False, buffer=None):
         """
-        :param num_of_channels: int : количество каналов СМО
-        :param num_of_parts: int : количество частей на которые разбивается задача
-        :param delta: float : параметр модели Fork-Join с дельта-разбиением
-        :param is_sj: bool : если True, то используется модель Split-Join, иначе - Fork-Join
-        :param buffer: Optional(int, None) : максимальная длина очереди
+        :param num_of_channels: int : number of channels (servers)
+        :param num_of_parts: int : number of parts on which the task is divided
+        :param delta: list[float] | float : If delta is a list, it should contain the moments of time delay caused by reception and restoration operations for each part. If delta is a float, delay is determistic and equal to delta.
+        :param is_sj: bool : if True, that means that the model is Split-Join, otherwise it's Fork-Join.
+        :param buffer: Optional(int, None) : maximum length of the queue
         """
         ForkJoinSim.__init__(self, num_of_channels,
                              num_of_parts, is_sj, buffer)
@@ -29,7 +33,7 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def task_arrival(self):
         """
-        Действия по прибытию заявки в СМО.
+        actions on task arrival in the system.
         """
 
         self.arrived += 1
@@ -39,7 +43,7 @@ class ForkJoinSimDelta(ForkJoinSim):
         self.arrival_time = self.ttek + self.source.generate()
         is_dropped = False
 
-        if self.buffer:  # ограниченная длина очереди
+        if self.buffer:  # length of the queue is limited
             if not self.is_sj:
                 if self.queue.size() + self.k - 1 > self.buffer + self.free_channels:
                     self.dropped += 1
@@ -89,7 +93,7 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def subtask_arrival(self, subtask_num):
         """
-        Действия по прибытию подзадачи в СМО.
+        Action to be taken when a subtask arrives in the system.
         """
 
         subtsk = self.subtask_arr_queue.pop(subtask_num)
@@ -99,7 +103,7 @@ class ForkJoinSimDelta(ForkJoinSim):
 
         is_dropped = False
 
-        if self.buffer:  # ограниченная длина очереди
+        if self.buffer:  # length of the queue is limited
             pass
 
         if not is_dropped:
@@ -129,8 +133,8 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def serving(self, c):
         """
-        Дейтсвия по поступлению заявки на обслуживание
-        с - номер канала
+        Action on the arrival of a request for service.
+        c - channel number
         """
         time_to_end = self.servers[c].time_to_end_service
         self.p[self.in_sys] += time_to_end - self.t_old
@@ -229,44 +233,39 @@ class ForkJoinSimDelta(ForkJoinSim):
 
     def __str__(self, is_short=False):
         """
-        Returns string representation of the system
-         :param is_short: bool : if True returns short version of string
-         :return: str : string representation of the system
+        :return: string representation of the system
+        :param is_short: if True, return short representation of the system
         """
-
-        res = "Queueing system " + self.source_types + \
-            "/" + self.server_types + "/" + str(self.n)
+        res = f"{Fore.GREEN}Queueing system {self.source_types}/{self.server_types}/{self.n}{Style.RESET_ALL}\n"
         if self.buffer is not None:
-            res += "/" + str(self.buffer)
+            res += f"{Fore.YELLOW}/ {self.buffer}{Style.RESET_ALL}\n"
         if self.is_sj:
-            res += '| Split-Join'
+            res += f"{Fore.CYAN}| Split-Join{Style.RESET_ALL}\n"
         else:
-            res += '| Fork-Join'
+            res += f"{Fore.CYAN}| Fork-Join{Style.RESET_ALL}\n"
 
-        res += "\n"
-        # res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
-        res += f"Current Time {self.ttek:8.3f}\n"
-        res += f"Arrival Time: {self.arrival_time:8.3f}\n"
+        res += f"{Fore.MAGENTA}Current Time {self.ttek:8.3f}{Style.RESET_ALL}\n"
+        res += f"{Fore.MAGENTA}Arrival Time: {self.arrival_time:8.3f}{Style.RESET_ALL}\n"
 
-        res += "Sojourn moments:\n"
+        res += f"{Fore.CYAN}Sojourn moments:{Style.RESET_ALL}\n"
         for i in range(3):
             res += f"\t{self.v[i]:8.4f}"
         res += "\n"
 
         if not is_short:
-            res += "Stationary prob:\n"
+            res += f"{Fore.BLUE}Stationary prob:{Style.RESET_ALL}\n"
             res += "\t"
             for i in range(10):
                 res += f"{self.p[i] / self.ttek:6.5f}   "
             res += "\n"
-            res += f"Arrived: {self.arrived}\n"
+            res += f"{Fore.GREEN}Arrived: {self.arrived}{Style.RESET_ALL}\n"
             if self.buffer is not None:
-                res += f"Dropped: {self.dropped}\n"
-            res += f"Served: {self.served}\n"
-            res += f"In System: {self.in_sys}\n"
+                res += f"{Fore.RED}Dropped: {self.dropped}{Style.RESET_ALL}\n"
+            res += f"{Fore.GREEN}Served: {self.served}{Style.RESET_ALL}\n"
+            res += f"{Fore.YELLOW}In System: {self.in_sys}{Style.RESET_ALL}\n"
 
             for c in range(self.n):
                 res += str(self.servers[c])
-            res += "\nQueue Count " + str(self.queue.size()) + "\n"
+            res += "\n{Fore.CYAN}Queue Count {self.queue.size()}{Style.RESET_ALL}\n"
 
         return res

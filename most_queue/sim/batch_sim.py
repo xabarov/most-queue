@@ -10,7 +10,6 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
     """
     Queueing system with batch arrivals.
     """
-
     def __init__(self, num_of_channels,
                  batch_prob,
                  buffer=None, verbose=True):
@@ -59,7 +58,7 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
             self.in_sys += 1
 
             if self.free_channels == 0:
-                if self.buffer is None:  # не задана длина очередиб т.е бесконечная очередь
+                if self.buffer is None:  # infinite buffer
                     new_tsk = Task(self.ttek)
                     new_tsk.start_waiting_time = self.ttek
                     self.queue.append(new_tsk)
@@ -86,7 +85,7 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
                                         self.ttek, is_warm_start)
                         self.free_channels -= 1
 
-                        # Проверям, не наступил ли ПНЗ:
+                        # Check if busy period has started:
                         if self.free_channels == 0:
                             if self.in_sys == self.n:
                                 self.start_busy = self.ttek

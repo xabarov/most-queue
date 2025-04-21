@@ -1,13 +1,18 @@
+"""
+Test for ForkJoin queue with delta.
+"""
 import numpy as np
 
-from most_queue.theory import fj_calc
-from most_queue.theory import mg1_warm_calc
 from most_queue.general_utils.tables import times_print
+from most_queue.rand_distribution import Erlang_dist, H2_dist
 from most_queue.sim.fj_delta_sim import ForkJoinSimDelta
-from most_queue.rand_distribution import H2_dist, Erlang_dist
+from most_queue.theory import fj_calc, mg1_warm_calc
 
 
 def test_fj_delta():
+    """
+    Test for ForkJoin queue with delta.
+    """
     n = 3
     l = 1.0
     b1 = 0.35
@@ -20,7 +25,7 @@ def test_fj_delta():
     b = H2_dist.calc_theory_moments(*b_params, 4)
 
     qs = ForkJoinSimDelta(n, n, b_delta, True)
-    
+
     qs.set_sources(l, 'M')
     qs.set_servers(b_params, 'H')
     qs.run(100000)
@@ -33,13 +38,12 @@ def test_fj_delta():
 
     print("\n")
     print("-" * 60)
-    print("{:^60s}".format('СМО Split-Join c задержкой начала обслуживания'))
+    print(f"{'Split-Join QS with service start delay':^60s}")
     print("-" * 60)
-    print("Коэфф вариации времени обслуживания: ", coev)
-    print(
-        "Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
-    print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
+    print(f"Coefficient of variation of service time: {coev}")
+    print(f"Average delay before service start: {b1_delta:.3f}")
+    print(f"Coefficient of variation of delay: {coev:.3f}")
+    print(f"Utilization coefficient: {ro:.3f}")
 
     times_print(v_im, v_ch, is_w=False)
 
@@ -67,11 +71,12 @@ def test_fj_delta():
     ro = l * b_max[0]
     v_ch = mg1_warm_calc.get_v(l, b_max, b_max_warm)
 
-    print("\n\nКоэфф вариации времени обслуживания: ", coev)
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
+    print("\n\nCoefficient of variation of service time: ", coev)
+    print(f"Load coefficient: {ro:.3f}")
     print(
-        "Среднее время задежки начала обслуживания: {:4.3f}".format(b1_delta))
-    print("Коэфф вариации времени задержки: {:4.3f}".format(coev))
+        f"Average waiting time for service start: {b1_delta:.3f}"
+    )
+    print(f"Coefficient of variation of waiting time: {coev}")
 
     times_print(v_im, v_ch, is_w=False)
 

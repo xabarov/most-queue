@@ -1,79 +1,173 @@
-import numpy as np
-
-from most_queue.rand_distribution import H2_dist, Erlang_dist
+"""
+Testing the Fork-Join and Split-Join systems
+"""
+from most_queue.rand_distribution import Erlang_dist, H2_dist
 from most_queue.sim.fj_sim import ForkJoinSim
 from most_queue.theory import fj_calc, mg1_calc
+from most_queue.theory.fj_calc import (
+    get_v1_fj_nelson_nk,
+    get_v1_fj_nelson_tantawi,
+    get_v1_fj_varma,
+    get_v1_varma_nk,
+)
 
 
 def test_fj_sim():
     """
-    Тестирование расчета системы Split-Join
-        | Рыжиков, Ю. И. Метод расчета длительности обработки задач в системе массового обслуживания
-        | с учетом процессов Split-Join / Ю. И. Рыжиков, В. А. Лохвицкий, Р. С. Хабаров
-        | Известия высших учебных заведений. Приборостроение. – 2019. – Т. 62. – № 5. – С. 419-423. –
+    Testing the Fork-Join system simulation
+    """
+    
+    n = 3  # number of servers
+    l = 1.0  # job arrival rate
+    num_of_jobs = 300000  # number of jobs for IM. The higher this number, the higher the accuracy of simulation modeling.
+
+    # We will choose the initial moments of service time "b" by average and coefficient of variation
+    # using the method most_queue.sim.rand_distribution.H2_dist.get_params_by_mean_and_coev()
+    b1 = 0.37  # average service time
+    
+    mu = 1.0/b1  # service rate
+
+    qs = ForkJoinSim(n, n, False)
+
+    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
+    qs.set_sources(l, 'M')
+
+    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # H - hyperexponential second order
+    qs.set_servers(mu, 'M')
+
+    # Start the simulation
+    qs.run(num_of_jobs)
+    
+    # Get a first initial moment of sojourn time 
+    v1_sim = qs.v[0]
+    
+    vi_varma = get_v1_fj_varma(l, mu, n)
+    vi_nelson_tantawi = get_v1_fj_nelson_tantawi(l, mu, n)
+    
+    print(f"\nAverage sojourn time in Fork-Join ({n}, {n}):")
+    
+    # Print comparision results as table with cols Method | Value. 
+    print("-" * 30)
+    print(f"{'Method': ^15} | {'Value': ^15}")
+    print("-" * 30)
+    print(f"{'Sim': ^15} | {v1_sim: .6f}")
+    print(f"{'Varma': ^15} | {vi_varma: .6f}")
+    print(f"{'Nelson-Tantawi': ^15} | {vi_nelson_tantawi: .6f}")
+    print("-" * 30)
+    
+    # Assert that the simulation result is close to the theoretical value
+    assert abs(v1_sim - vi_varma) < 0.02, "The simulation result is not close to the theoretical value for Varma's formula"
+    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, "The simulation result is not close to the theoretical value for Nelson-Tantawi's formula"
+
+
+    # Run Fork-Join (n, k) simulation and calculation of the average sojourn time
+    
+    k = 2
+    
+    qs = ForkJoinSim(n, k, False)
+
+    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
+    qs.set_sources(l, 'M')
+
+    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # H - hyperexponential second order
+    qs.set_servers(mu, 'M')
+
+    # Start the simulation
+    qs.run(num_of_jobs)
+    
+    # Get a first initial moment of sojourn time 
+    v1_sim = qs.v[0]
+    
+    vi_varma = get_v1_varma_nk(l, mu, n, k)
+    vi_nelson_tantawi = get_v1_fj_nelson_nk(l, mu, n, k)
+    
+    print(f"\nAverage sojourn time in Fork-Join ({n}, {k}):")
+    
+    # Print comparision results as table with cols Method | Value. 
+    print("-" * 30)
+    print(f"{'Method': ^15} | {'Value': ^15}")
+    print("-" * 30)
+    print(f"{'Sim': ^15} | {v1_sim: .6f}")
+    print(f"{'Varma': ^15} | {vi_varma: .6f}")
+    print(f"{'Nelson-Tantawi': ^15} | {vi_nelson_tantawi: .6f}")
+    print("-" * 30)
+
+    # Assert that the simulation result is close to the theoretical value
+    assert abs(v1_sim - vi_varma) < 0.02, "The simulation result is not close to the theoretical value for Varma's formula"
+    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, "The simulation result is not close to the theoretical value for Nelson-Tantawi's formula"
+
+
+def test_sj_sim():
+    """
+    Testing the calculation of a Split-Join system
+        | Ryzhikov, Yu. I. Method for calculating the duration of task processing in a queueing system
+        | with consideration of Split-Join processes / Yu. I. Ryzhikov, V. A. Lokhviatsky, R. S. Habarov
+        | Journal of Higher Educational Institutions. Instrument Engineering. – 2019. – Vol. 62. – No. 5. – pp. 419-423. –
         | DOI 10.17586/0021-3454-2019-62-5-419-423.
 
-    Для верификации используем имитационное моделирование (ИМ).
+    For verification, we use simulation modeling.
 
     """
-    n = 3  # число каналов
-    l = 1.0  # интенсивность вх потока
-    num_of_jobs = 300000  # количество заявок для ИМ. Чем больше, тем выше точночть ИМ
+    n = 3  # number of servers
+    l = 1.0  # job arrival rate
+    num_of_jobs = 300000  # number of jobs for IM. The higher this number, the higher the accuracy of simulation modeling.
 
-    # Подберем начальные моменты времени обслуживания "b" по среднему и коэфф вариации
-    # с помощью метода most_queue.sim.rand_distribution.H2_dist.get_params_by_mean_and_coev()
-    b1 = 0.37  # среднее время обслуживания
-    coev = 1.5  # коэфф вариации времени обслуживания
+    # We will choose the initial moments of service time "b" by average and coefficient of variation
+    # using the method most_queue.sim.rand_distribution.H2_dist.get_params_by_mean_and_coev()
+    b1 = 0.37  # average service time
+    coev = 1.5  # coefficient of variation of service time
 
-    params = H2_dist.get_params_by_mean_and_coev(b1, coev)  # параметры H2-распределения [y1, mu1, mu2]
+    params = H2_dist.get_params_by_mean_and_coev(b1, coev)  # parameters of the H2 distribution [y1, mu1, mu2]
 
-    # рассчитаем 4 начальных момента, нужно на один больше требуемых моментов времени пребывания в СМО
+    # Calculate the first four moments, we need one more than the required moments of time spent in the queueing system
     b = H2_dist.calc_theory_moments(*params, 4)
 
 
-    # для верификации используем ИМ.
-    # создаем экземпляр класса ИМ, передаем число каналов обслуживания
-    # ИМ поддерживает СМО типа Fork-Join (n, k). В нашем случае k = n
-    # Для задания СМО Split-Join необходимо передать третий параметр True, иначе по умаолчанию - Fork-Join
+    # To verify, we use IM.
+    # Create an instance of the simulation class and pass the number of servers for service
+    # Simulation class  supports a Fork-Join (n, k) type queueing system. In our case, k = n
+    # For specifying a Split-Join queueing system, you need to pass the third parameter True, otherwise by default - Fork-Join
 
     qs = ForkJoinSim(n, n, True)
 
-    # задаем входной поток. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
+    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
     qs.set_sources(l, 'M')
 
-    # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения.
-    # H - гиперэкспоненциальное второго параядка
+    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # H - hyperexponential second order
     qs.set_servers(params, 'H')
 
-    # запускаем ИМ
+    # Start the simulation
     qs.run(num_of_jobs)
-
-    # получаем список начальных моментов времени пребывания заявок в СМО
+    
+    # Get a list of initial moments of sojourn time 
     v_sim = qs.v
 
-    # расчет начальных моментов распределения максимума с помощью метода fj_calc.getMaxMoments.
-    # На вход число каналов, список начальных моментов
+    # Calculate the initial moments of the distribution maximum using the method fj_calc.getMaxMoments.
+    # The input is the number of servers and the list of initial moments
     b_max = fj_calc.getMaxMoments(n, b)
     ro = l * b_max[0]
 
-    # далее расчет как обычной СМО M/G/1 начальными моментами распределения максимума СВ
+    # Further calculation as in a regular M/G/1 queueing system with initial moments of the distribution maximum of the random variable
     v_ch = mg1_calc.get_v(l, b_max)
 
     print("\n")
     print("-" * 60)
-    print("{:^60s}".format('СМО Split-Join'))
+    print(f'{"Split-Join Queueing System":^60s}')
     print("-" * 60)
-    print("Коэфф вариации времени обслуживания: ", coev)
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Начальные моменты времени пребывания заявок в системе:")
+    print(f"Coefficient of variation of service time: {coev}")
+    print(f"Utilization coefficient: {ro:.3f}")
+    print("Initial moments of sojourn time:")
     print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
+    print("{0:^15s}|{1:^20s}|{2:^20s}".format("Moment", "Calc", "Sim"))
     print("-" * 60)
     for j in range(min(len(v_ch), len(v_sim))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_sim[j]))
+        print(f"{j + 1:^16d}|{v_ch[j]:^20.5g}|{v_sim[j]:^20.5g}")
     print("-" * 60)
 
-    # тоже для коэфф вариации < 1 (аппроксимируем распределением Эрланга)
+    # Also for a coefficient of variation < 1 (approximating the distribution with Erlang)
     coev = 0.8
     b1 = 0.5
     params = Erlang_dist.get_params_by_mean_and_coev(b1, coev)
@@ -89,14 +183,14 @@ def test_fj_sim():
     ro = l * b_max[0]
     v_ch = mg1_calc.get_v(l, b_max)
 
-    print("\n\nКоэфф вариации времени обслуживания: ", coev)
-    print("Коэффициент загрузки: {:4.3f}".format(ro))
-    print("Начальные моменты времени пребывания заявок в системе:")
+    print(f"Coefficient of variation of service time: {coev}")
+    print(f"Utilization coefficient: {ro:.3f}")
+    print("Initial moments of sojourn time:")
     print("-" * 60)
-    print("{0:^15s}|{1:^20s}|{2:^20s}".format("№ момента", "Числ", "ИМ"))
+    print("{0:^15s}|{1:^20s}|{2:^20s}".format("Moment", "Calc", "Sim"))
     print("-" * 60)
     for j in range(min(len(v_ch), len(v_sim))):
-        print("{0:^16d}|{1:^20.5g}|{2:^20.5g}".format(j + 1, v_ch[j], v_sim[j]))
+        print(f"{j + 1:^16d}|{v_ch[j]:^20.5g}|{v_sim[j]:^20.5g}")
     print("-" * 60)
     
     assert 100*abs(v_ch[0] - v_sim[0])/max(v_ch[0], v_sim[0]) < 10
