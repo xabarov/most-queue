@@ -2,9 +2,9 @@ import math
 
 import numpy as np
 
-from most_queue.theory.utils.passage_time import passage_time_calc
-from most_queue.theory.priority_calc import busy_calc
 from most_queue.rand_distribution import Cox_dist
+from most_queue.theory.priority_calc import busy_calc
+from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
 class Mmn3_pnz_cox:
@@ -136,7 +136,7 @@ class Mmn3_pnz_cox:
                     c_sum += C[i][row, j]
                 D[i][row, row] = a_sum + b_sum + c_sum
 
-        pass_time = passage_time_calc(A, B, C, D)
+        pass_time = PassageTimeCalculation(A, B, C, D)
 
         pass_time.calc()
 

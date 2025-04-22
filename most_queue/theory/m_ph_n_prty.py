@@ -2,8 +2,8 @@ import math
 
 import numpy as np
 
-from most_queue.theory.utils.passage_time import passage_time_calc
 from most_queue.rand_distribution import Cox_dist, H2_dist
+from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
 class MPhNPrty:
@@ -124,7 +124,7 @@ class MPhNPrty:
 
         is_ave = False
 
-        iter = 0
+        iter_num = 0
         self.run_iterations_num_ = 0
         if is_ave:
             x_ave1 = 0.0 + 0.0j
@@ -140,10 +140,10 @@ class MPhNPrty:
                 if self.x[i].real > x_ave1:
                     x_ave1 = self.x[i].real
 
-        while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter < self.max_iter:
+        while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter_num < self.max_iter:
             if self.verbose:
-                print("Start numeric iteration {0:d}".format(iter))
-            iter += 1
+                print(f"Start numeric iteration {iter_num}")
+            iter_num += 1
             x_ave2 = x_ave1
             for j in range(1, self.N):  # по всем ярусам, кроме первого.
 
@@ -189,7 +189,7 @@ class MPhNPrty:
                     if self.x[i].real > x_ave1:
                         x_ave1 = self.x[i].real
 
-        self.run_iterations_num_ = iter
+        self.run_iterations_num_ = iter_num
         self._calculate_p()
         self._calculate_y()
 
@@ -323,8 +323,8 @@ class MPhNPrty:
             self.C_for_busy.append(self._build_C_for_busy_periods(i))
             self.D_for_busy.append(self._build_D_for_busy_periods(i))
 
-        pass_time = passage_time_calc(self.A_for_busy, self.B_for_busy,
-                                      self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=self.verbose)
+        pass_time = PassageTimeCalculation(self.A_for_busy, self.B_for_busy,
+                                           self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=self.verbose)
         pass_time.calc()
 
         self.pnz_num_ = self.n ** 2
@@ -398,10 +398,10 @@ class MPhNPrty:
         p_sum = 0 + 0j
         p0_max = 1.0
         p0_min = 0.0
-        iter = 0
+        iter_num = 0
         self.p_iteration_num_ = 0
-        while math.fabs(1.0 - p_sum.real) > 1e-6 and iter < self.max_iter:
-            iter += 1
+        while math.fabs(1.0 - p_sum.real) > 1e-6 and iter_num < self.max_iter:
+            iter_num += 1
             p0_ = (p0_max + p0_min) / 2.0
             p_sum = p0_
             self.p[0] = p0_
@@ -524,7 +524,7 @@ class MPhNPrty:
                 m2_mass.append(h2_param[2])
                 if self.verbose:
                     print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
-                                                                                    h2_param[2]))
+                                                                                 h2_param[2]))
             else:
                 cox_params = Cox_dist.get_params(
                     self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
@@ -533,7 +533,7 @@ class MPhNPrty:
                 m2_mass.append(cox_params[2])
                 if self.verbose:
                     print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params[0], cox_params[1],
-                                                                                    cox_params[2]))
+                                                                                 cox_params[2]))
 
         # first quad
 

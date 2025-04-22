@@ -2,8 +2,8 @@ import math
 
 import numpy as np
 
-from most_queue.theory.utils.passage_time import passage_time_calc
 from most_queue.rand_distribution import Cox_dist
+from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
 class MMn_PRTY_PNZ_Cox_approx:
@@ -15,7 +15,6 @@ class MMn_PRTY_PNZ_Cox_approx:
     """
 
     def __init__(self, n, mu_L, mu_H, l_L, l_H, N=150, accuracy=1e-6, dtype="c16"):
-
         """
         n: число каналов
         l_L, l_H: интенсивности вх. потока заявок с низким и высоким приоритетами
@@ -73,7 +72,8 @@ class MMn_PRTY_PNZ_Cox_approx:
         b_mom = [0, 0, 0]
 
         for j in range(3):
-            b_mom[j] = math.factorial(j + 1) / math.pow(self.n * self.mu_H, j + 1)
+            b_mom[j] = math.factorial(
+                j + 1) / math.pow(self.n * self.mu_H, j + 1)
 
         pi = [0, 0, 0]
 
@@ -82,7 +82,7 @@ class MMn_PRTY_PNZ_Cox_approx:
         pi[0] = b_mom[0] / (1.0 - ro_load)
         pi[1] = b_mom[1] / (math.pow(1 - ro_load, 3))
         pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + \
-                3.0 * self.l_H * b_mom[1] * b_mom[1] / math.pow(1 - ro_load, 5)
+            3.0 * self.l_H * b_mom[1] * b_mom[1] / math.pow(1 - ro_load, 5)
 
         return pi
 
@@ -176,7 +176,8 @@ class MMn_PRTY_PNZ_Cox_approx:
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
+                    self.b2[j] = np.dot(
+                        self.t[j + 1], np.dot(self.B[j + 1], G))
                 else:
                     self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
 
@@ -190,7 +191,8 @@ class MMn_PRTY_PNZ_Cox_approx:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                    np.dot(self.x[j], self.b2[j])
 
             self.x[0] = 1.0 / self.z[1]
 
@@ -278,7 +280,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                     output[i, i] = sumA + sumB + sumC
             D.append(output)
 
-        pass_time = passage_time_calc(A, B, C, D, is_clx=True)
+        pass_time = PassageTimeCalculation(A, B, C, D, is_clx=True)
         pass_time.calc()
 
         # Z_gap = pass_time.Z_gap_calc(10,0)
@@ -287,7 +289,8 @@ class MMn_PRTY_PNZ_Cox_approx:
         G_gap = pass_time.G_gap_calc(l_start, l_end)
         Gr_gap = pass_time.Gr_gap_calc(l_start, l_end)
 
-        print("\nЗначения матрицы Gr_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
+        print(
+            "\nЗначения матрицы Gr_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
 
         for r in range(3):
             print("r = {0:^1d}".format(r + 1))
@@ -302,11 +305,14 @@ class MMn_PRTY_PNZ_Cox_approx:
                             print("{0:^5.3g}  ".format(Gr_gap[r][j, t]))
                     else:
                         if math.isclose(Gr_gap[r][j, t].imag, 0):
-                            print("{0:^5.3g}  ".format(Gr_gap[r][j, t].real), end='')
+                            print("{0:^5.3g}  ".format(
+                                Gr_gap[r][j, t].real), end='')
                         else:
-                            print("{0:^5.3g}  ".format(Gr_gap[r][j, t]), end='')
+                            print("{0:^5.3g}  ".format(
+                                Gr_gap[r][j, t]), end='')
 
-        print("\nЗначения матрицы G_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
+        print(
+            "\nЗначения матрицы G_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
 
         rows = G_gap.shape[0]
         cols = G_gap.shape[1]
@@ -377,19 +383,23 @@ class MMn_PRTY_PNZ_Cox_approx:
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
-                            Zs.append(self.t[i][0, j] * pass_time.G[i][j, s] * pass_time.Z[i][k][j, s])
+                            Zs.append(self.t[i][0, j] * pass_time.G[i]
+                                      [j, s] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[i][k][j, s])
-                        inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)
+                        inter_level_mom[i -
+                                        1] = self.binom_calc(inter_level_mom[i - 1], Zs)
             else:
                 for j in range(self.cols[i]):
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
-                            Zs.append(self.t[i][0, j] * pass_time.G[l_tilda][j, s] * pass_time.Z[l_tilda][k][j, s])
+                            Zs.append(
+                                self.t[i][0, j] * pass_time.G[l_tilda][j, s] * pass_time.Z[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[l_tilda][k][j, s])
-                        inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)
+                        inter_level_mom[i -
+                                        1] = self.binom_calc(inter_level_mom[i - 1], Zs)
 
         self.inter_level_mom_ = inter_level_mom
 
@@ -597,5 +607,3 @@ class MMn_PRTY_PNZ_Cox_approx:
             output[i, i] = sumA + sumB + sumC
 
         return output
-
-
