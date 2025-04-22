@@ -10,30 +10,21 @@ class Engset:
     Calculation of the Engset model for M/M/1 with a finite number of sources.
     """
 
-    def __init__(self, lam, mu, m):
+    def __init__(self, lam: float, mu: float, m: int):
         """
-        lam - интенсивность поступления заявок от каждого источника
-        mu - интенсивность обслуживания
-        m - число источников заявок
+        lam - arrival rate of requests from each source
+        mu - service rate
+        m - number of request sources
         """
         self.lam = lam
         self.mu = mu
         self.ro = lam / mu
         self.m = m
-        self.calc_m_i()
+        self._calc_m_i()
 
-    def calc_m_i(self):
-        m_i = []
-        m_i.append(1)
-        prod = 1
-        for i in range(self.m):
-            prod *= (self.m - i)
-            m_i.append(prod)
-        self.m_i = m_i
-
-    def get_p(self):
+    def get_p(self) -> list[float]:
         """
-        Вероятности состояний системы
+        Get probabilities of states of the system
         """
         summ = 0
         for i, mm in enumerate(self.m_i):
@@ -47,9 +38,9 @@ class Engset:
 
         return ps
 
-    def get_N(self):
+    def get_N(self)->float:
         """
-        Средние число заявок в системе
+        Get average number of jobs in the system
         """
         p0 = self.get_p()[0]
         N = 0
@@ -61,67 +52,74 @@ class Engset:
 
     def get_Q(self):
         """
-        Средние число заявок в очереди
+        Get average number of jobs in the queue
         """
         p0 = self.get_p()[0]
         return self.get_N() - (1.0 - p0)
 
     def get_kg(self):
         """
-        Вероятность того, что произвольно выбранный источник может послать заявку,
-        т.е. коэффициент готовности
+        Get probability that a randomly chosen source can send a request,
+        i.e. the readiness coefficient
         """
         p0 = self.get_p()[0]
         return self.mu * (1.0 - p0) / (self.lam * self.m)
-
-    def get_lamD(self):
-        lamD = self.lam * (self.m - self.get_N())
-        lamD2 = self.mu * (1.0 - self.get_p()[0])
-        print(f'Control {lamD:3.3f} == {lamD2:3.3f}')
-        return lamD
+        
 
     def get_w1(self):
         """
-        Средние время ожидания без дифф ПЛС
+        Get average waiting time without diff the Laplace-Stieltjes transform
         """
-        return self.get_Q() / self.get_lamD()
+        return self.get_Q() / self._get_lam_big_d()
 
     def get_v1(self):
         """
-        Средние время пребывания без дифф ПЛС
+        Get average soujourn time without diff the Laplace-Stieltjes transform
         """
-        return self.get_N() / self.get_lamD()
+        return self.get_N() / self._get_lam_big_d()
 
     def get_w(self):
         """
-        Начальные моменты времени ожидания через дифф ПЛС
+        Get waiting time initial moments through the diff Laplace-Stieltjes transform
         """
         h = 0.01
         ss = [x * h for x in range(5)]
         p0 = self.get_p()[0]
         N = self.get_N()
 
-        ws_dots = [self.ws(s, p0, N) for s in ss]
+        ws_dots = [self._ws(s, p0, N) for s in ss]
         w_diff = diff5dots(ws_dots, h)
 
         return [-w_diff[0], w_diff[1], -w_diff[2]]
 
-    def ws(self, s, p0, N):
+    def get_v(self):
         """
-        ПЛС времени ожидания
+        Get soujourn time initial moments trough convolution with service 
+        and diff Laplace-Stieltjes transform of waiting time
+        """
+        w = self.get_w()
+        b = [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
+        return get_moments(w, b)
+
+    def _calc_m_i(self):
+        m_i = []
+        m_i.append(1)
+        prod = 1
+        for i in range(self.m):
+            prod *= (self.m - i)
+            m_i.append(prod)
+        self.m_i = m_i
+
+    def _get_lam_big_d(self):
+        lam_big_d = self.lam * (self.m - self.get_N())
+        return lam_big_d
+
+    def _ws(self, s, p0, N):
+        """
+        Laplace-Stieltjes transform of waiting time
         """
         summ = 0
         for i in range(self.m):
             summ += pow(self.lam, i) * self.m_i[i + 1] / pow(self.mu + s, i)
 
         return summ * p0 / (self.m - N)
-
-    def get_v(self):
-        """
-        Начальные моменты времени пребывания через свертку с обслуживанием и дифф ПЛС времени ожидания
-        """
-        w = self.get_w()
-        b = [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
-        return get_moments(w, b)
-
-

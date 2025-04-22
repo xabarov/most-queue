@@ -42,6 +42,68 @@ def times_print(sim_moments, calc_moments, is_w=True):
     print(Style.RESET_ALL)
 
 
+def times_print_no_compare(wait_times=None, soujourn_times=None):
+    """
+    Prints the wait and sojourn times.
+    :param wait_times: Wait times
+    :param soujourn_times: Sojourn times
+    :return: None
+    """
+
+    if soujourn_times is None and wait_times is None:
+        raise ValueError(
+            "Either wait_times or soujourn_times must be provided.")
+
+    if soujourn_times is not None and wait_times is not None:
+
+        print(Fore.CYAN + 'Initial moments of soujourn and wait times in the system')
+
+        print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", "w", "v"))
+        print("-" * 45)
+        if isinstance(wait_times, list):
+            for j in range(min(len(wait_times), len(soujourn_times))):
+                w_mom = wait_times[j].real if isinstance(
+                    wait_times[j], complex) else wait_times[j]
+                v_mom = soujourn_times[j].real if isinstance(
+                    soujourn_times[j], complex) else soujourn_times[j]
+                print(
+                    Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW + f"{w_mom:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{v_mom:^15.5g}")
+        else:
+            w_mom = wait_times.real if isinstance(
+                wait_times, complex) else wait_times
+            v_mom = soujourn_times.real if isinstance(
+                soujourn_times, complex) else soujourn_times
+            print(
+                Fore.CYAN + f"{1:^15d}|" + Fore.YELLOW + f"{w_mom:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{v_mom:^15.5g}")
+
+        print(Style.RESET_ALL)
+
+    else:
+        times = wait_times if wait_times is not None else soujourn_times
+        spec = 'wait' if wait_times is not None else 'soujourn'
+        times_header = 'w' if wait_times is not None else 'v'
+        header = f'Initial moments of {spec} time in the system'
+
+        print(header)
+
+        print("{0:^15s}|{1:^15s}".format("#", times_header))
+        print("-" * 30)
+        if isinstance(times, list):
+            for j, mom in enumerate(times):
+                mom = mom.real if isinstance(
+                    mom, complex) else mom
+                print(
+                    Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW + f"{mom:^15.5g}" + Fore.CYAN)
+        else:
+            mom = times.real if isinstance(
+                times, complex) else times
+
+            print(
+                Fore.CYAN + f"{1:^15d}|" + Fore.YELLOW + f"{mom:^15.5g}" + Fore.CYAN)
+
+        print(Style.RESET_ALL)
+
+
 def probs_print(p_sim, p_ch, size=10):
     """
     Prints the probabilities of states.
@@ -59,6 +121,28 @@ def probs_print(p_sim, p_ch, size=10):
     for i in range(size):
         print(
             Fore.CYAN + f"{i:^4d}|" + Fore.YELLOW + f"{p_ch[i]:^15.5g}" + Fore.CYAN + "|" + Fore.YELLOW + f"{p_sim[i]:^15.5g}")
+    print(Fore.CYAN + "-" * 36)
+
+    print(Style.RESET_ALL)
+
+
+def probs_print_no_compare(probs, size=10, header="Probabilities of states"):
+    """
+    Print table with probabilities 
+     :param probs: Probabilities
+     :param size: Number of states to print
+      :return: None
+    """
+    print(Fore.CYAN + "-" * 36)
+    print(f"{header:^36s}")
+    print("-" * 36)
+    print("{0:^4s}|{1:^15s}".format("#", "Probability"))
+    print("-" * 36)
+
+    size = min(len(probs), size)
+    for i in range(size):
+        print(
+            Fore.CYAN + f"{i:^4d}|" + Fore.YELLOW + f"{probs[i]:^15.5g}" + Fore.CYAN)
     print(Fore.CYAN + "-" * 36)
 
     print(Style.RESET_ALL)

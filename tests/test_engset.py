@@ -1,10 +1,14 @@
-import numpy as np
-
-from most_queue.general_utils.tables import times_print
+"""
+Test for Engset model (M/M/1 with a finite number of sources)
+"""
+from most_queue.general_utils.tables import probs_print_no_compare, times_print_no_compare
 from most_queue.theory.engset_model import Engset
 
 
 def test_engset():
+    """
+    Test for Engset model (M/M/1 with a finite number of sources)
+    """
     
     lam = 0.3
     mu = 1.0
@@ -14,16 +18,7 @@ def test_engset():
 
     ps = engset.get_p()
 
-    print('Вероятности состояний системы')
-    header = "{0:^15s}|{1:^15s}".format('№', 'p')
-    print('-' * len(header))
-    print(header)
-    print('-' * len(header))
-    for i in range(len(ps)):
-        print("{0:^15d}|{1:^15.3f}".format(i, ps[i]))
-    print('-' * len(header))
-    print("{0:^15s}|{1:^15.3f}".format('Сумм', sum(ps)))
-    print('-' * len(header))
+    probs_print_no_compare(ps)
 
     N = engset.get_N()
     Q = engset.get_Q()
@@ -38,14 +33,7 @@ def test_engset():
 
     print(f'v1 = {v1:3.3f}, w1 = {w1:3.3f}')
 
-    print('Начальные моменты ожидания и пребывания')
-    header = "{0:^15s}|{1:^15s}|{2:^15s}".format('№', 'w', 'v')
-    print('-' * len(header))
-    print(header)
-    print('-' * len(header))
-    for i in range(3):
-        print("{0:^15d}|{1:^15.3f}|{2:^15.3f}".format(i + 1, w[i], v[i]))
-    print('-' * len(header))
+    times_print_no_compare(wait_times=w, soujourn_times=v)
     
 if __name__ == "__main__":
     
