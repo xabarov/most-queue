@@ -2,7 +2,8 @@ import numpy as np
 
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory import m_d_n_calc, mmnr_calc
+from most_queue.theory import mmnr_calc
+from most_queue.theory.m_d_n_calc import MDn
 
 
 def test_sim():
@@ -49,7 +50,7 @@ def test_sim():
 
     qs.run(1000000)
 
-    mdn = m_d_n_calc.M_D_n(l, 1 / mu, n)
+    mdn = MDn(l, 1 / mu, n)
     p_ch = mdn.calc_p()
     p_sim = qs.get_p()
 

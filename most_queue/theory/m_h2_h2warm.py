@@ -1,37 +1,51 @@
+"""
+Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+Use complex parameters, which allow to approximate the service time 
+distribution with arbitrary coefficients of variation (>1, <=1).
+"""
 import math
 
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.theory.utils.passage_time import passage_time_calc
 from most_queue.rand_distribution import H2_dist
 from most_queue.theory.utils.binom_probs import calc_binom_probs
+from most_queue.theory.utils.transforms import laplace_stieltjes_exp_transform as lst_exp
 
 
 class Mh2h2Warm:
     """
     Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
-    Use complex parameters. Complex parameters allow to approximate the service time distribution with arbitrary coefficients of variation (>1, <=1).
+    Use complex parameters, which allow to approximate the service time 
+    distribution with arbitrary coefficients of variation (>1, <=1).
     """
 
     def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False,
                  is_only_first=False):
+        """
+        Initialization of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+        Use complex parameters, which allow to approximate the service time 
+        distribution with arbitrary coefficients of variation (>1, <=1).
+        :param l: arrival intensity
+        :param b: initial moments of service time distribution
+        :param b_warm: initial moments of warming time distribution
+        :param n: number of servers
+        :param buffer: size of the buffer (optional)
+        :param N: number of levels (default is 150)
+        :param accuracy: accuracy, parameter for stopping iteration
+        :param dtype: data type for calculations (default is complex)
+        :param verbose: if True, print intermediate results
+        :param is_only_first: if True, calculate only the first level of the hierarchy
 
         """
-        n: число каналов
-        l: интенсивность вх. потока
-        b: начальные моменты времени обслуживания
-        b_warm: начальные моменты времени разогрева
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
-        """
+
         self.dt = np.dtype(dtype)
         if buffer:
-            self.R = buffer + n  # максимальное число заявок в сисетеме - очередь + каналы
-            self.N = self.R + 1  # число ярусов на один больше + нулевое состояние
+            self.R = buffer + n  # maximum number of requests in the system - queue + channels
+            self.N = self.R + 1  # number of levels on one more than + zero state
         else:
             self.N = N
-            self.R = None  # для проверки задан ли буфер
+            self.R = None
 
         self.is_only_first = is_only_first
 
@@ -46,7 +60,7 @@ class Mh2h2Warm:
         else:
             h2_params_service = H2_dist.get_params(b)
 
-        # параметры H2-распределения:
+        # Parameters of the H2 distribution
         self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
         self.mu = [h2_params_service[1], h2_params_service[2]]
 
@@ -58,10 +72,10 @@ class Mh2h2Warm:
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
-        # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
+        # Cols - array that stores the number of columns for each level, it is convenient to calculate it once:
         self.cols = [] * N
 
-        # переменные
+        # init parameters for the Takahasi-Takagi method
         self.t = []
         self.b1 = []
         self.b2 = []
@@ -69,16 +83,16 @@ class Mh2h2Warm:
             self.x = [0.0 + 0.0j] * N
             self.z = [0.0 + 0.0j] * N
 
-            # искомые вреоятности состояний СМО
+            # probabilities of states of the queueing system
             self.p = [0.0 + 0.0j] * N
         else:
             self.x = [0.0] * N
             self.z = [0.0] * N
 
-            # искомые вреоятности состояний СМО
+            # probabilities of states of the queueing system
             self.p = [0.0] * N
 
-        # матрицы переходов
+        # Transition matrices for the Takahasi-Takagi method
         self.A = []
         self.B = []
         self.C = []
@@ -100,7 +114,8 @@ class Mh2h2Warm:
                     if i == 0:
                         self.cols.append(1)  # 00 state
                     else:
-                        self.cols.append(i + 3)  # w1 w2 01 10, w1 w2 20 11 02, ...
+                        # w1 w2 01 10, w1 w2 20 11 02, ...
+                        self.cols.append(i + 3)
                 else:
                     self.cols.append(n + 3)
 
@@ -109,115 +124,23 @@ class Mh2h2Warm:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
-        self.key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-        self.down_probs = self.calc_down_probs(self.n + 1)
+        self._build_matrices()
+        self._initial_probabilities()
+        # Keys of the levels n, for n=3 [(3,0) (2,1) (1,2) (0,3)]
+        self.key_numbers = self._get_key_numbers(self.n)
+        self.down_probs = self._calc_down_probs(self.n + 1)
 
-    def get_p(self):
+    def get_p(self) -> list[float]:
         """
-        Возвращает список с вероятностями состояний системы
-        p[k] - вероятность пребывания в системе ровно k заявок
+        Get the probabilities of states of the queueing system.
         """
         for i in range(len(self.p)):
             self.p[i] = self.p[i].real
         return self.p
 
-    def pls(self, mu, s):
-        return mu / (mu + s)
-
-    def calc_passage_times(self):
-        pass_time = passage_time_calc(self.A, self.B, self.C, self.D, l_tilda=self.n + 1)
-        pass_time.calc()
-        print("\nЗначения матриц G:\n")
-
-        g_num = len(pass_time.G)
-        for i in range(g_num):
-
-            print("G{0:^1d}".format(i))
-
-            rows = pass_time.G[i].shape[0]
-            cols = pass_time.G[i].shape[1]
-            for j in range(rows):
-                for t in range(cols):
-                    if t == cols - 1:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]))
-                    else:
-                        print("{0:^5.3g}  ".format(pass_time.G[i][j, t]), end=" ")
-
-    def get_key_numbers(self, level):
-        key_numbers = []
-        for i in range(level + 1):
-            key_numbers.append((self.n - i, i))
-        return np.array(key_numbers, dtype=self.dt)
-
-    def calc_down_probs(self, from_level):
-        if from_level == self.n:
-            return np.eye(self.n + 1)
-        b_matrix = self.B[from_level]
-        probs = []
-        for i in range(2, self.cols[from_level - 1]):
-            probs_on_level = []
-            for j in range(2, self.cols[from_level - 1]):
-                if from_level != 1:
-                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
-                else:
-                    probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
-            probs.append(probs_on_level)
-        return np.array(probs, dtype=self.dt)
-
-    def matrix_pow(self, matrix, k):
-        res = np.eye(self.n + 1, dtype=self.dt)
-        for i in range(k):
-            res = np.dot(res, matrix)
-        return res
-
-    def calc_w_pls(self, s):
-        w = 0
-        # вероятности попадания в состояния обслуживания, вычисляются с помощью биноминального распределения
-        probs = calc_binom_probs(self.n + 1, self.y[0])
-
-        # Если заявка попала в фазу разогрева, хотя каналы свободны,
-        # ей придется подождать окончание разогрева
-        for k in range(1, self.n):
-            for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s)
-
-        for k in range(self.n, self.N):
-
-            # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
-            # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
-            key_numbers = self.get_key_numbers(self.n)  # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-
-            a = np.array(
-                [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
-                 range(self.n + 1)])
-
-            P = self.calc_down_probs(k)
-            Pa = np.transpose(self.matrix_pow(P * a, k - self.n))  # n+1 x n+1
-
-            aP_tilda = a * probs
-
-            pls_service_total = sum(np.dot(aP_tilda, Pa))
-
-            for i in range(2):
-                w += self.Y[k][0, i] * self.pls(self.mu_w[i], s) * pls_service_total
-
-            # попала в фазу обслуживания
-            Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
-            aPa = np.dot(a, Pa)
-            for i in range(self.n + 1):
-                w += Ys[i] * aPa[i]
-
-        return w
-
-    def calc_residual_b(self, mom_num):
-        res = self.b[mom_num + 1] / (2.0 * self.b[mom_num])
-        return res
-
     def get_w(self):
         """
-        Возвращает три первых начальных момента времени ожидания в СМО
+        Get the first three moments of the waiting time distribution.
         """
         w = [0.0] * 3
 
@@ -238,12 +161,13 @@ class Mh2h2Warm:
 
         else:
             for i in range(3):
-                w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+                w[i] = derivative(self._calc_w_pls, 0,
+                                  dx=1e-3 / self.b[0], n=i + 1, order=9)
             return [-w[0], w[1].real, -w[2]]
 
     def get_v(self):
         """
-        Возвращает три первых начальных момента времени пребывания в СМО
+        Get the first three initial moments of soujourn time in the queue.
         """
         v = [0.0] * 3
         w = self.get_w()
@@ -253,6 +177,79 @@ class Mh2h2Warm:
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
         return v
+
+    def _get_key_numbers(self, level):
+        key_numbers = []
+        for i in range(level + 1):
+            key_numbers.append((self.n - i, i))
+        return np.array(key_numbers, dtype=self.dt)
+
+    def _calc_down_probs(self, from_level):
+        if from_level == self.n:
+            return np.eye(self.n + 1)
+        b_matrix = self.B[from_level]
+        probs = []
+        for i in range(2, self.cols[from_level - 1]):
+            probs_on_level = []
+            for j in range(2, self.cols[from_level - 1]):
+                if from_level != 1:
+                    probs_on_level.append(b_matrix[i, j] / sum(b_matrix[i, :]))
+                else:
+                    probs_on_level.append(b_matrix[i, 0] / sum(b_matrix[i, :]))
+            probs.append(probs_on_level)
+        return np.array(probs, dtype=self.dt)
+
+    def _matrix_pow(self, matrix, k):
+        res = np.eye(self.n + 1, dtype=self.dt)
+        for i in range(k):
+            res = np.dot(res, matrix)
+        return res
+
+    def _calc_w_pls(self, s) -> float:
+        """
+        Calculate Laplace-Stietjes transform of the waiting time distribution.
+        :param s: Laplace variable
+        :return: Laplace-Stieltjes transform of the waiting time distribution
+        """
+        w = 0
+        # вероятности попадания в состояния обслуживания, вычисляются с помощью биноминального распределения
+        probs = calc_binom_probs(self.n + 1, self.y[0])
+
+        # Если заявка попала в фазу разогрева, хотя каналы свободны,
+        # ей придется подождать окончание разогрева
+        for k in range(1, self.n):
+            for i in range(2):
+                w += self.Y[k][0, i] * lst_exp(self.mu_w[i], s)
+
+        for k in range(self.n, self.N):
+
+            # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
+            # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
+            # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
+            key_numbers = self._get_key_numbers(self.n)
+
+            a = np.array(
+                [lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
+                 range(self.n + 1)])
+
+            P = self._calc_down_probs(k)
+            Pa = np.transpose(self._matrix_pow(P * a, k - self.n))  # n+1 x n+1
+
+            aP_tilda = a * probs
+
+            pls_service_total = sum(np.dot(aP_tilda, Pa))
+
+            for i in range(2):
+                w += self.Y[k][0, i] * \
+                    lst_exp(self.mu_w[i], s) * pls_service_total
+
+            # попала в фазу обслуживания
+            Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
+            aPa = np.dot(a, Pa)
+            for i in range(self.n + 1):
+                w += Ys[i] * aPa[i]
+
+        return w
 
     def print_mrx(self, mrx):
         row = mrx.shape[0]
@@ -266,18 +263,7 @@ class Mh2h2Warm:
                     print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
             print("\n" + "--------" * col)
 
-    @staticmethod
-    def binom_calc(a, b, num=3):
-        res = []
-        if num > 0:
-            res.append(a[0] + b[0])
-        if num > 1:
-            res.append(a[1] + 2 * a[0] * b[0] + b[1])
-        if num > 2:
-            res.append(a[2] + 3 * a[1] * b[0] + 3 * b[1] * a[0] + b[2])
-        return res
-
-    def initial_probabilities(self):
+    def _initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
         """
@@ -287,7 +273,7 @@ class Mh2h2Warm:
                 self.t[i][0, j] = 1.0 / self.cols[i]
         self.x[0] = 0.4
 
-    def norm_probs(self):
+    def _norm_probs(self):
         summ = 0
         for i in range(self.N):
             summ += self.p[i]
@@ -299,9 +285,8 @@ class Mh2h2Warm:
             summ = 0
             for i in range(self.N):
                 summ += self.p[i]
-            print("Summ of probs = {0:.5f}".format(summ))
 
-    def calculate_p(self):
+    def _calculate_p(self):
         """
         После окончания итераций находим значения вероятностей p по найденным х
         """
@@ -323,33 +308,33 @@ class Mh2h2Warm:
             else:
                 p0_min = p0_
 
-        self.norm_probs()
+        self._norm_probs()
 
-    def calculate_y(self):
+    def _calculate_y(self):
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
         Формирует матрицы переходов
         """
         for i in range(self.N):
-            self.A.append(self.buildA(i))
-            self.B.append(self.buildB(i))
-            self.C.append(self.buildC(i))
-            self.D.append(self.buildD(i))
+            self.A.append(self._buildA(i))
+            self.B.append(self._buildB(i))
+            self.C.append(self._buildC(i))
+            self.D.append(self._buildD(i))
 
-    def calc_g_matrices(self):
+    def _calc_g_matrices(self):
         self.G = []
         for j in range(0, self.N):
             self.G.append(np.linalg.inv(self.D[j] - self.C[j]))
 
-    def calc_ag_matrices(self):
+    def _calc_ag_matrices(self):
         self.AG = [0]
         for j in range(1, self.N):
             self.AG.append(np.dot(self.A[j - 1], self.G[j]))
 
-    def calc_bg_matrices(self):
+    def _calc_bg_matrices(self):
         self.BG = [0]
         for j in range(1, self.N):
             if j != (self.N - 1):
@@ -357,10 +342,10 @@ class Mh2h2Warm:
             else:
                 self.BG.append(np.dot(self.B[j], self.G[j]))
 
-    def calc_support_matrices(self):
-        self.calc_g_matrices()
-        self.calc_ag_matrices()
-        self.calc_bg_matrices()
+    def _calc_support_matrices(self):
+        self._calc_g_matrices()
+        self._calc_ag_matrices()
+        self._calc_bg_matrices()
 
     def run(self):
         """
@@ -377,7 +362,7 @@ class Mh2h2Warm:
             x_max1 = 0.0
             x_max2 = 0.0
 
-        self.calc_support_matrices()
+        self._calc_support_matrices()
 
         self.num_of_iter_ = 0  # кол-во итераций алгоритма
         for i in range(self.N):
@@ -399,7 +384,7 @@ class Mh2h2Warm:
                 else:
                     self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
 
-                c = self.calculate_c(j)
+                c = self._calculate_c(j)
 
                 x_znam = np.dot(c, self.b1[j]) + self.b2[j]
                 if self.dt == 'c16':
@@ -426,7 +411,8 @@ class Mh2h2Warm:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                        np.dot(self.x[j], self.b2[j])
 
             if self.dt == 'c16':
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
@@ -449,10 +435,10 @@ class Mh2h2Warm:
             if self.verbose:
                 print("End iter # {0:d}".format(self.num_of_iter_))
 
-        self.calculate_p()
-        self.calculate_y()
+        self._calculate_p()
+        self._calculate_y()
 
-    def calculate_c(self, j):
+    def _calculate_c(self, j):
         """
         Вычисляет значение переменной с, участвующей в расчете
         """
@@ -474,13 +460,13 @@ class Mh2h2Warm:
 
         return chisl / (znam - znam2)
 
-    def insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
+    def _insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
         row_num = level
         for i in range(row_num):
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def buildA(self, num):
+    def _buildA(self, num):
         """
         Формирует матрицу А по заданному номеру яруса
         """
@@ -504,37 +490,44 @@ class Mh2h2Warm:
             if num < self.n:
                 if self.is_only_first:
                     # first block
-                    self.insert_standart_A_into(output, self.l, self.y[0], 0, 0, level=num)
+                    self._insert_standart_A_into(
+                        output, self.l, self.y[0], 0, 0, level=num)
                     # second
-                    self.insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
+                    self._insert_standart_A_into(
+                        output, self.l, self.y[0], num, num + 1, level=num)
                     # third
-                    self.insert_standart_A_into(output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
+                    self._insert_standart_A_into(
+                        output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
                 else:
                     # first block
                     output[0, 0] = self.l
                     output[1, 1] = self.l
                     # second
-                    self.insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
+                    self._insert_standart_A_into(
+                        output, self.l, self.y[0], 2, 2, level=num + 1)
             else:
                 for i in range(row):
                     output[i, i] = self.l
 
         return output
 
-    def insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
+    def _insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
         col = level
         for i in range(col):
             if level <= n:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
+                mass[i + left_pos, i +
+                     bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
                 if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
+                    mass[i + left_pos, i + bottom_pos +
+                         1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:
-                    mass[i + + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
+                    mass[i + + left_pos + 1, i +
+                         bottom_pos] = (i + 1) * mu[1] * y[0]
 
-    def buildB(self, num):
+    def _buildB(self, num):
         """
             Формирует матрицу B по заданному номеру яруса
         """
@@ -567,11 +560,14 @@ class Mh2h2Warm:
 
                 if self.is_only_first:
                     # first block
-                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 0, 0, num - 1, self.n)
                     # second
-                    self.insert_standart_B_into(output, self.y, self.mu, num, num - 1, num - 1, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, num, num - 1, num - 1, self.n)
                     # third
-                    self.insert_standart_B_into(output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
 
                     # warm block 1
                     for i in range(num):
@@ -581,36 +577,44 @@ class Mh2h2Warm:
                     for i in range(num):
                         output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
                 else:
-                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 2, 2, num, self.n)
 
             else:
 
                 if self.is_only_first:
                     # first block
-                    self.insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
                     # second
-                    self.insert_standart_B_into(output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
                     # third
-                    self.insert_standart_B_into(output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
 
                     # warm block 1
                     for i in range(num - 1):
                         output[i, i + 2 * (num - 1)] = self.mu_w[0] * self.y[0]
-                        output[i, i + 2 * (num - 1) + 1] = self.mu_w[0] * self.y[1]
+                        output[i, i + 2 * (num - 1) +
+                               1] = self.mu_w[0] * self.y[1]
 
                     # warm block 2
                     for i in range(num - 1):
-                        output[i + num - 1, i + 2 * (num - 1)] = self.mu_w[1] * self.y[0]
-                        output[i + num - 1, i + 2 * (num - 1) + 1] = self.mu_w[1] * self.y[1]
+                        output[i + num - 1, i + 2 *
+                               (num - 1)] = self.mu_w[1] * self.y[0]
+                        output[i + num - 1, i + 2 *
+                               (num - 1) + 1] = self.mu_w[1] * self.y[1]
 
                 else:
-                    self.insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
+                    self._insert_standart_B_into(
+                        output, self.y, self.mu, 2, 2, num, self.n)
 
         return output
 
-    def buildC(self, num):
+    def _buildC(self, num):
         """
-            Формирует матрицу C по заданному номеру яруса
+        Формирует матрицу C по заданному номеру яруса
         """
         if num < self.n:
             col = self.cols[num]
@@ -627,16 +631,15 @@ class Mh2h2Warm:
         if not self.is_only_first:
             if num > 0:
                 probs = calc_binom_probs(num + 1, self.y[0])
-                print(probs)
                 for i in range(len(probs)):
                     output[0, 2 + i] = self.mu_w[0] * probs[i]
                     output[1, 2 + i] = self.mu_w[1] * probs[i]
 
         return output
 
-    def buildD(self, num):
+    def _buildD(self, num):
         """
-            Формирует матрицу D по заданному номеру яруса
+        Формирует матрицу D по заданному номеру яруса
         """
         if num < self.n:
             col = self.cols[num]
@@ -674,4 +677,3 @@ class Mh2h2Warm:
             output[i, i] = sumA + sumB + sumC
 
         return output
-

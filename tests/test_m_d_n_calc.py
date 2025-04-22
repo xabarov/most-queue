@@ -1,55 +1,51 @@
+"""
+Testing the M/D/n queueing system calculation.
+For verification, we use simulation modeling 
+"""
 import numpy as np
 
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.m_d_n_calc import M_D_n
+from most_queue.theory.m_d_n_calc import MDn
+from most_queue.general_utils.tables import probs_print
 
 
 def test_mdn():
     """
-    Тестирование расчета СМО M/D/n
-    Для верификации используем имитационное моделирование (ИМ).
+    Testing the M/D/n queueing system calculation.
+    For verification, we use simulation modeling 
     """
-    l = 1.0  # интенсивность входного потока
-    ro = 0.8  # коэффициент загрузки
-    n = 2  # количество каналов обслуживания
-    num_of_jobs = 300000  # количество заявок для ИМ
+    l = 1.0  # arrivals intensity
+    ro = 0.8  # load factor
+    n = 2  # number of service channels
+    num_of_jobs = 300000  # number of jobs for simulation
 
-    b = ro * n / l  # время обслуживания из заданного ro
+    b = ro * n / l  # service time from given ro
 
-    # расчет вероятностей состояний СМО
-    mdn = M_D_n(l, b, n)
+    # calculation of the probabilities of queueing system states
+    mdn = MDn(l, b, n)
     p_ch = mdn.calc_p()
 
-    # для верификации используем ИМ.
-    # создаем экземпляр класса ИМ, передаем число каналов обслуживания
+    # for verification, we use simulation modeling
+    # create an instance of the simulation class and pass the number of service channels
     qs = QueueingSystemSimulator(n)
 
-    # задаем входной поток. Методу нужно передать параметры распределения и тип распределения.
+    # set arrivals. The method needs to be passed distribution parameters and type of distribution.
     qs.set_sources(l, "M")
 
-    # задаем каналы обслуживания. На вход параметры (в нашем случае время обслуживания)
-    # и тип распределения - D (детерминированное).
+    # set the service channels. To the method we pass parameters (in our case, service time)
+    # and type of distribution - D (deterministic).
     qs.set_servers(b, "D")
 
-    # запускаем ИМ:
+    # start the simulation. The method takes the number of jobs to simulate.
     qs.run(num_of_jobs)
 
-    # получаем список начальных моментов времени пребывания в СМО
-    v_sim = qs.v
-    # получаем распределение вероятностей состояний СМО
+    # get the distribution of queueing system states probabilities
     p_sim = qs.get_p()
-    
+
     assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
 
-    # Вывод результатов
-    print("-" * 36)
-    print("{0:^36s}".format("Вероятности состояний СМО M/D/{0:d}".format(n)))
-    print("-" * 36)
-    print("{0:^4s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 36)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.5g}|{2:^15.5g}".format(i, p_ch[i], p_sim[i]))
-    print("-" * 36)
+    # Output results
+    probs_print(p_ch, p_sim)
 
 
 if __name__ == "__main__":
