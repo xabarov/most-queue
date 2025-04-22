@@ -1,3 +1,8 @@
+"""
+Calculation of M/PH, M/n queue with two classes of requests and absolute priority
+using the Takahashi-Takagi numerical method based on the approximation 
+of the busy-time distribution by a Cox second-order distribution.
+"""
 import math
 
 import numpy as np

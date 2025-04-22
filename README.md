@@ -95,7 +95,7 @@ import numpy as np
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.rand_distribution import H2_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mg1_calc import get_p, get_v, get_w
+from most_queue.theory.mg1_calc import MG1Calculation
 
 l = 1  # input flow intensity
 b1 = 0.7  # average service time
@@ -107,9 +107,10 @@ params = H2_dist.get_params_by_mean_and_coev(b1, coev)
 b = H2_dist.calc_theory_moments(*params, 4)
 
 # calculation using numerical methods
-w_ch = get_w(l, b)
-p_ch = get_p(l, b, 100)
-v_ch = get_v(l, b)
+mg1_num = MG1Calculation(l, b)
+w_ch = mg1_num.get_w()
+p_ch = mg1_num.get_p()
+v_ch = mg1_num.get_v()
 
 # running simulation for verification of results
 qs = QueueingSystemSimulator(1)

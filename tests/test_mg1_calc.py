@@ -3,7 +3,7 @@ import numpy as np
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.rand_distribution import H2_dist, Pareto_dist, Uniform_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mg1_calc import get_p, get_v, get_w
+from most_queue.theory.mg1_calc import MG1Calculation
 
 
 def test_mg1():
@@ -21,9 +21,10 @@ def test_mg1():
     b = H2_dist.calc_theory_moments(*params, 4)
 
     # calculation using numerical methods
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100)
-    v_ch = get_v(l, b)
+    mg1_num = MG1Calculation(l, b)
+    w_ch = mg1_num.get_w()
+    p_ch = mg1_num.get_p()
+    v_ch = mg1_num.get_v()
 
     # running IM for verification of results
     qs = QueueingSystemSimulator(1)
@@ -45,9 +46,10 @@ def test_mg1():
     print("Uniform")
     params = Uniform_dist.get_params_by_mean_and_coev(b1, coev)
     b = Uniform_dist.calc_theory_moments(*params, 4)
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100, dist_type="Uniform")
-    v_ch = get_v(l, b)
+    mg1_num = MG1Calculation(l, b)
+    w_ch = mg1_num.get_w()
+    p_ch = mg1_num.get_p(dist_type='Uniform')
+    v_ch = mg1_num.get_v()
 
     qs = QueueingSystemSimulator(1)
     qs.set_servers(params, "Uniform")
@@ -65,9 +67,10 @@ def test_mg1():
 
     a, K = Pareto_dist.get_a_k_by_mean_and_coev(b1, coev)
     b = Pareto_dist.calc_theory_moments(a, K, 4)
-    w_ch = get_w(l, b)
-    p_ch = get_p(l, b, 100, dist_type="Pa")
-    v_ch = get_v(l, b)
+    mg1_num = MG1Calculation(l, b)
+    w_ch = mg1_num.get_w()
+    p_ch = mg1_num.get_p(dist_type='Pa')
+    v_ch = mg1_num.get_v()
 
     qs = QueueingSystemSimulator(1)
     qs.set_servers([a, K], "Pa")

@@ -3,7 +3,7 @@ import math
 from most_queue.rand_distribution import Gamma
 from most_queue.theory.utils.diff5dots import diff5dots
 
-from most_queue.theory.mg1_calc import get_p, get_w
+from most_queue.theory.mg1_calc import MG1Calculation
 from most_queue.theory.mgn_tt import MGnCalc
 
 
@@ -282,8 +282,9 @@ def get_w_mg1_bp(l, b):
         for k in range(num_of_classes):
             b_sr[i] += b[k][i]
         b_sr[i] /= num_of_classes
-
-    w_k = get_w(l_sum, b_sr)
+    
+    mg1_num = MG1Calculation(l_sum, b_sr)
+    w_k = mg1_num.get_w()
 
     w = []
     for k in range(num_of_classes):
@@ -474,7 +475,8 @@ def get_w_prty_invar(l, b, n, type='NP', N=150, num=3):
     for k in range(k_num):
         l_sum += l[k]
 
-    p1 = get_p(l_sum, b_sr, N)
+    mg1_num = MG1Calculation(l_sum, b_sr)
+    p1 = mg1_num.get_p(N)
     q1 = 0
     for i in range(1, N):
         q1 += (i - 1) * p1[i]

@@ -8,7 +8,8 @@ import scipy.special as sp
 
 from most_queue.general_utils.conv import get_moments, get_self_conv_moments
 from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist
-from most_queue.theory import mg1_calc, mg1_warm_calc
+from most_queue.theory import mg1_warm_calc
+from most_queue.theory.mg1_calc import MG1Calculation
 
 
 class SplitJoinCalc:
@@ -55,8 +56,8 @@ class SplitJoinCalc:
 
         # Further calculation as in a regular M/G/1 queueing system with
         # initial moments of the distribution maximum of the random variable
-
-        return mg1_calc.get_v(self.l, self.b_max)
+        mg1 = MG1Calculation(self.l, self.b_max)
+        return mg1.get_v()
 
     def get_v_delta(self, b_delta: list[float] | float) -> list[float]:
         """
