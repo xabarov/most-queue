@@ -1,3 +1,6 @@
+"""
+Test M/H2/n system with H2-warming using the Takahasi-Takagi method.
+"""
 import math
 import time
 
@@ -6,20 +9,23 @@ import numpy as np
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.rand_distribution import Gamma
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.m_h2_h2warm import Mh2h2Warm
+from most_queue.theory.m_h2_h2warm import MH2nH2Warm
 
 
 def test_m_h2_h2warm():
-    n = 5  # число каналов
-    l = 1.0  # интенсивность вх потока
-    ro = 0.7  # коэфф загрузки
-    b1 = n * 0.7  # ср время обслуживания
-    b1_warm = n * 0.1  # ср время разогрева
-    num_of_jobs = 1000000  # число обсл заявок ИМ
-    b_coevs = [1.5]  # коэфф вариации времени обсл
-    b_coev_warm = 1.2  # коэфф вариации времени разогрева
-    buff = None  # очередь - неограниченная
-    verbose = False  # не выводить пояснения при расчетах
+    """
+    Test M/H2/n system with H2-warming using the Takahasi-Takagi method.
+    """
+    n = 5  # number of channels
+    l = 1.0  # intensity of the arrivals
+    ro = 0.7  # load factor
+    b1 = n * 0.7  # average service time
+    b1_warm = n * 0.1  # average warming time
+    num_of_jobs = 1000000  # number of jobs for the simulation
+    b_coevs = [1.5]  # coefficient of variation of service time
+    b_coev_warm = 1.2  # coefficient of variation of warming time
+    buff = None  # buffer - unlimited
+    verbose = False  # do not output explanations during calculations
 
     for b_coev in b_coevs:
         b = [0.0] * 3
@@ -48,7 +54,7 @@ def test_m_h2_h2warm():
         im_time = time.process_time() - im_start
 
         tt_start = time.process_time()
-        tt = Mh2h2Warm(l, b, b_w, n, buffer=buff, verbose=verbose)
+        tt = MH2nH2Warm(l, b, b_w, n, buffer=buff, verbose=verbose)
 
         tt.run()
         p_tt = tt.get_p()
@@ -57,17 +63,18 @@ def test_m_h2_h2warm():
 
         num_of_iter = tt.num_of_iter_
 
-        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.\n"
-              "ИМ - M/Gamma/{0:^2d}\nТакахаси-Таками - M/H2/{0:^2d}"
-              "с комплексными параметрами\n"
-              "Коэффициент загрузки: {1:^1.2f}".format(n, ro))
-        print(f'Коэффициент вариации времени обслуживания {b_coev:0.3f}')
-        print(f'Коэффициент вариации времени разогрева {b_coev_warm:0.3f}')
+        print("\nComparison of results calculated by the Takacs-Takaichi method and Simulation.")
         print(
-            "Количество итераций алгоритма Такахаси-Таками: {0:^4d}".format(num_of_iter))
+            f"Simulation - M/Gamma/{n:^2d}\nTakacs-Takaichi - M/H2/{n:^2d} with complex parameters")
+        print(f"Load factor: {ro:^1.2f}")
+        print(f'Coefficient of variation of service time {b_coev:0.3f}')
+        print(f'Coefficient of variation of warming time {b_coev_warm:0.3f}')
         print(
-            "Время работы алгоритма Такахаси-Таками: {0:^5.3f} c".format(tt_time))
-        print("Время ИМ: {0:^5.3f} c".format(im_time))
+            f"Number of iterations of the Takacs-Takaichi algorithm: {num_of_iter:^4d}")
+        print(
+            f"Time taken by the Takacs-Takaichi algorithm: {tt_time:^5.3f} s")
+        print(f"Simulation time: {im_time:^5.3f} s")
+
         probs_print(p, p_tt, 10)
         times_print(v_sim, v_tt, False)
 

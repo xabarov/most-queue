@@ -10,10 +10,12 @@ from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2_dist
 from most_queue.theory.utils.binom_probs import calc_binom_probs
-from most_queue.theory.utils.transforms import laplace_stieltjes_exp_transform as lst_exp
+from most_queue.theory.utils.transforms import (
+    laplace_stieltjes_exp_transform as lst_exp,
+)
 
 
-class Mh2h2Warm:
+class MH2nH2Warm:
     """
     Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
     Use complex parameters, which allow to approximate the service time 
@@ -134,8 +136,8 @@ class Mh2h2Warm:
         """
         Get the probabilities of states of the queueing system.
         """
-        for i in range(len(self.p)):
-            self.p[i] = self.p[i].real
+        self.p = [prob.real for prob in self.p]
+
         return self.p
 
     def get_w(self):
