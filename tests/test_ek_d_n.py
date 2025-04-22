@@ -1,17 +1,22 @@
-import numpy as np
+"""
+Testing the numerical calculation of the multichannel Ek/D/n system
+with deterministic service
 
+For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
+For verification, we use simulation modeling (sim).
+"""
 from most_queue.general_utils.tables import probs_print
 from most_queue.rand_distribution import Erlang_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.ek_d_n_calc import Ek_D_n
+from most_queue.theory.ek_d_n_calc import EkDn
 
 
-def test_EkDn():
+def test_ek_d_n():
     """
     Testing the numerical calculation of the multichannel Ek/D/n system
     with deterministic service
 
-    For calling - use the Ek_D_n class of the most_queue.theory.ek_d_n_calc package
+    For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
     For verification, we use simulation modeling (sim).
     """
 
@@ -19,7 +24,7 @@ def test_EkDn():
     num_of_jobs = 300000  # for sim
     channels_num = 2
 
-    # When creating an instance of the Ek_D_n class, you need to pass 4 parameters:
+    # When creating an instance of the EkDn class, you need to pass 4 parameters:
     # - l , k - Erlang distribution parameters of the input stream
     # - b - service time (deterministic)
     # - n - number of service channels
@@ -39,7 +44,7 @@ def test_EkDn():
     b = a1 * channels_num * ro
 
     # create an instance of the class for numerical calculation
-    ekdn = Ek_D_n(l, k, b, channels_num)
+    ekdn = EkDn(l, k, b, channels_num)
 
     # start calculating the probabilities of the QS states
     p_ch = ekdn.calc_p()
@@ -70,4 +75,4 @@ def test_EkDn():
 
 
 if __name__ == "__main__":
-    test_EkDn()
+    test_ek_d_n()

@@ -2,8 +2,9 @@ import numpy as np
 
 from most_queue.rand_distribution import Gamma, Pareto_dist
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.gi_m_1_calc import GI_M_1
+from most_queue.theory.gi_m_1_calc import GiM1
 from most_queue.general_utils.tables import times_print, probs_print
+
 
 def test_gi_m_1():
     """
@@ -23,7 +24,7 @@ def test_gi_m_1():
     a = Gamma.calc_theory_moments(v, alpha)
 
     # calculation of initial moments of time spent and waiting in the queueing system
-    gm1_calc = GI_M_1(a, mu)
+    gm1_calc = GiM1(a, mu)
     v_ch = gm1_calc.get_v()
     w_ch = gm1_calc.get_w()
 
@@ -61,8 +62,8 @@ def test_gi_m_1():
 
     alpha, K = Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
     a = Pareto_dist.calc_theory_moments(alpha, K)
-    
-    gm1_calc = GI_M_1(a, mu, approx_distr="Pa")
+
+    gm1_calc = GiM1(a, mu, approx_distr="Pa")
     v_ch = gm1_calc.get_v()
     w_ch = gm1_calc.get_w()
 
@@ -76,7 +77,7 @@ def test_gi_m_1():
     v_sim = qs.v
     w_sim = qs.w
     p_sim = qs.get_p()
-    
+
     assert np.allclose(np.array(v_sim), np.array(v_ch), rtol=30e-1)
     assert np.allclose(np.array(w_sim), np.array(w_ch), rtol=30e-1)
     assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), rtol=1e-1)

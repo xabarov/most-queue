@@ -8,7 +8,7 @@ import math
 import numpy as np
 
 
-class Ek_D_n:
+class EkDn:
     """
     Numerical calculation of a multi-channel system Ek/D/n
     with deterministic service

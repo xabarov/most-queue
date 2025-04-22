@@ -8,7 +8,7 @@ from most_queue.rand_distribution import Gamma, Pareto_dist
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 
 
-class GI_M_1:
+class GiM1:
     """
     Calculation of the GI/M/1 queueing system 
     """
@@ -17,7 +17,7 @@ class GI_M_1:
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
         mu - service intensity
-        approx_distr - distribution approximation method ("Gamma", "Pareto")
+        approx_distr - distribution approximation method, "Gamma" or "Pa" (Pareto)
         """
         self.a = a
         self.mu = mu

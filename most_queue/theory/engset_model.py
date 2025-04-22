@@ -21,6 +21,9 @@ class Engset:
         self.ro = lam / mu
         self.m = m
         self._calc_m_i()
+        
+        self.p = None
+        self.p0 = None
 
     def get_p(self) -> list[float]:
         """
@@ -36,17 +39,22 @@ class Engset:
         for i in range(1, self.m + 1):
             ps.append(ps[0] * self.m_i[i] * pow(self.ro, i))
 
+        self.p = ps
+        self.p0 = ps[0]
         return ps
 
     def get_N(self)->float:
         """
         Get average number of jobs in the system
         """
-        p0 = self.get_p()[0]
+        
+        if self.p is None:
+            self.get_p()
+            
         N = 0
         for i, mm in enumerate(self.m_i):
             N += i * mm * pow(self.ro, i)
-        N *= p0
+        N *= self.p0
 
         return N
 
@@ -54,16 +62,20 @@ class Engset:
         """
         Get average number of jobs in the queue
         """
-        p0 = self.get_p()[0]
-        return self.get_N() - (1.0 - p0)
+        if self.p is None:
+            self.get_p()
+
+        return self.get_N() - (1.0 - self.p0)
 
     def get_kg(self):
         """
         Get probability that a randomly chosen source can send a request,
         i.e. the readiness coefficient
         """
-        p0 = self.get_p()[0]
-        return self.mu * (1.0 - p0) / (self.lam * self.m)
+        if self.p is None:
+            self.get_p()
+
+        return self.mu * (1.0 - self.p0) / (self.lam * self.m)
         
 
     def get_w1(self):
@@ -82,12 +94,16 @@ class Engset:
         """
         Get waiting time initial moments through the diff Laplace-Stieltjes transform
         """
+        
+        if self.p is None:
+            self.get_p()
+            
         h = 0.01
         ss = [x * h for x in range(5)]
-        p0 = self.get_p()[0]
+        
         N = self.get_N()
 
-        ws_dots = [self._ws(s, p0, N) for s in ss]
+        ws_dots = [self._ws(s, self.p0, N) for s in ss]
         w_diff = diff5dots(ws_dots, h)
 
         return [-w_diff[0], w_diff[1], -w_diff[2]]

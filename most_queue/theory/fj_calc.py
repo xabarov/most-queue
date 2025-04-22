@@ -94,8 +94,6 @@ class SplitJoinCalc:
         """
 
         b = self.b
-        ro_max = b[0] * 0.8
-
         num = len(b)
 
         f = [0] * num
