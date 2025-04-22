@@ -1,17 +1,28 @@
+"""
+Test for M/M/1 queue with exponential impatience.
+"""
 from most_queue.sim.impatient_queue_sim import ImpatientQueueSim
-from most_queue.theory import impatience_calc
+from most_queue.theory.impatience_calc import MM1Impatience
+from most_queue.general_utils.tables import times_print, probs_print
 
 
 def test_impatience():
-    n = 1
-    l = 1.0
-    ro = 0.8
-    n_jobs = 300000
-    mu = l / (ro * n)
-    gamma = 0.2
+    """
+    Test for M/M/1 queue with exponential impatience.
+    """
+    n = 1  # number of servers
+    l = 1.0  # arrival rate
+    ro = 0.8  # load factor
+    n_jobs = 300000  # number of jobs to simulate
+    mu = l / (ro * n)  # service rate
+    gamma = 0.2  # impatience rate
 
-    v1 = impatience_calc.get_v1(l, mu, gamma)
+    # Calculate theoretical results
+    imp_calc = MM1Impatience(l, mu, gamma)
+    v1 = imp_calc.get_v1()
+    probs = imp_calc.probs
 
+    # Simulate the queue
     qs = ImpatientQueueSim(n)
 
     qs.set_sources(l, 'M')
@@ -21,12 +32,12 @@ def test_impatience():
     qs.run(n_jobs)
 
     v1_im = qs.v[0]
+    probs_sim = qs.get_p()
 
-    print("\nЗначения среднего времени пребывания заявок в системе:\n")
+    # Print results
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ момента", "Числ", "ИМ"))
-    print("-" * 45)
-    print("{0:^16d}|{1:^15.5g}|{2:^15.5g}".format(1, v1, v1_im))
+    times_print(v1_im, v1, is_w=False)
+    probs_print(probs_sim, probs)
 
     assert abs(v1 - v1_im) < 1e-2
 
