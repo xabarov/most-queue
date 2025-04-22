@@ -122,7 +122,6 @@ class passage_time_calc:
                 self.Lr[i].append(np.dot(left_mrx[r], self.L[i]))
 
     def G_tilda_calc(self):
-
         """
         Вычисление матрицы G = G_l_tilda
         """
@@ -146,7 +145,7 @@ class passage_time_calc:
             n_iter += 1
 
         if self.is_verbose:
-            print("Количество итераций вычисления матрицы G_l_tilda = {0:d}".format(n_iter))
+            print(f"Number of iterations to calculate the matrix  G_l_tilda = {n_iter}")
 
     def norm_mrx(self, mrx, is_max=True):
         rows = mrx.shape[0]

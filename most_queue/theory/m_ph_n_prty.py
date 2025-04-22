@@ -6,31 +6,35 @@ from most_queue.theory.utils.passage_time import passage_time_calc
 from most_queue.rand_distribution import Cox_dist, H2_dist
 
 
-class m_ph_n_prty:
+class MPhNPrty:
     """
-    Расчет СМО M/PH, M/n с 2-мя классами заявок, абсолютным приоритетом
-    численным методом Такахаси-Таками на основе аппроксимации ПНЗ распределением Кокса второго порядка
+    Calculation of M/PH, M/n queue with two classes of requests and absolute priority
+    using the Takahashi-Takagi numerical method based on the approximation 
+    of the busy-time distribution by a Cox second-order distribution.
     """
 
     def __init__(self, mu_L, mu1_H, mu2_H, p_H, l_L, l_H, n, N=250,
-                 accuracy=1e-8, max_iter=300, is_cox=True, approx_ee=0.1, approx_e=0.5, is_fitting=True,
+                 accuracy=1e-8, max_iter=300, is_cox=True,
+                 approx_ee=0.1, approx_e=0.5, is_fitting=True,
                  verbose=True):
-
         """
-        Численный расчет СМО M/Ph/n с абсолютным приоритетом на основе аппроксимации периодов непрерывной занятости
-        l_L, l_H: интенсивности вх. потока заявок с низким и высоким приоритетами
-        mu_L: интенсивность обслуживания заявок с низким приоритетом,
-        mu1_H, mu2_H, p_H: параметры Cox2 (H2) - распределения для заявок высокого класса
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
-        is_cox:
-            True -  для аппроксимации времени обслуживания заявок первого класса используется
-                    распределение Кокса 2-го порядка,
-            False - гиперэкспоненциальное распределение 2-го порядка H2
+        Calculation of M/PH, M/n queue with two classes of requests and absolute priority
+        based on the Takahashi-Takagi numerical method based on the approximation of the busy-time distribution 
+        by a Cox second-order distribution.
+        :param l_L: intensity of the arrivals with low priority,
+        :param l_H: intensity of the arrivals with high priority,
+        :param mu_L: intensity of service for low-priority requests,
+        :param mu1_H, mu2_H, p_H: params of Cox2 (H2) approximation of service time for high priority jobs
+        :param N: number of levels (stages)
+        :param accuracy: accuracy parameter for stopping the iteration
+        :param max_iter: maximum number of iterations
+        :param is_cox: if True, use Cox2 distribution for approximating service time of low-priority jobs, otherwise use H2 distribution.
+        :param approx_ee, approx_e: approximation paramters 
         """
         # self.dt = np.dtype("f8")
         self.dt = np.dtype("c16")
-        self.n = n  # количество каналов
+        self.n = n  # number of channels
+
         self.N = N
         self.e1 = accuracy
         self.l_L = l_L
@@ -46,35 +50,38 @@ class m_ph_n_prty:
         self.approx_e = approx_e
         self.is_fitting = is_fitting
 
-        self.busy_periods = []  # список из наборов начальных моментров ПНЗ B1, B2, ...
-        self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
+        self.busy_periods = []  # list of busy periods initial moments
+        self.busy_periods_coevs = []  # list of busy periods coefficients of variation
         self.alphas = []
-        self.pp = []  # список из вероятностей переходов в ПНЗ
+        self.pp = []  # list of transition probabilities to the busy periods states
 
-        self.calc_busy_periods()
+        self._calc_busy_periods()
 
-        # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
 
-        # переменные
+        # Takahasi-Takagi method parameters
+
         self.t = []
         self.b1 = []
         self.b2 = []
         self.x = [0.0 + 0.0j] * N
         self.z = [0.0 + 0.0j] * N
 
-        # искомые вреоятности состояний СМО
+        # Probabilities of system states
         self.p = [0.0 + 0.0j] * N
 
-        # матрицы переходов
+        self.run_iterations_num_ = 0
+        self.p_iteration_num_ = 0
+
+        # Transition matrices
         self.A = []
         self.B = []
         self.C = []
         self.D = []
         self.Y = []
 
-        # cols зависит от числа каналов. cols = количество всех микросостояний переходов для Cox2 до яруса
-        # с номером N-1 + число ПНЗ * 2. Число ПНЗ = n**2
+        # Cols depends on number of channels. cols = number of all microstates transitions
+        # from Cox2 to level
         self.cols_length_ = 2 * self.n ** 2
         for i in range(self.n):
             self.cols_length_ += i + 1
@@ -85,13 +92,112 @@ class m_ph_n_prty:
             self.b2.append(np.zeros((1, self.cols_length_), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols_length_), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
+        self._build_matrices()
+        self._initial_probabilities()
 
-    def build_A_for_busy_periods(self, num):
+    def get_p(self) -> list[float]:
         """
-            Формирует матрицу А(L) для расчета ПНЗ по заданному номеру яруса
-            num - номер яруса
+        Get probabilities of states.
+        Returns:
+            list: Probabilities of states.
+        """
+        return [prob.real for prob in self.p]
+
+    def get_low_class_v1(self) -> float:
+        """
+        Get average time spent by class L (with low priority) in the system.
+        Returns:
+            float: Average time spent by class L (with low priority) in the system.
+        """
+        l1 = 0
+        p_real = self.get_p()
+        for i in range(self.N):
+            l1 += p_real[i] * i
+        return l1 / self.l_L
+
+    def run(self):
+        """
+        Run calculation. The calculation algorithm does not depend on the structure of matrices.
+        """
+        self.b1[0][0, 0] = 0.0 + 0.0j
+        self.b2[0][0, 0] = 0.0 + 0.0j
+
+        is_ave = False
+
+        iter = 0
+        self.run_iterations_num_ = 0
+        if is_ave:
+            x_ave1 = 0.0 + 0.0j
+            x_ave2 = 0.0 + 0.0j
+            for i in range(self.N):
+                x_ave1 += self.x[i]
+            x_ave1 /= self.N
+        else:
+
+            x_ave1 = 0.0
+            x_ave2 = 0.0
+            for i in range(self.N):
+                if self.x[i].real > x_ave1:
+                    x_ave1 = self.x[i].real
+
+        while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter < self.max_iter:
+            if self.verbose:
+                print("Start numeric iteration {0:d}".format(iter))
+            iter += 1
+            x_ave2 = x_ave1
+            for j in range(1, self.N):  # по всем ярусам, кроме первого.
+
+                G = np.linalg.inv(self.D[j] - self.C[j])
+                # b':
+                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
+
+                # b":
+                if j != (self.N - 1):
+                    self.b2[j] = np.dot(
+                        self.t[j + 1], np.dot(self.B[j + 1], G))
+                else:
+                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
+
+                c = self._calculate_c(j)
+
+                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+                self.x[j] = 0.0 + 0.0j
+                for k in range(x_znam.shape[1]):
+                    self.x[j] += x_znam[0, k]
+
+                self.x[j] = 1.0 / self.x[j]
+
+                self.z[j] = np.dot(c, self.x[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                    np.dot(self.x[j], self.b2[j])
+
+            self.x[0] = 1.0 / self.z[1]
+
+            t1B1 = np.dot(self.t[1], self.B[1])
+            self.t[0] = np.dot(self.x[0], t1B1)
+            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
+
+            if is_ave:
+                x_ave1 = 0.0 + 0.0j
+                for i in range(self.N):
+                    x_ave1 += self.x[i]
+                x_ave1 /= self.N
+
+            else:
+                x_ave1 = 0.0
+                for i in range(self.N):
+                    if self.x[i].real > x_ave1:
+                        x_ave1 = self.x[i].real
+
+        self.run_iterations_num_ = iter
+        self._calculate_p()
+        self._calculate_y()
+
+    def _build_A_for_busy_periods(self, num):
+        """
+        Forms the matrix A at level num for calculating the Busy Period at a given level number.
+        :param num: level number
+        :return: matrix A(num)
         """
         if num < self.n:
             col = num + 2
@@ -109,10 +215,11 @@ class m_ph_n_prty:
             output[i, i] = self.l_H
         return output
 
-    def build_B_for_busy_periods(self, num):
+    def _build_B_for_busy_periods(self, num):
         """
-            Формирует матрицу B(num) для расчета ПНЗ  по заданному номеру яруса
-            num - номер яруса
+        Forms the matrix B at level num for calculating the Busy Period at a given level number.
+        :param num: level number
+        :return: matrix B(num)
         """
         if num == 0:
             output = np.zeros((1, 1), dtype=self.dt)
@@ -141,10 +248,11 @@ class m_ph_n_prty:
             output[i + 1, i] = (i + 1) * mu2
         return output
 
-    def build_C_for_busy_periods(self, num):
+    def _build_C_for_busy_periods(self, num):
         """
-            Формирует матрицу C(num) для расчета ПНЗ по заданному номеру яруса
-            num - номер яруса
+        Forms the matrix C at level num for calculating the Busy Period at a given level number.
+        :param num: level number
+        :return: matrix C(num)
         """
         if num == 0:
             output = np.zeros((1, 1), dtype=self.dt)
@@ -165,9 +273,11 @@ class m_ph_n_prty:
             output[i, i + 1] = (num - i) * mu1 * pH
         return output
 
-    def build_D_for_busy_periods(self, num):
+    def _build_D_for_busy_periods(self, num):
         """
-            Формирует матрицу D для ПНЗ по заданному номеру яруса num
+        Forms the matrix D at level num for calculating the Busy Period at a given level number.
+        :param num: level number
+        :return: matrix D(num)
         """
         if num <= self.n:
             col = num + 1
@@ -197,7 +307,10 @@ class m_ph_n_prty:
 
         return output
 
-    def calc_busy_periods(self):
+    def _calc_busy_periods(self):
+        """
+        Calculate the busy periods for all levels.
+        """
 
         self.A_for_busy = []
         self.B_for_busy = []
@@ -205,13 +318,13 @@ class m_ph_n_prty:
         self.D_for_busy = []
 
         for i in range(self.n + 2):
-            self.A_for_busy.append(self.build_A_for_busy_periods(i))
-            self.B_for_busy.append(self.build_B_for_busy_periods(i))
-            self.C_for_busy.append(self.build_C_for_busy_periods(i))
-            self.D_for_busy.append(self.build_D_for_busy_periods(i))
+            self.A_for_busy.append(self._build_A_for_busy_periods(i))
+            self.B_for_busy.append(self._build_B_for_busy_periods(i))
+            self.C_for_busy.append(self._build_C_for_busy_periods(i))
+            self.D_for_busy.append(self._build_D_for_busy_periods(i))
 
         pass_time = passage_time_calc(self.A_for_busy, self.B_for_busy,
-                                                   self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=True)
+                                      self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=self.verbose)
         pass_time.calc()
 
         self.pnz_num_ = self.n ** 2
@@ -236,17 +349,21 @@ class m_ph_n_prty:
                 self.busy_periods_coevs.append(math.inf)
 
         if self.verbose:
-            print("\nПериоды НЗ:\n")
+            print("\nBusy periods:\n")
             for j in range(self.pnz_num_):
                 for r in range(3):
                     if math.isclose(self.busy_periods[j][r].imag, 0):
-                        print("{0:^8.3g}".format(self.busy_periods[j][r].real), end=" ")
+                        print("{0:^8.3g}".format(
+                            self.busy_periods[j][r].real), end=" ")
                     else:
-                        print("{0:^8.3g}".format(self.busy_periods[j][r]), end=" ")
+                        print("{0:^8.3g}".format(
+                            self.busy_periods[j][r]), end=" ")
                 if math.isclose(self.busy_periods_coevs[j].imag, 0):
-                    print("coev = {0:^4.3g}".format(self.busy_periods_coevs[j].real))
+                    print("coev = {0:^4.3g}".format(
+                        self.busy_periods_coevs[j].real))
                 else:
-                    print("coev = {0:^4.3g}".format(self.busy_periods_coevs[j]))
+                    print("coev = {0:^4.3g}".format(
+                        self.busy_periods_coevs[j]))
 
         # pp - список из n**2 вероятностей переходов
         for j in range(self.pnz_num_):
@@ -256,36 +373,16 @@ class m_ph_n_prty:
                     self.pp.append(pass_time.G[self.n][i, j])
                     num = num + 1
         if self.verbose:
-            print("\nВероятности переходов в ПНЗ:\n")
+            print("\nTransition probabilities of busy periods:\n")
             for j in range(self.pnz_num_):
                 if math.isclose(self.pp[j].imag, 0):
                     print("{0:^8.3g}".format(self.pp[j].real), end=" ")
                 else:
                     print("{0:^8.3g}".format(self.pp[j]), end=" ")
 
-    def get_p(self):
+    def _initial_probabilities(self):
         """
-        Возвращает список с вероятностями состояний системы
-        p[k] - вероятность пребывания в системе ровно k заявок класса L
-        """
-        p_real = [0.0] * self.N
-        for i in range(len(self.p)):
-            p_real[i] = self.p[i].real
-        return p_real
-
-    def get_low_class_v1(self):
-        """
-        Возвращает среднее время пребывания для класса L
-        """
-        l1 = 0
-        p_real = self.get_p()
-        for i in range(self.N):
-            l1 += p_real[i] * i
-        return l1 / self.l_L
-
-    def initial_probabilities(self):
-        """
-        Задаем первоначальные значения вероятностей микросостояний
+        Set initial values of microstate probabilities.
         """
         # t задаем равновероятными
         for i in range(self.N):
@@ -293,9 +390,9 @@ class m_ph_n_prty:
                 self.t[i][0, j] = 1.0 / self.cols_length_
         self.x[0] = 0.4
 
-    def calculate_p(self):
+    def _calculate_p(self):
         """
-        После окончания итераций находим значения вероятностей p по найденным х
+        After the iterations are completed, we find the values of probabilities p by the found x.
         """
         # version 1
         p_sum = 0 + 0j
@@ -317,103 +414,23 @@ class m_ph_n_prty:
                 p0_min = p0_
         self.p_iteration_num_ = iter
 
-    def calculate_y(self):
+    def _calculate_y(self):
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
-        Формирует матрицы переходов
+        Builds matrices A, B, C and D for the system.
         """
         for i in range(self.N):
-            self.A.append(self.buildA(i))
-            self.B.append(self.buildB(i))
-            self.C.append(self.buildC(i))
-            self.D.append(self.buildD(i))
+            self.A.append(self._buildA(i))
+            self.B.append(self._buildB(i))
+            self.C.append(self._buildC(i))
+            self.D.append(self._buildD(i))
 
-    def run(self):
+    def _calculate_c(self, j):
         """
-        Запускает расчет. Алгоритм расчета не зависит от структуры матриц
-        """
-        self.b1[0][0, 0] = 0.0 + 0.0j
-        self.b2[0][0, 0] = 0.0 + 0.0j
-        
-        is_ave = False
-
-
-
-        iter = 0
-        self.run_iterations_num_ = 0
-        if is_ave:
-            x_ave1 = 0.0 + 0.0j
-            x_ave2 = 0.0 + 0.0j
-            for i in range(self.N):
-                x_ave1 += self.x[i]
-            x_ave1 /= self.N
-        else:
-
-            x_ave1 = 0.0
-            x_ave2 = 0.0
-            for i in range(self.N):
-                if self.x[i].real > x_ave1 :
-                    x_ave1 = self.x[i].real
-
-        while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter < self.max_iter:
-            if self.verbose:
-                print("Start numeric iteration {0:d}".format(iter))
-            iter += 1
-            x_ave2 = x_ave1
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                G = np.linalg.inv(self.D[j] - self.C[j])
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
-
-                c = self.calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                self.x[j] = 0.0 + 0.0j
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                self.x[j] = 1.0 / self.x[j]
-
-                self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            self.x[0] = 1.0 / self.z[1]
-
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
-
-
-
-            if is_ave:
-                x_ave1 = 0.0 + 0.0j
-                for i in range(self.N):
-                    x_ave1 += self.x[i]
-                x_ave1 /= self.N
-
-            else:
-                x_ave1 = 0.0
-                for i in range(self.N):
-                    if self.x[i].real > x_ave1:
-                        x_ave1 = self.x[i].real
-
-        self.run_iterations_num_ = iter
-        self.calculate_p()
-        self.calculate_y()
-
-    def calculate_c(self, j):
-        """
-        Вычисляет значение переменной с, участвующей в расчете
+        Calculates the value of variable c, participating in the calculation
         """
         chisl = 0.0 + 0.0j
         znam = 0.0 + 0.0j
@@ -433,9 +450,11 @@ class m_ph_n_prty:
 
         return chisl / (znam - znam2)
 
-    def buildA(self, num):
+    def _buildA(self, num: int):
         """
-        Формирует матрицу А(L) по заданному номеру яруса num
+        Forms the matrix A(L) at a given level number
+        :param: num - level number
+        return: matrix A(L) at level number 'num'
         """
         col = self.cols_length_
         row = self.cols_length_
@@ -448,9 +467,11 @@ class m_ph_n_prty:
             output[i, i] = self.l_L
         return output
 
-    def buildB(self, num):
+    def _buildB(self, num):
         """
-            Формирует матрицу B по заданному номеру яруса
+        Forms the matrix B(L) at a given level number
+        :param: num - level number
+        return: matrix B(L) at level number 'num'
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -472,9 +493,11 @@ class m_ph_n_prty:
 
         return output
 
-    def buildC(self, num):
+    def _buildC(self, num):
         """
-            Формирует матрицу C по заданному номеру яруса
+        Forms the matrix C(L) at a given level number
+        :param: num - level number
+        return: matrix C(L) at level number 'num'
         """
         col = self.cols_length_
         row = col
@@ -493,21 +516,23 @@ class m_ph_n_prty:
 
         for i in range(self.pnz_num_):
             if not self.is_cox:
-                h2_param = H2_dist.get_params_clx(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
+                h2_param = H2_dist.get_params_clx(
+                    self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
                 # h2_param = H2_dist.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param[0])
                 m1_mass.append(h2_param[1])
                 m2_mass.append(h2_param[2])
                 if self.verbose:
-                    print("Параметры для B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
+                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
                                                                                     h2_param[2]))
             else:
-                cox_params = Cox_dist.get_params(self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting)
+                cox_params = Cox_dist.get_params(
+                    self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
                 y1_mass.append(cox_params[0])
                 m1_mass.append(cox_params[1])
                 m2_mass.append(cox_params[2])
                 if self.verbose:
-                    print("Параметры для B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params[0], cox_params[1],
+                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params[0], cox_params[1],
                                                                                     cox_params[2]))
 
         # first quad
@@ -550,8 +575,10 @@ class m_ph_n_prty:
         for i in range(self.n):
             for j in range(self.n):
                 if not self.is_cox:
-                    output[l_start + i, l_end] = lh * y1_mass[num] * self.pp[num]
-                    output[l_start + i, l_end + 1] = lh * (1 - y1_mass[num]) * self.pp[num]
+                    output[l_start + i, l_end] = lh * \
+                        y1_mass[num] * self.pp[num]
+                    output[l_start + i, l_end + 1] = lh * \
+                        (1 - y1_mass[num]) * self.pp[num]
                 else:
                     output[l_start + i, l_end] = lh * self.pp[num]
                     output[l_start + i, l_end + 1] = 0
@@ -596,30 +623,11 @@ class m_ph_n_prty:
                     col += 2
         return output
 
-    def print_mrx(self, mrx, is_short=False):
-        row = mrx.shape[0]
-        col = mrx.shape[1]
-
-        for i in range(row):
-            for j in range(col):
-                if math.isclose(mrx[i, j].real, 0.0):
-                    if is_short:
-                        print("{0:^3s} | ".format(""), end="")
-                    else:
-                        print("{0:^5s} | ".format(""), end="")
-                else:
-                    if is_short:
-                        print("{0:^3.1f} | ".format(mrx[i, j].real), end="")
-                    else:
-                        print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
-            if is_short:
-                print("\n" + "------" * col)
-            else:
-                print("\n" + "--------" * col)
-
-    def buildD(self, num):
+    def _buildD(self, num):
         """
-            Формирует матрицу D по заданному номеру яруса
+        Forms the matrix D(L) at a given level number
+        :param: num - level number
+        return: matrix D(L) at level number 'num'
         """
         col = self.cols_length_
         row = col
@@ -648,3 +656,26 @@ class m_ph_n_prty:
 
         return output
 
+    def print_mrx(self, mrx, is_short=False):
+        """
+        Print matrix mrx
+        """
+        row = mrx.shape[0]
+        col = mrx.shape[1]
+
+        for i in range(row):
+            for j in range(col):
+                if math.isclose(mrx[i, j].real, 0.0):
+                    if is_short:
+                        print("{0:^3s} | ".format(""), end="")
+                    else:
+                        print("{0:^5s} | ".format(""), end="")
+                else:
+                    if is_short:
+                        print("{0:^3.1f} | ".format(mrx[i, j].real), end="")
+                    else:
+                        print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
+            if is_short:
+                print("\n" + "------" * col)
+            else:
+                print("\n" + "--------" * col)
