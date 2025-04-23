@@ -35,7 +35,7 @@ def test_ek_d_n():
 
     a1 = 1  # average time between requests in the input stream
     coev_a = 0.56  # coefficient of variation of input flow
-    k, l = ErlangDistribution.get_params_by_mean_and_coev(a1, coev_a)
+    erl_params = ErlangDistribution.get_params_by_mean_and_coev(a1, coev_a)
 
     # service time will be determined based on the specified utilization factor
     # In your case, the parameters l, k, b and n can be specified directly.
@@ -44,7 +44,7 @@ def test_ek_d_n():
     b = a1 * channels_num * ro
 
     # create an instance of the class for numerical calculation
-    ekdn = EkDn(l, k, b, channels_num)
+    ekdn = EkDn(erl_params, b, channels_num)
 
     # start calculating the probabilities of the QS states
     p_ch = ekdn.calc_p()
@@ -54,7 +54,7 @@ def test_ek_d_n():
     qs = QueueingSystemSimulator(channels_num)
 
     # we set the input stream. The method needs to be passed the distribution parameters as a list and the distribution type. E - Erlang
-    qs.set_sources([k, l], "E")
+    qs.set_sources(erl_params, "E")
     # we set the service channels. The input is the service time and the distribution type - D.
     qs.set_servers(b, "D")
 

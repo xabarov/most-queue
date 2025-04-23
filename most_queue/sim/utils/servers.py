@@ -10,6 +10,8 @@ from most_queue.rand_distribution import (
     GammaDistribution,
     H2Distribution,
     ParetoDistribution,
+    NormalDistribution,
+    ErlangDistribution
 )
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.phase import QsPhase
@@ -117,10 +119,18 @@ class ServerWarmUp(Server):
                     b = CoxDistribution.calc_theory_moments(self.dist.params)
                 elif self.dist.type == 'Pa':
                     b = ParetoDistribution.calc_theory_moments(
-                        *self.dist.params)
+                        self.dist.params)
+                elif self.dist.type == 'E':
+                    b = ErlangDistribution.calc_theory_moments(
+                        self.dist.params)
                 elif self.dist.type == 'Gamma':
                     b = GammaDistribution.calc_theory_moments(
                         self.dist.params)
+                elif self.dist.type == 'Normal':
+                    b = NormalDistribution.calc_theory_moments(
+                        self.dist.params)
+                else:
+                    raise ValueError("Unknown distribution type")
 
                 f_summ = get_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)

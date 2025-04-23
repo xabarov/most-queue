@@ -168,7 +168,7 @@ def test_sj_sim():
     coev = 0.8
     b1 = 0.5
     params = ErlangDistribution.get_params_by_mean_and_coev(b1, coev)
-    b = ErlangDistribution.calc_theory_moments(*params, 4)
+    b = ErlangDistribution.calc_theory_moments(params, 4)
 
     qs = ForkJoinSim(n, n, True)
     qs.set_sources(l, 'M')

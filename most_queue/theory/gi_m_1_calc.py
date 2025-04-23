@@ -105,7 +105,8 @@ class GiM1:
                 for i, q in enumerate(gamma_params.g):
                     summ += (q / pow(self.mu * (1.0 - w_old) + gamma_params.mu, i)) * (
                         GammaDistribution.get_gamma(gamma_params.alpha + i) / GammaDistribution.get_gamma(gamma_params.alpha))
-                left = pow(gamma_params.mu / (self.mu * (1.0 - w_old) + gamma_params.mu), gamma_params.alpha)
+                left = pow(gamma_params.mu / (self.mu *
+                           (1.0 - w_old) + gamma_params.mu), gamma_params.alpha)
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
                     break
@@ -113,7 +114,9 @@ class GiM1:
             return w_new
 
         elif self.approx_distr == "Pa":
-            alpha, K = ParetoDistribution.get_a_k(self.a)
+            pa_params = ParetoDistribution.get_params(self.a)
+            alpha, K = pa_params.alpha, pa_params.K
+
             while True:
                 left = alpha * pow(K * self.mu * (1.0 - w_old), alpha)
                 w_new = left * \

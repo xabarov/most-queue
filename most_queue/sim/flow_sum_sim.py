@@ -139,9 +139,9 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        a_K = ParetoDistribution.get_a_k(a1)
+        a_K = ParetoDistribution.get_params(a1)
         arr1 = ParetoDistribution(a_K)
-        b_M = ParetoDistribution.get_a_k(a2)
+        b_M = ParetoDistribution.get_params(a2)
         arr2 = ParetoDistribution(b_M)
         arrivals = []
         time1 = arr1.generate()

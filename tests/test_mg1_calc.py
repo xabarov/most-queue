@@ -50,7 +50,7 @@ def test_mg1():
     # The same for other distributions of service time
     print("Uniform")
     params = UniformDistribution.get_params_by_mean_and_coev(b1, coev)
-    b = UniformDistribution.calc_theory_moments(*params, 4)
+    b = UniformDistribution.calc_theory_moments(params, 4)
     mg1_num = MG1Calculation(l, b)
     w_ch = mg1_num.get_w()
     p_ch = mg1_num.get_p(dist_type='Uniform')
@@ -70,15 +70,16 @@ def test_mg1():
 
     print("Pareto")
 
-    a, K = ParetoDistribution.get_a_k_by_mean_and_coev(b1, coev)
-    b = ParetoDistribution.calc_theory_moments(a, K, 4)
+    pareto_params = ParetoDistribution.get_params_by_mean_and_coev(b1, coev)
+    print(pareto_params)
+    b = ParetoDistribution.calc_theory_moments(pareto_params, 4)
     mg1_num = MG1Calculation(l, b)
     w_ch = mg1_num.get_w()
     p_ch = mg1_num.get_p(dist_type='Pa')
     v_ch = mg1_num.get_v()
 
     qs = QueueingSystemSimulator(1)
-    qs.set_servers([a, K], "Pa")
+    qs.set_servers(pareto_params, "Pa")
     qs.set_sources(l, "M")
     qs.run(num_of_jobs)
     w_sim = qs.w

@@ -130,7 +130,9 @@ class GiMn:
             return b0
 
         elif self.approx_distr == "Pa":
-            alpha, K = ParetoDistribution.get_a_k(self.a)
+            pa_params = ParetoDistribution.get_params(self.a)
+            alpha, K = pa_params.alpha, pa_params.K
+
             left = alpha * pow(K * self.mu * j, alpha)
             b0 = left * \
                 GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
@@ -169,7 +171,9 @@ class GiMn:
             return w_new
 
         elif self.approx_distr == "Pa":
-            alpha, K = ParetoDistribution.get_a_k(self.a)
+            pa_params = ParetoDistribution.get_params(self.a)
+            alpha, K = pa_params.alpha, pa_params.K
+
             while True:
                 left = alpha * pow(K * self.mu * self.n * (1.0 - w_old), alpha)
                 w_new = left * \

@@ -73,10 +73,10 @@ class MG1Calculation:
         elif dist_type == "Uniform":
             uniform_params = UniformDistribution.get_params(self.b)
             q = get_q_uniform(
-                self.l, uniform_params[0], uniform_params[1], num)
+                self.l, uniform_params.mean, uniform_params.half_interval, num)
         elif dist_type == "Pa":
-            alpha, K = ParetoDistribution.get_a_k(self.b)
-            q = get_q_Pareto(self.l, alpha, K, num)
+            pa_params = ParetoDistribution.get_params(self.b)
+            q = get_q_Pareto(self.l, pa_params.alpha, pa_params.K, num)
         else:
             print("Error in get_p. Unknown type of distribution")
             return 0

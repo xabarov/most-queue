@@ -70,8 +70,9 @@ def test_gi_m_n():
     probs_print(p_sim, p_ch)
 
     # Also for Pareto distribution
-    alpha, K = ParetoDistribution.get_a_k_by_mean_and_coev(a1, a_coev)
-    a = ParetoDistribution.calc_theory_moments(alpha, K)
+    pa_params = ParetoDistribution.get_params_by_mean_and_coev(a1, a_coev)
+    print(pa_params)
+    a = ParetoDistribution.calc_theory_moments(pa_params)
     gi_m_n_calc = GiMn(a, mu, n, approx_distr='Pa')
     v_ch = gi_m_n_calc.get_v()
     w_ch = gi_m_n_calc.get_w()
@@ -79,7 +80,7 @@ def test_gi_m_n():
     p_ch = gi_m_n_calc.get_p()
 
     qs = QueueingSystemSimulator(n)
-    qs.set_sources([alpha, K], "Pa")
+    qs.set_sources(pa_params, "Pa")
     qs.set_servers(mu, "M")
     qs.run(num_of_jobs)
     v_sim = qs.v

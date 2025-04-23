@@ -56,10 +56,10 @@ def test_fj_delta():
     b1_delta = 0.1
     delta_params = ErlangDistribution.get_params_by_mean_and_coev(
         b1_delta, coev)
-    b_delta = ErlangDistribution.calc_theory_moments(*delta_params)
+    b_delta = ErlangDistribution.calc_theory_moments(delta_params)
 
     b_params = ErlangDistribution.get_params_by_mean_and_coev(b1, coev)
-    b = ErlangDistribution.calc_theory_moments(*b_params, 4)
+    b = ErlangDistribution.calc_theory_moments(b_params, 4)
 
     qs = ForkJoinSimDelta(n, n, b_delta, True)
     qs.set_sources(l, 'M')
