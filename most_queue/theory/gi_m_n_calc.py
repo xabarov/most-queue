@@ -119,7 +119,8 @@ class GiMn:
 
     def _get_b0(self, j):
         if self.approx_distr == "Gamma":
-            v, alpha, gs = GammaDistribution.get_params(self.a)
+            gamma_params = GammaDistribution.get_params(self.a)
+            v, alpha, gs = gamma_params.mu, gamma_params.alpha, gamma_params.g
             summ = 0
             for i, g_value in enumerate(gs):
                 summ += (g_value / pow(self.mu * j + v, i)) * (
@@ -152,7 +153,9 @@ class GiMn:
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
         if self.approx_distr == "Gamma":
-            v, alpha, gs = GammaDistribution.get_params(self.a)
+            gamma_params = GammaDistribution.get_params(self.a)
+            v, alpha, gs = gamma_params.mu, gamma_params.alpha, gamma_params.g
+
             while True:
                 summ = 0
                 for i, q_value in enumerate(gs):

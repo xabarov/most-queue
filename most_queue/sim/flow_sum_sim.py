@@ -213,9 +213,9 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        params1 = GammaDistribution.get_mu_alpha(a1)
+        params1 = GammaDistribution.get_params(a1)
         arr1 = GammaDistribution(params1)
-        params2 = GammaDistribution.get_mu_alpha(a2)
+        params2 = GammaDistribution.get_params(a2)
         arr2 = GammaDistribution(params2)
         arrivals = []
         time1 = arr1.generate()

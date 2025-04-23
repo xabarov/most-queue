@@ -30,7 +30,7 @@ if __name__ == "__main__":
     b[2] = a_s*pow(sigma, 3) + 3*b[1]*b[0] - 2*pow(b[0], 2)
 
     # Гамма-аппроксимация
-    gamma_params = GammaDistribution.get_mu_alpha(b)
+    gamma_params = GammaDistribution.get_params(b)
 
     # H2-аппроксимация
     h2_params = H2Distribution.get_params(b)
@@ -41,8 +41,7 @@ if __name__ == "__main__":
     b_approx_h2 = [0, 0, 0]
 
     for i in tqdm(range(n)):
-        val_gamma = GammaDistribution.generate_static(
-            gamma_params[0], gamma_params[1])
+        val_gamma = GammaDistribution.generate_static(gamma_params)
         val_h2 = H2Distribution.generate_static(h2_params)
         for k in range(3):
             b_approx_gamma[k] += pow(val_gamma, k+1)
@@ -68,7 +67,7 @@ if __name__ == "__main__":
 
     for i in range(dots_num):
         y_gamma.append(GammaDistribution.get_pdf(
-            gamma_params[0], gamma_params[1], x[i]))
+            gamma_params, x[i]))
         y_h2.append(H2Distribution.get_pdf(h2_params, x[i]))
 
     fig, ax = plt.subplots()

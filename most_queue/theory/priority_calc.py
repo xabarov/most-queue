@@ -399,16 +399,16 @@ def get_w_np(l, b, num=3):
         steps = 5
 
         if j != num_of_cl - 1:
-            b_b_param = GammaDistribution.get_mu_alpha(b_b)
+            b_b_param = GammaDistribution.get_params(b_b)
         else:
             b_b_param = 0
 
-        b_k_param = GammaDistribution.get_mu_alpha(b[j])
+        b_k_param = GammaDistribution.get_params(b[j])
 
         nu_a_PNZ = busy_calc(la, b_a)
 
         if j != 0:
-            nu_a_param = GammaDistribution.get_mu_alpha(nu_a_PNZ)
+            nu_a_param = GammaDistribution.get_params(nu_a_PNZ)
         else:
             nu_a_param = 0
 
@@ -418,7 +418,7 @@ def get_w_np(l, b, num=3):
             s = h * c
 
             if j != 0:
-                nu_a = GammaDistribution.get_pls(*nu_a_param, s)
+                nu_a = GammaDistribution.get_pls(nu_a_param, s)
                 summ = s + la - la * nu_a
             else:
                 summ = s
@@ -426,10 +426,10 @@ def get_w_np(l, b, num=3):
             chisl = (1 - ro) * summ
 
             if j != len(l) - 1:
-                chisl += lb * (1 - GammaDistribution.get_pls(*b_b_param, summ))
+                chisl += lb * (1 - GammaDistribution.get_pls(b_b_param, summ))
 
             znam = l[j] * \
-                GammaDistribution.get_pls(*b_k_param, summ) - l[j] + s
+                GammaDistribution.get_pls(b_k_param, summ) - l[j] + s
 
             w_pls.append(chisl / znam)
 

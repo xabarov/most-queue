@@ -20,8 +20,9 @@ def test_gi_m_1():
     num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
 
     # calculation of parameters approximating Gamma-distribution for the incoming stream based on the given average and coefficient of variation
-    v, alpha = GammaDistribution.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = GammaDistribution.calc_theory_moments(v, alpha)
+    gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
+    print(gamma_params)
+    a = GammaDistribution.calc_theory_moments(gamma_params)
 
     # calculation of initial moments of time spent and waiting in the queueing system
     gm1_calc = GiM1(a, mu)
@@ -36,7 +37,7 @@ def test_gi_m_1():
     qs = QueueingSystemSimulator(1)
 
     # set the input stream. The method needs to be passed parameters of distribution as a list and type of distribution.
-    qs.set_sources([v, alpha], "Gamma")
+    qs.set_sources(gamma_params, "Gamma")
 
     # set the service channels. Parameters (in our case, the service intensity)
     # and type of distribution - M (exponential).

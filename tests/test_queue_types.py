@@ -40,7 +40,7 @@ def compare_calc_times():
 
         # задаем параметры каналов обслуживания Гамма-распределением.
         # Параметры распределения подбираем с помощью метода библиотеки random_distribution
-        gamma_params = GammaDistribution.get_mu_alpha([b[0], b[1]])
+        gamma_params = GammaDistribution.get_params([b[0], b[1]])
         qs.set_servers(gamma_params, 'Gamma')
 
         # Запуск ИМ

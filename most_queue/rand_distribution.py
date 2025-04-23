@@ -28,6 +28,17 @@ class Cox2Params:
     p1: float | complex
 
 
+@dataclass
+class GammaParams:
+    """
+    Gamma distribution parameters.
+    """
+    mu: float  # 1/theta
+    alpha: float
+    g: list[float] | None = None  
+
+
+
 class NormalDistribution:
     """
     Gaussian distribution. Generates random numbers from a normal (Gaussian) distribution.
@@ -771,34 +782,31 @@ class GammaDistribution:
     Гамма-распределение
     """
 
-    def __init__(self, params, generator=None):
-        self.mu = params[0]
-        self.alpha = params[1]
+    def __init__(self, params:GammaParams, generator=None):
+        self.mu = params.mu
+        self.alpha = params.alpha
         self.is_corrective = False
-        self.g = []
-        if len(params) > 2:
-            self.is_corrective = True
-            for i in range(2, len(params)):
-                self.g.append(params[i])
+        self.g = params.g if params.g is not None else []
+
         self.params = params
         self.type = 'Gamma'
         self.generator = generator
 
-    @staticmethod
-    def get_mu_alpha(b):
-        """
-        Статический метод аппроксимации параметров mu и alpha Гамма-распределения
-        по двум заданным начальным моментам в списке "b"
-        b: список из двух начальных моментов
-        Возвращает кортеж из параметров mu и alpha
-        """
-        d = b[1] - b[0] * b[0]
-        mu = b[0] / d
-        alpha = mu * b[0]
-        return mu, alpha
+    # @staticmethod
+    # def get_params(b)->GammaParams:
+    #     """
+    #     Статический метод аппроксимации параметров mu и alpha Гамма-распределения
+    #     по двум заданным начальным моментам в списке "b"
+    #     b: список из двух начальных моментов
+    #     Возвращает кортеж из параметров mu и alpha
+    #     """
+    #     d = b[1] - b[0] * b[0]
+    #     mu = b[0] / d
+    #     alpha = mu * b[0]
+    #     return GammaParams(mu=mu, alpha=alpha)
 
     @staticmethod
-    def get_params(b):
+    def get_params(b)->GammaParams:
         """
         Статический метод аппроксимации параметров Гамма-распределения поправочным многочленом
         b: список из произвольного числа начальных моментов
@@ -821,39 +829,39 @@ class GammaDistribution:
                     A[i].append(GammaDistribution.get_gamma(alpha + i + j) /
                                 (pow(mu, i + j) * GammaDistribution.get_gamma(alpha)))
             g = np.linalg.solve(A, B)
-            return mu, alpha, g
-        else:
-            return mu, alpha
+            return GammaParams(mu=mu, alpha=alpha, g=g)
+        
+        return GammaParams(mu=mu, alpha=alpha)
 
     @staticmethod
-    def get_mu_alpha_by_mean_and_coev(mean, coev):
+    def get_params_by_mean_and_coev(mean, coev)->GammaParams:
         """
         Возвращает список параметров mu и alpha по заданным среднему и коэфф. вариации
         """
         d = pow(mean * coev, 2)
         mu = mean / d
         alpha = mu * mean
-        return mu, alpha
+        return GammaParams(mu=mu, alpha=alpha)
 
     def generate(self):
-        return self.generate_static(self.mu, self.alpha, self.generator)
+        return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(mu, alpha, generator=None):
-        theta = 1 / mu
+    def generate_static(params: GammaParams, generator=None):
+        theta = 1 / params.mu
         if generator:
-            return generator.gamma(alpha, theta)
-        return np.random.gamma(alpha, theta)
+            return generator.gamma(params.alpha, theta)
+        return np.random.gamma(params.alpha, theta)
 
     @staticmethod
-    def get_cdf(mu, alpha, t):
+    def get_cdf(params:GammaParams, t):
         """
         Возвращает значение функции распределения СВ
         """
-        return stats.gamma.cdf(mu * t, alpha)
+        return stats.gamma.cdf(params.mu * t, params.alpha)
 
     @staticmethod
-    def get_pdf(mu, alpha, t):
+    def get_pdf(params:GammaParams, t):
         """
         Функция плотности вероятности Гамма-распределения
         :param mu: параметр Гамма-распределения
@@ -862,10 +870,10 @@ class GammaDistribution:
         :return: значение плотности Гамма-распределения
         Добавлен для совместимости
         """
-        return GammaDistribution.get_f(mu, alpha, t)
+        return GammaDistribution.get_f(params, t)
 
     @staticmethod
-    def get_f(mu, alpha, t):
+    def get_f(parmas:GammaParams, t):
         """
         Функция плотности вероятности Гамма-распределения
         :param mu: параметр Гамма-распределения
@@ -873,6 +881,8 @@ class GammaDistribution:
         :param t: время
         :return: значение плотности Гамма-распределения
         """
+        mu, alpha = parmas.mu, parmas.alpha
+
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
@@ -885,7 +895,7 @@ class GammaDistribution:
         return main
 
     @staticmethod
-    def get_f_corrective(mu, alpha, g, t):
+    def get_f_corrective(params:GammaParams, gs, t):
         """
         Функция плотности вероятности Гамма-распределения с поправочным многочлненом
         mu: параметр Гамма-распределения
@@ -893,6 +903,8 @@ class GammaDistribution:
         g - массив поправочных коэффициентов
         t: время
         """
+        mu, alpha = params.mu, params.alpha
+        
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
@@ -903,13 +915,13 @@ class GammaDistribution:
         else:
             main = 0
         summ = 0
-        for i in range(len(g)):
-            summ += g[i] * pow(t, i)
+        for i, g  in enumerate(gs):
+            summ += g * pow(t, i)
 
         return main * summ
 
     @staticmethod
-    def calc_theory_moments(mu, alpha, count=3):
+    def calc_theory_moments(params: GammaParams, count=3)->list[float]:
         """
         mu, alpha - параметры распределения
         Вычисляет теоретические начальные моменты распределения. По умолчанию - первые три
@@ -918,13 +930,13 @@ class GammaDistribution:
         for i in range(count):
             prod = 1
             for k in range(i + 1):
-                prod *= alpha + k
-            f[i] = prod / math.pow(mu, i + 1)
+                prod *= params.alpha + k
+            f[i] = prod / math.pow(params.mu, i + 1)
         return f
 
     @staticmethod
-    def get_pls(mu, alpha, s):
-        return math.pow(mu / (mu + s), alpha)
+    def get_pls(params: GammaParams, s):
+        return math.pow(params.mu / (params.mu + s), params.alpha)
 
     @staticmethod
     def get_gamma_incomplete(x, z, e=1e-12):

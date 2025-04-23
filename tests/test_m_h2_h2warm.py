@@ -44,8 +44,8 @@ def test_m_h2_h2warm():
         qs = QueueingSystemSimulator(n, buffer=buff)
         qs.set_sources(l, 'M')
 
-        gamma_params = GammaDistribution.get_mu_alpha(b)
-        gamma_params_warm = GammaDistribution.get_mu_alpha(b_w)
+        gamma_params = GammaDistribution.get_params(b)
+        gamma_params_warm = GammaDistribution.get_params(b_w)
         qs.set_servers(gamma_params, 'Gamma')
         qs.set_warm(gamma_params_warm, 'Gamma')
         qs.run(num_of_jobs)

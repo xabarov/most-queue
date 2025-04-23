@@ -37,8 +37,8 @@ def test_mmn_h2cold_h2_warm():
     smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
     smo.set_sources(l, 'M')
 
-    gamma_params_warm = GammaDistribution.get_mu_alpha(b_w)
-    gamma_params_cold = GammaDistribution.get_mu_alpha(b_c)
+    gamma_params_warm = GammaDistribution.get_params(b_w)
+    gamma_params_cold = GammaDistribution.get_params(b_c)
 
     smo.set_servers(mu, 'M')
     smo.set_warm(gamma_params_warm, 'Gamma')
@@ -52,7 +52,6 @@ def test_mmn_h2cold_h2_warm():
     tt_start = time.process_time()
     tt = MMn_H2warm_H2cold(l, mu, b_w, b_c, n, buffer=buff,
                            verbose=verbose, accuracy=1e-14)
-
 
     tt.run()
     p_tt = tt.get_p()
@@ -94,7 +93,7 @@ def test_mmn_h2cold_h2_warm():
     print("-" * 32)
     for i in range(3):
         calc_mom = w_tt[i].real if isinstance(w_tt[i], complex) else w_tt[i]
-        sim_mom =  w_im[i].real if isinstance(w_im[i], complex) else w_im[i]
+        sim_mom = w_im[i].real if isinstance(w_im[i], complex) else w_im[i]
         print(f"{i+1:^4d}|{calc_mom:^15.3g}|{sim_mom:^15.3g}")
 
     assert abs(w_tt[0] - w_im[0]) < 1e-2

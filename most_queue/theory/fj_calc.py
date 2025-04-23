@@ -7,7 +7,11 @@ import numpy as np
 import scipy.special as sp
 
 from most_queue.general_utils.conv import get_moments, get_self_conv_moments
-from most_queue.rand_distribution import ErlangDistribution, GammaDistribution, H2Distribution
+from most_queue.rand_distribution import (
+    ErlangDistribution,
+    GammaDistribution,
+    H2Distribution,
+)
 from most_queue.theory.mg1_calc import MG1Calculation
 from most_queue.theory.mg1_warm_calc import MG1WarmCalc
 
@@ -134,7 +138,7 @@ class SplitJoinCalc:
                         p = p * a_big[j]
                         f[i] += p
         else:
-            params = GammaDistribution.get_mu_alpha(b)
+            params = GammaDistribution.get_params(b)
 
             for j in range(10):
                 p = g[j] * \
@@ -171,7 +175,7 @@ class SplitJoinCalc:
              9.91182721961E-13]
 
         if delta:
-            params = GammaDistribution.get_mu_alpha(b)
+            params = GammaDistribution.get_params(b)
 
             for j in range(10):
                 p = g[j] * self._dfr_gamma_mult(params, a_big[j],
@@ -264,19 +268,19 @@ class SplitJoinCalc:
         res = 1.0
         if not delta:
             for i in range(self.n):
-                res *= GammaDistribution.get_cdf(*params, t)
+                res *= GammaDistribution.get_cdf(params, t)
         else:
             if not isinstance(delta, list):
                 for i in range(self.n):
-                    res *= GammaDistribution.get_cdf(*params, t - i * delta)
+                    res *= GammaDistribution.get_cdf(params, t - i * delta)
             else:
-                b = GammaDistribution.calc_theory_moments(*params)
+                b = GammaDistribution.calc_theory_moments(params)
 
                 for i in range(self.n):
                     b_delta = get_self_conv_moments(delta, i)
                     b_summ = get_moments(b, b_delta)
-                    params_summ = GammaDistribution.get_mu_alpha(b_summ)
-                    res *= GammaDistribution.get_cdf(*params_summ, t)
+                    params_summ = GammaDistribution.get_params(b_summ)
+                    res *= GammaDistribution.get_cdf(params_summ, t)
 
         return 1.0 - res
 

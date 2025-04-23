@@ -50,10 +50,10 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
         sim = QueueingSystemSimulator(n, buffer=buff)
         sim.set_sources(l, 'M')
 
-        gamma_params = GammaDistribution.get_mu_alpha(b)
-        gamma_params_warm = GammaDistribution.get_mu_alpha(b_w)
-        gamma_params_cold = GammaDistribution.get_mu_alpha(b_c)
-        gamma_params_cold_delay = GammaDistribution.get_mu_alpha(b_d)
+        gamma_params = GammaDistribution.get_params(b)
+        gamma_params_warm = GammaDistribution.get_params(b_w)
+        gamma_params_cold = GammaDistribution.get_params(b_c)
+        gamma_params_cold_delay = GammaDistribution.get_params(b_d)
 
         sim.set_servers(gamma_params, 'Gamma')
         sim.set_warm(gamma_params_warm, 'Gamma')

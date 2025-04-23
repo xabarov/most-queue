@@ -39,9 +39,9 @@ class GiM1:
 
         pi = [0.0] * num
 
-        v, alpha = GammaDistribution.get_mu_alpha(self.a)
+        gamma_params = GammaDistribution.get_params(self.a)
 
-        qs = get_q_Gamma(self.mu, v, alpha)
+        qs = get_q_Gamma(self.mu, gamma_params.mu, gamma_params.alpha)
         summ = 0
         for i, q in enumerate(qs):
             summ += q * pow(self.w_param, i)
@@ -99,13 +99,13 @@ class GiM1:
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
         if self.approx_distr == "Gamma":
-            v, alpha, qs = GammaDistribution.get_params(self.a)
+            gamma_params = GammaDistribution.get_params(self.a)
             while True:
                 summ = 0
-                for i, q in enumerate(qs):
-                    summ += (q / pow(self.mu * (1.0 - w_old) + v, i)) * (
-                        GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
-                left = pow(v / (self.mu * (1.0 - w_old) + v), alpha)
+                for i, q in enumerate(gamma_params.g):
+                    summ += (q / pow(self.mu * (1.0 - w_old) + gamma_params.mu, i)) * (
+                        GammaDistribution.get_gamma(gamma_params.alpha + i) / GammaDistribution.get_gamma(gamma_params.alpha))
+                left = pow(gamma_params.mu / (self.mu * (1.0 - w_old) + gamma_params.mu), gamma_params.alpha)
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
                     break

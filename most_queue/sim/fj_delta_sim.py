@@ -86,9 +86,9 @@ class ForkJoinSimDelta(ForkJoinSim):
                     t.subtasks[i].future_arr_time = self.ttek + i * self.delta
                 else:
                     b_delta = get_self_conv_moments(self.delta, i)
-                    params_delta = GammaDistribution.get_mu_alpha(b_delta)
+                    params_delta = GammaDistribution.get_params(b_delta)
                     t.subtasks[i].future_arr_time = self.ttek + \
-                        GammaDistribution.generate_static(*params_delta)
+                        GammaDistribution.generate_static(params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):

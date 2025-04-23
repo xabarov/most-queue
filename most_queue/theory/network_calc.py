@@ -130,13 +130,13 @@ class NetworkCalc:
             T = self.R[k][1:, nodes].reshape(-1, 1)
             Q = self.R[k][1:, :nodes]
 
-            gamma_mu_alpha = [GammaDistribution.get_mu_alpha(
+            gamma_mu_alpha = [GammaDistribution.get_params(
                 [res['v_node'][i][k][0], res['v_node'][i][k][1]]) for i in range(nodes)]
 
             g_PLS = []
             for i in range(4):
                 N = np.diag([GammaDistribution.get_pls(
-                    *gamma_mu_alpha[j], s[i]) for j in range(nodes)])
+                    gamma_mu_alpha[j], s[i]) for j in range(nodes)])
 
                 G = np.dot(N, Q)
                 FF = I - G

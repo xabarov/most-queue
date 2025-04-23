@@ -120,14 +120,14 @@ class ServerWarmUp(Server):
                         *self.dist.params)
                 elif self.dist.type == 'Gamma':
                     b = GammaDistribution.calc_theory_moments(
-                        *self.dist.params)
+                        self.dist.params)
 
                 f_summ = get_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
-                params = GammaDistribution.get_mu_alpha(f_summ)
+                params = GammaDistribution.get_params(f_summ)
                 self.time_to_end_service = ttek + \
-                    GammaDistribution.generate_static(*params)
+                    GammaDistribution.generate_static(params)
 
 
 class ServerPriority:

@@ -18,10 +18,11 @@ def test_mg1():
     l = 1  # input flow intensity
     b1 = 0.7  # average service time
     coev = 1.2  # coefficient of variation of service time
-    num_of_jobs = 1000000  # number of jobs for IM
+    num_of_jobs = 300000  # number of jobs for IM
 
-    # selecting parameters of the approximating H2-distribution for service time [y1, mu1, mu2]:
+    # selecting parameters of the approximating H2-distribution for service time H2Params [p1, mu1, mu2]:
     params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
+    print(params)
     b = H2Distribution.calc_theory_moments(params, 4)
 
     # calculation using numerical methods

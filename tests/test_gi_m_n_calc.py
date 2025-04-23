@@ -26,8 +26,9 @@ def test_gi_m_n():
     num_of_jobs = 300000
 
     # calculate parameters of the approximating Gamma distribution for the input flow given the mean and coefficient of variation
-    v, alpha = GammaDistribution.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = GammaDistribution.calc_theory_moments(v, alpha)
+    gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
+    print(gamma_params)
+    a = GammaDistribution.calc_theory_moments(gamma_params)
 
     # calculate initial moments of soujourn and waiting times in the queueing system
 
@@ -44,7 +45,7 @@ def test_gi_m_n():
 
     # set the ariival distribution paprams.
     # The method needs to be passed parameters as a list and the type of distribution.
-    qs.set_sources([v, alpha], "Gamma")
+    qs.set_sources(gamma_params, "Gamma")
 
     # set the service channels.
     # The method should receive parameters (in our case, the service intensity)

@@ -1,9 +1,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
+from most_queue.theory.utils.flow_sum import SummatorNumeric
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.flow_sum_sim import FlowSumSim
-from most_queue.misc.flow_sum import SummatorNumeric
 
 matplotlib.use('TkAgg')
 
@@ -27,8 +27,8 @@ def test():
     # начальные моменты суммируемых потоков. В нашем случае все потоки одинаково распределены
     a = []
     for i in range(n_nums):
-        params1 = GammaDistribution.get_mu_alpha_by_mean_and_coev(mean, coev)
-        a1 = GammaDistribution.calc_theory_moments(*params1, 4)
+        params1 = GammaDistribution.get_params_by_mean_and_coev(mean, coev)
+        a1 = GammaDistribution.calc_theory_moments(params1, 4)
         a.append(a1)
 
     # Численный расчет

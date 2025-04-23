@@ -159,11 +159,11 @@ ro = lsum * b_sr / n
 # and add them to the list of parameters params
 params = []
 for i in range(k):
-    params.append(GammaDistribution.get_mu_alpha([b1[i], b2[i]]))
+    params.append(GammaDistribution.get_params([b1[i], b2[i]]))
 
 b = []
 for j in range(k):
-    b.append(GammaDistribution.calc_theory_moments(params[j][0], params[j][1], 4))
+    b.append(GammaDistribution.calc_theory_moments(params[j], 4))
 
 print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
       "time spent in a multi-channel queue with priorities")
