@@ -8,7 +8,7 @@ import scipy.special as sp
 
 from most_queue.general_utils.conv import get_moments, get_self_conv_moments
 from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist
-from most_queue.theory import mg1_warm_calc
+from most_queue.theory.mg1_warm_calc import MG1WarmCalc
 from most_queue.theory.mg1_calc import MG1Calculation
 
 
@@ -70,8 +70,8 @@ class SplitJoinCalc:
 
         self.b_max_warm = self.get_max_moments_delta(b_delta)
         self.b_max = self.get_max_moments()
-
-        return mg1_warm_calc.get_v(self.l, self.b_max, self.b_max_warm)
+        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm)
+        return mg1_warm.get_v()
 
     def get_ro(self):
         """

@@ -661,26 +661,4 @@ class MPhNPrty:
 
         return output
 
-    def print_mrx(self, mrx, is_short=False):
-        """
-        Print matrix mrx
-        """
-        row = mrx.shape[0]
-        col = mrx.shape[1]
-
-        for i in range(row):
-            for j in range(col):
-                if math.isclose(mrx[i, j].real, 0.0):
-                    if is_short:
-                        print("{0:^3s} | ".format(""), end="")
-                    else:
-                        print("{0:^5s} | ".format(""), end="")
-                else:
-                    if is_short:
-                        print("{0:^3.1f} | ".format(mrx[i, j].real), end="")
-                    else:
-                        print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
-            if is_short:
-                print("\n" + "------" * col)
-            else:
-                print("\n" + "--------" * col)
+    

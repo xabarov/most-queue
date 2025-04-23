@@ -1,29 +1,53 @@
-from most_queue.theory.utils.diff5dots import diff5dots
+"""
+Class for calculating M/G/1 queue with warm-up.
+"""
 from most_queue.rand_distribution import Gamma
+from most_queue.theory.utils.diff5dots import diff5dots
 
 
-def get_v(l, b, b_warm):
-    tv = b_warm[0] / (1 - l * b[0])
-    p0_star = 1 / (1 + l * tv)
+class MG1WarmCalc:
+    """
+    Class for calculating M/G/1 queue with warm-up.
+    """
 
-    b_param = Gamma.get_mu_alpha(b)
-    b_warm_param = Gamma.get_mu_alpha(b_warm)
+    def __init__(self, l: float, b: list[float], b_warm: list[float]):
+        """
+        Initialize the MG1WarmCalc class with arrival rate l, 
+        service time initial moments b, and warm-up service time moments b_warm.
+        Parameters:
+        l (float): Arrival rate.
+        b (list[float]): Initial moments of service time distribution.
+        b_warm (list[float]): Warm-up moments of service time distribution.
+        """
+        self.l = l
+        self.b = b
+        self.b_warm = b_warm
 
-    h = 0.0001
-    steps = 5
+    def get_v(self) -> list[float]:
+        """
+        Calculate sourjourn moments for M/G/1 queue with warm-up.
+        """
+        tv = self.b_warm[0] / (1 - self.l * self.b[0])
+        p0_star = 1 / (1 + self.l * tv)
 
-    v_pls = []
+        b_param = Gamma.get_mu_alpha(self.b)
+        b_warm_param = Gamma.get_mu_alpha(self.b_warm)
 
-    for c in range(1, steps):
-        s = h * c
-        chisl = p0_star * ((1 - s / l) * Gamma.get_pls(*b_warm_param, s) - Gamma.get_pls(*b_param, s))
-        znam = 1 - s / l - Gamma.get_pls(*b_param, s)
-        v_pls.append(chisl / znam)
+        h = 0.0001
+        steps = 5
 
-    v = diff5dots(v_pls, h)
-    v[0] = -v[0]
-    v[2] = -v[2]
+        v_pls = []
 
-    return v
+        for c in range(1, steps):
+            s = h * c
+            chisl = p0_star * \
+                ((1 - s / self.l) * Gamma.get_pls(*b_warm_param, s) -
+                 Gamma.get_pls(*b_param, s))
+            znam = 1 - s / self.l - Gamma.get_pls(*b_param, s)
+            v_pls.append(chisl / znam)
 
+        v = diff5dots(v_pls, h)
+        v[0] = -v[0]
+        v[2] = -v[2]
 
+        return v

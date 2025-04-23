@@ -1,3 +1,5 @@
+import math
+
 from colorama import Fore, Style, init
 
 init()
@@ -128,7 +130,7 @@ def probs_print(p_sim, p_ch, size=10):
 
 def probs_print_no_compare(probs, size=10, header="Probabilities of states"):
     """
-    Print table with probabilities 
+    Print table with probabilities
      :param probs: Probabilities
      :param size: Number of states to print
       :return: None
@@ -201,3 +203,31 @@ def times_print_with_classes(sim_moments, calc_moments, is_w=True):
     print("\n")
 
     print(Style.RESET_ALL)
+
+
+def print_mrx(mrx, is_short=False):
+    """
+    Print matrix mrx
+    """
+    row = mrx.shape[0]
+    col = mrx.shape[1]
+
+    Fore.RESET  # Ensure any previous colors are reset
+    print(f'{Fore.GREEN}\n')
+
+    for i in range(row):
+        print("| ", end="")
+
+        for j in range(col):
+            if math.isclose(mrx[i, j].real, 0.0):
+                color = Fore.RED
+            else:
+                color = Fore.GREEN
+            if is_short:
+                print(f"{color}{mrx[i, j].real:^4.2f} | ", end="")
+            else:
+                print(f"{color}{mrx[i, j]:^5.3f} | ", end="")
+        print("\n" + "-------" * col if is_short else "\n" + "---------------" * col)
+        Fore.RESET  # Reset colors after each row
+
+

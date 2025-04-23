@@ -55,9 +55,6 @@ def test_mmn_h2cold_h2_warm():
     tt = MMn_H2warm_H2cold(l, mu, b_w, b_c, n, buffer=buff,
                            verbose=verbose, accuracy=1e-14)
 
-    # for i in range(5):
-    #     print(f"Matrix C[{i}]")
-    #     tt.print_mrx(tt.C[i])
 
     tt.run()
     p_tt = tt.get_p()

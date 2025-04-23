@@ -223,17 +223,7 @@ class MMn_H2warm_H2cold:
             p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
         return p_warmup.real
 
-    def print_mrx(self, mrx):
-        row = mrx.shape[0]
-        col = mrx.shape[1]
-
-        for i in range(row):
-            for j in range(col):
-                if math.isclose(mrx[i, j].real, 0.0):
-                    print("{0:^5s} | ".format("     "), end="")
-                else:
-                    print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
-            print("\n" + "--------" * col)
+    
 
     @staticmethod
     def binom_calc(a, b, num=3):

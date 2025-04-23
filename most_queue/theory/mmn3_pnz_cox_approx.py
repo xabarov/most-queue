@@ -425,18 +425,7 @@ class Mmn3_pnz_cox:
 
         return output
 
-    def print_mrx(self, mrx):
-        row = mrx.shape[0]
-        col = mrx.shape[1]
-
-        for i in range(row):
-            for j in range(col):
-                if math.isclose(mrx[i, j].real, 0.0):
-                    print("{0:^5s} | ".format("     "), end="")
-                else:
-                    print("{0:^5.3f} | ".format(mrx[i, j].real), end="")
-            print("\n" + "--------" * col)
-
+    
     def buildD(self, num):
         """
             Формирует матрицу D по заданному номеру яруса

@@ -1,10 +1,11 @@
 """
-    Тестирование метода Такахаси-Таками для расчета СМО М/H2/n
+Testing the Takahasi-Takami method for calculating an M/H2/n queue
 
-    При коэфф вариации времени обслуживания < 1 параметры аппроксимирующего Н2-распределения
-    являются комплексными, что не мешает получению осмысленных результатов
+When the coefficient of variation of service time is less than 1, 
+the parameters of the approximating H2 distribution
+are complex, which does not prevent obtaining meaningful results.
 
-    Для верификации используется ИМ
+For verification, simulation is used.
 
 """
 import math
@@ -18,19 +19,19 @@ from most_queue.general_utils.tables import probs_print, times_print
 
 def test_mgn_tt():
     """
-    Тестирование метода Такахаси-Таками для расчета СМО М/H2/n
+    Testing the Takahasi-Takami method for calculating an M/H2/n queue
     """
 
-    n = 3  # число каналов
-    l = 1.0  # интенсивность вх потока
-    ro = 0.7  # коэфф загрузки
-    b1 = n * ro / l  # ср время обслуживания
-    num_of_jobs = 1000000  # число обсл заявок ИМ
-    # два варианта коэфф вариации времени обсл, запустим расчет и ИМ для каждого из них
+    n = 3  # number of channels
+    l = 1.0  # arrival rate
+    ro = 0.7  # utilization factor
+    b1 = n * ro / l  # average service time
+    num_of_jobs = 1000000  # number of jobs for simulation
+    # two variants of the coefficient of variation of service time, run calculation and simulation for each
     b_coev_mass = [0.8, 1.2]
 
     for b_coev in b_coev_mass:
-        #  расчет начальных моментов времени обслуживания по заданному среднему и коэфф вариации
+        # calculate initial moments of service time based on the given average and coefficient of variation
         b = [0.0] * 3
         alpha = 1 / (b_coev ** 2)
         b[0] = b1
@@ -38,48 +39,48 @@ def test_mgn_tt():
         b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
         tt_start = time.process_time()
-        #  запуск метода Такахаси-Таками
+        # run Takahasi-Takami method
         tt = MGnCalc(n, l, b)
         tt.run()
-        # получение результатов численных расчетов
+        # get numerical calculation results
         p_tt = tt.get_p()
         v_tt = tt.get_v()
         tt_time = time.process_time() - tt_start
-        # также можно узнать сколько итераций потребовалось
+        # also can find out how many iterations were required
         num_of_iter = tt.num_of_iter_
 
-        # запуск ИМ для верификации результатов
+        # run simulation for verification of the results
         im_start = time.process_time()
 
         qs = QueueingSystemSimulator(n)
 
-        # задаем вх поток заявок. М - экспоненциальный с интенсивностью l
+        # set arrival process. M - exponential with rate l
         qs.set_sources(l, 'M')
 
-        # задаем параметры каналов обслуживания Гамма-распределением.
-        # Параметры распределения подбираем с помощью метода библиотеки random_distribution
+        # set server parameters as Gamma distribution.
+        # Distribution parameters are selected using the method from the random_distribution library
         gamma_params = Gamma.get_mu_alpha([b[0], b[1]])
         qs.set_servers(gamma_params, 'Gamma')
 
-        # Запуск ИМ
+        # Run simulation
         qs.run(num_of_jobs)
 
-        # Получение результатов
+        # Get results
         p = qs.get_p()
         v_sim = qs.v
         im_time = time.process_time() - im_start
 
-        # вывод результатов
+        # print results
 
-        print("\nСравнение результатов расчета методом Такахаси-Таками и ИМ.")
+        print("\nComparison of calculation results by the Takahasi-Takami method and simulation.")
         print(
-            f"ИМ - M/Gamma/{n:^2d}\nТакахаси-Таками - M/H2/{n:^2d} с комплексными параметрами")
-        print(f"Коэффициент загрузки: {ro:^1.2f}")
-        print(f"Коэффициент вариации времени обслуживания: {b_coev:^1.2f}")
+            f"Simulation - M/Gamma/{n:^2d}\nTakahasi-Takami - M/H2/{n:^2d} with complex parameters")
+        print(f"Utilization factor: {ro:^1.2f}")
+        print(f"Coefficient of variation of service time: {b_coev:^1.2f}")
         print(
-            f"Количество итераций алгоритма Такахаси-Таками: {num_of_iter:^4d}")
-        print(f"Время работы алгоритма Такахаси-Таками: {tt_time:^5.3f} c")
-        print(f"Время работы ИМ: {im_time:^5.3f} c")
+            f"Number of iterations of the Takahasi-Takami algorithm: {num_of_iter:^4d}")
+        print(f"Takahasi-Takami algorithm execution time: {tt_time:^5.3f} s")
+        print(f"Simulation execution time: {im_time:^5.3f} s")
         probs_print(p, p_tt, 10)
 
         times_print(v_sim, v_tt, False)
