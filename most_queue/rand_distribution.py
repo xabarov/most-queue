@@ -1,17 +1,42 @@
 import cmath
 import math
+from dataclasses import dataclass
 
 import numpy as np
 import scipy.special as sp
 from scipy import stats
 
 
-class Normal_dist:
+@dataclass
+class H2Params:
+    """
+    H2 distribution parameters.
+    """
+    mu1: float | complex  # Mean of the first phase
+    mu2: float | complex  # Mean of the second phase
+    p1: float | complex  # Probability of being in the first phase
+
+
+@dataclass
+class Cox2Params:
+    """
+    Coxian second order distribution parameters.
+    """
+    mu1: float | complex  # Mean of the first phase
+    mu2: float | complex  # Mean of the second phase
+    # probability for transition between phase 1 and phase 2.
+    p1: float | complex
+
+
+class NormalDistribution:
+    """
+    Gaussian distribution. Generates random numbers from a normal (Gaussian) distribution.
+    """
+
     def __init__(self, params, generator=None):
         """
-        Принимает список параметров в следующей последовательности:
-        mean - среднее значение
-        sko - СКО
+        :param params: list of parameters [mean, std_dev]
+        :param generator: random number generator. If None, np.random is used.
         """
 
         self.mean = params[0]
@@ -19,9 +44,10 @@ class Normal_dist:
         self.type = 'Normal'
         self.generator = generator
 
-    def generate(self):
+    def generate(self) -> float:
         """
-        Генерация псевдо-случайных чисел
+        Generates a random number from the normal distribution.
+        :return: float
         """
 
         return self.generate_static(self.mean, self.sko, self.generator)
@@ -37,7 +63,7 @@ class Normal_dist:
         return np.random.normal(mean, sko)
 
 
-class Uniform_dist:
+class UniformDistribution:
     def __init__(self, params, generator=None):
         """
         Принимает список параметров в следующей последовательности:
@@ -76,7 +102,8 @@ class Uniform_dist:
 
         f = [0.0] * num
         for i in range(num):
-            f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (2 * half_interval * (i + 2))
+            f[i] = (pow(mean + half_interval, i + 2) - pow(mean -
+                    half_interval, i + 2)) / (2 * half_interval * (i + 2))
         return f
 
     @staticmethod
@@ -137,18 +164,15 @@ class Uniform_dist:
         Возвращает значение ДФР
         """
 
-        return 1.0 - Uniform_dist.get_cdf(mean, half_interval, t)
+        return 1.0 - UniformDistribution.get_cdf(mean, half_interval, t)
 
 
-class H2_dist:
-    def __init__(self, params, generator=None):
+class H2Distribution:
+    def __init__(self, params: H2Params, generator=None):
         """
         Принимает список параметров в следующей последовательности - y1, mu1, mu2
         """
 
-        self.y1 = params[0]
-        self.m1 = params[1]
-        self.m2 = params[2]
         self.params = params
         self.type = 'H'
         self.generator = generator
@@ -159,10 +183,10 @@ class H2_dist:
         Вызов из экземпляра класса
         """
 
-        return self.generate_static(self.y1, self.m1, self.m2, self.generator)
+        return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(y1, m1, m2, generator=None):
+    def generate_static(params: H2Params, generator=None):
         """
         Генерация псевдо-случайных чисел, подчиненных гиперэкспоненциальному распределению 2-го порядка.
         Статический метод
@@ -175,45 +199,39 @@ class H2_dist:
             r = np.random.rand()
             res = -np.log(np.random.rand())
 
-        if r < y1:
-            if m1 != 0:
-                res = res / m1
+        if r < params.p1:
+            if params.mu1 != 0:
+                res = res / params.mu1
             else:
                 res = 1e10
         else:
-            if m2 != 0:
-                res = res / m2
+            if params.mu2 != 0:
+                res = res / params.mu2
             else:
                 res = 1e10
         return res
 
     @staticmethod
-    def calc_theory_moments(y1, m1, m2, num=3):
+    def calc_theory_moments(params: H2Params, num=3):
         """
         Метод вычисляет теоретические моменты H2 распределения
         """
         f = [0.0] * num
-        y2 = 1.0 - y1
+        y2 = 1.0 - params.p1
+
         for i in range(num):
-            f[i] = math.factorial(i + 1) * (y1 / pow(m1, i + 1) + y2 / pow(m2, i + 1))
+            f[i] = math.factorial(
+                i + 1) * (params.p1 / pow(params.mu1, i + 1) + y2 / pow(params.mu2, i + 1))
         return f
 
     @staticmethod
-    def get_residual_params(params):
-        y1 = params[0]
-        y2 = 1.0 - y1
-        mu1 = params[1]
-        mu2 = params[2]
+    def get_residual_params(params: H2Params) -> H2Params:
+        y1, y2, mu1, mu2 = params.p1, 1.0 - params.p1, params.mu1, params.mu2
 
-        res = []
-        res.append(y1 * mu2 / (y1 * mu2 + y2 * mu1))
-        res.append(mu1)
-        res.append(mu2)
-
-        return res
+        return H2Params(p1=y1 * mu2 / (y1 * mu2 + y2 * mu1), mu1=mu1, mu2=mu2)
 
     @staticmethod
-    def get_params(moments):
+    def get_params(moments) -> H2Params:
         """
         Метод Алиева для подбора параметров H2 распределения по заданным начальным моментам.
         Подбирает параметры только принадлежащие множеству R (не комплексные)
@@ -234,7 +252,8 @@ class H2_dist:
         if t_min > moments[2]:
             # one phase distibution
             q_new = q_max
-            mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))) * moments[0]
+            mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) /
+                   (2 * (1.0 - q_new)))) * moments[0]
             if math.isclose(mu1, 0):
                 mu1 = 1e10
             else:
@@ -251,22 +270,24 @@ class H2_dist:
             while abs(tn - moments[2]) > 1e-8 and tec < max_iteration:
                 tec += 1
                 q_new = (q_max + q_min) / 2.0
-                t1 = (1.0 + math.sqrt((1.0 - q_new) * (v * v - 1.0) / (2 * q_new))) * moments[0]
-                t2 = (1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))) * moments[0]
+                t1 = (1.0 + math.sqrt((1.0 - q_new) *
+                      (v * v - 1.0) / (2 * q_new))) * moments[0]
+                t2 = (1.0 - math.sqrt(q_new * (v * v - 1.0) /
+                      (2 * (1.0 - q_new)))) * moments[0]
 
-                tn = 6 * (q_new * math.pow(t1, 3) + (1.0 - q_new) * math.pow(t2, 3))
+                tn = 6 * (q_new * math.pow(t1, 3) +
+                          (1.0 - q_new) * math.pow(t2, 3))
 
                 if tn - moments[2] > 0:
                     q_min = q_new
                 else:
                     q_max = q_new
-            res[0] = q_max
-            res[1] = 1.0 / t1
-            res[2] = 1.0 / t2
+
+            res = H2Params(p1=q_max, mu1=1.0/t1, mu2=1.0/t2)
             return res
 
     @staticmethod
-    def get_params_clx(moments, verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True):
+    def get_params_clx(moments, verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True) -> H2Params:
         """
         Метод подбора параметров H2 распределения по заданным начальным моментам.
         Допускает комплексные значения параметров при коэффициенте вариации <1
@@ -296,8 +317,8 @@ class H2_dist:
                 for i in range(len(moments)):
                     f.append(moments[i] * complex(1, (i + 1) * e))
 
-                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                              is_fitting=is_fitting)
+                return H2Distribution.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                                     is_fitting=is_fitting)
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -312,22 +333,21 @@ class H2_dist:
                     #     f.append(moments[0])
                     # else:
                     f.append(moments[i] * complex(1, (i + 1) * e))
-                return H2_dist.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                              is_fitting=is_fitting)
+                return H2Distribution.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                                     is_fitting=is_fitting)
 
         res = [0, 0, 0]  # y1, mu1, mu2
         c1 = complex(c1)
         x1 = -c1 / 2 + cmath.sqrt(d)
         x2 = -c1 / 2 - cmath.sqrt(d)
         y1 = (f[0] - x2) / (x1 - x2)
-        res[0] = y1
-        res[1] = 1 / x1
-        res[2] = 1 / x2
+
+        res = H2Params(p1=y1, mu1=1.0/x1, mu2=1.0/x2)
 
         return res
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1, coev, is_clx=False):
+    def get_params_by_mean_and_coev(f1, coev, is_clx=False) -> H2Params:
         """
         Подбор параметров H2 распределения по среднему и коэффициенту вариации
         Возвращает список с параметрами [y1, mu1, mu2]
@@ -335,61 +355,60 @@ class H2_dist:
 
         f = [0, 0, 0]
         alpha = 1 / (coev ** 2)
+
         f[0] = f1
         f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
         f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
+
         if is_clx:
-            return H2_dist.get_params_clx(f)
-        return H2_dist.get_params(f)
+            return H2Distribution.get_params_clx(f)
+        return H2Distribution.get_params(f)
 
     @staticmethod
-    def get_cdf(params, t):
+    def get_cdf(params: H2Params, t) -> float:
         """
         Возвращает значение функции распределения СВ
         """
         if t < 0:
             return 0
-        y = [params[0], 1 - params[0]]
-        mu = [params[1], params[2]]
+        y = [params.p1, 1 - params.p1]
+        mu = [params.mu1, params.mu2]
         res = 0
         for i in range(2):
             res += y[i] * math.exp(-mu[i] * t)
         return 1.0 - res
 
     @staticmethod
-    def get_pdf(params, t):
+    def get_pdf(params: H2Params, t):
         """
         Возвращает значение функции плотности распределения вероятностей СВ
         """
         if t < 0:
             return 0
-        y = [params[0], 1 - params[0]]
-        mu = [params[1], params[2]]
+        y = [params.p1, 1 - params.p1]
+        mu = [params.mu1, params.mu2]
         res = 0
         for i in range(2):
             res += y[i] * mu[i] * math.exp(-mu[i] * t)
         return res
 
     @staticmethod
-    def get_tail(params, t):
+    def get_tail(params: H2Params, t):
         """
         Возвращает значение ДФР
         """
-        return 1.0 - H2_dist.get_cdf(params, t)
+        return 1.0 - H2Distribution.get_cdf(params, t)
 
 
-class Cox_dist:
+class CoxDistribution:
     """
     Распределение Кокса 2-го порядка
     """
 
-    def __init__(self, params, generator=None):
+    def __init__(self, params: Cox2Params, generator=None):
         """
         Принимает список параметров в следующей последовательности - y1, mu1, mu2
         """
-        self.y1 = params[0]
-        self.m1 = params[1]
-        self.m2 = params[2]
         self.params = params
         self.type = 'C'
         self.generator = generator
@@ -398,20 +417,23 @@ class Cox_dist:
         """
         Генерация псевдо-случайных чисел, подчиненных распределению Кокса 2-го порядка. Вызов из экземпляра класса
         """
-        return self.generate_static(self.y1, self.m1, self.m2, self.generator)
+        return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(y1, m1, m2, generator):
+    def generate_static(params: Cox2Params, generator):
         """
         Генерация псевдо-случайных чисел, подчиненных распределению Кокса 2-го порядка. Статический метод
         """
+
+        p1, m1, m2 = params.p1, params.mu1, params.mu2
+
         if generator:
             r = generator.random()
             res = (-1.0 / m1) * np.log(generator.random())
         else:
             r = np.random.rand()
             res = (-1.0 / m1) * np.log(np.random.rand())
-        if r < y1:
+        if r < p1:
             if generator:
                 res = res + (-1.0 / m2) * np.log(generator.random())
             else:
@@ -419,22 +441,24 @@ class Cox_dist:
         return res
 
     @staticmethod
-    def calc_theory_moments(y1, m1, m2):
+    def calc_theory_moments(params: Cox2Params):
         """
         Метод вычисляет теоретические начальные моменты распределения Кокса 2-го порядка
         """
+        y1, m1, m2 = params.p1, params.mu1, params.mu2
 
         y2 = 1.0 - y1
         f = [0.0] * 3
         f[0] = y2 / m1 + y1 * (1.0 / m1 + 1.0 / m2)
-        f[1] = 2.0 * (y2 / math.pow(m1, 2) + y1 * (1.0 / math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2)))
+        f[1] = 2.0 * (y2 / math.pow(m1, 2) + y1 * (1.0 /
+                      math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2)))
         f[2] = 6.0 * (y2 / (math.pow(m1, 3)) + y1 * (1.0 / math.pow(m1, 3) + 1.0 / (math.pow(m1, 2) * m2) +
                                                      1.0 / (math.pow(m2, 2) * m1) + 1.0 / math.pow(m2, 3)))
 
         return f
 
     @staticmethod
-    def get_params(moments, ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True):
+    def get_params(moments, ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True) -> Cox2Params:
         """
         Метод вычисляет параметры распределения Кокса 2-го порядка по трем заданным начальным моментам [moments]
         Возвращает список с параметрами [y1, mu1, mu2]
@@ -452,8 +476,8 @@ class Cox_dist:
                 for i in range(len(moments)):
                     f.append(moments[i] * complex(1, (i + 1) * e))
 
-                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                           is_fitting=is_fitting)
+                return CoxDistribution.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                                  is_fitting=is_fitting)
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -468,8 +492,8 @@ class Cox_dist:
                     #     f.append(moments[0])
                     # else:
                     f.append(moments[i] * complex(1, (i + 1) * e))
-                return Cox_dist.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                           is_fitting=is_fitting)
+                return CoxDistribution.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
+                                                  is_fitting=is_fitting)
 
         # # особые случаи:
         # if abs(moments[1] - moments[0] * moments[0]) < ee:
@@ -483,13 +507,14 @@ class Cox_dist:
         for i in range(3):
             f[i] = moments[i] / math.factorial(i + 1)
 
-        d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - np.power(f[0], 2)) * (f[0] * f[2] - np.power(f[1], 2))
+        d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] -
+                                                     np.power(f[0], 2)) * (f[0] * f[2] - np.power(f[1], 2))
         mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
         mu2 /= 2.0 * (np.power(f[1], 2) - f[0] * f[2])
         mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
         y1 = (mu1 * f[0] - 1.0) * mu2 / mu1
 
-        return y1, mu1, mu2
+        return Cox2Params(p1=y1, mu1=mu1, mu2=mu2)
 
     @staticmethod
     def get_params_by_mean_and_coev(f1, coev):
@@ -504,10 +529,10 @@ class Cox_dist:
         f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
         f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
 
-        return Cox_dist.get_params(f)
+        return CoxDistribution.get_params(f)
 
 
-class Det_dist:
+class DeterministicDistribution:
     """Детерминированное"""
 
     def __init__(self, b):
@@ -518,14 +543,14 @@ class Det_dist:
         self.type = 'D'
 
     def generate(self):
-        return Det_dist.generate_static(self.b)
+        return DeterministicDistribution.generate_static(self.b)
 
     @staticmethod
     def generate_static(b):
         return b
 
 
-class Pareto_dist:
+class ParetoDistribution:
     "Распределение Парето"
 
     def __init__(self, params, generator=None):
@@ -539,7 +564,7 @@ class Pareto_dist:
         self.generator = generator
 
     def generate(self):
-        return Pareto_dist.generate_static(self.a, self.k, self.generator)
+        return ParetoDistribution.generate_static(self.a, self.k, self.generator)
 
     @staticmethod
     def get_pdf(t, a, k):
@@ -556,7 +581,7 @@ class Pareto_dist:
         Возвращает значение функции распределения СВ
         params = [a, K]
         """
-        return 1.0 - Pareto_dist.get_tail(params, t)
+        return 1.0 - ParetoDistribution.get_tail(params, t)
 
     @staticmethod
     def get_tail(params, t):
@@ -595,7 +620,7 @@ class Pareto_dist:
         Метод возвращает параметры a и K по 2-м начальным моментам списка f
         Добавлен для совместимости
         """
-        return Pareto_dist.get_a_k(f)
+        return ParetoDistribution.get_a_k(f)
 
     @staticmethod
     def get_a_k(f):
@@ -622,7 +647,7 @@ class Pareto_dist:
         return a, k
 
 
-class Erlang_dist:
+class ErlangDistribution:
     """
     Распределение Эрланга r-го порядка
     """
@@ -676,7 +701,7 @@ class Erlang_dist:
         """
         Возвращает значение ДФР
         """
-        return 1.0 - Erlang_dist.get_cdf(params, t)
+        return 1.0 - ErlangDistribution.get_cdf(params, t)
 
     @staticmethod
     def calc_theory_moments(r, mu, count=3):
@@ -711,16 +736,16 @@ class Erlang_dist:
         f = [0, 0]
         f[0] = f1
         f[1] = (math.pow(coev, 2) + 1) * math.pow(f[0], 2)
-        return Erlang_dist.get_params(f)
+        return ErlangDistribution.get_params(f)
 
 
-class Exp_dist:
+class ExpDistribution:
     """
         Экспоненциальное распределение
     """
 
     def __init__(self, mu, generator=None):
-        self.erl = Erlang_dist([1, mu])
+        self.erl = ErlangDistribution([1, mu])
         self.params = mu
         self.type = 'M'
         self.generator = generator
@@ -730,18 +755,18 @@ class Exp_dist:
 
     @staticmethod
     def generate_static(mu, generator=None):
-        return Erlang_dist.generate_static(1, mu, generator)
+        return ErlangDistribution.generate_static(1, mu, generator)
 
     @staticmethod
     def calc_theory_moments(mu, count=3):
-        return Erlang_dist.calc_theory_moments(r=1, mu=mu, count=count)
+        return ErlangDistribution.calc_theory_moments(r=1, mu=mu, count=count)
 
     @staticmethod
     def get_params(moments):
-        return Erlang_dist.get_params(moments)[1]
+        return ErlangDistribution.get_params(moments)[1]
 
 
-class Gamma:
+class GammaDistribution:
     """
     Гамма-распределение
     """
@@ -793,7 +818,8 @@ class Gamma:
                 else:
                     B.append(b[i - 1])
                 for j in range(len(b) + 1):
-                    A[i].append(Gamma.get_gamma(alpha + i + j) / (pow(mu, i + j) * Gamma.get_gamma(alpha)))
+                    A[i].append(GammaDistribution.get_gamma(alpha + i + j) /
+                                (pow(mu, i + j) * GammaDistribution.get_gamma(alpha)))
             g = np.linalg.solve(A, B)
             return mu, alpha, g
         else:
@@ -836,7 +862,7 @@ class Gamma:
         :return: значение плотности Гамма-распределения
         Добавлен для совместимости
         """
-        return Gamma.get_f(mu, alpha, t)
+        return GammaDistribution.get_f(mu, alpha, t)
 
     @staticmethod
     def get_f(mu, alpha, t):
@@ -850,7 +876,8 @@ class Gamma:
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
-                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
+                main = mu * math.pow(mu * t, alpha - 1) * \
+                    math.exp(-mu * t) / fract
             else:
                 main = 0
         else:
@@ -869,7 +896,8 @@ class Gamma:
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
-                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
+                main = mu * math.pow(mu * t, alpha - 1) * \
+                    math.exp(-mu * t) / fract
             else:
                 main = 0
         else:
@@ -901,7 +929,7 @@ class Gamma:
     @staticmethod
     def get_gamma_incomplete(x, z, e=1e-12):
 
-        return Gamma.get_gamma(x) - Gamma.get_gamma_small(x, z, e)
+        return GammaDistribution.get_gamma(x) - GammaDistribution.get_gamma_small(x, z, e)
 
     @staticmethod
     def get_gamma_small(x, z, e=1e-12):
@@ -928,12 +956,12 @@ class Gamma:
         Гамма-функиция Г(x)
         """
         if (x > 0.0) & (x < 1.0):
-            return Gamma.get_gamma(x + 1.0) / x
+            return GammaDistribution.get_gamma(x + 1.0) / x
         if x > 2:
-            return (x - 1) * Gamma.get_gamma(x - 1)
+            return (x - 1) * GammaDistribution.get_gamma(x - 1)
         if x <= 0:
-            return math.pi / (math.sin(math.pi * x) * Gamma.get_gamma(1 - x))
-        return Gamma.gamma_approx(x)
+            return math.pi / (math.sin(math.pi * x) * GammaDistribution.get_gamma(1 - x))
+        return GammaDistribution.gamma_approx(x)
 
     @staticmethod
     def gamma_approx(x):
@@ -963,69 +991,3 @@ class Gamma:
             a = (a + p[i]) * z
             b = b * z + q[i]
         return a / b + 1.0
-
-
-if __name__ == "__main__":
-
-    import matplotlib
-    import matplotlib.pyplot as plt
-
-    matplotlib.use('TkAgg')
-
-    r = 3
-    mu = 0.7
-    erl_gen = [Erlang_dist.generate_static(r, mu) for x in range(1000)]
-    print(sum(erl_gen) / len(erl_gen), Erlang_dist.calc_theory_moments(r, mu)[0])
-
-    print(Gamma.get_minus_gamma(0.5), Gamma.get_gamma(-0.5))
-    b1 = 1
-    coev = 1.3
-    b = [0.0] * 4
-    alpha = 1 / (coev ** 2)
-    b[0] = b1
-    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-    b[3] = b[2] * b[0] * (1.0 + 6 / alpha)
-
-    mu, a, g = Gamma.get_params(b)
-    print(mu, a, g)
-    sko = math.sqrt(b[1] - pow(b[0], 2))
-    x = np.linspace(0.05, sko, 100)
-    y1 = []
-    y2 = []
-    y_h2 = []
-    params_H2 = H2_dist.get_params(b)
-    for i in range(len(x)):
-        y1.append(Gamma.get_f_corrective(mu, a, g, x[i]))
-        y2.append(Gamma.get_f(mu, a, x[i]))
-        y_h2.append(H2_dist.get_pdf(params_H2, x[i]))
-
-    fig, ax = plt.subplots()
-
-    ax.plot(x, y1, label="Плотность Гамма с поправочным многочленом")
-    ax.plot(x, y2, label="Плотность Гамма без поправочного многочлена")
-    ax.plot(x, y_h2, label="Плотность H2")
-    plt.legend()
-    plt.show()
-
-    b_coev = [0.3, 0.6, 0.8, 1.2, 2.5]
-    print("\n")
-
-    for j in range(len(b_coev)):
-        b1 = 1
-        b = [0.0] * 3
-        alpha = 1 / (b_coev[j] ** 2)
-        b[0] = b1
-        b[1] = math.pow(b[0], 2) * (math.pow(b_coev[j], 2) + 1)
-        b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-
-        h2_params_clx = H2_dist.get_params_clx(b)
-        h2_params = H2_dist.get_params(b)
-        print("Коэффициент вариации: {0:3.3f}. Параметр alpha {1:3.3f}".format(b_coev[j], alpha))
-        print("-" * 45)
-        print("{0:^15s}|{1:^15s}|{2:^15s}".format("№ нач момента", "Компл", "Действ"))
-        print("-" * 45)
-        for i in range(3):
-            print("{0:^15d} |{1:^15.3f}|{2:^15.3f}".format(i + 1, h2_params_clx[i], h2_params[i]))
-        print("-" * 45)
-        print("\n")

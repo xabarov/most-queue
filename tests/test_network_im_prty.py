@@ -5,7 +5,7 @@ Compare results with numerical calculations using decomposition method.
 import numpy as np
 
 from most_queue.general_utils.tables import times_print_with_classes
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.priority_network import PriorityNetwork
 from most_queue.theory.network_calc import NetworkCalc
 
@@ -48,7 +48,7 @@ def test_network():
 
         b1 = 0.9 * n[m] / sum(L)
         coev = 1.2
-        h2_params.append(H2_dist.get_params_by_mean_and_coev(b1, coev))
+        h2_params.append(H2Distribution.get_params_by_mean_and_coev(b1, coev))
 
         serv_params.append([])
         for i in range(k_num):
@@ -57,7 +57,7 @@ def test_network():
     for k in range(k_num):
         b.append([])
         for m in range(n_num):
-            b[k].append(H2_dist.calc_theory_moments(*h2_params[m], 4))
+            b[k].append(H2Distribution.calc_theory_moments(h2_params[m], 4))
 
     prty = ['NP'] * n_num
 

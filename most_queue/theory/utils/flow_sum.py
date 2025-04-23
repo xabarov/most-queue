@@ -4,7 +4,7 @@ import math
 import matplotlib
 import matplotlib.pyplot as plt
 
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 
 matplotlib.use('TkAgg')
 
@@ -175,13 +175,13 @@ class SummatorNumeric:
         """
 
         # Вычисляем начальныем моменты первого произведения A1, A2*
-        y1_mus = H2_dist.get_params_clx(a1)
-        y = [y1_mus[0], 1.0 - y1_mus[0]]
-        mu = [y1_mus[1], y1_mus[2]]
-        y2_mus = H2_dist.get_params_clx(a2)
-        u1_lambdas = H2_dist.get_residual_params(y2_mus)
-        u = [u1_lambdas[0], 1.0 - u1_lambdas[0]]
-        lambdas = [u1_lambdas[1], u1_lambdas[2]]
+        y1_mus = H2Distribution.get_params_clx(a1)
+        y = [y1_mus.p1, 1.0 - y1_mus.p1]
+        mu = [y1_mus.mu1, y1_mus.mu2]
+        y2_mus = H2Distribution.get_params_clx(a2)
+        u1_lambdas = H2Distribution.get_residual_params(y2_mus)
+        u = [u1_lambdas.p1, 1.0 - u1_lambdas.p1]
+        lambdas = [u1_lambdas.mu1, u1_lambdas.mu2]
 
         f_first = []
         for i in range(len(a1)):
@@ -197,13 +197,13 @@ class SummatorNumeric:
 
         # Вычисляем начальныем моменты второго произведения A1*, A2
 
-        y1_mus = H2_dist.get_params_clx(a2)
-        y = [y1_mus[0], 1.0 - y1_mus[0]]
-        mu = [y1_mus[1], y1_mus[2]]
-        y2_mus = H2_dist.get_params_clx(a1)
-        u1_lambdas = H2_dist.get_residual_params(y2_mus)
-        u = [u1_lambdas[0], 1.0 - u1_lambdas[0]]
-        lambdas = [u1_lambdas[1], u1_lambdas[2]]
+        y1_mus = H2Distribution.get_params_clx(a2)
+        y = [y1_mus.p1, 1.0 - y1_mus.p1]
+        mu = [y1_mus.mu1, y1_mus.mu2]
+        y2_mus = H2Distribution.get_params_clx(a1)
+        u1_lambdas = H2Distribution.get_residual_params(y2_mus)
+        u = [u1_lambdas.p1, 1.0 - u1_lambdas.p1]
+        lambdas = [u1_lambdas.mu1, u1_lambdas.mu2]
 
         f_second = []
         for i in range(len(a1)):

@@ -93,7 +93,7 @@ Most_queue consists of two main parts:
 import numpy as np
 
 from most_queue.general_utils.tables import probs_print, times_print
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.mg1_calc import MG1Calculation
 
@@ -103,8 +103,8 @@ coev = 1.2  # coefficient of variation of service time
 num_of_jobs = 1000000  # number of jobs for simulation
 
 # selecting parameters of the approximating H2-distribution for service time [y1, mu1, mu2]:
-params = H2_dist.get_params_by_mean_and_coev(b1, coev)
-b = H2_dist.calc_theory_moments(*params, 4)
+params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
+b = H2Distribution.calc_theory_moments(params, 4)
 
 # calculation using numerical methods
 mg1_num = MG1Calculation(l, b)
@@ -159,7 +159,7 @@ ro = lsum * b_sr / n
 # and add them to the list of parameters params
 params = []
 for i in range(k):
-    params.append(Gamma.get_mu_alpha([b1[i], b2[i]]))
+    params.append(GammaDistribution.get_mu_alpha([b1[i], b2[i]]))
 
 b = []
 for j in range(k):

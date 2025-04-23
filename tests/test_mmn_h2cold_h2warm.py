@@ -1,9 +1,7 @@
 import math
 import time
 
-import numpy as np
-
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim import qs_sim
 from most_queue.theory.mmn_with_h2_cold_and_h2_warmup import MMn_H2warm_H2cold
 
@@ -39,8 +37,8 @@ def test_mmn_h2cold_h2_warm():
     smo = qs_sim.QueueingSystemSimulator(n, buffer=buff)
     smo.set_sources(l, 'M')
 
-    gamma_params_warm = Gamma.get_mu_alpha(b_w)
-    gamma_params_cold = Gamma.get_mu_alpha(b_c)
+    gamma_params_warm = GammaDistribution.get_mu_alpha(b_w)
+    gamma_params_cold = GammaDistribution.get_mu_alpha(b_c)
 
     smo.set_servers(mu, 'M')
     smo.set_warm(gamma_params_warm, 'Gamma')

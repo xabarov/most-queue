@@ -1,9 +1,9 @@
 import numpy as np
 
-from most_queue.rand_distribution import Gamma, Pareto_dist
+from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.gi_m_1_calc import GiM1
-from most_queue.general_utils.tables import times_print, probs_print
 
 
 def test_gi_m_1():
@@ -20,8 +20,8 @@ def test_gi_m_1():
     num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
 
     # calculation of parameters approximating Gamma-distribution for the incoming stream based on the given average and coefficient of variation
-    v, alpha = Gamma.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = Gamma.calc_theory_moments(v, alpha)
+    v, alpha = GammaDistribution.get_mu_alpha_by_mean_and_coev(a1, a_coev)
+    a = GammaDistribution.calc_theory_moments(v, alpha)
 
     # calculation of initial moments of time spent and waiting in the queueing system
     gm1_calc = GiM1(a, mu)
@@ -60,8 +60,8 @@ def test_gi_m_1():
 
     # Also for Pareto distribution
 
-    alpha, K = Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
-    a = Pareto_dist.calc_theory_moments(alpha, K)
+    alpha, K = ParetoDistribution.get_a_k_by_mean_and_coev(a1, a_coev)
+    a = ParetoDistribution.calc_theory_moments(alpha, K)
 
     gm1_calc = GiM1(a, mu, approx_distr="Pa")
     v_ch = gm1_calc.get_v()

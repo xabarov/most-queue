@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 
 
 class MGnCalc:
@@ -39,11 +39,11 @@ class MGnCalc:
         self.b = b
         self.verbose = verbose
 
-        h2_params = H2_dist.get_params_clx(b)
+        h2_params = H2Distribution.get_params_clx(b)
         # params of H2-distribution:
-        self.y = [h2_params[0], 1.0 - h2_params[0]]
+        self.y = [h2_params.p1, 1.0 - h2_params.p1]
         self.l = l
-        self.mu = [h2_params[1], h2_params[2]]
+        self.mu = [h2_params.mu1, h2_params.mu2]
         # Cols massive holds the number of columns for each level, it is more convenient to calculate it once:
         self.cols = [] * N
 
@@ -126,7 +126,7 @@ class MGnCalc:
                         tag_sum += tag[0, t_i]
                     self.z[j] = 1.0 / tag_sum
                     self.t[j] = self.z[j] * tag
-                    
+
                 else:
                     self.z[j] = np.dot(c, self.x[j])
                     self.t[j] = np.dot(self.z[j], self.b1[j]) + \
@@ -255,10 +255,10 @@ class MGnCalc:
         Form transition matrices
         """
         for i in range(self.N):
-            self.A.append(self._buildA(i))
-            self.B.append(self._buildB(i))
-            self.C.append(self._buildC(i))
-            self.D.append(self._buildD(i))
+            self.A.append(self._build_big_a_matrix(i))
+            self.B.append(self._build_big_b_matrix(i))
+            self.C.append(self._build_big_c_matrix(i))
+            self.D.append(self._build_big_d_matrix(i))
 
     def _calc_g_matrices(self):
         self.G = []
@@ -298,7 +298,7 @@ class MGnCalc:
 
         return chisl / (znam - znam2)
 
-    def _buildA(self, num):
+    def _build_big_a_matrix(self, num):
         """
         Create matrix A by the given level number.
         """
@@ -324,7 +324,7 @@ class MGnCalc:
 
         return output
 
-    def _buildB(self, num):
+    def _build_big_b_matrix(self, num):
         """
         Create matrix B by the given level number.
         """
@@ -357,7 +357,7 @@ class MGnCalc:
                     output[i + 1, i] = (i + 1) * self.mu[1] * self.y[0]
         return output
 
-    def _buildC(self, num):
+    def _build_big_c_matrix(self, num):
         """
         Create matrix C by the given level number.
         """
@@ -375,7 +375,7 @@ class MGnCalc:
 
         return output
 
-    def _buildD(self, num):
+    def _build_big_d_matrix(self, num):
         """
         Create matrix D by the given level number.
         """

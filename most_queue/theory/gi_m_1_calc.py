@@ -4,7 +4,7 @@ Calculation of the GI/M/1 queueing system
 import math
 
 from most_queue.general_utils.conv import get_moments_minus
-from most_queue.rand_distribution import Gamma, Pareto_dist
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 
 
@@ -23,13 +23,12 @@ class GiM1:
         self.mu = mu
         self.e = tolerance
         self.approx_distr = approx_distr
-        
-        self.w_param =  self._get_w_param()
-        
+
+        self.w_param = self._get_w_param()
+
         self.v = None
         self.w = None
         self.pi = None
-
 
     def get_pi(self, num=100):
         """
@@ -37,10 +36,10 @@ class GiM1:
         params:
         num - number of states to calculate
         """
-        
+
         pi = [0.0] * num
 
-        v, alpha = Gamma.get_mu_alpha(self.a)
+        v, alpha = GammaDistribution.get_mu_alpha(self.a)
 
         qs = get_q_Gamma(self.mu, v, alpha)
         summ = 0
@@ -60,7 +59,8 @@ class GiM1:
         """
         v = [0.0] * num
         for k in range(num):
-            v[k] = math.factorial(k + 1) / pow(self.mu * (1 - self.w_param), k + 1)
+            v[k] = math.factorial(k + 1) / pow(self.mu *
+                                               (1 - self.w_param), k + 1)
         return v
 
     def get_w(self, num=3):
@@ -68,10 +68,10 @@ class GiM1:
         Calculation of the initial moments of the waiting time
          num - number of moments
         """
-        
+
         if self.v is None:
             self.v = self.get_v(num)
-            
+
         b = [1.0 / self.mu, 2.0 /
              pow(self.mu, 2), 6.0 / pow(self.mu, 3), 24.0 / pow(self.mu, 4)]
         w = get_moments_minus(self.v, b, num)
@@ -99,12 +99,12 @@ class GiM1:
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
         if self.approx_distr == "Gamma":
-            v, alpha, qs = Gamma.get_params(self.a)
+            v, alpha, qs = GammaDistribution.get_params(self.a)
             while True:
                 summ = 0
                 for i, q in enumerate(qs):
                     summ += (q / pow(self.mu * (1.0 - w_old) + v, i)) * (
-                        Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
+                        GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
                 left = pow(v / (self.mu * (1.0 - w_old) + v), alpha)
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
@@ -113,12 +113,12 @@ class GiM1:
             return w_new
 
         elif self.approx_distr == "Pa":
-            alpha, K = Pareto_dist.get_a_k(self.a)
+            alpha, K = ParetoDistribution.get_a_k(self.a)
             while True:
                 left = alpha * pow(K * self.mu * (1.0 - w_old), alpha)
                 w_new = left * \
-                    Gamma.get_gamma_incomplete(-alpha,
-                                               K * self.mu * (1.0 - w_old))
+                    GammaDistribution.get_gamma_incomplete(-alpha,
+                                                           K * self.mu * (1.0 - w_old))
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new

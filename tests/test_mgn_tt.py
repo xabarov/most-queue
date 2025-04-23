@@ -11,7 +11,7 @@ For verification, simulation is used.
 import math
 import time
 
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.mgn_tt import MGnCalc
 from most_queue.general_utils.tables import probs_print, times_print
@@ -59,7 +59,7 @@ def test_mgn_tt():
 
         # set server parameters as Gamma distribution.
         # Distribution parameters are selected using the method from the random_distribution library
-        gamma_params = Gamma.get_mu_alpha([b[0], b[1]])
+        gamma_params = GammaDistribution.get_mu_alpha([b[0], b[1]])
         qs.set_servers(gamma_params, 'Gamma')
 
         # Run simulation

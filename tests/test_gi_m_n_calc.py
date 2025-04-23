@@ -2,10 +2,10 @@
 Testing the GI/M/n queueing system calculation.
 For verification, we use imitational modeling.
 """
-from most_queue.rand_distribution import Gamma, Pareto_dist
+from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.gi_m_n_calc import GiMn
-from most_queue.general_utils.tables import times_print, probs_print
 
 
 def test_gi_m_n():
@@ -22,11 +22,12 @@ def test_gi_m_n():
     mu = 1 / b1  # service intensity
     a_coev = 1.6  # coefficient of variation of arrival times
 
-    num_of_jobs = 300000  # number of jobs for simulation. The higher, the more accurate the simulation
+    # number of jobs for simulation. The higher, the more accurate the simulation
+    num_of_jobs = 300000
 
     # calculate parameters of the approximating Gamma distribution for the input flow given the mean and coefficient of variation
-    v, alpha = Gamma.get_mu_alpha_by_mean_and_coev(a1, a_coev)
-    a = Gamma.calc_theory_moments(v, alpha)
+    v, alpha = GammaDistribution.get_mu_alpha_by_mean_and_coev(a1, a_coev)
+    a = GammaDistribution.calc_theory_moments(v, alpha)
 
     # calculate initial moments of soujourn and waiting times in the queueing system
 
@@ -41,11 +42,11 @@ def test_gi_m_n():
     # create an instance of the Simulation class and pass the number of servers
     qs = QueueingSystemSimulator(n)
 
-    # set the ariival distribution paprams. 
+    # set the ariival distribution paprams.
     # The method needs to be passed parameters as a list and the type of distribution.
     qs.set_sources([v, alpha], "Gamma")
 
-    # set the service channels. 
+    # set the service channels.
     # The method should receive parameters (in our case, the service intensity)
     # and the type of distribution - M (exponential).
     qs.set_servers(mu, "M")
@@ -68,8 +69,8 @@ def test_gi_m_n():
     probs_print(p_sim, p_ch)
 
     # Also for Pareto distribution
-    alpha, K = Pareto_dist.get_a_k_by_mean_and_coev(a1, a_coev)
-    a = Pareto_dist.calc_theory_moments(alpha, K)
+    alpha, K = ParetoDistribution.get_a_k_by_mean_and_coev(a1, a_coev)
+    a = ParetoDistribution.calc_theory_moments(alpha, K)
     gi_m_n_calc = GiMn(a, mu, n, approx_distr='Pa')
     v_ch = gi_m_n_calc.get_v()
     w_ch = gi_m_n_calc.get_w()

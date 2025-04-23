@@ -1,11 +1,9 @@
 import math
 
-from most_queue.rand_distribution import Gamma
-from most_queue.theory.utils.diff5dots import diff5dots
-
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.mg1_calc import MG1Calculation
 from most_queue.theory.mgn_tt import MGnCalc
-
+from most_queue.theory.utils.diff5dots import diff5dots
 
 
 def get_w1_pr(l, b):
@@ -82,7 +80,8 @@ def busy_calc(l, b, num=5):
     if num > 1:
         pnz.append(b[1] / math.pow(1 - ro, 3))
     if num > 2:
-        pnz.append(b[2] / math.pow(1 - ro, 4) + 3 * l * b[1] * b[1] / math.pow(1 - ro, 5))
+        pnz.append(b[2] / math.pow(1 - ro, 4) + 3 *
+                   l * b[1] * b[1] / math.pow(1 - ro, 5))
     if num > 3:
         chisl = b[3] * math.pow(z, 4) + 6 * b[2] * l * pnz[1] * z * z + b[1] * (
                 3 * math.pow(l * pnz[1], 2) + 4 * l * pnz[2] * z)
@@ -90,7 +89,7 @@ def busy_calc(l, b, num=5):
     if num > 4:
         chisl = b[4] * math.pow(z, 5) + 10 * b[3] * l * pnz[1] * math.pow(z, 3) + \
                 b[2] * (15 * math.pow(l * pnz[1], 2) * z + 10 * l * pnz[2 * z * z]) + b[1] * (
-                        5 * l * pnz[3] * z + 10 * l * l * pnz[1] * pnz[2])
+            5 * l * pnz[3] * z + 10 * l * l * pnz[1] * pnz[2])
         pnz.append(chisl / (1 - ro))
 
     return pnz
@@ -114,14 +113,15 @@ def climov_w_pr_calc(l, b):
         if k != 0:
             w[k][0] = ro_k_j[k][1] / (2 * ro_k[k - 1] * ro_k[k])
             w[k][1] = ro_k_j[k][2] / (3 * ro_k[k]) + (ro_k_j[k][2]) / (
-                    2 * math.pow(ro_k[k], 2)) + \
-                      (ro_k_j[k][1]) / (2 * ro_k[k])
+                2 * math.pow(ro_k[k], 2)) + \
+                (ro_k_j[k][1]) / (2 * ro_k[k])
 
         else:
             w[k][0] = ro_k_j[k][1] / (2 * ro_k[k])
             w[k][1] = ro_k_j[k][2] / (3 * math.pow(ro_k[k - 1], 3) * ro_k[k]) + (ro_k_j[k][2] * ro_k_j[k - 1][1]) / (
-                    2 * math.pow(ro_k[k - 1], 2) * math.pow(ro_k[k], 2)) + \
-                      (ro_k_j[k][1] * ro_k_j[k - 1][1]) / (2 * math.pow(ro_k[k - 1], 3) * ro_k[k])
+                2 * math.pow(ro_k[k - 1], 2) * math.pow(ro_k[k], 2)) + \
+                (ro_k_j[k][1] * ro_k_j[k - 1][1]) / \
+                (2 * math.pow(ro_k[k - 1], 3) * ro_k[k])
 
     return w
 
@@ -142,14 +142,15 @@ def busy_calc_warm_up(l, f, pnz, num=5):
     if num > 1:
         pnz_warm_up.append(f[0] * l * pnz[1] + f[1] * z * z)
     if num > 2:
-        pnz_warm_up.append(f[0] * l * pnz[2] + 3 * f[1] * l * pnz[1] * z + f[2] * math.pow(z, 3))
+        pnz_warm_up.append(f[0] * l * pnz[2] + 3 * f[1] *
+                           l * pnz[1] * z + f[2] * math.pow(z, 3))
     if num > 3:
         pnz_warm_up.append(f[0] * l * pnz[3] + f[1] * (3 * math.pow(l * pnz[1], 2) + 4 * l * pnz[2] * z)
                            + 6 * f[2] * l * pnz[1] * z * z + f[3] * math.pow(z, 4))
     if num > 4:
         pnz_warm_up.append(f[0] * l * pnz[4] + f[1] * (5 * l * pnz[3] * z + 10 * l * l * pnz[1] * pnz[2]) +
                            f[2] * (15 * math.pow(l * pnz[1], 2) * z + 10 * f[3] * l * pnz[1] * math.pow(z, 3) + f[
-            4] * math.pow(z, 5)))
+                               4] * math.pow(z, 5)))
 
     return pnz_warm_up
 
@@ -190,14 +191,17 @@ def calc_pr1(l, b, num=3):
     for i in range(num):
         summ = b[0][i + 1] / (i + 2)
         for s in range(1, i + 1):
-            summ += b[0][i + 1 - s] * w[0][s] * math.factorial(i + 1) / (math.factorial(s) * math.factorial(i + 2 - s))
+            summ += b[0][i + 1 - s] * w[0][s] * \
+                math.factorial(i + 1) / (math.factorial(s)
+                                         * math.factorial(i + 2 - s))
         w[0][i] = summ * l[0] / (1 - l[0] * b[0][0])
 
     v.append([0.0] * num)
     v[0][0] = w[0][0] + b[0][0]
     v[0][1] = w[0][1] + 2 * w[0][0] * b[0][0] + b[0][1]
     if num > 2:
-        v[0][2] = w[0][2] + 3 * w[0][1] * b[0][0] + 3 * w[0][0] * b[0][1] + b[0][2]
+        v[0][2] = w[0][2] + 3 * w[0][1] * \
+            b[0][0] + 3 * w[0][0] * b[0][1] + b[0][2]
 
     h.append(b[0])
 
@@ -215,7 +219,8 @@ def calc_pr1(l, b, num=3):
             if j == 1:
                 pi_j_i[j][i] = busy_calc_warm_up(l[j], pi_j[0], pi_j_i[j][j])
             else:
-                pi_j_i[j][i] = busy_calc_warm_up(l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
+                pi_j_i[j][i] = busy_calc_warm_up(
+                    l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
 
         for moment in range(num + 1):
             summ = 0
@@ -231,14 +236,18 @@ def calc_pr1(l, b, num=3):
         for i in range(1, num + 1):
             summ = 0
             for m in range(i):
-                summ += w[j][m] * h[j][i - m] * math.factorial(i) / (math.factorial(m) * math.factorial(i + 1 - m))
+                summ += w[j][m] * h[j][i - m] * \
+                    math.factorial(i) / (math.factorial(m) *
+                                         math.factorial(i + 1 - m))
 
-            w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) + l[j] * summ) / (1.0 - l[j] * h[j][0])
+            w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) +
+                       l[j] * summ) / (1.0 - l[j] * h[j][0])
         w[j] = w[j][1:]
         v[j][0] = w[j][0] + h[j][0]
         v[j][1] = w[j][1] + 2 * w[j][0] * h[j][0] + h[j][1]
         if num > 2:
-            v[j][2] = w[j][2] + 3 * w[j][1] * h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
+            v[j][2] = w[j][2] + 3 * w[j][1] * \
+                h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
 
     res = {}
     res['v'] = v
@@ -250,7 +259,8 @@ def calc_pr1(l, b, num=3):
         w_with_pr[j][0] = v[j][0] - b[j][0]
         w_with_pr[j][1] = v[j][1] - 2 * w_with_pr[j][0] * b[j][0] - b[j][1]
         if num > 2:
-            w_with_pr[j][2] = v[j][2] - 3 * w_with_pr[j][1] * b[j][0] - 3 * w_with_pr[j][0] * b[j][1] - b[j][2]
+            w_with_pr[j][2] = v[j][2] - 3 * w_with_pr[j][1] * \
+                b[j][0] - 3 * w_with_pr[j][0] * b[j][1] - b[j][2]
     res['w_with_pr'] = w_with_pr
     res['pnz'] = pi_j
 
@@ -282,7 +292,7 @@ def get_w_mg1_bp(l, b):
         for k in range(num_of_classes):
             b_sr[i] += b[k][i]
         b_sr[i] /= num_of_classes
-    
+
     mg1_num = MG1Calculation(l_sum, b_sr)
     w_k = mg1_num.get_w()
 
@@ -306,7 +316,8 @@ def get_v_mg1_bp(l, b):
         if num_of_moment > 1:
             v[k].append(w[k][1] + 2 * w[k][0] * b[k][0] + b[k][1])
         if num_of_moment > 2:
-            v[k].append(w[k][2] + 3 * w[k][1] * b[k][0] + 3 * w[k][0] * b[k][1] + b[k][2])
+            v[k].append(w[k][2] + 3 * w[k][1] * b[k][0] +
+                        3 * w[k][0] * b[k][1] + b[k][2])
 
     return v
 
@@ -322,7 +333,8 @@ def get_v_np(l, b, num=3):
         if num > 1:
             v[i].append(w[i][1] + 2 * w[i][0] * b[i][0] + b[i][1])
         if num > 2:
-            v[i].append(w[i][2] + 3 * w[i][1] * b[i][0] + 3 * w[i][0] * b[i][1] + b[i][2])
+            v[i].append(w[i][2] + 3 * w[i][1] * b[i][0] +
+                        3 * w[i][0] * b[i][1] + b[i][2])
 
     return v
 
@@ -387,16 +399,16 @@ def get_w_np(l, b, num=3):
         steps = 5
 
         if j != num_of_cl - 1:
-            b_b_param = Gamma.get_mu_alpha(b_b)
+            b_b_param = GammaDistribution.get_mu_alpha(b_b)
         else:
             b_b_param = 0
 
-        b_k_param = Gamma.get_mu_alpha(b[j])
+        b_k_param = GammaDistribution.get_mu_alpha(b[j])
 
         nu_a_PNZ = busy_calc(la, b_a)
 
         if j != 0:
-            nu_a_param = Gamma.get_mu_alpha(nu_a_PNZ)
+            nu_a_param = GammaDistribution.get_mu_alpha(nu_a_PNZ)
         else:
             nu_a_param = 0
 
@@ -406,7 +418,7 @@ def get_w_np(l, b, num=3):
             s = h * c
 
             if j != 0:
-                nu_a = Gamma.get_pls(*nu_a_param, s)
+                nu_a = GammaDistribution.get_pls(*nu_a_param, s)
                 summ = s + la - la * nu_a
             else:
                 summ = s
@@ -414,9 +426,10 @@ def get_w_np(l, b, num=3):
             chisl = (1 - ro) * summ
 
             if j != len(l) - 1:
-                chisl += lb * (1 - Gamma.get_pls(*b_b_param, summ))
+                chisl += lb * (1 - GammaDistribution.get_pls(*b_b_param, summ))
 
-            znam = l[j] * Gamma.get_pls(*b_k_param, summ) - l[j] + s
+            znam = l[j] * \
+                GammaDistribution.get_pls(*b_k_param, summ) - l[j] + s
 
             w_pls.append(chisl / znam)
 
@@ -516,7 +529,8 @@ def get_v_prty_invar(l, b, n, type='NP', num=3):
         if num > 1:
             v[i][1] = w[i][1] + 2 * w[i][0] * b[i][0] + b[i][1]
         if num > 2:
-            v[i][2] = w[i][2] + 3 * w[i][1] * b[i][0] + 3 * w[i][0] * b[i][1] + b[i][2]
+            v[i][2] = w[i][2] + 3 * w[i][1] * \
+                b[i][0] + 3 * w[i][0] * b[i][1] + b[i][2]
     return v
 
 
@@ -547,6 +561,7 @@ def get_v_MxGn_no_pr(l, b, n):
         v.append([])
         v[i].append(b[i][0] + w[i][0])
         v[i].append(b[i][1] + 2 * b[i][0] * w[i][0] + w[i][1])
-        v[i].append(b[i][2] + 3 * b[i][1] * w[i][0] + 3 * b[i][0] * w[i][1] + w[i][2])
+        v[i].append(b[i][2] + 3 * b[i][1] * w[i][0] +
+                    3 * b[i][0] * w[i][1] + w[i][2])
 
     return v

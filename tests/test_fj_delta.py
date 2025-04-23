@@ -4,7 +4,7 @@ Test for ForkJoin queue with delta.
 import numpy as np
 
 from most_queue.general_utils.tables import times_print
-from most_queue.rand_distribution import Erlang_dist, H2_dist
+from most_queue.rand_distribution import ErlangDistribution, H2Distribution
 from most_queue.sim.fj_delta_sim import ForkJoinSimDelta
 from most_queue.theory import fj_calc
 
@@ -18,11 +18,11 @@ def test_fj_delta():
     b1 = 0.35
     coev = 1.2
     b1_delta = 0.1
-    b_params = H2_dist.get_params_by_mean_and_coev(b1, coev)
+    b_params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
 
-    delta_params = H2_dist.get_params_by_mean_and_coev(b1_delta, coev)
-    b_delta = H2_dist.calc_theory_moments(*delta_params)
-    b = H2_dist.calc_theory_moments(*b_params, 4)
+    delta_params = H2Distribution.get_params_by_mean_and_coev(b1_delta, coev)
+    b_delta = H2Distribution.calc_theory_moments(delta_params)
+    b = H2Distribution.calc_theory_moments(b_params, 4)
 
     qs = ForkJoinSimDelta(n, n, b_delta, True)
 
@@ -54,18 +54,19 @@ def test_fj_delta():
     b1 = 0.5
 
     b1_delta = 0.1
-    delta_params = Erlang_dist.get_params_by_mean_and_coev(b1_delta, coev)
-    b_delta = Erlang_dist.calc_theory_moments(*delta_params)
+    delta_params = ErlangDistribution.get_params_by_mean_and_coev(
+        b1_delta, coev)
+    b_delta = ErlangDistribution.calc_theory_moments(*delta_params)
 
-    b_params = Erlang_dist.get_params_by_mean_and_coev(b1, coev)
-    b = Erlang_dist.calc_theory_moments(*b_params, 4)
+    b_params = ErlangDistribution.get_params_by_mean_and_coev(b1, coev)
+    b = ErlangDistribution.calc_theory_moments(*b_params, 4)
 
     qs = ForkJoinSimDelta(n, n, b_delta, True)
     qs.set_sources(l, 'M')
     qs.set_servers(b_params, 'E')
     qs.run(100000)
     v_im = qs.v
-    
+
     sj_delta = fj_calc.SplitJoinCalc(l, n, b)
 
     v_ch = sj_delta.get_v_delta(b_delta)

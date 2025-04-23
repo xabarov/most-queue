@@ -1,7 +1,11 @@
 import numpy as np
 
 from most_queue.general_utils.tables import probs_print, times_print
-from most_queue.rand_distribution import H2_dist, Pareto_dist, Uniform_dist
+from most_queue.rand_distribution import (
+    H2Distribution,
+    ParetoDistribution,
+    UniformDistribution,
+)
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.mg1_calc import MG1Calculation
 
@@ -17,8 +21,8 @@ def test_mg1():
     num_of_jobs = 1000000  # number of jobs for IM
 
     # selecting parameters of the approximating H2-distribution for service time [y1, mu1, mu2]:
-    params = H2_dist.get_params_by_mean_and_coev(b1, coev)
-    b = H2_dist.calc_theory_moments(*params, 4)
+    params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
+    b = H2Distribution.calc_theory_moments(params, 4)
 
     # calculation using numerical methods
     mg1_num = MG1Calculation(l, b)
@@ -44,8 +48,8 @@ def test_mg1():
 
     # The same for other distributions of service time
     print("Uniform")
-    params = Uniform_dist.get_params_by_mean_and_coev(b1, coev)
-    b = Uniform_dist.calc_theory_moments(*params, 4)
+    params = UniformDistribution.get_params_by_mean_and_coev(b1, coev)
+    b = UniformDistribution.calc_theory_moments(*params, 4)
     mg1_num = MG1Calculation(l, b)
     w_ch = mg1_num.get_w()
     p_ch = mg1_num.get_p(dist_type='Uniform')
@@ -65,8 +69,8 @@ def test_mg1():
 
     print("Pareto")
 
-    a, K = Pareto_dist.get_a_k_by_mean_and_coev(b1, coev)
-    b = Pareto_dist.calc_theory_moments(a, K, 4)
+    a, K = ParetoDistribution.get_a_k_by_mean_and_coev(b1, coev)
+    b = ParetoDistribution.calc_theory_moments(a, K, 4)
     mg1_num = MG1Calculation(l, b)
     w_ch = mg1_num.get_w()
     p_ch = mg1_num.get_p(dist_type='Pa')
@@ -79,7 +83,7 @@ def test_mg1():
     w_sim = qs.w
     p_sim = qs.get_p()
     v_sim = qs.v
-    
+
     assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
 
     times_print(w_sim, w_ch, True)

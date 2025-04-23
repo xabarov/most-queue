@@ -4,7 +4,7 @@ Compare of queue implementation
 import math
 import time
 
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 
 
@@ -40,7 +40,7 @@ def compare_calc_times():
 
         # задаем параметры каналов обслуживания Гамма-распределением.
         # Параметры распределения подбираем с помощью метода библиотеки random_distribution
-        gamma_params = Gamma.get_mu_alpha([b[0], b[1]])
+        gamma_params = GammaDistribution.get_mu_alpha([b[0], b[1]])
         qs.set_servers(gamma_params, 'Gamma')
 
         # Запуск ИМ

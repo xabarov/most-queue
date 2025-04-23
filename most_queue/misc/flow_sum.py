@@ -1,8 +1,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
-from most_queue.rand_distribution import Gamma
+
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.flow_sum_sim import FlowSumSim
-from most_queue.theory.flow_sum import SummatorNumeric
+from most_queue.misc.flow_sum import SummatorNumeric
 
 matplotlib.use('TkAgg')
 
@@ -26,18 +27,20 @@ def test():
     # начальные моменты суммируемых потоков. В нашем случае все потоки одинаково распределены
     a = []
     for i in range(n_nums):
-        params1 = Gamma.get_mu_alpha_by_mean_and_coev(mean, coev)
-        a1 = Gamma.calc_theory_moments(*params1, 4)
+        params1 = GammaDistribution.get_mu_alpha_by_mean_and_coev(mean, coev)
+        a1 = GammaDistribution.calc_theory_moments(*params1, 4)
         a.append(a1)
 
     # Численный расчет
     s = SummatorNumeric(a, is_semi=is_semi)
-    s.sum_flows()  # в  s._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    # в  s._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    s.sum_flows()
     # i - кол-во суммируемых потоков, j - номер начального момента
 
     # ИМ
     s_sim = FlowSumSim(a, distr=distr_im, num_of_jobs=num_of_jobs)
-    s_sim.sum_flows()  # в  s_sim._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    # в  s_sim._flows[i][j] содержатся начальные моменты суммируемых потокоы,
+    s_sim.sum_flows()
     # i - кол-во суммируемых потоков, j - номер начального момента
 
     # Расчет ошибок и отображение результатов
@@ -48,7 +51,8 @@ def test():
     errors_coev = []
 
     str_f = "{0:^18s}|{1:^10.3f}|{2:^10.3f}|{3:^10.3f}|{4:^10.3f}|{5:^10.3f}"
-    print("{0:^18s}|{1:^10s}|{2:^10s}|{3:^10s}|{4:^10s}|{5:^10s}".format("-", "a1", "a2", "a3", "a4", "coev"))
+    print("{0:^18s}|{1:^10s}|{2:^10s}|{3:^10s}|{4:^10s}|{5:^10s}".format(
+        "-", "a1", "a2", "a3", "a4", "coev"))
     print("-" * 80)
 
     for i in range(n_nums - 1):
@@ -60,9 +64,12 @@ def test():
         print(str_f.format("Числ", s.flows_[i][0].real, s.flows_[i][1].real, s.flows_[i][2].real, s.flows_[i][3].real,
                            coevs_sim[i]))
         print("-" * 80)
-        errors1.append(SummatorNumeric.get_error(s.flows_[i][0].real, s_sim.flows_[i][0]))
-        errors2.append(SummatorNumeric.get_error(s.flows_[i][1].real, s_sim.flows_[i][1]))
-        errors_coev.append(SummatorNumeric.get_error(coevs_num[i], coevs_sim[i]))
+        errors1.append(SummatorNumeric.get_error(
+            s.flows_[i][0].real, s_sim.flows_[i][0]))
+        errors2.append(SummatorNumeric.get_error(
+            s.flows_[i][1].real, s_sim.flows_[i][1]))
+        errors_coev.append(SummatorNumeric.get_error(
+            coevs_num[i], coevs_sim[i]))
 
     fig, ax = plt.subplots()
     linestyles = ["solid", "dotted", "dashed", "dashdot"]

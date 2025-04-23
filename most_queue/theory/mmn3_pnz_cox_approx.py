@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import Cox_dist
+from most_queue.rand_distribution import CoxDistribution
 from most_queue.theory.priority_calc import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
@@ -82,11 +82,11 @@ class Mmn3_pnz_cox:
 
         pnz = busy_calc(l_H, b_mom, 3)
 
-        param_cox = Cox_dist.get_params(pnz)
+        param_cox = CoxDistribution.get_params(pnz)
 
-        y1_cox = param_cox[0]
-        mu1_cox = param_cox[1]
-        mu2_cox = param_cox[2]
+        y1_cox = param_cox.p1
+        mu1_cox = param_cox.mu1
+        mu2_cox = param_cox.mu2
 
         t1 = mu1_cox * (1.0 - y1_cox)
         t12 = mu1_cox * y1_cox
@@ -397,10 +397,10 @@ class Mmn3_pnz_cox:
         t12 = []
 
         for i in range(6):
-            cox_param = Cox_dist.get_params(self.busy_periods[i])
-            y1 = cox_param[0]
-            mu1 = cox_param[1]
-            mu2 = cox_param[2]
+            cox_param = CoxDistribution.get_params(self.busy_periods[i])
+            y1 = cox_param.p1
+            mu1 = cox_param.mu1
+            mu2 = cox_param.mu2
 
             t1.append(mu1 * (1.0 - y1))
             t12.append(mu1 * y1)
@@ -425,7 +425,6 @@ class Mmn3_pnz_cox:
 
         return output
 
-    
     def buildD(self, num):
         """
             Формирует матрицу D по заданному номеру яруса

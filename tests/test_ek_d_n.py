@@ -6,7 +6,7 @@ For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
 For verification, we use simulation modeling (sim).
 """
 from most_queue.general_utils.tables import probs_print
-from most_queue.rand_distribution import Erlang_dist
+from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.ek_d_n_calc import EkDn
 
@@ -31,11 +31,11 @@ def test_ek_d_n():
 
     # Let us select the parameters k and l of the approximating distribution
     # based on the mean value and the coefficient of variation
-    # using the Erlang_dist.get_params_by_mean_and_coev() method
+    # using the ErlangDistribution.get_params_by_mean_and_coev() method
 
     a1 = 1  # average time between requests in the input stream
     coev_a = 0.56  # coefficient of variation of input flow
-    k, l = Erlang_dist.get_params_by_mean_and_coev(a1, coev_a)
+    k, l = ErlangDistribution.get_params_by_mean_and_coev(a1, coev_a)
 
     # service time will be determined based on the specified utilization factor
     # In your case, the parameters l, k, b and n can be specified directly.

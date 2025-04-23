@@ -14,7 +14,7 @@ from most_queue.general_utils.vacations_paper_utils import (
     make_plot,
     print_table,
 )
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
 from most_queue.theory.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
 
@@ -50,10 +50,10 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
         sim = QueueingSystemSimulator(n, buffer=buff)
         sim.set_sources(l, 'M')
 
-        gamma_params = Gamma.get_mu_alpha(b)
-        gamma_params_warm = Gamma.get_mu_alpha(b_w)
-        gamma_params_cold = Gamma.get_mu_alpha(b_c)
-        gamma_params_cold_delay = Gamma.get_mu_alpha(b_d)
+        gamma_params = GammaDistribution.get_mu_alpha(b)
+        gamma_params_warm = GammaDistribution.get_mu_alpha(b_w)
+        gamma_params_cold = GammaDistribution.get_mu_alpha(b_c)
+        gamma_params_cold_delay = GammaDistribution.get_mu_alpha(b_d)
 
         sim.set_servers(gamma_params, 'Gamma')
         sim.set_warm(gamma_params_warm, 'Gamma')

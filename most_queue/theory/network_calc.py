@@ -3,7 +3,7 @@ Calculates queueing network.
 """
 import numpy as np
 
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.priority_calc import get_v_prty_invar
 from most_queue.theory.utils.diff5dots import diff5dots
 
@@ -13,8 +13,8 @@ class NetworkCalc:
     Calculates queueing network.
     """
 
-    def __init__(self, R: list[np.matrix], b: list[list[list[float]]], 
-                 n:list[int], L:list[float], prty:list[str], nodes_prty: list[list[int]]):
+    def __init__(self, R: list[np.matrix], b: list[list[list[float]]],
+                 n: list[int], L: list[float], prty: list[str], nodes_prty: list[list[int]]):
         """
         R: list of routing matrices for each class.
         b: list of lists of theoretical moments of service time distribution for each class in each node.
@@ -71,19 +71,20 @@ class NetworkCalc:
 
         # Create output array with zeros for null columns
         l_out = np.zeros(R.shape[1] - 1, dtype=np.float64)
-        
+
         # Fill non-null columns
         valid_indices = np.arange(len(intensities))
         l_out[~null_mask[:-1]] = intensities.flatten()
 
         return l_out
-    
+
     def order_b_l(self, k_num, nodes):
         """
         Order the loads and intensities based on node priority.
         """
-        
-        intensities = [self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)]
+
+        intensities = [self.balance_equation(
+            self.L[k], self.R[k]) for k in range(k_num)]
 
         b_order = []
         l_order = []
@@ -95,7 +96,6 @@ class NetworkCalc:
 
         return b_order, l_order
 
-
     def run(self):
         """
         Run the simulation and calculate the results.
@@ -106,7 +106,7 @@ class NetworkCalc:
         nodes = self.R[0].shape[0] - 1
         res['loads'] = [0.0] * nodes
         res['v'] = []
-        
+
         b_order, l_order = self.order_b_l(k_num, nodes)
 
         res['v_node'] = []
@@ -130,12 +130,14 @@ class NetworkCalc:
             T = self.R[k][1:, nodes].reshape(-1, 1)
             Q = self.R[k][1:, :nodes]
 
-            gamma_mu_alpha = [Gamma.get_mu_alpha([res['v_node'][i][k][0], res['v_node'][i][k][1]]) for i in range(nodes)]
+            gamma_mu_alpha = [GammaDistribution.get_mu_alpha(
+                [res['v_node'][i][k][0], res['v_node'][i][k][1]]) for i in range(nodes)]
 
             g_PLS = []
             for i in range(4):
-                N = np.diag([Gamma.get_pls(*gamma_mu_alpha[j], s[i]) for j in range(nodes)])
-            
+                N = np.diag([GammaDistribution.get_pls(
+                    *gamma_mu_alpha[j], s[i]) for j in range(nodes)])
+
                 G = np.dot(N, Q)
                 FF = I - G
                 F = np.linalg.inv(FF)

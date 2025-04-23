@@ -6,7 +6,12 @@ import math
 
 from tqdm import tqdm
 
-from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist, Pareto_dist
+from most_queue.rand_distribution import (
+    ErlangDistribution,
+    GammaDistribution,
+    H2Distribution,
+    ParetoDistribution,
+)
 
 
 class FlowSumSim:
@@ -88,10 +93,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        y1_mus = H2_dist.get_params(a1)
-        arr1 = H2_dist(y1_mus)
-        y2_mus = H2_dist.get_params(a2)
-        arr2 = H2_dist(y2_mus)
+        y1_mus = H2Distribution.get_params(a1)
+        arr1 = H2Distribution(y1_mus)
+        y2_mus = H2Distribution.get_params(a2)
+        arr2 = H2Distribution(y2_mus)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -134,10 +139,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        a_K = Pareto_dist.get_a_k(a1)
-        arr1 = Pareto_dist(a_K)
-        b_M = Pareto_dist.get_a_k(a2)
-        arr2 = Pareto_dist(b_M)
+        a_K = ParetoDistribution.get_a_k(a1)
+        arr1 = ParetoDistribution(a_K)
+        b_M = ParetoDistribution.get_a_k(a2)
+        arr2 = ParetoDistribution(b_M)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -168,10 +173,10 @@ class FlowSumSim:
     @staticmethod
     def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
 
-        params1 = Erlang_dist.get_params(a1)
-        arr1 = Erlang_dist(params1)
-        params2 = Erlang_dist.get_params(a2)
-        arr2 = Erlang_dist(params2)
+        params1 = ErlangDistribution.get_params(a1)
+        arr1 = ErlangDistribution(params1)
+        params2 = ErlangDistribution.get_params(a2)
+        arr2 = ErlangDistribution(params2)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -208,10 +213,10 @@ class FlowSumSim:
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
 
-        params1 = Gamma.get_mu_alpha(a1)
-        arr1 = Gamma(params1)
-        params2 = Gamma.get_mu_alpha(a2)
-        arr2 = Gamma(params2)
+        params1 = GammaDistribution.get_mu_alpha(a1)
+        arr1 = GammaDistribution(params1)
+        params2 = GammaDistribution.get_mu_alpha(a2)
+        arr2 = GammaDistribution(params2)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()

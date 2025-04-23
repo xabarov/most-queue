@@ -8,7 +8,7 @@ import math
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import (
     laplace_stieltjes_exp_transform as lst_exp,
@@ -58,21 +58,21 @@ class MH2nH2Warm:
         self.l = l
 
         if self.dt == 'c16':
-            h2_params_service = H2_dist.get_params_clx(b)
+            h2_params_service = H2Distribution.get_params_clx(b)
         else:
-            h2_params_service = H2_dist.get_params(b)
+            h2_params_service = H2Distribution.get_params(b)
 
         # Parameters of the H2 distribution
-        self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
-        self.mu = [h2_params_service[1], h2_params_service[2]]
+        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
+        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
 
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2Distribution.get_params_clx(b_warm)
         else:
-            h2_params_warm = H2_dist.get_params(b_warm)
-        self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
-        self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
+            h2_params_warm = H2Distribution.get_params(b_warm)
+        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
+        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
 
         # Cols - array that stores the number of columns for each level, it is convenient to calculate it once:
         self.cols = [] * N
@@ -309,10 +309,10 @@ class MH2nH2Warm:
         Формирует матрицы переходов
         """
         for i in range(self.N):
-            self.A.append(self._buildA(i))
-            self.B.append(self._buildB(i))
-            self.C.append(self._buildC(i))
-            self.D.append(self._buildD(i))
+            self.A.append(self._build_big_a_matrix(i))
+            self.B.append(self._build_big_b_matrix(i))
+            self.C.append(self._build_big_c_matrix(i))
+            self.D.append(self._build_big_d_matrix(i))
 
     def _calc_g_matrices(self):
         self.G = []
@@ -456,7 +456,7 @@ class MH2nH2Warm:
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def _buildA(self, num):
+    def _build_big_a_matrix(self, num):
         """
         Формирует матрицу А по заданному номеру яруса
         """
@@ -517,7 +517,7 @@ class MH2nH2Warm:
                     mass[i + + left_pos + 1, i +
                          bottom_pos] = (i + 1) * mu[1] * y[0]
 
-    def _buildB(self, num):
+    def _build_big_b_matrix(self, num):
         """
             Формирует матрицу B по заданному номеру яруса
         """
@@ -602,7 +602,7 @@ class MH2nH2Warm:
 
         return output
 
-    def _buildC(self, num):
+    def _build_big_c_matrix(self, num):
         """
         Формирует матрицу C по заданному номеру яруса
         """
@@ -627,7 +627,7 @@ class MH2nH2Warm:
 
         return output
 
-    def _buildD(self, num):
+    def _build_big_d_matrix(self, num):
         """
         Формирует матрицу D по заданному номеру яруса
         """

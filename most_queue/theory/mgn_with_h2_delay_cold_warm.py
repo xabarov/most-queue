@@ -8,7 +8,7 @@ from itertools import chain
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import laplace_stieltjes_exp_transform as pls
 
@@ -54,41 +54,41 @@ class MGnH2ServingColdWarmDelay:
         self.w_pls_dt = w_pls_dt
 
         if self.dt == 'c16':
-            h2_params_service = H2_dist.get_params_clx(b)
+            h2_params_service = H2Distribution.get_params_clx(b)
         else:
-            h2_params_service = H2_dist.get_params(b)
+            h2_params_service = H2Distribution.get_params(b)
 
         # H2-parameters for service time
-        self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
-        self.mu = [h2_params_service[1], h2_params_service[2]]
+        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
+        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
 
         # H2-parameters for warm-up time
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2Distribution.get_params_clx(b_warm)
         else:
-            h2_params_warm = H2_dist.get_params(b_warm)
-        self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
-        self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
+            h2_params_warm = H2Distribution.get_params(b_warm)
+        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
+        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
 
         # H2-parameters for cold-down time
         self.b_cold = b_cold
         if self.dt == 'c16':
-            h2_params_cold = H2_dist.get_params_clx(b_cold)
+            h2_params_cold = H2Distribution.get_params_clx(b_cold)
         else:
-            h2_params_cold = H2_dist.get_params(b_cold)
-        self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
-        self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
+            h2_params_cold = H2Distribution.get_params(b_cold)
+        self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
+        self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
 
         # H2-parameters for cold-down delay time
         self.b_cold_delay = b_cold_delay
         if self.dt == 'c16':
-            h2_params_cold_delay = H2_dist.get_params_clx(b_cold_delay)
+            h2_params_cold_delay = H2Distribution.get_params_clx(b_cold_delay)
         else:
-            h2_params_cold_delay = H2_dist.get_params(b_cold_delay)
-        self.y_c_delay = [h2_params_cold_delay[0],
-                          1.0 - h2_params_cold_delay[0]]
-        self.mu_c_delay = [h2_params_cold_delay[1], h2_params_cold_delay[2]]
+            h2_params_cold_delay = H2Distribution.get_params(b_cold_delay)
+        self.y_c_delay = [h2_params_cold_delay.p1,
+                          1.0 - h2_params_cold_delay.p1]
+        self.mu_c_delay = [h2_params_cold_delay.mu1, h2_params_cold_delay.mu2]
 
         self.cols = [] * N
 
@@ -495,10 +495,10 @@ class MGnH2ServingColdWarmDelay:
         Bulds matrices A, B, C, D
         """
         for i in range(self.N):
-            self.A.append(self._buildA(i))
-            self.B.append(self._buildB(i))
-            self.C.append(self._buildC(i))
-            self.D.append(self._buildD(i))
+            self.A.append(self._build_big_a_matrix(i))
+            self.B.append(self._build_big_b_matrix(i))
+            self.C.append(self._build_big_c_matrix(i))
+            self.D.append(self._build_big_d_matrix(i))
 
     def _calc_g_matrices(self):
         self.G = []
@@ -544,7 +544,7 @@ class MGnH2ServingColdWarmDelay:
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def _buildA(self, num):
+    def _build_big_a_matrix(self, num):
         if num < self.n:
             col = self.cols[num + 1]
             row = self.cols[num]
@@ -604,7 +604,7 @@ class MGnH2ServingColdWarmDelay:
                     mass[i + + left_pos + 1, i +
                          bottom_pos] = (i + 1) * mu[1] * y[0]
 
-    def _buildB(self, num):
+    def _build_big_b_matrix(self, num):
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
 
@@ -640,7 +640,7 @@ class MGnH2ServingColdWarmDelay:
 
         return output
 
-    def _buildC(self, num):
+    def _build_big_c_matrix(self, num):
         if num < self.n:
             col = self.cols[num]
             row = col
@@ -677,7 +677,7 @@ class MGnH2ServingColdWarmDelay:
 
         return output
 
-    def _buildD(self, num):
+    def _build_big_d_matrix(self, num):
         if num < self.n:
             col = self.cols[num]
             row = col

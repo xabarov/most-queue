@@ -1,7 +1,7 @@
 """
 Class for calculating M/G/1 queue with warm-up.
 """
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
@@ -30,8 +30,8 @@ class MG1WarmCalc:
         tv = self.b_warm[0] / (1 - self.l * self.b[0])
         p0_star = 1 / (1 + self.l * tv)
 
-        b_param = Gamma.get_mu_alpha(self.b)
-        b_warm_param = Gamma.get_mu_alpha(self.b_warm)
+        b_param = GammaDistribution.get_mu_alpha(self.b)
+        b_warm_param = GammaDistribution.get_mu_alpha(self.b_warm)
 
         h = 0.0001
         steps = 5
@@ -41,9 +41,9 @@ class MG1WarmCalc:
         for c in range(1, steps):
             s = h * c
             chisl = p0_star * \
-                ((1 - s / self.l) * Gamma.get_pls(*b_warm_param, s) -
-                 Gamma.get_pls(*b_param, s))
-            znam = 1 - s / self.l - Gamma.get_pls(*b_param, s)
+                ((1 - s / self.l) * GammaDistribution.get_pls(*b_warm_param, s) -
+                 GammaDistribution.get_pls(*b_param, s))
+            znam = 1 - s / self.l - GammaDistribution.get_pls(*b_param, s)
             v_pls.append(chisl / znam)
 
         v = diff5dots(v_pls, h)

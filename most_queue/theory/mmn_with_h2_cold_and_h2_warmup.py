@@ -4,7 +4,7 @@ from itertools import chain
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2_dist
+from most_queue.rand_distribution import H2Distribution
 
 
 class MMn_H2warm_H2cold:
@@ -40,20 +40,20 @@ class MMn_H2warm_H2cold:
 
         self.b_warm = b_warm
         if self.dt == 'c16':
-            h2_params_warm = H2_dist.get_params_clx(b_warm)
+            h2_params_warm = H2Distribution.get_params_clx(b_warm)
         else:
-            h2_params_warm = H2_dist.get_params(b_warm)
+            h2_params_warm = H2Distribution.get_params(b_warm)
 
-        self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
-        self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
+        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
+        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
 
         self.b_cold = b_cold
         if self.dt == 'c16':
-            h2_params_cold = H2_dist.get_params_clx(b_cold)
+            h2_params_cold = H2Distribution.get_params_clx(b_cold)
         else:
-            h2_params_cold = H2_dist.get_params(b_cold)
-        self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
-        self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
+            h2_params_cold = H2Distribution.get_params(b_cold)
+        self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
+        self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
@@ -222,8 +222,6 @@ class MMn_H2warm_H2cold:
         for k in range(1, self.N):
             p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
         return p_warmup.real
-
-    
 
     @staticmethod
     def binom_calc(a, b, num=3):

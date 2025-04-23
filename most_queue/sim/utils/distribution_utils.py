@@ -7,15 +7,15 @@ import math
 from colorama import Fore, Style
 
 from most_queue.rand_distribution import (
-    Cox_dist,
-    Det_dist,
-    Erlang_dist,
-    Exp_dist,
-    Gamma,
-    H2_dist,
-    Normal_dist,
-    Pareto_dist,
-    Uniform_dist,
+    CoxDistribution,
+    DeterministicDistribution,
+    ErlangDistribution,
+    ExpDistribution,
+    GammaDistribution,
+    H2Distribution,
+    NormalDistribution,
+    ParetoDistribution,
+    UniformDistribution,
 )
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 
@@ -24,25 +24,25 @@ def print_supported_distributions():
     """ Prints supported distributions """
     print(f"{Fore.GREEN}Supported distributions:{Style.RESET_ALL}")
     separator = f"{Fore.BLUE}--------------------------------------------------------------------{Style.RESET_ALL}"
-    
+
     table = (
         f"{separator}\n"
         f"{Fore.CYAN}Distribution                    {Fore.YELLOW}kendall_notation    params{Style.RESET_ALL}\n"
         f"{separator}\n"
         f"{Fore.MAGENTA}Exponential                           {Fore.GREEN}М{Style.RESET_ALL}             {Fore.RED}mu{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Hyperexponential of the 2nd order     {Fore.GREEN}Н{Style.RESET_ALL}         {Fore.RED}y1, mu1, mu2{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Hyperexponential of the 2nd order     {Fore.GREEN}Н{Style.RESET_ALL}         {Fore.RED}H2Params dataclass{Style.RESET_ALL}\n"
         f"{Fore.MAGENTA}Erlang                                {Fore.GREEN}E{Style.RESET_ALL}           {Fore.RED}r, mu{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Cox 2nd order                         {Fore.GREEN}C{Style.RESET_ALL}         {Fore.RED}y1, mu1, mu2{Style.RESET_ALL}\n"
+        f"{Fore.MAGENTA}Cox 2nd order                         {Fore.GREEN}C{Style.RESET_ALL}         {Fore.RED}Cox2Params dataclass{Style.RESET_ALL}\n"
         f"{Fore.MAGENTA}Pareto                                {Fore.GREEN}Pa{Style.RESET_ALL}         {Fore.RED}alpha, K{Style.RESET_ALL}\n"
         f"{Fore.MAGENTA}Deterministic                         {Fore.GREEN}D{Style.RESET_ALL}         {Fore.RED}b{Style.RESET_ALL}\n"
         f"{Fore.MAGENTA}Uniform                            {Fore.GREEN}Uniform{Style.RESET_ALL}     {Fore.RED}mean, half_interval{Style.RESET_ALL}\n"
         f"{Fore.MAGENTA}Gaussian                             {Fore.GREEN}Norm{Style.RESET_ALL}    {Fore.RED}mean, standard_deviation{Style.RESET_ALL}\n"
         f"{separator}"
     )
-    
+
     print(table)
-    
-    
+
+
 def create_distribution(params, kendall_notation: str, generator):
     """ Creates distribution from random_distributions 
 
@@ -50,9 +50,9 @@ def create_distribution(params, kendall_notation: str, generator):
     Distribution                    kendall_notation    params
     --------------------------------------------------------------------
     Exponential                           'М'             [mu]
-    Hyperexponential of the 2nd order     'Н'         [y1, mu1, mu2]
+    Hyperexponential of the 2nd order     'Н'         H2Params dataclass
     Erlang                                'E'           [r, mu]
-    Cox 2nd order                         'C'         [y1, mu1, mu2]
+    Cox 2nd order                         'C'         Cox2Params dataclass
     Pareto                                'Pa'         [alpha, K]
     Deterministic                         'D'         [b]
     Uniform                            'Uniform'     [mean, half_interval]
@@ -61,7 +61,7 @@ def create_distribution(params, kendall_notation: str, generator):
     Args:
         params (_type_): params of distribution. 
                          For "M": one single value "mu". 
-                         For "H": [y1, mu1, mu2]
+                         For "H": H2Params
         kendall_notation (str): like "M", "H", "E"
         generator (_type_): random numbers generator, for ex np.random.default_rng()
 
@@ -73,23 +73,23 @@ def create_distribution(params, kendall_notation: str, generator):
     """
     dist = None
     if kendall_notation == "M":
-        dist = Exp_dist(params, generator=generator)
+        dist = ExpDistribution(params, generator=generator)
     elif kendall_notation == "H":
-        dist = H2_dist(params, generator=generator)
+        dist = H2Distribution(params, generator=generator)
     elif kendall_notation == "E":
-        dist = Erlang_dist(params, generator=generator)
+        dist = ErlangDistribution(params, generator=generator)
     elif kendall_notation == "Gamma":
-        dist = Gamma(params, generator=generator)
+        dist = GammaDistribution(params, generator=generator)
     elif kendall_notation == "C":
-        dist = Cox_dist(params, generator=generator)
+        dist = CoxDistribution(params, generator=generator)
     elif kendall_notation == "Pa":
-        dist = Pareto_dist(params, generator=generator)
+        dist = ParetoDistribution(params, generator=generator)
     elif kendall_notation == "Uniform":
-        dist = Uniform_dist(params, generator=generator)
+        dist = UniformDistribution(params, generator=generator)
     elif kendall_notation == "Norm":
-        dist = Normal_dist(params, generator=generator)
+        dist = NormalDistribution(params, generator=generator)
     elif kendall_notation == "D":
-        dist = Det_dist(params)
+        dist = DeterministicDistribution(params)
     else:
         raise QsSourseSettingException(
             "Incorrect distribution type specified. Options \

@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import Cox_dist
+from most_queue.rand_distribution import CoxDistribution
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
@@ -32,10 +32,10 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.mu_H = mu_H
         self.busy_period = self.get_pnz_markov()
         self.busy_coev = self.get_busy_coev()
-        self.param_cox = Cox_dist.get_params(self.busy_period)
-        self.y1_cox = self.param_cox[0]
-        self.mu1_cox = self.param_cox[1]
-        self.mu2_cox = self.param_cox[2]
+        self.param_cox = CoxDistribution.get_params(self.busy_period)
+        self.y1_cox = self.param_cox.p1
+        self.mu1_cox = self.param_cox.mu1
+        self.mu2_cox = self.param_cox.mu2
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N

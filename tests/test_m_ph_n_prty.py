@@ -7,7 +7,7 @@ For verification, we use simulation
 import math
 import time
 
-from most_queue.rand_distribution import Cox_dist, Exp_dist, Gamma
+from most_queue.rand_distribution import CoxDistribution, ExpDistribution, GammaDistribution
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.theory import priority_calc
 from most_queue.theory.m_ph_n_prty import MPhNPrty
@@ -46,15 +46,15 @@ def test_m_ph_n_prty():
     bH[1] = math.pow(bH[0], 2) * (math.pow(bHcoev, 2) + 1)
     bH[2] = bH[1] * bH[0] * (1.0 + 2 / alpha)
 
-    gamma_params = Gamma.get_mu_alpha([bH[0], bH[1]])
+    gamma_params = GammaDistribution.get_mu_alpha([bH[0], bH[1]])
 
     mu_L = 1.0 / bL1
 
-    cox_params = Cox_dist.get_params(bH)
+    cox_params = CoxDistribution.get_params(bH)
 
     # calculation using the numerical method:
     tt_start = time.process_time()
-    tt = MPhNPrty(mu_L, cox_params[1], cox_params[2], cox_params[0], l_L, l_H, n=n, is_cox=is_cox,
+    tt = MPhNPrty(mu_L, cox_params, l_L, l_H, n=n, is_cox=is_cox,
                   max_iter=max_iter, verbose=False)
     tt.run()
     tt_time = time.process_time() - tt_start
@@ -64,7 +64,7 @@ def test_m_ph_n_prty():
 
     mu_L = 1.0 / bL1
 
-    bL = Exp_dist.calc_theory_moments(mu_L, 3)
+    bL = ExpDistribution.calc_theory_moments(mu_L, 3)
 
     b = []
     b.append(bH)

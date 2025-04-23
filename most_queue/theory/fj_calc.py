@@ -7,9 +7,9 @@ import numpy as np
 import scipy.special as sp
 
 from most_queue.general_utils.conv import get_moments, get_self_conv_moments
-from most_queue.rand_distribution import Erlang_dist, Gamma, H2_dist
-from most_queue.theory.mg1_warm_calc import MG1WarmCalc
+from most_queue.rand_distribution import ErlangDistribution, GammaDistribution, H2Distribution
 from most_queue.theory.mg1_calc import MG1Calculation
+from most_queue.theory.mg1_warm_calc import MG1WarmCalc
 
 
 class SplitJoinCalc:
@@ -112,7 +112,7 @@ class SplitJoinCalc:
         if len(b) >= 3:
 
             if coev < 1:
-                params = Erlang_dist.get_params(b)
+                params = ErlangDistribution.get_params(b)
 
                 for j in range(10):
                     p = g[j] * \
@@ -123,7 +123,7 @@ class SplitJoinCalc:
                         p = p * a_big[j]
                         f[i] += p
             else:
-                params = H2_dist.get_params(b)
+                params = H2Distribution.get_params(b)
 
                 for j in range(10):
                     p = g[j] * \
@@ -134,7 +134,7 @@ class SplitJoinCalc:
                         p = p * a_big[j]
                         f[i] += p
         else:
-            params = Gamma.get_mu_alpha(b)
+            params = GammaDistribution.get_mu_alpha(b)
 
             for j in range(10):
                 p = g[j] * \
@@ -171,7 +171,7 @@ class SplitJoinCalc:
              9.91182721961E-13]
 
         if delta:
-            params = Gamma.get_mu_alpha(b)
+            params = GammaDistribution.get_mu_alpha(b)
 
             for j in range(10):
                 p = g[j] * self._dfr_gamma_mult(params, a_big[j],
@@ -228,11 +228,11 @@ class SplitJoinCalc:
         res = 1.0
         if not delta:
             for i in range(self.n):
-                res *= H2_dist.get_cdf(params, t)
+                res *= H2Distribution.get_cdf(params, t)
         else:
             if not isinstance(delta, list):
                 for i in range(self.n):
-                    res *= H2_dist.get_cdf(params, t - i * delta)
+                    res *= H2Distribution.get_cdf(params, t - i * delta)
         return 1.0 - res
 
     def _dfr_erl_mult(self, params, t, delta=None):
@@ -246,11 +246,11 @@ class SplitJoinCalc:
         res = 1.0
         if not delta:
             for i in range(self.n):
-                res *= Erlang_dist.get_cdf(params, t)
+                res *= ErlangDistribution.get_cdf(params, t)
         else:
             if not isinstance(delta, list):
                 for i in range(self.n):
-                    res *= Erlang_dist.get_cdf(params, t - i * delta)
+                    res *= ErlangDistribution.get_cdf(params, t - i * delta)
         return 1.0 - res
 
     def _dfr_gamma_mult(self, params, t, delta=None):
@@ -264,19 +264,19 @@ class SplitJoinCalc:
         res = 1.0
         if not delta:
             for i in range(self.n):
-                res *= Gamma.get_cdf(*params, t)
+                res *= GammaDistribution.get_cdf(*params, t)
         else:
             if not isinstance(delta, list):
                 for i in range(self.n):
-                    res *= Gamma.get_cdf(*params, t - i * delta)
+                    res *= GammaDistribution.get_cdf(*params, t - i * delta)
             else:
-                b = Gamma.calc_theory_moments(*params)
+                b = GammaDistribution.calc_theory_moments(*params)
 
                 for i in range(self.n):
                     b_delta = get_self_conv_moments(delta, i)
                     b_summ = get_moments(b, b_delta)
-                    params_summ = Gamma.get_mu_alpha(b_summ)
-                    res *= Gamma.get_cdf(*params_summ, t)
+                    params_summ = GammaDistribution.get_mu_alpha(b_summ)
+                    res *= GammaDistribution.get_cdf(*params_summ, t)
 
         return 1.0 - res
 

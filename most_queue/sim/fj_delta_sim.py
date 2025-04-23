@@ -4,7 +4,7 @@ ForkJoin Queue with delta
 from colorama import Fore, Style, init
 
 from most_queue.general_utils.conv import get_self_conv_moments
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.fj_sim import ForkJoinSim
 from most_queue.sim.utils.tasks import ForkJoinTask
 
@@ -86,9 +86,9 @@ class ForkJoinSimDelta(ForkJoinSim):
                     t.subtasks[i].future_arr_time = self.ttek + i * self.delta
                 else:
                     b_delta = get_self_conv_moments(self.delta, i)
-                    params_delta = Gamma.get_mu_alpha(b_delta)
+                    params_delta = GammaDistribution.get_mu_alpha(b_delta)
                     t.subtasks[i].future_arr_time = self.ttek + \
-                        Gamma.generate_static(*params_delta)
+                        GammaDistribution.generate_static(*params_delta)
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):

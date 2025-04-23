@@ -13,7 +13,7 @@ class QsPhase:
         Args:
             name (str, optional): Name of simulation phase like Cold, WarmUP. Defaults to "".
             dist (_type_, optional): distribution object from random_distrubution 
-                                     like Exp_dist. Defaults to None.
+                                     like ExpDistribution. Defaults to None.
         """
         self.name = name
         self.is_set = False
@@ -26,10 +26,10 @@ class QsPhase:
         self.dist = dist
 
     def set_dist(self, dist):
-        """Set distribution object from random_distrubution like Exp_dist
+        """Set distribution object from random_distrubution like ExpDistribution
 
         Args:
-            dist (_type_): _distribution object from random_distrubution like Exp_dist
+            dist (_type_): _distribution object from random_distrubution like ExpDistribution
         """
         self.dist = dist
         self.is_set = True

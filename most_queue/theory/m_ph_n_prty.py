@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import Cox_dist, H2_dist
+from most_queue.rand_distribution import Cox2Params, CoxDistribution, H2Distribution
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
@@ -18,22 +18,25 @@ class MPhNPrty:
     of the busy-time distribution by a Cox second-order distribution.
     """
 
-    def __init__(self, mu_L, mu1_H, mu2_H, p_H, l_L, l_H, n, N=250,
-                 accuracy=1e-8, max_iter=300, is_cox=True,
-                 approx_ee=0.1, approx_e=0.5, is_fitting=True,
-                 verbose=True):
+    def __init__(self, mu_L: float, cox_param_H: Cox2Params, l_L: float, l_H: float, n: int, N: int = 250,
+                 accuracy: float = 1e-8, max_iter: int = 300, is_cox: bool = True,
+                 approx_ee: float = 0.1, approx_e: float = 0.5, is_fitting: bool = True,
+                 verbose: bool = True):
         """
         Calculation of M/PH, M/n queue with two classes of requests and absolute priority
-        based on the Takahashi-Takagi numerical method based on the approximation of the busy-time distribution 
-        by a Cox second-order distribution.
+        based on the Takahashi-Takagi numerical method based on the approximation 
+        of the busy-time distribution by a Cox second-order distribution.
+
         :param l_L: intensity of the arrivals with low priority,
         :param l_H: intensity of the arrivals with high priority,
         :param mu_L: intensity of service for low-priority requests,
-        :param mu1_H, mu2_H, p_H: params of Cox2 (H2) approximation of service time for high priority jobs
+        :param cox_param_H: params of Cox2 (H2) approximation 
+            of service time for high priority jobs
         :param N: number of levels (stages)
         :param accuracy: accuracy parameter for stopping the iteration
         :param max_iter: maximum number of iterations
-        :param is_cox: if True, use Cox2 distribution for approximating service time of low-priority jobs, otherwise use H2 distribution.
+        :param is_cox: if True, use Cox2 distribution for approximating service time 
+            of low-priority jobs, otherwise use H2 distribution.
         :param approx_ee, approx_e: approximation paramters 
         """
         # self.dt = np.dtype("f8")
@@ -45,9 +48,9 @@ class MPhNPrty:
         self.l_L = l_L
         self.l_H = l_H
         self.mu_L = mu_L
-        self.mu1_H = mu1_H
-        self.mu2_H = mu2_H
-        self.p_H = p_H
+        self.mu1_H = cox_param_H.mu1
+        self.mu2_H = cox_param_H.mu2
+        self.p_H = cox_param_H.p1
         self.max_iter = max_iter
         self.is_cox = is_cox
         self.verbose = verbose
@@ -428,10 +431,10 @@ class MPhNPrty:
         Builds matrices A, B, C and D for the system.
         """
         for i in range(self.N):
-            self.A.append(self._buildA(i))
-            self.B.append(self._buildB(i))
-            self.C.append(self._buildC(i))
-            self.D.append(self._buildD(i))
+            self.A.append(self._build_big_a_matrix(i))
+            self.B.append(self._build_big_b_matrix(i))
+            self.C.append(self._build_big_c_matrix(i))
+            self.D.append(self._build_big_d_matrix(i))
 
     def _calculate_c(self, j):
         """
@@ -455,7 +458,7 @@ class MPhNPrty:
 
         return chisl / (znam - znam2)
 
-    def _buildA(self, num: int):
+    def _build_big_a_matrix(self, num: int):
         """
         Forms the matrix A(L) at a given level number
         :param: num - level number
@@ -472,7 +475,7 @@ class MPhNPrty:
             output[i, i] = self.l_L
         return output
 
-    def _buildB(self, num):
+    def _build_big_b_matrix(self, num):
         """
         Forms the matrix B(L) at a given level number
         :param: num - level number
@@ -498,7 +501,7 @@ class MPhNPrty:
 
         return output
 
-    def _buildC(self, num):
+    def _build_big_c_matrix(self, num):
         """
         Forms the matrix C(L) at a given level number
         :param: num - level number
@@ -521,24 +524,24 @@ class MPhNPrty:
 
         for i in range(self.pnz_num_):
             if not self.is_cox:
-                h2_param = H2_dist.get_params_clx(
+                h2_param = H2Distribution.get_params_clx(
                     self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
-                # h2_param = H2_dist.get_params(self.busy_periods[i])
-                y1_mass.append(h2_param[0])
-                m1_mass.append(h2_param[1])
-                m2_mass.append(h2_param[2])
+                # h2_param = H2Distribution.get_params(self.busy_periods[i])
+                y1_mass.append(h2_param.p1)
+                m1_mass.append(h2_param.mu1)
+                m2_mass.append(h2_param.mu2)
                 if self.verbose:
-                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param[0], h2_param[1],
-                                                                                 h2_param[2]))
+                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param.p1, h2_param.mu1,
+                                                                                 h2_param.mu2))
             else:
-                cox_params = Cox_dist.get_params(
+                cox_params = CoxDistribution.get_params(
                     self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
-                y1_mass.append(cox_params[0])
-                m1_mass.append(cox_params[1])
-                m2_mass.append(cox_params[2])
+                y1_mass.append(cox_params.p1)
+                m1_mass.append(cox_params.mu1)
+                m2_mass.append(cox_params.mu2)
                 if self.verbose:
-                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params[0], cox_params[1],
-                                                                                 cox_params[2]))
+                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params.p1, cox_params.mu1,
+                                                                                 cox_params.mu2))
 
         # first quad
 
@@ -628,7 +631,7 @@ class MPhNPrty:
                     col += 2
         return output
 
-    def _buildD(self, num):
+    def _build_big_d_matrix(self, num):
         """
         Forms the matrix D(L) at a given level number
         :param: num - level number
@@ -660,5 +663,3 @@ class MPhNPrty:
             output[i, i] = sumA + sumB + sumC
 
         return output
-
-    

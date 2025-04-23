@@ -1,5 +1,5 @@
 from most_queue.general_utils.tables import times_print_with_classes
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.theory import priority_calc
 
@@ -39,11 +39,11 @@ def test_sim():
     # and add them to the list of parameters params
     params = []
     for i in range(k):
-        params.append(Gamma.get_mu_alpha([b1[i], b2[i]]))
+        params.append(GammaDistribution.get_mu_alpha([b1[i], b2[i]]))
 
     b = []
     for j in range(k):
-        b.append(Gamma.calc_theory_moments(params[j][0], params[j][1], 4))
+        b.append(GammaDistribution.calc_theory_moments(params[j][0], params[j][1], 4))
 
     print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
           "time spent in a multi-channel queue with priorities")

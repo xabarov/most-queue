@@ -7,7 +7,7 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.rand_distribution import Exp_dist
+from most_queue.rand_distribution import ExpDistribution
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.sim.utils.tasks import TaskPriority
 
@@ -19,26 +19,26 @@ class PriorityNetwork:
     Simulation of a priority network with priorities and multiple channels.
     """
 
-    def __init__(self, k_num: int, L: list[float], R: list[np.matrix], n: list[int], 
+    def __init__(self, k_num: int, L: list[float], R: list[np.matrix], n: list[int],
                  prty: list[str], serv_params, nodes_prty: list[list[int]]):
         """
         k_num: number of classes.
         L: list of arrival intensities for each class.
         R: list of routing matrices for each class.
         n: list of number of channels in each node.
-        
+
         prty: list of priority types for each node. 
             No  - no priorities, FIFO
             PR  - preemptive resume, with resuming interrupted request
             RS  - preemptive repeat with resampling, re-sampling duration for new service
             RW  - preemptive repeat without resampling, repeating service with previous duration
             NP  - non preemptive, relative priority
-            
+
         serv_params: list of list of dictionaries with service parameters for each node and class.
             [m][k][dict(type, params)]
             where m - node number, k - class number,  
             type - distribution type, params - distribution parameters.
-            
+
             See supported distributions params in the README.md file or use
                 ``` 
                 from most_queue.sim.utils.distribution_utils import print_supported_distributions
@@ -51,7 +51,7 @@ class PriorityNetwork:
                 [0][0,1,2] - for the first node, a direct order of priorities is set,
                 [2][0,2,1] - for the third node, such an order of priorities is set: for the first class - the oldest (0),
                             for the second - the youngest (2), for the third - intermediate (1)
-            
+
         """
 
         self.k_num = k_num  # number of classes
@@ -81,7 +81,7 @@ class PriorityNetwork:
         self.v_network = []
         self.w_network = []
         for k in range(k_num):
-            self.sources.append(Exp_dist(L[k]))
+            self.sources.append(ExpDistribution(L[k]))
             self.arrival_time.append(self.sources[k].generate())
             self.v_network.append([0.0] * 3)
             self.w_network.append([0.0] * 3)

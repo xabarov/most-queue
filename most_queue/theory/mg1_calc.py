@@ -3,7 +3,7 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 """
 import math
 
-from most_queue.rand_distribution import Gamma, Pareto_dist, Uniform_dist
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
 from most_queue.theory.utils.q_poisson_arrival_calc import (
     get_q_Gamma,
     get_q_Pareto,
@@ -64,14 +64,14 @@ class MG1Calculation:
         """
 
         if dist_type == "Gamma":
-            gamma_param = Gamma.get_mu_alpha(self.b)
+            gamma_param = GammaDistribution.get_mu_alpha(self.b)
             q = get_q_Gamma(self.l, gamma_param[0], gamma_param[1], num)
         elif dist_type == "Uniform":
-            uniform_params = Uniform_dist.get_params(self.b)
+            uniform_params = UniformDistribution.get_params(self.b)
             q = get_q_uniform(
                 self.l, uniform_params[0], uniform_params[1], num)
         elif dist_type == "Pa":
-            alpha, K = Pareto_dist.get_a_k(self.b)
+            alpha, K = ParetoDistribution.get_a_k(self.b)
             q = get_q_Pareto(self.l, alpha, K, num)
         else:
             print("Error in get_p. Unknown type of distribution")

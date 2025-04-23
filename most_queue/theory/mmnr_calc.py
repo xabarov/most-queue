@@ -4,7 +4,7 @@ Calculate queue M/M/n/r
 import math
 
 from most_queue.general_utils.conv import get_moments
-from most_queue.rand_distribution import Exp_dist
+from most_queue.rand_distribution import ExpDistribution
 
 
 class MMnrCalc:
@@ -65,7 +65,7 @@ class MMnrCalc:
         """
         if self.w is None:
             self.w = self.get_w()
-        b = Exp_dist.calc_theory_moments(self.mu)
+        b = ExpDistribution.calc_theory_moments(self.mu)
         v = get_moments(self.w, b)
         return v
 

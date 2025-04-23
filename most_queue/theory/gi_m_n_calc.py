@@ -6,14 +6,15 @@ import math
 import numpy as np
 
 from most_queue.general_utils.conv import get_moments
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.diff5dots import diff5dots
-from most_queue.rand_distribution import Gamma, Pareto_dist
 
 
 class GiMn:
     """
     Calculation of the GI/M/n queueing system 
     """
+
     def __init__(self, a: float, mu: float, n: int,  e=1e-10, approx_distr="Gamma", pi_num=100):
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
@@ -118,19 +119,20 @@ class GiMn:
 
     def _get_b0(self, j):
         if self.approx_distr == "Gamma":
-            v, alpha, gs = Gamma.get_params(self.a)
+            v, alpha, gs = GammaDistribution.get_params(self.a)
             summ = 0
             for i, g_value in enumerate(gs):
                 summ += (g_value / pow(self.mu * j + v, i)) * (
-                    Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
+                    GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
             left = pow(v / (self.mu * j + v), alpha)
             b0 = left * summ
             return b0
 
         elif self.approx_distr == "Pa":
-            alpha, K = Pareto_dist.get_a_k(self.a)
+            alpha, K = ParetoDistribution.get_a_k(self.a)
             left = alpha * pow(K * self.mu * j, alpha)
-            b0 = left * Gamma.get_gamma_incomplete(-alpha, K * self.mu * j)
+            b0 = left * \
+                GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
             return b0
 
         else:
@@ -150,12 +152,12 @@ class GiMn:
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
         if self.approx_distr == "Gamma":
-            v, alpha, gs = Gamma.get_params(self.a)
+            v, alpha, gs = GammaDistribution.get_params(self.a)
             while True:
                 summ = 0
                 for i, q_value in enumerate(gs):
                     summ += (q_value / pow(self.mu * self.n * (1.0 - w_old) + v, i)) * (
-                        Gamma.get_gamma(alpha + i) / Gamma.get_gamma(alpha))
+                        GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
                 left = pow(v / (self.mu * self.n * (1.0 - w_old) + v), alpha)
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
@@ -164,12 +166,12 @@ class GiMn:
             return w_new
 
         elif self.approx_distr == "Pa":
-            alpha, K = Pareto_dist.get_a_k(self.a)
+            alpha, K = ParetoDistribution.get_a_k(self.a)
             while True:
                 left = alpha * pow(K * self.mu * self.n * (1.0 - w_old), alpha)
                 w_new = left * \
-                    Gamma.get_gamma_incomplete(-alpha,
-                                               K * self.mu * self.n * (1.0 - w_old))
+                    GammaDistribution.get_gamma_incomplete(-alpha,
+                                                           K * self.mu * self.n * (1.0 - w_old))
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new

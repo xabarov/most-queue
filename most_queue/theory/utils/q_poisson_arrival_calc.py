@@ -1,6 +1,6 @@
 import math
 
-from most_queue.rand_distribution import Gamma
+from most_queue.rand_distribution import GammaDistribution
 
 
 def get_q_Gamma(l, mu, alpha, num=100):
