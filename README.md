@@ -163,7 +163,7 @@ for i in range(k):
 
 b = []
 for j in range(k):
-    b.append(Gamma.calc_theory_moments(params[j][0], params[j][1], 4))
+    b.append(GammaDistribution.calc_theory_moments(params[j][0], params[j][1], 4))
 
 print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
       "time spent in a multi-channel queue with priorities")
