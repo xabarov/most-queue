@@ -1,190 +1,150 @@
-import math
-
+"""
+Calculates queueing network.
+"""
 import numpy as np
 
-from most_queue.theory.utils.diff5dots import diff5dots
-from most_queue.theory.priority_calc import get_v_prty_invar
 from most_queue.rand_distribution import Gamma
+from most_queue.theory.priority_calc import get_v_prty_invar
+from most_queue.theory.utils.diff5dots import diff5dots
 
 
-def balance_equation(L, R):
-    rows = R.shape[0]
-    cols = R.shape[1]
-
-    # определяем нулевые строки и столбцы
-
-    null_numbers = []
-
-    for i in range(cols):
-        null_counts = 0
-        for j in range(rows):
-            if math.fabs(R[j, i] < 1e-6):
-                null_counts += 1
-        if null_counts == rows:
-            null_numbers.append(i)
-
-    # создаем новую матрицу без нулевых строк и столбцов
-
-    rows_mod = rows - len(null_numbers)
-    cols_mod = rows_mod
-
-    R_mod = np.zeros((rows_mod, cols_mod))
-    row_tek = 0
-    col_tek = 0
-
-    for i in range(rows):
-        skip = False
-        for n in null_numbers:
-            if n + 1 == i:
-                skip = True
-        if skip:
-            continue
-        for j in range(cols):
-            skip = False
-            for n in null_numbers:
-                if n == j:
-                    skip = True
-            if skip:
-                continue
-            R_mod[row_tek, col_tek] = R[i, j]
-            col_tek += 1
-        row_tek += 1
-        col_tek = 0
-    R = R_mod
-    b = np.zeros((cols_mod - 1, 1))
-    for i in range(cols_mod - 1):
-        b[i, 0] = np.dot(L, R[0, i])
-    Q = np.zeros((cols_mod - 1, cols_mod - 1))
-    for i in range(cols_mod - 1):
-        for j in range(cols_mod - 1):
-            Q[i, j] = R[i + 1, j]
-    A = np.zeros((cols_mod - 1, cols_mod - 1))
-    for i in range(cols_mod - 1):
-        for j in range(cols_mod - 1):
-            if i == j:
-                A[i, j] = 1.0 - Q[j, i]
-            else:
-                A[i, j] = -Q[j, i]
-
-    intensities = np.dot(np.linalg.inv(A), b)
-    l = [0.0] * (cols - 1)
-    for i in range(cols_mod - 1):
-        l[i] = intensities[i, 0]
-    l_out = [0.0] * (cols - 1)
-    int_col = 0
-    for i in range(cols - 1):
-        skip = False
-        for n in null_numbers:
-            if n == i:
-                l_out[i] = 0
-                skip = True
-        if skip:
-            continue
-
-        l_out[i] = l[int_col]
-        int_col += 1
-
-    return l_out
-
-
-def network_prty_calc(R, b, n, L, prty, nodes_prty):
+class NetworkCalc:
     """
-    Расчет СеМО
-    :param R[k] - матрицы передачи, k - номер класса
-    :param b[k][node][j] - нач моменты времени обслуживания
-    node - номер узла сети
-    k - номер класса
-    j - номер нач. момента
-    :param n[node] - количество каналов в узлах сети
-    :param L[k] - вх. интенсивность для k-го класса
-    :param prty[node] - вид приоритета в узле. 'PR', 'NP'
-    :param nodes_prty [node][0,2,1] - перестановки приритетов для каждого узла
-    :return: {'v':[], 'v_node':[], 'loads':[]}
-    v[k][j] - нач. моменты времени пребывания в Сети
-    v_node[node][k][j] - нач моменты вр пребывания в узле
-    loads[node] - коэффициенты загрузки Сети
+    Calculates queueing network.
     """
-    res = {}
 
-    k_num = len(L)
-    nodes = R[0].shape[0] - 1
-    res['loads'] = [0.0] * nodes
-    res['v'] = []
-    intensities = []
+    def __init__(self, R: list[np.matrix], b: list[list[list[float]]], 
+                 n:list[int], L:list[float], prty:list[str], nodes_prty: list[list[int]]):
+        """
+        R: list of routing matrices for each class.
+        b: list of lists of theoretical moments of service time distribution for each class in each node.
+        n: list of number of channels in each node.
+        L: list of arrival intensities for each class.
 
-    for k in range(k_num):
-        intensities.append(balance_equation(L[k], R[k]))
+        prty: list of priority types for each node. 
+            No  - no priorities, FIFO
+            PR  - preemptive resume, with resuming interrupted request
+            RS  - preemptive repeat with resampling, re-sampling duration for new service
+            RW  - preemptive repeat without resampling, repeating service with previous duration
+            NP  - non preemptive, relative priority
 
-    b_order = []
-    l_order = []
+        nodes_prty: Priority distribution among requests for each node in the network [m][x1, x2 .. x_k],
+            m - node number, xi - priority for i-th class, k - number of classes
+            For example: 
+                [0][0,1,2] - for the first node, a direct order of priorities is set,
+                [2][0,2,1] - for the third node, such an order of priorities is set: for the first class - the oldest (0),
+                            for the second - the youngest (2), for the third - intermediate (1)
+        """
+        self.R = R
+        self.b = b
+        self.n = n
+        self.L = L
+        self.prty = prty
+        self.nodes_prty = nodes_prty
 
-    for m in range(nodes):
-        b_order.append([])
-        l_order.append([])
-        for k in range(k_num):
-            order = nodes_prty[m][k]
-            b_order[m].append(b[order][m])
-            l_order[m].append(intensities[order][m])
+    def balance_equation(self, L, R):
+        """
+        Calc the balance equation for the network.
+        """
+        # Create copies to avoid modifying original matrices
+        L = np.array(L)
+        R = np.array(R)
 
-    res['v_node'] = []
-    for i in range(nodes):
-        l_sum = 0
-        for k in range(k_num):
-            l_sum += l_order[i][k]
+        # Identify null columns using vectorized operation
+        null_mask = np.all(np.abs(R) < 1e-6, axis=0)
+        null_numbers = np.where(null_mask)[0]
 
-        b_sr = [0.0] * 4
+        # Remove null columns and corresponding rows
+        R_nonull = R[:, ~null_mask]
+        R_nonull = R_nonull[~null_mask, :]
 
-        for j in range(4):
+        n_rows_mod, n_cols_mod = R_nonull.shape
+
+        # Calculate b and Q matrices using efficient indexing
+        if n_rows_mod > 0:
+            b = np.dot(L, R_nonull[0, :-1])
+            Q = R_nonull[1:, :-1]
+            A = np.eye(n_cols_mod - 1) - Q.T
+            intensities = np.linalg.solve(A, b)
+        else:
+            intensities = np.array([], dtype=np.float64)
+
+        # Create output array with zeros for null columns
+        l_out = np.zeros(R.shape[1] - 1, dtype=np.float64)
+        
+        # Fill non-null columns
+        valid_indices = np.arange(len(intensities))
+        l_out[~null_mask[:-1]] = intensities.flatten()
+
+        return l_out
+    
+    def order_b_l(self, k_num, nodes):
+        """
+        Order the loads and intensities based on node priority.
+        """
+        
+        intensities = [self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)]
+
+        b_order = []
+        l_order = []
+
+        for m in range(nodes):
+            orders = [self.nodes_prty[m][k] for k in range(k_num)]
+            b_order.append([self.b[o][m] for o in orders])
+            l_order.append([intensities[o][m] for o in orders])
+
+        return b_order, l_order
+
+
+    def run(self):
+        """
+        Run the simulation and calculate the results.
+        """
+        res = {}
+
+        k_num = len(self.L)
+        nodes = self.R[0].shape[0] - 1
+        res['loads'] = [0.0] * nodes
+        res['v'] = []
+        
+        b_order, l_order = self.order_b_l(k_num, nodes)
+
+        res['v_node'] = []
+        for i in range(nodes):
+            l_sum = np.sum(l_order[i])
+            b_sr = np.mean(b_order[i], axis=0)
+
+            res['loads'][i] = l_sum * b_sr[0] / self.n[i]
+            res['v_node'].append(get_v_prty_invar(
+                l_order[i], b_order[i], self.n[i], self.prty[i]))
             for k in range(k_num):
-                b_sr[j] += b_order[i][k][j]
-            b_sr[j] /= k_num
+                res['v_node'][i][self.nodes_prty[i][k]] = res['v_node'][i][k]
 
-        res['loads'][i] = l_sum * b_sr[0] / n[i]
-        res['v_node'].append(get_v_prty_invar(l_order[i], b_order[i], n[i], prty[i]))
+        h = 0.0001
+        s = [h * (i + 1) for i in range(4)]
+
         for k in range(k_num):
-            res['v_node'][i][nodes_prty[i][k]] = res['v_node'][i][k]
+            I = np.eye(nodes)
+            N = np.zeros((nodes, nodes))
+            P = self.R[k][0, :nodes].reshape(1, -1)
+            T = self.R[k][1:, nodes].reshape(-1, 1)
+            Q = self.R[k][1:, :nodes]
 
-    h = 0.0001
-    s = [0.0] * 4
-    for i in range(4):
-        s[i] = h * (i + 1)
+            gamma_mu_alpha = [Gamma.get_mu_alpha([res['v_node'][i][k][0], res['v_node'][i][k][1]]) for i in range(nodes)]
 
-    for k in range(k_num):
-        I = np.zeros((nodes, nodes))
-        for i in range(nodes):
-            for j in range(nodes):
-                if i == j:
-                    I[i, j] = 1
-        N = np.zeros((nodes, nodes))
-        P = np.zeros((1, nodes))
-        for i in range(nodes):
-            P[0, i] = R[k][0, i]
-        T = np.zeros((nodes, 1))
-        for i in range(nodes):
-            T[i, 0] = R[k][i + 1, nodes]
-        Q = np.zeros((nodes, nodes))
+            g_PLS = []
+            for i in range(4):
+                N = np.diag([Gamma.get_pls(*gamma_mu_alpha[j], s[i]) for j in range(nodes)])
+            
+                G = np.dot(N, Q)
+                FF = I - G
+                F = np.linalg.inv(FF)
+                F = np.dot(P, np.dot(F, np.dot(N, T)))
+                g_PLS.append(F[0, 0])
 
-        for i in range(nodes):
-            for j in range(nodes):
-                Q[i, j] = R[k][i + 1, j]
+            res['v'].append([])
+            res['v'][k] = diff5dots(g_PLS, h)
+            res['v'][k][0] = -res['v'][k][0]
+            res['v'][k][2] = -res['v'][k][2]
 
-        gamma_mu_alpha = []
-        for i in range(nodes):
-            gamma_mu_alpha.append(Gamma.get_mu_alpha([res['v_node'][i][k][0], res['v_node'][i][k][1]]))
-
-        g_PLS = []
-        for i in range(4):
-            for j in range(nodes):
-                N[j, j] = Gamma.get_pls(*gamma_mu_alpha[j], s[i])
-            G = np.dot(N, Q)
-            FF = I - G
-            F = np.linalg.inv(FF)
-            F = np.dot(P, np.dot(F, np.dot(N, T)))
-            g_PLS.append(F[0, 0])
-
-        res['v'].append([])
-        res['v'][k] = diff5dots(g_PLS, h)
-        res['v'][k][0] = -res['v'][k][0]
-        res['v'][k][2] = -res['v'][k][2]
-
-    return res
+        return res

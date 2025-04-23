@@ -1,3 +1,7 @@
+"""
+Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling 
+using Takahasi-Takami method.
+"""
 import math
 from itertools import chain
 
@@ -6,35 +10,40 @@ from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2_dist
 from most_queue.theory.utils.binom_probs import calc_binom_probs
+from most_queue.theory.utils.transforms import laplace_stieltjes_exp_transform as pls
 
 
 class MGnH2ServingColdWarmDelay:
     """
-    Расчет численным методом Такахаси-Таками СМО M/H2/n с H2-разогревом, H2-охлаждением и H2-задержкой начала охлаждения
-    Используются комплексные параметры. Комплексные параметры позволяют аппроксимировать распределения
-    с произвольными коэффициентами вариации (>1, <=1)
+    Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling 
+    using Takahasi-Takami method.
+    Complex parameters are used. Complex parameters allow approximating distributions
+    with arbitrary coefficients of variation (>1, <=1).
     """
 
     def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None, N=150, accuracy=1e-6, dtype="c16",
                  verbose=False, stable_w_pls=False, w_pls_dt=1e-3):
         """
-        n: число каналов
-        l: интенсивность вх. потока
-        b: начальные моменты времени обслуживания
-        b_warm: начальные моменты времени разогрева
-        b_cold: начальные моменты времени охлаждения
-        b_cold_delay: начальные моменты времени задежки начала охлаждения
-
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
+        n: number of servers
+        l: arrival rate
+        b: initial moments of service time
+        b_warm: initial moments of warming time
+        b_cold: initial moments of cooling time
+        b_cold_delay: initial moments of delay time before cooling starts
+        N: number of levels for the Markov chain approximation
+        accuracy: accuracy parameter for stopping iterations
+        dtype: data type for calculations (default is complex16)
+        verbose: flag to print intermediate results
+        stable_w_pls: flag to use a more stable method for calculating w_plus
+        w_pls_dt: time step for calculating w_plus when stable_w_pls is True
         """
         self.dt = np.dtype(dtype)
         if buffer:
-            self.R = buffer + n  # максимальное число заявок в сисетеме - очередь + каналы
-            self.N = self.R + 1  # число ярусов на один больше + нулевое состояние
+            self.R = buffer + n
+            self.N = self.R + 1
         else:
             self.N = N
-            self.R = None  # для проверки задан ли буфер
+            self.R = None
 
         self.e1 = accuracy
         self.n = n
@@ -49,13 +58,11 @@ class MGnH2ServingColdWarmDelay:
         else:
             h2_params_service = H2_dist.get_params(b)
 
-        # параметры H2-распределения:
-
-        # Обслуживание
+        # H2-parameters for service time
         self.y = [h2_params_service[0], 1.0 - h2_params_service[0]]
         self.mu = [h2_params_service[1], h2_params_service[2]]
 
-        # Разогрев
+        # H2-parameters for warm-up time
         self.b_warm = b_warm
         if self.dt == 'c16':
             h2_params_warm = H2_dist.get_params_clx(b_warm)
@@ -64,7 +71,7 @@ class MGnH2ServingColdWarmDelay:
         self.y_w = [h2_params_warm[0], 1.0 - h2_params_warm[0]]
         self.mu_w = [h2_params_warm[1], h2_params_warm[2]]
 
-        # Охлаждение
+        # H2-parameters for cold-down time
         self.b_cold = b_cold
         if self.dt == 'c16':
             h2_params_cold = H2_dist.get_params_clx(b_cold)
@@ -73,7 +80,7 @@ class MGnH2ServingColdWarmDelay:
         self.y_c = [h2_params_cold[0], 1.0 - h2_params_cold[0]]
         self.mu_c = [h2_params_cold[1], h2_params_cold[2]]
 
-        # Задержка начала охлаждения
+        # H2-parameters for cold-down delay time
         self.b_cold_delay = b_cold_delay
         if self.dt == 'c16':
             h2_params_cold_delay = H2_dist.get_params_clx(b_cold_delay)
@@ -83,27 +90,26 @@ class MGnH2ServingColdWarmDelay:
                           1.0 - h2_params_cold_delay[0]]
         self.mu_c_delay = [h2_params_cold_delay[1], h2_params_cold_delay[2]]
 
-        # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
 
-        # переменные
+        # Takahasi-Takami method parameters
         self.t = []
         self.b1 = []
         self.b2 = []
         if self.dt == 'c16':
-            self.x = [0.0 + 0.0j] * N
-            self.z = [0.0 + 0.0j] * N
-
-            # искомые вреоятности состояний СМО
-            self.p = [0.0 + 0.0j] * N
+            self.x = np.array([0.0 + 0.0j] * N)
+            self.z = np.array([0.0 + 0.0j] * N)
+            # Probabilities of states to be searched for
+            self.p = np.array([0.0 + 0.0j] * N)
         else:
-            self.x = [0.0] * N
-            self.z = [0.0] * N
+            self.x = np.array([0.0] * N)
+            self.z = np.array([0.0] * N)
+            # Probabilities of states to be searched for
+            self.p = np.array([0.0] * N)
 
-            # искомые вреоятности состояний СМО
-            self.p = [0.0] * N
+        self.num_of_iter_ = 0  # number of iterations of the algorithm
 
-        # матрицы переходов
+        # Transition matrices for the Takahasi-Takami method
         self.A = []
         self.B = []
         self.C = []
@@ -125,26 +131,108 @@ class MGnH2ServingColdWarmDelay:
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
+        self._build_matrices()
+        self._initial_probabilities()
 
-    def get_p(self):
+    def run(self):
         """
-        Возвращает список с вероятностями состояний системы
-        p[k] - вероятность пребывания в системе ровно k заявок
+        Запускает расчет
         """
-        for i in range(len(self.p)):
-            self.p[i] = self.p[i].real
-        return self.p
+        if self.dt == 'c16':
+            self.b1[0][0, 0] = 0.0 + 0.0j
+            self.b2[0][0, 0] = 0.0 + 0.0j
+            x_max2 = 0.0 + 0.0j
+        else:
+            self.b1[0][0, 0] = 0.0
+            self.b2[0][0, 0] = 0.0
+            x_max1 = 0.0
+            x_max2 = 0.0
 
-    def pls(self, mu, s):
-        return mu / (mu + s)
+        x_max1 = np.max(self.x)
+
+        self._calc_support_matrices()
+
+        self.num_of_iter_ = 0  # кол-во итераций алгоритма
+
+        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
+            x_max2 = x_max1
+            self.num_of_iter_ += 1
+
+            for j in range(1, self.N):  # по всем ярусам, кроме первого.
+
+                # b':
+                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
+
+                # b":
+                if j != (self.N - 1):
+                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
+                else:
+                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
+
+                c = self._calculate_c(j)
+
+                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+                if self.dt == 'c16':
+                    self.x[j] = 0.0 + 0.0j
+                else:
+                    self.x[j] = 0.0
+                for k in range(x_znam.shape[1]):
+                    self.x[j] += x_znam[0, k]
+
+                if self.dt == 'c16':
+                    self.x[j] = (1.0 + 0.0j) / self.x[j]
+                else:
+                    self.x[j] = (1.0) / self.x[j]
+
+                if self.R and j == (self.N - 1):
+                    tA = np.dot(self.t[j - 1], self.A[j - 1])
+                    tag = np.dot(tA, self.G[j])
+                    tag_sum = 0
+                    for t_i in range(tag.shape[1]):
+                        tag_sum += tag[0, t_i]
+                    self.z[j] = 1.0 / tag_sum
+                    self.t[j] = self.z[j] * tag
+
+                else:
+
+                    self.z[j] = np.dot(c, self.x[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
+                        np.dot(self.x[j], self.b2[j])
+
+            if self.dt == 'c16':
+                self.x[0] = (1.0 + 0.0j) / self.z[1]
+            else:
+                self.x[0] = 1.0 / self.z[1]
+
+            t1B1 = np.dot(self.t[1], self.B[1])
+            self.t[0] = np.dot(self.x[0], t1B1)
+            self.t[0] = np.dot(self.t[0], self.G[0])
+
+            if self.dt == 'c16':
+                x_max1 = 0.0 + 0.0j
+            else:
+                x_max1 = 0
+
+            for i in range(self.N):
+                if self.x[i].real > x_max1.real:
+                    x_max1 = self.x[i]
+
+            if self.verbose:
+                print(f"End iter # {self.num_of_iter_}")
+
+        self._calculate_p()
+        self._calculate_y()
+
+    def get_p(self) -> list[float]:
+        """
+        Get probabilities of states.
+        """
+        return [prob.real for prob in self.p]
 
     def get_cold_prob(self):
         """
-        Возвращает вероятность нахождения в состоянии охлаждения
+        Get probability of being in the cold state.
         """
         p_cold = 0
         for k in range(self.N):
@@ -153,7 +241,7 @@ class MGnH2ServingColdWarmDelay:
 
     def get_warmup_prob(self):
         """
-        Возвращает вероятность нахождения в состоянии разогрева
+        Get probability of being in the warmup state.
         """
         p_warmup = 0
         for k in range(1, self.N):
@@ -162,18 +250,59 @@ class MGnH2ServingColdWarmDelay:
 
     def get_cold_delay_prob(self):
         """
-        Возвращает вероятность нахождения в состоянии задержки начала охлаждения
+        Get probability of being in the cold delay state.
         """
         p_cold_delay = self.Y[0][0, 1] + self.Y[0][0, 2]
         return p_cold_delay.real
 
-    def get_key_numbers(self, level):
+    def get_idle_prob(self):
+        """
+        Get the probability of the server being idle.
+        """
+        return self.Y[0][0, 0]
+
+    def get_w(self):
+        """
+        Get first three moments of waiting time in the queue.
+        """
+        w = [0.0] * 3
+
+        for i in range(3):
+            if self.stable_w_pls:
+                max_mu = np.max(list(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'),
+                                           np.array(self.mu).astype('float'))))
+
+                dx = self.w_pls_dt / max_mu
+            else:
+                dx = self.w_pls_dt
+            w[i] = derivative(self._calc_w_pls, 0, dx=dx, n=i + 1, order=9)
+
+        w = [w_moment.real if isinstance(
+            w_moment, complex) else w_moment for w_moment in w]
+        return [-w[0].real, w[1].real, -w[2].real]
+
+    def get_v(self):
+        """
+        Get first three moments of sojourn time in the queue.
+        """
+        v = [0.0] * 3
+        w = self.get_w()
+        b = self.b
+        v[0] = w[0] + b[0]
+        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
+        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+
+        v = [v_moment.real if isinstance(
+            v_moment, complex) else v_moment for v_moment in v]
+        return v
+
+    def _get_key_numbers(self, level):
         key_numbers = []
         for i in range(level + 1):
             key_numbers.append((self.n - i, i))
         return np.array(key_numbers, dtype=self.dt)
 
-    def calc_down_probs(self, from_level):
+    def _calc_down_probs(self, from_level):
         if from_level == self.n:
             return np.eye(self.n + 1)
         b_matrix = self.B[from_level]
@@ -188,20 +317,14 @@ class MGnH2ServingColdWarmDelay:
             probs.append(probs_on_level)
         return np.array(probs, dtype=self.dt)
 
-    def matrix_pow(self, matrix, k):
-        res = np.eye(self.n + 1, dtype=self.dt)
-        for i in range(k):
-            res = np.dot(res, matrix)
-        return res
-
-    def calc_w_pls(self, s):
+    def _calc_w_pls(self, s):
         w = 0
 
-        # вычислим ПЛС заранее
+        # Calculate Laplace–Stieltjes transform in advance
         mu_w_pls = np.array(
-            [self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
+            [pls(self.mu_w[0], s), pls(self.mu_w[1], s)])
         mu_c_pls = np.array(
-            [self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
+            [pls(self.mu_c[0], s), pls(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
         # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
@@ -238,11 +361,11 @@ class MGnH2ServingColdWarmDelay:
                         w += self.Y[k][0, cold_pos + c_phase] * \
                             c_to_w[c_phase, w_phase]
 
-        P = self.calc_down_probs(self.n + 1)
+        P = self._calc_down_probs(self.n + 1)
         # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
-        key_numbers = self.get_key_numbers(self.n)
+        key_numbers = self._get_key_numbers(self.n)
         a = np.array(
-            [self.pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
+            [pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
              range(self.n + 1)])
         waits_service_on_level_before = None
 
@@ -309,102 +432,46 @@ class MGnH2ServingColdWarmDelay:
 
         return w
 
-    def get_idle_prob(self):
-        return self.Y[0][0, 0]
-
-    def get_w(self):
-        """
-        Возвращает три первых начальных момента времени ожидания в СМО
-        """
-        w = [0.0] * 3
-
-        for i in range(3):
-            if self.stable_w_pls:
-                max_mu = np.max(list(chain(np.array(self.mu_w).astype('float'), np.array(self.mu_c).astype('float'),
-                                           np.array(self.mu).astype('float'))))
-
-                dx = self.w_pls_dt / max_mu
-            else:
-                dx = self.w_pls_dt
-            w[i] = derivative(self.calc_w_pls, 0, dx=dx, n=i + 1, order=9)
-
-        w = [w_moment.real if isinstance(
-            w_moment, complex) else w_moment for w_moment in w]
-        return [-w[0].real, w[1].real, -w[2].real]
-
-    def get_v(self):
-        """
-        Возвращает три первых начальных момента времени пребывания в СМО
-        """
-        v = [0.0] * 3
-        w = self.get_w()
-        b = self.b
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
-
-        v = [v_moment.real if isinstance(
-            v_moment, complex) else v_moment for v_moment in v]
-        return v
-
-    
-
-    @staticmethod
-    def binom_calc(a, b, num=3):
-        res = []
-        if num > 0:
-            res.append(a[0] + b[0])
-        if num > 1:
-            res.append(a[1] + 2 * a[0] * b[0] + b[1])
-        if num > 2:
-            res.append(a[2] + 3 * a[1] * b[0] + 3 * b[1] * a[0] + b[2])
-        return res
-
-    def calc_serv_coev(self):
+    def _calc_serv_coev(self):
         b = self.b
         D = b[1] - b[0] * b[0]
         return math.sqrt(D) / b[0]
 
-    def initial_probabilities(self):
+    def _initial_probabilities(self):
         """
-        Задаем первоначальные значения вероятностей микросостояний
+        Initialize probabilities of microstates
         """
-        # t задаем равновероятными
+        # set initial probabilities of microstates to be uniform
         for i in range(self.N):
-            for j in range(self.cols[i]):
-                self.t[i][0, j] = 1.0 / self.cols[i]
+            self.t[i][0] = [1.0 / self.cols[i]] * self.cols[i]
 
         ro = self.l * self.b[0] / self.n
         va = 1.0  # M/
-        vb = self.calc_serv_coev()
+        vb = self._calc_serv_coev()
         self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
 
         self.x[0] = 0.4
 
-    def norm_probs(self):
-        summ = 0
-        for i in range(self.N):
-            summ += self.p[i]
-
-        for i in range(self.N):
-            self.p[i] /= summ
+    def _norm_probs(self):
+        """
+        Normalize probabilities of microstates to sum up to 1.0
+        """
+        total_prob = sum(self.p)
+        self.p = [prob / total_prob for prob in self.p]
 
         if self.verbose:
-            summ = 0
-            for i in range(self.N):
-                summ += self.p[i]
-            print("Summ of probs = {0:.5f}".format(summ))
+            print(f"Summ of probs = {sum(self.p):.5f}")
 
-    def calculate_p(self):
+    def _calculate_p(self):
         """
-        После окончания итераций находим значения вероятностей p по найденным х
+        Calculate probabilities of microstates
         """
         # version 1
         p_sum = 0
         p0_max = 1.0
         p0_min = 0.0
 
-        while math.fabs(1.0 - p_sum) > 1e-6:
+        while math.fabs(1.0 - p_sum.real) > 1e-6:
             p0_ = (p0_max + p0_min) / 2.0
             p_sum = p0_
             self.p[0] = p0_
@@ -417,33 +484,33 @@ class MGnH2ServingColdWarmDelay:
             else:
                 p0_min = p0_
 
-        self.norm_probs()
+        self._norm_probs()
 
-    def calculate_y(self):
+    def _calculate_y(self):
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
-        Формирует матрицы переходов
+        Bulds matrices A, B, C, D
         """
         for i in range(self.N):
-            self.A.append(self.buildA(i))
-            self.B.append(self.buildB(i))
-            self.C.append(self.buildC(i))
-            self.D.append(self.buildD(i))
+            self.A.append(self._buildA(i))
+            self.B.append(self._buildB(i))
+            self.C.append(self._buildC(i))
+            self.D.append(self._buildD(i))
 
-    def calc_g_matrices(self):
+    def _calc_g_matrices(self):
         self.G = []
         for j in range(0, self.N):
             self.G.append(np.linalg.inv(self.D[j] - self.C[j]))
 
-    def calc_ag_matrices(self):
+    def _calc_ag_matrices(self):
         self.AG = [0]
         for j in range(1, self.N):
             self.AG.append(np.dot(self.A[j - 1], self.G[j]))
 
-    def calc_bg_matrices(self):
+    def _calc_bg_matrices(self):
         self.BG = [0]
         for j in range(1, self.N):
             if j != (self.N - 1):
@@ -451,134 +518,33 @@ class MGnH2ServingColdWarmDelay:
             else:
                 self.BG.append(np.dot(self.B[j], self.G[j]))
 
-    def calc_support_matrices(self):
-        self.calc_g_matrices()
-        self.calc_ag_matrices()
-        self.calc_bg_matrices()
+    def _calc_support_matrices(self):
+        self._calc_g_matrices()
+        self._calc_ag_matrices()
+        self._calc_bg_matrices()
 
-    def run(self):
+    def _calculate_c(self, j):
         """
-        Запускает расчет
+        Calculate value of variable c participating in the calculation.
         """
-        if self.dt == 'c16':
-            self.b1[0][0, 0] = 0.0 + 0.0j
-            self.b2[0][0, 0] = 0.0 + 0.0j
-            x_max1 = 0.0 + 0.0j
-            x_max2 = 0.0 + 0.0j
-        else:
-            self.b1[0][0, 0] = 0.0
-            self.b2[0][0, 0] = 0.0
-            x_max1 = 0.0
-            x_max2 = 0.0
-
-        self.calc_support_matrices()
-
-        self.num_of_iter_ = 0  # кол-во итераций алгоритма
-        for i in range(self.N):
-            if self.x[i].real > x_max1.real:
-                x_max1 = self.x[i]
-
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
-            self.num_of_iter_ += 1
-
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
-
-                c = self.calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                if self.dt == 'c16':
-                    self.x[j] = 0.0 + 0.0j
-                else:
-                    self.x[j] = 0.0
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                if self.dt == 'c16':
-                    self.x[j] = (1.0 + 0.0j) / self.x[j]
-                else:
-                    self.x[j] = (1.0) / self.x[j]
-
-                if self.R and j == (self.N - 1):
-                    tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.G[j])
-                    tag_sum = 0
-                    for t_i in range(tag.shape[1]):
-                        tag_sum += tag[0, t_i]
-                    self.z[j] = 1.0 / tag_sum
-                    self.t[j] = self.z[j] * tag
-
-                else:
-
-                    self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
-
-            if self.dt == 'c16':
-                self.x[0] = (1.0 + 0.0j) / self.z[1]
-            else:
-                self.x[0] = 1.0 / self.z[1]
-
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], self.G[0])
-
-            if self.dt == 'c16':
-                x_max1 = 0.0 + 0.0j
-            else:
-                x_max1 = 0
-
-            for i in range(self.N):
-                if self.x[i].real > x_max1.real:
-                    x_max1 = self.x[i]
-
-            if self.verbose:
-                print("End iter # {0:d}".format(self.num_of_iter_))
-
-        self.calculate_p()
-        self.calculate_y()
-
-    def calculate_c(self, j):
-        """
-        Вычисляет значение переменной с, участвующей в расчете
-        """
-        chisl = 0
-        znam = 0
-        znam2 = 0
-
         m = np.dot(self.b2[j], self.B[j])
-        for k in range(m.shape[1]):
-            chisl += m[0, k]
+        chisl = np.sum(m[0])
 
         m = np.dot(self.b1[j], self.B[j])
-        for k in range(m.shape[1]):
-            znam2 += m[0, k]
+        znam2 = np.sum(m[0])
 
         m = np.dot(self.t[j - 1], self.A[j - 1])
-        for k in range(m.shape[1]):
-            znam += m[0, k]
+        znam = np.sum(m[0])
 
         return chisl / (znam - znam2)
 
-    def insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
+    def _insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
         row_num = level
         for i in range(row_num):
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def buildA(self, num):
-        """
-        Формирует матрицу А по заданному номеру яруса
-        """
+    def _buildA(self, num):
         if num < self.n:
             col = self.cols[num + 1]
             row = self.cols[num]
@@ -611,7 +577,7 @@ class MGnH2ServingColdWarmDelay:
                 output[0, 0] = self.l
                 output[1, 1] = self.l
                 # second
-                self.insert_standart_A_into(
+                self._insert_standart_A_into(
                     output, self.l, self.y[0], 2, 2, level=num + 1)
                 # cold block
                 output[-2, -2] = self.l
@@ -622,7 +588,7 @@ class MGnH2ServingColdWarmDelay:
 
         return output
 
-    def insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
+    def _insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
         col = level
         for i in range(col):
             if level <= n:
@@ -638,10 +604,7 @@ class MGnH2ServingColdWarmDelay:
                     mass[i + + left_pos + 1, i +
                          bottom_pos] = (i + 1) * mu[1] * y[0]
 
-    def buildB(self, num):
-        """
-            Формирует матрицу B по заданному номеру яруса
-        """
+    def _buildB(self, num):
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
 
@@ -669,18 +632,15 @@ class MGnH2ServingColdWarmDelay:
         else:
 
             if num < self.n + 1:
-                self.insert_standart_B_into(
+                self._insert_standart_B_into(
                     output, self.y, self.mu, 2, 2, num, self.n)
             else:
-                self.insert_standart_B_into(
+                self._insert_standart_B_into(
                     output, self.y, self.mu, 2, 2, num, self.n)
 
         return output
 
-    def buildC(self, num):
-        """
-            Формирует матрицу C по заданному номеру яруса
-        """
+    def _buildC(self, num):
         if num < self.n:
             col = self.cols[num]
             row = col
@@ -705,9 +665,9 @@ class MGnH2ServingColdWarmDelay:
         else:
             probs = calc_binom_probs(num + 1, self.y[0])
             # warm up
-            for i in range(len(probs)):
-                output[0, 2 + i] = self.mu_w[0] * probs[i]
-                output[1, 2 + i] = self.mu_w[1] * probs[i]
+            for i, prob in enumerate(probs):
+                output[0, 2 + i] = self.mu_w[0] * prob
+                output[1, 2 + i] = self.mu_w[1] * prob
             # cold
             output[-2, 0] = self.mu_c[0] * self.y_w[0]
             output[-2, 1] = self.mu_c[0] * self.y_w[1]
@@ -717,10 +677,7 @@ class MGnH2ServingColdWarmDelay:
 
         return output
 
-    def buildD(self, num):
-        """
-            Формирует матрицу D по заданному номеру яруса
-        """
+    def _buildD(self, num):
         if num < self.n:
             col = self.cols[num]
             row = col

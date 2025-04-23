@@ -2,7 +2,7 @@ import numpy as np
 
 from most_queue.general_utils.tables import probs_print, times_print
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory import mmnr_calc
+from most_queue.theory.mmnr_calc import MMnrCalc
 from most_queue.theory.m_d_n_calc import MDn
 
 
@@ -31,15 +31,17 @@ def test_sim():
     # вероятности состояний .get_p(), периоды непрерывной занятости .pppz
     w_sim = qs.w
 
+    mmnr = MMnrCalc(l, mu, n, r)
+
     # для сравнения расчитаем теже начальные моменты численно
-    w = mmnr_calc.MMnr_calc.get_w(l, mu, n, r)
+    w = mmnr.get_w()
 
     # вывод результатов
 
     times_print(w_sim, w, True)
 
     print("\n\nДанные ИМ::\n")
-    print(qs)
+    # print(qs)
 
     # тоже для детерминированного обслуживания
 
@@ -55,7 +57,7 @@ def test_sim():
     p_sim = qs.get_p()
 
     probs_print(p_sim, p_ch, 10)
-    
+
     assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
 
 

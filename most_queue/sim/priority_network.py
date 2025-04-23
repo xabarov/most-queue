@@ -19,7 +19,7 @@ class PriorityNetwork:
     Simulation of a priority network with priorities and multiple channels.
     """
 
-    def __init__(self, k_num: int, L: list[float], R: list[np.matrix], n: list, 
+    def __init__(self, k_num: int, L: list[float], R: list[np.matrix], n: list[int], 
                  prty: list[str], serv_params, nodes_prty: list[list[int]]):
         """
         k_num: number of classes.

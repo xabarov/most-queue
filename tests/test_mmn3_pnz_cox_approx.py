@@ -1,7 +1,7 @@
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 from most_queue.theory import mmn_prty_pnz_approx
-from most_queue.theory.mmnr_calc import MMnr_calc
 from most_queue.theory.mmn3_pnz_cox_approx import Mmn3_pnz_cox
+from most_queue.theory.mmnr_calc import MMnrCalc
 
 
 def test_mmn3():
@@ -52,8 +52,10 @@ def test_mmn3():
     p_tt = tt.get_p()
     v_tt = tt.get_low_class_v1()
     v_2 = tt_for_second.get_second_class_v1()
+    
+    mmnr = MMnrCalc(l_H, mu_H, 2, 100)
 
-    v_1 = MMnr_calc.get_v(l_H, mu_H, 2, 100)[0]
+    v_1 = mmnr.get_v()[0]
 
     print("\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
           "\nраспределением Кокса второго порядка и ИМ.")
