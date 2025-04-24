@@ -3,7 +3,7 @@ ForkJoin Queue with delta
 """
 from colorama import Fore, Style, init
 
-from most_queue.general_utils.conv import get_self_conv_moments
+from most_queue.general.conv import get_self_conv_moments
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.fj_sim import ForkJoinSim
 from most_queue.sim.utils.tasks import ForkJoinTask

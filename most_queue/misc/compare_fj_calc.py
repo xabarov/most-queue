@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from most_queue.sim.fj_sim import ForkJoinSim
-from most_queue.theory.fj_calc import (
+from most_queue.theory.fork_join.fj_calc import (
     get_v1_fj_nelson_tantawi,
     get_v1_fj_varki_merchant,
     get_v1_fj_varma,

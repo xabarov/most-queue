@@ -13,8 +13,8 @@ from most_queue.rand_distribution import (
     GammaDistribution,
 )
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory import priority_calc
-from most_queue.theory.m_ph_n_prty import MPhNPrty
+from most_queue.theory.priority import priority_calc
+from most_queue.theory.priority.m_ph_n_prty import MPhNPrty
 
 
 def test_m_ph_n_prty():

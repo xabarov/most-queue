@@ -1,8 +1,8 @@
 import math
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.mg1_calc import MG1Calculation
-from most_queue.theory.mgn_tt import MGnCalc
+from most_queue.theory.fifo.mg1_calc import MG1Calculation
+from most_queue.theory.fifo.mgn_tt import MGnCalc
 from most_queue.theory.utils.diff5dots import diff5dots
 
 

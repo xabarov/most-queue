@@ -4,10 +4,10 @@ Compare results with numerical calculations using decomposition method.
 """
 import numpy as np
 
-from most_queue.general_utils.tables import times_print_with_classes
+from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.priority_network import PriorityNetwork
-from most_queue.theory.network_calc import NetworkCalc
+from most_queue.theory.networks.open_network import OpenNetworkCalc
 
 
 def test_network():
@@ -71,7 +71,7 @@ def test_network():
     v_im = qn.v_network
 
     #  Get initial moments of soujorney time from calculation:
-    net_calc = NetworkCalc(R, b, n, L, prty, nodes_prty)
+    net_calc = OpenNetworkCalc(R, b, n, L, prty, nodes_prty)
     semo_calc = net_calc.run()
     v_ch = semo_calc['v']
 
@@ -101,7 +101,7 @@ def test_network():
     qn.run(jobs_num)
     v_im = qn.v_network
 
-    net_calc = NetworkCalc(R, b, n, L, prty, nodes_prty)
+    net_calc = OpenNetworkCalc(R, b, n, L, prty, nodes_prty)
     semo_calc = net_calc.run()
     v_ch = semo_calc['v']
 

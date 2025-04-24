@@ -1,4 +1,4 @@
-from most_queue.theory.mmn_prty_pnz_approx import MMn_PRTY_PNZ_Cox_approx
+from most_queue.theory.priority.mmn_prty_pnz_approx import MMn_PRTY_PNZ_Cox_approx
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
 
 

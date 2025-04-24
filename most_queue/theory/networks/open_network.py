@@ -4,11 +4,11 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.priority_calc import get_v_prty_invar
+from most_queue.theory.priority.priority_calc import get_v_prty_invar
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
-class NetworkCalc:
+class OpenNetworkCalc:
     """
     Calculates queueing network.
     """

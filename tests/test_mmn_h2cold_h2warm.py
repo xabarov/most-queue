@@ -3,7 +3,7 @@ import time
 
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim import qs_sim
-from most_queue.theory.mmn_with_h2_cold_and_h2_warmup import MMn_H2warm_H2cold
+from most_queue.theory.vacations.mmn_with_h2_cold_and_h2_warmup import MMn_H2warm_H2cold
 
 
 def test_mmn_h2cold_h2_warm():

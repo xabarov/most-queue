@@ -1,10 +1,11 @@
 """
 Testing the Fork-Join and Split-Join systems
 """
-from most_queue.general_utils.tables import times_print
+from most_queue.general.tables import times_print
 from most_queue.rand_distribution import ErlangDistribution, H2Distribution
 from most_queue.sim.fj_sim import ForkJoinSim
-from most_queue.theory.fj_calc import ForkJoinMarkovianCalc, SplitJoinCalc
+from most_queue.theory.fork_join.fj_calc import ForkJoinMarkovianCalc
+from most_queue.theory.fork_join.sj_calc import SplitJoinCalc
 
 
 def test_fj_sim():
@@ -188,4 +189,4 @@ def test_sj_sim():
 
 
 if __name__ == "__main__":
-    test_sj_sim()
+    test_fj_sim()

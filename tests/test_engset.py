@@ -1,8 +1,8 @@
 """
 Test for Engset model (M/M/1 with a finite number of sources)
 """
-from most_queue.general_utils.tables import probs_print_no_compare, times_print_no_compare
-from most_queue.theory.engset_model import Engset
+from most_queue.general.tables import probs_print_no_compare, times_print_no_compare
+from most_queue.theory.closed.engset_model import Engset
 
 
 def test_engset():

@@ -2,8 +2,8 @@
 Test for M/M/1 queue with exponential impatience.
 """
 from most_queue.sim.impatient_queue_sim import ImpatientQueueSim
-from most_queue.theory.impatience_calc import MM1Impatience
-from most_queue.general_utils.tables import times_print, probs_print
+from most_queue.theory.impatience.impatience_mm1 import MM1Impatience
+from most_queue.general.tables import times_print, probs_print
 
 
 def test_impatience():

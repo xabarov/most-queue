@@ -1,3 +1,6 @@
+"""
+Printing tables for simulation and calculation results.
+"""
 import math
 
 from colorama import Fore, Style, init

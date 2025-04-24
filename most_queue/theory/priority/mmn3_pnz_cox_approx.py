@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.priority_calc import busy_calc
+from most_queue.theory.priority.priority_calc import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 

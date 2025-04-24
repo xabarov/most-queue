@@ -1,7 +1,7 @@
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory import mmn_prty_pnz_approx
-from most_queue.theory.mmn3_pnz_cox_approx import Mmn3_pnz_cox
-from most_queue.theory.mmnr_calc import MMnrCalc
+from most_queue.theory.priority.mmn_prty_pnz_approx import MMn_PRTY_PNZ_Cox_approx
+from most_queue.theory.priority.mmn3_pnz_cox_approx import Mmn3_pnz_cox
+from most_queue.theory.fifo.mmnr_calc import MMnrCalc
 
 
 def test_mmn3():
@@ -44,7 +44,7 @@ def test_mmn3():
 
     # расчет численным методом:
     tt = Mmn3_pnz_cox(mu_L, mu_M, mu_H, l_L, l_M, l_H)
-    tt_for_second = mmn_prty_pnz_approx.MMn_PRTY_PNZ_Cox_approx(
+    tt_for_second = MMn_PRTY_PNZ_Cox_approx(
         2, mu_M, mu_H, l_M, l_H)
     tt_for_second.run()
 

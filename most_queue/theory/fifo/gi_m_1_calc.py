@@ -3,7 +3,7 @@ Calculation of the GI/M/1 queueing system
 """
 import math
 
-from most_queue.general_utils.conv import get_moments_minus
+from most_queue.general.conv import get_moments_minus
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 

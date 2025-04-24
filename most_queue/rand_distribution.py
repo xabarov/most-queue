@@ -3,81 +3,24 @@ Random distributions for simulation.
 """
 import cmath
 import math
-from dataclasses import dataclass
 
 import numpy as np
 import scipy.special as sp
 from scipy import stats
 
-
-@dataclass
-class H2Params:
-    """
-    H2 distribution parameters.
-    """
-    mu1: float | complex  # Mean of the first phase
-    mu2: float | complex  # Mean of the second phase
-    p1: float | complex  # Probability of being in the first phase
-
-
-@dataclass
-class Cox2Params:
-    """
-    Coxian second order distribution parameters.
-    """
-    mu1: float | complex  # Mean of the first phase
-    mu2: float | complex  # Mean of the second phase
-    # probability for transition between phase 1 and phase 2.
-    p1: float | complex
+from most_queue.general.distribution_params import (
+    Cox2Params,
+    ErlangParams,
+    GammaParams,
+    GaussianParams,
+    H2Params,
+    ParetoParams,
+    UniformParams,
+)
+from most_queue.general.interfaces import Distribution
 
 
-@dataclass
-class GammaParams:
-    """
-    Gamma distribution parameters.
-    """
-    mu: float  # 1/theta
-    alpha: float
-    g: list[float] | None = None
-
-
-@dataclass
-class GaussianParams:
-    """
-    Normal distribution parameters.
-    """
-    mean: float  # Mean of the distribution
-    std_dev: float  # Standard deviation of the distribution
-
-
-@dataclass
-class UniformParams:
-    """
-    Uniform  distribution parameters.
-    """
-    mean: float  # Mean of the distribution
-    half_interval: float  # Half interval of the distribution
-
-
-@dataclass
-class ParetoParams:
-    """
-    Pareto  distribution parameters.
-    """
-    alpha: float  # alpha of the distribution
-    K: float  # K of the distribution (or x_m, minimum value of x)
-
-
-@dataclass
-class ErlangParams:
-    """
-    Erlang distribution parameters.
-    """
-    r: int
-    mu: float
-
-
-class NormalDistribution:
+class NormalDistribution(Distribution):
     """
     Gaussian distribution. Generates random numbers from a normal (Gaussian) distribution.
     """
@@ -126,8 +69,29 @@ class NormalDistribution:
         f[1] = params.mean ** 2 + params.std_dev ** 2
         return f
 
+    @staticmethod
+    def get_params(moments: list[float]):
+        """
+        :param moments: list of theoretical moments.
+        :return: Parameters for the distribution that correspond to the given moments.
+        """
+        mean = moments[0]
+        std_dev = np.sqrt(moments[1] - mean ** 2)
+        return GaussianParams(mean, std_dev)
 
-class UniformDistribution:
+    @staticmethod
+    def get_params_by_mean_and_coev(f1: float, coev: float):
+        """
+        :param f1: mean of the distribution.
+        :param coev: coefficient of variation (std_dev / mean).
+        :return: Parameters for the distribution that correspond to the given mean and coefficient of variation.
+        """
+        mean = f1
+        std_dev = coev * mean
+        return GaussianParams(mean, std_dev)
+
+
+class UniformDistribution(Distribution):
     """
     Uniform distribution class. Generates random numbers according to the uniform distribution.
     """
@@ -166,7 +130,7 @@ class UniformDistribution:
         return np.random.uniform(mean - half_interval, mean + half_interval)
 
     @staticmethod
-    def calc_theory_moments(params: UniformParams, num=3):
+    def calc_theory_moments(params: UniformParams, num: int = 3) -> list[float]:
         """
         Calculates theoretical moments for the uniform distribution.
         """
@@ -178,7 +142,7 @@ class UniformDistribution:
         return f
 
     @staticmethod
-    def get_params(moments) -> UniformParams:
+    def get_params(moments: list[float]) -> UniformParams:
         """
         Get parameters of the uniform distribution by moments.
         """
@@ -190,7 +154,7 @@ class UniformDistribution:
         return UniformParams(mean=mean, half_interval=half_interval)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1, coev) -> UniformParams:
+    def get_params_by_mean_and_coev(f1: float, coev: float) -> UniformParams:
         """
         Get parameters of the uniform distribution by mean and coefficient of variation.
         Returns mean and half interval.
@@ -202,7 +166,7 @@ class UniformDistribution:
         return UniformParams(mean=f1, half_interval=half_interval)
 
     @staticmethod
-    def get_pdf(params: UniformParams, t) -> float:
+    def get_pdf(params: UniformParams, t: float) -> float:
         """
         Get probability density function (PDF) value for a given time t
         """
@@ -215,7 +179,7 @@ class UniformDistribution:
         return 1.0 / (b - a)
 
     @staticmethod
-    def get_cdf(params: UniformParams, t) -> float:
+    def get_cdf(params: UniformParams, t: float) -> float:
         """
         Get cummulative distribution function (CDF) value for a given time t
         """
@@ -230,7 +194,7 @@ class UniformDistribution:
         return (t - a) / (b - a)
 
     @staticmethod
-    def get_tail(params: UniformParams, t) -> float:
+    def get_tail(params: UniformParams, t: float) -> float:
         """
         Get the tail probability of the distribution.
         """
@@ -238,7 +202,7 @@ class UniformDistribution:
         return 1.0 - UniformDistribution.get_cdf(params, t)
 
 
-class H2Distribution:
+class H2Distribution(Distribution):
     """
     Hyperexponential distribution of the second order. (H2)
     """
@@ -254,7 +218,7 @@ class H2Distribution:
         self.type = 'H'
         self.generator = generator
 
-    def generate(self):
+    def generate(self) -> float:
         """
         Generation of pseudo-random numbers according to the H2 distribution.
         """
@@ -262,7 +226,7 @@ class H2Distribution:
         return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(params: H2Params, generator=None):
+    def generate_static(params: H2Params, generator=None) -> float:
         """
         Generation of pseudo-random numbers according to the H2 distribution.
         """
@@ -287,7 +251,7 @@ class H2Distribution:
         return res
 
     @staticmethod
-    def calc_theory_moments(params: H2Params, num=3):
+    def calc_theory_moments(params: H2Params, num=3) -> list[float]:
         """
         Calculates theoretical moments of the H2 distribution.
         """
@@ -309,7 +273,7 @@ class H2Distribution:
         return H2Params(p1=y1 * mu2 / (y1 * mu2 + y2 * mu1), mu1=mu1, mu2=mu2)
 
     @staticmethod
-    def get_params(moments) -> H2Params:
+    def get_params(moments: list[float]) -> H2Params:
         """
         Aliev's method for calculating the parameters of H2 distribution by given initial moments.
         Only real parameters are selected.
@@ -365,7 +329,7 @@ class H2Distribution:
             return res
 
     @staticmethod
-    def get_params_clx(moments, verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True) -> H2Params:
+    def get_params_clx(moments: list[float], verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True) -> H2Params:
         """
         Method of fitting H2 distribution parameters to given initial moments.
         Uses the method of moments and optimization to fit the parameters.
@@ -386,8 +350,8 @@ class H2Distribution:
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
             if math.fabs(coev.real - 1.0) < ee:
                 if verbose:
-                    print("H2 is close to Exp. Multiply moments to (1+je), coev = {0:5.3f},"
-                          " e = {1:5.3f}.".format(coev, e))
+                    print(
+                        f"H2 is close to Exp. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}.")
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
@@ -400,8 +364,8 @@ class H2Distribution:
             # проверка на близость распределения к Эрланга 2-го порядка
             if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < ee:
                 if verbose:
-                    print("H2 is close to E2. Multiply moments to (1+je), coev = {0:5.3f},"
-                          " e = {1:5.3f}.".format(coev, e))
+                    print(
+                        f"H2 is close to E2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}.")
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
@@ -419,7 +383,7 @@ class H2Distribution:
         return res
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1, coev, is_clx=False) -> H2Params:
+    def get_params_by_mean_and_coev(f1: float, coev: float, is_clx=False) -> H2Params:
         """
         Get parameters of the H2 distribution by mean and coefficient of variation.
         """
@@ -436,7 +400,7 @@ class H2Distribution:
         return H2Distribution.get_params(f)
 
     @staticmethod
-    def get_cdf(params: H2Params, t) -> float:
+    def get_cdf(params: H2Params, t: float) -> float:
         """
         Get the cumulative distribution function (CDF) of the H2 distribution.
         """
@@ -450,7 +414,7 @@ class H2Distribution:
         return 1.0 - res
 
     @staticmethod
-    def get_pdf(params: H2Params, t):
+    def get_pdf(params: H2Params, t: float) -> float:
         """
         Get probability density function (PDF) of the H2 distribution.
         """
@@ -464,14 +428,14 @@ class H2Distribution:
         return res
 
     @staticmethod
-    def get_tail(params: H2Params, t):
+    def get_tail(params: H2Params, t: float) -> float:
         """
         Get the tail probability of the H2 distribution.
         """
         return 1.0 - H2Distribution.get_cdf(params, t)
 
 
-class CoxDistribution:
+class CoxDistribution(Distribution):
     """
     Coxian distribution of the second order.
 
@@ -486,16 +450,16 @@ class CoxDistribution:
         self.type = 'C'
         self.generator = generator
 
-    def generate(self):
+    def generate(self) -> float:
         """
         generate random number according to Coxian distribution.
         """
         return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(params: Cox2Params, generator):
+    def generate_static(params: Cox2Params, generator=None) -> float:
         """
-        generate random number according to Coxian distribution. Static method.
+        Generate random number according to Coxian distribution. Static method.
         """
 
         p1, m1, m2 = params.p1, params.mu1, params.mu2
@@ -514,7 +478,7 @@ class CoxDistribution:
         return res
 
     @staticmethod
-    def calc_theory_moments(params: Cox2Params):
+    def calc_theory_moments(params: Cox2Params, num: int = 3) -> list[float]:
         """
         Calculates the theoretical initial moments of the Coxian distribution.
         """
@@ -531,7 +495,7 @@ class CoxDistribution:
         return f
 
     @staticmethod
-    def get_params(moments, ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True) -> Cox2Params:
+    def get_params(moments: list[float], ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True) -> Cox2Params:
         """
         Calculates Cox-2 distribution parameters by three given initial moments [moments].
         """
@@ -577,7 +541,7 @@ class CoxDistribution:
         return Cox2Params(p1=y1, mu1=mu1, mu2=mu2)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1, coev) -> Cox2Params:
+    def get_params_by_mean_and_coev(f1: float, coev: float) -> Cox2Params:
         """
         Get parameters of C2 distribution by mean and coefficient of variation
         """
@@ -591,7 +555,7 @@ class CoxDistribution:
         return CoxDistribution.get_params(f)
 
 
-class DeterministicDistribution:
+class DeterministicDistribution(Distribution):
     """Deterministic distribution class. Generates constant value."""
 
     def __init__(self, b: float):
@@ -614,8 +578,37 @@ class DeterministicDistribution:
         """
         return b
 
+    @staticmethod
+    def calc_theory_moments(b, num: int) -> list[float]:
+        """
+        Calculates theoretical moments of the distribution up to the specified order.
+        :param b: constant value.
+        :param num: number of moments to calculate.
+        :return: list[float]
+        """
+        moments = [b**i for i in range(1, num+1)]
+        return moments
 
-class ParetoDistribution:
+    @staticmethod
+    def get_params(moments: list[float]):
+        """
+        :param moments: list of theoretical moments.
+        :return: Parameters for the distribution that correspond to the given moments.
+        """
+        return moments[0]
+
+    @staticmethod
+    def get_params_by_mean_and_coev(f1: float, coev: float):
+        """
+        :param f1: mean of the distribution.
+        :param coev: coefficient of variation (std_dev / mean).
+        :return: Parameters for the distribution that correspond to the given mean and coefficient of variation.
+        """
+        b = f1
+        return b
+
+
+class ParetoDistribution(Distribution):
     """
     Pareto distribution class. Generates values according to Pareto distribution.
     """
@@ -631,11 +624,15 @@ class ParetoDistribution:
         self.type = 'Pa'
         self.generator = generator
 
-    def generate(self):
+    def generate(self) -> float:
+        """
+        Generate a random value according to Pareto distribution.
+        :return: generated random value.
+        """
         return ParetoDistribution.generate_static(self.params, self.generator)
 
     @staticmethod
-    def get_pdf(t, params: ParetoParams) -> float:
+    def get_pdf(params: ParetoParams, t: float) -> float:
         """
         Get probability density function value for given time t.
         """
@@ -646,14 +643,14 @@ class ParetoDistribution:
         return a * math.pow(k, a) / math.pow(t, a + 1)
 
     @staticmethod
-    def get_cdf(params: ParetoParams, t) -> float:
+    def get_cdf(params: ParetoParams, t: float) -> float:
         """
         Get cummulative distribution function value for given time t.
         """
         return 1.0 - ParetoDistribution.get_tail(params, t)
 
     @staticmethod
-    def get_tail(params: ParetoParams, t):
+    def get_tail(params: ParetoParams, t: float) -> float:
         """
         Get tail of distribution function value for given time t. 
         Tail is defined as P(X>t).
@@ -665,7 +662,7 @@ class ParetoDistribution:
         return math.pow(k / t, a)
 
     @staticmethod
-    def calc_theory_moments(params: ParetoParams, max_number=3) -> list[float]:
+    def calc_theory_moments(params: ParetoParams, num: int = 3) -> list[float]:
         """
         Calc theoretical moments of the distribution.
         """
@@ -673,7 +670,7 @@ class ParetoDistribution:
         a = params.alpha
         k = params.K
         f = []
-        for i in range(max_number):
+        for i in range(num):
             if a > i + 1:
                 f.append(a * math.pow(k, i + 1) / (a - i - 1))
             else:
@@ -696,34 +693,34 @@ class ParetoDistribution:
         return k * math.pow(np.random.rand(), -1 / a)
 
     @staticmethod
-    def get_params(f):
+    def get_params(moments: list[float]):
         """
         Calc parameters of the distribution. 
-        :param f: list of initial moments
+        :param moments: list of initial moments
         """
-        d = f[1] - f[0] * f[0]
-        c = f[0] * f[0] / d
+        d = moments[1] - moments[0] * moments[0]
+        c = moments[0] * moments[0] / d
         disc = 4 * (1 + c)
         a = (2 + math.sqrt(disc)) / 2
-        k = (a - 1) * f[0] / a
+        k = (a - 1) * moments[0] / a
         return ParetoParams(alpha=a, K=k)
 
     @staticmethod
-    def get_params_by_mean_and_coev(mean, coev):
+    def get_params_by_mean_and_coev(f1: float, coev: float):
         """
         Get parameters of the distribution by mean and coefficient of variation.
-        :param mean: float, mean value of the distribution
+        :param f1: float, mean value of the distribution
         :param coev: float, coefficient of variation (mean / std)
         """
-        d = pow(mean * coev, 2)
-        c = pow(mean, 2) / d
+        d = pow(f1 * coev, 2)
+        c = pow(f1, 2) / d
         disc = 4 * (1 + c)
         a = (2 + math.sqrt(disc)) / 2
-        k = (a - 1) * mean / a
+        k = (a - 1) * f1 / a
         return ParetoParams(alpha=a, K=k)
 
 
-class ErlangDistribution:
+class ErlangDistribution(Distribution):
     """
     Erlang distribution class.
     """
@@ -763,7 +760,7 @@ class ErlangDistribution:
         return -(1.0 / mu) * np.log(prod)
 
     @staticmethod
-    def get_cdf(params: ErlangParams, t) -> float:
+    def get_cdf(params: ErlangParams, t: float) -> float:
         """
         Get cummulative distribution function value of the random variable.
         """
@@ -777,21 +774,21 @@ class ErlangDistribution:
         return 1.0 - res
 
     @staticmethod
-    def get_tail(params: ErlangParams, t) -> float:
+    def get_tail(params: ErlangParams, t: float) -> float:
         """
         Returns the value of the tail distribution function.
         """
         return 1.0 - ErlangDistribution.get_cdf(params, t)
 
     @staticmethod
-    def calc_theory_moments(params: ErlangParams, count=3) -> list[float]:
+    def calc_theory_moments(params: ErlangParams, num: int = 3) -> list[float]:
         """
         Calculates theoretical initial moments of the distribution. By default - first three.
         """
         r, mu = params.r, params.mu
 
-        f = [0.0] * count
-        for i in range(count):
+        f = [0.0] * num
+        for i in range(num):
             prod = 1
             for k in range(i + 1):
                 prod *= r + k
@@ -799,12 +796,13 @@ class ErlangDistribution:
         return f
 
     @staticmethod
-    def get_params(f: list[float]) -> ErlangParams:
+    def get_params(moments: list[float]) -> ErlangParams:
         """
         Calculates parameters of the Erlang distribution by initial moments. 
         """
-        r = int(math.floor(f[0] * f[0] / (f[1] - f[0] * f[0]) + 0.5))
-        mu = r / f[0]
+        r = int(math.floor(moments[0] * moments[0] /
+                (moments[1] - moments[0] * moments[0]) + 0.5))
+        mu = r / moments[0]
         return ErlangParams(r=r, mu=mu)
 
     @staticmethod
@@ -818,7 +816,7 @@ class ErlangDistribution:
         return ErlangDistribution.get_params(f)
 
 
-class ExpDistribution:
+class ExpDistribution(Distribution):
     """
     Exponential distribution. It is a special case of the Erlang distribution with r = 1.
     """
@@ -841,21 +839,21 @@ class ExpDistribution:
         return self.erl.generate()
 
     @staticmethod
-    def generate_static(mu: float, generator=None):
+    def generate_static(params: float, generator=None):
         """
         Generates a random number from the exponential distribution.
-        :param mu: rate parameter (inverse of the mean)
+        :param params (mu): rate parameter (inverse of the mean)
         """
-        return ErlangDistribution.generate_static(ErlangParams(r=1, mu=mu), generator)
+        return ErlangDistribution.generate_static(ErlangParams(r=1, mu=params), generator)
 
     @staticmethod
-    def calc_theory_moments(mu: float, count=3):
+    def calc_theory_moments(params: float, num: int = 3) -> list[float]:
         """
         Calculates theoretical moments of the exponential distribution.
-        :param mu: rate parameter (inverse of the mean)
+        :param params (mu): rate parameter (inverse of the mean)
 
         """
-        return ErlangDistribution.calc_theory_moments(ErlangParams(r=1, mu=mu), count=count)
+        return ErlangDistribution.calc_theory_moments(ErlangParams(r=1, mu=params), num=num)
 
     @staticmethod
     def get_params(moments: list[float]):
@@ -865,8 +863,17 @@ class ExpDistribution:
         """
         return ErlangDistribution.get_params(moments).mu
 
+    @staticmethod
+    def get_params_by_mean_and_coev(f1: float, coev: float) -> float:
+        """
+        Get parameters of the exponential distribution from mean and coefficient of variation.
+        :param f1: mean value
+        :param coev: coefficient of variation (coefficient of dispersion)
+        """
+        return 1 / f1
 
-class GammaDistribution:
+
+class GammaDistribution(Distribution):
     """
     Gamma distribution class.
     """
@@ -882,24 +889,24 @@ class GammaDistribution:
         self.generator = generator
 
     @staticmethod
-    def get_params(b: list[float]) -> GammaParams:
+    def get_params(moments: list[float]) -> GammaParams:
         """
         Get parameters of the Gamma distribution from theoretical moments.
         """
-        d = b[1] - b[0] * b[0]
-        mu = b[0] / d
-        alpha = mu * b[0]
-        if len(b) > 2:
+        d = moments[1] - moments[0] * moments[0]
+        mu = moments[0] / d
+        alpha = mu * moments[0]
+        if len(moments) > 2:
             # подбор коэффициентов g
             A = []
             B = []
-            for i in range(len(b) + 1):
+            for i in range(len(moments) + 1):
                 A.append([])
                 if i == 0:
                     B.append(1)
                 else:
-                    B.append(b[i - 1])
-                for j in range(len(b) + 1):
+                    B.append(moments[i - 1])
+                for j in range(len(moments) + 1):
                     A[i].append(GammaDistribution.get_gamma(alpha + i + j) /
                                 (pow(mu, i + j) * GammaDistribution.get_gamma(alpha)))
             g = np.linalg.solve(A, B)
@@ -908,23 +915,23 @@ class GammaDistribution:
         return GammaParams(mu=mu, alpha=alpha)
 
     @staticmethod
-    def get_params_by_mean_and_coev(mean, coev) -> GammaParams:
+    def get_params_by_mean_and_coev(f1: float, coev: float) -> GammaParams:
         """
         Get parameters of gamma distribution by mean and coefficient of variation.
         """
-        d = pow(mean * coev, 2)
-        mu = mean / d
-        alpha = mu * mean
+        d = pow(f1 * coev, 2)
+        mu = f1 / d
+        alpha = mu * f1
         return GammaParams(mu=mu, alpha=alpha)
 
-    def generate(self):
+    def generate(self) -> float:
         """
         Generate gamma distributed random number.
         """
         return self.generate_static(self.params, self.generator)
 
     @staticmethod
-    def generate_static(params: GammaParams, generator=None):
+    def generate_static(params: GammaParams, generator=None) -> float:
         """
         Generate gamma distributed random number.
         """
@@ -991,15 +998,15 @@ class GammaDistribution:
         return main * summ
 
     @staticmethod
-    def calc_theory_moments(params: GammaParams, count=3) -> list[float]:
+    def calc_theory_moments(params: GammaParams, num: int = 3) -> list[float]:
         """
         Calc theoretical moments of gamma distribution.
         :param params: GammaParams object with parameters of gamma distribution.
-        :param count: Count of moments to calculate.
+        :param num: Count of moments to calculate.
         :return: List of theoretical moments.
         """
-        f = [0.0] * count
-        for i in range(count):
+        f = [0.0] * num
+        for i in range(num):
             prod = 1
             for k in range(i + 1):
                 prod *= params.alpha + k

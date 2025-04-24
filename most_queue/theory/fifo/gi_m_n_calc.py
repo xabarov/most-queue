@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 
-from most_queue.general_utils.conv import get_moments
+from most_queue.general.conv import get_moments
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.diff5dots import diff5dots
 

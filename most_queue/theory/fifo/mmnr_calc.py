@@ -3,7 +3,7 @@ Calculate queue M/M/n/r
 """
 import math
 
-from most_queue.general_utils.conv import get_moments
+from most_queue.general.conv import get_moments
 from most_queue.rand_distribution import ExpDistribution
 
 

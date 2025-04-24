@@ -1,9 +1,9 @@
 import numpy as np
 
-from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mmnr_calc import MMnrCalc
-from most_queue.theory.m_d_n_calc import MDn
+from most_queue.theory.fifo.mmnr_calc import MMnrCalc
+from most_queue.theory.fifo.m_d_n_calc import MDn
 
 
 def test_sim():

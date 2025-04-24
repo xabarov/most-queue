@@ -11,10 +11,10 @@ For verification, simulation is used.
 import math
 import time
 
-from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mgn_tt import MGnCalc
+from most_queue.theory.fifo.mgn_tt import MGnCalc
 
 
 def test_mgn_tt():

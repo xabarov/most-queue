@@ -1,7 +1,7 @@
-from most_queue.general_utils.tables import times_print_with_classes
+from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory import priority_calc
+from most_queue.theory.priority import priority_calc
 
 
 def test_sim():

@@ -2,10 +2,10 @@
 Testing the GI/M/n queueing system calculation.
 For verification, we use imitational modeling.
 """
-from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.gi_m_n_calc import GiMn
+from most_queue.theory.fifo.gi_m_n_calc import GiMn
 
 
 def test_gi_m_n():

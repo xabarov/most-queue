@@ -3,10 +3,10 @@ Test for ForkJoin queue with delta.
 """
 import numpy as np
 
-from most_queue.general_utils.tables import times_print
+from most_queue.general.tables import times_print
 from most_queue.rand_distribution import ErlangDistribution, H2Distribution
 from most_queue.sim.fj_delta_sim import ForkJoinSimDelta
-from most_queue.theory import fj_calc
+from most_queue.theory.fork_join.sj_calc import SplitJoinCalc
 
 
 def test_fj_delta():
@@ -31,7 +31,7 @@ def test_fj_delta():
     qs.run(100000)
     v_im = qs.v
 
-    sj_delta = fj_calc.SplitJoinCalc(l, n, b)
+    sj_delta = SplitJoinCalc(l, n, b)
 
     v_ch = sj_delta.get_v_delta(b_delta)
     ro = sj_delta.get_ro()
@@ -67,7 +67,7 @@ def test_fj_delta():
     qs.run(100000)
     v_im = qs.v
 
-    sj_delta = fj_calc.SplitJoinCalc(l, n, b)
+    sj_delta = SplitJoinCalc(l, n, b)
 
     v_ch = sj_delta.get_v_delta(b_delta)
     ro = sj_delta.get_ro()

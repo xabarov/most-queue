@@ -1,13 +1,13 @@
 import numpy as np
 
-from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import (
     H2Distribution,
     ParetoDistribution,
     UniformDistribution,
 )
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mg1_calc import MG1Calculation
+from most_queue.theory.fifo.mg1_calc import MG1Calculation
 
 
 def test_mg1():

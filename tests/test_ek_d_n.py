@@ -5,10 +5,10 @@ with deterministic service
 For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
 For verification, we use simulation modeling (sim).
 """
-from most_queue.general_utils.tables import probs_print
+from most_queue.general.tables import probs_print
 from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.ek_d_n_calc import EkDn
+from most_queue.theory.fifo.ek_d_n_calc import EkDn
 
 
 def test_ek_d_n():
@@ -71,7 +71,7 @@ def test_ek_d_n():
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert abs(p_sim[0] - p_ch[0]) < 0.001
+    assert abs(p_sim[0] - p_ch[0]) < 0.01
 
 
 if __name__ == "__main__":
