@@ -96,7 +96,7 @@ Package consist of following submodules:
 | #   | Kendall Notations | Package Name                      | Description      | Example | Tutorial |
 |-----|-------------------|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
 | 1.  | M/H<SUB>2</SUB>/c          | vacations.m_h2_h2warm                      | Numerical calculation of the M/H<SUB>2</SUB>/c system with H<SUB>2</SUB>-warming using the Takahasi-Takagi method.      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_h2_h2warm.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/m_h2_h2warm.ipynb)| |
-| 2.  | M/G/1           | vacations.mg1_warm_calc                     | Solving for QS M/G/1 with "warm-up       |  | |
+| 2.  | M/G/1           | vacations.mg1_warm_calc                     | Solving for QS M/G/1 with warm-up       |  | |
 | 3.  | M/Ph/c         | vacations.mgn_with_h2_delay_cold_warm    | Multichannel queuing system with H<SUB>2</SUB>-serving time, H<SUB>2</SUB>-warm-up, H<SUB>2</SUB>-cold delay and H<SUB>2</SUB>-cold (vacations). The system uses complex parameters, which allows you to calculate systems with arbitrary serving, warm-up, cold-delay and cold variation coefficients | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_with_h2_delay_cold_warm.py) | |
 | 4.  | M/M/c          | vacations.mmn_with_h2_cold_h2_warmup  | Multichannel queuing system with exp serving time, H<SUB>2</SUB>-warm-up and H<SUB>2</SUB>-cold (vacations). The system uses complex parameters, which allows to calculate systems with arbitrary warm-up and cold variation coefficients    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_h2cold_h2warm.py) | |
 
@@ -129,10 +129,10 @@ Package consist of following submodules:
 ```python
 import numpy as np
 
-from most_queue.general_utils.tables import probs_print, times_print
+from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.mg1_calc import MG1Calculation
+from most_queue.theory.fifo.mg1_calc import MG1Calculation
 
 l = 1  # input flow intensity
 b1 = 0.7  # average service time
@@ -164,102 +164,6 @@ print("M/H2/1")
 times_print(w_sim, w_ch, True)
 times_print(v_sim, v_ch, False)
 probs_print(p_sim, p_ch, 10)
-```
-
-### Priority queue example.   For verification, comparing results with those calculated using the method of [invariant relations](https://cyberleninka.ru/article/n/raschet-mnogokanalnyh-sistem-obsluzhivaniya-s-absolyutnym-i-otnositelnym-prioritetami-na-osnove-invariantov-otnosheniya)
-
-```python
-n = 5  # number of servers
-k = 3  # number of classes of requests
-l = [0.2, 0.3, 0.4]  # service intensities by request classes
-lsum = sum(l)
-num_of_jobs = 300000  # number of jobs for the simulation
-
-# Set up the parameters for service times at initial moments.
-# Set average service times by class
-b1 = [0.45 * n, 0.9 * n, 1.35 * n]
-
-# Coefficient of variation of service time let's be the same for all classes
-coev = 0.577
-
-# second initial moments
-b2 = [0] * k
-for i in range(k):
-    b2[i] = (b1[i] ** 2) * (1 + coev ** 2)
-
-b_sr = sum(b1) / k
-
-# get the coefficient of load
-ro = lsum * b_sr / n
-
-# now, given the two initial moments, select parameters for the approximating Gamma distribution
-# and add them to the list of parameters params
-params = []
-for i in range(k):
-    params.append(GammaDistribution.get_params([b1[i], b2[i]]))
-
-b = []
-for j in range(k):
-    b.append(GammaDistribution.calc_theory_moments(params[j], 4))
-
-print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
-      "time spent in a multi-channel queue with priorities")
-print("Number of servers: " + str(n) + "\nNumber of classes: " + str(k) + "\nCoefficient of load: {0:<1.2f}".format(ro) +
-      "\nCoefficient of variation of service time: " + str(coev) + "\n")
-print("PR (Preamptive) priority")
-
-# when creating the simulation, pass the number of servers, number of classes and type of priority.
-# PR - absolute with re-service of requests
-qs = PriorityQueueSimulator(n, k, "PR")
-
-# to set up sources of requests and service servers, we need to specify a set of dictionaries with fields
-# type - distribution type,
-# params - its parameters.
-# The number of such dictionaries in the lists sources and servers_params corresponds to the number of classes
-
-sources = []
-servers_params = []
-for j in range(k):
-    sources.append({'type': 'M', 'params': l[j]})
-    servers_params.append({'type': 'Gamma', 'params': params[j]})
-
-qs.set_sources(sources)
-qs.set_servers(servers_params)
-
-# start the simulation
-qs.run(num_of_jobs)
-
-# get the initial moments of time spent
-
-v_sim = qs.v
-
-# calculate them as well using the method of invariant relations (for comparison)
-v_teor = priority_calc.get_v_prty_invar(l, b, n, 'PR')
-
-assert abs(v_sim[0][0] - v_teor[0][0]) < 0.3
-
-times_print_with_classes(v_sim, v_teor, False)
-
-print("NP (Non-preamptive) priority")
-
-# The same for relative priority (NP)
-qs = PriorityQueueSimulator(n, k, "NP")
-sources = []
-servers_params = []
-for j in range(k):
-    sources.append({'type': 'M', 'params': l[j]})
-    servers_params.append({'type': 'Gamma', 'params': params[j]})
-
-qs.set_sources(sources)
-qs.set_servers(servers_params)
-
-qs.run(num_of_jobs)
-
-v_sim = qs.v
-
-v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
-
-times_print_with_classes(v_sim, v_teor, False)
 ```
 
 ### References
