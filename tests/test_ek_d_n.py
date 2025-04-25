@@ -7,8 +7,8 @@ For verification, we use simulation modeling (sim).
 """
 from most_queue.general.tables import probs_print
 from most_queue.rand_distribution import ErlangDistribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.fifo.ek_d_n_calc import EkDn
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.fifo.ek_d_n import EkDn
 
 
 def test_ek_d_n():

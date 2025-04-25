@@ -5,7 +5,7 @@ import math
 import time
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
 
 
 def compare_calc_times():

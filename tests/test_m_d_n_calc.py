@@ -4,8 +4,8 @@ For verification, we use simulation modeling
 """
 import numpy as np
 
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.fifo.m_d_n_calc import MDn
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
 from most_queue.general.tables import probs_print
 
 

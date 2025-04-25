@@ -8,7 +8,7 @@ from colorama import Fore, Style, init
 from tqdm import tqdm
 
 from most_queue.rand_distribution import ExpDistribution
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
+from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
 from most_queue.sim.utils.tasks import TaskPriority
 
 init()

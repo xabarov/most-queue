@@ -12,9 +12,9 @@ from most_queue.rand_distribution import (
     ExpDistribution,
     GammaDistribution,
 )
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory.priority import priority_calc
-from most_queue.theory.priority.m_ph_n_prty import MPhNPrty
+from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
+from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
+from most_queue.theory.queueing_systems.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
 
 
 def test_m_ph_n_prty():
@@ -75,7 +75,8 @@ def test_m_ph_n_prty():
     b.append(bL)
 
     invar_start = time.process_time()
-    v = priority_calc.get_v_prty_invar([l_H, l_L], b, n=n, type='PR', num=2)
+    invar_calc = MGnInvarApproximation([l_H, l_L], b, n=n)
+    v = invar_calc.get_v(priority='PR', num=2)
     v2_invar = v[1][0]
     invar_time = time.process_time() - invar_start
 

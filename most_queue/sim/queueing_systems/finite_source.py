@@ -1,9 +1,13 @@
 """
 Simulating a queueing system with finite number of sources.
 """
-from colorama import Fore, Style, init
+import time
 
-from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
+import numpy as np
+from colorama import Fore, Style, init
+from tqdm import tqdm
+
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator, Task
 from most_queue.sim.utils.distribution_utils import create_distribution
 
 init()
@@ -13,7 +17,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
     Simulating a queueing system with finite number of sources.
     """
 
-    def __init__(self, num_of_channels, m, buffer=None, verbose=True):
+    def __init__(self, num_of_channels: int, m: int, buffer=None, verbose=True):
         """
         num_of_channels - number of channels in the system.
         m - number of sources.
@@ -35,7 +39,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
             
         """
         self.m = m
-        self.sources_left = m  # сколько источников готовы посылать заявки
+        self.sources_left = m  # how many sources are ready to send requests
 
         super().__init__(num_of_channels, buffer=buffer, verbose=verbose)
 
@@ -80,7 +84,8 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         self.arrival_times[self.arrived_num] = 1e10
 
         if self.free_channels == 0:
-            if self.buffer == None:  # не задана длина очереди, т.е бесконечная очередь
+            if self.buffer is None:  # infinite queue
+
                 new_tsk = Task(self.ttek)
                 new_tsk.start_waiting_time = self.ttek
                 self.queue.append(new_tsk)
@@ -160,32 +165,73 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
     def run_one_step(self):
         """
-        Run one step of the simulation.
-         This method is called repeatedly until the end of the simulation.
+        Run Open step of simulation
         """
 
         num_of_server_earlier = -1
-        serv_earl = 1e10
-        arr_earl = 1e10
-        self.arrived_num = -1
-
-        if self.sources_left != 0:
-            for i, a in enumerate(self.arrival_times):
-                if a < arr_earl:
-                    arr_earl = a
-                    self.arrived_num = i
+        serv_earl = 1e16
 
         for c in range(self.n):
             if self.servers[c].time_to_end_service < serv_earl:
                 serv_earl = self.servers[c].time_to_end_service
                 num_of_server_earlier = c
 
-        # Key moment:
+        # Global warm-up is set. Need to track
+        # including the moment of warm-up end
+        times = [serv_earl, self.warm_phase.end_time,
+                 self.cold_phase.end_time, self.cold_delay_phase.end_time]
+        for t in self.arrival_times:  # Arrival times
+            times.append(t)
 
-        if arr_earl < serv_earl:
-            self.arrival()
-        else:
+        min_time_num = np.argmin(times)
+        if min_time_num == 0:
+            # Serving
             self.serving(num_of_server_earlier)
+        elif min_time_num == 1:
+            # Warm-up ends
+            self.on_end_warming()
+        elif min_time_num == 2:
+            # Cold ends
+            self.on_end_cold()
+        elif min_time_num == 3:
+            # Cold delay ends
+            self.on_end_cold_delay()
+        else:
+            self.arrived_num = min_time_num - 4
+            # Arrival of a new customer
+            self.arrival()
+
+    def run(self, total_served, is_real_served=True):
+        """
+        Run simulation process
+        """
+        start = time.process_time()
+
+        print(Fore.GREEN + '\rStart simulation')
+
+        if is_real_served:
+
+            last_percent = 0
+
+            with tqdm(total=100) as pbar:
+                while self.served < total_served:
+                    self.run_one_step()
+                    percent = int(100*(self.served/total_served))
+                    if last_percent != percent:
+                        last_percent = percent
+                        pbar.update(1)
+                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
+                                             Fore.YELLOW + f'{self.served}/{total_served}' +
+                                             Fore.LIGHTGREEN_EX)
+
+        else:
+            for _ in tqdm(range(total_served)):
+                self.run_one_step()
+
+        print(Fore.GREEN + '\rSimulation is finished')
+        print(Style.RESET_ALL)
+
+        self.time_spent = time.process_time() - start
 
     def get_p(self):
         """

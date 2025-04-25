@@ -10,13 +10,15 @@ class MM1Impatience:
     Calc M/M/1 queue with exponential impatience.
     """
 
-    def __init__(self, l, mu, gamma, tol=1e-12, probs_max_num=100000):
+    def __init__(self, l:float, mu:float, gamma:float,
+                 tol:float=1e-12, probs_max_num:int=100000):
         """
         Initialization of the MM1Impatience class.
         :param l: Arrival rate
         :param mu: Service rate
         :param gamma: Impatience rate
         :param tol: Tolerance for convergence in iterative calculations. Default is 1e-12.
+        :param probs_max_num: Maximum number of probabilities to calculate. Default is 100000.
         """
         self.l = l
         self.mu = mu

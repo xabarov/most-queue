@@ -5,14 +5,14 @@ import math
 
 import numpy as np
 
-from most_queue.general.conv import get_moments, get_self_conv_moments
+from most_queue.general.conv import conv_moments, get_self_conv_moments
 from most_queue.rand_distribution import (
     ErlangDistribution,
     GammaDistribution,
     H2Distribution,
 )
-from most_queue.theory.fifo.mg1_calc import MG1Calculation
-from most_queue.theory.vacations.mg1_warm_calc import MG1WarmCalc
+from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
+from most_queue.theory.queueing_systems.vacations.mg1_warm_calc import MG1WarmCalc
 
 
 class SplitJoinCalc:
@@ -277,7 +277,7 @@ class SplitJoinCalc:
 
                 for i in range(self.n):
                     b_delta = get_self_conv_moments(delta, i)
-                    b_summ = get_moments(b, b_delta)
+                    b_summ = conv_moments(b, b_delta)
                     params_summ = GammaDistribution.get_params(b_summ)
                     res *= GammaDistribution.get_cdf(params_summ, t)
 

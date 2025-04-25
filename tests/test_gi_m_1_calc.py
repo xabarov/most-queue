@@ -6,8 +6,8 @@ import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.fifo.gi_m_1_calc import GiM1
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.fifo.gi_m_1 import GiM1
 
 
 def test_gi_m_1():

@@ -6,8 +6,8 @@ from most_queue.rand_distribution import (
     ParetoDistribution,
     UniformDistribution,
 )
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.fifo.mg1_calc import MG1Calculation
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
 
 
 def test_mg1():

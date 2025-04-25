@@ -6,7 +6,7 @@ import math
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.sim.qs_sim import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
 from most_queue.sim.utils.tasks import ForkJoinTask
 
 init()

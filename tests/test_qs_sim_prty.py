@@ -1,7 +1,8 @@
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory.priority import priority_calc
+from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
+from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
+
 
 
 def test_sim():
@@ -78,7 +79,8 @@ def test_sim():
     v_sim = qs.v
 
     # calculate them as well using the method of invariant relations (for comparison)
-    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'PR')
+    invar_calc = MGnInvarApproximation(l, b, n=n)
+    v_teor = invar_calc.get_v('PR')
 
     assert abs(v_sim[0][0] - v_teor[0][0]) < 0.3
 
@@ -101,7 +103,7 @@ def test_sim():
 
     v_sim = qs.v
 
-    v_teor = priority_calc.get_v_prty_invar(l, b, n, 'NP')
+    v_teor = invar_calc.get_v('NP')
 
     times_print_with_classes(v_sim, v_teor, False)
 

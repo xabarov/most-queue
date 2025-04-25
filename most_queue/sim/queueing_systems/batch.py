@@ -3,7 +3,7 @@ Queueing system with batch arrivals.
 """
 import numpy as np
 
-from most_queue.sim.qs_sim import QueueingSystemSimulator, Task
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator, Task
 
 
 class QueueingSystemBatchSim(QueueingSystemSimulator):

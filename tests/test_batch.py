@@ -6,8 +6,8 @@ The main function is test_batch_mm1, which tests the Mx/M/1/infinite model.
 It compares the results of the simulation and the analytical solution.
 """
 from most_queue.general.tables import times_print
-from most_queue.sim.batch_sim import QueueingSystemBatchSim
-from most_queue.theory.batch.batch_mm1 import BatchMM1
+from most_queue.sim.queueing_systems.batch import QueueingSystemBatchSim
+from most_queue.theory.queueing_systems.batch.mm1 import BatchMM1
 
 
 def calc_mean_batch_size(batch_probs):

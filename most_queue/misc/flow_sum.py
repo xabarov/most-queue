@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from most_queue.theory.utils.flow_sum import SummatorNumeric
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.flow_sum_sim import FlowSumSim
+from most_queue.sim.flow_sum import FlowSumSim
 
 matplotlib.use('TkAgg')
 

@@ -8,8 +8,8 @@ import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.vacations.m_h2_h2warm import MH2nH2Warm
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.vacations.m_h2_h2warm import MH2nH2Warm
 
 
 def test_m_h2_h2warm():

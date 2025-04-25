@@ -6,7 +6,7 @@ import numpy as np
 
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
-from most_queue.sim.priority_network import PriorityNetwork
+from most_queue.sim.networks.priority_network import PriorityNetwork
 from most_queue.theory.networks.open_network import OpenNetworkCalc
 
 

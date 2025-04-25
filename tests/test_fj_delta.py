@@ -5,8 +5,8 @@ import numpy as np
 
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import ErlangDistribution, H2Distribution
-from most_queue.sim.fj_delta_sim import ForkJoinSimDelta
-from most_queue.theory.fork_join.sj_calc import SplitJoinCalc
+from most_queue.sim.queueing_systems.fork_join_delta import ForkJoinSimDelta
+from most_queue.theory.queueing_systems.fork_join.split_join import SplitJoinCalc
 
 
 def test_fj_delta():

@@ -3,7 +3,7 @@ QS channels or servers
 """
 from colorama import Fore, Style
 
-from most_queue.general.conv import get_moments
+from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import (
     CoxDistribution,
     ExpDistribution,
@@ -132,7 +132,7 @@ class ServerWarmUp(Server):
                 else:
                     raise ValueError("Unknown distribution type")
 
-                f_summ = get_moments(b, self.delta)
+                f_summ = conv_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = GammaDistribution.get_params(f_summ)
@@ -232,6 +232,5 @@ class ServerPriority:
             res += f"{Fore.GREEN}\tFree\n{Style.RESET_ALL}"
         else:
             res += f"{Fore.YELLOW}\tServing...\n{Style.RESET_ALL}"
-            res += "\tTask on service:\n"
-            res += f"\t\t{self.tsk_on_service.__str__('\t')}"
+            res += f"\tTask on service:\t{self.tsk_on_service}\n"
         return res

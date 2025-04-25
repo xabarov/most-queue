@@ -1,5 +1,5 @@
-from most_queue.theory.priority.mmn_prty_pnz_approx import MMn_PRTY_PNZ_Cox_approx
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
+from most_queue.theory.queueing_systems.priority.preemptive.mmn_2cls_pr_busy_approx import MMn_PRTY_PNZ_Cox_approx
+from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
 
 
 def test_mmn_prty():

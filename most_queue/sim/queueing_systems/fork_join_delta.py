@@ -5,7 +5,7 @@ from colorama import Fore, Style, init
 
 from most_queue.general.conv import get_self_conv_moments
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.fj_sim import ForkJoinSim
+from most_queue.sim.queueing_systems.fork_join import ForkJoinSim
 from most_queue.sim.utils.tasks import ForkJoinTask
 
 init()

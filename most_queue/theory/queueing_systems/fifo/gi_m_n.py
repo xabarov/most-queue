@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 
-from most_queue.general.conv import get_moments
+from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.diff5dots import diff5dots
 
@@ -47,7 +47,7 @@ class GiMn:
 
         b = [1 / self.mu, 2 / pow(self.mu, 2), 6 /
              pow(self.mu, 3), 24 / pow(self.mu, 4)]
-        v = get_moments(w, b, len(w))
+        v = conv_moments(w, b, len(w))
         return v
 
     def get_w(self) -> list[float]:

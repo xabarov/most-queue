@@ -15,8 +15,8 @@ from most_queue.general.vacations_paper_utils import (
     print_table,
 )
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.qs_sim import QueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.theory.queueing_systems.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
 
 
 def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):

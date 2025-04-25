@@ -3,7 +3,7 @@ Simulation model for queueing systems with impatient tasks
 """
 from colorama import Fore, Style, init
 
-from most_queue.sim.qs_sim import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.tasks import ImpatientTask
 

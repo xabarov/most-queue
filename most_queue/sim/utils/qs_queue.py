@@ -55,6 +55,9 @@ class QsQueueList:
         Get size of queue
         """
         return len(self.queue)
+    
+    def __len__(self):
+        return len(self.queue)
 
 
 class QsQueueDeque:

@@ -1,7 +1,7 @@
-from most_queue.sim.priority_queue_sim import PriorityQueueSimulator
-from most_queue.theory.priority.mmn_prty_pnz_approx import MMn_PRTY_PNZ_Cox_approx
-from most_queue.theory.priority.mmn3_pnz_cox_approx import Mmn3_pnz_cox
-from most_queue.theory.fifo.mmnr_calc import MMnrCalc
+from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
+from most_queue.theory.queueing_systems.priority.preemptive.mmn_2cls_pr_busy_approx import MMn_PRTY_PNZ_Cox_approx
+from most_queue.theory.queueing_systems.priority.preemptive.mmn_3cls_busy_approx import Mmn3_pnz_cox
+from most_queue.theory.queueing_systems.fifo.mmnr import MMnrCalc
 
 
 def test_mmn3():

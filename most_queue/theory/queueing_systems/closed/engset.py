@@ -2,7 +2,7 @@
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
 from most_queue.theory.utils.diff5dots import diff5dots
-from most_queue.general.conv import get_moments
+from most_queue.general.conv import conv_moments
 
 
 class Engset:
@@ -115,7 +115,7 @@ class Engset:
         """
         w = self.get_w()
         b = [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
-        return get_moments(w, b)
+        return conv_moments(w, b)
 
     def _calc_m_i(self):
         m_i = []

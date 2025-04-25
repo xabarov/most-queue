@@ -3,7 +3,7 @@ Calculation of the GI/M/1 queueing system
 """
 import math
 
-from most_queue.general.conv import get_moments_minus
+from most_queue.general.conv import conv_moments_minus
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_Gamma
 
@@ -74,7 +74,7 @@ class GiM1:
 
         b = [1.0 / self.mu, 2.0 /
              pow(self.mu, 2), 6.0 / pow(self.mu, 3), 24.0 / pow(self.mu, 4)]
-        w = get_moments_minus(self.v, b, num)
+        w = conv_moments_minus(self.v, b, num)
 
         return w
 
