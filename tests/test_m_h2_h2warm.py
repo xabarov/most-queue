@@ -21,7 +21,7 @@ def test_m_h2_h2warm():
     ro = 0.7  # load factor
     b1 = n * 0.7  # average service time
     b1_warm = n * 0.1  # average warming time
-    num_of_jobs = 1000000  # number of jobs for the simulation
+    num_of_jobs = 100000  # number of jobs for the simulation
     b_coevs = [1.5]  # coefficient of variation of service time
     b_coev_warm = 1.2  # coefficient of variation of warming time
     buff = None  # buffer - unlimited

@@ -226,11 +226,11 @@ def print_mrx(mrx, is_short=False):
                 color = Fore.RED
             else:
                 color = Fore.GREEN
-            if is_short:
+            if is_short or mrx[i, j].imag == 0.0:
                 print(f"{color}{mrx[i, j].real:^4.2f} | ", end="")
             else:
                 print(f"{color}{mrx[i, j]:^5.3f} | ", end="")
-        print("\n" + "-------" * col if is_short else "\n" + "---------------" * col)
+        print("\n" + "-------" * col if is_short or mrx[i, j].imag == 0.0 else "\n" + "---------------" * col)
         Fore.RESET  # Reset colors after each row
 
 

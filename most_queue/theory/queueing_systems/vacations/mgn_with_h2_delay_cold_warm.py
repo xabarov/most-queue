@@ -205,18 +205,7 @@ class MGnH2ServingColdWarmDelay:
             else:
                 self.x[0] = 1.0 / self.z[1]
 
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], self.G[0])
-
-            if self.dt == 'c16':
-                x_max1 = 0.0 + 0.0j
-            else:
-                x_max1 = 0
-
-            for i in range(self.N):
-                if self.x[i].real > x_max1.real:
-                    x_max1 = self.x[i]
+            x_max1 = np.max(self.x)
 
             if self.verbose:
                 print(f"End iter # {self.num_of_iter_}")
@@ -445,10 +434,10 @@ class MGnH2ServingColdWarmDelay:
         for i in range(self.N):
             self.t[i][0] = [1.0 / self.cols[i]] * self.cols[i]
 
-        ro = self.l * self.b[0] / self.n
-        va = 1.0  # M/
-        vb = self._calc_serv_coev()
-        self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
+        # ro = self.l * self.b[0] / self.n
+        # va = 1.0  # M/
+        # vb = self._calc_serv_coev()
+        # self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
 
         self.x[0] = 0.4
 

@@ -117,31 +117,31 @@ def calc_qs_load(source_types: str, source_params,
     elif source_types == "D":
         l = 1.00 / source_params
     elif source_types == "Uniform":
-        l = 1.00 / source_params[0]
+        l = 1.00 / source_params.mean
     elif source_types == "H":
-        y1 = source_params[0]
-        y2 = 1.0 - source_params[0]
-        mu1 = source_params[1]
-        mu2 = source_params[2]
+        y1 = source_params.p1
+        y2 = 1.0 - y1
+        mu1 = source_params.mu1
+        mu2 = source_params.mu2
 
         f1 = y1 / mu1 + y2 / mu2
         l = 1.0 / f1
 
     elif source_types == "E":
-        r = source_params[0]
-        mu = source_params[1]
+        r = source_params.r
+        mu = source_params.mu
         l = mu / r
 
     elif source_types == "Gamma":
-        mu = source_params[0]
-        alpha = source_params[1]
+        mu = source_params.mu
+        alpha = source_params.alpha
         l = mu / alpha
 
     elif source_types == "C":
-        y1 = source_params[0]
-        y2 = 1.0 - source_params[0]
-        mu1 = source_params[1]
-        mu2 = source_params[2]
+        y1 = source_params.p1
+        y2 = 1.0 - y1
+        mu1 = source_params.mu1
+        mu2 = source_params.mu2
 
         f1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
         l = 1.0 / f1
@@ -149,8 +149,8 @@ def calc_qs_load(source_types: str, source_params,
         if source_params[0] < 1:
             return None
         else:
-            a = source_params[0]
-            k = source_params[1]
+            a = source_params.alpha
+            k = source_params.K
             f1 = a * k / (a - 1)
             l = 1.0 / f1
 
@@ -161,39 +161,39 @@ def calc_qs_load(source_types: str, source_params,
     elif server_types == "D":
         b1 = server_params
     elif server_types == "Uniform":
-        b1 = server_params[0]
+        b1 = server_params.mean
 
     elif server_types == "H":
-        y1 = server_params[0]
-        y2 = 1.0 - server_params[0]
-        mu1 = server_params[1]
-        mu2 = server_params[2]
+        y1 = server_params.p1
+        y2 = 1.0 - y1
+        mu1 = server_params.mu1
+        mu2 = server_params.mu2
 
         b1 = y1 / mu1 + y2 / mu2
 
     elif server_types == "Gamma":
-        mu = server_params[0]
-        alpha = server_params[1]
+        mu = server_params.mu
+        alpha = server_params.alpha
         b1 = alpha / mu
 
     elif server_types == "E":
-        r = server_params[0]
-        mu = server_params[1]
+        r = server_params.r
+        mu = server_params.mu
         b1 = r / mu
 
     elif server_types == "C":
-        y1 = server_params[0]
-        y2 = 1.0 - server_params[0]
-        mu1 = server_params[1]
-        mu2 = server_params[2]
+        y1 = server_params.p1
+        y2 = 1.0 - y1
+        mu1 = server_params.mu1
+        mu2 = server_params.mu2
 
         b1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
     elif server_types == "Pa":
         if server_params[0] < 1:
             return math.inf
         else:
-            a = server_params[0]
-            k = server_params[1]
+            a = server_params.alpha
+            k = server_params.K
             b1 = a * k / (a - 1)
 
     return l * b1 / n

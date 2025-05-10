@@ -116,7 +116,7 @@ class MH2nH2Warm:
                     if i == 0:
                         self.cols.append(1)  # 00 state
                     else:
-                        # w1 w2 01 10, w1 w2 20 11 02, ...
+                        # w1 w2 01 10, 20 11 02, ...
                         self.cols.append(i + 3)
                 else:
                     self.cols.append(n + 3)
@@ -409,21 +409,13 @@ class MH2nH2Warm:
             else:
                 self.x[0] = 1.0 / self.z[1]
 
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], self.G[0])
-
-            if self.dt == 'c16':
-                x_max1 = 0.0 + 0.0j
-            else:
-                x_max1 = 0
-
+            x_max1 = 0.0 + 0.0j
             for i in range(self.N):
                 if self.x[i].real > x_max1.real:
                     x_max1 = self.x[i]
 
             if self.verbose:
-                print("End iter # {0:d}".format(self.num_of_iter_))
+                print(f"End iter # {self.num_of_iter_}")
 
         self._calculate_p()
         self._calculate_y()

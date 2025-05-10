@@ -572,21 +572,21 @@ class DeterministicDistribution(Distribution):
         return DeterministicDistribution.generate_static(self.b)
 
     @staticmethod
-    def generate_static(b):
+    def generate_static(params, generator=None):
         """
         Generate a constant value b. Static method for use without creating an instance of the class.
         """
-        return b
+        return params
 
     @staticmethod
-    def calc_theory_moments(b, num: int) -> list[float]:
+    def calc_theory_moments(params, num: int) -> list[float]:
         """
         Calculates theoretical moments of the distribution up to the specified order.
-        :param b: constant value.
+        :param params = b: constant value.
         :param num: number of moments to calculate.
         :return: list[float]
         """
-        moments = [b**i for i in range(1, num+1)]
+        moments = [params**i for i in range(1, num+1)]
         return moments
 
     @staticmethod
