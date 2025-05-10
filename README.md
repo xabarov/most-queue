@@ -28,9 +28,14 @@ Contributions are welcome! If you find any issues or have suggestions, please op
 ---
 
 ## Installation
-Install most-queue with pip
+- install most-queue with pip
 ```bash
   pip install most-queue
+```
+
+- install most-queue from repository
+```bash
+  pip install -e .
 ```
 
 --- 
