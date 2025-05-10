@@ -213,29 +213,30 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         return w
 
-    def get_v(self, derivate=False) -> list[float]:
+    def get_v(self) -> list[float]:
         """
         Get the sojourn time moments
         """
-        v = [0.0] * 3
+        # v = [0.0] * 3
 
-        if derivate:
-            for i in range(3):
-                v[i] = derivative(self._calc_v_pls, 0,
-                                  dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return [-v[0], v[1].real, -v[2]]
+        # if derivate:
+        #     for i in range(3):
+        #         v[i] = derivative(self._calc_v_pls, 0,
+        #                           dx=1e-3 / self.b[0], n=i + 1, order=9)
+        #     return [-v[0], v[1].real, -v[2]]
 
         w = self.get_w(derivate=False)
         
-        # serving = min(H2_residual, exp(l_neg)) = H2(y1=y1_res, mu1 = mu1_res+l_neg, mu2=mu2_res+l_neg)
-        residual_params = H2Distribution.get_residual_params(H2Params(p1=self.y[0], 
-                                                        mu1=self.mu[0], 
-                                                        mu2=self.mu[1]))
+        # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
+       
+        params = H2Params(p1=self.y[0], 
+                        mu1=self.mu[0], 
+                        mu2=self.mu[1])
         
-        b = H2Distribution.calc_theory_moments(H2Params(p1=residual_params.p1, 
-                                                        mu1=self.l_neg + residual_params.mu1, 
-                                                        mu2=self.l_neg + residual_params.mu2))
-        
+        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1, 
+                                                        mu1=self.l_neg + params.mu1, 
+                                                        mu2=self.l_neg + params.mu2))
+
         return conv_moments(w, b)
 
     def _build_big_b_matrix(self, num):

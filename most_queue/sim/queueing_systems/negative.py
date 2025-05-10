@@ -260,7 +260,6 @@ class QueueingSystemSimulatorWithNegatives:
 
             not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
             c = random.choice(not_free_servers)
-            
             end_ts = self.servers[c].end_service()
             self.breaked += 1
             self.free_channels += 1

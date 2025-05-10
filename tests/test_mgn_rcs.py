@@ -58,7 +58,7 @@ def test_mgn():
     queue_calc.run()
 
     p_calc = queue_calc.get_p()
-    v_calc = queue_calc.get_v(derivate=False)
+    v_calc = queue_calc.get_v()
     w_calc = queue_calc.get_w(derivate=False)
     
     print(f'q = {queue_calc.get_q()}')
