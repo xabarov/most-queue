@@ -13,7 +13,7 @@ from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.utils.transforms import (
     laplace_stieltjes_exp_transform as lst_exp,
 )
-
+from most_queue.rand_distribution import H2Distribution, H2Params
 
 class MGnNegativeRCSCalc(MGnCalc):
     """
@@ -35,13 +35,11 @@ class MGnNegativeRCSCalc(MGnCalc):
         dtype: data type for calculations (default is complex double precision)
         verbose: whether to print intermediate results (default is False)
         """
-        
+
         self.l_neg = l_neg
 
         super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
                          accuracy=accuracy, dtype=dtype, verbose=verbose)
-
-        
 
     def get_q(self) -> float:
         """
@@ -228,7 +226,17 @@ class MGnNegativeRCSCalc(MGnCalc):
             return [-v[0], v[1].real, -v[2]]
 
         w = self.get_w(derivate=False)
-        return conv_moments(w, self.b)
+        
+        # serving = min(H2_residual, exp(l_neg)) = H2(y1=y1_res, mu1 = mu1_res+l_neg, mu2=mu2_res+l_neg)
+        residual_params = H2Distribution.get_residual_params(H2Params(p1=self.y[0], 
+                                                        mu1=self.mu[0], 
+                                                        mu2=self.mu[1]))
+        
+        b = H2Distribution.calc_theory_moments(H2Params(p1=residual_params.p1, 
+                                                        mu1=self.l_neg + residual_params.mu1, 
+                                                        mu2=self.l_neg + residual_params.mu2))
+        
+        return conv_moments(w, b)
 
     def _build_big_b_matrix(self, num):
         """
