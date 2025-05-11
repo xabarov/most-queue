@@ -43,6 +43,15 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         return 1.0 - (self.l_neg/self.l)*(1.0-self.p[0].real)
     
+    def _calc_service_probs(self) ->list[float]:
+        """
+        
+        """
+        ps = np.array([self.p[i] for i in range(1, self.n+1)])
+        ps /= np.sum(ps)
+        
+        return ps
+    
 
     def get_v(self) -> list[float]:
         """
@@ -56,13 +65,58 @@ class MGnNegativeRCSCalc(MGnCalc):
                           mu1=self.mu[0],
                           mu2=self.mu[1])
         
-        l_neg = self.l_neg
+        
+        service_probs = self._calc_service_probs()
+        b_cum = np.array([0.0,0.0,0.0])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg/i
 
-        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
-                                                        mu1=l_neg + params.mu1,
-                                                        mu2=l_neg + params.mu2))
+            b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
+                                                            mu1=l_neg + params.mu1,
+                                                            mu2=l_neg + params.mu2))
+            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+        
+        return conv_moments(w, b_cum)
+    
+    def get_v_served(self) -> list[float]:
+        """
+        Get the sojourn time moments
+        """
+        w = self.get_w()
 
-        return conv_moments(w, b)
+        # serving = F_neg(t>T)*f_H2(t)
+        
+        service_probs = self._calc_service_probs()
+        b_cum = np.array([0.0,0.0,0.0])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg/i
+
+            ps = [self.y[i]*self.mu[i] for i in range(2)]
+            
+            b = [sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+1) for i in range(2)]) for k in range(3)]
+            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+
+        return conv_moments(w, b_cum)
+    
+    def get_v_breaked(self) -> list[float]:
+        """
+        Get the sojourn time moments
+        """
+        w = self.get_w()
+
+        # serving = F_neg(t<T)*f_H2(t)
+
+        service_probs = self._calc_service_probs()
+        b_cum = np.array([0.0,0.0,0.0])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg/i
+
+            ps = [self.y[i]*self.mu[i] for i in range(2)]
+            
+            b = [self.b[k] - sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+1) for i in range(2)]) for k in range(3)]
+            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+
+        return conv_moments(w, b_cum)
 
     def _build_big_b_matrix(self, num):
         """

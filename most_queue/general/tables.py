@@ -8,7 +8,7 @@ from colorama import Fore, Style, init
 init()
 
 
-def times_print(sim_moments, calc_moments, is_w=True):
+def times_print(sim_moments, calc_moments, is_w=True, header=None):
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:
@@ -17,12 +17,13 @@ def times_print(sim_moments, calc_moments, is_w=True):
          is_w (bool, optional): If True, prints waiting time moments. Otherwise, prints sojourn time moments. Defaults to True.
 
     """
-    if is_w:
-        spec = 'waiting'
-    else:
-        spec = 'soujorn'
 
-    header = f'Initial moments of {spec} time in the system'
+    if header is None:
+        if is_w:
+            spec = 'waiting'
+        else:
+            spec = 'soujorn'
+        header = f'Initial moments of {spec} time in the system'
 
     print(Fore.CYAN + f'\r{header}')
 
