@@ -18,19 +18,19 @@ def test_mgn():
     """
 
     l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.9  # arrival rate of negative jobs
-    n = 3
+    l_neg = 0.1  # arrival rate of negative jobs
+    n = 2
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time
-    b_coev = 1.3
+    b_coev = 1.57
 
     b = [0.0] * 3
     alpha = 1 / (b_coev ** 2)
     b[0] = b1
     b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
     b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-    
+
     print(f'B: {b}')
 
     # Create a simulator with 1 server and 1 queue
@@ -45,26 +45,23 @@ def test_mgn():
     queue_sim.run(num_of_jobs)
 
     p_sim = queue_sim.get_p()
-    v_sim_served = queue_sim.get_v_served()
-    v_sim_breaked = queue_sim.get_v_breaked()
-    
-    print(f'V served {v_sim_served}, breaked {v_sim_breaked}')
-    print(f'served {queue_sim.served}, breaked {queue_sim.breaked}')
-    
+    v_sim = queue_sim.get_v()
+
     w_sim = queue_sim.get_w()
 
-    queue_calc = MGnNegativeRCSCalc(n, l_pos, l_neg, b, verbose=False, accuracy=1e-8)
+    queue_calc = MGnNegativeRCSCalc(
+        n, l_pos, l_neg, b, verbose=False, accuracy=1e-8)
 
     queue_calc.run()
 
     p_calc = queue_calc.get_p()
     v_calc = queue_calc.get_v()
-    w_calc = queue_calc.get_w(derivate=False)
-    
+    w_calc = queue_calc.get_w()
+
     print(f'q = {queue_calc.get_q()}')
 
     probs_print(p_sim, p_calc)
-    times_print(v_sim_served, v_calc, is_w=False)
+    times_print(v_sim, v_calc, is_w=False)
     times_print(w_sim, w_calc)
 
 
