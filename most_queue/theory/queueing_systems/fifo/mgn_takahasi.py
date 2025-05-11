@@ -68,23 +68,29 @@ class MGnCalc:
         self.D = []
         self.Y = []
 
-        for i in range(N):
-            if i < n + 1:
+    def _fill_cols(self):
+        for i in range(self.N):
+            if i < self.n + 1:
                 self.cols.append(i + 1)
             else:
-                self.cols.append(n + 1)
+                self.cols.append(self.n + 1)
 
+    def _fill_t_b(self):
+        for i in range(self.N):
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-
-        self._build_matrices()
-        self._initial_probabilities()
 
     def run(self):
         """
         Run the algorithm.
         """
+
+        self._fill_cols()
+        self._fill_t_b()
+        self._build_matrices()
+        self._initial_probabilities()
+
         self.b1[0][0, 0] = 0.0 + 0.0j
         self.b2[0][0, 0] = 0.0 + 0.0j
         x_max1 = np.max(self.x)
@@ -345,7 +351,6 @@ class MGnCalc:
                     self.y[0] + i * self.mu[1] * self.y[1]
                 if i != num - 1:
                     output[i, i + 1] = (num - i - 1) * self.mu[0] * self.y[1]
-                if i != num - 1:
                     output[i + 1, i] = (i + 1) * self.mu[1] * self.y[0]
         return output
 

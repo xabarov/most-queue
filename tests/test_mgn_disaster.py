@@ -1,5 +1,5 @@
 """
-Test QS M/G/n queue with negative jobs and RCS discipline.
+Test QS M/G/n queue with disasters.
 """
 import math
 
@@ -9,17 +9,19 @@ from most_queue.sim.queueing_systems.negative import (
     NegativeServiceType,
     QueueingSystemSimulatorWithNegatives,
 )
-from most_queue.theory.queueing_systems.negative.mgn_rcs import MGnNegativeRCSCalc
+from most_queue.theory.queueing_systems.negative.mgn_disaster import (
+    MGnNegativeDisasterCalc,
+)
 
 
 def test_mgn():
     """
-    Test QS M/G/n queue with negative jobs and RCS discipline.
+    Test QS M/G/n queue with disasters.
     """
 
     l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.9  # arrival rate of negative jobs
-    n = 3
+    l_neg = 0.3  # arrival rate of negative jobs
+    n = 5
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time
@@ -32,10 +34,11 @@ def test_mgn():
     b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
     print(f'Service time moments: {b}')
-
+    
     # Run simulation 
+
     queue_sim = QueueingSystemSimulatorWithNegatives(
-        n, NegativeServiceType.RCS)
+        n, NegativeServiceType.DISASTER)
 
     queue_sim.set_negative_sources(l_neg, 'M')
     queue_sim.set_positive_sources(l_pos, 'M')
@@ -46,21 +49,18 @@ def test_mgn():
 
     p_sim = queue_sim.get_p()
     v_sim = queue_sim.get_v()
-
     w_sim = queue_sim.get_w()
     
     # Run calc
-    queue_calc = MGnNegativeRCSCalc(
+    queue_calc = MGnNegativeDisasterCalc(
         n, l_pos, l_neg, b, verbose=False, accuracy=1e-8)
-
+    
     queue_calc.run()
 
     p_calc = queue_calc.get_p()
     v_calc = queue_calc.get_v()
     w_calc = queue_calc.get_w()
-
-    print(f'q = {queue_calc.get_q()}')
-
+    
     probs_print(p_sim, p_calc)
     times_print(v_sim, v_calc, is_w=False)
     times_print(w_sim, w_calc)

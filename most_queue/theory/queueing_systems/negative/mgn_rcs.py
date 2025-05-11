@@ -32,37 +32,17 @@ class MGnNegativeRCSCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        self.l_neg = l_neg
-
         super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
                          accuracy=accuracy, dtype=dtype, verbose=verbose)
+        
+        self.l_neg = l_neg
 
     def get_q(self) -> float:
         """
         Calculation of the conditional probability of successful service completion at a node
         """
         return 1.0 - (self.l_neg/self.l)*(1.0-self.p[0].real)
-
-    def get_w(self) -> list[float]:
-        """
-        Get the waiting time moments
-        """
-
-        w = [0.0] * 3
-
-        for j in range(1, len(self.p) - self.n):
-            w[0] += j * self.p[self.n + j]
-        for j in range(2, len(self.p) - self.n):
-            w[1] += j * (j - 1) * self.p[self.n + j]
-        for j in range(3, len(self.p) - self.n):
-            w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
-
-        for j in range(3):
-            w[j] /= math.pow(self.l, j + 1)
-            w[j] = w[j].real
-
-        return np.array(w)
-
+    
 
     def get_v(self) -> list[float]:
         """

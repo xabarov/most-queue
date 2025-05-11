@@ -226,8 +226,16 @@ class QueueingSystemSimulatorWithNegatives:
             return
 
         if self.type_of_negatives == NegativeServiceType.DISASTER:
+            
+            not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
+            for c in not_free_servers:
+                end_ts = self.servers[c].end_service()
+                self.served += 1
+                self.refresh_v_stat(self.ttek - end_ts.arr_time)
+
             self.in_sys = 0
             self.free_channels = self.n
+            
             while self.queue:
                 ts = self.queue.pop()
                 ts.wait_time += self.ttek - ts.start_waiting_time

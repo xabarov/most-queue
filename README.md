@@ -98,6 +98,14 @@ Most_queue consists of two main parts:
 |-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
 | 1.  | M/M/1/D         |  Solving for M/M/1 with exponential impatience     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_impatience.py) | |
 
+
+### QS with Negative arrivals
+| #   | Kendall Notations |  Description      | Example | Tutorial |
+|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
+| 1.  | M/G/c RCS         |  Numerical calculation of M/G/c with RCS (remove customer from service) negative arrivals. Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_rcs.py) | |
+| 2.  | M/G/c disaster         |  Numerical calculation of M/G/c with disaster (remove all customer from service and queue by negative arrival). Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_disaster.py) | |
+
+
 ### Closed QS (with finite number of sources)
 | #   | Kendall Notations |  Description      | Example | Tutorial |
 |-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
