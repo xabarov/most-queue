@@ -1,17 +1,16 @@
 """
 Calculate M/H2/n queue with negative jobs with disasters,
 """
-import math
-
 import numpy as np
 from scipy.misc import derivative
 
+from most_queue.general.conditional import (moments_exp_less_than_H2,
+                                            moments_H2_less_than_exp)
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.utils.transforms import (
-    laplace_stieltjes_exp_transform as lst_exp,
-)
+from most_queue.theory.utils.transforms import \
+    laplace_stieltjes_exp_transform as lst_exp
 
 
 class MGnNegativeDisasterCalc(MGnCalc):
@@ -46,6 +45,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
                          accuracy=accuracy, dtype=dtype, verbose=verbose)
         self.base_mgn._fill_cols()
         self.base_mgn._build_matrices()
+
+        self.w = None
         
     def _fill_cols(self):
         """
@@ -218,6 +219,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         :param s: Laplace variable
         :return: Laplace-Stieltjes transform of the waiting time distribution
         """
+
         w = 0
 
         key_numbers = self._get_key_numbers(self.n)
@@ -245,12 +247,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Get the waiting time moments
         """
 
+        if not self.w is None:
+            return self.w
+        
         w = [0.0] * 3
 
         for i in range(3):
             w[i] = derivative(self._calc_w_pls, 0,
                                 dx=1e-3 / self.b[0], n=i + 1, order=9)
-        return np.array([-w[0].real, w[1].real, -w[2].real])
+        w = np.array([-w[0].real, w[1].real, -w[2].real])
+        self.w = w
+
+        return w
 
     def get_v(self) -> list[float]:
         """
@@ -271,5 +279,51 @@ class MGnNegativeDisasterCalc(MGnCalc):
                                                         mu2=l_neg + params.mu2))
 
         return conv_moments(w, b)
+    
+    def _calc_service_probs(self) -> list[float]:
+        """
+        Returns the conditional probabilities of loaded states.
+        """
+        ps = np.array([self.p[i] for i in range(1, self.n+1)])
+        ps /= np.sum(ps)
+
+        return ps
+    
+    def get_v_served(self) -> list[float]:
+        """
+        Get the sojourn time moments
+        """
+        w = self.get_w()
+
+        # serving = P(H2 | H2 < exp(l_neg))
+
+        service_probs = self._calc_service_probs()
+        b_cum = np.array([0.0, 0.0, 0.0])
+        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg
+
+            b = moments_H2_less_than_exp(l_neg, h2_params)
+            b_cum += service_probs[i-1].real*b
+
+        return conv_moments(w, b_cum)
+
+    def get_v_broken(self) -> list[float]:
+        """
+        Get the sojourn time moments
+        """
+        w = self.get_w()
+
+        # serving = P(exp(l_neg) | exp(l_neg) < H2)
+
+        service_probs = self._calc_service_probs()
+        b_cum = np.array([0.0, 0.0, 0.0])
+        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg
+            b = moments_exp_less_than_H2(l_neg, h2_params)
+            b_cum += service_probs[i-1].real*b
+
+        return conv_moments(w, b_cum)
 
     

@@ -60,12 +60,12 @@ class QueueingSystemSimulatorWithNegatives:
         self.ttek = 0  # current simulation time
 
         self.w = [0, 0, 0]  # initial moments of waiting time in the QS
-        # initial moments of sojourn time (total, breaked and successfully served)
+        # initial moments of sojourn time (total, broken and successfully served)
         self.v = [0, 0, 0]
         # initial moments of sojourn time of successfully served
         self.v_served = [0, 0, 0]
-        # initial moments of sojourn time of breaked by negative jobs
-        self.v_breaked = [0, 0, 0]
+        # initial moments of sojourn time of broken by negative jobs
+        self.v_broken = [0, 0, 0]
 
         # probabilities of the QS states:
         self.p = [0.0] * self.num_of_states
@@ -73,8 +73,8 @@ class QueueingSystemSimulatorWithNegatives:
         self.taked = 0  # number of job accepted for service
 
         self.served = 0  # number of job serviced by the system without negative job breaks
-        self.breaked = 0  # number of job breaked by negatives
-        self.total = 0  # number of job breaked by negatives and served without breaks
+        self.broken = 0  # number of job broken by negatives
+        self.total = 0  # number of job broken by negatives and served without breaks
 
         self.in_sys = 0  # number of job in the system
 
@@ -240,11 +240,11 @@ class QueueingSystemSimulatorWithNegatives:
                 self.n) if not self.servers[c].is_free]
             for c in not_free_servers:
                 end_ts = self.servers[c].end_service()
-                self.breaked += 1
+                self.broken += 1
                 self.total += 1
                 soujourn_time = self.ttek - end_ts.arr_time
                 self.refresh_v_stat(soujourn_time)
-                self.refresh_v_stat_breaked(soujourn_time)
+                self.refresh_v_stat_broken(soujourn_time)
 
             self.in_sys = 0
             self.free_channels = self.n
@@ -254,12 +254,12 @@ class QueueingSystemSimulatorWithNegatives:
                 ts.wait_time += self.ttek - ts.start_waiting_time
                 self.taked += 1
                 self.total += 1
-                self.breaked += 1
+                self.broken += 1
                 self.refresh_w_stat(ts.wait_time)
 
                 soujourn_time = self.ttek - ts.arr_time
                 self.refresh_v_stat(soujourn_time)
-                self.refresh_v_stat_breaked(soujourn_time)
+                self.refresh_v_stat_broken(soujourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCE:
             self.in_sys -= 1
@@ -269,12 +269,12 @@ class QueueingSystemSimulatorWithNegatives:
 
             self.taked += 1
             self.total += 1
-            self.breaked += 1
+            self.broken += 1
 
             self.refresh_w_stat(ts.wait_time)
             soujourn_time = self.ttek - ts.arr_time
             self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_breaked(soujourn_time)
+            self.refresh_v_stat_broken(soujourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCH:
             self.in_sys -= 1
@@ -283,12 +283,12 @@ class QueueingSystemSimulatorWithNegatives:
 
             self.taked += 1
             self.total += 1
-            self.breaked += 1
+            self.broken += 1
 
             self.refresh_w_stat(ts.wait_time)
             soujourn_time = self.ttek - ts.arr_time
             self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_breaked(soujourn_time)
+            self.refresh_v_stat_broken(soujourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCS:
 
@@ -297,11 +297,11 @@ class QueueingSystemSimulatorWithNegatives:
             c = random.choice(not_free_servers)
             end_ts = self.servers[c].end_service()
             self.total += 1
-            self.breaked += 1
+            self.broken += 1
             self.free_channels += 1
             soujourn_time = self.ttek - end_ts.arr_time
             self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_breaked(soujourn_time)
+            self.refresh_v_stat_broken(soujourn_time)
 
             self.in_sys -= 1
 
@@ -420,16 +420,16 @@ class QueueingSystemSimulatorWithNegatives:
 
     def refresh_v_stat(self, new_a):
         """
-        Updating statistics of sojourn times (all, breaked and successfully served)
+        Updating statistics of sojourn times (all, broken and successfully served)
         """
         self.v = refresh_moments_stat(self.v, new_a, self.total)
 
-    def refresh_v_stat_breaked(self, new_a):
+    def refresh_v_stat_broken(self, new_a):
         """
-        Updating statistics of sojourn times of breaked jobs
+        Updating statistics of sojourn times of broken jobs
         """
-        self.v_breaked = refresh_moments_stat(
-            self.v_breaked, new_a, self.breaked)
+        self.v_broken = refresh_moments_stat(
+            self.v_broken, new_a, self.broken)
 
     def refresh_v_stat_served(self, new_a):
         """
@@ -462,7 +462,7 @@ class QueueingSystemSimulatorWithNegatives:
 
     def get_v(self):
         """
-        Returns initial moments of soujourn time (total, successfully served and breaked)
+        Returns initial moments of soujourn time (total, successfully served and broken)
         """
         return self.v
 
@@ -472,11 +472,11 @@ class QueueingSystemSimulatorWithNegatives:
         """
         return self.v_served
 
-    def get_v_breaked(self):
+    def get_v_broken(self):
         """
-        Returns initial moments of soujourn time  (only for breaked by negative arrivals)
+        Returns initial moments of soujourn time  (only for broken by negative arrivals)
         """
-        return self.v_breaked
+        return self.v_broken
 
     def __str__(self, is_short=False):
 

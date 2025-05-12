@@ -2,10 +2,11 @@
 Calculate M/H2/n queue with negative jobs with RCS discipline,
 (remove customer from service)
 """
-import math
 
 import numpy as np
 
+from most_queue.general.conditional import (moments_exp_less_than_H2,
+                                            moments_H2_less_than_exp)
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
@@ -82,44 +83,34 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         w = self.get_w()
 
-        # serving = F_neg(t>T)*f_H2(t)
+        # serving = P(H2 | H2 < exp(l_neg))
 
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
+        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
 
-            ps = [self.y[i]*self.mu[i] for i in range(2)]
-            
-            coef = sum([self.y[i]*self.mu[i]/(self.mu[i]+l_neg) for i in range(2)])
-
-            b = [sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+2)
-                     for i in range(2)])/coef for k in range(3)]
-            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+            b = moments_H2_less_than_exp(l_neg, h2_params)
+            b_cum += service_probs[i-1].real*b
 
         return conv_moments(w, b_cum)
 
-    def get_v_breaked(self) -> list[float]:
+    def get_v_broken(self) -> list[float]:
         """
         Get the sojourn time moments
         """
         w = self.get_w()
 
-        # serving = F_neg(t<T)*f_H2(t)
+        # serving = P(exp(l_neg) | exp(l_neg) < H2)
 
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
+        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
-
-            coef = np.sum([self.y[j]*l_neg/(self.mu[j]*(self.mu[j]+l_neg)) for j in range(2)])
-
-            b = [0.0, 0.0, 0.0]
-            for k in range(3):
-                firsts = [1.0/pow(self.mu[j], k+1) for j in range(2)]
-                seconds = [self.mu[j]/pow(self.mu[j]+l_neg, k+2) for j in range(2)]
-                b[k] = math.factorial(k+1)*np.sum([self.y[j]*(firsts[j] - seconds[j]) for j in range(2)])/coef
-            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+            b = moments_exp_less_than_H2(l_neg, h2_params)
+            b_cum += service_probs[i-1].real*b
 
         return conv_moments(w, b_cum)
 

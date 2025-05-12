@@ -68,6 +68,8 @@ class MGnCalc:
         self.D = []
         self.Y = []
 
+        self.w = None
+
     def _fill_cols(self):
         for i in range(self.N):
             if i < self.n + 1:
@@ -158,6 +160,10 @@ class MGnCalc:
         """
         Get the waiting time moments
         """
+
+        if not self.w is None:
+            return self.w
+
         w = [0.0] * 3
 
         for j in range(1, len(self.p) - self.n):
@@ -171,6 +177,7 @@ class MGnCalc:
             w[j] /= math.pow(self.l, j + 1)
             w[j] = w[j].real
 
+        self.w = w
         return w
 
     def get_v(self) -> list[float]:
