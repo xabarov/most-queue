@@ -4,7 +4,7 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
+from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
