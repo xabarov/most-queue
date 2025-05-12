@@ -19,7 +19,7 @@ def test_mgn():
 
     l_pos = 1.0  # arrival rate of positive jobs
     l_neg = 0.7  # arrival rate of negative jobs
-    n = 4
+    n = 3
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time
@@ -46,6 +46,9 @@ def test_mgn():
 
     p_sim = queue_sim.get_p()
     v_sim = queue_sim.get_v()
+    v_sim_served = queue_sim.get_v_served()
+    v_sim_breaked = queue_sim.get_v_breaked()
+
 
     w_sim = queue_sim.get_w()
 
@@ -57,12 +60,16 @@ def test_mgn():
 
     p_calc = queue_calc.get_p()
     v_calc = queue_calc.get_v()
+    v_calc_served = queue_calc.get_v_served()
+    v_calc_breaked = queue_calc.get_v_breaked()
     w_calc = queue_calc.get_w()
 
     print(f'q = {queue_calc.get_q()}')
 
     probs_print(p_sim, p_calc)
-    times_print(v_sim, v_calc, is_w=False)
+    times_print(v_sim, v_calc, is_w=False, header='Total')
+    times_print(v_sim_served, v_calc_served, is_w=False, header='Served')
+    times_print(v_sim_breaked, v_calc_breaked, is_w=False, header='Breaked')
     times_print(w_sim, w_calc)
 
 

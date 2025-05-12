@@ -34,7 +34,7 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
                          accuracy=accuracy, dtype=dtype, verbose=verbose)
-        
+
         self.l_neg = l_neg
 
     def get_q(self) -> float:
@@ -42,16 +42,15 @@ class MGnNegativeRCSCalc(MGnCalc):
         Calculation of the conditional probability of successful service completion at a node
         """
         return 1.0 - (self.l_neg/self.l)*(1.0-self.p[0].real)
-    
-    def _calc_service_probs(self) ->list[float]:
+
+    def _calc_service_probs(self) -> list[float]:
         """
-        
+        Returns the conditional probabilities of loaded states.
         """
         ps = np.array([self.p[i] for i in range(1, self.n+1)])
         ps /= np.sum(ps)
-        
+
         return ps
-    
 
     def get_v(self) -> list[float]:
         """
@@ -64,10 +63,9 @@ class MGnNegativeRCSCalc(MGnCalc):
         params = H2Params(p1=self.y[0],
                           mu1=self.mu[0],
                           mu2=self.mu[1])
-        
-        
+
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0,0.0,0.0])
+        b_cum = np.array([0.0, 0.0, 0.0])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
 
@@ -75,9 +73,9 @@ class MGnNegativeRCSCalc(MGnCalc):
                                                             mu1=l_neg + params.mu1,
                                                             mu2=l_neg + params.mu2))
             b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
-        
+
         return conv_moments(w, b_cum)
-    
+
     def get_v_served(self) -> list[float]:
         """
         Get the sojourn time moments
@@ -85,19 +83,22 @@ class MGnNegativeRCSCalc(MGnCalc):
         w = self.get_w()
 
         # serving = F_neg(t>T)*f_H2(t)
-        
+
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0,0.0,0.0])
+        b_cum = np.array([0.0, 0.0, 0.0])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
 
             ps = [self.y[i]*self.mu[i] for i in range(2)]
             
-            b = [sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+1) for i in range(2)]) for k in range(3)]
+            coef = sum([self.y[i]*self.mu[i]/(self.mu[i]+l_neg) for i in range(2)])
+
+            b = [sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+2)
+                     for i in range(2)])/coef for k in range(3)]
             b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
 
         return conv_moments(w, b_cum)
-    
+
     def get_v_breaked(self) -> list[float]:
         """
         Get the sojourn time moments
@@ -107,13 +108,17 @@ class MGnNegativeRCSCalc(MGnCalc):
         # serving = F_neg(t<T)*f_H2(t)
 
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0,0.0,0.0])
+        b_cum = np.array([0.0, 0.0, 0.0])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
 
-            ps = [self.y[i]*self.mu[i] for i in range(2)]
-            
-            b = [self.b[k] - sum([math.factorial(k+1)*ps[i]/pow(self.mu[i]+l_neg, k+1) for i in range(2)]) for k in range(3)]
+            coef = np.sum([self.y[j]*l_neg/(self.mu[j]*(self.mu[j]+l_neg)) for j in range(2)])
+
+            b = [0.0, 0.0, 0.0]
+            for k in range(3):
+                firsts = [1.0/pow(self.mu[j], k+1) for j in range(2)]
+                seconds = [self.mu[j]/pow(self.mu[j]+l_neg, k+2) for j in range(2)]
+                b[k] = math.factorial(k+1)*np.sum([self.y[j]*(firsts[j] - seconds[j]) for j in range(2)])/coef
             b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
 
         return conv_moments(w, b_cum)
