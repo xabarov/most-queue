@@ -9,6 +9,8 @@ from most_queue.general.conditional import (moments_exp_less_than_H2,
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.queueing_systems.negative.structs import \
+    NegativeArrivalsResults
 from most_queue.theory.utils.transforms import \
     laplace_stieltjes_exp_transform as lst_exp
 
@@ -255,7 +257,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         for i in range(3):
             w[i] = derivative(self._calc_w_pls, 0,
                                 dx=1e-3 / self.b[0], n=i + 1, order=9)
-        w = np.array([-w[0].real, w[1].real, -w[2].real])
+        w = [-w[0].real, w[1].real, -w[2].real]
         self.w = w
 
         return w
@@ -264,7 +266,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Get the sojourn time moments
         """
-        w = self.get_w()
+        w = np.array(self.get_w())
 
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
 
@@ -278,7 +280,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
                                                         mu1=l_neg + params.mu1,
                                                         mu2=l_neg + params.mu2))
 
-        return conv_moments(w, b)
+        return [m.real for m in conv_moments(w, b)]
     
     def _calc_service_probs(self) -> list[float]:
         """
@@ -287,7 +289,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         ps = np.array([self.p[i] for i in range(1, self.n+1)])
         ps /= np.sum(ps)
 
-        return ps
+        return [prob.real for prob in ps]
     
     def get_v_served(self) -> list[float]:
         """
@@ -306,7 +308,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
             b = moments_H2_less_than_exp(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
-        return conv_moments(w, b_cum)
+        return [m.real for m in conv_moments(w, b_cum)]
 
     def get_v_broken(self) -> list[float]:
         """
@@ -324,6 +326,19 @@ class MGnNegativeDisasterCalc(MGnCalc):
             b = moments_exp_less_than_H2(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
-        return conv_moments(w, b_cum)
+        return [m.real for m in conv_moments(w, b_cum)]
+    
+    def get_results(self, max_p: int = 100) -> NegativeArrivalsResults:
+        """
+        Get the results of the calculation.
+        max_p: Maximum number of probabilities to calculate
+        :return: Results object containing calculated values.
+        """
+        p = self.get_p()[:max_p]
+        v = self.get_v()
+        v_served = self.get_v_served()
+        v_broken = self.get_v_broken()
+        w = self.get_w()
+        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
 
     

@@ -58,7 +58,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             for i in range(3):
                 w[i] = derivative(self._calc_w_pls, 0,
                                   dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return np.array([-w[0].real, w[1].real, -w[2].real])
+            return np.array([-w[0], w[1].real, -w[2]])
 
         for j in range(1, len(self.p) - self.n):
             w[0] += j * self.p[self.n + j]

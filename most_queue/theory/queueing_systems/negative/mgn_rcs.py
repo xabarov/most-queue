@@ -10,6 +10,8 @@ from most_queue.general.conditional import (moments_exp_less_than_H2,
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.queueing_systems.negative.structs import \
+    NegativeArrivalsResults
 
 
 class MGnNegativeRCSCalc(MGnCalc):
@@ -75,7 +77,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                                                             mu2=l_neg + params.mu2))
             b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
 
-        return conv_moments(w, b_cum)
+        return [mom.real for mom in conv_moments(w, b_cum)]
 
     def get_v_served(self) -> list[float]:
         """
@@ -94,7 +96,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             b = moments_H2_less_than_exp(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
-        return conv_moments(w, b_cum)
+        return [mom.real for mom in conv_moments(w, b_cum)]
 
     def get_v_broken(self) -> list[float]:
         """
@@ -112,7 +114,20 @@ class MGnNegativeRCSCalc(MGnCalc):
             b = moments_exp_less_than_H2(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
-        return conv_moments(w, b_cum)
+        return [mom.real for mom in conv_moments(w, b_cum)]
+    
+    def get_results(self, max_p: int = 100) -> NegativeArrivalsResults:
+        """
+        Get the results of the calculation.
+        max_p: Maximum number of probabilities to calculate
+        :return: Results object containing calculated values.
+        """
+        p = self.get_p()[:max_p]
+        v = self.get_v()
+        v_served = self.get_v_served()
+        v_broken = self.get_v_broken()
+        w = self.get_w()
+        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
 
     def _build_big_b_matrix(self, num):
         """

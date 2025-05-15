@@ -1,3 +1,6 @@
+"""
+Conditional moments of random variables.
+"""
 import math
 
 import numpy as np
@@ -46,13 +49,3 @@ def moments_exp_less_than_H2(gamma:float, h2_params:H2Params):
     
     return np.array([mom.real for mom in b])
 
-if __name__ == "__main__":
-        
-    # Example usage:
-    gamma = 1.0
-    p1 = 0.5
-    mu1 = 2.0
-    mu2 = 3.0
-
-    result = moments_exp_less_than_H2(gamma, H2Params(p1=p1, mu1=mu1, mu2=mu2))
-    print(f"The mean of Y given X < Y is: {result}")

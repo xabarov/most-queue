@@ -9,12 +9,15 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
+from most_queue.sim.utils.distribution_utils import (calc_qs_load,
+                                                     create_distribution)
 from most_queue.sim.utils.exceptions import QsWrongQueueTypeException
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import Task
+from most_queue.theory.queueing_systems.negative.structs import \
+    NegativeArrivalsResults
 
 init()
 
@@ -319,7 +322,7 @@ class QueueingSystemSimulatorWithNegatives:
 
         self.ttek = time_to_end
         self.free_channels += 1
-        
+
         self.served += 1
         self.total += 1
         soujourn_time = self.ttek - end_ts.arr_time
@@ -477,6 +480,18 @@ class QueueingSystemSimulatorWithNegatives:
         Returns initial moments of soujourn time  (only for broken by negative arrivals)
         """
         return self.v_broken
+
+    def get_results(self, max_p: int = 100) -> NegativeArrivalsResults:
+        """
+        Returns results as a NegativeArrivalsResults object
+        max_p: Maximum number of probabilities to return
+        """
+        return NegativeArrivalsResults(
+            p=self.get_p()[:max_p],
+            v=self.v,
+            w=self.w,
+            v_served=self.v_served,
+            v_broken=self.v_broken)
 
     def __str__(self, is_short=False):
 
