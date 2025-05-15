@@ -4,7 +4,7 @@ For verification, we use simulation modeling
 """
 import numpy as np
 
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
 from most_queue.general.tables import probs_print
 
@@ -27,7 +27,7 @@ def test_mdn():
 
     # for verification, we use simulation modeling
     # create an instance of the simulation class and pass the number of service channels
-    qs = QueueingSystemSimulator(n)
+    qs = QsSim(n)
 
     # set arrivals. The method needs to be passed distribution parameters and type of distribution.
     qs.set_sources(l, "M")

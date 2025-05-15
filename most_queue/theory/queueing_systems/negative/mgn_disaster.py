@@ -257,7 +257,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         for i in range(3):
             w[i] = derivative(self._calc_w_pls, 0,
                                 dx=1e-3 / self.b[0], n=i + 1, order=9)
-        w = [-w[0].real, w[1].real, -w[2].real]
+        w = [-w[0], w[1].real, -w[2]]
         self.w = w
 
         return w

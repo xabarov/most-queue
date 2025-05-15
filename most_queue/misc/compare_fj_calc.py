@@ -1,29 +1,35 @@
-import matplotlib
+"""
+Test approximation for Fork-Join queues
+"""
 import matplotlib.pyplot as plt
 
 from most_queue.sim.queueing_systems.fork_join import ForkJoinSim
-from most_queue.theory.fork_join.m_m_n import (
-    get_v1_fj_nelson_tantawi,
-    get_v1_fj_varki_merchant,
-    get_v1_fj_varma,
-)
+from most_queue.theory.queueing_systems.fork_join.m_m_n import \
+    ForkJoinMarkovianCalc
 
-matplotlib.use('TkAgg')
+
+def calc_error(calc:float, sim:float)->float:
+    """
+    Вычисление относительной ошибки аппроксимации
+    :param calc: объект класса ForkJoinMarkovianCalc
+    :param sim: объект класса ForkJoinSim
+    :return:
+    """
+    return 100*(calc-sim)/calc
 
 
 def test_fj_calc():
     """
     Тестирование аппроксимаций для системы Fork-Join
-    В пакете theory.fj_calc модержатся следующие методы:
+        - R. D. Nelson and A. N. Tantawi, “Approximate analysis of fork/join
+            synchronization in parallel queues.” IEEE Trans. Computers, vol. 37, 
+            no. 6, pp. 739–743, 1988.
 
-        get_v1_fj_nelson_tantawi -  R. D. Nelson and A. N. Tantawi, “Approximate analysis of fork/join
-                                    synchronization in parallel queues.” IEEE Trans. Computers, vol. 37, no. 6, pp. 739–743, 1988.
+        - S. Varma and A. M. Makowski, “Interpolation approximations for
+            symmetric fork-join queues.” Perform. Eval., vol. 20, no. 1, pp. 245–265, 1994.
 
-        get_v1_fj_varma  -  S. Varma and A. M. Makowski, “Interpolation approximations for
-                            symmetric fork-join queues.” Perform. Eval., vol. 20, no. 1, pp. 245–265, 1994.
-
-        get_v1_fj_varki_merchant  -  E. Varki, “Response time analysis of parallel computer and storage
-                                     systems.” IEEE Trans. Parallel Distrib. Syst., 2001.
+        - E. Varki, “Response time analysis of parallel computer and storage
+            systems.” IEEE Trans. Parallel Distrib. Syst., 2001.
 
     Для верификации используем имитационное моделирование (ИМ).
 
@@ -56,10 +62,12 @@ def test_fj_calc():
 
         qs = ForkJoinSim(nn, nn, False)
 
-        # задаем входной поток. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
+        # задаем входной поток. Методу нужно передать параметры распределения и тип распределения.
+        #  М - экспоненциальное
         qs.set_sources(l, 'M')
 
-        # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения. М - экспоненциальное
+        # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения.
+        #  М - экспоненциальное
         qs.set_servers(mu, 'M')
 
         # запускаем ИМ
@@ -73,15 +81,17 @@ def test_fj_calc():
         # расчет средних времен пребывания с помощью аппроксимаций. \
         # На вход каждого из методов - l, mu, nn (число каналов СМО)
 
-        v_varki.append(get_v1_fj_varki_merchant(l, mu, nn))
-        v_varma.append(get_v1_fj_varma(l, mu, nn))
-        v_nelson.append(get_v1_fj_nelson_tantawi(l, mu, nn))
+        calcs = ForkJoinMarkovianCalc(l, mu, nn)
+
+        v_varki.append(calcs.get_v1_fj_varki_merchant())
+        v_varma.append(calcs.get_v1_fj_varma())
+        v_nelson.append(calcs.get_v1_fj_nelson_tantawi())
 
         print(str_f_v.format(v_sim[i], v_varki[i], v_varma[i], v_nelson[i]))
 
     # строим графики и сохраняем в текущую директорию:
 
-    fig, ax = plt.subplots()
+    _fig, ax = plt.subplots()
 
     linestyles = ["solid", "dotted", "dashed", "dashdot"]
 
@@ -94,19 +104,14 @@ def test_fj_calc():
     ax.set_xlabel("n")
 
     plt.legend()
-    plt.savefig("v1_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)
+    plt.savefig(f"v1_from_n_with_ro = {ro:^4.2f}.png", dpi=300)
 
     # errors
-    v_nelson_err = []
-    v_varma_err = []
-    v_varki_err = []
+    v_varma_err = [calc_error(v, s) for v, s in zip(v_varma, v_sim)]
+    v_varki_err = [calc_error(v, s) for v, s in zip(v_varki, v_sim)] 
+    v_nelson_err = [calc_error(v, s) for v, s in zip(v_nelson, v_sim)]
 
-    for i in range(len(v_sim)):
-        v_varma_err.append(100 * (v_varma[i] - v_sim[i]) / v_sim[i])
-        v_varki_err.append(100 * (v_varki[i] - v_sim[i]) / v_sim[i])
-        v_nelson_err.append(100 * (v_nelson[i] - v_sim[i]) / v_sim[i])
-
-    fig, ax = plt.subplots()
+    _fig, ax = plt.subplots()
     ax.plot(n, v_varki_err, label="Varki", linestyle=linestyles[0])
     ax.plot(n, v_varma_err, label="Varma", linestyle=linestyles[1])
     ax.plot(n, v_nelson_err, label="Nelson", linestyle=linestyles[2])
@@ -115,7 +120,7 @@ def test_fj_calc():
     ax.set_xlabel("n")
 
     plt.legend()
-    plt.savefig("error_from_n_with_ro = {0:^4.2f}.png".format(ro), dpi=300)
+    plt.savefig(f"error_from_n_with_ro = {ro:^4.2f}.png", dpi=300)
 
 
 if __name__ == "__main__":

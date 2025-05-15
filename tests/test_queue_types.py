@@ -5,7 +5,7 @@ import math
 import time
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 
 
 def compare_calc_times():
@@ -33,7 +33,7 @@ def compare_calc_times():
         # запуск ИМ для верификации результатов
         im_start = time.process_time()
 
-        qs = QueueingSystemSimulator(n, buffer_type=b_type)
+        qs = QsSim(n, buffer_type=b_type)
 
         # задаем вх поток заявок. М - экспоненциальный с интенсивностью l
         qs.set_sources(l, 'M')

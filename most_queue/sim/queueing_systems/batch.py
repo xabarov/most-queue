@@ -3,24 +3,24 @@ Queueing system with batch arrivals.
 """
 import numpy as np
 
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator, Task
+from most_queue.sim.queueing_systems.base import QsSim, Task
 
 
-class QueueingSystemBatchSim(QueueingSystemSimulator):
+class QueueingSystemBatchSim(QsSim):
     """
     Queueing system with batch arrivals GI[x]/G/c/m
 
     """
     def __init__(self, num_of_channels,
                  batch_prob,
-                 buffer=None, verbose=True):
+                 buffer=None, verbose=True, buffer_type="list"):
         """
         :param num_of_channels: int : number of channels (servers)
         :param batch_prob: list : probabilities for different batch sizes
         :param buffer: Optional(int, None) : length of queueu
         :param verbose: bool : if True prints info about simulation process
         """
-        super().__init__(num_of_channels, buffer, verbose)
+        super().__init__(num_of_channels, buffer, verbose, buffer_type)
 
         self.batch_prob = batch_prob
         self.calc_cdf_prob()
@@ -75,15 +75,12 @@ class QueueingSystemBatchSim(QueueingSystemSimulator):
             else:  # there are free channels:
 
                 # check if its a warm phase:
-                is_warm_start = False
-                if self.queue.size() == 0 and self.free_channels == self.n and self.warm_phase.is_set:
-                    is_warm_start = True
 
                 for s in self.servers:
                     if s.is_free:
                         self.taked += 1
                         s.start_service(Task(self.ttek),
-                                        self.ttek, is_warm_start)
+                                        self.ttek, False)
                         self.free_channels -= 1
 
                         # Check if busy period has started:

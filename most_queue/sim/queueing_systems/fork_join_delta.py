@@ -16,7 +16,7 @@ class ForkJoinSimDelta(ForkJoinSim):
     Simulation of ForkJoin queue with delta.
     """
 
-    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, is_sj=False, buffer=None):
+    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, is_sj=False, buffer=None, buffer_type="list", verbose=True):
         """
         :param num_of_channels: int : number of channels (servers)
         :param num_of_parts: int : number of parts on which the task is divided
@@ -24,8 +24,8 @@ class ForkJoinSimDelta(ForkJoinSim):
         :param is_sj: bool : if True, that means that the model is Split-Join, otherwise it's Fork-Join.
         :param buffer: Optional(int, None) : maximum length of the queue
         """
-        ForkJoinSim.__init__(self, num_of_channels,
-                             num_of_parts, is_sj, buffer)
+        super().__init__(num_of_channels, num_of_parts, is_sj,
+                         buffer, buffer_type=buffer_type, verbose=verbose)
         self.delta = delta
         self.subtask_arr_queue = []
         self.serv_task_id = -1

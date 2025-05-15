@@ -7,7 +7,7 @@ For verification, we use simulation modeling (sim).
 """
 from most_queue.general.tables import probs_print
 from most_queue.rand_distribution import ErlangDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.ek_d_n import EkDn
 
 
@@ -51,7 +51,7 @@ def test_ek_d_n():
 
     # for verification we use IM.
     # create an instance of the IM class, pass the number of service channels
-    qs = QueueingSystemSimulator(channels_num)
+    qs = QsSim(channels_num)
 
     # we set the input stream. The method needs to be passed the distribution parameters as a list and the distribution type. E - Erlang
     qs.set_sources(erl_params, "E")

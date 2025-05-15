@@ -1,10 +1,7 @@
 import json
 import math
 
-import matplotlib
 import matplotlib.pyplot as plt
-
-matplotlib.use('TkAgg')
 
 
 def print_table(experiments_stat):
@@ -84,7 +81,7 @@ def calc_moments_by_mean_and_coev(mean, coev):
 
 
 def make_plot(experiments_stat, w_moments_num=0,
-              param_name="ro", mode='error'):
+              param_name="ro", mode='error', save_path=None):
     """
     Build plot for wait times initial moments
     :param experiments_stat: list of experiment statistics
@@ -93,7 +90,7 @@ def make_plot(experiments_stat, w_moments_num=0,
     :param mode: 'error' or 'mass' - whether to plot errors or mass values
     :return: figure and axis objects
     """
-    fig, ax = plt.subplots()
+    _fig, ax = plt.subplots()
     w_sim_mass = []
     w_tt_mass = []
     xs = []
@@ -132,4 +129,7 @@ def make_plot(experiments_stat, w_moments_num=0,
     elif param_name == "delay_mean":
         ax.set_xlabel("t, с")
 
-    plt.show()
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+    else:
+        plt.show()

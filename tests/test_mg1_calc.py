@@ -6,7 +6,7 @@ from most_queue.rand_distribution import (
     ParetoDistribution,
     UniformDistribution,
 )
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
 
 
@@ -32,7 +32,7 @@ def test_mg1():
     v_ch = mg1_num.get_v()
 
     # running IM for verification of results
-    qs = QueueingSystemSimulator(1)
+    qs = QsSim(1)
     qs.set_servers(params, "H")
     qs.set_sources(l, "M")
     qs.run(num_of_jobs)
@@ -56,7 +56,7 @@ def test_mg1():
     p_ch = mg1_num.get_p(dist_type='Uniform')
     v_ch = mg1_num.get_v()
 
-    qs = QueueingSystemSimulator(1)
+    qs = QsSim(1)
     qs.set_servers(params, "Uniform")
     qs.set_sources(l, "M")
     qs.run(num_of_jobs)
@@ -78,7 +78,7 @@ def test_mg1():
     p_ch = mg1_num.get_p(dist_type='Pa')
     v_ch = mg1_num.get_v()
 
-    qs = QueueingSystemSimulator(1)
+    qs = QsSim(1)
     qs.set_servers(pareto_params, "Pa")
     qs.set_sources(l, "M")
     qs.run(num_of_jobs)

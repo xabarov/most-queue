@@ -2,24 +2,16 @@
 Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
 """
 import random
-import time
 from enum import Enum
 
 import numpy as np
-from colorama import Fore, Style, init
-from tqdm import tqdm
 
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.sim.utils.distribution_utils import (calc_qs_load,
                                                      create_distribution)
-from most_queue.sim.utils.exceptions import QsWrongQueueTypeException
-from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
-from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
-from most_queue.sim.utils.tasks import Task
 from most_queue.theory.queueing_systems.negative.structs import \
     NegativeArrivalsResults
-
-init()
 
 
 class NegativeServiceType(Enum):
@@ -32,7 +24,7 @@ class NegativeServiceType(Enum):
     RCE = 4  # remove customer at the End
 
 
-class QueueingSystemSimulatorWithNegatives:
+class QsSimNegatives(QsSim):
     """
     Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
     """
@@ -49,41 +41,22 @@ class QueueingSystemSimulatorWithNegatives:
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
         """
-        self.n = num_of_channels
-        self.buffer = buffer
-        self.verbose = verbose
+
+        super().__init__(num_of_channels, buffer, verbose, buffer_type)
+
         self.type_of_negatives = type_of_negatives
 
-        self.generator = np.random.default_rng()
-
-        self.free_channels = self.n
-        self.num_of_states = 100000
-        self.load = 0  # utilization factor
-
-        self.ttek = 0  # current simulation time
-
-        self.w = [0, 0, 0]  # initial moments of waiting time in the QS
-        # initial moments of sojourn time (total, broken and successfully served)
-        self.v = [0, 0, 0]
         # initial moments of sojourn time of successfully served
         self.v_served = [0, 0, 0]
         # initial moments of sojourn time of broken by negative jobs
         self.v_broken = [0, 0, 0]
 
-        # probabilities of the QS states:
-        self.p = [0.0] * self.num_of_states
-
-        self.taked = 0  # number of job accepted for service
-
         self.served = 0  # number of job serviced by the system without negative job breaks
         self.broken = 0  # number of job broken by negatives
         self.total = 0  # number of job broken by negatives and served without breaks
 
-        self.in_sys = 0  # number of job in the system
-
         # Positive arrivals
         self.positive_arrived = 0  # number of job received
-        self.positive_dropped = 0  # number of job denied service
         self.positive_arrival_time = 0  # time of arrival of the next job
         self.positive_source = None
         self.positive_source_params = None
@@ -97,23 +70,6 @@ class QueueingSystemSimulatorWithNegatives:
         self.negative_source_params = None
         self.negative_source_types = None
         self.is_set_negative_source_params = False
-
-        # queue of jobs: class - Task
-        if buffer_type == "list":
-            self.queue = QsQueueList()
-        elif buffer_type == "deque":
-            self.queue = QsQueueDeque()
-        else:
-            raise QsWrongQueueTypeException("Unknown queue type")
-
-        self.servers = []  # service channels, list of Server's
-
-        self.server_params = None
-        self.server_types = None
-
-        self.is_set_server_params = False
-
-        self.time_spent = 0
 
     def set_positive_sources(self, params, types):
         """
@@ -149,20 +105,6 @@ class QueueingSystemSimulatorWithNegatives:
 
         self.negative_arrival_time = self.negative_source.generate()
 
-    def set_servers(self, params, types):
-        """
-        Specifies the type and parameters of service time distribution.
-        :param params: list : parameters for the service time distribution
-        :param types: list : types of service time distribution 
-        """
-        self.server_params = params
-        self.server_types = types
-
-        self.is_set_server_params = True
-
-        self.servers = [Server(self.server_params, self.server_types,
-                               generator=self.generator) for i in range(self.n)]
-
     def calc_positive_load(self):
         """
         Calculates the load factor of the QS if has no disatsers
@@ -172,39 +114,6 @@ class QueueingSystemSimulatorWithNegatives:
                             self.positive_source_params,
                             self.server_types,
                             self.server_params, self.n)
-
-    def send_task_to_channel(self):
-        """
-        Sends a job to the service channel
-        """
-        for s in self.servers:
-            if s.is_free:
-                tsk = Task(self.ttek)
-                tsk.wait_time = 0
-                self.taked += 1
-                self.refresh_w_stat(tsk.wait_time)
-
-                s.start_service(tsk, self.ttek, False)
-                self.free_channels -= 1
-
-                break
-
-    def send_task_to_queue(self):
-        """
-        Send Task to Queue
-        """
-        if self.buffer is None:  # queue length is not specified, i.e. infinite queue
-            new_tsk = Task(self.ttek)
-            new_tsk.start_waiting_time = self.ttek
-            self.queue.append(new_tsk)
-        else:
-            if self.queue.size() < self.buffer:
-                new_tsk = Task(self.ttek)
-                new_tsk.start_waiting_time = self.ttek
-                self.queue.append(new_tsk)
-            else:
-                self.positive_dropped += 1
-                self.in_sys -= 1
 
     def positive_arrival(self):
         """
@@ -334,19 +243,6 @@ class QueueingSystemSimulatorWithNegatives:
         if self.queue.size() != 0:
             self.send_head_of_queue_to_channel(c)
 
-    def send_head_of_queue_to_channel(self, channel_num):
-        """
-        Send first Task (head of queue) to Channel
-        """
-        que_ts = self.queue.pop()
-
-        self.taked += 1
-        que_ts.wait_time += self.ttek - que_ts.start_waiting_time
-        self.refresh_w_stat(que_ts.wait_time)
-
-        self.servers[channel_num].start_service(que_ts, self.ttek)
-        self.free_channels -= 1
-
     def run_one_step(self):
         """
         Run Open step of simulation
@@ -375,52 +271,6 @@ class QueueingSystemSimulatorWithNegatives:
             # Arrival negative
             self.negative_arrival()
 
-    def run(self, total_served, is_real_served=True):
-        """
-        Run simulation process
-        """
-
-        # Check if is_set_server_params is set
-        if not self.is_set_server_params:
-            raise ValueError(
-                'Server parameters are not set. Please call set_servers() first.')
-        # Check if is_set_positive_source_params
-        if not self.is_set_positive_source_params:
-            raise ValueError(
-                'Positive source parameters are not set. Please call set_positive_sources() first.')
-        # Check if is_set_negative_source_params
-        if not self.is_set_negative_source_params:
-            raise ValueError(
-                'Negative source parameters are not set. Please call set_negative_sources() first.')
-
-        start = time.process_time()
-
-        print(Fore.GREEN + '\rStart simulation')
-
-        if is_real_served:
-
-            last_percent = 0
-
-            with tqdm(total=100) as pbar:
-                while self.served < total_served:
-                    self.run_one_step()
-                    percent = int(100*(self.served/total_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{self.served}/{total_served}' +
-                                             Fore.LIGHTGREEN_EX)
-
-        else:
-            for _ in tqdm(range(total_served)):
-                self.run_one_step()
-
-        print(Fore.GREEN + '\rSimulation is finished')
-        print(Style.RESET_ALL)
-
-        self.time_spent = time.process_time() - start
-
     def refresh_v_stat(self, new_a):
         """
         Updating statistics of sojourn times (all, broken and successfully served)
@@ -439,35 +289,6 @@ class QueueingSystemSimulatorWithNegatives:
         Updating statistics of sojourn times of successfully served jobs
         """
         self.v_served = refresh_moments_stat(self.v_served, new_a, self.served)
-
-    def refresh_w_stat(self, new_a):
-        """
-        Updating statistics of wait times
-        """
-        self.w = refresh_moments_stat(self.w, new_a, self.taked)
-
-    def get_p(self):
-        """
-        Returns a list with probabilities of QS states
-        p[j] - the probability that there will be exactly j jobs 
-        in the QS at a random moment in time
-        """
-        res = [0.0] * len(self.p)
-        for j in range(0, self.num_of_states):
-            res[j] = self.p[j] / self.ttek
-        return res
-
-    def get_w(self):
-        """
-        Returns waiting time initial moments
-        """
-        return self.w
-
-    def get_v(self):
-        """
-        Returns initial moments of soujourn time (total, successfully served and broken)
-        """
-        return self.v
 
     def get_v_served(self):
         """
@@ -534,7 +355,7 @@ class QueueingSystemSimulatorWithNegatives:
             res += "\n"
             res += f"Positive arrived: {self.positive_arrived}\n"
             if self.buffer is not None:
-                res += f"Positive dropped: {self.positive_dropped}\n"
+                res += f"Positive dropped: {self.dropped}\n"
             res += f"Negative arrived: {self.negative_arrived}\n"
             res += f"Taken: {self.taked}\n"
             res += f"Served: {self.served}\n"

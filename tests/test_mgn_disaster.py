@@ -7,7 +7,7 @@ from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.queueing_systems.negative import (
     NegativeServiceType,
-    QueueingSystemSimulatorWithNegatives,
+    QsSimNegatives,
 )
 from most_queue.theory.queueing_systems.negative.mgn_disaster import (
     MGnNegativeDisasterCalc,
@@ -25,7 +25,7 @@ def test_mgn():
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time
-    b_coev = 1.57
+    b_coev = 0.57
 
     b = [0.0] * 3
     alpha = 1 / (b_coev ** 2)
@@ -37,7 +37,7 @@ def test_mgn():
     
     # Run simulation 
 
-    queue_sim = QueueingSystemSimulatorWithNegatives(
+    queue_sim = QsSimNegatives(
         n, NegativeServiceType.DISASTER)
 
     queue_sim.set_negative_sources(l_neg, 'M')

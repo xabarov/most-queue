@@ -7,7 +7,7 @@ from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.queueing_systems.negative import (
     NegativeServiceType,
-    QueueingSystemSimulatorWithNegatives,
+    QsSimNegatives,
 )
 from most_queue.theory.queueing_systems.negative.mgn_rcs import MGnNegativeRCSCalc
 
@@ -18,7 +18,7 @@ def test_mgn():
     """
 
     l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.9  # arrival rate of negative jobs
+    l_neg = 0.3  # arrival rate of negative jobs
     n = 3
     num_of_jobs = 300000
     ro = 0.7
@@ -34,7 +34,7 @@ def test_mgn():
     print(f'Service time moments: {b}')
 
     # Run simulation
-    queue_sim = QueueingSystemSimulatorWithNegatives(
+    queue_sim = QsSimNegatives(
         n, NegativeServiceType.RCS)
 
     queue_sim.set_negative_sources(l_neg, 'M')
@@ -60,7 +60,7 @@ def test_mgn():
 
     p_calc = queue_calc.get_p()
     v_calc = queue_calc.get_v()
-    v_calc_served = queue_calc.get_v_served()
+    v_calc_served = queue_calc.get_v_served(derivate=False)
     v_calc_broken = queue_calc.get_v_broken()
     w_calc = queue_calc.get_w()
 

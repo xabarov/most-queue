@@ -8,15 +8,13 @@ import time
 import numpy as np
 
 from most_queue.general.vacations_paper_utils import (
-    calc_moments_by_mean_and_coev,
-    dump_stat,
-    load_stat,
-    make_plot,
-    print_table,
-)
+    calc_moments_by_mean_and_coev, dump_stat, load_stat, make_plot,
+    print_table)
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
-from most_queue.theory.queueing_systems.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
+from most_queue.sim.queueing_systems.vacations import \
+    VacationQueueingSystemSimulator
+from most_queue.theory.queueing_systems.vacations.mgn_with_h2_delay_cold_warm import \
+    MGnH2ServingColdWarmDelay
 
 
 def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):
@@ -47,7 +45,7 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
 
     for j in range(sim_ave):
         print(f"\nStart {j + 1}/{sim_ave} simulation")
-        sim = QueueingSystemSimulator(n, buffer=buff)
+        sim = VacationQueueingSystemSimulator(n, buffer=buff)
         sim.set_sources(l, 'M')
 
         gamma_params = GammaDistribution.get_params(b)
@@ -490,4 +488,4 @@ if __name__ == "__main__":
                    stable_w_pls=True, sim_ave=1)
 
     print_table(n_stat)
-    make_plot(n_stat, param_name='n', mode='abs')
+    make_plot(n_stat, param_name='n', mode='abs', save_path="tests/vacations_ro_0.7.png")

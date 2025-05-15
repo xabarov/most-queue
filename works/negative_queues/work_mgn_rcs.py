@@ -15,8 +15,7 @@ from most_queue.theory.queueing_systems.negative.mgn_rcs import \
     MGnNegativeRCSCalc
 from most_queue.theory.queueing_systems.negative.structs import (
     DependsOnChannelsResults, DependsOnJSONEncoder,
-    DependsOnUtilizationResults, DependsOnVariationResults,
-    NegativeArrivalsResults)
+    DependsOnUtilizationResults, DependsOnVariationResults)
 
 
 def calc_service_moments(channels: int, utilization_factor: float,
@@ -225,14 +224,14 @@ if __name__ == "__main__":
     import os
 
     L_POS = 1.0
-    L_NEG = 0.9
+    L_NEG = 0.5
     NUM_OF_JOBS = 1000000
     ACCURACY = 1e-10
     UTILIZATION_FACTOR = 0.7
-    CHANNELS_MAX = 20
-    CHANNELS_NUM = 3
-    SERVICE_TIME_COEF_VARIANCE = 1.5
-    COEF_MAX = 2.0
+    CHANNELS_MAX = 10
+    CHANNELS_NUM = 5
+    SERVICE_TIME_COEF_VARIANCE = 0.7
+    COEF_MAX = 3.0
 
     APPENDIX = f"n_{CHANNELS_NUM}_"
     APPENDIX += "_".join([f"{k}_{v:.2f}" for k, v in [('u', UTILIZATION_FACTOR),

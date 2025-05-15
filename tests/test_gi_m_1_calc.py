@@ -6,7 +6,7 @@ import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.gi_m_1 import GiM1
 
 
@@ -38,7 +38,7 @@ def test_gi_m_1():
 
     # for verification, we use sim.
     # create an instance of the sim class and pass the number of service channels
-    qs = QueueingSystemSimulator(1)
+    qs = QsSim(1)
 
     # set the input stream. The method needs to be passed parameters of distribution as a list and type of distribution.
     qs.set_sources(gamma_params, "Gamma")
@@ -76,7 +76,7 @@ def test_gi_m_1():
     # calculation of probabilities of system states
     p_ch = gm1_calc.get_p()
 
-    qs = QueueingSystemSimulator(1)
+    qs = QsSim(1)
     qs.set_sources(pareto_params, "Pa")
     qs.set_servers(mu, "M")
     qs.run(num_of_jobs)

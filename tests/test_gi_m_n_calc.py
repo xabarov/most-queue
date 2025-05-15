@@ -4,7 +4,7 @@ For verification, we use imitational modeling.
 """
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.gi_m_n import GiMn
 
 
@@ -41,7 +41,7 @@ def test_gi_m_n():
 
     # for verification, we use simulation.
     # create an instance of the Simulation class and pass the number of servers
-    qs = QueueingSystemSimulator(n)
+    qs = QsSim(n)
 
     # set the ariival distribution paprams.
     # The method needs to be passed parameters as a list and the type of distribution.
@@ -79,7 +79,7 @@ def test_gi_m_n():
 
     p_ch = gi_m_n_calc.get_p()
 
-    qs = QueueingSystemSimulator(n)
+    qs = QsSim(n)
     qs.set_sources(pa_params, "Pa")
     qs.set_servers(mu, "M")
     qs.run(num_of_jobs)

@@ -8,7 +8,7 @@ import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.queueing_systems.vacations.m_h2_h2warm import MH2nH2Warm
 
 
@@ -41,7 +41,7 @@ def test_m_h2_h2warm():
         b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
 
         im_start = time.process_time()
-        qs = QueueingSystemSimulator(n, buffer=buff)
+        qs = VacationQueueingSystemSimulator(n, buffer=buff)
         qs.set_sources(l, 'M')
 
         gamma_params = GammaDistribution.get_params(b)

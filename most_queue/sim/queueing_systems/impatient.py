@@ -3,13 +3,13 @@ Simulation model for queueing systems with impatient tasks
 """
 from colorama import Fore, Style, init
 
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.tasks import ImpatientTask
 
 init()
 
-class ImpatientQueueSim(QueueingSystemSimulator):
+class ImpatientQueueSim(QsSim):
     """
     Queueing system with impatient tasks
     """
@@ -78,16 +78,11 @@ class ImpatientQueueSim(QueueingSystemSimulator):
 
         else:  # there are free channels:
 
-            # check if its a warm phase:
-            is_warm_start = False
-            if self.queue.size() == 0 and self.free_channels == self.n and self.warm_phase.is_set:
-                is_warm_start = True
-
             for s in self.servers:
                 if s.is_free:
                     self.taked += 1
                     s.start_service(ImpatientTask(
-                        self.ttek, moment_to_leave), self.ttek, is_warm_start)
+                        self.ttek, moment_to_leave), self.ttek, False)
                     self.free_channels -= 1
 
                     # Проверям, не наступил ли ПНЗ:

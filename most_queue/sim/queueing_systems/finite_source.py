@@ -7,17 +7,17 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator, Task
+from most_queue.sim.queueing_systems.base import QsSim, Task
 from most_queue.sim.utils.distribution_utils import create_distribution
 
 init()
 
-class QueueingFiniteSourceSim(QueueingSystemSimulator):
+class QueueingFiniteSourceSim(QsSim):
     """
     Simulating a queueing system with finite number of sources.
     """
 
-    def __init__(self, num_of_channels: int, m: int, buffer=None, verbose=True):
+    def __init__(self, num_of_channels: int, m: int, buffer=None, verbose=True, buffer_type="list"):
         """
         num_of_channels - number of channels in the system.
         m - number of sources.
@@ -41,7 +41,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         self.m = m
         self.sources_left = m  # how many sources are ready to send requests
 
-        super().__init__(num_of_channels, buffer=buffer, verbose=verbose)
+        super().__init__(num_of_channels, buffer=buffer, verbose=verbose, buffer_type=buffer_type)
 
         self.arrival_times = []
         self.arrived_num = -1
@@ -101,14 +101,10 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         else:  # there are free channels:
 
             # check if its a warm phase:
-            is_warm_start = False
-            if len(self.queue) == 0 and self.free_channels == self.n and self.warm_phase.is_set:
-                is_warm_start = True
-
             for s in self.servers:
                 if s.is_free:
                     self.taked += 1
-                    s.start_service(Task(self.ttek), self.ttek, is_warm_start)
+                    s.start_service(Task(self.ttek), self.ttek, False)
                     self.free_channels -= 1
 
                     # Проверям, не наступил ли ПНЗ:
@@ -178,8 +174,7 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end
-        times = [serv_earl, self.warm_phase.end_time,
-                 self.cold_phase.end_time, self.cold_delay_phase.end_time]
+        times = [serv_earl]
         for t in self.arrival_times:  # Arrival times
             times.append(t)
 
@@ -187,51 +182,11 @@ class QueueingFiniteSourceSim(QueueingSystemSimulator):
         if min_time_num == 0:
             # Serving
             self.serving(num_of_server_earlier)
-        elif min_time_num == 1:
-            # Warm-up ends
-            self.on_end_warming()
-        elif min_time_num == 2:
-            # Cold ends
-            self.on_end_cold()
-        elif min_time_num == 3:
-            # Cold delay ends
-            self.on_end_cold_delay()
         else:
-            self.arrived_num = min_time_num - 4
+            self.arrived_num = min_time_num - 1
             # Arrival of a new customer
             self.arrival()
 
-    def run(self, total_served, is_real_served=True):
-        """
-        Run simulation process
-        """
-        start = time.process_time()
-
-        print(Fore.GREEN + '\rStart simulation')
-
-        if is_real_served:
-
-            last_percent = 0
-
-            with tqdm(total=100) as pbar:
-                while self.served < total_served:
-                    self.run_one_step()
-                    percent = int(100*(self.served/total_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{self.served}/{total_served}' +
-                                             Fore.LIGHTGREEN_EX)
-
-        else:
-            for _ in tqdm(range(total_served)):
-                self.run_one_step()
-
-        print(Fore.GREEN + '\rSimulation is finished')
-        print(Style.RESET_ALL)
-
-        self.time_spent = time.process_time() - start
 
     def get_p(self):
         """

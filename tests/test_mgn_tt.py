@@ -13,7 +13,7 @@ import time
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.fifo import QueueingSystemSimulator
+from most_queue.sim.queueing_systems.base import QsSim
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
 
 
@@ -52,7 +52,7 @@ def test_mgn_tt():
         # run simulation for verification of the results
         im_start = time.process_time()
 
-        qs = QueueingSystemSimulator(n)
+        qs = QsSim(n)
 
         # set arrival process. M - exponential with rate l
         qs.set_sources(l, 'M')
