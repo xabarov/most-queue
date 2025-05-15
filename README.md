@@ -77,7 +77,7 @@ Most_queue consists of two main parts:
 | #   | Kendall Notations |  Description      | Example | Tutorial |
 |-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
 | 1. | M/M/c/Fork-Join       |  Solving for Fork-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_im.py) |  |
-| 1. | M/G/c/Split-Join       |  Solving for Split-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_im.py) |  |
+| 2. | M/G/c/Split-Join       |  Solving for Split-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_im.py) |  |
 
 
 ### QS with Batch Arrival
