@@ -238,7 +238,7 @@ if __name__ == "__main__":
     APPENDIX += "_".join([f"{k}_{v:.2f}" for k, v in [('u', UTILIZATION_FACTOR),
                          ('b', SERVICE_TIME_COEF_VARIANCE), ('l_neg', L_NEG)]])
     
-    EXP_DIR_NAME = f'works/negative_queues/disaster_{APPENDIX}'
+    EXP_DIR_NAME = f'works/results/disaster_{APPENDIX}'
     IS_EXISTS = False
     if not os.path.exists(EXP_DIR_NAME):
         os.makedirs(EXP_DIR_NAME)

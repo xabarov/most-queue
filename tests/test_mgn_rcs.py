@@ -23,7 +23,7 @@ def test_mgn():
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time
-    b_coev = 1.57
+    b_coev = 2.1
 
     b = [0.0] * 3
     alpha = 1 / (b_coev ** 2)
@@ -64,7 +64,7 @@ def test_mgn():
     v_calc_broken = queue_calc.get_v_broken()
     w_calc = queue_calc.get_w()
 
-    print(f'q = {queue_calc.get_q()}')
+    print(f'q = {queue_calc.get_q():0.3f}')
 
     probs_print(p_sim, p_calc)
     times_print(v_sim, v_calc, is_w=False, header='Total soujourn time')
