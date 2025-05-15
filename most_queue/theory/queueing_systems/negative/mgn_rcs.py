@@ -6,15 +6,17 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.general.conditional import (moments_exp_less_than_H2,
-                                            moments_H2_less_than_exp)
+from most_queue.general.conditional import (
+    moments_exp_less_than_h2,
+    moments_h2_less_than_exp,
+)
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.queueing_systems.negative.structs import \
-    NegativeArrivalsResults
-from most_queue.theory.utils.transforms import \
-    laplace_stieltjes_exp_transform as lst_exp
+from most_queue.theory.queueing_systems.negative.structs import NegativeArrivalsResults
+from most_queue.theory.utils.transforms import (
+    laplace_stieltjes_exp_transform as lst_exp,
+)
 
 
 class MGnNegativeRCSCalc(MGnCalc):
@@ -116,15 +118,15 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         keys = self._get_key_numbers(self.n)
         keys_mu = np.array(
-                [keys[j][0] * self.mu[0] + keys[j][1] * self.mu[1] for j in
-                 range(self.n + 1)])
+            [keys[j][0] * self.mu[0] + keys[j][1] * self.mu[1] for j in
+             range(self.n + 1)])
 
         a = np.array(
             [lst_exp(keys_mu[j], s) for j in
                 range(self.n + 1)])
         probs = np.array([(keys_mu[j]) / (keys_mu[j] + self.l_neg) for j in
-                            range(self.n + 1)])
-        
+                          range(self.n + 1)])
+
         for k in range(self.n, self.N):
             Ys = np.array([self.Y[k][0, i] for i in range(self.n+1)])
 
@@ -161,7 +163,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             for i in range(1, self.n+1):
                 l_neg = self.l_neg/i
 
-                b = moments_H2_less_than_exp(l_neg, h2_params)
+                b = moments_h2_less_than_exp(l_neg, h2_params)
                 b_served += service_probs[i-1].real*b
 
         return [mom.real for mom in conv_moments(w, b_served)]
@@ -179,7 +181,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n+1):
             l_neg = self.l_neg/i
-            b = moments_exp_less_than_H2(l_neg, h2_params)
+            b = moments_exp_less_than_h2(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
         return [mom.real for mom in conv_moments(w, b_cum)]

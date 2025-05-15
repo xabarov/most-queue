@@ -4,15 +4,17 @@ Calculate M/H2/n queue with negative jobs with disasters,
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.general.conditional import (moments_exp_less_than_H2,
-                                            moments_H2_less_than_exp)
+from most_queue.general.conditional import (
+    moments_exp_less_than_h2,
+    moments_h2_less_than_exp,
+)
 from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.queueing_systems.negative.structs import \
-    NegativeArrivalsResults
-from most_queue.theory.utils.transforms import \
-    laplace_stieltjes_exp_transform as lst_exp
+from most_queue.theory.queueing_systems.negative.structs import NegativeArrivalsResults
+from most_queue.theory.utils.transforms import (
+    laplace_stieltjes_exp_transform as lst_exp,
+)
 
 
 class MGnNegativeDisasterCalc(MGnCalc):
@@ -38,18 +40,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
                          accuracy=accuracy, dtype=dtype, verbose=verbose)
-        
+
         self.l_neg = l_neg
         self.gamma = 1e3*b[0]  # disaster artifitial states intensity
-        
+
         # for calc B matrices
         self.base_mgn = MGnCalc(n=n, l=l_pos, b=b, buffer=buffer, N=N,
-                         accuracy=accuracy, dtype=dtype, verbose=verbose)
+                                accuracy=accuracy, dtype=dtype, verbose=verbose)
         self.base_mgn._fill_cols()
         self.base_mgn._build_matrices()
 
         self.w = None
-        
+
     def _fill_cols(self):
         """
         Add disasters states.
@@ -58,7 +60,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         D 10 01
         D 20 11 02
         D 30 21 12 03
-        
+
         Notice, we can't go from we can't go straight to state 00,
         we need these artificial states on each layer with high intensity
         of transition up to state 00
@@ -68,11 +70,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
                 if i == 0:
                     self.cols.append(1)
                 else:
-                    
+
                     self.cols.append(i + 2)
             else:
                 self.cols.append(self.n + 2)
-                
+
     def _build_big_a_matrix(self, num):
         """
         Create matrix A by the given level number.
@@ -89,7 +91,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         if num > self.n:
             output = self.A[self.n]
             return output
-        
+
         if num == 0:
             output[0, 1] = self.l * self.y[0]
             output[0, 2] = self.l * self.y[1]
@@ -103,12 +105,12 @@ class MGnNegativeDisasterCalc(MGnCalc):
                 output[i, i] = self.l
 
         return output
-    
+
     def _build_big_b_matrix(self, num):
         """
         Create matrix B by the given level number.
         """
-        
+
         base_matrix = self.base_mgn.B[num]
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -125,13 +127,13 @@ class MGnNegativeDisasterCalc(MGnCalc):
         if num > self.n + 1:
             output = self.B[self.n + 1]
             return output
-        
+
         output[0, 0] = self.gamma
         if num == 1:
             output[1, 0] = self.mu[0] + self.l_neg
             output[2, 0] = self.mu[1] + self.l_neg
             return output
-        
+
         # fill first col
         if num <= self.n:
             for j in range(1, num+2):
@@ -139,7 +141,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         else:
             for j in range(1, self.n+2):
                 output[j, 0] = self.l_neg
-        
+
         # copy base matrix on position 1,1
         output[1:, 1:] = base_matrix
         return output
@@ -160,30 +162,29 @@ class MGnNegativeDisasterCalc(MGnCalc):
         if num > self.n:
             output = self.D[self.n]
             return output
-        
+
         if num == 0:
             output[0, 0] = self.l
             return output
-        
+
         output[0, 0] = self.gamma
-        
+
         for i in range(1, row):
             output[i, i] = self.l + self.l_neg + \
                 (num - i + 1) * self.mu[0] + (i-1) * self.mu[1]
 
         return output
 
-    
     def get_p(self) -> list[float]:
-        
+
         first_col_sum = 0
         for i in range(1, self.N):
             first_col_sum += self.Y[i][0, 0]
             self.p[i] = np.sum(self.Y[i][0, 1:])
         self.p[0] += first_col_sum
-        
+
         return [prob.real for prob in self.p]
-    
+
     def _get_key_numbers(self, level):
         key_numbers = []
         if level >= self.n:
@@ -214,7 +215,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         for i in range(k):
             res = np.dot(res, matrix)
         return res
-    
+
     def _calc_w_pls(self, s) -> float:
         """
         Calculate Laplace-Stietjes transform of the waiting time distribution.
@@ -227,8 +228,9 @@ class MGnNegativeDisasterCalc(MGnCalc):
         key_numbers = self._get_key_numbers(self.n)
         a = [lst_exp(self.gamma, s)]
         for j in range(self.n + 1):
-            a.append(lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg, s))
-        
+            a.append(lst_exp(
+                key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg, s))
+
         a = np.array(a)
 
         Pn_plus = self._calc_up_probs(self.n+1)
@@ -243,7 +245,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
             w += Ys.dot(aPa)
 
         return w
-    
+
     def get_w(self) -> list[float]:
         """
         Get the waiting time moments
@@ -251,12 +253,12 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         if not self.w is None:
             return self.w
-        
+
         w = [0.0] * 3
 
         for i in range(3):
             w[i] = derivative(self._calc_w_pls, 0,
-                                dx=1e-3 / self.b[0], n=i + 1, order=9)
+                              dx=1e-3 / self.b[0], n=i + 1, order=9)
         w = [-w[0], w[1].real, -w[2]]
         self.w = w
 
@@ -273,7 +275,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         params = H2Params(p1=self.y[0],
                           mu1=self.mu[0],
                           mu2=self.mu[1])
-        
+
         l_neg = self.l_neg
 
         b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
@@ -281,7 +283,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
                                                         mu2=l_neg + params.mu2))
 
         return [m.real for m in conv_moments(w, b)]
-    
+
     def _calc_service_probs(self) -> list[float]:
         """
         Returns the conditional probabilities of loaded states.
@@ -290,7 +292,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         ps /= np.sum(ps)
 
         return [prob.real for prob in ps]
-    
+
     def get_v_served(self) -> list[float]:
         """
         Get the sojourn time moments
@@ -301,11 +303,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
-        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
+        h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n+1):
             l_neg = self.l_neg
 
-            b = moments_H2_less_than_exp(l_neg, h2_params)
+            b = moments_h2_less_than_exp(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
         return [m.real for m in conv_moments(w, b_cum)]
@@ -320,14 +322,14 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
-        h2_params=H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
+        h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n+1):
             l_neg = self.l_neg
-            b = moments_exp_less_than_H2(l_neg, h2_params)
+            b = moments_exp_less_than_h2(l_neg, h2_params)
             b_cum += service_probs[i-1].real*b
 
         return [m.real for m in conv_moments(w, b_cum)]
-    
+
     def get_results(self, max_p: int = 100) -> NegativeArrivalsResults:
         """
         Get the results of the calculation.
@@ -340,5 +342,3 @@ class MGnNegativeDisasterCalc(MGnCalc):
         v_broken = self.get_v_broken()
         w = self.get_w()
         return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
-
-    

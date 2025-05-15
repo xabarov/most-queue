@@ -78,7 +78,7 @@ def test_m_h2_h2warm():
         probs_print(p, p_tt, 10)
         times_print(v_sim, v_tt, False)
 
-        assert np.allclose(np.array(v_sim), np.array(v_tt), rtol=1e-1)
+        assert np.allclose(np.array(v_sim), np.array(v_tt), rtol=0.1)
 
 
 if __name__ == "__main__":

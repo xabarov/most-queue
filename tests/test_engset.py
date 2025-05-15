@@ -1,9 +1,11 @@
 """
 Test for Engset model (M/M/1 with a finite number of sources)
 """
+import numpy as np
+
 from most_queue.general.tables import probs_print, times_print
-from most_queue.theory.queueing_systems.closed.engset import Engset
 from most_queue.sim.queueing_systems.finite_source import QueueingFiniteSourceSim
+from most_queue.theory.queueing_systems.closed.engset import Engset
 
 
 def test_engset():
@@ -56,6 +58,9 @@ def test_engset():
 
     times_print(w_sim, w_ch, is_w=True)
     times_print(v_sim, v_ch, is_w=False)
+    
+    assert np.allclose(w_sim, w_ch, rtol=0.05), "QueueingFiniteSourceSim simulation results do not match theoretical values"
+
 
 
 if __name__ == "__main__":

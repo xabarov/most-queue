@@ -2,7 +2,7 @@ import math
 import time
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems import vacations
+from most_queue.sim.queueing_systems.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.queueing_systems.vacations.mmn_with_h2_cold_and_h2_warmup import MMn_H2warm_H2cold
 
 
@@ -34,7 +34,7 @@ def test_mmn_h2cold_h2_warm():
     b_c[2] = b_c[1] * b_c[0] * (1.0 + 2 / alpha)
 
     im_start = time.process_time()
-    smo = vacations.QueueingSystemSimulator(n, buffer=buff)
+    smo = VacationQueueingSystemSimulator(n, buffer=buff)
     smo.set_sources(l, 'M')
 
     gamma_params_warm = GammaDistribution.get_params(b_w)

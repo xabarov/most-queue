@@ -406,7 +406,10 @@ class MMn_H2warm_H2cold:
             else:
                 self.x[0] = 1.0 / self.z[1]
 
-            x_max1 = np.max(self.x)
+            x_max1 = 0
+            for i in range(self.N):
+                if self.x[i].real > x_max1.real:
+                    x_max1 = self.x[i]
 
             if self.verbose:
                 print(f"End iter # {self.num_of_iter_:d}, x_max: {x_max1}")

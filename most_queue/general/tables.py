@@ -25,8 +25,8 @@ def times_print(sim_moments, calc_moments, is_w=True, header=None):
             spec = 'soujorn'
         header = f'Initial moments of {spec} time in the system'
 
-    print(Fore.CYAN + f'\r{header}')
-
+    print(Fore.CYAN + f'\n{header:^45}')
+    print("-" * 45)
     print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", "Num", "Sim"))
     print("-" * 45)
     if isinstance(sim_moments, list):

@@ -6,60 +6,55 @@ from most_queue.theory.queueing_systems.fifo.mmnr import MMnrCalc
 from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
 
 
-def test_sim():
+def test_sim_mmnr():
     """
-    Тестирование имитационной модели СМО
-    Для верификации - сравнение с результатами расчета СМО M/M/3, M/D/3
+    Test the simulation model for an M/M/n/r system
     """
-    n = 3  # число каналов
-    l = 1.0  # интенсивность вх потока
-    r = 30  # длина очереди
-    ro = 0.8  # коэфф загрузки
-    mu = l / (ro * n)  # интенсивность обслуживания
+    n = 3  # Number of channels
+    l = 1.0  # Arrival rate intensity
+    r = 30  # Queue length
+    ro = 0.8  # Load coefficient
+    mu = l / (ro * n)  # Service intensity
 
-    # создвем экземпляр класса ИМ
+    # Create simulation instance
     qs = QsSim(n, buffer=r)
 
-    # задаем вх поток - параметры и тип распределения.
+    # Set arrival process parameters and distribution
     qs.set_sources(l, 'M')
-    # задаем распределение обслуживания - параметры и тип распределения.
+    # Set service time parameters and distribution
     qs.set_servers(mu, 'M')
 
-    # запуск ИМ - передаем кол-во заявок для обслуживания
+    # Run the simulation
     qs.run(300000)
-    # получаем начальные моменты времени ожидания. Также можно получить время пребывания .v,
-    # вероятности состояний .get_p(), периоды непрерывной занятости .pppz
+    # Get initial moments of waiting time. Also can get .v for sojourn times,
+    # probabilities of states .get_p(), periods of continuous occupancy .pppz
     w_sim = qs.w
 
     mmnr = MMnrCalc(l, mu, n, r)
-
-    # для сравнения расчитаем теже начальные моменты численно
     w = mmnr.get_w()
+    times_print(w_sim, w)
 
-    # вывод результатов
+    # Verify simulation results against theoretical calculations
+    assert np.allclose(w_sim, w, rtol=0.1), "MMQ system simulation results do not match theoretical values"
 
-    times_print(w_sim, w, True)
-
-    # print("\n\nДанные ИМ::\n")
-    # print(qs)
-
-    # тоже для детерминированного обслуживания
-
+def test_sim_mdn():
+    """
+    Test the simulation model for a M/D/n
+    """
+    n = 3  # Number of channels
+    l = 1.0  # Arrival rate intensity
+    
     qs = QsSim(n)
-
+    
     qs.set_sources(l, 'M')
-    qs.set_servers(1.0 / mu, 'D')
+    qs.set_servers(1.0 / (l / (n * 0.8)), 'D')  # Using same load coefficient as before
 
     qs.run(1000000)
 
-    mdn = MDn(l, 1 / mu, n)
+    mdn = MDn(l, 1 / (l / (n * 0.8)), n)
     p_ch = mdn.calc_p()
     p_sim = qs.get_p()
+    
+    probs_print(p_sim=p_sim, p_ch=p_ch, size=10)
 
-    probs_print(p_sim, p_ch, 10)
-
-    assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
-
-
-if __name__ == "__main__":
-    test_sim()
+    assert np.allclose(p_sim[:10], p_ch[:10], atol=1e-2), "M/D/n system simulation results do not match theoretical values"
