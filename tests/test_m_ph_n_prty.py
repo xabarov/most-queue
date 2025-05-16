@@ -24,11 +24,15 @@ def test_m_ph_n_prty():
     based on the approximation of busy periods by Cox's second-order distribution.
     For verification, we use simulation
     """
-    num_of_jobs = 300000  # number of served jobs in IM
+    num_of_jobs = 300000  # number of served jobs in simulation
 
-    is_cox = False  # use Cox's second-order distribution or H2-distribution for approximating busy periods
+    # use Cox's second-order distribution or H2-distribution for approximating busy periods
+    is_cox = False
+
     max_iter = 100  # maximum number of iterations for the numerical method
-    # Investigation of the influence of the average time spent by requests of class 2 on the load factor
+
+    # Investigation of the influence of the average time 
+    # spent by requests of class 2 on the load factor
     n = 4  # number of servers
     K = 2  # number of classes
     ros = 0.75  # load factor of the queue
@@ -99,7 +103,6 @@ def test_m_ph_n_prty():
 
     # getting the results of the simulation:
     v_sim = qs.v
-    v1_sim = v_sim[0][0]
     v2_sim = v_sim[1][0]
 
     im_time = time.process_time() - im_start
@@ -129,7 +132,7 @@ def test_m_ph_n_prty():
     print("{0:^15s}|{1:^15s}|{2:^15s}".format(*headers))
     print("-" * 45)
     for row, value, t in zip(rows, values, times):
-        print("{0:^15s}|{1:^14.3f} | {2:^14.3f}".format(row, value, t))
+        print(f"{row:^15}|{value:^14.3f} | {t:^14.3f}")
     print("-" * 45)
     print("\n")
 

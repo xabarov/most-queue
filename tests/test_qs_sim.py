@@ -1,3 +1,7 @@
+"""
+Test the simulation of a queueing system
+For verification, compare with results for M/M/3 and M/D/3 systems
+"""
 import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
@@ -8,56 +12,64 @@ from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
 
 def test_sim():
     """
-    Тестирование имитационной модели СМО
-    Для верификации - сравнение с результатами расчета СМО M/M/3, M/D/3
+    Test the simulation of a queueing system
+    For verification, compare with results for M/M/3 and M/D/3 systems
     """
-    n = 3  # число каналов
-    l = 1.0  # интенсивность вх потока
-    r = 30  # длина очереди
-    ro = 0.8  # коэфф загрузки
-    mu = l / (ro * n)  # интенсивность обслуживания
+    # System parameters
+    num_servers = 3          # Number of channels/servers
+    arrival_rate = 1.0      # Arrival rate (lambda)
+    queue_length = 30       # Buffer size/r queue length
+    utilization = 0.8       # Server utilization (rho)
+    
+    # Calculate service rate based on utilization
+    service_rate = arrival_rate / (utilization * num_servers)
 
-    # создвем экземпляр класса ИМ
-    qs = QsSim(n, buffer=r)
+    # Initialize simulation model
+    qs = QsSim(num_servers, buffer=queue_length)
 
-    # задаем вх поток - параметры и тип распределения.
-    qs.set_sources(l, 'M')
-    # задаем распределение обслуживания - параметры и тип распределения.
-    qs.set_servers(mu, 'M')
+    # Set arrival process parameters and distribution (M for Markovian)
+    qs.set_sources(arrival_rate, 'M')
+    
+    # Set service time parameters and distribution (M for Markovian)
+    qs.set_servers(service_rate, 'M')
 
-    # запуск ИМ - передаем кол-во заявок для обслуживания
+    # Run simulation with 300,000 arrivals
     qs.run(300000)
-    # получаем начальные моменты времени ожидания. Также можно получить время пребывания .v,
-    # вероятности состояний .get_p(), периоды непрерывной занятости .pppz
+
+    # Get simulated waiting times
     w_sim = qs.w
 
-    mmnr = MMnrCalc(l, mu, n, r)
+    # Calculate theoretical waiting times using MMnr model
+    mmnr = MMnrCalc(arrival_rate, service_rate, num_servers, queue_length)
+    w_theory = mmnr.get_w()
 
-    # для сравнения расчитаем теже начальные моменты численно
-    w = mmnr.get_w()
+    # Print comparison of simulation and theoretical results
+    times_print(w_sim, w_theory, True)
 
-    # вывод результатов
+    # Reset for next part of test
+    qs = QsSim(num_servers)
 
-    times_print(w_sim, w, True)
+    # Set arrival process again (M distribution)
+    qs.set_sources(arrival_rate, 'M')
+    
+    # Set deterministic service times (D distribution)
+    qs.set_servers(1.0 / service_rate, 'D')
 
-    # print(qs)
-
-    # тоже для детерминированного обслуживания
-
-    qs = QsSim(n)
-
-    qs.set_sources(l, 'M')
-    qs.set_servers(1.0 / mu, 'D')
-
+    # Run simulation with 1,000,000 arrivals
     qs.run(1000000)
 
-    mdn = MDn(l, 1 / mu, n)
-    p_ch = mdn.calc_p()
+    # Calculate theoretical probabilities using MDn model
+    mdn = MDn(arrival_rate, 1.0 / service_rate, num_servers)
+    p_theory = mdn.calc_p()
+    
+    # Get simulated state probabilities
     p_sim = qs.get_p()
 
-    probs_print(p_sim, p_ch, 10)
+    # Print comparison of simulation and theoretical probabilities
+    probs_print(p_sim, p_theory, 10)
 
-    assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), atol=1e-2)
+    # Assert that first 10 probabilities match within tolerance
+    np.allclose(np.array(p_sim[:10]), np.array(p_theory[:10]), atol=1e-2)
 
 
 if __name__ == "__main__":

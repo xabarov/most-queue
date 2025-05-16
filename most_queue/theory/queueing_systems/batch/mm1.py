@@ -25,7 +25,7 @@ class BatchMM1:
         moments = self.calc_l_moments()
         self.l = moments[0]
         self.l2 = moments[1]
-        
+
         self.ro_tilda = self.lam / self.mu
         self.ro = self.l * self.ro_tilda
 
@@ -88,7 +88,7 @@ class BatchMM1:
         """
         Mean jobs in QS
         """
-        
+
         return (self.l2 + self.l) * self.ro_tilda / (2 * (1.0 - self.ro))
 
     def get_Q(self):

@@ -1,16 +1,14 @@
 """
 Simulating a queueing system with finite number of sources.
 """
-import time
-
 import numpy as np
 from colorama import Fore, Style, init
-from tqdm import tqdm
 
 from most_queue.sim.queueing_systems.base import QsSim, Task
 from most_queue.sim.utils.distribution_utils import create_distribution
 
 init()
+
 
 class QueueingFiniteSourceSim(QsSim):
     """
@@ -23,7 +21,7 @@ class QueueingFiniteSourceSim(QsSim):
         m - number of sources.
         buffer - maximum length of the queue.
         verbose - print comments during simulation.
-        
+
         To start the simulation, you need to:
         - call the constructor with parameters
         - set the input arrival distribution using the set_sorces() method
@@ -36,12 +34,13 @@ class QueueingFiniteSourceSim(QsSim):
             from most_queue.sim.utils.distribution_utils import print_supported_distributions
             print_supported_distributions()
             ```
-            
+
         """
         self.m = m
         self.sources_left = m  # how many sources are ready to send requests
 
-        super().__init__(num_of_channels, buffer=buffer, verbose=verbose, buffer_type=buffer_type)
+        super().__init__(num_of_channels, buffer=buffer,
+                         verbose=verbose, buffer_type=buffer_type)
 
         self.arrival_times = []
         self.arrived_num = -1
@@ -158,7 +157,6 @@ class QueueingFiniteSourceSim(QsSim):
             self.servers[c].start_service(que_ts, self.ttek)
             self.free_channels -= 1
 
-
     def run_one_step(self):
         """
         Run Open step of simulation
@@ -186,7 +184,6 @@ class QueueingFiniteSourceSim(QsSim):
             self.arrived_num = min_time_num - 1
             # Arrival of a new customer
             self.arrival()
-
 
     def get_p(self):
         """

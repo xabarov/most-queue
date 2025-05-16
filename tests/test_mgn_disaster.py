@@ -34,9 +34,8 @@ def test_mgn():
     b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
 
     print(f'Service time moments: {b}')
-    
-    # Run simulation 
 
+    # Run simulation
     queue_sim = QsSimNegatives(
         n, NegativeServiceType.DISASTER)
 
@@ -52,11 +51,11 @@ def test_mgn():
     v_sim_served = queue_sim.get_v_served()
     v_sim_broken = queue_sim.get_v_broken()
     w_sim = queue_sim.get_w()
-    
+
     # Run calc
     queue_calc = MGnNegativeDisasterCalc(
         n, l_pos, l_neg, b, verbose=False, accuracy=1e-8)
-    
+
     queue_calc.run()
 
     p_calc = queue_calc.get_p()
@@ -64,11 +63,13 @@ def test_mgn():
     v_calc_served = queue_calc.get_v_served()
     v_calc_broken = queue_calc.get_v_broken()
     w_calc = queue_calc.get_w()
-    
+
     probs_print(p_sim, p_calc)
     times_print(v_sim, v_calc, is_w=False, header='Soujourn total')
-    times_print(v_sim_served, v_calc_served, is_w=False, header='Soujourn served')
-    times_print(v_sim_broken, v_calc_broken, is_w=False, header='Soujourn broken')
+    times_print(v_sim_served, v_calc_served,
+                is_w=False, header='Soujourn served')
+    times_print(v_sim_broken, v_calc_broken,
+                is_w=False, header='Soujourn broken')
     times_print(w_sim, w_calc)
 
 

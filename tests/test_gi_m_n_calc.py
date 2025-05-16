@@ -25,7 +25,8 @@ def test_gi_m_n():
     # number of jobs for simulation. The higher, the more accurate the simulation
     num_of_jobs = 300000
 
-    # calculate parameters of the approximating Gamma distribution for the input flow given the mean and coefficient of variation
+    # calculate parameters of the approximating Gamma distribution for the input 
+    # flow given the mean and coefficient of variation
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)

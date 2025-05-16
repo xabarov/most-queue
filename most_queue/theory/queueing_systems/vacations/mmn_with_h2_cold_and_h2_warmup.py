@@ -183,8 +183,8 @@ class MMn_H2warm_H2cold:
         w = [0.0] * 3
 
         for i in range(3):
-            min_mu = min(chain(np.array(self.mu_w).astype('float'),
-                         np.array(self.mu_c).astype('float'), [self.mu]))
+            min_mu = min(chain(np.array([mu.real for mu in self.mu_w]).astype('float'),
+                         np.array([mu.real for mu in self.mu_c]).astype('float'), [self.mu]))
             w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 /
                               min_mu, n=i + 1, order=9)
         return [-w[0], w[1], -w[2]]

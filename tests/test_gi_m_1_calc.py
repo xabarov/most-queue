@@ -23,7 +23,8 @@ def test_gi_m_1():
     a_coev = 1.6  # coefficient of variation in the input stream
     num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
 
-    # calculation of parameters approximating Gamma-distribution for the incoming stream based on the given average and coefficient of variation
+    # calculation of parameters approximating Gamma-distribution for the incoming 
+    # stream based on the given average and coefficient of variation
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
@@ -40,7 +41,8 @@ def test_gi_m_1():
     # create an instance of the sim class and pass the number of service channels
     qs = QsSim(1)
 
-    # set the input stream. The method needs to be passed parameters of distribution as a list and type of distribution.
+    # set the input stream. The method needs to be passed parameters 
+    # of distribution as a list and type of distribution.
     qs.set_sources(gamma_params, "Gamma")
 
     # set the service channels. Parameters (in our case, the service intensity)

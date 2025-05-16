@@ -53,7 +53,8 @@ def test_ek_d_n():
     # create an instance of the IM class, pass the number of service channels
     qs = QsSim(channels_num)
 
-    # we set the input stream. The method needs to be passed the distribution parameters as a list and the distribution type. E - Erlang
+    # we set the input stream. The method needs to be passed 
+    # the distribution parameters as a list and the distribution type. E - Erlang
     qs.set_sources(erl_params, "E")
     # we set the service channels. The input is the service time and the distribution type - D.
     qs.set_servers(b, "D")
@@ -61,7 +62,8 @@ def test_ek_d_n():
     # run simulation
     qs.run(num_of_jobs)
 
-    # obtain parameters - initial moments (3) of sojourn time and probability distribution of the system state
+    # obtain parameters - initial moments (3) of sojourn time 
+    # and probability distribution of the system state
     v_sim = qs.v
 
     print(f'v_sim: {v_sim}')

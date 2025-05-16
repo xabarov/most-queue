@@ -49,7 +49,6 @@ def test_mgn():
     v_sim_served = queue_sim.get_v_served()
     v_sim_broken = queue_sim.get_v_broken()
 
-
     w_sim = queue_sim.get_w()
 
     # Run calc
@@ -68,8 +67,10 @@ def test_mgn():
 
     probs_print(p_sim, p_calc)
     times_print(v_sim, v_calc, is_w=False, header='Total soujourn time')
-    times_print(v_sim_served, v_calc_served, is_w=False, header='Served soujourn time')
-    times_print(v_sim_broken, v_calc_broken, is_w=False, header='Broken soujourn time')
+    times_print(v_sim_served, v_calc_served, is_w=False,
+                header='Served soujourn time')
+    times_print(v_sim_broken, v_calc_broken, is_w=False,
+                header='Broken soujourn time')
     times_print(w_sim, w_calc)
 
 

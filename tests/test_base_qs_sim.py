@@ -1,3 +1,6 @@
+"""
+Test the simulation model for an M/M/n/r system
+"""
 import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
@@ -35,7 +38,9 @@ def test_sim_mmnr():
     times_print(w_sim, w)
 
     # Verify simulation results against theoretical calculations
-    assert np.allclose(w_sim, w, rtol=0.1), "MMQ system simulation results do not match theoretical values"
+    assert np.allclose(
+        w_sim, w, rtol=0.1), "MMQ system simulation results do not match theoretical values"
+
 
 def test_sim_mdn():
     """
@@ -43,18 +48,20 @@ def test_sim_mdn():
     """
     n = 3  # Number of channels
     l = 1.0  # Arrival rate intensity
-    
+
     qs = QsSim(n)
-    
+
     qs.set_sources(l, 'M')
-    qs.set_servers(1.0 / (l / (n * 0.8)), 'D')  # Using same load coefficient as before
+    # Using same load coefficient as before
+    qs.set_servers(1.0 / (l / (n * 0.8)), 'D')
 
     qs.run(1000000)
 
     mdn = MDn(l, 1 / (l / (n * 0.8)), n)
     p_ch = mdn.calc_p()
     p_sim = qs.get_p()
-    
+
     probs_print(p_sim=p_sim, p_ch=p_ch, size=10)
 
-    assert np.allclose(p_sim[:10], p_ch[:10], atol=1e-2), "M/D/n system simulation results do not match theoretical values"
+    assert np.allclose(
+        p_sim[:10], p_ch[:10], atol=1e-2), "M/D/n system simulation results do not match theoretical values"

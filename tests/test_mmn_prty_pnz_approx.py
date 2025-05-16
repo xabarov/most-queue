@@ -1,73 +1,78 @@
+"""
+Test the MMn_PRTY_PNZ_Cox_approx class for priority queueing systems.
+"""
 from most_queue.theory.queueing_systems.priority.preemptive.mmn_2cls_pr_busy_approx import MMn_PRTY_PNZ_Cox_approx
 from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
+from most_queue.general.tables import times_print, probs_print
 
 
 def test_mmn_prty():
-    
-    num_of_jobs = 100000
-    n = 3  # количество каналов
-    K = 2  # количество классов
-    mu_L = 1.3  # интенсивность обслуживания заявок 2-го класса
-    mu_H = 1.5  # интенсивность обслуживания заявок 1-го класса
-    l_H = 1.0  # интенсивность вх потока заявок 1-го класса
-    l_L = 1.4  # интенсивность вх потока заявок 2-го класса
-    ro = 0.8
-    b1_H = 1 / mu_H
-    b1_L = (ro * n - l_H * b1_H) / l_L
-    l_sum = l_H + l_L
-    # b_ave = (l_L / l_sum) * b1_L + (l_H / l_sum) * b1_H
+    """
+    Test function for evaluating the performance of a priority queueing system approximation.
+    This function compares simulation results with theoretical calculations using Cox approximation.
+    """
 
-    # задание ИМ:
-    qs = PriorityQueueSimulator(n, K, "PR")
+    # Simulation parameters
+    num_of_jobs = 100000  # Number of jobs to simulate
+    n = 3                # Number of servers/channels
+    num_priority = 2                # Number of priority classes
+
+    # Service rates (mu)
+    mu_high = 1.5           # Service rate for high-priority class
+    mu_low = 1.3           # Service rate for low-priority class
+
+    # Arrival rates (lambda)
+    lambda_high = 1.0       # Arrival rate for high-priority class
+    lambda_low = 1.4       # Arrival rate for low-priority class
+
+    rho = 0.8            # System utilization factor
+
+    # Setting up arrival streams and server parameters
     sources = []
     servers_params = []
-    l = [l_H, l_L]
-    mu = [mu_H, mu_L]
-    for j in range(K):
-        sources.append({'type': 'M', 'params': l[j]})
-        servers_params.append({'type': 'M', 'params': mu[j]})
 
+    # Defining arrival rates and service rates for each class
+    arrival_rates = [lambda_high, lambda_low]
+    service_rates = [mu_high, mu_low]
+
+    for j in range(num_priority):
+        sources.append({'type': 'M', 'params': arrival_rates[j]})
+        servers_params.append({'type': 'M', 'params': service_rates[j]})
+
+    # Setting up the priority queueing system simulator
+    qs = PriorityQueueSimulator(n, num_priority, "PR")
     qs.set_sources(sources)
     qs.set_servers(servers_params)
 
-    # запуск ИМ:
+    # Running the simulation
     qs.run(num_of_jobs)
 
-    # получение результатов ИМ:
-    p = qs.get_p()
+    # Getting simulation results
+    p_sim = qs.get_p()
     v_sim = qs.v
 
-    # расчет численным методом:
-    tt = MMn_PRTY_PNZ_Cox_approx(n, mu_L, mu_H, l_L, l_H)
+    # Setting up and running the theoretical approximation model
+    tt = MMn_PRTY_PNZ_Cox_approx(n, mu_low, mu_high, lambda_low, lambda_high)
     tt.run()
     p_tt = tt.get_p()
     v_tt = tt.get_second_class_v1()
-    # v = tt.calculate_v()
 
-    print("\nСравнение результатов расчета численным методом с аппроксимацией ПНЗ "
-          "\nраспределением Кокса второго порядка и ИМ.")
-    print("Коэффициент загрузки: {0:^1.2f}".format(ro))
-    print("Количество обслуженных заявок для ИМ: {0:d}\n".format(num_of_jobs))
+    # Printing comparison results
+    print("\nComparison of theoretical calculation with Cox approximation and simulation results.")
+    print(f"Utilization factor: {rho:^6.2f}")
+    print(f"Number of simulated jobs: {num_of_jobs:d}\n")
 
-    print("{0:^25s}".format("Вероятности состояний для заявок 2-го класса"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Числ", "ИМ"))
-    print("-" * 32)
-    for i in range(11):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, p_tt[i], p[1][i]))
+    print("Probabilities of system states for low-priority class")
 
-    print("\n")
-    print("{0:^25s}".format("Среднее время пребывания в СМО заявок 2-го класса"))
-    print("{0:^15s}|{1:^15s}".format("Числ", "ИМ"))
-    print("-" * 32)
-    print("{0:^15.3g}|{1:^15.3g}".format(v_tt, v_sim[1][0]))
-    # print("{0:^15.3g}|{1:^15.3g}".format(v[0].real, v_sim[1][0]))
-    # print("{0:^15.3g}|{1:^15.3g}".format(v[1].real, v_sim[1][1]))
-    # print("{0:^15.3g}|{1:^15.3g}".format(v[2].real, v_sim[1][2]))
-    
-    assert 100*abs(v_tt - v_sim[1][0])/max(v_tt, v_sim[1][0]) < 10
+    # Printing probability comparison table
+    probs_print(p_sim=p_sim[1], p_ch=p_tt, size=10)
 
+    # Printing time moments comparison
+    times_print(sim_moments=[v_sim[1][0]], calc_moments=[v_tt], is_w=False)
+
+    # Asserting the accuracy of the results
+    assert 100 * abs(v_tt - v_sim[1][0]) / max(v_tt, v_sim[1][0]) < 10
 
 
 if __name__ == "__main__":
-    
     test_mmn_prty()

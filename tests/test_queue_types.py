@@ -1,54 +1,61 @@
 """
-Compare of queue implementation 
+Compare queue implementation performance
 """
-import math
 import time
 
-from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.base import QsSim
+from most_queue.rand_distribution import \
+    GammaDistribution  # For generating gamma distribution parameters
+from most_queue.sim.queueing_systems.base import \
+    QsSim  # Main queueing system simulation class
 
 
 def compare_calc_times():
-    """Compare queue calc times
     """
-    n = 3  # число каналов
-    l = 1.0  # интенсивность вх потока
-    ro = 0.7  # коэфф загрузки
-    b1 = n * ro / l  # ср время обслуживания
-    num_of_jobs = 1000000  # число обсл заявок ИМ
-    # два варианта коэфф вариации времени обсл, запустим расчет и ИМ для каждого из них
+    Compare calculation times for different buffer types in the queueing system.
+
+    Returns:
+        Prints comparison results of 'list' and 'deque' buffer types performance.
+    """
+    num_channels = 3              # Number of service channels
+    arrival_rate = 1.0           # Arrival rate intensity
+    utilization_factor = 0.7     # System utilization factor
+    mean_service_time = (num_channels * utilization_factor) / arrival_rate
+    num_jobs = 1_000_000         # Number of jobs for simulation
+    variation_coeff = 1.2        # Coefficient of variation for service time
+
     buffer_types = ['list', 'deque']
-    b_coev = 1.2
 
-    calc_times = {'list': 0, 'deque': 0}
+    execution_times = {'list': 0, 'deque': 0}
 
-    for b_type in buffer_types:
-        #  расчет начальных моментов времени обслуживания по заданному среднему и коэфф вариации
-        b = [0.0] * 3
-        alpha = 1 / (b_coev ** 2)
-        b[0] = b1
-        b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
-        b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    for buffer_type in buffer_types:
+        # Calculate initial moments of service time based on mean and variation coefficient
+        moments = [0.0] * 3
+        alpha = 1 / (variation_coeff ** 2)
 
-        # запуск ИМ для верификации результатов
-        im_start = time.process_time()
+        moments[0] = mean_service_time
+        moments[1] = (moments[0] ** 2) * (variation_coeff ** 2 + 1)
+        moments[2] = moments[1] * moments[0] * (1.0 + 2 / alpha)
 
-        qs = QsSim(n, buffer_type=b_type)
+        # Start simulation timing for this buffer type
+        sim_start_time = time.process_time()
 
-        # задаем вх поток заявок. М - экспоненциальный с интенсивностью l
-        qs.set_sources(l, 'M')
+        # Initialize queueing system with specified buffer type
+        qs = QsSim(num_channels, buffer_type=buffer_type)
 
-        # задаем параметры каналов обслуживания Гамма-распределением.
-        # Параметры распределения подбираем с помощью метода библиотеки random_distribution
-        gamma_params = GammaDistribution.get_params([b[0], b[1]])
-        qs.set_servers(gamma_params, 'Gamma')
+        # Configure arrival process (Exponential distribution with rate λ)
+        qs.set_sources(arrival_rate, types='M')
 
-        # Запуск ИМ
-        qs.run(num_of_jobs)
+        # Configure service process (Gamma distribution with parameters derived from moments)
+        gamma_params = GammaDistribution.get_params(moments[:2])
+        qs.set_servers(gamma_params, types='Gamma')
 
-        calc_times[b_type] = time.process_time() - im_start
+        # Run the simulation
+        qs.run(num_jobs)
 
-    print(calc_times)
+        # Record execution time for this buffer type
+        execution_times[buffer_type] = time.process_time() - sim_start_time
+
+    print("Execution times:", execution_times)
 
 
 if __name__ == "__main__":

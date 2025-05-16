@@ -1,48 +1,53 @@
+"""
+Utility functions for processing data from vacation-type queueing systems.
+"""
 import json
 import math
 
 import matplotlib.pyplot as plt
+from most_queue.general.tables import probs_print, times_print
 
 
 def print_table(experiments_stat):
     """
-    Prints a table comparing the results of the Takahashi-Takami method and simulation modeling for different queueing systems.
+    Prints a table comparing the results of the Takahashi-Takami 
+    method and simulation modeling for different queueing systems.
     :param experiments_stat: A list of dictionaries containing the results of the experiments.
     :type experiments_stat: list[dict]
     :return: None
     """
     for stat in experiments_stat:
-        print("\nComparison of calculation results by the Takahashi-Takami method and simulation modeling.\n"
-              "M/H2/{0:^2d} with H2-warm-up, H2-cooling and H2-cooling delay"
-              "Utilization factor: {1:^1.2f}".format(stat["n"], stat["ro"]))
-        print(f'Service time coefficient of variation {stat["coev_service"]:0.3f}')
-        print(f'Warm-up time coefficient of variation {stat["coev_warm"]:0.3f}')
-        print(f'Cooling time coefficient of variation {stat["coev_cold"]:0.3f}')
-        print(f'Cooling delay coefficient of variation {stat["coev_cold_delay"]:0.3f}')
-        print("Number of iterations of the Takahashi-Takami algorithm: {0:^4d}".format(stat["tt_num_of_iter"]))
+        # Print header information
         print(
-            f"Probability of being in a warm-up state\n\tИМ: {stat['sim_warm_prob']:0.3f}\n\tЧисл: {stat['tt_warm_prob']:0.3f}")
-        print(
-            f"Probability of being in a cooling state\n\tИМ: {stat['sim_cold_prob']:0.3f}\n\tЧисл: {stat['tt_cold_prob']:0.3f}")
-        print(
-            f"Probability of being in a cooling delay state\n\tИМ: {stat['sim_cold_delay_prob']:0.3f}\n\tЧисл: {stat['tt_cold_delay_prob']:0.3f}")
+            f"\nComparison of M/H2/{stat['n']} with H2-warm-up, H2-cooling and H2-cooling delay")
+        print(f"Utilization factor: {stat['ro']:0.2f}")
+        # Service time coefficients of variation
+        coeff_variants = [
+            ("Service", stat["coev_service"]),
+            ("Warm-up", stat["coev_warm"]),
+            ("Cooling", stat["coev_cold"]),
+            ("Cooling delay", stat["coev_cold_delay"])
+        ]
 
-        print("Running time of the Takahashi-Takami algorithm: {0:^5.3f} c".format(stat['tt_time']))
-        print("Simulation time: {0:^5.3f} c".format(stat['sim_time']))
-        print("{0:^25s}".format("First 10 probabilities of QS states"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Numerical", "Sim"))
-        print("-" * 32)
-        for i in range(11):
-            print("{0:^4d}|{1:^15.3g}|{2:^15.3g}".format(i, stat["p_tt"][i], stat["p_sim"][i]))
+        for label, value in coeff_variants:
+            print(f"{label} time coefficient of variation {value:0.3f}")
 
-        print("\n")
-        print("{0:^25s}".format("Initial waiting times in the QS"))
-        print("{0:^3s}|{1:^15s}|{2:^15s}".format("№", "Numerical", "Sim"))
-        print("-" * 32)
-        for i in range(3):
-            calc_mom = stat["w_tt"][i].real if isinstance(stat["w_tt"][i], complex) else stat["w_tt"][i]
-            sim_mom =  stat["w_sim"][i].real if isinstance(stat["w_sim"][i], complex) else stat["w_sim"][i]
-            print(f"{i+1:^4d}|{calc_mom:^15.3g}|{sim_mom:^15.3g}")
+        # Print probabilities
+        states = ["warm", "cold", "cold_delay"]
+        for state in states:
+            tt_val = stat[f'tt_{state}_prob']
+            sim_val = stat[f'sim_{state}_prob']
+            print(f"\nProbability of being in a {state} state")
+            print(f"\tSim: {sim_val:0.3f}\n\tCalc: {tt_val:0.3f}")
+
+        # Print run times
+        print("\nAlgorithm run times:")
+        print(
+            f"Running time of the Takahashi-Takami algorithm: {stat['tt_time']:0.3f} c")
+        print(f"Simulation time: {stat['sim_time']:0.3f} c")
+
+        probs_print(p_sim=stat['p_sim'], p_ch=stat['p_tt'], size=10)
+        times_print(sim_moments=stat["w_sim"], calc_moments=stat["w_tt"])
 
 
 def dump_stat(experiments_stat, save_name='run_stat.json'):
@@ -51,7 +56,7 @@ def dump_stat(experiments_stat, save_name='run_stat.json'):
     :param experiments_stat: A list of dictionaries containing the results of the experiments.
     :param save_name: The name of the file to save the results to. Defaults to 'run_stat.json'.
     """
-    with open(save_name, 'w') as f:
+    with open(save_name, 'w', encoding='utf-8') as f:
         json.dump(experiments_stat, f)
 
 
@@ -61,13 +66,14 @@ def load_stat(stat_name):
     :param stat_name: The name of the file to load the results from.
     :return: A list of dictionaries containing the results of the experiments.
     """
-    with open(stat_name, 'r') as f:
+    with open(stat_name, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 
 def calc_moments_by_mean_and_coev(mean, coev):
     """
-    Calculate the initial three moments (mean, variance, and skewness) based on the mean and coefficient of variation.
+    Calculate the initial three moments (mean, variance, and skewness) 
+    based on the mean and coefficient of variation.
     :param mean: The mean value of the distribution.
     :param coev: The coefficient of variation (standard deviation divided by the mean).
     :return: A list containing the calculated moments [mean, variance, skewness].

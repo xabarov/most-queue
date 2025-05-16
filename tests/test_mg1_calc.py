@@ -1,3 +1,7 @@
+"""
+Testing the M/G/1 queueing system calculation
+For verification, we use simulation modeling 
+"""
 import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
@@ -13,14 +17,15 @@ from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
 def test_mg1():
     """
     Testing the M/G/1 queueing system calculation
-    For verification, we use simulation modeling (IM).
+    For verification, we use simulation modeling
     """
     l = 1  # input flow intensity
     b1 = 0.7  # average service time
     coev = 1.2  # coefficient of variation of service time
     num_of_jobs = 300000  # number of jobs for IM
 
-    # selecting parameters of the approximating H2-distribution for service time H2Params [p1, mu1, mu2]:
+    # selecting parameters of the approximating H2-distribution
+    # for service time H2Params [p1, mu1, mu2]:
     params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
     print(params)
     b = H2Distribution.calc_theory_moments(params, 4)

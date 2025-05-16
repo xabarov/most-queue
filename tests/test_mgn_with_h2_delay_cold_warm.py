@@ -107,7 +107,8 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
     :param b_d: initial moments of delay time before cooling starts
     :param p_limit: limit for the sum of probabilities in the Takahasi-Takami method
     :param w_pls_dt: step for the Laplace-Stieltjes transform calculation
-    :param stable_w_pls: flag for using a stable version of the Laplace-Stieltjes transform calculation
+    :param stable_w_pls: flag for using a stable version 
+      of the Laplace-Stieltjes transform calculation
     :param verbose: flag for printing debug information
     :return: None
     """
@@ -395,12 +396,19 @@ def run_delay_mean(b1_service, coev_service,
 
 def test_all():
     """
-    Runs all tests for the M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling.
+    Runs all tests for the M/H2/n queue with H2-warming, 
+    H2-cooling and H2-delay of the start of cooling.
     """
 
     n = 3
     ro = 0.7
-    ro_dir = os.path.join(os.path.dirname(__file__), "ro_test")
+
+    # if results directory does not exist, create it
+    results_path = os.path.join(os.path.dirname(__file__), 'results')
+    if not os.path.exists(results_path):
+        os.makedirs(results_path)
+
+    ro_dir = os.path.join(results_path, "ro_test")
     ro_json_filename = os.path.join(ro_dir, f"n_{n}.json")
 
     if not os.path.exists(ro_json_filename):
@@ -423,7 +431,7 @@ def test_all():
 
     print_table(ro_stat)
     # make_plot(ro_stat, param_name='ro', mode='abs')
-    n_dir = os.path.join(os.path.dirname(__file__), "n_test")
+    n_dir = os.path.join(results_path, "n_test")
     n_json_filename = os.path.join(n_dir, f"ro_{ro:0.3f}.json")
 
     if not os.path.exists(n_json_filename):
@@ -448,7 +456,7 @@ def test_all():
     print_table(n_stat)
     # make_plot(n_stat, param_name='n', mode='abs')
 
-    delay_dir = os.path.join(os.path.dirname(__file__), "delay_mean_test")
+    delay_dir = os.path.join(results_path, "delay_mean_test")
 
     delay_json_filename = os.path.join(f"n_{n}_ro_{ro}.json")
 
@@ -478,14 +486,14 @@ def test_all():
 if __name__ == "__main__":
 
     # test_all()
-    ro = 0.7
-    n_stat = run_n(b1_service=10.0, coev_service=1.2,
+    UTILIZATION = 0.7
+    N_STAT = run_n(b1_service=10.0, coev_service=1.2,
                    b1_warm=3.1, coev_warm=0.87,
                    b1_cold=4.1, coev_cold=1.1,
                    b1_cold_delay=3.71, coev_cold_delay=1.2,
                    num_of_jobs=300000,
-                   n_min=1, n_max=10, ro=ro, w_pls_dt=1e-3,
+                   n_min=1, n_max=10, ro=UTILIZATION, w_pls_dt=1e-3,
                    stable_w_pls=True, sim_ave=1)
 
-    print_table(n_stat)
-    make_plot(n_stat, param_name='n', mode='abs', save_path="tests/vacations_ro_0.7.png")
+    print_table(N_STAT)
+    make_plot(N_STAT, param_name='n', mode='abs', save_path="tests/vacations_ro_0.7.png")

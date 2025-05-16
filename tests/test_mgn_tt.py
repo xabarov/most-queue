@@ -27,11 +27,14 @@ def test_mgn_tt():
     ro = 0.7  # utilization factor
     b1 = n * ro / l  # average service time
     num_of_jobs = 1000000  # number of jobs for simulation
-    # two variants of the coefficient of variation of service time, run calculation and simulation for each
+
+    # two variants of the coefficient of variation of service time,
+    # run calculation and simulation for each
     b_coev_mass = [0.8, 1.2]
 
     for b_coev in b_coev_mass:
-        # calculate initial moments of service time based on the given average and coefficient of variation
+        # calculate initial moments of service time based
+        # on the given average and coefficient of variation
         b = [0.0] * 3
         alpha = 1 / (b_coev ** 2)
         b[0] = b1

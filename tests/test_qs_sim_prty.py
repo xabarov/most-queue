@@ -1,3 +1,6 @@
+"""
+Testing the simulation model of an M/G/c queue with priorities.
+"""
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
@@ -7,7 +10,7 @@ from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInva
 
 def test_sim():
     """
-    Testing the simulation model of an M/M/c queue with priorities.
+    Testing the simulation model of an M/G/c queue with priorities.
     For verification, comparing results with those calculated using the method of invariant relations:
         Ryzhikov Yu.I., Khomonenko A.D. Calculation of multi-channel service systems with absolute and
         relative priorities based on invariant relations // Intelligent technologies

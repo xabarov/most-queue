@@ -10,7 +10,7 @@ import numpy as np
 from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.queueing_systems.negative import (
-    NegativeServiceType, QueueingSystemSimulatorWithNegatives)
+    NegativeServiceType, QsSimNegatives)
 from most_queue.theory.queueing_systems.negative.mgn_rcs import \
     MGnNegativeRCSCalc
 from most_queue.theory.queueing_systems.negative.structs import (
@@ -65,7 +65,7 @@ def collect_sim_results(channels: int, b: list[float],
     :param num_of_jobs: Number of jobs to simulate.
     """
     # Run simulation
-    queue_sim = QueueingSystemSimulatorWithNegatives(
+    queue_sim = QsSimNegatives(
         channels, NegativeServiceType.RCS)
 
     queue_sim.set_negative_sources(l_neg, 'M')

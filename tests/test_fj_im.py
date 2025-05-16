@@ -26,10 +26,12 @@ def test_fj_sim():
 
     qs = ForkJoinSim(n, n, False)
 
-    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
+    # Set the input stream. The method needs to be passed distribution
+    # parameters and type of distribution. M - exponential
     qs.set_sources(l, 'M')
 
-    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # Set the service channels. The method needs to be passed distribution 
+    # parameters and type of distribution.
     # H - hyperexponential second order
     qs.set_servers(mu, 'M')
 
@@ -56,9 +58,9 @@ def test_fj_sim():
     print("-" * 30)
 
     # Assert that the simulation result is close to the theoretical value
-    assert abs(
-        v1_sim - vi_varma) < 0.02, "The simulation result is not close to the theoretical value for Varma's formula"
-    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, "The simulation result is not close to the theoretical value for Nelson-Tantawi's formula"
+    prefix = "The simulation result is not close to the theoretical value for "
+    assert abs(v1_sim - vi_varma) < 0.02, prefix + "Varma's formula"
+    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, prefix + "Nelson-Tantawi's formula"
 
     # Run Fork-Join (n, k) simulation and calculation of the average sojourn time
 
@@ -66,10 +68,12 @@ def test_fj_sim():
 
     qs = ForkJoinSim(n, k, False)
 
-    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
+    # Set the input stream. The method needs to be passed distribution 
+    # parameters and type of distribution. M - exponential
     qs.set_sources(l, 'M')
 
-    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # Set the service channels. The method needs to be 
+    # passed distribution parameters and type of distribution.
     # H - hyperexponential second order
     qs.set_servers(mu, 'M')
 
@@ -96,17 +100,19 @@ def test_fj_sim():
     print("-" * 30)
 
     # Assert that the simulation result is close to the theoretical value
-    assert abs(
-        v1_sim - vi_varma) < 0.02, "The simulation result is not close to the theoretical value for Varma's formula"
-    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, "The simulation result is not close to the theoretical value for Nelson-Tantawi's formula"
+    prefix = "The simulation result is not close to the theoretical value for "
+    assert abs(v1_sim - vi_varma) < 0.02, prefix + "Varma's formula"
+    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, prefix + "Nelson-Tantawi's formula"
 
 
 def test_sj_sim():
     """
     Testing the calculation of a Split-Join system
-        | Ryzhikov, Yu. I. Method for calculating the duration of task processing in a queueing system
-        | with consideration of Split-Join processes / Yu. I. Ryzhikov, V. A. Lokhviatsky, R. S. Habarov
-        | Journal of Higher Educational Institutions. Instrument Engineering. – 2019. – Vol. 62. – No. 5. – pp. 419-423. –
+        | Ryzhikov, Yu. I. Method for calculating the duration of task processing 
+        | in a queueing system with consideration of Split-Join processes 
+        | Yu. I. Ryzhikov, V. A. Lokhviatsky, R. S. Habarov
+        | Journal of Higher Educational Institutions. Instrument Engineering. 
+        – 2019. – Vol. 62. – No. 5. – pp. 419-423. –
         | DOI 10.17586/0021-3454-2019-62-5-419-423.
 
     For verification, we use simulation modeling.
@@ -125,20 +131,24 @@ def test_sj_sim():
     # parameters of the H2 distribution [y1, mu1, mu2]
     params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
 
-    # Calculate the first four moments, we need one more than the required moments of time spent in the queueing system
+    # Calculate the first four moments, we need one more than the required moments 
+    # of time spent in the queueing system
     b = H2Distribution.calc_theory_moments(params, 4)
 
     # To verify, we use IM.
     # Create an instance of the simulation class and pass the number of servers for service
     # Simulation class  supports a Fork-Join (n, k) type queueing system. In our case, k = n
-    # For specifying a Split-Join queueing system, you need to pass the third parameter True, otherwise by default - Fork-Join
+    # For specifying a Split-Join queueing system, you need to pass the 
+    # third parameter True, otherwise by default - Fork-Join
 
     qs = ForkJoinSim(n, n, True)
 
-    # Set the input stream. The method needs to be passed distribution parameters and type of distribution. M - exponential
+    # Set the input stream. The method needs to be passed distribution 
+    # parameters and type of distribution. M - exponential
     qs.set_sources(l, 'M')
 
-    # Set the service channels. The method needs to be passed distribution parameters and type of distribution.
+    # Set the service channels. The method needs to be passed distribution 
+    # parameters and type of distribution.
     # H - hyperexponential second order
     qs.set_servers(params, 'H')
 
@@ -148,14 +158,16 @@ def test_sj_sim():
     # Get a list of initial moments of sojourn time
     v_sim = qs.v
 
-    # Calculate the initial moments of the distribution maximum using the method fj_calc.getMaxMoments.
+    # Calculate the initial moments of the distribution maximum 
+    # using the method fj_calc.getMaxMoments.
     # The input is the number of servers and the list of initial moments
 
     sj_calc = SplitJoinCalc(l, n, b)
     v_ch = sj_calc.get_v()
     ro = sj_calc.get_ro()
 
-    # Further calculation as in a regular M/G/1 queueing system with initial moments of the distribution maximum of the random variable
+    # Further calculation as in a regular M/G/1 queueing system with initial moments 
+    # of the distribution maximum of the random variable
 
     print("\n")
     print("-" * 60)
