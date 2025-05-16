@@ -1,5 +1,5 @@
 """
-Test the priority queueing network simulation (IM SEMO) with priority queues at nodes.
+Test the priority queueing network simulation with priority queues at nodes.
 Compare results with numerical calculations using decomposition method.
 """
 import numpy as np
@@ -12,7 +12,7 @@ from most_queue.theory.networks.open_network import OpenNetworkCalc
 
 def test_network():
     """
-    Test the priority queueing network simulation (IM SEMO) with priority queues at nodes.
+    Test the priority queueing network simulation  with priority queues at nodes.
     Compare results with numerical calculations using decomposition method.
     """
     k_num = 3  # Number of job classes
@@ -46,7 +46,7 @@ def test_network():
             else:
                 nodes_prty[m].append(k_num - j - 1)
 
-        b1 = 0.9 * n[m] / sum(L)
+        b1 = 0.7 * n[m] / sum(L)
         coev = 1.2
         h2_params.append(H2Distribution.get_params_by_mean_and_coev(b1, coev))
 
