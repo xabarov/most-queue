@@ -10,9 +10,7 @@ from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.binom_probs import calc_binom_probs
-from most_queue.theory.utils.transforms import (
-    laplace_stieltjes_exp_transform as lst_exp,
-)
+from most_queue.theory.utils.transforms import lst_exp
 
 
 class MH2nH2Warm:

@@ -41,9 +41,9 @@ class MG1WarmCalc:
         for c in range(1, steps):
             s = h * c
             chisl = p0_star * \
-                ((1 - s / self.l) * GammaDistribution.get_pls(b_warm_param, s) -
-                 GammaDistribution.get_pls(b_param, s))
-            znam = 1 - s / self.l - GammaDistribution.get_pls(b_param, s)
+                ((1 - s / self.l) * GammaDistribution.get_lst(b_warm_param, s) -
+                 GammaDistribution.get_lst(b_param, s))
+            znam = 1 - s / self.l - GammaDistribution.get_lst(b_param, s)
             v_pls.append(chisl / znam)
 
         v = diff5dots(v_pls, h)

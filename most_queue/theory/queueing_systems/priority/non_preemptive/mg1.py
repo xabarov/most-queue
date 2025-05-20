@@ -137,7 +137,7 @@ class MG1NonPreemtiveCalculation:
                 s = h * c
 
                 if j != 0:
-                    nu_a = GammaDistribution.get_pls(nu_a_param, s)
+                    nu_a = GammaDistribution.get_lst(nu_a_param, s)
                     summ = s + la - la * nu_a
                 else:
                     summ = s
@@ -146,10 +146,10 @@ class MG1NonPreemtiveCalculation:
 
                 if j != len(self.l) - 1:
                     chisl += lb * \
-                        (1 - GammaDistribution.get_pls(b_b_param, summ))
+                        (1 - GammaDistribution.get_lst(b_b_param, summ))
 
                 znam = self.l[j] * \
-                    GammaDistribution.get_pls(b_k_param, summ) - self.l[j] + s
+                    GammaDistribution.get_lst(b_k_param, summ) - self.l[j] + s
 
                 w_pls.append(chisl / znam)
 

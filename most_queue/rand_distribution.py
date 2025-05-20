@@ -1012,7 +1012,7 @@ class GammaDistribution(Distribution):
         return f
 
     @staticmethod
-    def get_pls(params: GammaParams, s: float) -> float:
+    def get_lst(params: GammaParams, s: float) -> float:
         """
         Calculate Laplace-Stieljets transform  for gamma distribution.
         :param params: GammaParams object with parameters of gamma distribution.

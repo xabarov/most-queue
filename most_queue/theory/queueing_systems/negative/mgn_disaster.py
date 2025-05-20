@@ -12,9 +12,7 @@ from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.queueing_systems.negative.structs import NegativeArrivalsResults
-from most_queue.theory.utils.transforms import (
-    laplace_stieltjes_exp_transform as lst_exp,
-)
+from most_queue.theory.utils.transforms import lst_exp
 
 
 class MGnNegativeDisasterCalc(MGnCalc):

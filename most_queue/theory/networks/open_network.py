@@ -4,7 +4,9 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
+from most_queue.theory.queueing_systems.priority.mgn_invar_approx import (
+    MGnInvarApproximation,
+)
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
@@ -115,7 +117,8 @@ class OpenNetworkCalc:
             b_sr = np.mean(b_order[i], axis=0)
 
             res['loads'][i] = l_sum * b_sr[0] / self.n[i]
-            invar_calc = MGnInvarApproximation(l_order[i], b_order[i], self.n[i])
+            invar_calc = MGnInvarApproximation(
+                l_order[i], b_order[i], self.n[i])
             res['v_node'].append(invar_calc.get_v(priority=self.prty[i]))
             for k in range(k_num):
                 res['v_node'][i][self.nodes_prty[i][k]] = res['v_node'][i][k]
@@ -135,7 +138,7 @@ class OpenNetworkCalc:
 
             g_PLS = []
             for i in range(4):
-                N = np.diag([GammaDistribution.get_pls(
+                N = np.diag([GammaDistribution.get_lst(
                     gamma_mu_alpha[j], s[i]) for j in range(nodes)])
 
                 G = np.dot(N, Q)

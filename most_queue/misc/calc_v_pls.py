@@ -9,11 +9,10 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.general.conv import conv_moments
-from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.utils.transforms import (
-    laplace_stieltjes_exp_transform as lst_exp,
-)
 from most_queue.rand_distribution import H2Distribution, H2Params
+from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.utils.transforms import lst_exp
+
 
 class MGnNegativeRCSCalc(MGnCalc):
     """
@@ -218,20 +217,19 @@ class MGnNegativeRCSCalc(MGnCalc):
         Get the sojourn time moments
         """
         w = self.get_w(derivate=False)
-        
+
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
-       
-        params = H2Params(p1=self.y[0], 
-                        mu1=self.mu[0], 
-                        mu2=self.mu[1])
+
+        params = H2Params(p1=self.y[0],
+                          mu1=self.mu[0],
+                          mu2=self.mu[1])
         #
         l_neg = 0
         for i in range(1, self.n):
             l_neg += self.p[i]*self.l_neg/i
-            
-            
-        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1, 
-                                                        mu1=l_neg + params.mu1, 
+
+        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
+                                                        mu1=l_neg + params.mu1,
                                                         mu2=l_neg + params.mu2))
 
         return conv_moments(w, b)
