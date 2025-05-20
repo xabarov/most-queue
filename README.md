@@ -79,8 +79,9 @@ Most_queue consists of two main parts:
 ### Queueing Systems with Negative arrivals
 | #   | Kendall Notations |  Description      | Example | Tutorial |
 |-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1.  | M/G/c RCS         |  Numerical calculation of M/G/c with RCS (remove customer from service) negative arrivals. Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_rcs.py) | |
-| 2.  | M/G/c disaster         |  Numerical calculation of M/G/c with disaster (remove all customer from service and queue by negative arrival). Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_disaster.py) | |
+| 1.  | M/G/1 RCS         |  Exact calculation soujourn time for M/G/1 with RCS (remove customer from service) negative arrivals. Service time approximates by H<SUB>2</SUB> or Gamma distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mg1_rcs.py) | |
+| 2.  | M/G/c RCS         |  Numerical calculation of M/G/c with RCS negative arrivals. Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_rcs.py) | |
+| 3.  | M/G/c disaster         |  Numerical calculation of M/G/c with disaster (remove all customer from service and queue by negative arrival). Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_disaster.py) | |
 
 
 ### Fork-Join Queueing Systems
