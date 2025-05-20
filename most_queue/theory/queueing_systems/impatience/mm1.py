@@ -10,8 +10,8 @@ class MM1Impatience:
     Calc M/M/1 queue with exponential impatience.
     """
 
-    def __init__(self, l:float, mu:float, gamma:float,
-                 tol:float=1e-12, probs_max_num:int=100000):
+    def __init__(self, l: float, mu: float, gamma: float,
+                 tol: float = 1e-12, probs_max_num: int = 100000):
         """
         Initialization of the MM1Impatience class.
         :param l: Arrival rate
@@ -65,7 +65,7 @@ class MM1Impatience:
 
     def get_v1(self):
         """
-        Get average soujourn time.
+        Get average sojourn time.
         """
         return self.get_N() / self.l
 

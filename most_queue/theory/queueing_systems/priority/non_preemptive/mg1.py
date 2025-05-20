@@ -47,9 +47,9 @@ class MG1NonPreemtiveCalculation:
 
     def get_v(self, num=3) -> list[list[float]]:
         """
-        Calculation of initial moments of soujourn time in M/G/1 with non-preemptive priority.
+        Calculation of initial moments of sojourn time in M/G/1 with non-preemptive priority.
         :param num: number of moments to calculate
-        :return: list of initial moments of soujourn time for each class
+        :return: list of initial moments of sojourn time for each class
         """
         k = len(self, self.l)
         v = []

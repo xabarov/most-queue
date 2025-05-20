@@ -61,7 +61,7 @@ def test_mg1_h2_rcs():
     m_hyper_1_calc = M_H2_1_RCS(l_pos, l_neg, h2_params)
     v1_h2_calc = m_hyper_1_calc.get_v1()
 
-    times_print(v_sim[0], v1_h2_calc, is_w=False, header='Soujourn time H2')
+    times_print(v_sim[0], v1_h2_calc, is_w=False, header='sojourn time H2')
 
 
 def test_mg1_gamma_rcs():
@@ -95,7 +95,7 @@ def test_mg1_gamma_rcs():
     v1_gamma_calc = m_gamma_1_calc.get_v1()
 
     times_print(v_sim[0], v1_gamma_calc, is_w=False,
-                header='Soujourn time Gamma')
+                header='sojourn time Gamma')
 
 
 if __name__ == "__main__":

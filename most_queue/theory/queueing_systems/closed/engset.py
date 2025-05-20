@@ -1,8 +1,8 @@
 """
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
-from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.general.conv import conv_moments
+from most_queue.theory.utils.diff5dots import diff5dots
 
 
 class Engset:
@@ -21,7 +21,7 @@ class Engset:
         self.ro = lam / mu
         self.m = m
         self._calc_m_i()
-        
+
         self.p = None
         self.p0 = None
 
@@ -43,14 +43,14 @@ class Engset:
         self.p0 = ps[0]
         return ps
 
-    def get_N(self)->float:
+    def get_N(self) -> float:
         """
         Get average number of jobs in the system
         """
-        
+
         if self.p is None:
             self.get_p()
-            
+
         N = 0
         for i, mm in enumerate(self.m_i):
             N += i * mm * pow(self.ro, i)
@@ -76,7 +76,6 @@ class Engset:
             self.get_p()
 
         return self.mu * (1.0 - self.p0) / (self.lam * self.m)
-        
 
     def get_w1(self):
         """
@@ -86,7 +85,7 @@ class Engset:
 
     def get_v1(self):
         """
-        Get average soujourn time without diff the Laplace-Stieltjes transform
+        Get average sojourn time without diff the Laplace-Stieltjes transform
         """
         return self.get_N() / self._get_lam_big_d()
 
@@ -94,13 +93,13 @@ class Engset:
         """
         Get waiting time initial moments through the diff Laplace-Stieltjes transform
         """
-        
+
         if self.p is None:
             self.get_p()
-            
+
         h = 0.01
         ss = [x * h for x in range(5)]
-        
+
         N = self.get_N()
 
         ws_dots = [self._ws(s, self.p0, N) for s in ss]
@@ -110,7 +109,7 @@ class Engset:
 
     def get_v(self):
         """
-        Get soujourn time initial moments trough convolution with service 
+        Get sojourn time initial moments trough convolution with service 
         and diff Laplace-Stieltjes transform of waiting time
         """
         w = self.get_w()

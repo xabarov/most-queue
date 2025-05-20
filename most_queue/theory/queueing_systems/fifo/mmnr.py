@@ -61,7 +61,7 @@ class MMnrCalc:
 
     def get_v(self) -> list[float]:
         """
-        Calculate  initial moments of soujourn time in the queue 
+        Calculate  initial moments of sojourn time in the queue 
         """
         if self.w is None:
             self.w = self.get_w()

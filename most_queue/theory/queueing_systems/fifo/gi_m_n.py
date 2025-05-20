@@ -37,7 +37,7 @@ class GiMn:
 
     def get_v(self) -> list[float]:
         """
-        Calculate soujourn time first 3 initial moments
+        Calculate sojourn time first 3 initial moments
         """
 
         if self.w is None:

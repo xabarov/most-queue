@@ -9,8 +9,8 @@ from dataclasses import asdict, dataclass, is_dataclass
 class NegativeArrivalsResults:
     """
     Class for storing results related to negative arrivals in a queueing system.
-     Contains lists of waiting times (w), soujourn times  (v),
-     soujourn times of served jobs (v_served), soujourn times of broken jobs (v_broken),
+     Contains lists of waiting times (w), sojourn times  (v),
+     sojourn times of served jobs (v_served), sojourn times of broken jobs (v_broken),
      and probabilities (p).
     """
     w: list[float]
@@ -75,8 +75,7 @@ class DependsOnJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if is_dataclass(o):
             json_res = {'service_time_variation_coef': o.service_time_variation_coef,
-                      'channels': o.channels, 'utilization_factor': o.utilization_factor,
-                      'calc': [asdict(r) for r in o.calc], 'sim': [asdict(r) for r in o.sim]}
+                        'channels': o.channels, 'utilization_factor': o.utilization_factor,
+                        'calc': [asdict(r) for r in o.calc], 'sim': [asdict(r) for r in o.sim]}
             return json_res
         return super().default(o)
-

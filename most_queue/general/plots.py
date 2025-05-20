@@ -2,6 +2,7 @@ from enum import Enum
 
 import matplotlib.pyplot as plt
 
+
 class DependsType(Enum):
     """
     Enum to specify the type of dependency for plotting.
@@ -27,7 +28,7 @@ def plot_sim_vs_calc_moments(xs: list[float], sim_results: list[float],
     :type depends_on: DependsType
     :param is_errors: If True, plots the percentage error between simulation and calculation results.
     :type is_errors: bool
-    :param is_waiting_time: If True, labels the y-axis as waiting time; otherwise, as soujourn time.
+    :param is_waiting_time: If True, labels the y-axis as waiting time; otherwise, as sojourn time.
     :type is_waiting_time: bool
     :param save_path: The path where the plot should be saved. If None, the plot will not be saved.
     :type save_path: str or NoneType

@@ -110,7 +110,7 @@ class PriorityNetwork:
 
     def refresh_v_stat(self, k, new_a):
         """
-        Refresh soujourn time statistics for a given class and new arrival.
+        Refresh sojourn time statistics for a given class and new arrival.
         :param k: The class of the task.
         :param new_a: The new arrival time.
         """

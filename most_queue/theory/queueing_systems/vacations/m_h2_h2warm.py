@@ -167,7 +167,7 @@ class MH2nH2Warm:
 
     def get_v(self):
         """
-        Get the first three initial moments of soujourn time in the queue.
+        Get the first three initial moments of sojourn time in the queue.
         """
         v = [0.0] * 3
         w = self.get_w()

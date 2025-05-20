@@ -7,11 +7,9 @@ from enum import Enum
 import numpy as np
 
 from most_queue.sim.queueing_systems.base import QsSim
-from most_queue.sim.utils.distribution_utils import (calc_qs_load,
-                                                     create_distribution)
+from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
 from most_queue.sim.utils.stats_update import refresh_moments_stat
-from most_queue.theory.queueing_systems.negative.structs import \
-    NegativeArrivalsResults
+from most_queue.theory.queueing_systems.negative.structs import NegativeArrivalsResults
 
 
 class NegativeServiceType(Enum):
@@ -154,9 +152,9 @@ class QsSimNegatives(QsSim):
                 end_ts = self.servers[c].end_service()
                 self.broken += 1
                 self.total += 1
-                soujourn_time = self.ttek - end_ts.arr_time
-                self.refresh_v_stat(soujourn_time)
-                self.refresh_v_stat_broken(soujourn_time)
+                sojourn_time = self.ttek - end_ts.arr_time
+                self.refresh_v_stat(sojourn_time)
+                self.refresh_v_stat_broken(sojourn_time)
 
             self.in_sys = 0
             self.free_channels = self.n
@@ -169,9 +167,9 @@ class QsSimNegatives(QsSim):
                 self.broken += 1
                 self.refresh_w_stat(ts.wait_time)
 
-                soujourn_time = self.ttek - ts.arr_time
-                self.refresh_v_stat(soujourn_time)
-                self.refresh_v_stat_broken(soujourn_time)
+                sojourn_time = self.ttek - ts.arr_time
+                self.refresh_v_stat(sojourn_time)
+                self.refresh_v_stat_broken(sojourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCE:
             self.in_sys -= 1
@@ -184,9 +182,9 @@ class QsSimNegatives(QsSim):
             self.broken += 1
 
             self.refresh_w_stat(ts.wait_time)
-            soujourn_time = self.ttek - ts.arr_time
-            self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_broken(soujourn_time)
+            sojourn_time = self.ttek - ts.arr_time
+            self.refresh_v_stat(sojourn_time)
+            self.refresh_v_stat_broken(sojourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCH:
             self.in_sys -= 1
@@ -198,9 +196,9 @@ class QsSimNegatives(QsSim):
             self.broken += 1
 
             self.refresh_w_stat(ts.wait_time)
-            soujourn_time = self.ttek - ts.arr_time
-            self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_broken(soujourn_time)
+            sojourn_time = self.ttek - ts.arr_time
+            self.refresh_v_stat(sojourn_time)
+            self.refresh_v_stat_broken(sojourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCS:
 
@@ -211,9 +209,9 @@ class QsSimNegatives(QsSim):
             self.total += 1
             self.broken += 1
             self.free_channels += 1
-            soujourn_time = self.ttek - end_ts.arr_time
-            self.refresh_v_stat(soujourn_time)
-            self.refresh_v_stat_broken(soujourn_time)
+            sojourn_time = self.ttek - end_ts.arr_time
+            self.refresh_v_stat(sojourn_time)
+            self.refresh_v_stat_broken(sojourn_time)
 
             self.in_sys -= 1
 
@@ -234,9 +232,9 @@ class QsSimNegatives(QsSim):
 
         self.served += 1
         self.total += 1
-        soujourn_time = self.ttek - end_ts.arr_time
-        self.refresh_v_stat(soujourn_time)
-        self.refresh_v_stat_served(soujourn_time)
+        sojourn_time = self.ttek - end_ts.arr_time
+        self.refresh_v_stat(sojourn_time)
+        self.refresh_v_stat_served(sojourn_time)
 
         self.in_sys -= 1
 
@@ -292,13 +290,13 @@ class QsSimNegatives(QsSim):
 
     def get_v_served(self):
         """
-        Returns initial moments of soujourn time (only for successfully served jobs)
+        Returns initial moments of sojourn time (only for successfully served jobs)
         """
         return self.v_served
 
     def get_v_broken(self):
         """
-        Returns initial moments of soujourn time  (only for broken by negative arrivals)
+        Returns initial moments of sojourn time  (only for broken by negative arrivals)
         """
         return self.v_broken
 

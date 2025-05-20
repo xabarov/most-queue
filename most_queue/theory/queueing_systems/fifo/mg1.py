@@ -45,7 +45,7 @@ class MG1Calculation:
 
     def get_v(self, num=3):
         """
-        Calculate the initial moments of soujournin the system for M/G/1 queue.
+        Calculate the initial moments of sojournin the system for M/G/1 queue.
         """
         num_of_mom = min(len(self.b) - 1, num)
 

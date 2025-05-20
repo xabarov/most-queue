@@ -1,21 +1,25 @@
 """
-Approximation of the initial moments of waiting and soujourn times 
+Approximation of the initial moments of waiting and sojourn times 
 for a multi-channel queue with priorities
 and general service times.
 The approximation is based on method of invariant moments for M/G/n queues.
 """
 import math
 
+from most_queue.general.conv import conv_moments
 from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.queueing_systems.priority.preemptive.mg1 import MG1PreemtiveCalculation
-from most_queue.theory.queueing_systems.priority.non_preemptive.mg1 import MG1NonPreemtiveCalculation
-from most_queue.general.conv import conv_moments
+from most_queue.theory.queueing_systems.priority.non_preemptive.mg1 import (
+    MG1NonPreemtiveCalculation,
+)
+from most_queue.theory.queueing_systems.priority.preemptive.mg1 import (
+    MG1PreemtiveCalculation,
+)
 
 
 class MGnInvarApproximation:
     """
-    Approximation of the initial moments of waiting and soujourn times for a multi-channel queue with priorities
+    Approximation of the initial moments of waiting and sojourn times for a multi-channel queue with priorities
      and general service times.
       The approximation is based on method of invariant moments for M/G/n queues.
     """
@@ -111,7 +115,7 @@ class MGnInvarApproximation:
 
     def get_v(self, priority='NP', num=3) -> list[list[float]]:
         """
-        Approximation of the initial moments of soujourn time 
+        Approximation of the initial moments of sojourn time 
         for a multi-channel queue with priorities
         based on the invariant relation M*|G*|n = M*|G*|1 * (M|G|n / M|G|1)
 
@@ -119,7 +123,7 @@ class MGnInvarApproximation:
           default is "NP" (preemptive, non-preemptive)
         :param N: number of levels for the Takahashi-Takagi method, also the number of probabilities
         calculated for M/G/1
-        :return: v[k][j] - initial moments of soujourn time for all classes
+        :return: v[k][j] - initial moments of sojourn time for all classes
         """
         w = self.get_w(priority, num=num)
         v = []

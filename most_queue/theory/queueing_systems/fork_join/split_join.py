@@ -48,9 +48,9 @@ class SplitJoinCalc:
 
     def get_v(self) -> list[float]:
         """
-        Calculate soujourn time initial moments for Split-Join queueing systems
+        Calculate sojourn time initial moments for Split-Join queueing systems
 
-        :return: list[float] : initial moments of soujourn time distribution 
+        :return: list[float] : initial moments of sojourn time distribution 
         """
 
         # Calc Split-Join max of n channels service time distribution
@@ -64,11 +64,11 @@ class SplitJoinCalc:
 
     def get_v_delta(self, b_delta: list[float] | float) -> list[float]:
         """
-        Calculate soujourn time initial moments for Split-Join queueing systems with delta
+        Calculate sojourn time initial moments for Split-Join queueing systems with delta
         :param b_delta:  If delta is a list, it should contain the moments of
         time delay caused by reception and restoration operations for each part. 
         If delta is a float, delay is determistic and equal to delta.
-        :return: list[float] : initial moments of soujourn time distribution 
+        :return: list[float] : initial moments of sojourn time distribution 
         """
 
         self.b_max_warm = self.get_max_moments_delta(b_delta)

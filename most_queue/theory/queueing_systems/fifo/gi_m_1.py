@@ -52,7 +52,7 @@ class GiM1:
 
     def get_v(self, num=3):
         """
-        Calculation of the soujourn time initial moments
+        Calculation of the sojourn time initial moments
         num - number of moments
         e - accuracy
         approx_distr - approximation distribution for the arrival process

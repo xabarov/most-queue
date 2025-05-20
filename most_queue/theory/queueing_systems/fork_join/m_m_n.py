@@ -46,10 +46,10 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_fj2(self):
         """
-        Calculation of mean soujourn time for FJ system with n=2 channels
+        Calculation of mean sojourn time for FJ system with n=2 channels
         :param mu: service rate
         :param l: arrival rate
-        :return: mean soujourn time for FJ system with n=2 channels
+        :return: mean sojourn time for FJ system with n=2 channels
         """
 
         assert self.n == 2, "n must be equal to 2"
@@ -61,7 +61,7 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_fj_varma(self):
         """
-        Calculation of mean soujourn time for FJ system with n channels
+        Calculation of mean sojourn time for FJ system with n channels
         using approximation from:
         S. Varma and A. M. Makowski, “Interpolation approximations for
         symmetric fork-join queues.” Perform. Eval., vol. 20, no. 1, pp. 245–265,
@@ -70,7 +70,7 @@ class ForkJoinMarkovianCalc:
         :param mu: service rate
         :param l: arrival rate
         :param n: number of channels
-        :return: mean soujourn time for FJ system with n channels
+        :return: mean sojourn time for FJ system with n channels
         """
 
         Vn = self._get_v_big(self.n)
@@ -80,7 +80,7 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_fj_nelson_tantawi(self):
         """
-        Calculation of mean soujourn time for FJ system with n channels
+        Calculation of mean sojourn time for FJ system with n channels
         using approximation from:
         R. D. Nelson and A. N. Tantawi, “Approximate analysis of fork/join
         synchronization in parallel queues.” IEEE Trans. Computers, vol. 37,
@@ -89,7 +89,7 @@ class ForkJoinMarkovianCalc:
         :param mu: service rate
         :param l: arrival rate
         :param n: number of channels
-        :return: mean soujourn time for FJ system with n channels
+        :return: mean sojourn time for FJ system with n channels
         """
 
         Hn = self._get_h_big(self.n)
@@ -99,7 +99,7 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_fj_nelson_nk(self):
         """
-        Calculation of mean soujourn time for FJ (n, k) system with n channels
+        Calculation of mean sojourn time for FJ (n, k) system with n channels
         using approximation from:
         R. D. Nelson and A. N. Tantawi, “Approximate analysis of fork/join
         synchronization in parallel queues.” IEEE Trans. Computers, vol. 37,
@@ -110,7 +110,7 @@ class ForkJoinMarkovianCalc:
         :param n: number of channels
         :param k: number of sub-tasks that need to be completed before a job is considered done
                 if n = k, then it's a basic fork-join queueing system.
-        :return: mean soujourn time for FJ system with n channels
+        :return: mean sojourn time for FJ system with n channels
         """
         res = 0
         coeff = (12 - self.ro) / (88 * self.mu * (1 - self.ro))
@@ -135,7 +135,7 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_varma_nk(self):
         """
-        Calculation of mean soujourn time for FJ (n, k) system with n channels
+        Calculation of mean sojourn time for FJ (n, k) system with n channels
         using approximation from:
         S. Varma and A. M. Makowski, “Interpolation approximations for
         symmetric fork-join queues.” Perform. Eval., vol. 20, no. 1, pp. 245–265,
@@ -146,7 +146,7 @@ class ForkJoinMarkovianCalc:
         :param n: number of channels
         :param k: number of sub-tasks that need to be completed before a job is considered done
                 if n = k, then it's a basic fork-join queueing system.
-        :return: mean soujourn time for FJ system with n channels
+        :return: mean sojourn time for FJ system with n channels
         """
         summ = 0
 
@@ -162,14 +162,14 @@ class ForkJoinMarkovianCalc:
 
     def get_v1_fj_varki_merchant(self):
         """
-        Calculation of mean soujourn time for FJ system with n channels
+        Calculation of mean sojourn time for FJ system with n channels
         using approximation from:
         E. Varki, “Response time analysis of parallel computer and storage
         systems.” IEEE Trans. Parallel Distrib. Syst., 2001.
         :param mu: service rate
         :param l: arrival rate
         :param n: number of channels
-        :return: mean soujourn time for FJ system with n channels
+        :return: mean sojourn time for FJ system with n channels
         """
         Hn = self._get_h_big(self.n)
         summ = 0

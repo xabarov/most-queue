@@ -5,10 +5,7 @@ import math
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.negative import (
-    NegativeServiceType,
-    QsSimNegatives,
-)
+from most_queue.sim.queueing_systems.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.queueing_systems.negative.mgn_rcs import MGnNegativeRCSCalc
 
 
@@ -66,11 +63,11 @@ def test_mgn():
     print(f'q = {queue_calc.get_q():0.3f}')
 
     probs_print(p_sim, p_calc)
-    times_print(v_sim, v_calc, is_w=False, header='Total soujourn time')
+    times_print(v_sim, v_calc, is_w=False, header='Total sojourn time')
     times_print(v_sim_served, v_calc_served, is_w=False,
-                header='Served soujourn time')
+                header='Served sojourn time')
     times_print(v_sim_broken, v_calc_broken, is_w=False,
-                header='Broken soujourn time')
+                header='Broken sojourn time')
     times_print(w_sim, w_calc)
 
 

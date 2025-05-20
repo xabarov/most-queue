@@ -85,18 +85,18 @@ class MG1PreemtiveCalculation:
 
     def calc_all(self, num=3):
         """
-        Calculate initial moments of soujourn time, waiting 
+        Calculate initial moments of sojourn time, waiting 
         for service without and with interruptions, active time
           and busy period in M/G/1 with absolute priority.
         :param num: number of moments to calculate
         :return:
-         - soujourn initial moments of continuous busy period
+         - sojourn initial moments of continuous busy period
          - waiting initial moments of continuous busy period
          - active time initial moments of continuous busy period
          - busy period initial moments of continuous busy period
 
         return res:
-        res['v'][k][j] -initial moments of soujourn time
+        res['v'][k][j] -initial moments of sojourn time
         res['w'][k][j] - initial moments of waiting for service without interruptions
         res['h'][k][j] - initial moments of active time
         res['busy'][k][j] - initial moments of busy period

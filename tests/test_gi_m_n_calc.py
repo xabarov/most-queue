@@ -25,13 +25,13 @@ def test_gi_m_n():
     # number of jobs for simulation. The higher, the more accurate the simulation
     num_of_jobs = 300000
 
-    # calculate parameters of the approximating Gamma distribution for the input 
+    # calculate parameters of the approximating Gamma distribution for the input
     # flow given the mean and coefficient of variation
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
-    # calculate initial moments of soujourn and waiting times in the queueing system
+    # calculate initial moments of sojourn and waiting times in the queueing system
 
     gi_m_n_calc = GiMn(a, mu, n)
     v_ch = gi_m_n_calc.get_v()
@@ -56,7 +56,7 @@ def test_gi_m_n():
     # start the simulation:
     qs.run(num_of_jobs)
 
-    # get the list of initial moments of soujourn and waiting times in the queueing system
+    # get the list of initial moments of sojourn and waiting times in the queueing system
     v_sim = qs.v
     w_sim = qs.w
 

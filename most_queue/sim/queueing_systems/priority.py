@@ -56,7 +56,7 @@ class PriorityQueueSimulator:
         self.queue = []
         self.class_busy_started = -1
         self.w = []  # wait moments of the system
-        self.v = []  # soujourn moments of the system
+        self.v = []  # sojourn moments of the system
 
         # probability of states of the system (number of requests in it j):
         self.p = []
@@ -308,7 +308,7 @@ class PriorityQueueSimulator:
         if self.free_channels != 0:
             self.arrive_on_free_channels(moment, k, new_tsk)
             return
-        
+
         # All servers are busy. Check priority type and add task to queue or start service.
 
         if self.prty_type == 'No':
@@ -359,7 +359,7 @@ class PriorityQueueSimulator:
             if self.in_sys[k] == self.n:
                 self.start_busy = self.ttek
                 self.class_busy_started = k
-                
+
     def arrive_with_no_prty(self, new_tsk, k):
         """
         Action of arriving a new task with no priority.
@@ -378,7 +378,7 @@ class PriorityQueueSimulator:
             else:
                 self.dropped[k] += 1
                 self.in_sys[k] -= 1
-    
+
     def arrive_with_absolute_prty(self, moment, new_tsk, k):
         """
         Action of arriving a new task with absolute priority.
@@ -387,7 +387,7 @@ class PriorityQueueSimulator:
         k - class of the task.
 
         """
-        
+
         # look for the task with lower priority
         is_found_weekier = False
         for c in self.servers:
@@ -448,7 +448,6 @@ class PriorityQueueSimulator:
                 else:
                     self.dropped[k] += 1
                     self.in_sys[k] -= 1
-
 
     def serving(self, c, is_network=False):
         """
@@ -713,7 +712,7 @@ class PriorityQueueSimulator:
                 res += f"Server {c + 1}: Free\n"
             else:
                 res += str(self.servers[c]) + "\n"
-                
+
         for kk in range(self.k):
             res += f"{Fore.GREEN}Queue #{kk + 1}{Style.RESET_ALL} count {len(self.queue[kk])}\n"
 
