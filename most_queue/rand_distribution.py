@@ -284,7 +284,7 @@ class H2Distribution(Distribution):
         v = math.sqrt(v) / moments[0]
         res = [0.0] * 3
         if v < 1.0:
-            return res
+            return H2Params(p1=0, mu1=0, mu2=0)
 
         q_max = 2.0 / (1.0 + v * v)
         t_min = 1.5 * ((1 + v * v) ** 2) * math.pow(moments[0], 3)
@@ -300,9 +300,7 @@ class H2Distribution(Distribution):
                 mu1 = 1e10
             else:
                 mu1 = 1.0 / mu1
-            res[0] = q_max
-            res[1] = mu1
-            res[2] = 1e6
+            res = H2Params(p1=q_max, mu1=mu1, mu2=1e6)
             return res
         else:
             max_iteration = 10000

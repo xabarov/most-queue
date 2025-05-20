@@ -4,7 +4,6 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
 """
 
 import numpy as np
-from scipy.misc import derivative
 
 from most_queue.general.conditional import (
     moments_exp_less_than_h2,
@@ -14,9 +13,6 @@ from most_queue.general.conv import conv_moments
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.queueing_systems.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.queueing_systems.negative.structs import NegativeArrivalsResults
-from most_queue.theory.utils.transforms import (
-    laplace_stieltjes_exp_transform as lst_exp,
-)
 
 
 class MGnNegativeRCSCalc(MGnCalc):
@@ -84,87 +80,22 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         return [mom.real for mom in conv_moments(w, b_cum)]
 
-    def _get_key_numbers(self, level):
-        key_numbers = []
-        if level >= self.n:
-            for i in range(level + 1):
-                key_numbers.append((self.n - i, i))
-        else:
-            for i in range(level + 1):
-                key_numbers.append((level - i, i))
-        return np.array(key_numbers, dtype=self.dt)
-
-    def _calc_b_served_pls(self, s):
-
-        b = 0
-
-        for k in range(1, self.n):
-            # for k=1, [(2,0), (1,1), (0, 2)]
-            keys = self._get_key_numbers(k)
-
-            keys_mu = np.array(
-                [keys[j][0] * self.mu[0] + keys[j][1] * self.mu[1] for j in
-                 range(k + 1)])
-
-            a = np.array(
-                [lst_exp(keys_mu[j], s) for j in
-                 range(k + 1)])
-            probs = np.array([(keys_mu[j]) / (keys_mu[j] + self.l_neg) for j in
-                              range(k + 1)])
-
-            Ys = np.array([self.Y[k][0, i] for i in range(k + 1)])
-
-            b += np.sum(a * probs * Ys)
-
-        keys = self._get_key_numbers(self.n)
-        keys_mu = np.array(
-            [keys[j][0] * self.mu[0] + keys[j][1] * self.mu[1] for j in
-             range(self.n + 1)])
-
-        a = np.array(
-            [lst_exp(keys_mu[j], s) for j in
-                range(self.n + 1)])
-        probs = np.array([(keys_mu[j]) / (keys_mu[j] + self.l_neg) for j in
-                          range(self.n + 1)])
-
-        for k in range(self.n, self.N):
-            Ys = np.array([self.Y[k][0, i] for i in range(self.n+1)])
-
-            b += np.sum(a * probs * Ys)
-
-        return b
-
-    def _calc_b_served(self) -> list[float]:
-        """
-        Calculate the expected number of served jobs.
-        """
-
-        b = [0.0] * 3
-
-        for i in range(3):
-            b[i] = derivative(self._calc_b_served_pls, 0,
-                              dx=1e-3 / self.b[0], n=i + 1, order=9)
-        return [-b[0], b[1].real, -b[2]]
-
-    def get_v_served(self, derivate=False) -> list[float]:
+    def get_v_served(self) -> list[float]:
         """
         Get the sojourn time moments
         """
         w = self.get_w()
 
-        if derivate:
-            b_served = self._calc_b_served()
-        else:
-            # serving = P(H2 | H2 < exp(l_neg))
+        # serving = P(H2 | H2 < exp(l_neg))
 
-            service_probs = self._calc_service_probs()
-            b_served = np.array([0.0, 0.0, 0.0])
-            h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-            for i in range(1, self.n+1):
-                l_neg = self.l_neg/i
+        service_probs = self._calc_service_probs()
+        b_served = np.array([0.0, 0.0, 0.0])
+        h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
+        for i in range(1, self.n+1):
+            l_neg = self.l_neg/i
 
-                b = moments_h2_less_than_exp(l_neg, h2_params)
-                b_served += service_probs[i-1].real*b
+            b = moments_h2_less_than_exp(l_neg, h2_params)
+            b_served += service_probs[i-1].real*b
 
         return [mom.real for mom in conv_moments(w, b_served)]
 

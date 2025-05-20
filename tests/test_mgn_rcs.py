@@ -59,7 +59,7 @@ def test_mgn():
 
     p_calc = queue_calc.get_p()
     v_calc = queue_calc.get_v()
-    v_calc_served = queue_calc.get_v_served(derivate=False)
+    v_calc_served = queue_calc.get_v_served()
     v_calc_broken = queue_calc.get_v_broken()
     w_calc = queue_calc.get_w()
 
