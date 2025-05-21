@@ -95,7 +95,9 @@ class ImpatientQueueSim(QsSim):
         """
         Drop a task from the queue and update statistics.
         """
+        self.p[self.in_sys] += moment_to_leave_earlier - self.ttek
         self.ttek = moment_to_leave_earlier
+        
         new_queue = []
         end_ts = None
         for i, tsk in enumerate(self.queue.queue):
