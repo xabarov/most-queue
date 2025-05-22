@@ -2,7 +2,7 @@
 Test QS M/G/n queue with disasters.
 """
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import GammaDistribution
+from most_queue.rand_distribution import GammaDistribution, H2Distribution
 from most_queue.sim.queueing_systems.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.queueing_systems.fifo.mg1 import MG1Calculation
 from most_queue.theory.queueing_systems.negative.mg1_disasters import MG1Disasters
@@ -14,20 +14,20 @@ def test_mg1():
     """
 
     l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.1  # arrival rate of negative jobs
+    l_neg = 0.3  # arrival rate of negative jobs
     n = 1
     num_of_jobs = 100_000
-    ro = 0.65
+    ro = 0.75
     b1 = n * ro / l_pos  # average service time
-    b_coev = 2.57
+    b_coev = 1.57
 
-    params = GammaDistribution.get_params_by_mean_and_coev(b1, b_coev)
-    b = GammaDistribution.calc_theory_moments(params)
+    params = H2Distribution.get_params_by_mean_and_coev(b1, b_coev)
+    b = H2Distribution.calc_theory_moments(params)
 
     print(f'Service time moments: {b}')
 
     # Run calc
-    queue_calc = MG1Disasters(l_pos, l_neg, b, approximation='gamma')
+    queue_calc = MG1Disasters(l_pos, l_neg, b, approximation='h2')
 
     p0_calc = 1.0 -queue_calc.nu
     v_calc = queue_calc.get_v()
@@ -38,7 +38,7 @@ def test_mg1():
 
     queue_sim.set_negative_sources(l_neg, 'M')
     queue_sim.set_positive_sources(l_pos, 'M')
-    queue_sim.set_servers(params, 'Gamma')
+    queue_sim.set_servers(params, 'H')
 
     queue_sim.run(num_of_jobs)
 
