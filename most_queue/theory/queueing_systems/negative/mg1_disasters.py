@@ -7,9 +7,9 @@ Use results from the paper:
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_lst
-from most_queue.theory.utils.transforms import lst_h2
+from most_queue.rand_distribution import H2Distribution, GammaDistribution
+from most_queue.theory.utils.busy_periods import busy_calc
+from most_queue.theory.utils.transforms import lst_h2, lst_gamma
 
 
 class MG1Disasters:
@@ -17,7 +17,7 @@ class MG1Disasters:
     Class for calculating M/G/1 queue with disasters.
     """
 
-    def __init__(self, l_pos: float, l_neg: float, b: list[float]):
+    def __init__(self, l_pos: float, l_neg: float, b: list[float], approximation='h2'):
         """
         Parameters
         ----------
@@ -31,8 +31,16 @@ class MG1Disasters:
         self.l_pos = l_pos
         self.l_neg = l_neg
         self.b = b
-        self.lst_function = lst_h2
-        self.params = H2Distribution.get_params(b)
+        self.approximation = approximation
+        if approximation == 'h2':
+            self.lst_function = lst_h2
+            self.params = H2Distribution.get_params(b)
+        elif approximation == 'gamma':
+            self.lst_function = lst_gamma
+            self.params = GammaDistribution.get_params(b)
+        else:
+            raise ValueError(
+                f'Unknown approximation method {approximation}. Must be "h2" or "gamma".')
 
         self.nu = self._calc_nu()
 
@@ -44,7 +52,10 @@ class MG1Disasters:
         (1-b_lst(l_neg))/(self.l_neg/self.l_pos + 1 - b_lst(l_neg))
         """
         busy_moments = busy_calc(self.l_pos, self.b)
-        busy_params = H2Distribution.get_params(busy_moments)
+        if self.approximation == 'h2':
+            busy_params = H2Distribution.get_params(busy_moments)
+        else:
+            busy_params = GammaDistribution.get_params(busy_moments)
         one_minus_b_lst = 1.0 - self.lst_function(busy_params, self.l_neg)
         nu = one_minus_b_lst/(self.l_neg/self.l_pos + one_minus_b_lst)
         return nu
@@ -66,4 +77,6 @@ class MG1Disasters:
         for i in range(3):
             v[i] = derivative(self._v_lst, 0,
                               dx=1e-3 / self.b[0], n=i + 1, order=9)
-        return np.array([-v[0], v[1].real, -v[2]])
+        v = np.array([-v[0], v[1].real, -v[2]])
+
+        return v
