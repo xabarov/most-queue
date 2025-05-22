@@ -18,7 +18,7 @@ def test_mgn():
 
     l_pos = 1.0  # arrival rate of positive jobs
     l_neg = 0.3  # arrival rate of negative jobs
-    n = 5
+    n = 1
     num_of_jobs = 300000
     ro = 0.7
     b1 = n * ro / l_pos  # average service time

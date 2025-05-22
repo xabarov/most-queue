@@ -8,7 +8,7 @@ from colorama import Fore, Style, init
 init()
 
 
-def times_print(sim_moments, calc_moments, is_w=True, header=None):
+def times_print(sim_moments, calc_moments, is_w=True, header=None, sim_header='Sim', calc_header='Num'):
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:
@@ -27,7 +27,7 @@ def times_print(sim_moments, calc_moments, is_w=True, header=None):
 
     print(Fore.CYAN + f'\n{header:^45}')
     print("-" * 45)
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", "Num", "Sim"))
+    print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", calc_header, sim_header))
     print("-" * 45)
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments))):

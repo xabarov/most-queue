@@ -1,10 +1,11 @@
 """
 Test the conditional moments calculation functions.
 """
-import pytest
 import numpy as np
+import pytest
 
 from most_queue.general.conditional import (
+    calc_b_min_h2_and_exp,
     moments_exp_less_than_h2,
     moments_h2_less_than_exp,
 )
@@ -69,7 +70,7 @@ def test_moments_exp_less_than_h2(setup_params):
         ]
 
     calc_moments = moments_exp_less_than_h2(
-        gamma=params['gamma'], 
+        gamma=params['gamma'],
         h2_params=params['h2_params']
     )
 
@@ -111,3 +112,32 @@ def test_moments_h2_less_than_exp(setup_params):
 
     # Add assertions
     np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=1e-2)
+
+def test_min_h2_and_exp(setup_params):
+    params = setup_params
+    h2_values = params['h2_values']
+    exp_values = params['exp_values']
+
+    # Calculate min of H2 and Exp values using numpy
+    min_h2_exp = np.minimum(h2_values, exp_values)
+
+    if len(min_h2_exp) == 0:
+        sim_moments = [0, 0, 0]
+    else:
+        sim_moments = [
+            np.mean(min_h2_exp),
+            np.mean(min_h2_exp ** 2),
+            np.mean(min_h2_exp ** 3)
+        ]
+
+    calc_moments = calc_b_min_h2_and_exp(
+        h2_params=params['h2_params'],
+        mu=params['gamma']
+    )
+
+    times_print(sim_moments, calc_moments, is_w=False,
+                header='Results for min(H2, Exp)')
+
+    # Add assertions
+    np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=1e-2)
+    

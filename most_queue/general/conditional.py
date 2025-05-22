@@ -6,6 +6,7 @@ import math
 import numpy as np
 
 from most_queue.general.distribution_params import H2Params
+from most_queue.rand_distribution import H2Distribution
 
 
 def moments_h2_less_than_exp(gamma: float, h2_params: H2Params):
@@ -50,3 +51,24 @@ def moments_exp_less_than_h2(gamma: float, h2_params: H2Params):
         b.append(numerator / denominator)
 
     return np.array([mom.real for mom in b])
+
+
+def calc_b_min_h2_and_exp(h2_params: H2Params, mu: float) -> list[float]:
+    """
+    Calculate the minimum of H2 and exponential distribution moments.
+    Parameters
+    ----------
+    h2_params : H2Params
+    Parameters for the H2 distribution.
+    mu : float
+        Arrival rate of negative
+    """
+    b = H2Distribution.calc_theory_moments(H2Params(p1=h2_params.p1,
+                                                    mu1=mu + h2_params.mu1,
+                                                    mu2=mu + h2_params.mu2))
+
+    return b
+
+
+
+
