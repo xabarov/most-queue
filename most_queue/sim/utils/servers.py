@@ -3,7 +3,7 @@ QS channels or servers
 """
 from colorama import Fore, Style
 
-from most_queue.general.conv import conv_moments
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.rand_distribution import (
     CoxDistribution,
     ExpDistribution,

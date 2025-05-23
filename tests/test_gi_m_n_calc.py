@@ -4,8 +4,8 @@ For verification, we use imitational modeling.
 """
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.sim.queueing_systems.base import QsSim
-from most_queue.theory.queueing_systems.fifo.gi_m_n import GiMn
+from most_queue.sim.base import QsSim
+from most_queue.theory.fifo.gi_m_n import GiMn
 
 
 def test_gi_m_n():

@@ -4,7 +4,7 @@ Test the conditional moments calculation functions.
 import numpy as np
 import pytest
 
-from most_queue.general.conditional import (
+from most_queue.theory.utils.conditional import (
     calc_b_min_h2_and_exp,
     moments_exp_less_than_h2,
     moments_h2_less_than_exp,
@@ -49,7 +49,9 @@ def setup_params():
 
 
 def test_moments_exp_less_than_h2(setup_params):
-    """Test moments for Exp < H2 condition"""
+    """
+    Test moments for Exp < H2 condition
+    """
     params = setup_params
     h2_values = params['h2_values']
     exp_values = params['exp_values']
@@ -82,7 +84,10 @@ def test_moments_exp_less_than_h2(setup_params):
 
 
 def test_moments_h2_less_than_exp(setup_params):
-    """Test moments for H2 < Exp condition"""
+    """
+    Test moments for H2 < Exp condition
+    simulation vs calculation for H2 < Exp condition
+    """
     params = setup_params
     h2_values = params['h2_values']
     exp_values = params['exp_values']
@@ -114,6 +119,9 @@ def test_moments_h2_less_than_exp(setup_params):
     np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=1e-2)
 
 def test_min_h2_and_exp(setup_params):
+    """
+    Test min of H2 and Exp values simulation vs calculation
+    """
     params = setup_params
     h2_values = params['h2_values']
     exp_values = params['exp_values']

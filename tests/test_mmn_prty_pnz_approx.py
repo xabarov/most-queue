@@ -1,9 +1,11 @@
 """
 Test the MMn_PRTY_PNZ_Cox_approx class for priority queueing systems.
 """
-from most_queue.theory.queueing_systems.priority.preemptive.mmn_2cls_pr_busy_approx import MMn_PRTY_PNZ_Cox_approx
-from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
-from most_queue.general.tables import times_print, probs_print
+from most_queue.general.tables import probs_print, times_print
+from most_queue.sim.priority import PriorityQueueSimulator
+from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import (
+    MMn_PRTY_PNZ_Cox_approx,
+)
 
 
 def test_mmn_prty():

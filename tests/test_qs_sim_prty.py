@@ -3,9 +3,8 @@ Testing the simulation model of an M/G/c queue with priorities.
 """
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
-from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
-
+from most_queue.sim.priority import PriorityQueueSimulator
+from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 
 
 def test_sim():

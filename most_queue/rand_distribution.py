@@ -749,7 +749,7 @@ class ErlangDistribution(Distribution):
         r, mu = params.r, params.mu
 
         prod = 1
-        for i in range(r):
+        for _ in range(r):
             if generator:
                 prod *= generator.random()
             else:

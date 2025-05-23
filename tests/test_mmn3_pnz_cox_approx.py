@@ -2,12 +2,12 @@
 Test the M/M/n queue with three priority classes using Cox approximation.
 """
 from most_queue.general.tables import probs_print
-from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
-from most_queue.theory.queueing_systems.fifo.mmnr import MMnrCalc
-from most_queue.theory.queueing_systems.priority.preemptive.mmn_2cls_pr_busy_approx import \
-    MMn_PRTY_PNZ_Cox_approx
-from most_queue.theory.queueing_systems.priority.preemptive.mmn_3cls_busy_approx import \
-    Mmn3_pnz_cox
+from most_queue.sim.priority import PriorityQueueSimulator
+from most_queue.theory.fifo.mmnr import MMnrCalc
+from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import (
+    MMn_PRTY_PNZ_Cox_approx,
+)
+from most_queue.theory.priority.preemptive.mmn_3cls_busy_approx import Mmn3_pnz_cox
 
 
 def test_mmn3():

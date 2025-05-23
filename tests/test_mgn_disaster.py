@@ -5,10 +5,8 @@ import math
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.negative import NegativeServiceType, QsSimNegatives
-from most_queue.theory.queueing_systems.negative.mgn_disaster import (
-    MGnNegativeDisasterCalc,
-)
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
+from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 
 
 def test_mgn():

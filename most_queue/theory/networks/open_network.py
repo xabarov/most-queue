@@ -4,10 +4,9 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.queueing_systems.priority.mgn_invar_approx import (
-    MGnInvarApproximation,
-)
+from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.utils.diff5dots import diff5dots
+from most_queue.theory.utils.transforms import lst_gamma
 
 
 class OpenNetworkCalc:
@@ -54,7 +53,7 @@ class OpenNetworkCalc:
 
         # Identify null columns using vectorized operation
         null_mask = np.all(np.abs(R) < 1e-6, axis=0)
-        null_numbers = np.where(null_mask)[0]
+        _null_numbers = np.where(null_mask)[0]
 
         # Remove null columns and corresponding rows
         R_nonull = R[:, ~null_mask]
@@ -75,7 +74,7 @@ class OpenNetworkCalc:
         l_out = np.zeros(R.shape[1] - 1, dtype=np.float64)
 
         # Fill non-null columns
-        valid_indices = np.arange(len(intensities))
+        _valid_indices = np.arange(len(intensities))
         l_out[~null_mask[:-1]] = intensities.flatten()
 
         return l_out
@@ -138,7 +137,7 @@ class OpenNetworkCalc:
 
             g_PLS = []
             for i in range(4):
-                N = np.diag([GammaDistribution.get_lst(
+                N = np.diag([lst_gamma(
                     gamma_mu_alpha[j], s[i]) for j in range(nodes)])
 
                 G = np.dot(N, Q)

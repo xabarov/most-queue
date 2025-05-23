@@ -99,10 +99,13 @@ class TaskPriority:
         tab = "  "
         arr_time_str = f"{self.arr_time:8.3f}" if isinstance(
             self.arr_time, float) else str(self.arr_time)
-        res = f"{Fore.GREEN}Task #{self.id}{Style.RESET_ALL}  Class: {Fore.BLUE}{self.k + 1}{Style.RESET_ALL}\n"
-        res += f"{tab}\t{Fore.YELLOW}Arrival moment:{Style.RESET_ALL} {Fore.CYAN}{arr_time_str}{Style.RESET_ALL}\n"
+        res = f"{Fore.GREEN}Task #{self.id}{Style.RESET_ALL}"
+        res += f" Class: {Fore.BLUE}{self.k + 1}{Style.RESET_ALL}\n"
+        res += f"{tab}\t{Fore.YELLOW}Arrival moment:{Style.RESET_ALL}"
+        res += f"  {Fore.CYAN}{arr_time_str}{Style.RESET_ALL}\n"
         if self.time_to_end_service != 0:
-            res += f"{tab}\t{Fore.MAGENTA}End service moment:{Style.RESET_ALL} {Fore.LIGHTGREEN_EX}{self.time_to_end_service:.3f}{Style.RESET_ALL}\n"
+            res += f"{tab}\t{Fore.MAGENTA}End service moment:{Style.RESET_ALL}"
+            res += f" {Fore.LIGHTGREEN_EX}{self.time_to_end_service:.3f}{Style.RESET_ALL}\n"
 
         return res
 
@@ -122,6 +125,7 @@ class ImpatientTask(Task):
         report += f'{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}'
         return report
 
+
 class ImpatientTaskWithRepairs(ImpatientTask):
     """
     A task that can leave the queue if it has not been served by a server within a certain time
@@ -136,6 +140,6 @@ class ImpatientTaskWithRepairs(ImpatientTask):
 
     def __str__(self):
         return f'{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n' \
-               f'{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n' \
-               f'{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}\n' \
-               f'{Fore.MAGENTA}Arrive in repair mode: {self.arrive_in_repair_mode}{Style.RESET_ALL}'
+            f'{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n' \
+            f'{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}\n' \
+            f'{Fore.MAGENTA}Arrive in repair mode: {self.arrive_in_repair_mode}{Style.RESET_ALL}'

@@ -27,7 +27,8 @@ def times_print(sim_moments, calc_moments, is_w=True, header=None, sim_header='S
 
     print(Fore.CYAN + f'\n{header:^45}')
     print("-" * 45)
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", calc_header, sim_header))
+    num_col = "#"
+    print(f"{num_col:^15s}|{calc_header:^15s}|{sim_header:^15s}")
     print("-" * 45)
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments))):
@@ -64,7 +65,8 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
 
         print(Fore.CYAN + 'Initial moments of sojourn and wait times in the system')
 
-        print("{0:^15s}|{1:^15s}|{2:^15s}".format("#", "w", "v"))
+        num_col, w_col, v_col = "#", "w", "v"
+        print(f"{num_col:^15s}|{w_col:^15s}|{v_col:^15s}")
         print("-" * 45)
         if isinstance(wait_times, list):
             for j in range(min(len(wait_times), len(sojourn_times))):
@@ -92,7 +94,8 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
 
         print(header)
 
-        print("{0:^15s}|{1:^15s}".format("#", times_header))
+        num_col = "#"
+        print(f"{num_col:^15s}|{times_header:^15s}")
         print("-" * 30)
         if isinstance(times, list):
             for j, mom in enumerate(times):

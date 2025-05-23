@@ -5,8 +5,8 @@ import math
 
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.sim.queueing_systems.negative import NegativeServiceType, QsSimNegatives
-from most_queue.theory.queueing_systems.negative.mg1_rcs import MG1NegativeCalcRCS
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
+from most_queue.theory.negative.mg1_rcs import MG1NegativeCalcRCS
 
 
 def calc_service_moments(utilization_factor: float,
@@ -55,7 +55,8 @@ def test_mg1_h2_rcs():
 
     v_sim = queue_sim.get_v()
 
-    m_hyper_1_calc = MG1NegativeCalcRCS(l_pos, l_neg, b, service_time_approx_dist='h2')
+    m_hyper_1_calc = MG1NegativeCalcRCS(
+        l_pos, l_neg, b, service_time_approx_dist='h2')
     v1_h2_calc = m_hyper_1_calc.get_v1()
 
     times_print(v_sim[0], v1_h2_calc, is_w=False, header='sojourn time H2')
@@ -88,7 +89,8 @@ def test_mg1_gamma_rcs():
 
     v_sim = queue_sim.get_v()
 
-    m_gamma_1_calc = MG1NegativeCalcRCS(l_pos, l_neg, b, service_time_approx_dist='gamma')
+    m_gamma_1_calc = MG1NegativeCalcRCS(
+        l_pos, l_neg, b, service_time_approx_dist='gamma')
     v1_gamma_calc = m_gamma_1_calc.get_v1()
 
     times_print(v_sim[0], v1_gamma_calc, is_w=False,

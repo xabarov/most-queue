@@ -3,10 +3,10 @@ Compare queue implementation performance
 """
 import time
 
-from most_queue.rand_distribution import \
-    GammaDistribution  # For generating gamma distribution parameters
-from most_queue.sim.queueing_systems.base import \
-    QsSim  # Main queueing system simulation class
+from most_queue.rand_distribution import (
+    GammaDistribution,  # For generating gamma distribution parameters
+)
+from most_queue.sim.base import QsSim  # Main queueing system simulation class
 
 
 def compare_calc_times():

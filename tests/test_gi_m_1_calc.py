@@ -6,8 +6,8 @@ import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.sim.queueing_systems.base import QsSim
-from most_queue.theory.queueing_systems.fifo.gi_m_1 import GiM1
+from most_queue.sim.base import QsSim
+from most_queue.theory.fifo.gi_m_1 import GiM1
 
 
 def test_gi_m_1():
@@ -23,7 +23,7 @@ def test_gi_m_1():
     a_coev = 1.6  # coefficient of variation in the input stream
     num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
 
-    # calculation of parameters approximating Gamma-distribution for the incoming 
+    # calculation of parameters approximating Gamma-distribution for the incoming
     # stream based on the given average and coefficient of variation
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
     print(gamma_params)
@@ -41,7 +41,7 @@ def test_gi_m_1():
     # create an instance of the sim class and pass the number of service channels
     qs = QsSim(1)
 
-    # set the input stream. The method needs to be passed parameters 
+    # set the input stream. The method needs to be passed parameters
     # of distribution as a list and type of distribution.
     qs.set_sources(gamma_params, "Gamma")
 

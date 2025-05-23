@@ -12,9 +12,9 @@ from most_queue.rand_distribution import (
     ExpDistribution,
     GammaDistribution,
 )
-from most_queue.sim.queueing_systems.priority import PriorityQueueSimulator
-from most_queue.theory.queueing_systems.priority.mgn_invar_approx import MGnInvarApproximation
-from most_queue.theory.queueing_systems.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
+from most_queue.sim.priority import PriorityQueueSimulator
+from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
+from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
 
 
 def test_m_ph_n_prty():
@@ -31,7 +31,7 @@ def test_m_ph_n_prty():
 
     max_iter = 100  # maximum number of iterations for the numerical method
 
-    # Investigation of the influence of the average time 
+    # Investigation of the influence of the average time
     # spent by requests of class 2 on the load factor
     n = 4  # number of servers
     K = 2  # number of classes

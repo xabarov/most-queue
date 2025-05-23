@@ -5,9 +5,9 @@ For verification, compare with results for M/M/3 and M/D/3 systems
 import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
-from most_queue.sim.queueing_systems.base import QsSim
-from most_queue.theory.queueing_systems.fifo.mmnr import MMnrCalc
-from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
+from most_queue.sim.base import QsSim
+from most_queue.theory.fifo.m_d_n import MDn
+from most_queue.theory.fifo.mmnr import MMnrCalc
 
 
 def test_sim():
@@ -20,7 +20,7 @@ def test_sim():
     arrival_rate = 1.0      # Arrival rate (lambda)
     queue_length = 30       # Buffer size/r queue length
     utilization = 0.8       # Server utilization (rho)
-    
+
     # Calculate service rate based on utilization
     service_rate = arrival_rate / (utilization * num_servers)
 
@@ -29,7 +29,7 @@ def test_sim():
 
     # Set arrival process parameters and distribution (M for Markovian)
     qs.set_sources(arrival_rate, 'M')
-    
+
     # Set service time parameters and distribution (M for Markovian)
     qs.set_servers(service_rate, 'M')
 
@@ -51,7 +51,7 @@ def test_sim():
 
     # Set arrival process again (M distribution)
     qs.set_sources(arrival_rate, 'M')
-    
+
     # Set deterministic service times (D distribution)
     qs.set_servers(1.0 / service_rate, 'D')
 
@@ -61,7 +61,7 @@ def test_sim():
     # Calculate theoretical probabilities using MDn model
     mdn = MDn(arrival_rate, 1.0 / service_rate, num_servers)
     p_theory = mdn.calc_p()
-    
+
     # Get simulated state probabilities
     p_sim = qs.get_p()
 

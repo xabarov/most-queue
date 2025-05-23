@@ -3,10 +3,8 @@ Test QS M/G/n queue with disasters.
 """
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.negative import (NegativeServiceType,
-                                                      QsSimNegatives)
-from most_queue.theory.queueing_systems.negative.mg1_disasters import \
-    MG1Disasters
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
+from most_queue.theory.negative.mg1_disasters import MG1Disasters
 
 
 def test_mg1():
@@ -15,7 +13,7 @@ def test_mg1():
     """
 
     l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.3  # arrival rate of negative jobs
+    l_neg = 0.2  # arrival rate of negative jobs
     n = 1
     num_of_jobs = 300_000
     ro = 0.7
@@ -43,7 +41,6 @@ def test_mg1():
     v_sim = queue_sim.get_v()
 
     times_print(v_sim, v_calc, is_w=False)
-    
 
 
 if __name__ == "__main__":

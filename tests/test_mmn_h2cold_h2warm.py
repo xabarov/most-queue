@@ -6,10 +6,8 @@ import time
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.vacations import \
-    VacationQueueingSystemSimulator
-from most_queue.theory.queueing_systems.vacations.mmn_with_h2_cold_and_h2_warmup import \
-    MMn_H2warm_H2cold
+from most_queue.sim.vacations import VacationQueueingSystemSimulator
+from most_queue.theory.vacations.mmn_with_h2_cold_and_h2_warmup import MMn_H2warm_H2cold
 
 
 def calculate_gamma_moments(mean, cv):
@@ -22,7 +20,7 @@ def calculate_gamma_moments(mean, cv):
     b3 = b2 * b1 * (1 + 2 / alpha)
 
     return [b1, b2, b3]
-    
+
 
 def test_mmn_h2cold_h2_warm():
     """
@@ -46,7 +44,7 @@ def test_mmn_h2cold_h2_warm():
     # Simulation settings
     num_jobs = 300_000      # Number of jobs to simulate
     verbose = False          # Verbosity level (set to True if needed)
-    
+
     # Initialize the Vacation Queueing System Simulator
     simulator = VacationQueueingSystemSimulator(num_channels, buffer=None)
 
@@ -103,7 +101,7 @@ def test_mmn_h2cold_h2_warm():
     print(
         f"Execution time of the Takahashi-Takami algorithm: {tt_execution_time:.3f} s")
     print(f"Simulatiion time: {im_execution_time:.3f} s")
-    
+
     probs_print(p_sim=simulator.get_p(), p_ch=tt.get_p(), size=10)
 
     times_print(sim_moments=simulator.get_w(), calc_moments=tt.get_w())

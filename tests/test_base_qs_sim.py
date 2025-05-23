@@ -4,9 +4,9 @@ Test the simulation model for an M/M/n/r system
 import numpy as np
 
 from most_queue.general.tables import probs_print, times_print
-from most_queue.sim.queueing_systems.base import QsSim
-from most_queue.theory.queueing_systems.fifo.mmnr import MMnrCalc
-from most_queue.theory.queueing_systems.fifo.m_d_n import MDn
+from most_queue.sim.base import QsSim
+from most_queue.theory.fifo.m_d_n import MDn
+from most_queue.theory.fifo.mmnr import MMnrCalc
 
 
 def test_sim_mmnr():

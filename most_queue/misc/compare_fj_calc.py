@@ -3,12 +3,11 @@ Test approximation for Fork-Join queues
 """
 import matplotlib.pyplot as plt
 
-from most_queue.sim.queueing_systems.fork_join import ForkJoinSim
-from most_queue.theory.queueing_systems.fork_join.m_m_n import \
-    ForkJoinMarkovianCalc
+from most_queue.sim.fork_join import ForkJoinSim
+from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 
 
-def calc_error(calc:float, sim:float)->float:
+def calc_error(calc: float, sim: float) -> float:
     """
     Вычисление относительной ошибки аппроксимации
     :param calc: объект класса ForkJoinMarkovianCalc
@@ -108,7 +107,7 @@ def test_fj_calc():
 
     # errors
     v_varma_err = [calc_error(v, s) for v, s in zip(v_varma, v_sim)]
-    v_varki_err = [calc_error(v, s) for v, s in zip(v_varki, v_sim)] 
+    v_varki_err = [calc_error(v, s) for v, s in zip(v_varki, v_sim)]
     v_nelson_err = [calc_error(v, s) for v, s in zip(v_nelson, v_sim)]
 
     _fig, ax = plt.subplots()
@@ -124,5 +123,5 @@ def test_fj_calc():
 
 
 if __name__ == "__main__":
-    
+
     test_fj_calc()

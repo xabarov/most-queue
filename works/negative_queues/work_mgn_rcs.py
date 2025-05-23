@@ -9,13 +9,14 @@ import numpy as np
 
 from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.queueing_systems.negative import (
-    NegativeServiceType, QsSimNegatives)
-from most_queue.theory.queueing_systems.negative.mgn_rcs import \
-    MGnNegativeRCSCalc
-from most_queue.theory.queueing_systems.negative.structs import (
-    DependsOnChannelsResults, DependsOnJSONEncoder,
-    DependsOnUtilizationResults, DependsOnVariationResults)
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
+from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
+from most_queue.theory.negative.structs import (
+    DependsOnChannelsResults,
+    DependsOnJSONEncoder,
+    DependsOnUtilizationResults,
+    DependsOnVariationResults,
+)
 
 
 def calc_service_moments(channels: int, utilization_factor: float,
@@ -236,7 +237,7 @@ if __name__ == "__main__":
     APPENDIX = f"n_{CHANNELS_NUM}_"
     APPENDIX += "_".join([f"{k}_{v:.2f}" for k, v in [('u', UTILIZATION_FACTOR),
                          ('b', SERVICE_TIME_COEF_VARIANCE), ('l_neg', L_NEG)]])
-    
+
     EXP_DIR_NAME = f'works/results/rcs_{APPENDIX}'
 
     IS_EXISTS = False
