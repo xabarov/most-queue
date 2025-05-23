@@ -1,10 +1,10 @@
 import math
 
-import numpy as np
 from scipy.misc import derivative
 
-from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
+from most_queue.theory.utils.transforms import lst_gamma, lst_h2
+
 
 def busy_calc(l: float, b: list[float], num: int = 5):
     """
@@ -26,16 +26,47 @@ def busy_calc(l: float, b: list[float], num: int = 5):
         busy_moments.append(b[2] / math.pow(1 - ro, 4) + 3 *
                             l * b[1] * b[1] / math.pow(1 - ro, 5))
     if num > 3:
-        chisl = b[3] * math.pow(z, 4) + 6 * b[2] * l * busy_moments[1] * z * z + b[1] * (
-                3 * math.pow(l * busy_moments[1], 2) + 4 * l * busy_moments[2] * z)
-        busy_moments.append(chisl / (1 - ro))
+        numerator = b[3] * math.pow(z, 4)
+        numerator += 6 * b[2] * l * busy_moments[1] * z * z
+        numerator += b[1] * (3 * math.pow(l * busy_moments[1],
+                             2) + 4 * l * busy_moments[2] * z)
+        busy_moments.append(numerator / (1 - ro))
     if num > 4:
-        chisl = b[4] * math.pow(z, 5) + 10 * b[3] * l * busy_moments[1] * math.pow(z, 3) + \
-                b[2] * (15 * math.pow(l * busy_moments[1], 2) * z + 10 * l * busy_moments[2 * z * z]) + b[1] * (
-            5 * l * busy_moments[3] * z + 10 * l * l * busy_moments[1] * busy_moments[2])
-        busy_moments.append(chisl / (1 - ro))
+        numerator = b[4] * math.pow(z, 5)
+        numerator += 10 * b[3] * l * busy_moments[1] * math.pow(z, 3)
+        numerator += b[2] * (15 * math.pow(l * busy_moments[1], 2)
+                             * z + 10 * l * busy_moments[2]*z*z)
+        numerator += b[1] * (5 * l * busy_moments[3] * z +
+                             10 * l * l * busy_moments[1] * busy_moments[2])
+        busy_moments.append(numerator / (1 - ro))
 
     return busy_moments
+
+
+def calc_busy_pls(b_lst_function, b_params, l: float, s: float, tolerance=1e-12):
+    """
+    Calculate the busy period Laplace-Stieltjes transform.
+     Parameters
+     ----------
+     b_lst_function : callable
+         The function to use for the Laplace-Stieltjes transform.
+     b_params : list[float]
+         The parameters for service time distribution.
+     l : float
+         Arrival rate.
+     s : float
+         The value at which to evaluate the Laplace-Stieltjes transform.
+
+     Returns
+     -------
+         The value of the busy period  Laplace-Stieltjes transform at the given value of s.
+    """
+    y = 0
+    while True:
+        y_new = b_lst_function(b_params, s + l-l*y)
+        if abs(y_new - y) < tolerance:
+            return y_new
+        y = y_new
 
 
 def busy_calc_lst(l: float, b: list[float], lst_function='gamma'):
@@ -63,7 +94,7 @@ def busy_calc_lst(l: float, b: list[float], lst_function='gamma'):
     else:
         raise ValueError('lst_function must be one of "gamma" or "h2"')
 
-    def calc_busy_pls(s):
+    def _calc_busy_pls(s):
         y = 0
         while True:
             y_new = lst_function(params, s + l-l*y)
@@ -72,38 +103,48 @@ def busy_calc_lst(l: float, b: list[float], lst_function='gamma'):
             y = y_new
     busy = [0, 0, 0]
     for i in range(3):
-        busy[i] = derivative(calc_busy_pls, 0,
+        busy[i] = derivative(_calc_busy_pls, 0,
                              dx=1e-3 / b[0], n=i + 1, order=9)
     return [-busy[0], busy[1].real, -busy[2]]
 
 
-def busy_calc_warm_up(l: float, f: list[float], busy_moments: list[float], num: int = 5):
+def busy_calc_warm_up(l: float, f: list[float], b_busy: list[float], num: int = 5):
     """
     Calculate the initial moments of continuous busy period for M/G/1 queue with warm-up
     By default, the first three are calculated.
     :param l: - input flow intensity
     :param f: - initial service time moments
-    :param busy_moments: - initial moments of busy period
+    :param b_busy: - initial moments of busy period
     :param num: - number of moments to calculate
-    :return: busy_moments_warm_up
-
+    :return: - initial moments of continuous busy period
     """
     num = min(num, len(f))
 
-    busy_moments_warm_up = []
-    z = 1 + l * busy_moments[0]
-    busy_moments_warm_up.append(f[0] * z)
+    gs = []
+    z = 1 + l * b_busy[0]
+    fzs = [f[i] * z ** (i+1) for i in range(num)]
+    g1 = fzs[0]
+    fl = f[0] * l
+    gs.append(g1)
     if num > 1:
-        busy_moments_warm_up.append(f[0] * l * busy_moments[1] + f[1] * z * z)
+        g2 = fl * b_busy[1] + fzs[1]
+        gs.append(g2)
     if num > 2:
-        busy_moments_warm_up.append(f[0] * l * busy_moments[2] + 3 * f[1] *
-                                    l * busy_moments[1] * z + f[2] * math.pow(z, 3))
+        g3 = fl * b_busy[2]
+        g3 += 3 * f[1] * l * b_busy[1] * z + fzs[2]
+        gs.append(g3)
     if num > 3:
-        busy_moments_warm_up.append(f[0] * l * busy_moments[3] + f[1] * (3 * math.pow(l * busy_moments[1], 2) + 4 * l * busy_moments[2] * z)
-                                    + 6 * f[2] * l * busy_moments[1] * z * z + f[3] * math.pow(z, 4))
+        g4 = fl * b_busy[3]
+        g4 += f[1] * (3 * math.pow(l * b_busy[1], 2) + 4 * l * b_busy[2] * z)
+        g4 += 6 * f[2] * l * b_busy[1] * z * z + fzs[3]
+        gs.append(g4)
     if num > 4:
-        busy_moments_warm_up.append(f[0] * l * busy_moments[4] + f[1] * (5 * l * busy_moments[3] * z + 10 * l * l * busy_moments[1] * busy_moments[2]) +
-                                    f[2] * (15 * math.pow(l * busy_moments[1], 2) * z + 10 * f[3] * l * busy_moments[1] * math.pow(z, 3) + f[
-                                        4] * math.pow(z, 5)))
+        g5 = fl * b_busy[4]
+        g5 += f[1] * (5 * l * b_busy[3] * z + 10 *
+                      l * l * b_busy[1] * b_busy[2])
+        g5 += f[2] * (15 * math.pow(l * b_busy[1], 2) *
+                      z + 10 * l * b_busy[2] * math.pow(z, 2))
+        g5 += 10 * f[3] * l * b_busy[1] * math.pow(z, 3) + fzs[4]
+        gs.append(g5)
 
-    return busy_moments_warm_up
+    return gs

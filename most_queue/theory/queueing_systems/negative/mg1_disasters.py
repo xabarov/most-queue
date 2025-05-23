@@ -7,9 +7,9 @@ Use results from the paper:
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2Distribution, GammaDistribution
-from most_queue.theory.utils.busy_periods import busy_calc
-from most_queue.theory.utils.transforms import lst_h2, lst_gamma
+from most_queue.rand_distribution import GammaDistribution, H2Distribution
+from most_queue.theory.utils.busy_periods import calc_busy_pls
+from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 
 class MG1Disasters:
@@ -17,7 +17,7 @@ class MG1Disasters:
     Class for calculating M/G/1 queue with disasters.
     """
 
-    def __init__(self, l_pos: float, l_neg: float, b: list[float], approximation='h2'):
+    def __init__(self, l_pos: float, l_neg: float, b: list[float], approximation='gamma'):
         """
         Parameters
         ----------
@@ -39,8 +39,7 @@ class MG1Disasters:
             self.lst_function = lst_gamma
             self.params = GammaDistribution.get_params(b)
         else:
-            raise ValueError(
-                f'Unknown approximation method {approximation}. Must be "h2" or "gamma".')
+            raise ValueError("Approximation must be 'h2' or 'gamma'.")
 
         self.nu = self._calc_nu()
 
@@ -51,18 +50,15 @@ class MG1Disasters:
         so nu = E[min{B, Y}]/(1/l_neg + E[min{B, Y}]) = 
         (1-b_lst(l_neg))/(self.l_neg/self.l_pos + 1 - b_lst(l_neg))
         """
-        busy_moments = busy_calc(self.l_pos, self.b)
-        if self.approximation == 'h2':
-            busy_params = H2Distribution.get_params(busy_moments)
-        else:
-            busy_params = GammaDistribution.get_params(busy_moments)
-        one_minus_b_lst = 1.0 - self.lst_function(busy_params, self.l_neg)
-        nu = one_minus_b_lst/(self.l_neg/self.l_pos + one_minus_b_lst)
+        busy_s = calc_busy_pls(
+            self.lst_function, self.params, self.l_pos, self.l_neg)
+        x = self.l_pos*(1-busy_s)
+        nu = x/(self.l_neg + x)
         return nu
 
     def _v_lst(self, s):
         """
-        Calculate  Laplace-Stieljets transform for sojourn time in the system.
+        Calculate  Laplace-Stieljets transform for waiting time in the system.
         """
         numerator = s*(1-self.nu) - self.l_neg
         big_g = self.lst_function(self.params, s)
