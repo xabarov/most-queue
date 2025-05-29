@@ -9,6 +9,12 @@ from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.gi_m_1 import GiM1
 
+ARRIVAL_RATE = 1.0
+SERVICE_TIME_AVERAGE = 0.9
+ARRIVAL_CV = 1.6  # Coefficient of Variation of arrival time distribution
+
+NUM_OF_JOBS = 300000
+
 
 def test_gi_m_1():
     """
@@ -16,26 +22,22 @@ def test_gi_m_1():
     For verification, we use simulation 
     """
 
-    l = 1  # input intensity of the incoming stream
-    a1 = 1 / l  # average interval between requests
-    b1 = 0.9  # average service time
-    mu = 1 / b1  # service intensity
-    a_coev = 1.6  # coefficient of variation in the input stream
-    num_of_jobs = 300000  # number of jobs for IM. The higher, the higher the accuracy of sim
+    a1 = 1 / ARRIVAL_RATE    # average interval between requests
+    mu = 1 / SERVICE_TIME_AVERAGE  # service intensity
 
-    # calculation of parameters approximating Gamma-distribution for the incoming
-    # stream based on the given average and coefficient of variation
-    gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, a_coev)
+    # calculation of parameters approximating Gamma-distribution for arrival times
+    gamma_params = GammaDistribution.get_params_by_mean_and_coev(
+        a1, ARRIVAL_CV)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
     # calculation of initial moments of time spent and waiting in the queueing system
     gm1_calc = GiM1(a, mu)
-    v_ch = gm1_calc.get_v()
-    w_ch = gm1_calc.get_w()
+    v_num = gm1_calc.get_v()
+    w_num = gm1_calc.get_w()
 
     # calculation of probabilities of states in the queueing system
-    p_ch = gm1_calc.get_p()
+    p_num = gm1_calc.get_p()
 
     # for verification, we use sim.
     # create an instance of the sim class and pass the number of service channels
@@ -49,8 +51,8 @@ def test_gi_m_1():
     # and type of distribution - M (exponential).
     qs.set_servers(mu, "M")
 
-    # start IM:
-    qs.run(num_of_jobs)
+    # start simulation
+    qs.run(NUM_OF_JOBS)
 
     # get the list of initial moments of time spent and waiting in the queueing system
     v_sim = qs.v
@@ -62,38 +64,39 @@ def test_gi_m_1():
     # Output results
     print("\nGamma\n")
 
-    times_print(v_sim, v_ch, False)
-    probs_print(p_sim, p_ch)
+    times_print(v_sim, v_num, False)
+    probs_print(p_sim, p_num)
 
     # Also for Pareto distribution
 
-    pareto_params = ParetoDistribution.get_params_by_mean_and_coev(a1, a_coev)
+    pareto_params = ParetoDistribution.get_params_by_mean_and_coev(
+        a1, ARRIVAL_CV)
     print(pareto_params)
     a = ParetoDistribution.calc_theory_moments(pareto_params)
 
     gm1_calc = GiM1(a, mu, approx_distr="Pa")
-    v_ch = gm1_calc.get_v()
-    w_ch = gm1_calc.get_w()
+    v_num = gm1_calc.get_v()
+    w_num = gm1_calc.get_w()
 
     # calculation of probabilities of system states
-    p_ch = gm1_calc.get_p()
+    p_num = gm1_calc.get_p()
 
     qs = QsSim(1)
     qs.set_sources(pareto_params, "Pa")
     qs.set_servers(mu, "M")
-    qs.run(num_of_jobs)
+    qs.run(NUM_OF_JOBS)
     v_sim = qs.v
     w_sim = qs.w
     p_sim = qs.get_p()
 
-    assert np.allclose(np.array(v_sim), np.array(v_ch), rtol=30e-1)
-    assert np.allclose(np.array(w_sim), np.array(w_ch), rtol=30e-1)
-    assert np.allclose(np.array(p_sim[:10]), np.array(p_ch[:10]), rtol=1e-1)
+    assert np.allclose(np.array(v_sim), np.array(v_num), rtol=30e-1)
+    assert np.allclose(np.array(w_sim), np.array(w_num), rtol=30e-1)
+    assert np.allclose(np.array(p_sim[:10]), np.array(p_num[:10]), rtol=1e-1)
 
     print("\nPareto\n")
 
-    times_print(v_sim, v_ch, False)
-    probs_print(p_sim, p_ch)
+    times_print(v_sim, v_num, False)
+    probs_print(p_sim, p_num)
 
 
 if __name__ == "__main__":

@@ -62,7 +62,6 @@ class QsSim:
         self.taked = 0  # number of job accepted for service
         self.served = 0  # number of job serviced by the system
         self.in_sys = 0  # number of job in the system
-        self.t_old = 0  # time of the previous event
         self.arrived = 0  # number of job received
         self.dropped = 0  # number of job denied service
         self.arrival_time = 0  # time of arrival of the next job
@@ -79,10 +78,10 @@ class QsSim:
 
         self.source = None
         self.source_params = None
-        self.source_types = None
+        self.source_kendall_notation = None
 
         self.server_params = None
-        self.server_types = None
+        self.server_kendall_notation = None
 
         self.is_set_source_params = False
         self.is_set_server_params = False
@@ -91,44 +90,51 @@ class QsSim:
 
         self.zero_wait_arrivals_num = 0
 
-    def set_sources(self, params, types):
+    def set_sources(self, params, kendall_notation: str = 'M'):
         """
         Specifies the type and parameters of source time distribution.
-        :param params: list : parameters for the source time distribution
-        :param types: list : types of source time distribution 
-
+        :param params: dataclass : parameters for the source time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params) 
+            For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
         """
         self.source_params = params
-        self.source_types = types
+        self.source_kendall_notation = kendall_notation
 
         self.is_set_source_params = True
 
-        self.source = create_distribution(params, types, self.generator)
+        self.source = create_distribution(params, kendall_notation, self.generator)
 
         self.arrival_time = self.source.generate()
 
-    def set_servers(self, params, types):
+    def set_servers(self, params, kendall_notation: str = 'M'):
         """
         Specifies the type and parameters of service time distribution.
-        :param params: list : parameters for the service time distribution
-        :param types: list : types of service time distribution 
+        :param params: dataclass : parameters for the service time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params) 
+            For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
         """
         self.server_params = params
-        self.server_types = types
+        self.server_kendall_notation = kendall_notation
 
         self.is_set_server_params = True
 
-        self.servers = [Server(self.server_params, self.server_types,
-                               generator=self.generator) for i in range(self.n)]
+        self.servers = [Server(self.server_params, self.server_kendall_notation,
+                               generator=self.generator) for _i in range(self.n)]
 
     def calc_load(self):
         """
         Calculates the load factor of the QS
         """
 
-        return calc_qs_load(self.source_types,
+        return calc_qs_load(self.source_kendall_notation,
                             self.source_params,
-                            self.server_types,
+                            self.server_kendall_notation,
                             self.server_params, self.n)
 
     def send_task_to_channel(self, is_warm_start=False):
@@ -176,11 +182,10 @@ class QsSim:
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.t_old
+        self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
 
         if self.free_channels == 0:
@@ -196,10 +201,9 @@ class QsSim:
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
 
-        self.p[self.in_sys] += time_to_end - self.t_old
+        self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
-        self.t_old = self.ttek
         self.served += 1
         self.total += 1
         self.free_channels += 1
@@ -334,8 +338,8 @@ class QsSim:
 
     def __str__(self, is_short=False):
 
-        res = "Queueing system " + self.source_types + \
-            "/" + self.server_types + "/" + str(self.n)
+        res = "Queueing system " + self.source_kendall_notation + \
+            "/" + self.server_kendall_notation + "/" + str(self.n)
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         res += f"\nLoad: {self.calc_load():4.3f}\n"

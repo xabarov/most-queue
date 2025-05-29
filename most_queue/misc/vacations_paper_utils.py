@@ -46,7 +46,7 @@ def print_table(experiments_stat):
             f"Running time of the Takahashi-Takami algorithm: {stat['tt_time']:0.3f} c")
         print(f"Simulation time: {stat['sim_time']:0.3f} c")
 
-        probs_print(p_sim=stat['p_sim'], p_ch=stat['p_tt'], size=10)
+        probs_print(p_sim=stat['p_sim'], p_num=stat['p_tt'], size=10)
         times_print(sim_moments=stat["w_sim"], calc_moments=stat["w_tt"])
 
 

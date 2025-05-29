@@ -28,25 +28,28 @@ class ImpatientQueueSim(QsSim):
         super().__init__(num_of_channels, buffer, verbose)
 
         self.impatience_params = None
-        self.impatience_types = None
+        self.impatience_kendall_notation = None
 
         self.impatience = None
         self.is_set_impatience_params = False
 
-    def set_impatience(self, params, types):
+    def set_impatience(self, params, kendall_notation: str='M'):
         """
         Set the impatience distribution for tasks.
-
-        :param params: list : parameters for the impatience distribution
-        :param types: list : types of the impatience distribution (e.g. 'exp', 'norm')
+        :param params: dataclass : parameters for the impatience time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params)
+             For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
 
         """
         self.impatience_params = params
-        self.impatience_types = types
+        self.impatience_kendall_notation = kendall_notation
 
         self.is_set_impatience_params = True
 
-        self.impatience = create_distribution(params, types, self.generator)
+        self.impatience = create_distribution(params, kendall_notation, self.generator)
 
     def arrival(self):
         """
@@ -54,11 +57,10 @@ class ImpatientQueueSim(QsSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.t_old
+        self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
 
         moment_to_leave = self.ttek + self.impatience.generate()
@@ -163,4 +165,8 @@ class ImpatientQueueSim(QsSim):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
-        return f'{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL} is earlier to leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}'
+        
+        result = f'{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL}\n'
+        result += f'leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}'
+
+        return result

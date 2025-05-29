@@ -16,12 +16,17 @@ class ForkJoinSimDelta(ForkJoinSim):
     Simulation of ForkJoin queue with delta.
     """
 
-    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, is_sj=False, buffer=None, buffer_type="list", verbose=True):
+    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, 
+                 is_sj=False, buffer=None, buffer_type="list", verbose=True):
         """
         :param num_of_channels: int : number of channels (servers)
         :param num_of_parts: int : number of parts on which the task is divided
-        :param delta: list[float] | float : If delta is a list, it should contain the moments of time delay caused by reception and restoration operations for each part. If delta is a float, delay is determistic and equal to delta.
-        :param is_sj: bool : if True, that means that the model is Split-Join, otherwise it's Fork-Join.
+        :param delta: list[float] | float : If delta is a list, 
+            then it should contain the moments of time delay
+          caused by reception and restoration operations for each part. 
+          If delta is a float, delay is determistic and equal to delta.
+        :param is_sj: bool : if True, that means that the model is Split-Join, 
+                             otherwise it's Fork-Join.
         :param buffer: Optional(int, None) : maximum length of the queue
         """
         super().__init__(num_of_channels, num_of_parts, is_sj,
@@ -37,9 +42,8 @@ class ForkJoinSimDelta(ForkJoinSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.t_old
+        self.p[self.in_sys] += self.arrival_time - self.ttek
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
         is_dropped = False
 
@@ -97,9 +101,8 @@ class ForkJoinSimDelta(ForkJoinSim):
         """
 
         subtsk = self.subtask_arr_queue.pop(subtask_num)
-        self.p[self.in_sys] += subtsk.future_arr_time - self.t_old
+        self.p[self.in_sys] += subtsk.future_arr_time - self.ttek
         self.ttek = subtsk.future_arr_time
-        self.t_old = self.ttek
 
         is_dropped = False
 
@@ -137,11 +140,10 @@ class ForkJoinSimDelta(ForkJoinSim):
         c - channel number
         """
         time_to_end = self.servers[c].time_to_end_service
-        self.p[self.in_sys] += time_to_end - self.t_old
+        self.p[self.in_sys] += time_to_end - self.ttek
         end_ts = self.servers[c].end_service()
         self.serv_task_id = end_ts.task_id
         self.ttek = time_to_end
-        self.t_old = self.ttek
         self.served_subtask_in_task[end_ts.task_id] += 1
         self.total += 1
         self.free_channels += 1
@@ -236,7 +238,8 @@ class ForkJoinSimDelta(ForkJoinSim):
         :return: string representation of the system
         :param is_short: if True, return short representation of the system
         """
-        res = f"{Fore.GREEN}Queueing system {self.source_types}/{self.server_types}/{self.n}{Style.RESET_ALL}\n"
+        res = f"{Fore.GREEN}Queueing system {self.source_kendall_notation}/"
+        res += f"{self.server_kendall_notation}/{self.n}{Style.RESET_ALL}\n"
         if self.buffer is not None:
             res += f"{Fore.YELLOW}/ {self.buffer}{Style.RESET_ALL}\n"
         if self.is_sj:

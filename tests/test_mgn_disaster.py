@@ -8,38 +8,37 @@ from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 
+ARRIVAL_RATE_POSITIVE = 1.0
+ARRIVAL_RATE_NEGATIVE = 0.3
+NUM_OF_JOBS = 300_000
+NUM_OF_CHANNELS = 3
+SERVICE_TIME_CV = 0.57
+UTILIZATION = 0.7
+
 
 def test_mgn():
     """
     Test QS M/G/n queue with disasters.
     """
 
-    l_pos = 1.0  # arrival rate of positive jobs
-    l_neg = 0.3  # arrival rate of negative jobs
-    n = 1
-    num_of_jobs = 300000
-    ro = 0.7
-    b1 = n * ro / l_pos  # average service time
-    b_coev = 0.57
+    b1 = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE_POSITIVE  # average service time
 
     b = [0.0] * 3
-    alpha = 1 / (b_coev ** 2)
+    alpha = 1 / (SERVICE_TIME_CV ** 2)
     b[0] = b1
-    b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
+    b[1] = math.pow(b[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
     b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-
-    print(f'Service time moments: {b}')
 
     # Run simulation
     queue_sim = QsSimNegatives(
-        n, NegativeServiceType.DISASTER)
+        NUM_OF_CHANNELS, NegativeServiceType.DISASTER)
 
-    queue_sim.set_negative_sources(l_neg, 'M')
-    queue_sim.set_positive_sources(l_pos, 'M')
+    queue_sim.set_negative_sources(ARRIVAL_RATE_NEGATIVE, 'M')
+    queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, 'M')
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, 'Gamma')
 
-    queue_sim.run(num_of_jobs)
+    queue_sim.run(NUM_OF_JOBS)
 
     p_sim = queue_sim.get_p()
     v_sim = queue_sim.get_v()
@@ -49,7 +48,8 @@ def test_mgn():
 
     # Run calc
     queue_calc = MGnNegativeDisasterCalc(
-        n, l_pos, l_neg, b, verbose=False, accuracy=1e-8)
+        NUM_OF_CHANNELS, ARRIVAL_RATE_POSITIVE, ARRIVAL_RATE_NEGATIVE,
+        b, verbose=False, accuracy=1e-8)
 
     queue_calc.run()
 

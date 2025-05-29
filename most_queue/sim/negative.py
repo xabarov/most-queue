@@ -58,7 +58,7 @@ class QsSimNegatives(QsSim):
         self.positive_arrival_time = 0  # time of arrival of the next job
         self.positive_source = None
         self.positive_source_params = None
-        self.positive_source_types = None
+        self.positive_source_kendall_notation = None
         self.is_set_positive_source_params = False
 
         # Negative arrivals
@@ -66,40 +66,46 @@ class QsSimNegatives(QsSim):
         self.negative_arrival_time = 0  # time of arrival of the next job
         self.negative_source = None
         self.negative_source_params = None
-        self.negative_source_types = None
+        self.negative_source_kendall_notation = None
         self.is_set_negative_source_params = False
 
-    def set_positive_sources(self, params, types):
+    def set_positive_sources(self, params, kendall_notation: str = 'M'):
         """
         Specifies the type and parameters of positives source time distribution.
-        :param params: list : parameters for the positives source time distribution
-        :param types: list : types of positives source time distribution 
-
+        :param params: dataclass : parameters for the positives source time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params) 
+            For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of positives source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
         """
         self.positive_source_params = params
-        self.positive_source_types = types
+        self.positive_source_kendall_notation = kendall_notation
 
         self.is_set_positive_source_params = True
 
         self.positive_source = create_distribution(
-            params, types, self.generator)
+            params, kendall_notation, self.generator)
 
         self.positive_arrival_time = self.positive_source.generate()
 
-    def set_negative_sources(self, params, types):
+    def set_negative_sources(self, params, kendall_notation: str = 'M'):
         """
         Specifies the type and parameters of negative source time distribution.
-        :param params: list : parameters for the negative source time distribution
-        :param types: list : types of negative source time distribution 
-
+        :param params: dataclass : parameters for the negative source time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params)
+            For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of negative source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
         """
         self.negative_source_params = params
-        self.negative_source_types = types
+        self.negative_source_kendall_notation = kendall_notation
 
         self.is_set_negative_source_params = True
 
         self.negative_source = create_distribution(
-            params, types, self.generator)
+            params, kendall_notation, self.generator)
 
         self.negative_arrival_time = self.negative_source.generate()
 
@@ -108,9 +114,9 @@ class QsSimNegatives(QsSim):
         Calculates the load factor of the QS if has no disatsers
         """
 
-        return calc_qs_load(self.positive_source_types,
+        return calc_qs_load(self.positive_source_kendall_notation,
                             self.positive_source_params,
-                            self.server_types,
+                            self.server_kendall_notation,
                             self.server_params, self.n)
 
     def positive_arrival(self):
@@ -326,8 +332,9 @@ class QsSimNegatives(QsSim):
         else:
             type_of_neg_str = 'Unknown'
 
-        res = "Queueing system " + self.positive_source_types + \
-            "/" + self.server_types + "/" + str(self.n) + type_of_neg_str
+        res = "Queueing system " + self.positive_source_kendall_notation + \
+            "/" + self.server_kendall_notation + \
+            "/" + str(self.n) + type_of_neg_str
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         res += f"\nLoad: {self.calc_positive_load():4.3f}\n"

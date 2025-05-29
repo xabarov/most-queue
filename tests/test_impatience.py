@@ -5,31 +5,32 @@ from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.impatient import ImpatientQueueSim
 from most_queue.theory.impatience.mm1 import MM1Impatience
 
+NUM_OF_SERVERS = 1
+ARRIVAL_RATE = 1.0
+IMPATIENCE_RATE = 0.2
+UTILIZATION = 0.8
+NUM_OF_JOBS = 300000
+
 
 def test_impatience():
     """
     Test for M/M/1 queue with exponential impatience.
     """
-    n = 1  # number of servers
-    l = 1.0  # arrival rate
-    ro = 0.8  # load factor
-    n_jobs = 300000  # number of jobs to simulate
-    mu = l / (ro * n)  # service rate
-    gamma = 0.2  # impatience rate
+    mu = ARRIVAL_RATE / (UTILIZATION * NUM_OF_SERVERS)  # service rate
 
     # Calculate theoretical results
-    imp_calc = MM1Impatience(l, mu, gamma)
+    imp_calc = MM1Impatience(ARRIVAL_RATE, mu, IMPATIENCE_RATE)
     v1 = imp_calc.get_v1()
     probs = imp_calc.probs
 
     # Simulate the queue
-    qs = ImpatientQueueSim(n)
+    qs = ImpatientQueueSim(NUM_OF_SERVERS)
 
-    qs.set_sources(l, 'M')
+    qs.set_sources(ARRIVAL_RATE, 'M')
     qs.set_servers(mu, 'M')
-    qs.set_impatience(gamma, 'M')
+    qs.set_impatience(IMPATIENCE_RATE, 'M')
 
-    qs.run(n_jobs)
+    qs.run(NUM_OF_JOBS)
 
     v1_im = qs.v[0]
     probs_sim = qs.get_p()

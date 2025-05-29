@@ -33,11 +33,14 @@ class SplitJoinCalc:
 
     """
 
-    def __init__(self, l: float, n: int, b: list[float]):
+    def __init__(self, l: float, n: int, b: list[float], approximation='gamma'):
         """
         :param l: arrival rate
         :param n: number of servers
         :param b: list of initial moments of service time
+        :param approximation: str : type of approximation 
+            for the initial moments of service time, can be 'gamma', 'h2' or 'erlang'
+            default is 'gamma'
         """
         self.n = n
         self.b = b
@@ -45,6 +48,20 @@ class SplitJoinCalc:
 
         self.b_max = None
         self.b_max_warm = None
+        self.approximation = approximation
+
+        if approximation not in ['gamma', 'h2', 'erlang']:
+            raise ValueError(
+                "Approximation must be one of 'gamma', 'h2' or 'erlang'.")
+
+        self.a_big = [1.37793470540E-1, 7.29454549503E-1, 1.808342901740E0,
+                      3.401433697855E0, 5.552496140064E0, 8.330152746764E0,
+                      1.1843785837900E1, 1.6279257831378E1, 2.1996585811981E1,
+                      2.9920697012274E1]
+        self.g = [3.08441115765E-1, 4.01119929155E-1, 2.18068287612E-1,
+                  6.20874560987E-2, 9.50151697518E-3, 7.53008388588E-4,
+                  2.82592334960E-5, 4.24931398496E-7, 1.83956482398E-9,
+                  9.91182721961E-13]
 
     def get_v(self) -> list[float]:
         """
@@ -73,7 +90,8 @@ class SplitJoinCalc:
 
         self.b_max_warm = self.get_max_moments_delta(b_delta)
         self.b_max = self.get_max_moments()
-        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm)
+        mg1_approx = 'gamma' if self.approximation == 'erlang' else self.approximation
+        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm, approximation=mg1_approx)
         return mg1_warm.get_v()
 
     def get_ro(self):
@@ -97,55 +115,64 @@ class SplitJoinCalc:
         :return: maximum value of lambda for a given number of channels and service rate.
         """
 
-        b = self.b
-        num = len(b)
+        if self.approximation == 'gamma':
+            return self._calc_f_gamma()
+        elif self.approximation == 'h2':
+            return self._calc_f_h2()
+
+        return self._calc_f_erlang()
+
+    def _calc_f_h2(self):
+        num = len(self.b)
+        f = [0] * num
+        params = H2Distribution.get_params(self.b)
+
+        for j in range(10):
+            p = self.g[j] * \
+                self._dfr_h2_mult(
+                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            f[0] += p
+            for i in range(1, num):
+                p = p * self.a_big[j]
+                f[i] += p
+
+        for i in range(num - 1):
+            f[i + 1] *= (i + 2)
+        return f
+
+    def _calc_f_gamma(self):
+        num = len(self.b)
+        f = [0] * num
+        params = GammaDistribution.get_params(self.b)
+
+        for j in range(10):
+            p = self.g[j] * \
+                self._dfr_gamma_mult(
+                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            f[0] += p
+            for i in range(1, num):
+                p = p * self.a_big[j]
+                f[i] += p
+
+        for i in range(num - 1):
+            f[i + 1] *= (i + 2)
+        return f
+
+    def _calc_f_erlang(self):
+        num = len(self.b)
 
         f = [0] * num
-        variance = b[1] - b[0] * b[0]
-        coev = math.sqrt(variance) / b[0]
-        a_big = [1.37793470540E-1, 7.29454549503E-1, 1.808342901740E0,
-                 3.401433697855E0, 5.552496140064E0, 8.330152746764E0,
-                 1.1843785837900E1, 1.6279257831378E1, 2.1996585811981E1,
-                 2.9920697012274E1]
-        g = [3.08441115765E-1, 4.01119929155E-1, 2.18068287612E-1,
-             6.20874560987E-2, 9.50151697518E-3, 7.53008388588E-4,
-             2.82592334960E-5, 4.24931398496E-7, 1.83956482398E-9,
-             9.91182721961E-13]
 
-        if len(b) >= 3:
+        params = ErlangDistribution.get_params(self.b)
 
-            if coev < 1:
-                params = ErlangDistribution.get_params(b)
-
-                for j in range(10):
-                    p = g[j] * \
-                        self._dfr_erl_mult(
-                            params, a_big[j]) * math.exp(a_big[j])
-                    f[0] += p
-                    for i in range(1, num):
-                        p = p * a_big[j]
-                        f[i] += p
-            else:
-                params = H2Distribution.get_params(b)
-
-                for j in range(10):
-                    p = g[j] * \
-                        self._dfr_h2_mult(
-                            params, a_big[j]) * math.exp(a_big[j])
-                    f[0] += p
-                    for i in range(1, num):
-                        p = p * a_big[j]
-                        f[i] += p
-        else:
-            params = GammaDistribution.get_params(b)
-
-            for j in range(10):
-                p = g[j] * \
-                    self._dfr_gamma_mult(params, a_big[j]) * math.exp(a_big[j])
-                f[0] += p
-                for i in range(1, num):
-                    p = p * a_big[j]
-                    f[i] += p
+        for j in range(10):
+            p = self.g[j] * \
+                self._dfr_erl_mult(
+                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            f[0] += p
+            for i in range(1, num):
+                p = p * self.a_big[j]
+                f[i] += p
 
         for i in range(num - 1):
             f[i + 1] *= (i + 2)
@@ -164,24 +191,16 @@ class SplitJoinCalc:
         num = len(self.b)
 
         f = [0] * num
-        a_big = [1.37793470540E-1, 7.29454549503E-1, 1.808342901740E0,
-                 3.401433697855E0, 5.552496140064E0, 8.330152746764E0,
-                 1.1843785837900E1, 1.6279257831378E1, 2.1996585811981E1,
-                 2.9920697012274E1]
-        g = [3.08441115765E-1, 4.01119929155E-1, 2.18068287612E-1,
-             6.20874560987E-2, 9.50151697518E-3, 7.53008388588E-4,
-             2.82592334960E-5, 4.24931398496E-7, 1.83956482398E-9,
-             9.91182721961E-13]
 
         if delta:
             params = GammaDistribution.get_params(b)
 
             for j in range(10):
-                p = g[j] * self._dfr_gamma_mult(params, a_big[j],
-                                                delta) * math.exp(a_big[j])
+                p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j],
+                                                delta) * math.exp(self.a_big[j])
                 f[0] += p
                 for i in range(1, num):
-                    p = p * a_big[j]
+                    p = p * self.a_big[j]
                     f[i] += p
 
             for i in range(num - 1):

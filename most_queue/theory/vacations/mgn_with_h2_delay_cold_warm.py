@@ -21,7 +21,8 @@ class MGnH2ServingColdWarmDelay:
     with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None, N=150, accuracy=1e-6, dtype="c16",
+    def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None, 
+                 N=150, accuracy=1e-6, dtype="c16",
                  verbose=False, stable_w_pls=False, w_pls_dt=1e-3):
         """
         n: number of servers

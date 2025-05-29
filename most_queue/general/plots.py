@@ -1,3 +1,6 @@
+"""
+Plotting utilities for simulation results.
+"""
 from enum import Enum
 
 import matplotlib.pyplot as plt

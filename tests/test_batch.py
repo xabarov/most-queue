@@ -9,6 +9,18 @@ from most_queue.general.tables import times_print
 from most_queue.sim.batch import QueueingSystemBatchSim
 from most_queue.theory.batch.mm1 import BatchMM1
 
+NUM_OF_JOBS = 100000
+NUM_OF_CHANNELS = 1
+
+ARRIVAL_RATE = 0.7
+
+BATCH_SIZE = 5
+BATCH_PROBABILITIES = [0.2, 0.3, 0.1, 0.2, 0.2]
+
+UTILIZATION_FACTOR = 0.7
+
+ERROR_MSG = "Simulation results do not match theoretical calculations."
+
 
 def calc_mean_batch_size(batch_probs):
     """
@@ -27,31 +39,26 @@ def test_batch_mm1():
     """
 
     # probs of batch size 1, 2, .. 5
-    batch_probs = [0.2, 0.3, 0.1, 0.2, 0.2]
-    mean_batch_size = calc_mean_batch_size(batch_probs)
+    mean_batch_size = calc_mean_batch_size(BATCH_PROBABILITIES)
 
-    n = 1   # one channel
-    lam = 0.7  # arrival intensity
-    ro = 0.7  # QS utilization factor
-    mu = lam * mean_batch_size / ro  # serving intensity
-    n_jobs = 500000  # jobs to serve in QS simulation
+    mu = ARRIVAL_RATE * mean_batch_size / UTILIZATION_FACTOR  # serving intensity
 
-    batch_calc = BatchMM1(lam, mu, batch_probs)
+    batch_calc = BatchMM1(ARRIVAL_RATE, mu, BATCH_PROBABILITIES)
 
     v1 = batch_calc.get_v1()
 
-    qs = QueueingSystemBatchSim(n, batch_probs)
+    qs = QueueingSystemBatchSim(NUM_OF_CHANNELS, BATCH_PROBABILITIES)
 
-    qs.set_sources(lam, 'M')
+    qs.set_sources(ARRIVAL_RATE, 'M')
     qs.set_servers(mu, 'M')
 
-    qs.run(n_jobs, is_real_served=True)
+    qs.run(NUM_OF_JOBS)
 
     v1_im = qs.v[0]
 
     times_print(v1_im, v1, False)  # prints 2.6556 and approx 2.5-2.7
 
-    assert v1 - v1_im < 0.2
+    assert v1 - v1_im < 0.2, ERROR_MSG
 
 
 if __name__ == "__main__":

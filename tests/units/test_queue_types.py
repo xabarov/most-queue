@@ -43,11 +43,11 @@ def compare_calc_times():
         qs = QsSim(num_channels, buffer_type=buffer_type)
 
         # Configure arrival process (Exponential distribution with rate λ)
-        qs.set_sources(arrival_rate, types='M')
+        qs.set_sources(arrival_rate, kendall_notation='M')
 
         # Configure service process (Gamma distribution with parameters derived from moments)
         gamma_params = GammaDistribution.get_params(moments[:2])
-        qs.set_servers(gamma_params, types='Gamma')
+        qs.set_servers(gamma_params, kendall_notation='Gamma')
 
         # Run the simulation
         qs.run(num_jobs)

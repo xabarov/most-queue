@@ -9,26 +9,25 @@ from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
+NUM_OF_CHANNELS = 3
+ARRIVAL_RATE = 1.0
+QUEUE_LENGTH = 30
+UTILIZATION = 0.8
+
 
 def test_sim():
     """
     Test the simulation of a queueing system
     For verification, compare with results for M/M/3 and M/D/3 systems
     """
-    # System parameters
-    num_servers = 3          # Number of channels/servers
-    arrival_rate = 1.0      # Arrival rate (lambda)
-    queue_length = 30       # Buffer size/r queue length
-    utilization = 0.8       # Server utilization (rho)
-
     # Calculate service rate based on utilization
-    service_rate = arrival_rate / (utilization * num_servers)
+    service_rate = ARRIVAL_RATE / (NUM_OF_CHANNELS*UTILIZATION)
 
     # Initialize simulation model
-    qs = QsSim(num_servers, buffer=queue_length)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=QUEUE_LENGTH)
 
     # Set arrival process parameters and distribution (M for Markovian)
-    qs.set_sources(arrival_rate, 'M')
+    qs.set_sources(ARRIVAL_RATE, 'M')
 
     # Set service time parameters and distribution (M for Markovian)
     qs.set_servers(service_rate, 'M')
@@ -40,17 +39,17 @@ def test_sim():
     w_sim = qs.w
 
     # Calculate theoretical waiting times using MMnr model
-    mmnr = MMnrCalc(arrival_rate, service_rate, num_servers, queue_length)
+    mmnr = MMnrCalc(ARRIVAL_RATE, service_rate, NUM_OF_CHANNELS, QUEUE_LENGTH)
     w_theory = mmnr.get_w()
 
     # Print comparison of simulation and theoretical results
     times_print(w_sim, w_theory, True)
 
     # Reset for next part of test
-    qs = QsSim(num_servers)
+    qs = QsSim(NUM_OF_CHANNELS)
 
     # Set arrival process again (M distribution)
-    qs.set_sources(arrival_rate, 'M')
+    qs.set_sources(ARRIVAL_RATE, 'M')
 
     # Set deterministic service times (D distribution)
     qs.set_servers(1.0 / service_rate, 'D')
@@ -59,7 +58,7 @@ def test_sim():
     qs.run(1000000)
 
     # Calculate theoretical probabilities using MDn model
-    mdn = MDn(arrival_rate, 1.0 / service_rate, num_servers)
+    mdn = MDn(ARRIVAL_RATE, 1.0 / service_rate, NUM_OF_CHANNELS)
     p_theory = mdn.calc_p()
 
     # Get simulated state probabilities

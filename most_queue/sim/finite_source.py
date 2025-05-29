@@ -15,10 +15,11 @@ class QueueingFiniteSourceSim(QsSim):
     Simulating a queueing system with finite number of sources.
     """
 
-    def __init__(self, num_of_channels: int, m: int, buffer=None, verbose=True, buffer_type="list"):
+    def __init__(self, num_of_channels: int, number_of_sources: int,
+                 buffer=None, verbose=True, buffer_type="list"):
         """
         num_of_channels - number of channels in the system.
-        m - number of sources.
+        number_of_sources - number of sources.
         buffer - maximum length of the queue.
         verbose - print comments during simulation.
 
@@ -28,43 +29,35 @@ class QueueingFiniteSourceSim(QsSim):
         - set the service distribution using the set_servers() method
         - start the simulation using the run() method
         to which you need to pass the number of job required for servicing
-
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
-
         """
-        self.m = m
-        self.sources_left = m  # how many sources are ready to send requests
+        self.m = number_of_sources
+        # how many sources are ready to send requests
+        self.sources_left = number_of_sources
 
         super().__init__(num_of_channels, buffer=buffer,
                          verbose=verbose, buffer_type=buffer_type)
 
         self.arrival_times = []
         self.arrived_num = -1
-        self.p = [0.0] * (m+1)
+        self.p = [0.0] * (number_of_sources+1)
 
-    def set_sources(self, params, types):
+    def set_sources(self, params, kendall_notation: str = 'M'):
         """
-        Set source parameters and types
-        :param params: list of lists, where each sublist contains parameters for a source distribution
-        :param types: list of strings, where each string specifies the type of distribution for a source
-        :return: None
-
-        See supported distributions params in the README.md file or use
-            ``` 
-            from most_queue.sim.utils.distribution_utils import print_supported_distributions
-            print_supported_distributions()
-            ```
+        Specifies the type and parameters of source time distribution.
+        :param params: dataclass : parameters for the source time distribution
+            for example: H2Params for hyper-exponential distribution 
+            (see most_queue.general.distribution_params)
+            For 'M' (exponential) params is a float number, that represent single parameter
+        :param kendall_notation: str : types of source time distribution ,
+           for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
         """
         self.source_params = params
-        self.source_types = types
+        self.source_kendall_notation = kendall_notation
 
         self.is_set_source_params = True
 
-        self.source = create_distribution(params, types, self.generator)
+        self.source = create_distribution(
+            params, kendall_notation, self.generator)
 
         self.arrival_times = [self.source.generate() for i in range(self.m)]
 
@@ -75,11 +68,10 @@ class QueueingFiniteSourceSim(QsSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_times[self.arrived_num] - self.t_old
+        self.p[self.in_sys] += self.arrival_times[self.arrived_num] - self.ttek
         self.sources_left -= 1
         self.in_sys += 1
         self.ttek = self.arrival_times[self.arrived_num]
-        self.t_old = self.ttek
         self.arrival_times[self.arrived_num] = 1e10
 
         if self.free_channels == 0:
@@ -122,7 +114,7 @@ class QueueingFiniteSourceSim(QsSim):
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
 
-        self.p[self.in_sys] += time_to_end - self.t_old
+        self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
 
@@ -131,7 +123,6 @@ class QueueingFiniteSourceSim(QsSim):
                 self.arrival_times[i] = self.ttek + self.source.generate()
                 break
 
-        self.t_old = self.ttek
         self.served += 1
         self.total += 1
         self.free_channels += 1
@@ -189,7 +180,8 @@ class QueueingFiniteSourceSim(QsSim):
         """
         Get probabilities of states.
         Returns list with probabilities of states.
-        p[j] - probability that in random moment of time there will be exactly j requests in the system
+        p[j] - probability that in random moment of time there will be 
+            exactly j requests in the system
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.m+1):
@@ -203,7 +195,9 @@ class QueueingFiniteSourceSim(QsSim):
         :return: string with information about the queueing system
         """
 
-        res = f"{Fore.GREEN}Queueing system {self.source_types}/{self.server_types}/{self.n}{Style.RESET_ALL}\n"
+        res = f"{Fore.GREEN}Queueing system {self.source_kendall_notation}"
+        res += f"/{self.server_kendall_notation}/{self.n}{Style.RESET_ALL}\n"
+
         if self.buffer is not None:
             res += f"{Fore.GREEN}/ {self.buffer}{Style.RESET_ALL}\n"
         res += f"{Fore.YELLOW}Load: {self.calc_load():4.3f}{Style.RESET_ALL}\n"

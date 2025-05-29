@@ -8,6 +8,7 @@ from most_queue.sim.base import QsSim
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 from most_queue.sim.utils.phase import QsPhase
+from most_queue.sim.utils.servers import Server
 
 
 class VacationQueueingSystemSimulator(QsSim):
@@ -18,13 +19,17 @@ class VacationQueueingSystemSimulator(QsSim):
     def __init__(self, num_of_channels,
                  buffer=None,
                  verbose=True,
-                 buffer_type="list"):
+                 buffer_type="list", is_service_on_warm_up=False):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system
         :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
+        :param is_service_on_warm_up: bool : 
+            if is True, jobs arrived in empty system will be served with warm_phase distribution
+            if is False, jobs arrived in empty system will be send to queue, 
+                and warm_phase starts with warm_phase distribution
         """
         super().__init__(num_of_channels, buffer, verbose, buffer_type)
 
@@ -33,6 +38,7 @@ class VacationQueueingSystemSimulator(QsSim):
         self.cold_delay_phase = QsPhase("ColdDelay")
 
         self.warm_after_cold_starts = 0
+        self.is_service_on_warm_up = is_service_on_warm_up
 
     def set_warm(self, params, kendall_notation):
         """
@@ -42,8 +48,20 @@ class VacationQueueingSystemSimulator(QsSim):
         :param kendall_notation: str : Kendall notation for the warm-up time distribution
 
         """
+        if not self.is_set_server_params:
+            raise ValueError(
+                "Server parameters are not set. Please call set_servers() first.")
+
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
+
+        if self.is_service_on_warm_up:
+            self.servers = []
+            for _i in range(self.n):
+                server = Server(self.server_params, self.server_kendall_notation,
+                                generator=self.generator)
+                server.set_warm(params, kendall_notation, self.generator)
+                self.servers.append(server)
 
     def set_cold(self, params, kendall_notation):
         """
@@ -74,11 +92,10 @@ class VacationQueueingSystemSimulator(QsSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.t_old
+        self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
 
         if self.free_channels == 0:
@@ -115,10 +132,13 @@ class VacationQueueingSystemSimulator(QsSim):
                     self.send_task_to_queue()
                 else:
                     if self.free_channels == self.n:
-                        # 2. It is empty and was turned off after cooling. We start warm-up
-                        self.warm_phase.start(self.ttek)
                         # to queue
-                        self.send_task_to_queue()
+                        if self.is_service_on_warm_up:
+                            self.send_task_to_channel(is_warm_start=True)
+                        else:
+                            # 2. It is empty and was turned off after cooling. We start warm-up
+                            self.warm_phase.start(self.ttek)
+                            self.send_task_to_queue()
                     else:
                         # 3. Not empty and warmed up -> then we send it for servicing
                         self.send_task_to_channel()
@@ -134,10 +154,9 @@ class VacationQueueingSystemSimulator(QsSim):
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
 
-        self.p[self.in_sys] += time_to_end - self.t_old
+        self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
-        self.t_old = self.ttek
         self.served += 1
         self.total += 1
         self.free_channels += 1
@@ -171,10 +190,9 @@ class VacationQueueingSystemSimulator(QsSim):
         Job that has to be done after WarmUp Period Ends
         """
 
-        self.p[self.in_sys] += self.warm_phase.end_time - self.t_old
+        self.p[self.in_sys] += self.warm_phase.end_time - self.ttek
 
         self.ttek = self.warm_phase.end_time
-        self.t_old = self.ttek
 
         self.warm_phase.end(self.ttek)
 
@@ -187,10 +205,9 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Period Ends
         """
-        self.p[self.in_sys] += self.cold_phase.end_time - self.t_old
+        self.p[self.in_sys] += self.cold_phase.end_time - self.ttek
 
         self.ttek = self.cold_phase.end_time
-        self.t_old = self.ttek
 
         self.cold_phase.end(self.ttek)
 
@@ -210,10 +227,9 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Delay Period Ends
         """
-        self.p[self.in_sys] += self.cold_delay_phase.end_time - self.t_old
+        self.p[self.in_sys] += self.cold_delay_phase.end_time - self.ttek
 
         self.ttek = self.cold_delay_phase.end_time
-        self.t_old = self.ttek
 
         self.cold_delay_phase.end(self.ttek)
 

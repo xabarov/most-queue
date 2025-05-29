@@ -98,13 +98,13 @@ def create_distribution(params, kendall_notation: str, generator):
     return dist
 
 
-def calc_qs_load(source_types: str, source_params,
-                 server_types: str, server_params, n) -> float:
+def calc_qs_load(source_kendall_notation: str, source_params,
+                 server_kendall_notation: str, server_params, n) -> float:
     """Calculates the utilization (load factor) of the QS
 
     Args:
-        source_types: str,  Kendall notation of source 
-        server_types: str, Kendall notation of source 
+        source_kendall_notation: str,  Kendall notation of source 
+        server_kendall_notation: str, Kendall notation of source 
         n (int): number of QS channels
 
     Returns:
@@ -112,13 +112,13 @@ def calc_qs_load(source_types: str, source_params,
     """
 
     l = 0
-    if source_types == "M":
+    if source_kendall_notation == "M":
         l = source_params
-    elif source_types == "D":
+    elif source_kendall_notation == "D":
         l = 1.00 / source_params
-    elif source_types == "Uniform":
+    elif source_kendall_notation == "Uniform":
         l = 1.00 / source_params.mean
-    elif source_types == "H":
+    elif source_kendall_notation == "H":
         y1 = source_params.p1
         y2 = 1.0 - y1
         mu1 = source_params.mu1
@@ -127,17 +127,17 @@ def calc_qs_load(source_types: str, source_params,
         f1 = y1 / mu1 + y2 / mu2
         l = 1.0 / f1
 
-    elif source_types == "E":
+    elif source_kendall_notation == "E":
         r = source_params.r
         mu = source_params.mu
         l = mu / r
 
-    elif source_types == "Gamma":
+    elif source_kendall_notation == "Gamma":
         mu = source_params.mu
         alpha = source_params.alpha
         l = mu / alpha
 
-    elif source_types == "C":
+    elif source_kendall_notation == "C":
         y1 = source_params.p1
         y2 = 1.0 - y1
         mu1 = source_params.mu1
@@ -145,7 +145,7 @@ def calc_qs_load(source_types: str, source_params,
 
         f1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
         l = 1.0 / f1
-    elif source_types == "Pa":
+    elif source_kendall_notation == "Pa":
         if source_params[0] < 1:
             return None
         else:
@@ -155,15 +155,15 @@ def calc_qs_load(source_types: str, source_params,
             l = 1.0 / f1
 
     b1 = 0
-    if server_types == "M":
+    if server_kendall_notation == "M":
         mu = server_params
         b1 = 1.0 / mu
-    elif server_types == "D":
+    elif server_kendall_notation == "D":
         b1 = server_params
-    elif server_types == "Uniform":
+    elif server_kendall_notation == "Uniform":
         b1 = server_params.mean
 
-    elif server_types == "H":
+    elif server_kendall_notation == "H":
         y1 = server_params.p1
         y2 = 1.0 - y1
         mu1 = server_params.mu1
@@ -171,24 +171,24 @@ def calc_qs_load(source_types: str, source_params,
 
         b1 = y1 / mu1 + y2 / mu2
 
-    elif server_types == "Gamma":
+    elif server_kendall_notation == "Gamma":
         mu = server_params.mu
         alpha = server_params.alpha
         b1 = alpha / mu
 
-    elif server_types == "E":
+    elif server_kendall_notation == "E":
         r = server_params.r
         mu = server_params.mu
         b1 = r / mu
 
-    elif server_types == "C":
+    elif server_kendall_notation == "C":
         y1 = server_params.p1
         y2 = 1.0 - y1
         mu1 = server_params.mu1
         mu2 = server_params.mu2
 
         b1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
-    elif server_types == "Pa":
+    elif server_kendall_notation == "Pa":
         if server_params[0] < 1:
             return math.inf
         else:

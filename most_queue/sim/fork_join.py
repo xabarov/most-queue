@@ -22,7 +22,7 @@ class ForkJoinSim(QsSim):
     The (n, k) fork-join queues, only require the job’s any k out of n sub-tasks to be finished,
     and thus have performance advantages in such scenarios. 
 
-    Split-Join queue differs from a basic fork-join queueing system in that it has blocking behavior. 
+    Split-Join queue differs from a basic FJ queueing system in that it has blocking behavior. 
     New jobs are not allowed to enter the system, until current job has finished.
 
     There are mainly two versions of (n, k) fork-join queues: 
@@ -31,14 +31,19 @@ class ForkJoinSim(QsSim):
     As a contrast, the non-purging one keeps queuing and executing remaining sub-tasks
     """
 
-    def __init__(self, num_of_channels, k, is_sj=False, is_purge=False, buffer=None, buffer_type="list", verbose=True):
+    def __init__(self, num_of_channels, k, is_sj=False, is_purge=False, 
+                 buffer=None, buffer_type="list", verbose=True):
         """
-        :param num_of_channels: int : number of channels in the system (number of parts a task is split into)
-        :param k: int : number of sub-tasks that need to be completed before a job is considered done
-            if n = k, then it's a basic fork-join queueing system.
-        :param is_sj: bool : if True, then Split-Join model is used, otherwise Fork-Join model is used
+        :param num_of_channels: int : number of channels in the system 
+                                      (number of parts a task is split into)
+        :param k: int : number of sub-tasks that need to be completed 
+                        before a job is considered done
+                        if n = k, then it's a basic fork-join queueing system.
+        :param is_sj: bool : if True, then Split-Join model is used, 
+                             otherwise Fork-Join model is used
         :param buffer: Optional(int, None) : maximum length of the queue
-        :param is_purge: bool : if True, then purging version is used, otherwise non-purging version is used
+        :param is_purge: bool : if True, then purging version is used, 
+                                otherwise non-purging version is used
         :param buffer: Optional(int, None) : maximum length of the queue
         """
         super().__init__(num_of_channels=num_of_channels,
@@ -65,9 +70,8 @@ class ForkJoinSim(QsSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.t_old
+        self.p[self.in_sys] += self.arrival_time - self.ttek
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
         self.arrival_time = self.ttek + self.source.generate()
 
         is_dropped = False
@@ -118,10 +122,9 @@ class ForkJoinSim(QsSim):
         :param c: int : number of channel where service is completed.
         """
         time_to_end = self.servers[c].time_to_end_service
-        self.p[self.in_sys] += time_to_end - self.t_old
+        self.p[self.in_sys] += time_to_end - self.ttek
         end_ts = self.servers[c].end_service()
         self.ttek = time_to_end
-        self.t_old = self.ttek
         self.served_subtask_in_task[end_ts.task_id] += 1
         self.total += 1
         self.free_channels += 1
@@ -167,12 +170,13 @@ class ForkJoinSim(QsSim):
     def __str__(self, is_short=False):
         """
         Prints the model of the queueing system
-        :param is_short: bool : if True, then short information about the model of the queueing system is returned
+        :param is_short: bool : if True, then short information about the model 
+            of the queueing system is returned
         :return: str : string representation of the model of the queueing system
         """
 
-        res = Fore.GREEN + "Queueing system " + self.source_types + \
-            "/" + self.server_types + "/" + str(self.n) + Style.RESET_ALL
+        res = Fore.GREEN + "Queueing system " + self.source_kendall_notation + \
+            "/" + self.server_kendall_notation + "/" + str(self.n) + Style.RESET_ALL
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         if self.is_sj:

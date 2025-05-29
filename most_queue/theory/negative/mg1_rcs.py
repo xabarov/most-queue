@@ -15,7 +15,8 @@ class MG1NegativeCalcRCS:
     Class for M/G/1 queue with negative jobs and RCS discipline.
     """
 
-    def __init__(self, l_pos: float, l_neg: float, b: list[float], service_time_approx_dist='gamma'):
+    def __init__(self, l_pos: float, l_neg: float, b: list[float],
+                 service_time_approx_dist='gamma'):
         """
         Parameters
         ----------

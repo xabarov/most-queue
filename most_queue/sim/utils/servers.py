@@ -24,12 +24,12 @@ class Server:
     """
     id = 0
 
-    def __init__(self, params, types, generator=None):
+    def __init__(self, params, kendall_notation, generator=None):
         """
         params - параметры распределения
         types -  тип распределения
         """
-        self.dist = create_distribution(params, types, generator)
+        self.dist = create_distribution(params, kendall_notation, generator)
         self.time_to_end_service = 1e10
         self.is_free = True
         self.tsk_on_service = None
@@ -40,12 +40,12 @@ class Server:
         self.types_warm = None
         self.warm_phase = QsPhase("WarmUp", None)
 
-    def set_warm(self, params, types, generator=None):
+    def set_warm(self, params, kendall_notation, generator=None):
         """
         Set local warmup period distrubution on server
         """
 
-        self.warm_phase.set_dist(create_distribution(params, types, generator))
+        self.warm_phase.set_dist(create_distribution(params, kendall_notation, generator))
 
     def start_service(self, ts: Task, ttek, is_warm=False):
         """
@@ -88,13 +88,13 @@ class ServerWarmUp(Server):
     """
     id = 0
 
-    def __init__(self, params, types, delta=None):
+    def __init__(self, params, kendall_notation, delta=None):
         """
         params - server parameters
         types - server distribution types
         delta - warm-up time or dictionary with moments for different classes of tasks
         """
-        Server.__init__(self, params, types)
+        Server.__init__(self, params, kendall_notation)
         self.delta = delta
 
     def start_service(self, ts, ttek, is_warm=False):

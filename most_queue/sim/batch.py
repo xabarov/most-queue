@@ -48,13 +48,12 @@ class QueueingSystemBatchSim(QsSim):
                 break
 
         self.ttek = self.arrival_time
-        self.t_old = self.ttek
 
         self.arrival_time = self.ttek + self.source.generate()
 
         for _tsk in range(batch_size):
             self.arrived += 1
-            self.p[self.in_sys] += self.arrival_time - self.t_old
+            self.p[self.in_sys] += self.arrival_time - self.ttek
 
             self.in_sys += 1
 

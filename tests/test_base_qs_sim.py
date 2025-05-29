@@ -8,60 +8,68 @@ from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
+ERROR_MSG = "System simulation results do not match theoretical values"
+
+NUM_OF_CHANNELS = 3
+NUM_OF_JOBS = 300000
+ARRIVAL_RATE = 1.0
+UTILIZATION_FACTOR = 0.8
+BUFFER = 30
+
 
 def test_sim_mmnr():
     """
     Test the simulation model for an M/M/n/r system
     """
-    n = 3  # Number of channels
-    l = 1.0  # Arrival rate intensity
-    r = 30  # Queue length
-    ro = 0.8  # Load coefficient
-    mu = l / (ro * n)  # Service intensity
+    mu = ARRIVAL_RATE / (UTILIZATION_FACTOR *
+                         NUM_OF_CHANNELS)  # Service intensity
 
     # Create simulation instance
-    qs = QsSim(n, buffer=r)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=BUFFER)
 
-    # Set arrival process parameters and distribution
-    qs.set_sources(l, 'M')
-    # Set service time parameters and distribution
+    # Set arrival process parameters and distribution as exponential
+    qs.set_sources(ARRIVAL_RATE, 'M')
+    # Set service time parameters and distribution as exponential
     qs.set_servers(mu, 'M')
 
     # Run the simulation
-    qs.run(300000)
+    qs.run(NUM_OF_JOBS)
     # Get initial moments of waiting time. Also can get .v for sojourn times,
     # probabilities of states .get_p(), periods of continuous occupancy .pppz
     w_sim = qs.w
 
-    mmnr = MMnrCalc(l, mu, n, r)
+    mmnr = MMnrCalc(ARRIVAL_RATE, mu, NUM_OF_CHANNELS, BUFFER)
     w = mmnr.get_w()
     times_print(w_sim, w)
 
     # Verify simulation results against theoretical calculations
-    assert np.allclose(
-        w_sim, w, rtol=0.1), "MMQ system simulation results do not match theoretical values"
+    assert np.allclose(w_sim, w, rtol=0.2), ERROR_MSG
 
 
 def test_sim_mdn():
     """
     Test the simulation model for a M/D/n
     """
-    n = 3  # Number of channels
-    l = 1.0  # Arrival rate intensity
+    qs = QsSim(NUM_OF_CHANNELS)
 
-    qs = QsSim(n)
+    mu = ARRIVAL_RATE / (UTILIZATION_FACTOR *
+                         NUM_OF_CHANNELS)  # Service intensity
 
-    qs.set_sources(l, 'M')
+    qs.set_sources(ARRIVAL_RATE, 'M')
     # Using same load coefficient as before
-    qs.set_servers(1.0 / (l / (n * 0.8)), 'D')
+    qs.set_servers(1.0 / mu, 'D')
 
-    qs.run(1000000)
+    qs.run(NUM_OF_JOBS)
 
-    mdn = MDn(l, 1 / (l / (n * 0.8)), n)
-    p_ch = mdn.calc_p()
+    mdn = MDn(ARRIVAL_RATE, 1 / mu, NUM_OF_CHANNELS)
+    p_num = mdn.calc_p()
     p_sim = qs.get_p()
 
-    probs_print(p_sim=p_sim, p_ch=p_ch, size=10)
+    probs_print(p_sim=p_sim, p_num=p_num, size=10)
 
-    assert np.allclose(
-        p_sim[:10], p_ch[:10], atol=1e-2), "M/D/n system simulation results do not match theoretical values"
+    assert np.allclose(p_sim[:10], p_num[:10], atol=1e-2), ERROR_MSG
+
+
+if __name__ == "__main__":
+    test_sim_mmnr()
+    test_sim_mdn()

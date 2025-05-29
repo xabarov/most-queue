@@ -16,6 +16,18 @@ from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
 
+NUM_OF_SERVERS = 4
+NUM_OF_CLASSES = 2
+ARRIVAL_RATE_HIGH = 1.0
+ARRIVAL_RATE_LOW = 1.5
+UTILIZATION = 0.75
+NUM_OF_JOBS = 300000
+SERVICE_TIME_CV = 1.2
+
+MAX_ITER = 100  # maximum number of iterations for the numerical method
+IS_COX = False  # use C2 distribution or H2-distribution for approximating busy periods
+SERVICE_PROPORTION = 2  # service time for class H is less than L by this factor
+
 
 def test_m_ph_n_prty():
     """
@@ -24,82 +36,68 @@ def test_m_ph_n_prty():
     based on the approximation of busy periods by Cox's second-order distribution.
     For verification, we use simulation
     """
-    num_of_jobs = 300000  # number of served jobs in simulation
 
-    # use Cox's second-order distribution or H2-distribution for approximating busy periods
-    is_cox = False
+    print(f"coev =  {SERVICE_TIME_CV:5.3f}")
 
-    max_iter = 100  # maximum number of iterations for the numerical method
+    lsum = ARRIVAL_RATE_LOW + ARRIVAL_RATE_HIGH
+    bsr = NUM_OF_SERVERS * UTILIZATION / lsum
+    b1_high = lsum * bsr / (ARRIVAL_RATE_LOW *
+                            SERVICE_PROPORTION + ARRIVAL_RATE_HIGH)
+    b1_low = SERVICE_PROPORTION * b1_high
+    b_high = [0.0] * 3
+    alpha = 1 / (SERVICE_TIME_CV ** 2)
+    b_high[0] = b1_high
+    b_high[1] = math.pow(b_high[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
+    b_high[2] = b_high[1] * b_high[0] * (1.0 + 2 / alpha)
 
-    # Investigation of the influence of the average time
-    # spent by requests of class 2 on the load factor
-    n = 4  # number of servers
-    K = 2  # number of classes
-    ros = 0.75  # load factor of the queue
-    bH_to_bL = 2  # service time for class H is less than L by this factor
-    lH_to_lL = 1.5  # arrival rate of requests of class H is lower than L by this factor
-    l_H = 1.0  # arrival rate of the input stream of type 1 requests
-    l_L = lH_to_lL * l_H  # arrival rate of the input stream of type 2 requests
-    bHcoev = 1.2  # investigated coefficients of variation for service times of class 1
+    gamma_params = GammaDistribution.get_params([b_high[0], b_high[1]])
 
-    print(f"coev =  {bHcoev:5.3f}")
+    mu_low = 1.0 / b1_low
 
-    lsum = l_L + l_H
-    bsr = n * ros / lsum
-    bH1 = lsum * bsr / (l_L * bH_to_bL + l_H)
-    bL1 = bH_to_bL * bH1
-    bH = [0.0] * 3
-    alpha = 1 / (bHcoev ** 2)
-    bH[0] = bH1
-    bH[1] = math.pow(bH[0], 2) * (math.pow(bHcoev, 2) + 1)
-    bH[2] = bH[1] * bH[0] * (1.0 + 2 / alpha)
-
-    gamma_params = GammaDistribution.get_params([bH[0], bH[1]])
-
-    mu_L = 1.0 / bL1
-
-    cox_params = CoxDistribution.get_params(bH)
+    cox_params = CoxDistribution.get_params(b_high)
 
     # calculation using the numerical method:
     tt_start = time.process_time()
-    tt = MPhNPrty(mu_L, cox_params, l_L, l_H, n=n, is_cox=is_cox,
-                  max_iter=max_iter, verbose=False)
+    tt = MPhNPrty(mu_low, cox_params, ARRIVAL_RATE_LOW, ARRIVAL_RATE_HIGH,
+                  n=NUM_OF_SERVERS, is_cox=IS_COX,
+                  max_iter=MAX_ITER, verbose=False)
     tt.run()
     tt_time = time.process_time() - tt_start
 
     iter_num = tt.run_iterations_num_
     v2_tt = tt.get_low_class_v1()
 
-    mu_L = 1.0 / bL1
+    mu_low = 1.0 / b1_low
 
-    bL = ExpDistribution.calc_theory_moments(mu_L, 3)
+    b_low = ExpDistribution.calc_theory_moments(mu_low, 3)
 
     b = []
-    b.append(bH)
-    b.append(bL)
+    b.append(b_high)
+    b.append(b_low)
 
     invar_start = time.process_time()
-    invar_calc = MGnInvarApproximation([l_H, l_L], b, n=n)
+    invar_calc = MGnInvarApproximation(
+        [ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_SERVERS)
     v = invar_calc.get_v(priority='PR', num=2)
     v2_invar = v[1][0]
     invar_time = time.process_time() - invar_start
 
     im_start = time.process_time()
 
-    qs = PriorityQueueSimulator(n, K, "PR")
+    qs = PriorityQueueSimulator(NUM_OF_SERVERS, NUM_OF_CLASSES, "PR")
     sources = []
     servers_params = []
 
-    sources.append({'type': 'M', 'params': l_H})
-    sources.append({'type': 'M', 'params': l_L})
+    sources.append({'type': 'M', 'params': ARRIVAL_RATE_HIGH})
+    sources.append({'type': 'M', 'params': ARRIVAL_RATE_LOW})
     servers_params.append({'type': 'Gamma', 'params': gamma_params})
-    servers_params.append({'type': 'M', 'params': mu_L})
+    servers_params.append({'type': 'M', 'params': mu_low})
 
     qs.set_sources(sources)
     qs.set_servers(servers_params)
 
     # running the simulation:
-    qs.run(num_of_jobs)
+    qs.run(NUM_OF_JOBS)
 
     # getting the results of the simulation:
     v_sim = qs.v
@@ -107,10 +105,11 @@ def test_m_ph_n_prty():
 
     im_time = time.process_time() - im_start
 
-    print("\nComparison of the results calculated using the numerical method with approximation of busy periods by Cox's second-order distribution and simulation.")
-    print(f"ro: {ros:1.2f}")
-    print(f"n : {n}")
-    print(f"Number of served jobs for simulation: {num_of_jobs}")
+    print("\nComparison of the results calculated using the numerical method with approximation")
+    print(" of busy periods by Cox's second-order distribution and simulation.")
+    print(f"ro: {UTILIZATION:1.2f}")
+    print(f"n : {NUM_OF_SERVERS}")
+    print(f"Number of served jobs for simulation: {NUM_OF_JOBS}")
     print(f'Calc iterations: {iter_num}')
 
     print("\n")

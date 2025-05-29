@@ -1,11 +1,104 @@
 """
 Testing the Fork-Join and Split-Join systems
 """
+import numpy as np
+
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import ErlangDistribution, H2Distribution
+from most_queue.rand_distribution import GammaDistribution, GammaParams
 from most_queue.sim.fork_join import ForkJoinSim
 from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
+
+NUM_OF_SERVERS = 3  # or n in (n,k) fork-join queueing system
+JOBS_REQUIRED = 2  # or k in (n,k) fork-join queueing system
+
+NUM_OF_JOBS = 300000
+ARRIVAL_RATE = 1.0
+SERVICE_TIME_AVERAGE = 0.35
+# coefficient of variation for service time distributions
+SERVICE_TIME_CV = [0.8, 1.2]
+
+
+def print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k: int):
+    """
+    Prints the average sojourn time in Fork-Join system for different methods.
+    """
+    print(
+        f"\nAverage sojourn time in Fork-Join ({NUM_OF_SERVERS}, {k}):")
+
+    # Print comparision results as table with cols Method | Value.
+    print("-" * 30)
+    print(f"{'Method': ^15} | {'Value': ^15}")
+    print("-" * 30)
+    print(f"{'Sim': ^15} | {v1_sim: .6f}")
+    print(f"{'Varma': ^15} | {v1_varma: .6f}")
+    print(f"{'Nelson-Tantawi': ^15} | {v1_nelson_tantawi: .6f}")
+    print("-" * 30)
+
+    # Assert that the simulation result is close to the theoretical value
+    prefix = "The simulation result is not close to the theoretical value for "
+    assert abs(v1_sim - v1_varma) < 0.02, prefix + "Varma's formula"
+    assert abs(v1_sim - v1_nelson_tantawi) < 0.02, prefix + \
+        "Nelson-Tantawi's formula"
+
+
+def print_results_sj(coev: float, ro: float, v_sim: list, v_num: list):
+    """
+    Print results of Split-Join Queueing System simulation.
+     Args:
+         coev: Coefficient of variation of service time.
+         ro: Utilization coefficient.
+         v_sim: List of simulated sojourn times.
+         v_num: List of theoretical sojourn times.
+    """
+    print("\n")
+    print("-" * 60)
+    print(f'{"Split-Join Queueing System":^60s}')
+    print("-" * 60)
+    print(
+        f"Coefficient of variation of service time: {coev}")
+    print(f"Utilization coefficient: {ro:.3f}")
+    times_print(v_sim, v_num, False)
+
+
+def run_sim_fj(k: int, mu: float):
+    """
+    Run Fork-Join (n,k) simulation for M/M/n systems.
+    """
+    qs = ForkJoinSim(NUM_OF_SERVERS, k, False)
+
+    # Set the input stream. The method needs to be passed distribution
+    # parameters and type of distribution. M - exponential
+    qs.set_sources(ARRIVAL_RATE, 'M')
+
+    # Set the service channels. 
+    qs.set_servers(mu, 'M')
+
+    # Start the simulation
+    qs.run(NUM_OF_JOBS)
+
+    return qs.v
+
+
+def run_sim_sj(service_params: GammaParams):
+    """
+    Run Split-Join (n,n) simulation for M/Gamma/n systems.
+    """
+    # Create an instance of the simulation class and pass the number of servers for service
+    # Simulation class  supports a Fork-Join (n, k) type queueing system. 
+    # For specifying a Split-Join queueing system, you need to pass the
+    # third parameter True, otherwise by default - Fork-Join
+
+    qs = ForkJoinSim(NUM_OF_SERVERS, NUM_OF_SERVERS, True)
+
+    qs.set_sources(ARRIVAL_RATE, 'M')
+    qs.set_servers(service_params, 'Gamma')
+
+    # Start the simulation
+    qs.run(NUM_OF_JOBS)
+
+    # Get a list of initial moments of sojourn time
+    return qs.v
 
 
 def test_fj_sim():
@@ -13,98 +106,27 @@ def test_fj_sim():
     Testing the Fork-Join system simulation
     """
 
-    n = 3  # number of servers
-    l = 1.0  # job arrival rate
-    # number of jobs for IM. The higher this number, the higher the accuracy of simulation modeling.
-    num_of_jobs = 300000
+    mu = 1.0/SERVICE_TIME_AVERAGE    # service rate
 
-    # We will choose the initial moments of service time "b" by average and coefficient of variation
-    # using the method most_queue.sim.rand_distribution.H2Distribution.get_params_by_mean_and_coev()
-    b1 = 0.37  # average service time
+    v1_sim = run_sim_fj(NUM_OF_SERVERS, mu)[0]
 
-    mu = 1.0/b1  # service rate
+    fj_calc_markov = ForkJoinMarkovianCalc(ARRIVAL_RATE, mu, NUM_OF_SERVERS)
 
-    qs = ForkJoinSim(n, n, False)
+    v1_varma = fj_calc_markov.get_v1_fj_varma()
+    v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_tantawi()
 
-    # Set the input stream. The method needs to be passed distribution
-    # parameters and type of distribution. M - exponential
-    qs.set_sources(l, 'M')
-
-    # Set the service channels. The method needs to be passed distribution
-    # parameters and type of distribution.
-    # H - hyperexponential second order
-    qs.set_servers(mu, 'M')
-
-    # Start the simulation
-    qs.run(num_of_jobs)
-
-    # Get a first initial moment of sojourn time
-    v1_sim = qs.v[0]
-
-    fj_calc_markov = ForkJoinMarkovianCalc(l, mu, n)
-
-    vi_varma = fj_calc_markov.get_v1_fj_varma()
-    vi_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_tantawi()
-
-    print(f"\nAverage sojourn time in Fork-Join ({n}, {n}):")
-
-    # Print comparision results as table with cols Method | Value.
-    print("-" * 30)
-    print(f"{'Method': ^15} | {'Value': ^15}")
-    print("-" * 30)
-    print(f"{'Sim': ^15} | {v1_sim: .6f}")
-    print(f"{'Varma': ^15} | {vi_varma: .6f}")
-    print(f"{'Nelson-Tantawi': ^15} | {vi_nelson_tantawi: .6f}")
-    print("-" * 30)
-
-    # Assert that the simulation result is close to the theoretical value
-    prefix = "The simulation result is not close to the theoretical value for "
-    assert abs(v1_sim - vi_varma) < 0.02, prefix + "Varma's formula"
-    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, prefix + \
-        "Nelson-Tantawi's formula"
+    print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=NUM_OF_SERVERS)
 
     # Run Fork-Join (n, k) simulation and calculation of the average sojourn time
+    v1_sim = run_sim_fj(JOBS_REQUIRED, mu)[0]
 
-    k = 2
+    fj_calc_markov = ForkJoinMarkovianCalc(
+        ARRIVAL_RATE, mu, NUM_OF_SERVERS, JOBS_REQUIRED)
 
-    qs = ForkJoinSim(n, k, False)
+    v1_varma = fj_calc_markov.get_v1_varma_nk()
+    v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_nk()
 
-    # Set the input stream. The method needs to be passed distribution
-    # parameters and type of distribution. M - exponential
-    qs.set_sources(l, 'M')
-
-    # Set the service channels. The method needs to be
-    # passed distribution parameters and type of distribution.
-    # H - hyperexponential second order
-    qs.set_servers(mu, 'M')
-
-    # Start the simulation
-    qs.run(num_of_jobs)
-
-    # Get a first initial moment of sojourn time
-    v1_sim = qs.v[0]
-
-    fj_calc_markov = ForkJoinMarkovianCalc(l, mu, n, k)
-
-    vi_varma = fj_calc_markov.get_v1_varma_nk()
-    vi_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_nk()
-
-    print(f"\nAverage sojourn time in Fork-Join ({n}, {k}):")
-
-    # Print comparision results as table with cols Method | Value.
-    print("-" * 30)
-    print(f"{'Method': ^15} | {'Value': ^15}")
-    print("-" * 30)
-    print(f"{'Sim': ^15} | {v1_sim: .6f}")
-    print(f"{'Varma': ^15} | {vi_varma: .6f}")
-    print(f"{'Nelson-Tantawi': ^15} | {vi_nelson_tantawi: .6f}")
-    print("-" * 30)
-
-    # Assert that the simulation result is close to the theoretical value
-    prefix = "The simulation result is not close to the theoretical value for "
-    assert abs(v1_sim - vi_varma) < 0.02, prefix + "Varma's formula"
-    assert abs(v1_sim - vi_nelson_tantawi) < 0.02, prefix + \
-        "Nelson-Tantawi's formula"
+    print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=JOBS_REQUIRED)
 
 
 def test_sj_sim():
@@ -120,88 +142,22 @@ def test_sj_sim():
     For verification, we use simulation modeling.
 
     """
-    n = 3  # number of servers
-    l = 1.0  # job arrival rate
-    # number of jobs for IM. The higher this number, the higher the accuracy of simulation modeling.
-    num_of_jobs = 300000
+    for coev in SERVICE_TIME_CV:
+        params = GammaDistribution.get_params_by_mean_and_coev(
+            SERVICE_TIME_AVERAGE, coev)
 
-    # We will choose the initial moments of service time "b" by average and coefficient of variation
-    # using the method most_queue.sim.rand_distribution.H2Distribution.get_params_by_mean_and_coev()
-    b1 = 0.37  # average service time
-    coev = 1.5  # coefficient of variation of service time
+        b = GammaDistribution.calc_theory_moments(params)
+        v_sim = run_sim_sj(params)
 
-    # parameters of the H2 distribution [y1, mu1, mu2]
-    params = H2Distribution.get_params_by_mean_and_coev(b1, coev)
+        sj_calc = SplitJoinCalc(ARRIVAL_RATE, NUM_OF_SERVERS, b)
+        v_num = sj_calc.get_v()
+        ro = sj_calc.get_ro()
 
-    # Calculate the first four moments, we need one more than the required moments
-    # of time spent in the queueing system
-    b = H2Distribution.calc_theory_moments(params, 4)
+        print_results_sj(coev, ro, v_sim, v_num)
 
-    # To verify, we use IM.
-    # Create an instance of the simulation class and pass the number of servers for service
-    # Simulation class  supports a Fork-Join (n, k) type queueing system. In our case, k = n
-    # For specifying a Split-Join queueing system, you need to pass the
-    # third parameter True, otherwise by default - Fork-Join
-
-    qs = ForkJoinSim(n, n, True)
-
-    # Set the input stream. The method needs to be passed distribution
-    # parameters and type of distribution. M - exponential
-    qs.set_sources(l, 'M')
-
-    # Set the service channels. The method needs to be passed distribution
-    # parameters and type of distribution.
-    # H - hyperexponential second order
-    qs.set_servers(params, 'H')
-
-    # Start the simulation
-    qs.run(num_of_jobs)
-
-    # Get a list of initial moments of sojourn time
-    v_sim = qs.v
-
-    # Calculate the initial moments of the distribution maximum
-    # using the method fj_calc.getMaxMoments.
-    # The input is the number of servers and the list of initial moments
-
-    sj_calc = SplitJoinCalc(l, n, b)
-    v_ch = sj_calc.get_v()
-    ro = sj_calc.get_ro()
-
-    # Further calculation as in a regular M/G/1 queueing system with initial moments
-    # of the distribution maximum of the random variable
-
-    print("\n")
-    print("-" * 60)
-    print(f'{"Split-Join Queueing System":^60s}')
-    print("-" * 60)
-    print(f"Coefficient of variation of service time: {coev}")
-    print(f"Utilization coefficient: {ro:.3f}")
-    times_print(v_sim, v_ch, False)
-
-    # Also for a coefficient of variation < 1 (approximating the distribution with Erlang)
-    coev = 0.8
-    b1 = 0.5
-    params = ErlangDistribution.get_params_by_mean_and_coev(b1, coev)
-    b = ErlangDistribution.calc_theory_moments(params, 4)
-
-    qs = ForkJoinSim(n, n, True)
-    qs.set_sources(l, 'M')
-    qs.set_servers(params, 'E')
-    qs.run(num_of_jobs)
-    v_sim = qs.v
-
-    sj_calc = SplitJoinCalc(l, n, b)
-    v_ch = sj_calc.get_v()
-    ro = sj_calc.get_ro()
-
-    print(f"Coefficient of variation of service time: {coev}")
-    print(f"Utilization coefficient: {ro:.3f}")
-    times_print(v_sim, v_ch, False)
-
-    assert 100*abs(v_ch[0] - v_sim[0])/max(v_ch[0], v_sim[0]) < 10
+        assert np.allclose(np.array(v_sim[:2]), np.array(v_num), rtol=3)
 
 
 if __name__ == "__main__":
-    test_fj_sim()
     test_sj_sim()
+    test_fj_sim()

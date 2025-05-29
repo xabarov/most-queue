@@ -45,13 +45,15 @@ class PriorityNetwork:
                 print_supported_distributions()
                 ```
 
-        nodes_prty: Priority distribution among requests for each node in the network [m][x1, x2 .. x_k],
+        nodes_prty: Priority distribution among requests for each node in the network 
+            [m][x1, x2 .. x_k],
             m - node number, xi - priority for i-th class, k - number of classes
             For example: 
                 [0][0,1,2] - for the first node, a direct order of priorities is set,
-                [2][0,2,1] - for the third node, such an order of priorities is set: for the first class - the oldest (0),
-                            for the second - the youngest (2), for the third - intermediate (1)
-
+                [2][0,2,1] - for the third node, such an order of priorities is set: 
+                            for the first class - the oldest (0),
+                            for the second - the youngest (2), 
+                            for the third - intermediate (1)
         """
 
         self.k_num = k_num  # number of classes
@@ -90,7 +92,6 @@ class PriorityNetwork:
         self.total = 0
         self.served = [0] * self.k_num
         self.in_sys = [0] * self.k_num
-        self.t_old = [0] * self.k_num
         self.arrived = [0] * self.k_num
 
     def choose_next_node(self, real_class, current_node):
@@ -114,9 +115,11 @@ class PriorityNetwork:
         :param k: The class of the task.
         :param new_a: The new arrival time.
         """
+        factor = (1.0 - (1.0 / self.served[k]))
+        a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.v_network[k][i] = self.v_network[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / \
-                self.served[k]
+            self.v_network[k][i] = self.v_network[k][i] * \
+                factor + a_pow[i] / self.served[k]
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -125,9 +128,11 @@ class PriorityNetwork:
         :param new_a: The new arrival time.
 
         """
+        factor = (1.0 - (1.0 / self.served[k]))
+        a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.w_network[k][i] = self.w_network[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / \
-                self.served[k]
+            self.w_network[k][i] = self.w_network[k][i] * \
+                factor + a_pow[i] / self.served[k]
 
     def run_one_step(self):
         """

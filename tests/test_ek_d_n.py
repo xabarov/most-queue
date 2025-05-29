@@ -10,48 +10,47 @@ from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 
+UTILIZATION_FACTOR = 0.7
+NUM_OF_JOBS = 300000
+CHANNELS_NUM = 2
+ARRIVAL_TIME_AVERAGE = 1.0
+ARRIVAL_TIME_CV = 0.56  # coefficient of variation (CV) for arrival time
+
+ERROR_MSG = "The difference between theoretical and simulation results is too large"
+
 
 def test_ek_d_n():
     """
     Testing the numerical calculation of the multichannel Ek/D/n system
     with deterministic service
-
-    For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
-    For verification, we use simulation modeling (sim).
     """
 
-    ro = 0.7  # utilization factor
-    num_of_jobs = 300000  # for sim
-    channels_num = 2
-
-    # When creating an instance of the EkDn class, you need to pass 4 parameters:
-    # - l , k - Erlang distribution parameters of the input stream
+    # When creating an instance of the EkDn class, you need to pass 3 parameters:
+    # - erlang_params: dataclass ErlangParams - Erlang distribution parameters of the input stream
+    #     ErlangParams has two fields, r and mu:
     # - b - service time (deterministic)
     # - n - number of service channels
 
-    # Let us select the parameters k and l of the approximating distribution
+    # Let us select the ErlangParams
     # based on the mean value and the coefficient of variation
     # using the ErlangDistribution.get_params_by_mean_and_coev() method
 
-    a1 = 1  # average time between requests in the input stream
-    coev_a = 0.56  # coefficient of variation of input flow
-    erl_params = ErlangDistribution.get_params_by_mean_and_coev(a1, coev_a)
+    erl_params = ErlangDistribution.get_params_by_mean_and_coev(
+        ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV)
 
     # service time will be determined based on the specified utilization factor
-    # In your case, the parameters l, k, b and n can be specified directly.
-    # Be sure to check that the load factor of the QS does not exceed 1.0
 
-    b = a1 * channels_num * ro
+    b = ARRIVAL_TIME_AVERAGE * CHANNELS_NUM * UTILIZATION_FACTOR
 
     # create an instance of the class for numerical calculation
-    ekdn = EkDn(erl_params, b, channels_num)
+    ekdn = EkDn(erl_params, b, CHANNELS_NUM)
 
     # start calculating the probabilities of the QS states
-    p_ch = ekdn.calc_p()
+    p_num = ekdn.calc_p()
 
-    # for verification we use IM.
-    # create an instance of the IM class, pass the number of service channels
-    qs = QsSim(channels_num)
+    # for verification we use simulation.
+    # create an instance of the QsSim class, pass the number of service channels
+    qs = QsSim(CHANNELS_NUM)
 
     # we set the input stream. The method needs to be passed
     # the distribution parameters as a list and the distribution type. E - Erlang
@@ -60,7 +59,7 @@ def test_ek_d_n():
     qs.set_servers(b, "D")
 
     # run simulation
-    qs.run(num_of_jobs)
+    qs.run(NUM_OF_JOBS)
 
     # obtain parameters - initial moments (3) of sojourn time
     # and probability distribution of the system state
@@ -69,11 +68,11 @@ def test_ek_d_n():
     print(f'v_sim: {v_sim}')
     p_sim = qs.get_p()
 
-    probs_print(p_sim, p_ch, 10)
+    probs_print(p_sim, p_num, 10)
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert abs(p_sim[0] - p_ch[0]) < 0.01
+    assert abs(p_sim[0] - p_num[0]) < 0.01, ERROR_MSG
 
 
 if __name__ == "__main__":

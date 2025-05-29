@@ -5,32 +5,39 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.utils.transforms import lst_exp
 
-
-class MMn_H2warm_H2cold:
+class MMnHyperExpWarmAndCold:
     """
-    Расчет СМО M/M/n с H2-разогревом и H2-охлаждением численным методом Такахаси-Таками.
-    Используются комплексные параметры. Комплексные параметры позволяют аппроксимировать распределение времени обслуживания
-    с произвольными коэффициентами вариации (>1, <=1)
+    Calculation of M/M/n queueing system with H2-warm-up and H2-cooling
+    using numerical Takahashi-Takagi method.Complex parameters are used. 
+    Complex parameters allow approximating the service time distribution 
+    with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, l, mu, b_warm, b_cold, n, buffer=None, N=150, accuracy=1e-8, dtype="c16", verbose=False):
+    def __init__(self, l: float, mu: float, b_warm: list[float], b_cold: list[float],
+                 n: int, buffer: int | None = None,
+                 N: int = 150, accuracy: float = 1e-8, dtype: str = "c16",
+                 verbose: bool = False):
         """
-        n: число каналов
-        l: интенсивность вх. потока
-        mu: интенсивность обслуживания
-        b_warm: начальные моменты времени разогрева
-        b_cold: начальные моменты времени охлаждения
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
+        l: arrival rate
+        mu: service rate
+        b_warm: initial moments of warm-up time
+        b_cold: initial moments of cooling time
+        n: number of servers
+        buffer: size of the buffer (optional)
+        N: number of levels for the Markov chain approximation
+        accuracy: accuracy parameter for stopping iterations
+        dtype: data type for calculations (default is complex16)
+        verbose: flag to print intermediate results
         """
         self.dt = np.dtype(dtype)
         if buffer:
-            self.R = buffer + n  # максимальное число заявок в сисетеме - очередь + каналы
-            self.N = self.R + 1  # число ярусов на один больше + нулевое состояние
+            self.R = buffer + n
+            self.N = self.R + 1
         else:
             self.N = N
-            self.R = None  # для проверки задан ли буфер
+            self.R = None
 
         self.e1 = accuracy
         self.n = n
@@ -55,10 +62,8 @@ class MMn_H2warm_H2cold:
         self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
         self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
 
-        # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
 
-        # переменные
         self.t = []
         self.b1 = []
         self.b2 = []
@@ -66,16 +71,14 @@ class MMn_H2warm_H2cold:
             self.x = [0.0 + 0.0j] * N
             self.z = [0.0 + 0.0j] * N
 
-            # искомые вреоятности состояний СМО
             self.p = [0.0 + 0.0j] * N
         else:
             self.x = [0.0] * N
             self.z = [0.0] * N
 
-            # искомые вреоятности состояний СМО
             self.p = [0.0] * N
 
-        # матрицы переходов
+        # transient matrices for the Markov chain approximation
         self.A = []
         self.B = []
         self.C = []
@@ -103,25 +106,21 @@ class MMn_H2warm_H2cold:
 
     def get_p(self):
         """
-        Возвращает список с вероятностями состояний системы
-        p[k] - вероятность пребывания в системе ровно k заявок
+        Returns the list of state probabilities
+        p[k] - probability of being in the system with exactly k requests
         """
-        for i in range(len(self.p)):
-            self.p[i] = self.p[i].real
-        return self.p
+        return [prob.real for prob in self.p]
 
-    def pls(self, mu, s):
-        return mu / (mu + s)
 
-    def calc_w_pls(self, s):
+    def _calc_w_pls(self, s):
         w = 0
 
         # вычислим ПЛС заранее
-        mu_pls = self.pls(self.mu * self.n, s)
+        mu_pls = lst_exp(self.mu * self.n, s)
         mu_w_pls = np.array(
-            [self.pls(self.mu_w[0], s), self.pls(self.mu_w[1], s)])
+            [lst_exp(self.mu_w[0], s), lst_exp(self.mu_w[1], s)])
         mu_c_pls = np.array(
-            [self.pls(self.mu_c[0], s), self.pls(self.mu_c[1], s)])
+            [lst_exp(self.mu_c[0], s), lst_exp(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
         # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
@@ -178,23 +177,26 @@ class MMn_H2warm_H2cold:
 
     def get_w(self):
         """
-        Возвращает три первых начальных момента времени ожидания в СМО
+        Returns waiting time initial moments 
         """
         w = [0.0] * 3
 
         for i in range(3):
             min_mu = min(chain(np.array([mu.real for mu in self.mu_w]).astype('float'),
                          np.array([mu.real for mu in self.mu_c]).astype('float'), [self.mu]))
-            w[i] = derivative(self.calc_w_pls, 0, dx=1e-3 /
+            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 /
                               min_mu, n=i + 1, order=9)
         return [-w[0], w[1], -w[2]]
 
     def get_b(self):
+        """
+        Returns service time initial moments 
+        """
         return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
 
     def get_v(self):
         """
-        Возвращает три первых начальных момента времени пребывания в СМО
+        Return initial moments of time spent in the system
         """
         v = [0.0] * 3
         w = self.get_w()
@@ -207,7 +209,7 @@ class MMn_H2warm_H2cold:
 
     def get_cold_prob(self):
         """
-        Возвращает вероятность нахождения в состоянии охлаждения
+        Get the probability of being in a cold state.
         """
         p_cold = 0
         for k in range(self.N):
@@ -216,31 +218,14 @@ class MMn_H2warm_H2cold:
 
     def get_warmup_prob(self):
         """
-        Возвращает вероятность нахождения в состоянии разогрева
+        Get the probability of being in a warmup state.
         """
         p_warmup = 0
         for k in range(1, self.N):
             p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
         return p_warmup.real
 
-    @staticmethod
-    def binom_calc(a, b, num=3):
-        res = []
-        if num > 0:
-            res.append(a[0] + b[0])
-        if num > 1:
-            res.append(a[1] + 2 * a[0] * b[0] + b[1])
-        if num > 2:
-            res.append(a[2] + 3 * a[1] * b[0] + 3 * b[1] * a[0] + b[2])
-        return res
 
-    def calc_source_coev(self):
-
-        return 1.0
-
-    def calc_serv_coev(self):
-
-        return 1.0
 
     def initial_probabilities(self):
         """
@@ -252,11 +237,11 @@ class MMn_H2warm_H2cold:
                 self.t[i][0, j] = 1.0 / self.cols[i]
 
         ro = self.l / (self.mu * self.n)
-        va = self.calc_source_coev()
-        vb = self.calc_serv_coev()
+        va = 1.0
+        vb = 1.0
         self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
 
-    def norm_probs(self):
+    def _norm_probs(self):
         summ = 0
         for i in range(self.N):
             summ += self.p[i]
@@ -268,7 +253,7 @@ class MMn_H2warm_H2cold:
             summ = 0
             for i in range(self.N):
                 summ += self.p[i]
-            print("Summ of probs = {0:.5f}".format(summ))
+            print(f"Summ of probs = {summ:.5f}")
 
     def calculate_p(self):
         """
@@ -292,7 +277,7 @@ class MMn_H2warm_H2cold:
             else:
                 p0_min = p0_
 
-        self.norm_probs()
+        self._norm_probs()
 
     def calculate_y(self):
         # sum_y = 0.0
