@@ -104,12 +104,12 @@ def run_simulation(arrival_rate: float, b: list[float],
 
     stat = {}
 
-    stat["w"] = np.mean(ws, axis=0)
-    stat["process_time"] = np.sum(process_times)
-    stat["cold_prob"] = np.mean(cold_probs)
-    stat["cold_delay_prob"] = np.mean(cold_delay_probs)
-    stat["warmup_prob"] = np.mean(warmup_probs)
-    stat["p"] = np.mean(ps, axis=0)
+    stat["w"] = np.mean(ws, axis=0).tolist()
+    stat["process_time"] = np.sum(process_times).item()
+    stat["cold_prob"] = np.mean(cold_probs).item()
+    stat["cold_delay_prob"] = np.mean(cold_delay_probs).item()
+    stat["warmup_prob"] = np.mean(warmup_probs).item()
+    stat["p"] = np.mean(ps, axis=0).tolist()
 
     return stat
 

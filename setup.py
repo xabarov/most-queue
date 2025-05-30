@@ -1,8 +1,7 @@
 from setuptools import find_packages, setup
 
-
 setup(name='most-queue',
-      version='1.57',
+      version='1.58',
       description='Software package for calculation and simulation of queuing systems',
       author='Xabarov Roman',
       author_email='xabarov1985@gmail.com',
@@ -16,14 +15,14 @@ setup(name='most-queue',
       license='MIT',
       packages=find_packages(),
       install_requires=[
-            "colorama",
-            "matplotlib",
-            "numpy",
-            "pandas",
-            "scipy==1.13.0",
-            "tqdm",
-            "graphviz",
-            "networkx",
+          "colorama",
+          "matplotlib",
+          "numpy",
+          "pandas",
+          "scipy==1.13.0",
+          "tqdm",
+          "graphviz",
+          "networkx",
       ],
       include_package_data=True,
       zip_safe=False)
