@@ -7,21 +7,22 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import Cox2Params, CoxDistribution, H2Distribution
+from most_queue.rand_distribution import CoxDistribution, H2Distribution
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
-class MPhNPrty:
+class MPhNPrty(MGnCalc):
     """
     Calculation of M/PH, M/n queue with two classes of requests and absolute priority
     using the Takahashi-Takagi numerical method based on the approximation 
     of the busy-time distribution by a Cox second-order distribution.
     """
 
-    def __init__(self, mu_L: float, cox_param_H: Cox2Params, l_L: float, l_H: float, n: int, N: int = 250,
+    def __init__(self, mu_L: float, b_high: list[float], l_L: float, l_H: float, n: int, N: int = 250,
                  accuracy: float = 1e-8, max_iter: int = 300, is_cox: bool = True,
                  approx_ee: float = 0.1, approx_e: float = 0.5, is_fitting: bool = True,
-                 verbose: bool = True):
+                 buffer=None, verbose: bool = True, dtype="c16"):
         """
         Calculation of M/PH, M/n queue with two classes of requests and absolute priority
         based on the Takahashi-Takagi numerical method based on the approximation 
@@ -30,8 +31,7 @@ class MPhNPrty:
         :param l_L: intensity of the arrivals with low priority,
         :param l_H: intensity of the arrivals with high priority,
         :param mu_L: intensity of service for low-priority requests,
-        :param cox_param_H: params of Cox2 (H2) approximation 
-            of service time for high priority jobs
+        :param b_high: list of E[X^k], k =1,2,3 for service time for high priority jobs
         :param N: number of levels (stages)
         :param accuracy: accuracy parameter for stopping the iteration
         :param max_iter: maximum number of iterations
@@ -39,21 +39,21 @@ class MPhNPrty:
             of low-priority jobs, otherwise use H2 distribution.
         :param approx_ee, approx_e: approximation paramters 
         """
-        # self.dt = np.dtype("f8")
-        self.dt = np.dtype("c16")
-        self.n = n  # number of channels
 
-        self.N = N
-        self.e1 = accuracy
+        super().__init__(n=n, l=0, b=b_high, buffer=buffer,
+                         N=N, accuracy=accuracy, dtype=dtype, verbose=verbose)
+
         self.l_L = l_L
         self.l_H = l_H
         self.mu_L = mu_L
+
+        cox_param_H = CoxDistribution.get_params(b_high)
+
         self.mu1_H = cox_param_H.mu1
         self.mu2_H = cox_param_H.mu2
         self.p_H = cox_param_H.p1
         self.max_iter = max_iter
         self.is_cox = is_cox
-        self.verbose = verbose
         self.approx_ee = approx_ee
         self.approx_e = approx_e
         self.is_fitting = is_fitting
@@ -67,49 +67,9 @@ class MPhNPrty:
 
         self.cols = [] * N
 
-        # Takahasi-Takagi method parameters
-
-        self.t = []
-        self.b1 = []
-        self.b2 = []
-        self.x = [0.0 + 0.0j] * N
-        self.z = [0.0 + 0.0j] * N
-
-        # Probabilities of system states
-        self.p = [0.0 + 0.0j] * N
-
         self.run_iterations_num_ = 0
         self.p_iteration_num_ = 0
-
-        # Transition matrices
-        self.A = []
-        self.B = []
-        self.C = []
-        self.D = []
-        self.Y = []
-
-        # Cols depends on number of channels. cols = number of all microstates transitions
-        # from Cox2 to level
-        self.cols_length_ = 2 * self.n ** 2
-        for i in range(self.n):
-            self.cols_length_ += i + 1
-
-        for i in range(N):
-            self.t.append(np.zeros((1, self.cols_length_), dtype=self.dt))
-            self.b1.append(np.zeros((1, self.cols_length_), dtype=self.dt))
-            self.b2.append(np.zeros((1, self.cols_length_), dtype=self.dt))
-            self.x.append(np.zeros((1, self.cols_length_), dtype=self.dt))
-
-        self._build_matrices()
-        self._initial_probabilities()
-
-    def get_p(self) -> list[float]:
-        """
-        Get probabilities of states.
-        Returns:
-            list: Probabilities of states.
-        """
-        return [prob.real for prob in self.p]
+        self.cols_length_ = 0
 
     def get_low_class_v1(self) -> float:
         """
@@ -123,85 +83,20 @@ class MPhNPrty:
             l1 += p_real[i] * i
         return l1 / self.l_L
 
-    def run(self):
-        """
-        Run calculation. The calculation algorithm does not depend on the structure of matrices.
-        """
-        self.b1[0][0, 0] = 0.0 + 0.0j
-        self.b2[0][0, 0] = 0.0 + 0.0j
+    def _fill_cols(self):
+        # Cols depends on number of channels. cols = number of all microstates transitions
+        # from Cox2 to level
+        self.cols_length_ = 2 * self.n ** 2
+        for i in range(self.n):
+            self.cols_length_ += i + 1
 
-        is_ave = False
+    def _fill_t_b(self):
+        for _i in range(self.N):
+            self.t.append(np.zeros((1, self.cols_length_), dtype=self.dt))
+            self.b1.append(np.zeros((1, self.cols_length_), dtype=self.dt))
+            self.b2.append(np.zeros((1, self.cols_length_), dtype=self.dt))
 
-        iter_num = 0
-        self.run_iterations_num_ = 0
-        if is_ave:
-            x_ave1 = 0.0 + 0.0j
-            x_ave2 = 0.0 + 0.0j
-            for i in range(self.N):
-                x_ave1 += self.x[i]
-            x_ave1 /= self.N
-        else:
-
-            x_ave1 = 0.0
-            x_ave2 = 0.0
-            for i in range(self.N):
-                if self.x[i].real > x_ave1:
-                    x_ave1 = self.x[i].real
-
-        while math.fabs(x_ave2.real - x_ave1.real) >= self.e1 and iter_num < self.max_iter:
-            if self.verbose:
-                print(f"Start numeric iteration {iter_num}")
-            iter_num += 1
-            x_ave2 = x_ave1
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                G = np.linalg.inv(self.D[j] - self.C[j])
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(
-                        self.t[j + 1], np.dot(self.B[j + 1], G))
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
-
-                c = self._calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                self.x[j] = 0.0 + 0.0j
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                self.x[j] = 1.0 / self.x[j]
-
-                self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                    np.dot(self.x[j], self.b2[j])
-
-            self.x[0] = 1.0 / self.z[1]
-
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
-
-            if is_ave:
-                x_ave1 = 0.0 + 0.0j
-                for i in range(self.N):
-                    x_ave1 += self.x[i]
-                x_ave1 /= self.N
-
-            else:
-                x_ave1 = 0.0
-                for i in range(self.N):
-                    if self.x[i].real > x_ave1:
-                        x_ave1 = self.x[i].real
-
-        self.run_iterations_num_ = iter_num
-        self._calculate_p()
-        self._calculate_y()
-
-    def _build_A_for_busy_periods(self, num):
+    def _build_big_a_for_busy_periods(self, num):
         """
         Forms the matrix A at level num for calculating the Busy Period at a given level number.
         :param num: level number
@@ -214,7 +109,7 @@ class MPhNPrty:
             col = num + 1
             row = num + 1
         else:
-            output = self.A_for_busy[self.n]
+            output = self.big_a_for_busy[self.n]
             return output
 
         output = np.zeros((row, col), dtype=self.dt)
@@ -223,7 +118,7 @@ class MPhNPrty:
             output[i, i] = self.l_H
         return output
 
-    def _build_B_for_busy_periods(self, num):
+    def _build_big_b_for_busy_periods(self, num):
         """
         Forms the matrix B at level num for calculating the Busy Period at a given level number.
         :param num: level number
@@ -239,10 +134,10 @@ class MPhNPrty:
             col = num
             row = num
             output = np.zeros((row, col), dtype=self.dt)
-            output[:, :self.n] = self.B_for_busy[self.n]
+            output[:, :self.n] = self.big_b_for_busy[self.n]
             return output
         else:
-            output = self.B_for_busy[self.n + 1]
+            output = self.big_b_for_busy[self.n + 1]
             return output
 
         output = np.zeros((row, col), dtype=self.dt)
@@ -256,7 +151,7 @@ class MPhNPrty:
             output[i + 1, i] = (i + 1) * mu2
         return output
 
-    def _build_C_for_busy_periods(self, num):
+    def _build_big_c_for_busy_periods(self, num):
         """
         Forms the matrix C at level num for calculating the Busy Period at a given level number.
         :param num: level number
@@ -269,7 +164,7 @@ class MPhNPrty:
             col = num + 1
             row = num + 1
         else:
-            output = self.C_for_busy[self.n]
+            output = self.big_c_for_busy[self.n]
             return output
 
         output = np.zeros((row, col), dtype=self.dt)
@@ -281,7 +176,7 @@ class MPhNPrty:
             output[i, i + 1] = (num - i) * mu1 * pH
         return output
 
-    def _build_D_for_busy_periods(self, num):
+    def _build_big_d_for_busy_periods(self, num):
         """
         Forms the matrix D at level num for calculating the Busy Period at a given level number.
         :param num: level number
@@ -291,7 +186,7 @@ class MPhNPrty:
             col = num + 1
             row = num + 1
         else:
-            output = self.D_for_busy[self.n]
+            output = self.big_d_for_busy[self.n]
             return output
 
         output = np.zeros((row, col), dtype=self.dt)
@@ -302,14 +197,14 @@ class MPhNPrty:
             sumC = 0.0 + 0.0j
 
             for j in range(col):
-                sumA += self.A_for_busy[num][i, j]
+                sumA += self.big_a_for_busy[num][i, j]
 
             if num != 0:
                 for j in range(col - 1):
-                    sumB += self.B_for_busy[num][i, j]
+                    sumB += self.big_b_for_busy[num][i, j]
 
             for j in range(col):
-                sumC += self.C_for_busy[num][i, j]
+                sumC += self.big_c_for_busy[num][i, j]
 
             output[i, i] = sumA + sumB + sumC
 
@@ -320,19 +215,19 @@ class MPhNPrty:
         Calculate the busy periods for all levels.
         """
 
-        self.A_for_busy = []
-        self.B_for_busy = []
-        self.C_for_busy = []
-        self.D_for_busy = []
+        self.big_a_for_busy = []
+        self.big_b_for_busy = []
+        self.big_c_for_busy = []
+        self.big_d_for_busy = []
 
         for i in range(self.n + 2):
-            self.A_for_busy.append(self._build_A_for_busy_periods(i))
-            self.B_for_busy.append(self._build_B_for_busy_periods(i))
-            self.C_for_busy.append(self._build_C_for_busy_periods(i))
-            self.D_for_busy.append(self._build_D_for_busy_periods(i))
+            self.big_a_for_busy.append(self._build_big_a_for_busy_periods(i))
+            self.big_b_for_busy.append(self._build_big_b_for_busy_periods(i))
+            self.big_c_for_busy.append(self._build_big_c_for_busy_periods(i))
+            self.big_d_for_busy.append(self._build_big_d_for_busy_periods(i))
 
-        pass_time = PassageTimeCalculation(self.A_for_busy, self.B_for_busy,
-                                           self.C_for_busy, self.D_for_busy, is_clx=True, is_verbose=self.verbose)
+        pass_time = PassageTimeCalculation(self.big_a_for_busy, self.big_b_for_busy,
+                                           self.big_c_for_busy, self.big_d_for_busy, is_clx=True, is_verbose=self.verbose)
         pass_time.calc()
 
         self.pnz_num_ = self.n ** 2
@@ -421,42 +316,6 @@ class MPhNPrty:
             else:
                 p0_min = p0_
         self.p_iteration_num_ = iter
-
-    def _calculate_y(self):
-        for i in range(self.N):
-            self.Y.append(np.dot(self.p[i], self.t[i]))
-
-    def _build_matrices(self):
-        """
-        Builds matrices A, B, C and D for the system.
-        """
-        for i in range(self.N):
-            self.A.append(self._build_big_a_matrix(i))
-            self.B.append(self._build_big_b_matrix(i))
-            self.C.append(self._build_big_c_matrix(i))
-            self.D.append(self._build_big_d_matrix(i))
-
-    def _calculate_c(self, j):
-        """
-        Calculates the value of variable c, participating in the calculation
-        """
-        chisl = 0.0 + 0.0j
-        znam = 0.0 + 0.0j
-        znam2 = 0.0 + 0.0j
-
-        m = np.dot(self.b2[j], self.B[j])
-        for k in range(m.shape[1]):
-            chisl += m[0, k]
-
-        m = np.dot(self.b1[j], self.B[j])
-        for k in range(m.shape[1]):
-            znam2 += m[0, k]
-
-        m = np.dot(self.t[j - 1], self.A[j - 1])
-        for k in range(m.shape[1]):
-            znam += m[0, k]
-
-        return chisl / (znam - znam2)
 
     def _build_big_a_matrix(self, num: int):
         """
@@ -556,22 +415,22 @@ class MPhNPrty:
         l_start = 1
         l_end = 0
         for i in range(1, self.n):
-            rows = self.B_for_busy[i].shape[0]
-            cols = self.B_for_busy[i].shape[1]
+            rows = self.big_b_for_busy[i].shape[0]
+            cols = self.big_b_for_busy[i].shape[1]
             for r in range(rows):
                 for c in range(cols):
-                    output[l_start + r, l_end + c] = self.B_for_busy[i][r, c]
+                    output[l_start + r, l_end + c] = self.big_b_for_busy[i][r, c]
             l_start += i + 1
             l_end += i
 
         # C_for_busy
         l_start = 1
         for i in range(1, self.n):
-            rows = self.C_for_busy[i].shape[0]
-            cols = self.C_for_busy[i].shape[1]
+            rows = self.big_c_for_busy[i].shape[0]
+            cols = self.big_c_for_busy[i].shape[1]
             for r in range(rows):
                 for c in range(cols):
-                    output[l_start + r, l_start + c] = self.C_for_busy[i][r, c]
+                    output[l_start + r, l_start + c] = self.big_c_for_busy[i][r, c]
             l_start += i + 1
 
         l_start = 0

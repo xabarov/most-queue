@@ -206,6 +206,8 @@ class MGnH2ServingColdWarmDelay:
             else:
                 self.x[0] = 1.0 / self.z[1]
 
+            self.t[0] = self.x[0]*(np.dot(self.t[1], self.B[1]).dot(self.G[0]))
+
             x_max1 = np.max(self.x)
 
             if self.verbose:

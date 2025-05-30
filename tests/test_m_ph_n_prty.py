@@ -8,7 +8,6 @@ import math
 import time
 
 from most_queue.rand_distribution import (
-    CoxDistribution,
     ExpDistribution,
     GammaDistribution,
 )
@@ -54,11 +53,9 @@ def test_m_ph_n_prty():
 
     mu_low = 1.0 / b1_low
 
-    cox_params = CoxDistribution.get_params(b_high)
-
     # calculation using the numerical method:
     tt_start = time.process_time()
-    tt = MPhNPrty(mu_low, cox_params, ARRIVAL_RATE_LOW, ARRIVAL_RATE_HIGH,
+    tt = MPhNPrty(mu_low, b_high, ARRIVAL_RATE_LOW, ARRIVAL_RATE_HIGH,
                   n=NUM_OF_SERVERS, is_cox=IS_COX,
                   max_iter=MAX_ITER, verbose=False)
     tt.run()
