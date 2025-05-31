@@ -68,6 +68,10 @@ class MGnCalc:
         self.D = []
         self.Y = []
 
+        self.big_g = []
+        self.big_ag = []
+        self.big_bg = []
+
         self.w = None
 
     def _fill_cols(self):
@@ -109,13 +113,13 @@ class MGnCalc:
             for j in range(1, self.N):  # for all levels except the first.
 
                 # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
+                self.b1[j] = np.dot(self.t[j - 1], self.big_ag[j])
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
+                    self.b2[j] = np.dot(self.t[j + 1], self.big_bg[j])
                 else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
+                    self.b2[j] = np.dot(self.t[j - 1], self.big_bg[j])
 
                 c = self._calculate_c(j)
 
@@ -128,7 +132,7 @@ class MGnCalc:
 
                 if self.R and j == (self.N - 1):
                     tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.G[j])
+                    tag = np.dot(tA, self.big_g[j])
                     tag_sum = 0
                     for t_i in range(tag.shape[1]):
                         tag_sum += tag[0, t_i]
@@ -142,7 +146,8 @@ class MGnCalc:
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 
-            self.t[0] = self.x[0]*(np.dot(self.t[1], self.B[1]).dot(self.G[0]))
+            self.t[0] = self.x[0] * \
+                (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
 
             x_max1 = np.max(self.x)
 
@@ -268,22 +273,22 @@ class MGnCalc:
             self.D.append(self._build_big_d_matrix(i))
 
     def _calc_g_matrices(self):
-        self.G = []
+        self.big_g = []
         for j in range(0, self.N):
-            self.G.append(np.linalg.inv(self.D[j] - self.C[j]))
+            self.big_g.append(np.linalg.inv(self.D[j] - self.C[j]))
 
     def _calc_ag_matrices(self):
-        self.AG = [0]
+        self.big_ag = [0]
         for j in range(1, self.N):
-            self.AG.append(np.dot(self.A[j - 1], self.G[j]))
+            self.big_ag.append(np.dot(self.A[j - 1], self.big_g[j]))
 
     def _calc_bg_matrices(self):
-        self.BG = [0]
+        self.big_bg = [0]
         for j in range(1, self.N):
             if j != (self.N - 1):
-                self.BG.append(np.dot(self.B[j + 1], self.G[j]))
+                self.big_bg.append(np.dot(self.B[j + 1], self.big_g[j]))
             else:
-                self.BG.append(np.dot(self.B[j], self.G[j]))
+                self.big_bg.append(np.dot(self.B[j], self.big_g[j]))
 
     def _calc_support_matrices(self):
         self._calc_g_matrices()

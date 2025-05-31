@@ -9,31 +9,12 @@ from run_one_calc_vs_sim import (calc_moments_by_mean_and_coev,
                                  run_calculation, run_simulation)
 from utils import calc_rel_error_percent, plot_w1, plot_w1_errors
 
-ARRIVAL_RATE = 1.0
 
-SERVICE_TIME_CV = 1.2
-
-WARM_UP_TIME_MEAN = 3.1
-WARM_UP_TIME_CV = 0.87
-
-COOL_TIME_MEAN = 4.1
-COOL_TIME_CV = 1.1
-
-COOL_DELAY_MEAN = 3.71
-COOL_DELAY_CV = 1.2
-
-UTILIZATION = 0.7
-
-NUM_OF_JOBS_PER_SIM = 300_000  # Number of jobs per simulation
-NUM_OF_SIM_TO_AVERAGE = 10  # Number of simulations to average over
-
-
-def run_wait_time_vs_channels_num(channels_min: int = 1, channels_max: int = 10,
-                                  save_path: str = None):
+def run_channels(qp, save_path: str = None):
     """
     Run simulation and calculation for different number of channels and plot the results.
     """
-    channels = np.arange(channels_min, channels_max + 1)
+    channels = np.arange(qp['channels']['min'], qp['channels']['max'] + 1)
 
     w1_num = []
     w1_sim = []
@@ -42,21 +23,25 @@ def run_wait_time_vs_channels_num(channels_min: int = 1, channels_max: int = 10,
     total_num_time = 0
     total_sim_time = 0
 
-    b_w = calc_moments_by_mean_and_coev(WARM_UP_TIME_MEAN, WARM_UP_TIME_CV)
-    b_c = calc_moments_by_mean_and_coev(COOL_TIME_MEAN, COOL_TIME_CV)
-    b_d = calc_moments_by_mean_and_coev(COOL_DELAY_MEAN, COOL_DELAY_CV)
+    b_w = calc_moments_by_mean_and_coev(
+        qp['warmup']['mean']['base'], qp['warmup']['cv']['base'])
+    b_c = calc_moments_by_mean_and_coev(
+        qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
+    b_d = calc_moments_by_mean_and_coev(
+        qp['delay']['mean']['base'], qp['delay']['cv']['base'])
 
     for n in channels:
         print(f"Start {n} channels...")
-        service_mean = n*UTILIZATION/ARRIVAL_RATE
+        service_mean = n*qp['utilization']['base']/qp['arrival_rate']
 
-        b = calc_moments_by_mean_and_coev(service_mean, SERVICE_TIME_CV)
+        b = calc_moments_by_mean_and_coev(
+            service_mean, qp['service']['cv']['base'])
 
         num_results = run_calculation(
-            arrival_rate=ARRIVAL_RATE, num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d)
+            arrival_rate=qp['arrival_rate'], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d)
         sim_results = run_simulation(
-            arrival_rate=ARRIVAL_RATE, num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d,
-            num_of_jobs=NUM_OF_JOBS_PER_SIM, ave_num=NUM_OF_SIM_TO_AVERAGE)
+            arrival_rate=qp['arrival_rate'], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d,
+            num_of_jobs=qp['jobs_per_sim'], ave_num=qp['sim_to_average'])
 
         w1_num.append(num_results["w"][0])
         w1_sim.append(sim_results["w"][0])
@@ -82,14 +67,3 @@ def run_wait_time_vs_channels_num(channels_min: int = 1, channels_max: int = 10,
                        x_label="Number of Channels", is_xs_int=True)
 
     return channels, w1_num, w1_sim, w1_rel_errors
-
-
-if __name__ == "__main__":
-
-    # cur file dir
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    results_path = os.path.join(cur_dir, 'results')
-    if not os.path.exists(results_path):
-        os.makedirs(results_path)
-
-    run_wait_time_vs_channels_num(save_path=results_path)

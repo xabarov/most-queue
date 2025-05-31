@@ -21,7 +21,7 @@ class MGnH2ServingColdWarmDelay:
     with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None, 
+    def __init__(self, l, b, b_warm, b_cold, b_cold_delay, n, buffer=None,
                  N=150, accuracy=1e-6, dtype="c16",
                  verbose=False, stable_w_pls=False, w_pls_dt=1e-3):
         """
@@ -135,6 +135,38 @@ class MGnH2ServingColdWarmDelay:
 
         self._build_matrices()
         self._initial_probabilities()
+
+    def get_probs_of_servers_busy(self):
+        """
+        Return probabilities of servers being busy.
+        prob[i] - probability that i number of servers is busy.
+        """
+
+        probs = np.zeros((self.n + 1), dtype=self.dt)
+
+        # servers are not busy, when system in [0,0] state, in cooling, and warming up states.
+
+        probs[0] += self.Y[0][0, 0] + self.Y[0][0, 3] + self.Y[0][0, 4]
+
+        # when cooling delay, 1 server is running
+
+        probs[1] += self.Y[0][0, 1] + self.Y[0][0, 2] 
+        
+        for k in range(1, self.n):
+            probs[k] += np.sum(self.Y[k][0, 2:k+3])
+
+        for k in range(1, self.N):
+            # warm-ups
+            for i in range(2):
+                probs[0] += self.Y[k][0, i]
+
+            # coolings
+            probs[0] += self.Y[k][0, -1] + self.Y[k][0, -2]
+
+        probs[-1] = 1.0 - np.sum(probs)
+        probs = probs.tolist()
+        return [prob.real for prob in probs]
+
 
     def run(self):
         """

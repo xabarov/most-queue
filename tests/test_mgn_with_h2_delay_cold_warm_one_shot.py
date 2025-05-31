@@ -2,9 +2,12 @@
 Run one simulation vs calculation for queueing system.
 with H2-warming, H2-cooling and H2-delay of cooling starts.
 """
+import math
 import time
 
 import numpy as np
+import yaml
+
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -12,7 +15,22 @@ from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
     MGnH2ServingColdWarmDelay,
 )
 
-from utils import calc_moments_by_mean_and_coev
+
+def calc_moments_by_mean_and_coev(mean, coev):
+    """
+    Calculate the E[X^k] for k=0,1,2
+    for a distribution with given mean and coefficient of variation.
+    :param mean: The mean value of the distribution.
+    :param coev: The coefficient of variation (standard deviation divided by the mean).
+    :return: A list containing the calculated moments
+    """
+    b = [0.0] * 3
+    alpha = 1 / (coev ** 2)
+    b[0] = mean
+    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
+    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    return b
+
 
 
 def run_calculation(arrival_rate: float, b: list[float],
@@ -47,6 +65,7 @@ def run_calculation(arrival_rate: float, b: list[float],
     stat["warmup_prob"] = solver.get_warmup_prob()
     stat["cold_prob"] = solver.get_cold_prob()
     stat["cold_delay_prob"] = solver.get_cold_delay_prob()
+    stat['servers_busy_probs'] = solver.get_probs_of_servers_busy()
 
     return stat
 
@@ -114,12 +133,16 @@ def run_simulation(arrival_rate: float, b: list[float],
 
     return stat
 
+def read_parameters_from_yaml(file_path: str) -> dict:
+    """
+    Read a YAML file and return the content as a dictionary.
+    """
+    with open(file_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 if __name__ == "__main__":
 
-    from utils import read_parameters_from_yaml
-    
-    qp = read_parameters_from_yaml("works/vacations/base_parameters.yaml")
+    qp = read_parameters_from_yaml("tests/cold_warm_delay_params.yaml")
 
     SERVICE_TIME_MEAN = qp['channels']['base']*qp['utilization']['base']/qp['arrival_rate']
 
@@ -144,3 +167,5 @@ if __name__ == "__main__":
 
     probs_print(p_sim=sim_results["p"], p_num=num_results["p"], size=10)
     times_print(sim_moments=sim_results["w"], calc_moments=num_results["w"])
+    
+    print(num_results['servers_busy_probs'])

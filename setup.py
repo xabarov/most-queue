@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(name='most-queue',
-      version='1.58',
+      version='1.60',
       description='Software package for calculation and simulation of queuing systems',
       author='Xabarov Roman',
       author_email='xabarov1985@gmail.com',
@@ -23,6 +23,7 @@ setup(name='most-queue',
           "tqdm",
           "graphviz",
           "networkx",
+          'pyyaml',
       ],
       include_package_data=True,
       zip_safe=False)

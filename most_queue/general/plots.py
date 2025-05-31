@@ -42,11 +42,11 @@ def plot_sim_vs_calc_moments(xs: list[float], sim_results: list[float],
         errors = [100 * (w_sim - w_tt) / w_tt for w_sim,
                   w_tt in zip(sim_results, calc_results)]
 
-        ax.plot(xs, errors)
+        ax.plot(xs, errors, color='black')
         ax.set_ylabel(r"$\varepsilon$, %")
     else:
-        ax.plot(xs, sim_results, label="Sim")
-        ax.plot(xs, calc_results, label="Calc")
+        ax.plot(xs, sim_results, label="Sim", color='black', linestyle='--')
+        ax.plot(xs, calc_results, label="Calc", color='black')
         if is_waiting_time:
             ax.set_ylabel(r"$\omega_{1}$")
         else:

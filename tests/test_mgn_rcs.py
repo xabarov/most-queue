@@ -8,10 +8,10 @@ from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
 
-ARRIVAL_RATE_NEGATIVE = 0.3
+ARRIVAL_RATE_NEGATIVE = 0.9
 ARRIVAL_RATE_POSITIVE = 1.0
 NUM_OF_JOBS = 300000
-NUM_OF_CHANNELS = 3
+NUM_OF_CHANNELS = 5
 UTILIZATION = 0.7
 SERVICE_TIME_CV = 2.1
 
@@ -28,8 +28,6 @@ def test_mgn():
     b[0] = b1
     b[1] = math.pow(b[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
     b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-
-    print(f'Service time moments: {b}')
 
     # Run simulation
     queue_sim = QsSimNegatives(
@@ -71,7 +69,7 @@ def test_mgn():
     times_print(v_sim_broken, v_calc_broken, is_w=False,
                 header='Broken sojourn time')
     times_print(w_sim, w_calc)
-
+    
 
 if __name__ == "__main__":
     test_mgn()

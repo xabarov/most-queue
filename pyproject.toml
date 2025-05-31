@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "most_queue"
-version = "1.58"
+version = "1.60"
 authors = [
   { name="Xabarov Roman", email="xabarov1985@gmail.com" },
 ]
@@ -25,7 +25,8 @@ dependencies = [
   "scipy==1.13.0",
   "tqdm",
   "graphviz",
-  "networkx"
+  "networkx",
+  "pyyaml",
 ]
 [project.urls]
 "Homepage" = "https://github.com/xabarov/most-queue"

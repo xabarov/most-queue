@@ -162,4 +162,4 @@ cython_debug/
 
 .vscode
 
-/works/results/
+works/negative_queues/results/*

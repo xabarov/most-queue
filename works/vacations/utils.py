@@ -3,9 +3,11 @@
 Utils module for vacations paper
 """
 import math
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import yaml
 
 
 def calc_rel_error_percent(sim_value: float, calc_value: float) -> float:
@@ -105,3 +107,36 @@ def plot_probs(xs, probs_num, probs_sim, x_label, save_path=None):
         plt.show()
 
     plt.close(_fig)
+
+
+def create_new_experiment_dir(directory):
+    """
+    All directories has names like 'directory/exp_1', 'directory/exp_2', etc.
+    If the directory already exists, it will be incremented by 1 and created.
+    Return the new directory path.
+    """
+    i = 1
+    while True:
+        exp_dir = os.path.join(directory, f"exp_{i}")
+        if not os.path.exists(exp_dir):
+            os.makedirs(exp_dir)
+            return exp_dir
+        i += 1
+
+
+def save_parameters_as_yaml(qp: dict, save_path: str):
+    """
+    dict qp, that contains all parameters for the experiment
+    should be saved as yaml file.
+    """
+    yaml_path = os.path.join(save_path, "parameters.yaml")
+    with open(yaml_path, "w", encoding="utf-8") as f:
+        yaml.dump(qp, f)
+
+
+def read_parameters_from_yaml(file_path: str) -> dict:
+    """
+    Read a YAML file and return the content as a dictionary.
+    """
+    with open(file_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
