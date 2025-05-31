@@ -6,6 +6,8 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.utils.transforms import lst_exp
+from scipy.misc import derivative
 
 
 class MGnCalc:
@@ -163,7 +165,7 @@ class MGnCalc:
         """
         return [prob.real for prob in self.p]
 
-    def get_w(self) -> list[float]:
+    def get_w(self, derivate=False) -> list[float]:
         """
         Get the waiting time moments
         """
@@ -172,6 +174,12 @@ class MGnCalc:
             return self.w
 
         w = [0.0] * 3
+
+        if derivate:
+            for i in range(3):
+                w[i] = derivative(self._calc_w_lst, 0,
+                                  dx=1e-3 / self.b[0], n=i + 1, order=9)
+            return np.array([-w[0], w[1].real, -w[2]])
 
         for j in range(1, len(self.p) - self.n):
             w[0] += j * self.p[self.n + j]
@@ -191,6 +199,7 @@ class MGnCalc:
         """
         Get the sojourn time moments
         """
+
         w = self.get_w()
         b0 = self.b[0]
         b1 = self.b[1]
@@ -407,3 +416,57 @@ class MGnCalc:
             output[i, i] = self.l + (num - i) * self.mu[0] + i * self.mu[1]
 
         return output
+
+    def _calc_up_probs(self, from_level):
+
+        b_matrix = self.B[from_level]
+        low_level_size = self.cols[from_level - 1]
+        high_level_size = self.cols[from_level]
+
+        probs = np.zeros((high_level_size, low_level_size), dtype=self.dt)
+
+        for i in range(high_level_size):
+            for j in range(low_level_size):
+                if from_level != 1:
+                    probs[i, j] = b_matrix[i, j] / sum(b_matrix[i, :])
+                else:
+                    probs[i, j] = b_matrix[i, 0] / sum(b_matrix[i, :])
+
+        return probs
+
+    def _get_key_numbers(self, level):
+        key_numbers = []
+        if level >= self.n:
+            for i in range(level + 1):
+                key_numbers.append((self.n - i, i))
+        else:
+            for i in range(level + 1):
+                key_numbers.append((level - i, i))
+        return np.array(key_numbers, dtype=self.dt)
+
+    def _calc_w_lst(self, s):
+
+        w = 0
+
+        key_numbers = self._get_key_numbers(self.n)
+
+        a = np.array(
+            [lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
+             range(self.n + 1)])
+
+        up_transition_mrx = self._calc_up_probs(self.n+1)  # (n + 1 x n + 1)
+
+        for k in range(self.n, self.N):
+
+            Pa = np.linalg.matrix_power(
+                up_transition_mrx * a, k - self.n)  # n+1 x n+1
+
+            Ys = [self.Y[k][0, i] for i in range(self.n + 1)]
+            aPa = np.dot(Pa, a)
+            for i in range(self.n + 1):
+                w += Ys[i] * aPa[i]
+
+        return w
+
+
+   

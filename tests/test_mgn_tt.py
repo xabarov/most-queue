@@ -15,6 +15,7 @@ from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+import numpy as np
 
 ARRIVAL_RATE = 1.0
 NUM_OF_JOBS = 300000
@@ -44,7 +45,8 @@ def test_mgn_tt():
         tt.run()
         # get numerical calculation results
         p_tt = tt.get_p()
-        v_tt = tt.get_v()
+        v_tt = tt.get_v(derivate=True)
+
         tt_time = time.process_time() - tt_start
         # also can find out how many iterations were required
         num_of_iter = tt.num_of_iter_
@@ -87,7 +89,8 @@ def test_mgn_tt():
 
         times_print(v_sim, v_tt, False)
 
-        assert 100*abs(v_tt[0] - v_sim[0])/max(v_tt[0], v_sim[0]) < 10
+        assert np.allclose(v_sim, v_tt, rtol=5e-1), "The results of the simulation and Takahasi-Takami method do not match!"
+
 
 
 if __name__ == "__main__":
