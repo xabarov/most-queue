@@ -45,7 +45,7 @@ def test_mgn_tt():
         tt.run()
         # get numerical calculation results
         p_tt = tt.get_p()
-        v_tt = tt.get_v(derivate=True)
+        v_tt = tt.get_v()
 
         tt_time = time.process_time() - tt_start
         # also can find out how many iterations were required
