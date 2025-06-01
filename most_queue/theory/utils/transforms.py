@@ -25,3 +25,6 @@ def lst_gamma(gamma_params: GammaParams, s: float) -> float:
     Calculate the Laplace-Stieltjes transform of a gamma distribution.
     """
     return math.pow(gamma_params.mu/(s+gamma_params.mu), gamma_params.alpha)
+
+
+

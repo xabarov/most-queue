@@ -467,6 +467,3 @@ class MGnCalc:
                 w += Ys[i] * aPa[i]
 
         return w
-
-
-   
