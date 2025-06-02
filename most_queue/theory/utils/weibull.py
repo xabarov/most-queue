@@ -27,15 +27,15 @@ class Weibull:
         u0 = math.log(2 * a) / (2.0 * math.log(2))
         ee = 1e-6
         u1 = (1.0 / (2 * math.log(2))) * math.log(
-            a * math.sqrt(math.pi) * rd.Gamma.get_gamma(u0 + 1) / rd.Gamma.get_gamma(u0 + 0.5))
+            a * math.sqrt(math.pi) * rd.GammaDistribution.get_gamma(u0 + 1) / rd.GammaDistribution.get_gamma(u0 + 0.5))
         delta = u1 - u0
         while math.fabs(delta) > ee:
             u1 = (1.0 / (2 * math.log(2))) * math.log(
-                a * math.sqrt(math.pi) * rd.Gamma.get_gamma(u0 + 1) / rd.Gamma.get_gamma(u0 + 0.5))
+                a * math.sqrt(math.pi) * rd.GammaDistribution.get_gamma(u0 + 1) / rd.GammaDistribution.get_gamma(u0 + 0.5))
             delta = u1 - u0
             u0 = u1
         k = 1 / u1
-        T = math.pow(t[0] / rd.Gamma.get_gamma(u1 + 1), k)
+        T = math.pow(t[0] / rd.GammaDistribution.get_gamma(u1 + 1), k)
         weibullParam = [k, T]
         if num > 2:
             b = [0, 0, 0]
@@ -48,7 +48,7 @@ class Weibull:
 
             for j in range(3):
                 for i in range(3):
-                    A[i, j] = rd.Gamma.get_gamma((i + j + 1) / k) * math.pow(T, (i + j + 1) / k)
+                    A[i, j] = rd.GammaDistribution.get_gamma((i + j + 1) / k) * math.pow(T, (i + j + 1) / k)
             G = A.I * B
             for i in range(num - 2):
                 weibullParam.append(G[i, 0])
