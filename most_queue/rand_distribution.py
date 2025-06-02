@@ -16,8 +16,133 @@ from most_queue.general.distribution_params import (
     H2Params,
     ParetoParams,
     UniformParams,
+    WeibullParams
 )
 from most_queue.general.interfaces import Distribution
+
+
+class Weibull(Distribution):
+    """
+    Class for working with the Weibull distribution
+    """
+
+    def __init__(self, params: WeibullParams, generator=None):
+        """
+        :param params: WeibullParams object containing shape parameter (k) and scale parameter (T)
+        :param generator: random number generator. If None, np.random is used.
+        """
+
+        self.k = params.k
+        self.W = params.W
+        self.params = params
+        self.type = 'Weibull'
+        self.generator = generator
+
+    @staticmethod
+    def generate_static(params: WeibullParams, generator=None):
+        """
+        Generates a random number according to the Weibull distribution.
+        """
+        if generator:
+            p = generator.random()
+        else:
+            p = np.random.rand()
+        return math.pow(-math.log(p)*params.W, -1 / params.k)
+
+    def generate(self) -> float:
+        """
+        Generates a random number according to the Weibull distribution.
+        """
+
+        return self.generate_static(self.params, self.generator)
+
+    @staticmethod
+    def calc_theory_moments(params: WeibullParams, num: int) -> list[float]:
+        """
+        Calculates theoretical moments of the distribution up to the specified order.
+        :param params: WeibullParams parameters for the distribution.
+        :param num: number of moments to calculate.
+        :return: list[float]
+        """
+        f = [0.0]*num
+        for i in range(num):
+            f[i] = math.gamma(1 + i/params.k) * math.pow(params.W, i/params.k)
+        return f
+
+    @staticmethod
+    def get_params(moments: list[float]) -> WeibullParams:
+        """
+        Parameter selection for the distribution based 
+        on initial moments of the distribution 
+
+        params:
+            moments: initial moments of the random variable
+
+       return:
+            WeibullParams 
+
+        """
+        a = moments[1] / (moments[0] * moments[0])
+        u0 = math.log(2 * a) / (2.0 * math.log(2))
+        ee = 1e-6
+        u1 = (1.0 / (2 * math.log(2))) * math.log(
+            a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
+        delta = u1 - u0
+        while math.fabs(delta) > ee:
+            u1 = (1.0 / (2 * math.log(2))) * math.log(
+                a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
+            delta = u1 - u0
+            u0 = u1
+        k = 1 / u1
+        big_w = math.pow(moments[0] / math.gamma(u1 + 1), k)
+
+        return WeibullParams(k=k, W=big_w)
+
+    @staticmethod
+    def get_params_by_mean_and_coev(f1: float, coev: float) -> WeibullParams:
+        """
+        Subselect parameters of Weibull distribution by the given mean and coefficient of variation.
+         Args:
+             f1 (float): The first parameter of the Weibull distribution.
+             coev (float): The coefficient of variation.
+         Returns:
+             WeibullParams
+        """
+
+        f = [0, 0, 0]
+        alpha = 1 / (coev ** 2)
+        f[0] = f1
+        f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
+        f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
+
+        return Weibull.get_params(f)
+
+    @staticmethod
+    def get_tail(params: WeibullParams, t: float) -> float:
+        """
+        Calculate the tail probability of a Weibull distribution at a given value.
+         Args:
+            params (WeibullParams): The parameters of Weibull distribution
+            t: The value at which to calculate the tail probability.
+        """
+        k = params.k
+        big_w = params.W
+
+        return math.exp(-math.pow(t, k) / big_w)
+
+    @staticmethod
+    def get_cdf(params: WeibullParams, t: float) -> float:
+        """
+        Calculate the cumulative distribution function (CDF) of a Weibull distribution for a given set of values.
+         Args:
+            params (WeibullParams): The parameters of Weibull distribution
+            t: The value at which to calculate the cdf probability.
+
+        """
+        k = params.k
+        big_w = params.W
+
+        return 1.0 - math.exp(-math.pow(t, k) / big_w)
 
 
 class NormalDistribution(Distribution):

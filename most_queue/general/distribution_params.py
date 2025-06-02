@@ -36,6 +36,15 @@ class GammaParams:
 
 
 @dataclass
+class WeibullParams:
+    """
+     Weibull distribution parameters.
+    """
+    k: float  # Shape parameter
+    W: float  # Scale parameter
+
+
+@dataclass
 class GaussianParams:
     """
     Normal distribution parameters.
