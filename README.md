@@ -100,7 +100,7 @@ Most_queue consists of two main parts:
 | 3. | M/M/1/N          |  Solving for the Engset model for M/M/1 with a finite number of sources.     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_engset.py) | |
 | 4.  | Queuing Network |  Numerical calculation of queuing network     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_no_prty.py) |  |
 | 5.  | Queuing Network with Priorities  |  Numerical calculation of queuing network with priorities in nodes      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_im_prty.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/network_with_priorities.ipynb) |
-| 5.  | Queuing Network Optimization  | Optimization of queuing network transition matrix     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_opt.py) |  |
+| 6.  | Queuing Network Optimization  | Optimization of queuing network transition matrix     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_opt.py) |  |
 
 
 ---
