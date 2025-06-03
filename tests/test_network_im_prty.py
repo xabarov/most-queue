@@ -7,7 +7,7 @@ import numpy as np
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
-from most_queue.theory.networks.open_network import OpenNetworkCalc
+from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
 
 NUM_OF_CLASSES = 3
 NUM_OF_NODES = 5
@@ -92,20 +92,16 @@ def test_network():
     v_im = qn.v_network
 
     #  Get initial moments of soujorney time from calculation:
-    net_calc = OpenNetworkCalc(
+    net_calc = OpenNetworkCalcPriorities(
         big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
-    semo_calc = net_calc.run()
-    v_num = semo_calc['v']
+    net_calc = net_calc.run()
+    v_num = net_calc['v']
 
     # Get utilization factor of each node
-    loads = semo_calc['loads']
+    loads = net_calc['loads']
 
     #  Print results
 
-    print("\n")
-    print("-" * 60)
-    print("""Comparison of simulation and calculation Results
-for Priority Queuing Network with Multiple Channels""")
     print("-" * 60)
     print(f"Channels at nodes: {NUM_OF_CHANNELS}")
     print(
@@ -124,10 +120,10 @@ for Priority Queuing Network with Multiple Channels""")
     qn.run(NUM_OF_JOBS)
     v_im = qn.v_network
 
-    net_calc = OpenNetworkCalc(
+    net_calc = OpenNetworkCalcPriorities(
         big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
-    semo_calc = net_calc.run()
-    v_num = semo_calc['v']
+    net_calc = net_calc.run()
+    v_num = net_calc['v']
 
     print("-" * 60)
     print("Absolute Priority ('PR')")

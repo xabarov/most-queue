@@ -105,7 +105,8 @@ class QsSim:
 
         self.is_set_source_params = True
 
-        self.source = create_distribution(params, kendall_notation, self.generator)
+        self.source = create_distribution(
+            params, kendall_notation, self.generator)
 
         self.arrival_time = self.source.generate()
 
@@ -137,14 +138,17 @@ class QsSim:
                             self.server_kendall_notation,
                             self.server_params, self.n)
 
-    def send_task_to_channel(self, is_warm_start=False):
+    def send_task_to_channel(self, is_warm_start=False, tsk=None):
         """
         Sends a job to the service channel
         """
+
+        if tsk is None:
+            tsk = Task(self.ttek)
+            tsk.wait_time = 0
+
         for s in self.servers:
             if s.is_free:
-                tsk = Task(self.ttek)
-                tsk.wait_time = 0
                 self.taked += 1
                 self.refresh_w_stat(tsk.wait_time)
                 self.zero_wait_arrivals_num += 1
@@ -159,42 +163,53 @@ class QsSim:
 
                 break
 
-    def send_task_to_queue(self):
+    def send_task_to_queue(self, new_tsk=None):
         """
         Send Task to Queue
         """
-        if self.buffer is None:  # queue length is not specified, i.e. infinite queue
+
+        if new_tsk is None:
             new_tsk = Task(self.ttek)
             new_tsk.start_waiting_time = self.ttek
+
+        if self.buffer is None:  # queue length is not specified, i.e. infinite queue
+
             self.queue.append(new_tsk)
         else:
             if self.queue.size() < self.buffer:
-                new_tsk = Task(self.ttek)
-                new_tsk.start_waiting_time = self.ttek
                 self.queue.append(new_tsk)
             else:
                 self.dropped += 1
                 self.in_sys -= 1
 
-    def arrival(self):
+    def arrival(self, moment=None, ts=None):
         """
         Actions upon arrival of the job by the QS.
         """
+
+        if moment:
+            self.ttek = moment
+            ts.arr_time = moment
+            ts.wait_time = 0
+            ts.start_waiting_time = -1
+            ts.time_to_end_service = 0
+            
+        else:
+            self.ttek = self.arrival_time
+            self.arrival_time = self.ttek + self.source.generate()
 
         self.arrived += 1
         self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
-        self.ttek = self.arrival_time
-        self.arrival_time = self.ttek + self.source.generate()
-
+        
         if self.free_channels == 0:
-            self.send_task_to_queue()
+            self.send_task_to_queue(new_tsk=ts)
 
         else:  # there are free channels:
-            self.send_task_to_channel()
+            self.send_task_to_channel(tsk=ts)
 
-    def serving(self, c):
+    def serving(self, c, is_network=False):
         """
         Actions upon receipt of a service job with - channel number
         """
@@ -219,9 +234,12 @@ class QsSim:
                 self.refresh_busy_stat(self.ttek - self.start_busy)
 
         if self.queue.size() != 0:
-            self.send_head_of_queue_to_channel(c)
+            self.send_head_of_queue_to_channel(c, is_network=is_network)
+            
+        if is_network:
+            return end_ts
 
-    def send_head_of_queue_to_channel(self, channel_num):
+    def send_head_of_queue_to_channel(self, channel_num, is_network=False):
         """
         Send first Task (head of queue) to Channel
         """
@@ -232,6 +250,8 @@ class QsSim:
 
         self.taked += 1
         que_ts.wait_time += self.ttek - que_ts.start_waiting_time
+        if is_network:
+            que_ts.wait_network += self.ttek - que_ts.start_waiting_time
         self.refresh_w_stat(que_ts.wait_time)
 
         self.servers[channel_num].start_service(que_ts, self.ttek)

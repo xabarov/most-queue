@@ -4,7 +4,8 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
@@ -14,34 +15,18 @@ class OpenNetworkCalc:
     Calculates queueing network.
     """
 
-    def __init__(self, R: list[np.matrix], b: list[list[list[float]]],
-                 n: list[int], L: list[float], prty: list[str], nodes_prty: list[list[int]]):
+    def __init__(self, R: np.matrix, b: list[list[float]],
+                 n: list[int], arrival_rate: float):
         """
-        R: list of routing matrices for each class.
-        b: list of lists of theoretical moments of service time distribution for each class in each node.
+        R: routing matrix
+        b: list of theoretical moments of service time distribution for each node.
         n: list of number of channels in each node.
-        L: list of arrival intensities for each class.
-
-        prty: list of priority types for each node. 
-            No  - no priorities, FIFO
-            PR  - preemptive resume, with resuming interrupted request
-            RS  - preemptive repeat with resampling, re-sampling duration for new service
-            RW  - preemptive repeat without resampling, repeating service with previous duration
-            NP  - non preemptive, relative priority
-
-        nodes_prty: Priority distribution among requests for each node in the network [m][x1, x2 .. x_k],
-            m - node number, xi - priority for i-th class, k - number of classes
-            For example: 
-                [0][0,1,2] - for the first node, a direct order of priorities is set,
-                [2][0,2,1] - for the third node, such an order of priorities is set: for the first class - the oldest (0),
-                            for the second - the youngest (2), for the third - intermediate (1)
+        L: arrival intensitiy.
         """
         self.R = R
         self.b = b
         self.n = n
-        self.L = L
-        self.prty = prty
-        self.nodes_prty = nodes_prty
+        self.arrival_rate = arrival_rate
 
     def balance_equation(self, L, R):
         """
@@ -79,76 +64,63 @@ class OpenNetworkCalc:
 
         return l_out
 
-    def order_b_l(self, k_num, nodes):
-        """
-        Order the loads and intensities based on node priority.
-        """
-
-        intensities = [self.balance_equation(
-            self.L[k], self.R[k]) for k in range(k_num)]
-
-        b_order = []
-        l_order = []
-
-        for m in range(nodes):
-            orders = [self.nodes_prty[m][k] for k in range(k_num)]
-            b_order.append([self.b[o][m] for o in orders])
-            l_order.append([intensities[o][m] for o in orders])
-
-        return b_order, l_order
-
-    def run(self):
+    def run(self, is_markovian=False):
         """
         Run the simulation and calculate the results.
         """
         res = {}
 
-        k_num = len(self.L)
-        nodes = self.R[0].shape[0] - 1
+        nodes = len(self.n)
         res['loads'] = [0.0] * nodes
         res['v'] = []
 
-        b_order, l_order = self.order_b_l(k_num, nodes)
+        intensities = self.balance_equation(self.arrival_rate, self.R)
 
         res['v_node'] = []
         for i in range(nodes):
-            l_sum = np.sum(l_order[i])
-            b_sr = np.mean(b_order[i], axis=0)
+            node_arrival_rate = intensities[i]
+            b1_node = self.b[i][0]
 
-            res['loads'][i] = l_sum * b_sr[0] / self.n[i]
-            invar_calc = MGnInvarApproximation(
-                l_order[i], b_order[i], self.n[i])
-            res['v_node'].append(invar_calc.get_v(priority=self.prty[i]))
-            for k in range(k_num):
-                res['v_node'][i][self.nodes_prty[i][k]] = res['v_node'][i][k]
+            res['loads'][i] = node_arrival_rate * b1_node / self.n[i]
+            
+            if is_markovian:
+                mmnr_calc = MMnrCalc(l=node_arrival_rate, mu=1/b1_node, n=self.n[i], r=100)
+                res['v_node'].append(mmnr_calc.get_v())
+            else:
+                mgn_calc = MGnCalc(n=self.n[i], l=node_arrival_rate, b=self.b[i])
+                mgn_calc.run()
+                res['v_node'].append(mgn_calc.get_v())
 
         h = 0.0001
         s = [h * (i + 1) for i in range(4)]
 
-        for k in range(k_num):
-            I = np.eye(nodes)
-            N = np.zeros((nodes, nodes))
-            P = self.R[k][0, :nodes].reshape(1, -1)
-            T = self.R[k][1:, nodes].reshape(-1, 1)
-            Q = self.R[k][1:, :nodes]
+        I = np.eye(nodes)
+        N = np.zeros((nodes, nodes))
+        P = self.R[0, :nodes].reshape(1, -1)
+        T = self.R[1:, nodes].reshape(-1, 1)
+        Q = self.R[1:, :nodes]
 
-            gamma_mu_alpha = [GammaDistribution.get_params(
-                [res['v_node'][i][k][0], res['v_node'][i][k][1]]) for i in range(nodes)]
+        gamma_mu_alpha = [GammaDistribution.get_params(
+            [res['v_node'][i][0], res['v_node'][i][1]]) for i in range(nodes)]
 
-            g_PLS = []
-            for i in range(4):
-                N = np.diag([lst_gamma(
-                    gamma_mu_alpha[j], s[i]) for j in range(nodes)])
+        g_PLS = []
+        for i in range(4):
+            N = np.diag([lst_gamma(
+                gamma_mu_alpha[j], s[i]) for j in range(nodes)])
 
-                G = np.dot(N, Q)
-                FF = I - G
-                F = np.linalg.inv(FF)
-                F = np.dot(P, np.dot(F, np.dot(N, T)))
-                g_PLS.append(F[0, 0])
+            G = np.dot(N, Q)
+            FF = I - G
+            F = np.linalg.inv(FF)
+            F = np.dot(P, np.dot(F, np.dot(N, T)))
+            g_PLS.append(F[0, 0])
 
-            res['v'].append([])
-            res['v'][k] = diff5dots(g_PLS, h)
-            res['v'][k][0] = -res['v'][k][0]
-            res['v'][k][2] = -res['v'][k][2]
+        res['v'] = diff5dots(g_PLS, h)
+        res['v'][0] = -res['v'][0]
+        res['v'][2] = -res['v'][2]
+        
+        res['intensities'] = intensities
+        res['v'] = [float(v) for v in res['v']]
+        res['loads'] = [float(l) for l in res['loads']]
+
 
         return res

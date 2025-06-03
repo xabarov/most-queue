@@ -60,12 +60,9 @@ class PriorityQueueSimulator:
 
         # probability of states of the system (number of requests in it j):
         self.p = []
-        if self.prty_type == "No":
-            # for no priority system, we have one queue for all classes of requests:
-            self.queue = []  # queue of Task's
-        else:
-            for _ in range(self.k):
-                self.queue.append([])
+        
+        for _ in range(self.k):
+            self.queue.append([])
 
         for _ in range(self.k):
             self.busy.append([0, 0, 0])
@@ -369,12 +366,12 @@ class PriorityQueueSimulator:
         """
         if not self.buffer:  # no buffer, infinite queue length
             new_tsk.start_waiting_time = self.ttek
-            self.queue.append(new_tsk)
+            self.queue[k].append(new_tsk)
         else:
 
             if len(self.queue) < self.buffer:
                 new_tsk.start_waiting_time = self.ttek
-                self.queue.append(new_tsk)
+                self.queue[k].append(new_tsk)
             else:
                 self.dropped[k] += 1
                 self.in_sys[k] -= 1
@@ -473,13 +470,14 @@ class PriorityQueueSimulator:
         self.refresh_w_stat(k, end_ts.wait_time)
         self.in_sys[k] -= 1
 
-        if len(self.queue[k]) == 0 and self.free_channels == 1:
-            if self.in_sys[k] == self.n - 1 and self.class_busy_started != -1:
-                # End of busy period
-                self.busy_moments[k] += 1
-                self.refresh_busy_stat(k, self.ttek - self.start_busy)
 
         if self.prty_type != "No":
+            if len(self.queue[k]) == 0 and self.free_channels == 1:
+                if self.in_sys[k] == self.n - 1 and self.class_busy_started != -1:
+                    # End of busy period
+                    self.busy_moments[k] += 1
+                    self.refresh_busy_stat(k, self.ttek - self.start_busy)
+
 
             start_number = 0
             if self.prty_type == "PR" or self.prty_type == "RS" or self.prty_type == "RW":
@@ -507,10 +505,15 @@ class PriorityQueueSimulator:
                     self.free_channels -= 1
                     break
         else:
+            if len(self.queue[0]) == 0 and self.free_channels == 1:
+                if self.in_sys == self.n - 1 and self.class_busy_started != -1:
+                    # End of busy period
+                    self.busy_moments += 1
+                    self.refresh_busy_stat(0, self.ttek - self.start_busy)
             # one queue
-            if len(self.queue) != 0:
+            if len(self.queue[0]) != 0:
 
-                que_ts = self.queue.pop(0)
+                que_ts = self.queue[0].pop(0)
 
                 if self.free_channels == 1 and k != end_ts.k:
                     self.start_busy[k] = self.ttek

@@ -320,3 +320,5 @@ def print_mrx(mrx, is_short=False):
                 print(f"{color}{mrx[i, j]:^5.3f} | ", end="")
         print("\n" + "-------" *
               col if is_short or mrx[i, j].imag == 0.0 else "\n" + "---------------" * col)
+
+    print(f'{Style.RESET_ALL}')

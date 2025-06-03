@@ -10,10 +10,15 @@ class Task:
     """
     id = 0
 
-    def __init__(self, arr_time):
+    def __init__(self, arr_time, is_network=False):
         """
         :param arr_time: Момент прибытия в СМО
         """
+        
+        if is_network:
+            self.arr_network = arr_time
+            self.wait_network = 0
+            
         self.arr_time = arr_time
 
         self.start_waiting_time = 0
@@ -115,8 +120,8 @@ class ImpatientTask(Task):
     A task that can leave the queue if it has not been served by a server within a certain time.
     """
 
-    def __init__(self, arr_time, moment_to_leave):
-        super().__init__(arr_time)
+    def __init__(self, arr_time, moment_to_leave, is_network=False):
+        super().__init__(arr_time, is_network)
         self.moment_to_leave = moment_to_leave
 
     def __str__(self):
@@ -132,8 +137,8 @@ class ImpatientTaskWithRepairs(ImpatientTask):
     Tracking if the task arrived in repair mode or not.
     """
 
-    def __init__(self, arr_time, moment_to_leave, arrive_in_repair_mode=False):
-        super().__init__(arr_time, moment_to_leave)
+    def __init__(self, arr_time, moment_to_leave, arrive_in_repair_mode=False, is_network=False):
+        super().__init__(arr_time, moment_to_leave, is_network)
         self.arrive_in_repair_mode = arrive_in_repair_mode
         self.end_repair_time = 1e16
         self.is_end_repair = False
