@@ -1,6 +1,6 @@
 # Queueing Systems: Simulation & Numerical Methods 🔄
 
-![Queue](assets/3.png)
+![Queue](assets/3.gif)
 
 A Python package for simulating and analyzing queueing systems (QS) and networks. 
 
