@@ -13,9 +13,6 @@ from most_queue.theory.networks.transition_opt import (
     MaxLoadNodeResults,
     NetworkOptimizer,
     OptimizerDynamic,
-    LoadBalanceResults,
-    MaxLoadNodeResults, 
-    ChildLoadBalanceResults
 )
 
 
@@ -48,7 +45,7 @@ class NetworkOptimizerPlus(NetworkOptimizer):
     def _find_opt_candidates(self, loads: list[float],
                              intensities: list[float],
                              strategy: Strategy = Strategy.RANDOM,
-                             top_k:int=3) -> Candidates:
+                             top_k: int = 3) -> Candidates:
         """
         Find candidates for optimization based on the current loads and intensities.
         """
@@ -97,18 +94,17 @@ class NetworkOptimizerPlus(NetworkOptimizer):
             pass
 
         return Candidates(optimized=False, candidates=candidates)
-    
 
-    def run(self, tolerance=1e-6, max_steps=100, 
+    def run(self, tolerance=1e-6, max_steps=100,
             strategy: Strategy = Strategy.RANDOM,
-            top_k:int=3):
+            top_k: int = 3):
         """
         Run the optimization algorithm.
         """
 
         self._maximize_outs()
         self._optimize_loops()
-        
+
         if self.verbose:
             self._print_header()
 
@@ -137,9 +133,9 @@ class NetworkOptimizerPlus(NetworkOptimizer):
                 break
 
             for candidate in candidates_res.candidates:
-                
+
                 z_res = self._find_balance(loads, candidate)
-                
+
                 parent = candidate.parent
                 max_load_node = candidate.node
 
@@ -159,7 +155,7 @@ class NetworkOptimizerPlus(NetworkOptimizer):
                 if self.verbose:
                     self._print_state()
                 step_num += 1
-                
+
         if self.verbose:
             self._print_line()
 
