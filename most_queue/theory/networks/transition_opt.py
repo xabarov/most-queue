@@ -10,8 +10,11 @@ Class for optimizing the transition matrix for an open network.
 from dataclasses import dataclass
 
 import numpy as np
+from colorama import Fore, Style, init
 
 from most_queue.theory.networks.open_network import OpenNetworkCalc
+
+init()
 
 
 @dataclass
@@ -19,7 +22,7 @@ class MaxLoadNodeResults:
     """
     Results of finding the maximum load node in an open network.
     """
-    max_load_node: int
+    node: int
     lam_r_max: float
     optimized: bool
     parent: int
@@ -123,31 +126,43 @@ class NetworkOptimizer:
             self.R, self.b, self.num_channels, self.arrival_rate)
         return net_calc.run(is_markovian=self.is_markovian)
 
+    def print_last_state(self, header='Load balance dynamics'):
+        """
+        Print the load balance dynamics
+        """
+        self._print_header(header=header)
+        self._print_state()
+        self._print_line()
+
     def _print_state(self):
         state = self.dynamics[-1]
-        print(f'|{len(self.dynamics):^8}', end='')
+        print(Fore.CYAN + '|' + Fore.YELLOW +
+              f'{len(self.dynamics):^8}'+Fore.CYAN + '|', end='')
         for load in state.loads:
-            print(f'{load:^8.3f}|', end='')
+            print(Fore.YELLOW+f'{load:^8.3f}'+Fore.CYAN + '|', end='')
 
-        print(f'{state.v1:^12.3f}|')
+        print(Fore.YELLOW+f'{state.v1:^12.3f}'+Fore.CYAN + '|'+Style.RESET_ALL)
 
-    def _print_header(self):
-        header = 'Load balance dynamics'
+    def _print_header(self, header='Load balance dynamics'):
         v1_header = 'v1'
         first_col = 'Iter'
 
-        line_long = 9*(self.rows) + 13
-        print('-'*line_long)
-        print(f'{header:^{line_long}}')
+        line_long = 9*(self.rows) + 14
+        print(Fore.CYAN + '-'*line_long)
+        print(Fore.LIGHTGREEN_EX + f'{header:^{line_long}}'+Fore.CYAN)
         print('-'*line_long)
 
-        print(f'|{first_col:^8}', end='')
+        print(f'|{first_col:^8}|', end='')
         for i in range(self.rows - 1):
             print(f'{i+1:^8}|', end='')
 
         print(f'{v1_header:^12}|')
 
-        print('-'*line_long)
+        print('-'*line_long+Style.RESET_ALL)
+
+    def _print_line(self):
+        line_long = 9*(self.rows) + 14
+        print(Fore.CYAN + '-'*line_long+Style.RESET_ALL)
 
     def _check_if_optimized(self):
         """
@@ -160,14 +175,11 @@ class NetworkOptimizer:
                             intensities: list[float]) -> MaxLoadNodeResults:
         """
         Find the node with the maximum load
-        Return dict with keys 
-        {'optimized': True/False, 'lam_r_max': float, 
-        'parent': int, 'max_load_node': int}
         """
 
         if self._check_if_optimized():
             return MaxLoadNodeResults(optimized=True, lam_r_max=None,
-                                      parent=None, max_load_node=None)
+                                      parent=None, node=None)
 
         max_load_node = -1
         max_load = -1
@@ -200,7 +212,7 @@ class NetworkOptimizer:
             return self._find_max_load_node(loads, intensities)
 
         return MaxLoadNodeResults(optimized=False, lam_r_max=lam_r_max,
-                                  parent=parent, max_load_node=max_load_node)
+                                  parent=parent, node=max_load_node)
 
     def _find_balance(self, loads: list[float],
                       max_node_res: MaxLoadNodeResults) -> LoadBalanceResults:
@@ -212,7 +224,7 @@ class NetworkOptimizer:
         """
 
         parent = max_node_res.parent
-        max_load_node = max_node_res.max_load_node
+        max_load_node = max_node_res.node
         lam_r_max = max_node_res.lam_r_max
 
         childrens = [k for k in range(
@@ -264,7 +276,8 @@ class NetworkOptimizer:
         self._maximize_outs()
         self._optimize_loops()
 
-        self._print_header()
+        if self.verbose:
+            self._print_header()
 
         net_res = self._get_network_calc()
 
@@ -293,7 +306,7 @@ class NetworkOptimizer:
             z_res = self._find_balance(loads, max_node_res)
 
             parent = max_node_res.parent
-            max_load_node = max_node_res.max_load_node
+            max_load_node = max_node_res.node
 
             self._balance(parent, max_load_node, z_res)
 
@@ -310,7 +323,8 @@ class NetworkOptimizer:
             if self.verbose:
                 self._print_state()
             step_num += 1
+            
+        if self.verbose:
+            self._print_line()
 
         return self.R, current_v1
-
-
