@@ -9,7 +9,7 @@ from enum import Enum
 
 import numpy as np
 
-from most_queue.theory.networks.transition_opt import (
+from most_queue.theory.networks.opt.transition import (
     MaxLoadNodeResults,
     NetworkOptimizer,
     OptimizerDynamic,

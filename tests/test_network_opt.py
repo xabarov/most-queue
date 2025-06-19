@@ -11,7 +11,7 @@ import numpy as np
 
 from most_queue.general.tables import print_mrx
 from most_queue.rand_distribution import ExpDistribution
-from most_queue.theory.networks.transition_opt import NetworkOptimizer
+from most_queue.theory.networks.opt.transition import NetworkOptimizer
 
 
 def test_network_opt():
