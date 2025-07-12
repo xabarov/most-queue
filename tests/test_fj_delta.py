@@ -77,7 +77,7 @@ def test_fj_delta():
 
     assert len(v_sim) == len(v_num)
     assert np.allclose(np.array(v_sim), np.array(
-        v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+        v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

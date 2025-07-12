@@ -98,7 +98,7 @@ def test_m_h2_h2warm():
     probs_print(p_sim, p_num, 10)
     times_print(v_sim, v_num, False)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
     assert np.allclose(p_sim[:10], p_num[:10],
                        atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG

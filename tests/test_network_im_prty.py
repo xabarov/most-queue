@@ -2,12 +2,26 @@
 Test the priority queueing network simulation with priority queues at nodes.
 Compare results with numerical calculations using decomposition method.
 """
+import os
+
 import numpy as np
+import yaml
 
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
-from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
+from most_queue.theory.networks.open_network_prty import \
+    OpenNetworkCalcPriorities
+
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+# Import constants from params file
+NUM_OF_JOBS = int(params['num_of_jobs'])
+ERROR_MSG = params['error_msg']
 
 NUM_OF_CLASSES = 3
 NUM_OF_NODES = 5
@@ -38,8 +52,6 @@ TRANSITION_MATRIX_THIRD_CLS = np.matrix([
     [0, 0, 0, 0, 1, 0],
     [0, 0, 0, 0, 0, 1]
 ])
-
-NUM_OF_JOBS = 300_000
 
 # Coefficient of variation for service times for each job class
 SERVICE_TIME_CVS = [1.5, 1.3, 1.4]
@@ -107,12 +119,13 @@ def test_network():
     print(
         f"Node utilization coefficients: {[float(round(load, 3)) for load in loads]}")
 
-    assert abs(v_sim[0][0] - v_num[0][0]) / \
-        max(v_sim[0][0], v_num[0][0]) * 100 < 10
-
     print("-" * 60)
     print("Relative Priority ('NP')")
     times_print_with_classes(v_sim, v_num, False)
+
+    assert abs(v_sim[0][0]-v_num[0][0]< 2.0), ERROR_MSG
+    assert abs(v_sim[1][0]-v_num[1][0]< 2.0), ERROR_MSG
+    assert abs(v_sim[2][0]-v_num[2][0]< 2.0), ERROR_MSG
 
     prty = ['PR'] * NUM_OF_NODES  # Absolute priority at each node
     qn = PriorityNetwork(NUM_OF_CLASSES, ARRIVAL_RATES,
@@ -128,6 +141,10 @@ def test_network():
     print("-" * 60)
     print("Absolute Priority ('PR')")
     times_print_with_classes(v_sim, v_num, False)
+
+    assert abs(v_sim[0][0]-v_num[0][0]< 2.0), ERROR_MSG
+    assert abs(v_sim[1][0]-v_num[1][0]< 2.0), ERROR_MSG
+    assert abs(v_sim[2][0]-v_num[2][0]< 2.0), ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -1,504 +1,219 @@
 """
-Test for M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling.
-Theoretical calculation is compared with simulation results.
+Run one simulation vs calculation for queueing system.
+with H2-warming, H2-cooling and H2-delay of cooling starts.
 """
+import math
 import os
 import time
 
 import numpy as np
+import yaml
 
-from most_queue.misc.vacations_paper_utils import (
-    calc_moments_by_mean_and_coev,
-    dump_stat,
-    load_stat,
-    make_plot,
-    print_table,
-)
+from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
-    MGnH2ServingColdWarmDelay,
-)
+from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import \
+    MGnH2ServingColdWarmDelay
+
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+# Import constants from params file
+NUM_OF_CHANNELS = int(params['num_of_channels'])
 
 
-def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):
+ARRIVAL_RATE = float(params['arrival']['rate'])
+SERVICE_TIME_CV = float(params['service']['cv'])
+
+WARM_UP_MEAN = float(params['warm-up']['mean'])
+WARM_UP_CV = float(params['warm-up']['cv'])
+
+COOLING_MEAN = float(params['cooling']['mean'])
+COOLING_CV = float(params['cooling']['cv'])
+
+COOLING_DELAY_MEAN = float(params['cooling-delay']['mean'])
+COOLING_DELAY_CV = float(params['cooling-delay']['cv'])
+
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
+
+
+def calc_moments_by_mean_and_coev(mean, coev):
     """
-    Get simulation statistics for an M/H2/n queue with H2-warming, 
-    H2-cooling and H2-delay of the start of cooling.
-
-    :param stat: statistic object
-    :param n: number of servers
-    :param l: arrival rate
-    :param buff: buffer size
-    :param b: initial moments of service time
-    :param b_c: initial moments of cooling time
-    :param b_w: initial moments of warming time
-    :param b_d: initial moments of delay of the start of cooling time
-    :param num_of_jobs: number of jobs to simulate
-    :param p_limit: limit for the probability of state
-    :param sim_ave: number of simulations to average the results
-    :return: tuple of lists with simulated statistics (w_sim_mass, p_sim_mass, 
-    warm_prob_sim_mass, cold_prob_sim_mass,
+    Calculate the E[X^k] for k=0,1,2
+    for a distribution with given mean and coefficient of variation.
+    :param mean: The mean value of the distribution.
+    :param coev: The coefficient of variation (standard deviation divided by the mean).
+    :return: A list containing the calculated moments
     """
-    im_start = time.process_time()
-    w_sim_mass = []
-    p_sim_mass = []
-    warm_prob_sim_mass = []
-    cold_prob_sim_mass = []
-    cold_delay_prob_sim_mass = []
+    b = [0.0] * 3
+    alpha = 1 / (coev ** 2)
+    b[0] = mean
+    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
+    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    return b
 
-    for j in range(sim_ave):
-        print(f"\nStart {j + 1}/{sim_ave} simulation")
-        sim = VacationQueueingSystemSimulator(n, buffer=buff)
-        sim.set_sources(l, 'M')
 
-        gamma_params = GammaDistribution.get_params(b)
-        gamma_params_warm = GammaDistribution.get_params(b_w)
-        gamma_params_cold = GammaDistribution.get_params(b_c)
-        gamma_params_cold_delay = GammaDistribution.get_params(b_d)
+def run_calculation(arrival_rate: float, b: list[float],
+                    b_w: list[float], b_c: list[float], b_d: list[float],
+                    num_channels: int):
+    """
+    Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay 
+    of the start of cooling using Takahasi-Takami method.
+    Args:
+       arrival_rate (float): The arrival rate of the queue.
+        b (list): A list containing the E[X^k] k=0, 1, 2. for the service time distribution.
+        b_w (list): A list containing the E[X^k] k=0, 1, 2. for the warmup time distribution.
+        b_c (list): A list containing the E[X^k] k=0, 1, 2. for the cooling time distribution.
+        b_d (list): A list containing the E[X^k] k=0, 1, 2. for the delay time distribution.
+        num_of_channels (int): The number of channels in the queue.
+    Returns:
+        dict: A dictionary containing the statistics of the queue.
+    """
+    num_start = time.process_time()
+
+    solver = MGnH2ServingColdWarmDelay(
+        arrival_rate, b, b_w, b_c, b_d, num_channels)
+
+    solver.run()
+
+    stat = {}
+    stat["w"] = solver.get_w()
+    stat["process_time"] = time.process_time() - num_start
+    stat["p"] = solver.get_p()[:10]
+    stat["num_of_iter"] = solver.num_of_iter_
+
+    stat["warmup_prob"] = solver.get_warmup_prob()
+    stat["cold_prob"] = solver.get_cold_prob()
+    stat["cold_delay_prob"] = solver.get_cold_delay_prob()
+    stat['servers_busy_probs'] = solver.get_probs_of_servers_busy()
+
+    return stat
+
+
+def run_simulation(arrival_rate: float, b: list[float],
+                   b_w: list[float], b_c: list[float], b_d: list[float],
+                   num_channels: int, num_of_jobs: int = 300_000, ave_num: int = 10):
+    """
+    Run simulation for an M/H2/n queue with H2-warming, 
+    H2-cooling and H2-delay before cooling starts.
+    Args:
+       arrival_rate (float): The arrival rate of the queue.
+        b (list): A list containing the E[X^k] k=0, 1, 2. for the service time distribution.
+        b_w (list): A list containing the E[X^k] k=0, 1, 2. for the warmup time distribution.
+        b_c (list): A list containing the E[X^k] k=0, 1, 2. for the cooling time distribution.
+        b_d (list): A list containing the E[X^k] k=0, 1, 2. for the delay time distribution.
+        num_of_channels (int): The number of channels in the queue.
+        num_of_jobs (int): The number of jobs to simulate.
+    Returns:
+        dict: A dictionary containing the statistics of the queue.
+    """
+
+    gamma_params = GammaDistribution.get_params(b)
+    gamma_params_warm = GammaDistribution.get_params(b_w)
+    gamma_params_cold = GammaDistribution.get_params(b_c)
+    gamma_params_cold_delay = GammaDistribution.get_params(b_d)
+
+    ws = []
+    ps = []
+    process_times = []
+    warmup_probs = []
+    cold_probs = []
+    cold_delay_probs = []
+
+    for sim_run_num in range(ave_num):
+        print(f"Running simulation {sim_run_num + 1} of {ave_num}")
+
+        im_start = time.process_time()
+        sim = VacationQueueingSystemSimulator(num_channels)
+        sim.set_sources(arrival_rate, 'M')
 
         sim.set_servers(gamma_params, 'Gamma')
         sim.set_warm(gamma_params_warm, 'Gamma')
         sim.set_cold(gamma_params_cold, 'Gamma')
         sim.set_cold_delay(gamma_params_cold_delay, 'Gamma')
-
         sim.run(num_of_jobs)
 
-        w_sim_mass.append(sim.w)
-        p_sim_mass.append(sim.get_p()[:p_limit])
-        warm_prob_sim_mass.append(sim.get_warmup_prob())
-        cold_prob_sim_mass.append(sim.get_cold_prob())
-        cold_delay_prob_sim_mass.append(sim.get_cold_delay_prob())
+        ws.append(sim.w)
+        process_times.append(time.process_time() - im_start)
+        cold_probs.append(sim.get_cold_prob())
+        cold_delay_probs.append(sim.get_cold_delay_prob())
+        warmup_probs.append(sim.get_warmup_prob())
+        ps.append(sim.get_p()[:10])
 
-    # average all sim data
+    # average over all simulations
 
-    w_ave = [0, 0, 0]
-    p_ave = [0.0] * p_limit
-    for k in range(3):
-        for j in range(sim_ave):
-            w_ave[k] += w_sim_mass[j][k]
-        w_ave[k] /= sim_ave
+    stat = {}
 
-    for k in range(p_limit):
-        for j in range(sim_ave):
-            p_ave[k] += p_sim_mass[j][k]
-        p_ave[k] /= sim_ave
+    stat["w"] = np.mean(ws, axis=0).tolist()
+    stat["process_time"] = np.sum(process_times)
+    stat["cold_prob"] = np.mean(cold_probs)
+    stat["cold_delay_prob"] = np.mean(cold_delay_probs)
+    stat["warmup_prob"] = np.mean(warmup_probs)
+    stat["p"] = np.mean(ps, axis=0).tolist()
 
-    im_time = time.process_time() - im_start
-
-    stat["w_sim"] = w_ave
-    stat["p_sim"] = p_ave
-    stat["sim_time"] = im_time
-
-    stat["sim_warm_prob"] = np.array(warm_prob_sim_mass).mean()
-
-    stat["sim_cold_prob"] = np.array(cold_prob_sim_mass).mean()
-
-    stat["sim_cold_delay_prob"] = np.array(cold_delay_prob_sim_mass).mean()
+    return stat
 
 
-def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_pls, verbose=False):
+def read_parameters_from_yaml(file_path: str) -> dict:
     """
-    Get statistics from Takahasi-Takami method.
-
-    :param stat: statistic object
-    :param n: number of servers
-    :param l: arrival rate
-    :param buff: buffer size (None if infinite)
-    :param b: initial moments of service time
-    :param b_c: initial moments of cooling time
-    :param b_w: initial moments of warming time
-    :param b_d: initial moments of delay time before cooling starts
-    :param p_limit: limit for the sum of probabilities in the Takahasi-Takami method
-    :param w_pls_dt: step for the Laplace-Stieltjes transform calculation
-    :param stable_w_pls: flag for using a stable version 
-      of the Laplace-Stieltjes transform calculation
-    :param verbose: flag for printing debug information
-    :return: None
+    Read a YAML file and return the content as a dictionary.
     """
-    tt_start = time.process_time()
-    tt = MGnH2ServingColdWarmDelay(l, b, b_w, b_c, b_d, n,
-                                   buffer=buff, verbose=verbose, w_pls_dt=w_pls_dt, stable_w_pls=stable_w_pls)
-
-    tt.run()
-    p_tt = tt.get_p()
-    w_tt = tt.get_w()  # .get_w() -> wait times
-
-    tt_time = time.process_time() - tt_start
-
-    stat["w_tt"] = w_tt
-    stat["tt_time"] = tt_time
-    stat["p_tt"] = p_tt[:p_limit]
-    stat["tt_num_of_iter"] = tt.num_of_iter_
-
-    stat["tt_warm_prob"] = tt.get_warmup_prob()
-    stat["tt_cold_prob"] = tt.get_cold_prob()
-    stat["tt_cold_delay_prob"] = tt.get_cold_delay_prob()
+    with open(file_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
-def run_ro(b1_service, coev_service,
-           b1_warm, coev_warm,
-           b1_cold, coev_cold,
-           b1_cold_delay, coev_cold_delay,
-           n=1, num_of_jobs=300000,
-           num_of_roes=12, min_ro=0.1, max_ro=0.9,
-           p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-           verbose=False):
+def test_mgn_h2_delay_cold_warm():
     """
-    Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
-    H2-cooling and H2-delay of the start of cooling depending on load factor (rho).
-    Parameters:
-    ----------
-    b1_service: mean service time
-    coev_service: service time coefficient of variation
-
-    b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
-
-    b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
-
-    b1_cold_delay: average cooling start delay time
-    coev_cold_delay: coefficient of variation of cooling start delay
-
-    n: number of channels
-    num_of_jobs - number of jobs for the simulation model
-
-    num_of_roes - number of utilization factors
-    min_ro - min value of utilization factor
-    max_ro - max value of utilization factor
-
-    p_limit - max number of probabilities
-
-    w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
-
-    stable_w_pls -  if True the algorithm try to fit w_pls_dt value
-                    taking into account the values of transition intensities
-
-    sim_ave - number of runs of the simulation model to average values (reduce variance)
-
-    verbose - is it necessary to display related information
+    Test the M/G/N queue with H2 delay, cold and warm phases.
     """
-
-    # ro = l*b1/n Будем подбирать l от ro
-    roes = np.linspace(min_ro, max_ro, num_of_roes)
-
-    experiment_stats = []
-
-    for ro_num, ro in enumerate(roes):
-        print(f"Start {ro_num + 1}/{len(roes)} with ro={ro:0.3f}... ")
-
-        stat = {}
-        l = n * ro / b1_service
-
-        stat["l"] = l
-        stat["ro"] = ro
-        stat["n"] = n
-
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(b1_cold_delay, coev_cold_delay)
-
-        stat["b"] = b
-        stat["coev_service"] = coev_service
-
-        stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
-
-        stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
-
-        stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
-
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
-
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
-
-        experiment_stats.append(stat)
-
-    return experiment_stats
-
-
-def run_n(b1_service, coev_service,
-          b1_warm, coev_warm,
-          b1_cold, coev_cold,
-          b1_cold_delay, coev_cold_delay,
-          num_of_jobs=300000,
-          ro=0.7, n_min=1, n_max=30,
-          p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-          verbose=False):
-    """
-    Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
-    H2-cooling and H2-delay of the start of cooling depending on the number of servers.
-    Parameters:
-    ----------
-
-    b1_service: mean service time
-    coev_service: service time coefficient of variation
-
-    b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
-
-    b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
-
-    b1_cold_delay: average cooling start delay time
-    coev_cold_delay: coefficient of variation of cooling start delay
-
-    ro - QS utilization factor
-
-    num_of_jobs - number of jobs for the simulation model
-
-    n_min: min value of number of channels
-    n_max: max value of number of channels
-
-    p_limit - max number of probabilities
-
-    w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
-
-    stable_w_pls -  if True the algorithm try to fit w_pls_dt value
-                    taking into account the values of transition intensities
-
-    sim_ave - number of runs of the simulation model to average values (reduce variance)
-
-    verbose - is it necessary to display related information
-    """
-
-    # ro = l*b1/n Будем подбирать l от ro
-    ns = [n for n in range(n_min, n_max + 1)]
-
-    experiment_stats = []
-
-    for n in ns:
-        print(f"Start {n}/{len(ns)}... ")
-
-        stat = {}
-        l = n * ro / b1_service
-
-        stat["l"] = l
-        stat["ro"] = ro
-        stat["n"] = n
-
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(b1_cold_delay, coev_cold_delay)
-
-        stat["b"] = b
-        stat["coev_service"] = coev_service
-
-        stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
-
-        stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
-
-        stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
-
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
-
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
-
-        experiment_stats.append(stat)
-
-    return experiment_stats
-
-
-def run_delay_mean(b1_service, coev_service,
-                   b1_warm, coev_warm,
-                   b1_cold, coev_cold,
-                   coev_cold_delay,
-                   n=1, num_of_jobs=300000, ro=0.7,
-                   num_of_delays=12, min_delay=0.1, max_delay=10,
-                   p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-                   verbose=False):
-    """
-    Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
-    H2-cooling and H2-delay of the start of cooling depending on mean delay time.
-    Parameters:
-
-    b1_service: mean service time
-    coev_service: service time coefficient of variation
-
-    b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
-
-    b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
-
-    coev_cold_delay: coefficient of variation of cooling start delay
-
-    n - number of channels
-    num_of_jobs - number of jobs for the simulation model
-    ro - QS utilization factor
-
-    num_of_delays - number of cooling delays times
-    min_delay - min value of cooling delay
-    max_delay - max value of cooling delay
-
-    p_limit - max number of probabilities
-
-    w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
-
-    stable_w_pls -  if True the algorithm try to fit w_pls_dt value
-                    taking into account the values of transition intensities
-
-    sim_ave - number of runs of the simulation model to average values (reduce variance)
-
-    verbose - is it necessary to display related information
-    """
-
-    ds = np.linspace(min_delay, max_delay, num_of_delays)
-
-    experiment_stats = []
-
-    for d_num, d in enumerate(ds):
-        print(f"Start {d_num + 1}/{len(ds)} with delta={d:0.3f}... ")
-        stat = {}
-        l = n * ro / b1_service
-
-        stat["l"] = l
-        stat["ro"] = ro
-        stat["n"] = n
-
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(d, coev_cold_delay)
-
-        stat["b"] = b
-        stat["coev_service"] = coev_service
-
-        stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
-
-        stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
-
-        stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
-
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
-
-        experiment_stats.append(stat)
-
-    return experiment_stats
-
-
-def test_all():
-    """
-    Runs all tests for the M/H2/n queue with H2-warming, 
-    H2-cooling and H2-delay of the start of cooling.
-    """
-
-    n = 3
-    ro = 0.7
-
-    # if results directory does not exist, create it
-    results_path = os.path.join(os.path.dirname(__file__), 'results')
-    if not os.path.exists(results_path):
-        os.makedirs(results_path)
-
-    ro_dir = os.path.join(results_path, "ro_test")
-    ro_json_filename = os.path.join(ro_dir, f"n_{n}.json")
-
-    if not os.path.exists(ro_json_filename):
-
-        if not os.path.exists(ro_dir):
-            os.makedirs(ro_dir)
-
-        ro_stat = run_ro(b1_service=10.0, coev_service=1.2,
-                         b1_warm=3.1, coev_warm=0.87,
-                         b1_cold=4.1, coev_cold=1.1,
-                         b1_cold_delay=3.71, coev_cold_delay=1.2,
-                         n=n, num_of_jobs=300000,
-                         num_of_roes=10, min_ro=0.1, max_ro=0.9, w_pls_dt=1e-3,
-                         stable_w_pls=True, sim_ave=1)
-
-        dump_stat(ro_stat, save_name=ro_json_filename)
-
-    else:
-        ro_stat = load_stat(ro_json_filename)
-
-    print_table(ro_stat)
-    # make_plot(ro_stat, param_name='ro', mode='abs')
-    n_dir = os.path.join(results_path, "n_test")
-    n_json_filename = os.path.join(n_dir, f"ro_{ro:0.3f}.json")
-
-    if not os.path.exists(n_json_filename):
-
-        if not os.path.exists(n_dir):
-            os.makedirs(n_dir)
-
-        n_stat = run_n(b1_service=10.0, coev_service=1.2,
-                       b1_warm=3.1, coev_warm=0.87,
-                       b1_cold=4.1, coev_cold=1.1,
-                       b1_cold_delay=3.71, coev_cold_delay=1.2,
-                       num_of_jobs=300000,
-                       n_min=1, n_max=10, ro=ro, w_pls_dt=1e-3,
-                       stable_w_pls=True, sim_ave=1)
-
-        dump_stat(n_stat, save_name=n_json_filename)
-
-    else:
-
-        n_stat = load_stat(n_json_filename)
-
-    print_table(n_stat)
-    # make_plot(n_stat, param_name='n', mode='abs')
-
-    delay_dir = os.path.join(results_path, "delay_mean_test")
-
-    delay_json_filename = os.path.join(f"n_{n}_ro_{ro}.json")
-
-    if not os.path.exists(delay_json_filename):
-
-        if not os.path.exists(delay_dir):
-            os.makedirs(delay_dir)
-
-        delay_stat = run_delay_mean(b1_service=10.0, coev_service=1.2,
-                                    b1_warm=3.1, coev_warm=0.87,
-                                    b1_cold=4.1, coev_cold=1.1, ro=ro,
-                                    coev_cold_delay=1.2,
-                                    n=n, num_of_jobs=1000000,
-                                    num_of_delays=10, min_delay=0.1, max_delay=10,
-                                    w_pls_dt=1e-3, stable_w_pls=True, sim_ave=1)
-
-        dump_stat(delay_stat, save_name=delay_json_filename)
-
-    else:
-
-        delay_stat = load_stat(delay_json_filename)
-
-    print_table(delay_stat)
-    # make_plot(delay_stat, param_name='delay_mean', mode='abs')
-
-
-if __name__ == "__main__":
-
-    # test_all()
-    UTILIZATION = 0.7
-    N_STAT = run_n(b1_service=10.0, coev_service=1.2,
-                   b1_warm=3.1, coev_warm=0.87,
-                   b1_cold=4.1, coev_cold=1.1,
-                   b1_cold_delay=3.71, coev_cold_delay=1.2,
-                   num_of_jobs=300000,
-                   n_min=1, n_max=10, ro=UTILIZATION, w_pls_dt=1e-3,
-                   stable_w_pls=True, sim_ave=1)
-
-    print_table(N_STAT)
-    make_plot(N_STAT, param_name='n', mode='abs',
-              save_path="tests/vacations_ro_0.7.png")
+    service_time_mean = NUM_OF_CHANNELS*UTILIZATION_FACTOR/ARRIVAL_RATE
+
+    # Calculate initial moments for service time, warm-up time,
+    # cool-down time, and delay before cooling starts.
+    b_service = calc_moments_by_mean_and_coev(
+        service_time_mean, SERVICE_TIME_CV)
+    b_warmup = calc_moments_by_mean_and_coev(
+        WARM_UP_MEAN, WARM_UP_CV)
+    b_cooling = calc_moments_by_mean_and_coev(COOLING_MEAN, COOLING_CV)
+    b_delay = calc_moments_by_mean_and_coev(
+        COOLING_DELAY_MEAN, COOLING_DELAY_CV)
+
+    num_results = run_calculation(
+        arrival_rate=ARRIVAL_RATE, num_channels=NUM_OF_CHANNELS, b=b_service,
+        b_w=b_warmup, b_c=b_cooling, b_d=b_delay
+    )
+    sim_results = run_simulation(
+        arrival_rate=ARRIVAL_RATE, num_channels=NUM_OF_CHANNELS, b=b_service,
+        b_w=b_warmup, b_c=b_cooling, b_d=b_delay, num_of_jobs=NUM_OF_JOBS,
+        ave_num=1
+    )
+
+    probs_print(p_sim=sim_results["p"], p_num=num_results["p"], size=10)
+    times_print(sim_moments=sim_results["w"], calc_moments=num_results["w"])
+
+    # Print the results for the number of busy servers
+    print("Probability distribution of number of busy servers:")
+    for i, prob in enumerate(num_results['servers_busy_probs']):
+        print(f'\t{i}: {prob: 0.4f}')
+
+    assert np.allclose(
+        sim_results["w"], num_results["w"], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+
+    assert np.allclose(sim_results["p"][:10], num_results["p"][:10],
+                       atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+
+
+if __name__ == '__main__':
+
+    test_mgn_h2_delay_cold_warm()

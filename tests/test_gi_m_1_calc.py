@@ -84,9 +84,9 @@ def test_gi_m_1():
     times_print(v_sim, v_num, False)
     probs_print(p_sim, p_num)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
     assert np.allclose(p_sim[:10], p_num[:10],
-                       rtol=PROBS_RTOL, atol=PROBS_ATOL)
+                       rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

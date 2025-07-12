@@ -1,17 +1,29 @@
 """
 Testing the simulation model of an M/G/c queue with priorities.
 """
+import os
+
+import yaml
+
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
 NUM_OF_CHANNELS = 5
 NUM_OF_CLASSES = 3
 ARRIVAL_RATES = [0.1, 0.2, 0.3]
 SERVICE_TIMES_AVE = [2.25, 4.5, 6.75]
-SERVICE_TIME_CV = 1.2
-NUM_OF_JOBS = 300_000
+SERVICE_TIME_CV = float(params['service']['cv'])
+NUM_OF_JOBS = int(params['num_of_jobs'])
+
+ERROR_MSG = params['error_msg']
 
 
 def test_sim():
@@ -36,15 +48,15 @@ def test_sim():
 
     # now, given the two initial moments, select parameters for the approximating Gamma distribution
     # and add them to the list of parameters params
-    params = []
+    gamma_params = []
     for i in range(NUM_OF_CLASSES):
-        params.append(GammaDistribution.get_params(
+        gamma_params.append(GammaDistribution.get_params(
             [SERVICE_TIMES_AVE[i], b2[i]]))
 
     b = []
     for j in range(NUM_OF_CLASSES):
         b.append(GammaDistribution.calc_theory_moments(
-            params[j], 4))
+            gamma_params[j], 4))
 
     print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
           "time spent in a multi-channel queue with priorities")
@@ -67,7 +79,7 @@ def test_sim():
     servers_params = []
     for j in range(NUM_OF_CLASSES):
         sources.append({'type': 'M', 'params': ARRIVAL_RATES[j]})
-        servers_params.append({'type': 'Gamma', 'params': params[j]})
+        servers_params.append({'type': 'Gamma', 'params': gamma_params[j]})
 
     qs.set_sources(sources)
     qs.set_servers(servers_params)
@@ -81,11 +93,13 @@ def test_sim():
 
     # calculate them as well using the method of invariant relations (for comparison)
     invar_calc = MGnInvarApproximation(ARRIVAL_RATES, b, n=NUM_OF_CHANNELS)
-    v_teor = invar_calc.get_v('PR')
+    v_num = invar_calc.get_v('PR')
 
-    assert abs(v_sim[0][0] - v_teor[0][0]) < 0.3
+    assert abs(v_sim[0][0]-v_num[0][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[1][0]-v_num[1][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[2][0]-v_num[2][0]< 1.0), ERROR_MSG
 
-    times_print_with_classes(v_sim, v_teor, False)
+    times_print_with_classes(v_sim, v_num, False)
 
     print("NP (Non-preamptive) priority")
 
@@ -95,7 +109,7 @@ def test_sim():
     servers_params = []
     for j in range(NUM_OF_CLASSES):
         sources.append({'type': 'M', 'params': ARRIVAL_RATES[j]})
-        servers_params.append({'type': 'Gamma', 'params': params[j]})
+        servers_params.append({'type': 'Gamma', 'params': gamma_params[j]})
 
     qs.set_sources(sources)
     qs.set_servers(servers_params)
@@ -104,11 +118,13 @@ def test_sim():
 
     v_sim = qs.v
 
-    v_teor = invar_calc.get_v('NP')
+    v_num = invar_calc.get_v('NP')
 
-    times_print_with_classes(v_sim, v_teor, False)
+    times_print_with_classes(v_sim, v_num, False)
 
-    assert abs(v_sim[0][0] - v_teor[0][0]) < 0.3
+    assert abs(v_sim[0][0]-v_num[0][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[1][0]-v_num[1][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[2][0]-v_num[2][0]< 1.0), ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -68,7 +68,7 @@ def test_batch_mm1():
 
     v1_sim = qs.v[0]
 
-    times_print(v1_sim, v1, False)  
+    times_print(v1_sim, v1, False)
 
     assert np.allclose(v1_sim, v1, atol=MOMENTS_ATOL,
                        rtol=MOMENTS_RTOL), ERROR_MSG

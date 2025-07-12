@@ -1,6 +1,5 @@
 arrival_rate: 1.0
 jobs_per_sim: 300000
-sim_to_average: 1
 service:
     cv:
         base: 1.2

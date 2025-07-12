@@ -64,7 +64,7 @@ def test_mdn():
     # Output results
     probs_print(p_num, p_sim)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL)
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

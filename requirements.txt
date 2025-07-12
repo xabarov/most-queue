@@ -78,7 +78,6 @@ matplotlib-inline==0.1.7
 mdurl==0.1.2
 mistune==3.1.3
 more-itertools==10.6.0
--e git+https://github.com/xabarov/most-queue@1f4278b54c746b025a324422455e129885e943e4#egg=most_queue
 nbclient==0.10.2
 nbconvert==7.16.6
 nbformat==5.10.4

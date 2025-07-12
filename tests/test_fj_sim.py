@@ -54,10 +54,8 @@ def print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k: int):
     print("-" * 30)
 
     # Assert that the simulation result is close to the theoretical value
-    prefix = "The simulation result is not close to the theoretical value for "
-    assert abs(v1_sim - v1_varma) < 0.02, prefix + "Varma's formula"
-    assert abs(v1_sim - v1_nelson_tantawi) < 0.02, prefix + \
-        "Nelson-Tantawi's formula"
+    assert abs(v1_sim - v1_varma) < 0.02, ERROR_MSG
+    assert abs(v1_sim - v1_nelson_tantawi) < 0.02, ERROR_MSG
 
 
 def print_results_sj(coev: float, ro: float, v_sim: list, v_num: list):
@@ -174,7 +172,7 @@ def test_sj_sim():
     print_results_sj(SERVICE_TIME_CV, ro, v_sim, v_num)
 
     assert np.allclose(np.array(v_sim[:2]), np.array(
-        v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+        v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -91,7 +91,7 @@ def test_mgn():
                 header='Broken sojourn time')
     times_print(w_sim, w_calc)
 
-    assert np.allclose(v_sim, v_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(v_sim, v_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
     assert np.allclose(p_sim[:10], p_calc[:10],
                        atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG

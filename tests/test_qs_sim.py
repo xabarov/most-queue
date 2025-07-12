@@ -2,17 +2,38 @@
 Test the simulation of a queueing system
 For verification, compare with results for M/M/3 and M/D/3 systems
 """
+import os
+
 import numpy as np
+import yaml
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.base import QsSim
-from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
-NUM_OF_CHANNELS = 3
-ARRIVAL_RATE = 1.0
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+# Import constants from params file
+NUM_OF_CHANNELS = int(params['num_of_channels'])
+
+ARRIVAL_RATE = float(params['arrival']['rate'])
+SERVICE_TIME_CV = float(params['service']['cv'])
+
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
+
 QUEUE_LENGTH = 30
-UTILIZATION = 0.8
 
 
 def test_sim():
@@ -21,7 +42,7 @@ def test_sim():
     For verification, compare with results for M/M/3 and M/D/3 systems
     """
     # Calculate service rate based on utilization
-    service_rate = ARRIVAL_RATE / (NUM_OF_CHANNELS*UTILIZATION)
+    service_rate = ARRIVAL_RATE / (NUM_OF_CHANNELS*UTILIZATION_FACTOR)
 
     # Initialize simulation model
     qs = QsSim(NUM_OF_CHANNELS, buffer=QUEUE_LENGTH)
@@ -33,42 +54,26 @@ def test_sim():
     qs.set_servers(service_rate, 'M')
 
     # Run simulation with 300,000 arrivals
-    qs.run(300000)
+    qs.run(NUM_OF_JOBS)
 
     # Get simulated waiting times
     w_sim = qs.w
+    p_sim = qs.get_p()
 
     # Calculate theoretical waiting times using MMnr model
     mmnr = MMnrCalc(ARRIVAL_RATE, service_rate, NUM_OF_CHANNELS, QUEUE_LENGTH)
-    w_theory = mmnr.get_w()
+    w_num = mmnr.get_w()
+    p_num = mmnr.get_p()
 
     # Print comparison of simulation and theoretical results
-    times_print(w_sim, w_theory, True)
+    times_print(w_sim, w_num, True)
+    probs_print(p_num=p_num, p_sim=p_sim, size=10)
 
-    # Reset for next part of test
-    qs = QsSim(NUM_OF_CHANNELS)
+    assert np.allclose(w_sim, w_num, rtol=MOMENTS_RTOL,
+                       atol=MOMENTS_ATOL), ERROR_MSG
 
-    # Set arrival process again (M distribution)
-    qs.set_sources(ARRIVAL_RATE, 'M')
-
-    # Set deterministic service times (D distribution)
-    qs.set_servers(1.0 / service_rate, 'D')
-
-    # Run simulation with 1,000,000 arrivals
-    qs.run(1000000)
-
-    # Calculate theoretical probabilities using MDn model
-    mdn = MDn(ARRIVAL_RATE, 1.0 / service_rate, NUM_OF_CHANNELS)
-    p_theory = mdn.calc_p()
-
-    # Get simulated state probabilities
-    p_sim = qs.get_p()
-
-    # Print comparison of simulation and theoretical probabilities
-    probs_print(p_sim, p_theory, 10)
-
-    # Assert that first 10 probabilities match within tolerance
-    np.allclose(np.array(p_sim[:10]), np.array(p_theory[:10]), atol=1e-2)
+    assert np.allclose(p_sim[:10], p_num[:10],
+                       atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

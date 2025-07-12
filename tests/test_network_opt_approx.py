@@ -35,7 +35,9 @@ def test_network_opt_approx():
         maximum_rates_to_end=max_ends,
         is_service_markovian=True, verbose=True)
 
-    optimizer.run()
+    _best_transition_matrix, best_v1 = optimizer.run()
+
+    assert best_v1 < 16.0, f'The best V1 value should be less than 16.0. Found: {best_v1}'
 
 
 if __name__ == "__main__":

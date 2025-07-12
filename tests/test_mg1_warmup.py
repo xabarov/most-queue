@@ -83,7 +83,7 @@ def test_mg1_warm():
     times_print(v_sim, v_num, is_w=False)
 
     # assert all close with relative percent 20%
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

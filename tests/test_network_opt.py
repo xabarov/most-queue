@@ -46,6 +46,8 @@ def test_network_opt():
     print_mrx(best_r)
     print(f"Best mean sojourn time: {v1:0.2f}")
 
+    assert v1 < 16.0, "Mean sojourn time is too high."
+
 
 if __name__ == "__main__":
     test_network_opt()

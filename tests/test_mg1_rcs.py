@@ -78,7 +78,7 @@ def test_mg1_gamma_rcs():
 
     # assert is all close with rtol 10%
     assert np.allclose(v_sim[0], v1_gamma_calc,
-                       rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+                       rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

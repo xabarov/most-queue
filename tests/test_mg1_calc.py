@@ -73,7 +73,7 @@ def test_mg1():
     assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
 
     assert np.allclose(np.array(p_sim[:10]), np.array(
-        p_num[:10]), atol=PROBS_ATOL, rtol=PROBS_RTOL)
+        p_num[:10]), atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

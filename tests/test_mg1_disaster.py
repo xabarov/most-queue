@@ -88,7 +88,7 @@ def test_mg1():
     times_print_with_two_numerical(v_sim, v_calc1, v_calc_tt, is_w=False,
                                    num1_header='MG1', num2_header='T-T')
 
-    assert np.allclose(v_sim, v_calc_tt, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(v_sim, v_calc_tt, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
     # when MG1 will work, add assert with v_calc1
 

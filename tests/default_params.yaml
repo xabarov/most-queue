@@ -2,6 +2,7 @@ error_msg: "System simulation results do not match theoretical values"
 
 num_of_channels: 3
 num_of_jobs: 100000
+sim_to_average: 1
 
 utilization_factor: 0.7
 buffer: 30
@@ -21,4 +22,14 @@ service:
 
 warm-up:
   cv: 1.2
+  mean: 3.0
+
+cooling:
+  cv: 1.2
+  mean: 3.0
+
+cooling-delay:
+  cv: 1.2
+  mean: 3.0
+
 

@@ -40,9 +40,13 @@ def test_network_opt_plus():
             maximum_rates_to_end=max_ends,
             is_service_markovian=True, verbose=False)
 
-        optimizer.run(strategy=strategy, top_k=top_k)
+        _, best_v1 = optimizer.run(strategy=strategy, top_k=top_k)
         print('\n')
         optimizer.print_last_state(header=f'Strategy: {strategy}')
+
+        assert best_v1 < 18.0, f"Best value for strategy {strategy} is too high."
+
+
 
 
 if __name__ == "__main__":
