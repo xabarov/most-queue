@@ -15,17 +15,17 @@ from most_queue.theory.batch.mm1 import BatchMM1
 
 
 cur_dir = os.getcwd()
-config_path = os.path.join(cur_dir, 'tests', 'config.yaml')
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
 
-with open(config_path, 'r', encoding='utf-8') as file:
-    config = yaml.safe_load(file)
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
 
-# Import constants from config.yaml file
+# Import constants from params file
 NUM_OF_CHANNELS = 1
-ARRIVAL_RATE = float(config['arrival_rate'])
-NUM_OF_JOBS = int(config['num_of_jobs'])
-UTILIZATION_FACTOR = float(config['utilization_factor'])
-ERROR_MSG = config['error_msg']
+ARRIVAL_RATE = float(params['arrival']['rate'])
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
 
 BATCH_SIZE = 5
 BATCH_PROBABILITIES = [0.2, 0.3, 0.1, 0.2, 0.2]

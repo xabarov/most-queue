@@ -7,6 +7,7 @@ For verification, we use simulation modeling (sim).
 """
 import os
 
+import numpy as np
 import yaml
 
 from most_queue.general.tables import probs_print
@@ -14,22 +15,21 @@ from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 
-
 cur_dir = os.getcwd()
-config_path = os.path.join(cur_dir, 'tests', 'config.yaml')
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
 
-with open(config_path, 'r', encoding='utf-8') as file:
-    config = yaml.safe_load(file)
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
 
-# Import constants from config.yaml file
-NUM_OF_CHANNELS = int(config['num_of_channels'])
+# Import constants from params file
+NUM_OF_CHANNELS = int(params['num_of_channels'])
 
-ARRIVAL_TIME_AVERAGE = 1.0/float(config['arrival_rate'])
-ARRIVAL_TIME_CV = 1 # float(config['arrival_cv'])
+ARRIVAL_TIME_AVERAGE = 1.0/float(params['arrival']['rate'])
+ARRIVAL_TIME_CV = float(params['arrival']['cv'])
 
-NUM_OF_JOBS = int(config['num_of_jobs'])
-UTILIZATION_FACTOR = float(config['utilization_factor'])
-ERROR_MSG = config['error_msg']
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
 
 
 def test_ek_d_n():
@@ -85,7 +85,7 @@ def test_ek_d_n():
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert abs(p_sim[0] - p_num[0]) < 0.01, ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=1e-2), ERROR_MSG
 
 
 if __name__ == "__main__":

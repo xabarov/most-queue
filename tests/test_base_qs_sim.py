@@ -14,18 +14,20 @@ from most_queue.theory.fifo.mmnr import MMnrCalc
 # Open config.yaml
 
 cur_dir = os.getcwd()
-config_path = os.path.join(cur_dir, 'tests', 'config.yaml')
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
 
-with open(config_path, 'r', encoding='utf-8') as file:
-    config = yaml.safe_load(file)
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
 
-# Import constants from config.yaml file
-NUM_OF_CHANNELS = int(config['num_of_channels'])
-ARRIVAL_RATE = float(config['arrival_rate'])
-NUM_OF_JOBS = int(config['num_of_jobs'])
-BUFFER = int(config['buffer'])
-UTILIZATION_FACTOR = float(config['utilization_factor'])
-ERROR_MSG = config['error_msg']
+# Import constants from params file
+NUM_OF_CHANNELS = int(params['num_of_channels'])
+ARRIVAL_RATE = float(params['arrival']['rate'])
+NUM_OF_JOBS = int(params['num_of_jobs'])
+BUFFER = int(params['buffer'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+PROBS_ATOL = float()
+
+ERROR_MSG = params['error_msg']
 
 
 def test_sim_mmnr():
