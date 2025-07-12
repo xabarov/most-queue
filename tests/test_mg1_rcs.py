@@ -2,13 +2,32 @@
 Test the M/H2/1 and M/Gamma/1 queueing systems with RCS discipline.
 """
 import math
+import os
 
 import numpy as np
+import yaml
 
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_rcs import MG1NegativeCalcRCS
+
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+SERVICE_TIME_CV = float(params['service']['cv'])
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
+
+ARRIVAL_RATE_POSITIVE = float(params['arrival']['rate'])
+ARRIVAL_RATE_NEGATIVE = 0.8*ARRIVAL_RATE_POSITIVE
 
 
 def calc_service_moments(utilization_factor: float,
@@ -28,20 +47,14 @@ def calc_service_moments(utilization_factor: float,
 
     return b
 
-ARRIVAL_RATE_POSITIVE = 1.0
-ARRIVAL_RATE_NEGATIVE = 0.8
-NUM_OF_JOBS = 300000
-SERVICE_TIME_CV = 2.15
-UTILIZATION = 0.7
-
-
 
 def test_mg1_gamma_rcs():
     """
     Test the  M/Gamma/1 queueing systems with RCS discipline.
     """
 
-    b = calc_service_moments(UTILIZATION, SERVICE_TIME_CV, ARRIVAL_RATE_POSITIVE)
+    b = calc_service_moments(
+        UTILIZATION_FACTOR, SERVICE_TIME_CV, ARRIVAL_RATE_POSITIVE)
 
     # Run simulation
     queue_sim = QsSimNegatives(
@@ -61,10 +74,11 @@ def test_mg1_gamma_rcs():
     v1_gamma_calc = m_gamma_1_calc.get_v1()
 
     times_print(v_sim[0], v1_gamma_calc, is_w=False,
-                header='sojourn time Gamma')
+                header='Sojourn time in M/G/1 with RCS disasters')
 
     # assert is all close with rtol 10%
-    assert np.allclose(v_sim[0], v1_gamma_calc, rtol=0.1)
+    assert np.allclose(v_sim[0], v1_gamma_calc,
+                       rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
 
 
 if __name__ == "__main__":

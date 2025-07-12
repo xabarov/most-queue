@@ -5,23 +5,34 @@ based on the approximation of busy periods by Cox's second-order distribution.
 For verification, we use simulation
 """
 import math
+import os
 import time
 
-from most_queue.rand_distribution import (
-    ExpDistribution,
-    GammaDistribution,
-)
+import yaml
+
+from most_queue.rand_distribution import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
 
-NUM_OF_SERVERS = 4
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+
+NUM_OF_CHANNELS = int(params['num_of_channels'])
+
+SERVICE_TIME_CV = float(params['service']['cv'])
+
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
 NUM_OF_CLASSES = 2
-ARRIVAL_RATE_HIGH = 1.0
-ARRIVAL_RATE_LOW = 1.5
-UTILIZATION = 0.75
-NUM_OF_JOBS = 300000
-SERVICE_TIME_CV = 1.2
+ARRIVAL_RATE_HIGH = float(params['arrival']['rate'])
+ARRIVAL_RATE_LOW = 1.5*ARRIVAL_RATE_HIGH
 
 MAX_ITER = 100  # maximum number of iterations for the numerical method
 IS_COX = False  # use C2 distribution or H2-distribution for approximating busy periods
@@ -39,7 +50,7 @@ def test_m_ph_n_prty():
     print(f"coev =  {SERVICE_TIME_CV:5.3f}")
 
     lsum = ARRIVAL_RATE_LOW + ARRIVAL_RATE_HIGH
-    bsr = NUM_OF_SERVERS * UTILIZATION / lsum
+    bsr = NUM_OF_CHANNELS * UTILIZATION_FACTOR / lsum
     b1_high = lsum * bsr / (ARRIVAL_RATE_LOW *
                             SERVICE_PROPORTION + ARRIVAL_RATE_HIGH)
     b1_low = SERVICE_PROPORTION * b1_high
@@ -56,13 +67,13 @@ def test_m_ph_n_prty():
     # calculation using the numerical method:
     tt_start = time.process_time()
     tt = MPhNPrty(mu_low, b_high, ARRIVAL_RATE_LOW, ARRIVAL_RATE_HIGH,
-                  n=NUM_OF_SERVERS, is_cox=IS_COX,
+                  n=NUM_OF_CHANNELS, is_cox=IS_COX,
                   max_iter=MAX_ITER, verbose=False)
     tt.run()
     tt_time = time.process_time() - tt_start
 
     iter_num = tt.run_iterations_num_
-    v2_tt = tt.get_low_class_v1()
+    v_low_tt = tt.get_low_class_v1()
 
     mu_low = 1.0 / b1_low
 
@@ -74,14 +85,14 @@ def test_m_ph_n_prty():
 
     invar_start = time.process_time()
     invar_calc = MGnInvarApproximation(
-        [ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_SERVERS)
+        [ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_CHANNELS)
     v = invar_calc.get_v(priority='PR', num=2)
-    v2_invar = v[1][0]
+    v_low_invar = v[1][0]
     invar_time = time.process_time() - invar_start
 
     im_start = time.process_time()
 
-    qs = PriorityQueueSimulator(NUM_OF_SERVERS, NUM_OF_CLASSES, "PR")
+    qs = PriorityQueueSimulator(NUM_OF_CHANNELS, NUM_OF_CLASSES, "PR")
     sources = []
     servers_params = []
 
@@ -98,39 +109,35 @@ def test_m_ph_n_prty():
 
     # getting the results of the simulation:
     v_sim = qs.v
-    v2_sim = v_sim[1][0]
+    v_low_sim = v_sim[1][0]
 
-    im_time = time.process_time() - im_start
+    sim_time = time.process_time() - im_start
 
     print("\nComparison of the results calculated using the numerical method with approximation")
     print(" of busy periods by Cox's second-order distribution and simulation.")
-    print(f"ro: {UTILIZATION:1.2f}")
-    print(f"n : {NUM_OF_SERVERS}")
+    print(f"ro: {UTILIZATION_FACTOR:1.2f}")
+    print(f"n : {NUM_OF_CHANNELS}")
     print(f"Number of served jobs for simulation: {NUM_OF_JOBS}")
     print(f'Calc iterations: {iter_num}')
 
     print("\n")
     print("Average times spent in the queue by requests of class 2")
     print("-" * 45)
-    rows = ["Ours", "Sim", "Invar"]
-    values = [
-        v2_tt,
-        v2_sim,
-        v2_invar,
-    ]
-
-    times = [tt_time,
-             im_time,
-             invar_time]
-
     headers = ["Calc type", "v1 low", 'calc time, s']
 
     print("{0:^15s}|{1:^15s}|{2:^15s}".format(*headers))
     print("-" * 45)
-    for row, value, t in zip(rows, values, times):
-        print(f"{row:^15}|{value:^14.3f} | {t:^14.3f}")
+    row = 'Ours'
+    print(f"{row:^15}|{v_low_tt:^14.3f} | {tt_time:^14.3f}")
+    row = 'Invar'
+    print(f"{row:^15}|{v_low_invar:^14.3f} | {invar_time:^14.3f}")
+    print("-" * 45)
+    row = 'Sim'
+    print(f"{row:^15}|{v_low_sim:^14.3f} | {sim_time:^14.3f}")
     print("-" * 45)
     print("\n")
+
+    assert abs(v_low_tt-v_low_sim) < 0.1, ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -6,9 +6,19 @@ num_of_jobs: 100000
 utilization_factor: 0.7
 buffer: 30
 
+probs_rtol: 1e-3 
 probs_atol: 1e-2
+
+moments_atol: 2.0
+moments_rtol: 0.3
 
 arrival:
   rate: 1.0
   cv: 0.56 # coefficient of variation (CV) for arrival time if it not markovian
+
+service:
+  cv: 1.2
+
+warm-up:
+  cv: 1.2
 

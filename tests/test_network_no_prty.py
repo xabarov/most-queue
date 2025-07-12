@@ -60,7 +60,7 @@ def test_network():
     qn.run(NUM_OF_JOBS)
 
     # Get initial moments of sojourn time from simulation:
-    v_im = qn.v_network
+    v_sim = qn.v_network
 
     print("-" * 60)
     print(f"Channels at nodes: {NUM_OF_CHANNELS}")
@@ -69,7 +69,7 @@ def test_network():
 
     print("-" * 60)
     print("Results")
-    times_print(v_im, v_num, False)
+    times_print(v_sim, v_num, False)
 
 
 if __name__ == "__main__":

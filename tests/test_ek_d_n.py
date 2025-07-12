@@ -31,6 +31,9 @@ NUM_OF_JOBS = int(params['num_of_jobs'])
 UTILIZATION_FACTOR = float(params['utilization_factor'])
 ERROR_MSG = params['error_msg']
 
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
 
 def test_ek_d_n():
     """
@@ -85,7 +88,8 @@ def test_ek_d_n():
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=1e-2), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10],
+                       atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

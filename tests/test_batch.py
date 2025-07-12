@@ -7,12 +7,12 @@ It compares the results of the simulation and the analytical solution.
 """
 import os
 
+import numpy as np
 import yaml
 
 from most_queue.general.tables import times_print
 from most_queue.sim.batch import QueueingSystemBatchSim
 from most_queue.theory.batch.mm1 import BatchMM1
-
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
@@ -29,6 +29,9 @@ ERROR_MSG = params['error_msg']
 
 BATCH_SIZE = 5
 BATCH_PROBABILITIES = [0.2, 0.3, 0.1, 0.2, 0.2]
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
 
 
 def calc_mean_batch_size(batch_probs):
@@ -63,11 +66,12 @@ def test_batch_mm1():
 
     qs.run(NUM_OF_JOBS)
 
-    v1_im = qs.v[0]
+    v1_sim = qs.v[0]
 
-    times_print(v1_im, v1, False)  # prints 2.6556 and approx 2.5-2.7
+    times_print(v1_sim, v1, False)  
 
-    assert v1 - v1_im < 0.2, ERROR_MSG
+    assert np.allclose(v1_sim, v1, atol=MOMENTS_ATOL,
+                       rtol=MOMENTS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

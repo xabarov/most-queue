@@ -89,7 +89,7 @@ def test_network():
     qn.run(NUM_OF_JOBS)
 
     # Get initial moments of soujorney time from simulation:
-    v_im = qn.v_network
+    v_sim = qn.v_network
 
     #  Get initial moments of soujorney time from calculation:
     net_calc = OpenNetworkCalcPriorities(
@@ -107,18 +107,18 @@ def test_network():
     print(
         f"Node utilization coefficients: {[float(round(load, 3)) for load in loads]}")
 
-    assert abs(v_im[0][0] - v_num[0][0]) / \
-        max(v_im[0][0], v_num[0][0]) * 100 < 10
+    assert abs(v_sim[0][0] - v_num[0][0]) / \
+        max(v_sim[0][0], v_num[0][0]) * 100 < 10
 
     print("-" * 60)
     print("Relative Priority ('NP')")
-    times_print_with_classes(v_im, v_num, False)
+    times_print_with_classes(v_sim, v_num, False)
 
     prty = ['PR'] * NUM_OF_NODES  # Absolute priority at each node
     qn = PriorityNetwork(NUM_OF_CLASSES, ARRIVAL_RATES,
                          big_r, NUM_OF_CHANNELS, prty, serv_params, nodes_prty)
     qn.run(NUM_OF_JOBS)
-    v_im = qn.v_network
+    v_sim = qn.v_network
 
     net_calc = OpenNetworkCalcPriorities(
         big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
@@ -127,7 +127,7 @@ def test_network():
 
     print("-" * 60)
     print("Absolute Priority ('PR')")
-    times_print_with_classes(v_im, v_num, False)
+    times_print_with_classes(v_sim, v_num, False)
 
 
 if __name__ == "__main__":

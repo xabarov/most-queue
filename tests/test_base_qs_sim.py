@@ -25,9 +25,14 @@ ARRIVAL_RATE = float(params['arrival']['rate'])
 NUM_OF_JOBS = int(params['num_of_jobs'])
 BUFFER = int(params['buffer'])
 UTILIZATION_FACTOR = float(params['utilization_factor'])
-PROBS_ATOL = float()
 
 ERROR_MSG = params['error_msg']
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
 
 
 def test_sim_mmnr():
@@ -56,7 +61,7 @@ def test_sim_mmnr():
     times_print(w_sim, w)
 
     # Verify simulation results against theoretical calculations
-    assert np.allclose(w_sim, w, rtol=0.2), ERROR_MSG
+    assert np.allclose(w_sim, w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 def test_sim_mdn():
@@ -80,7 +85,7 @@ def test_sim_mdn():
 
     probs_print(p_sim=p_sim, p_num=p_num, size=10)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=5e-1), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

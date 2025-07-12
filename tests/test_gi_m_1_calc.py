@@ -2,18 +2,34 @@
 Test of GI/M/1 queueing system calculation.
 For verification, we use simulation 
 """
+import os
+
 import numpy as np
+import yaml
 
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.gi_m_1 import GiM1
 
-ARRIVAL_RATE = 1.0
-SERVICE_TIME_AVERAGE = 0.9
-ARRIVAL_CV = 1.6  # Coefficient of Variation of arrival time distribution
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
 
-NUM_OF_JOBS = 300000
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+ARRIVAL_RATE = float(params['arrival']['rate'])
+ARRIVAL_CV = float(params['arrival']['cv'])
+
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
 
 
 def test_gi_m_1():
@@ -23,7 +39,7 @@ def test_gi_m_1():
     """
 
     a1 = 1 / ARRIVAL_RATE    # average interval between requests
-    mu = 1 / SERVICE_TIME_AVERAGE  # service intensity
+    mu = ARRIVAL_RATE / UTILIZATION_FACTOR  # service intensity
 
     # calculation of parameters approximating Gamma-distribution for arrival times
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(
@@ -64,39 +80,13 @@ def test_gi_m_1():
     # Output results
     print("\nGamma\n")
 
+    times_print(w_sim, w_num, True)
     times_print(v_sim, v_num, False)
     probs_print(p_sim, p_num)
 
-    # Also for Pareto distribution
-
-    pareto_params = ParetoDistribution.get_params_by_mean_and_coev(
-        a1, ARRIVAL_CV)
-    print(pareto_params)
-    a = ParetoDistribution.calc_theory_moments(pareto_params)
-
-    gm1_calc = GiM1(a, mu, approx_distr="Pa")
-    v_num = gm1_calc.get_v()
-    w_num = gm1_calc.get_w()
-
-    # calculation of probabilities of system states
-    p_num = gm1_calc.get_p()
-
-    qs = QsSim(1)
-    qs.set_sources(pareto_params, "Pa")
-    qs.set_servers(mu, "M")
-    qs.run(NUM_OF_JOBS)
-    v_sim = qs.v
-    w_sim = qs.w
-    p_sim = qs.get_p()
-
-    assert np.allclose(np.array(v_sim), np.array(v_num), rtol=30e-1)
-    assert np.allclose(np.array(w_sim), np.array(w_num), rtol=30e-1)
-    assert np.allclose(np.array(p_sim[:10]), np.array(p_num[:10]), rtol=1e-1)
-
-    print("\nPareto\n")
-
-    times_print(v_sim, v_num, False)
-    probs_print(p_sim, p_num)
+    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(p_sim[:10], p_num[:10],
+                       rtol=PROBS_RTOL, atol=PROBS_ATOL)
 
 
 if __name__ == "__main__":

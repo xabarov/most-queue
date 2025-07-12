@@ -1,9 +1,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-from most_queue.theory.utils.flow_sum import SummatorNumeric
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.flow_sum import FlowSumSim
+from most_queue.theory.utils.flow_sum import SummatorNumeric
 
 matplotlib.use('TkAgg')
 
@@ -19,7 +19,7 @@ def test():
     mean = 1  # среднее каждого потока
     num_of_jobs = 400000  # количество заявок для ИМ
     is_semi = False  # True, если необходимо использовать метод семиинвариантов вместо H2
-    distr_im = "Gamma"  # распределение, используемое для ИМ
+    distr_sim = "Gamma"  # распределение, используемое для ИМ
 
     # число суммируемых потоков
     ns = [x + 2 for x in range(n_nums - 1)]
@@ -38,7 +38,7 @@ def test():
     # i - кол-во суммируемых потоков, j - номер начального момента
 
     # ИМ
-    s_sim = FlowSumSim(a, distr=distr_im, num_of_jobs=num_of_jobs)
+    s_sim = FlowSumSim(a, distr=distr_sim, num_of_jobs=num_of_jobs)
     # в  s_sim._flows[i][j] содержатся начальные моменты суммируемых потокоы,
     s_sim.sum_flows()
     # i - кол-во суммируемых потоков, j - номер начального момента

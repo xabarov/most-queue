@@ -2,18 +2,38 @@
 Test QS M/G/n queue with disasters.
 """
 import math
+import os
+
+import numpy as np
+import yaml
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 
-ARRIVAL_RATE_POSITIVE = 1.0
-ARRIVAL_RATE_NEGATIVE = 0.3
-NUM_OF_JOBS = 300_000
-NUM_OF_CHANNELS = 3
-SERVICE_TIME_CV = 0.57
-UTILIZATION = 0.7
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+
+NUM_OF_CHANNELS = int(params['num_of_channels'])
+
+SERVICE_TIME_CV = float(params['service']['cv'])
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+MOMENTS_ATOL = float(params['moments_atol'])
+MOMENTS_RTOL = float(params['moments_rtol'])
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
+
+ARRIVAL_RATE_POSITIVE = float(params['arrival']['rate'])
+ARRIVAL_RATE_NEGATIVE = 0.3*ARRIVAL_RATE_POSITIVE
 
 
 def test_mgn():
@@ -21,7 +41,8 @@ def test_mgn():
     Test QS M/G/n queue with disasters.
     """
 
-    b1 = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE_POSITIVE  # average service time
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / \
+        ARRIVAL_RATE_POSITIVE  # average service time
 
     b = [0.0] * 3
     alpha = 1 / (SERVICE_TIME_CV ** 2)
@@ -66,6 +87,11 @@ def test_mgn():
     times_print(v_sim_broken, v_calc_broken,
                 is_w=False, header='sojourn broken')
     times_print(w_sim, w_calc)
+
+    assert np.allclose(v_sim, v_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+
+    assert np.allclose(p_sim[:10], p_calc[:10],
+                       atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

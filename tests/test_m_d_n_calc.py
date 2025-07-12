@@ -2,16 +2,33 @@
 Testing the M/D/n queueing system calculation.
 For verification, we use simulation modeling 
 """
+import os
+
 import numpy as np
+import yaml
 
 from most_queue.general.tables import probs_print
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 
-NUM_OF_SERVERS = 2
-ARRIVAL_RATE = 1.0
-UTILIZATION = 0.8
-NUM_OF_JOBS = 300000
+cur_dir = os.getcwd()
+params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+
+with open(params_path, 'r', encoding='utf-8') as file:
+    params = yaml.safe_load(file)
+
+
+NUM_OF_CHANNELS = int(params['num_of_channels'])
+
+ARRIVAL_RATE = float(params['arrival']['rate'])
+ARRIVAL_CV = float(params['arrival']['cv'])
+
+NUM_OF_JOBS = int(params['num_of_jobs'])
+UTILIZATION_FACTOR = float(params['utilization_factor'])
+ERROR_MSG = params['error_msg']
+
+PROBS_ATOL = float(params['probs_atol'])
+PROBS_RTOL = float(params['probs_rtol'])
 
 
 def test_mdn():
@@ -20,15 +37,16 @@ def test_mdn():
     For verification, we use simulation modeling 
     """
 
-    b = UTILIZATION * NUM_OF_SERVERS / ARRIVAL_RATE  # service time from given ro
+    b = UTILIZATION_FACTOR * NUM_OF_CHANNELS / \
+        ARRIVAL_RATE  # service time from given ro
 
     # calculation of the probabilities of queueing system states
-    mdn = MDn(ARRIVAL_RATE, b, NUM_OF_SERVERS)
+    mdn = MDn(ARRIVAL_RATE, b, NUM_OF_CHANNELS)
     p_num = mdn.calc_p()
 
     # for verification, we use simulation modeling
     # create an instance of the simulation class and pass the number of service channels
-    qs = QsSim(NUM_OF_SERVERS)
+    qs = QsSim(NUM_OF_CHANNELS)
 
     # set arrivals. The method needs to be passed distribution parameters and type of distribution.
     qs.set_sources(ARRIVAL_RATE, "M")
@@ -46,7 +64,7 @@ def test_mdn():
     # Output results
     probs_print(p_num, p_sim)
 
-    assert np.allclose(np.array(p_sim[:4]), np.array(p_num[:4]), atol=1e-1)
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL)
 
 
 if __name__ == "__main__":
