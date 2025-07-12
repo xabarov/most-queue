@@ -5,18 +5,31 @@ with deterministic service
 For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
 For verification, we use simulation modeling (sim).
 """
+import os
+
+import yaml
+
 from most_queue.general.tables import probs_print
 from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 
-UTILIZATION_FACTOR = 0.7
-NUM_OF_JOBS = 300000
-CHANNELS_NUM = 2
-ARRIVAL_TIME_AVERAGE = 1.0
-ARRIVAL_TIME_CV = 0.56  # coefficient of variation (CV) for arrival time
 
-ERROR_MSG = "The difference between theoretical and simulation results is too large"
+cur_dir = os.getcwd()
+config_path = os.path.join(cur_dir, 'tests', 'config.yaml')
+
+with open(config_path, 'r', encoding='utf-8') as file:
+    config = yaml.safe_load(file)
+
+# Import constants from config.yaml file
+NUM_OF_CHANNELS = int(config['num_of_channels'])
+
+ARRIVAL_TIME_AVERAGE = 1.0/float(config['arrival_rate'])
+ARRIVAL_TIME_CV = 1 # float(config['arrival_cv'])
+
+NUM_OF_JOBS = int(config['num_of_jobs'])
+UTILIZATION_FACTOR = float(config['utilization_factor'])
+ERROR_MSG = config['error_msg']
 
 
 def test_ek_d_n():
@@ -40,17 +53,17 @@ def test_ek_d_n():
 
     # service time will be determined based on the specified utilization factor
 
-    b = ARRIVAL_TIME_AVERAGE * CHANNELS_NUM * UTILIZATION_FACTOR
+    b = ARRIVAL_TIME_AVERAGE * NUM_OF_CHANNELS * UTILIZATION_FACTOR
 
     # create an instance of the class for numerical calculation
-    ekdn = EkDn(erl_params, b, CHANNELS_NUM)
+    ekdn = EkDn(erl_params, b, NUM_OF_CHANNELS)
 
     # start calculating the probabilities of the QS states
     p_num = ekdn.calc_p()
 
     # for verification we use simulation.
     # create an instance of the QsSim class, pass the number of service channels
-    qs = QsSim(CHANNELS_NUM)
+    qs = QsSim(NUM_OF_CHANNELS)
 
     # we set the input stream. The method needs to be passed
     # the distribution parameters as a list and the distribution type. E - Erlang

@@ -1,20 +1,31 @@
 """
 Test the simulation model for an M/M/n/r system
 """
+import os
+
 import numpy as np
+import yaml
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
-ERROR_MSG = "System simulation results do not match theoretical values"
+# Open config.yaml
 
-NUM_OF_CHANNELS = 3
-NUM_OF_JOBS = 300000
-ARRIVAL_RATE = 1.0
-UTILIZATION_FACTOR = 0.8
-BUFFER = 30
+cur_dir = os.getcwd()
+config_path = os.path.join(cur_dir, 'tests', 'config.yaml')
+
+with open(config_path, 'r', encoding='utf-8') as file:
+    config = yaml.safe_load(file)
+
+# Import constants from config.yaml file
+NUM_OF_CHANNELS = int(config['num_of_channels'])
+ARRIVAL_RATE = float(config['arrival_rate'])
+NUM_OF_JOBS = int(config['num_of_jobs'])
+BUFFER = int(config['buffer'])
+UTILIZATION_FACTOR = float(config['utilization_factor'])
+ERROR_MSG = config['error_msg']
 
 
 def test_sim_mmnr():

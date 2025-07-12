@@ -186,6 +186,9 @@ class QsSim:
         """
         Actions upon arrival of the job by the QS.
         """
+        
+        self.arrived += 1
+        self.p[self.in_sys] += self.arrival_time - self.ttek
 
         if moment:
             self.ttek = moment
@@ -197,9 +200,6 @@ class QsSim:
         else:
             self.ttek = self.arrival_time
             self.arrival_time = self.ttek + self.source.generate()
-
-        self.arrived += 1
-        self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
         

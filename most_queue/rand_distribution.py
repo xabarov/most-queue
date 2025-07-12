@@ -931,7 +931,8 @@ class ErlangDistribution(Distribution):
     @staticmethod
     def get_params_by_mean_and_coev(f1: float, coev: float) -> ErlangParams:
         """
-        Method selects the parameters of the Erlang distribution by mean and coefficient of variation.
+        Method selects the parameters of the Erlang distribution 
+        by mean and coefficient of variation.
         """
         f = [0, 0]
         f[0] = f1

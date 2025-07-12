@@ -16,7 +16,7 @@ class EkDn:
 
     def __init__(self, erlang_params: ErlangParams, b, n, e=1e-12, p_num=100):
         """
-        l, k - parameters of the Erlang input request distribution
+        erlang_params - parameters of the Erlang input request distribution
         b - service time in a channel
         n - number of channels
         e - accuracy of calculations

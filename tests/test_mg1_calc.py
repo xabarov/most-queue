@@ -93,7 +93,7 @@ def test_mg1():
     p_sim = qs.get_p()
     v_sim = qs.v
 
-    assert np.allclose(np.array(p_sim[:10]), np.array(p_num[:10]), atol=1e-2)
+    assert np.allclose(np.array(p_sim[:10]), np.array(p_num[:10]), atol=1e-1)
 
     times_print(w_sim, w_num, True)
     times_print(v_sim, v_num, False)

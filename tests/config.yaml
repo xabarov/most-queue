@@ -1,0 +1,8 @@
+error_msg: "System simulation results do not match theoretical values"
+
+num_of_channels: 3
+num_of_jobs: 100000
+arrival_rate: 1.0
+arrival_cv: 0.56 # coefficient of variation (CV) for arrival time if it not markovian
+utilization_factor: 0.7
+buffer: 30
