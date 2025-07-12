@@ -1,6 +1,6 @@
 """
 Test the simulation of a queueing system
-For verification, compare with results for M/M/3 and M/D/3 systems
+For verification, compare with results for M/M/3
 """
 import os
 
