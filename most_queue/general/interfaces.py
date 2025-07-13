@@ -1,6 +1,7 @@
 """
 Abstract base class for all distributions.
 """
+
 from abc import ABC, abstractmethod
 
 

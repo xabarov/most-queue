@@ -1,6 +1,7 @@
 """
 Testing the simulation model of an M/G/c queue with priorities.
 """
+
 import os
 
 import yaml
@@ -11,19 +12,19 @@ from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 
 cur_dir = os.getcwd()
-params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
 
-with open(params_path, 'r', encoding='utf-8') as file:
+with open(params_path, "r", encoding="utf-8") as file:
     params = yaml.safe_load(file)
 
 NUM_OF_CHANNELS = 5
 NUM_OF_CLASSES = 3
 ARRIVAL_RATES = [0.1, 0.2, 0.3]
 SERVICE_TIMES_AVE = [2.25, 4.5, 6.75]
-SERVICE_TIME_CV = float(params['service']['cv'])
-NUM_OF_JOBS = int(params['num_of_jobs'])
+SERVICE_TIME_CV = float(params["service"]["cv"])
+NUM_OF_JOBS = int(params["num_of_jobs"])
 
-ERROR_MSG = params['error_msg']
+ERROR_MSG = params["error_msg"]
 
 
 def test_sim():
@@ -39,7 +40,7 @@ def test_sim():
     # second initial moments
     b2 = [0] * NUM_OF_CLASSES
     for i in range(NUM_OF_CLASSES):
-        b2[i] = (SERVICE_TIMES_AVE[i] ** 2) * (1 + SERVICE_TIME_CV ** 2)
+        b2[i] = (SERVICE_TIMES_AVE[i] ** 2) * (1 + SERVICE_TIME_CV**2)
 
     b_sr = sum(SERVICE_TIMES_AVE) / NUM_OF_CLASSES
 
@@ -50,16 +51,16 @@ def test_sim():
     # and add them to the list of parameters params
     gamma_params = []
     for i in range(NUM_OF_CLASSES):
-        gamma_params.append(GammaDistribution.get_params(
-            [SERVICE_TIMES_AVE[i], b2[i]]))
+        gamma_params.append(GammaDistribution.get_params([SERVICE_TIMES_AVE[i], b2[i]]))
 
     b = []
     for j in range(NUM_OF_CLASSES):
-        b.append(GammaDistribution.calc_theory_moments(
-            gamma_params[j], 4))
+        b.append(GammaDistribution.calc_theory_moments(gamma_params[j], 4))
 
-    print("\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
-          "time spent in a multi-channel queue with priorities")
+    print(
+        "\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
+        "time spent in a multi-channel queue with priorities"
+    )
     print(f"Number of servers: {NUM_OF_CHANNELS}")
     print(f"Number of classes: {NUM_OF_CLASSES}")
     print(f"Coefficient of load: {ro:<1.2f}")
@@ -78,8 +79,8 @@ def test_sim():
     sources = []
     servers_params = []
     for j in range(NUM_OF_CLASSES):
-        sources.append({'type': 'M', 'params': ARRIVAL_RATES[j]})
-        servers_params.append({'type': 'Gamma', 'params': gamma_params[j]})
+        sources.append({"type": "M", "params": ARRIVAL_RATES[j]})
+        servers_params.append({"type": "Gamma", "params": gamma_params[j]})
 
     qs.set_sources(sources)
     qs.set_servers(servers_params)
@@ -93,11 +94,11 @@ def test_sim():
 
     # calculate them as well using the method of invariant relations (for comparison)
     invar_calc = MGnInvarApproximation(ARRIVAL_RATES, b, n=NUM_OF_CHANNELS)
-    v_num = invar_calc.get_v('PR')
+    v_num = invar_calc.get_v("PR")
 
-    assert abs(v_sim[0][0]-v_num[0][0]< 1.0), ERROR_MSG
-    assert abs(v_sim[1][0]-v_num[1][0]< 1.0), ERROR_MSG
-    assert abs(v_sim[2][0]-v_num[2][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG
+    assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG
+    assert abs(v_sim[2][0] - v_num[2][0] < 1.0), ERROR_MSG
 
     times_print_with_classes(v_sim, v_num, False)
 
@@ -108,8 +109,8 @@ def test_sim():
     sources = []
     servers_params = []
     for j in range(NUM_OF_CLASSES):
-        sources.append({'type': 'M', 'params': ARRIVAL_RATES[j]})
-        servers_params.append({'type': 'Gamma', 'params': gamma_params[j]})
+        sources.append({"type": "M", "params": ARRIVAL_RATES[j]})
+        servers_params.append({"type": "Gamma", "params": gamma_params[j]})
 
     qs.set_sources(sources)
     qs.set_servers(servers_params)
@@ -118,13 +119,13 @@ def test_sim():
 
     v_sim = qs.v
 
-    v_num = invar_calc.get_v('NP')
+    v_num = invar_calc.get_v("NP")
 
     times_print_with_classes(v_sim, v_num, False)
 
-    assert abs(v_sim[0][0]-v_num[0][0]< 1.0), ERROR_MSG
-    assert abs(v_sim[1][0]-v_num[1][0]< 1.0), ERROR_MSG
-    assert abs(v_sim[2][0]-v_num[2][0]< 1.0), ERROR_MSG
+    assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG
+    assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG
+    assert abs(v_sim[2][0] - v_num[2][0] < 1.0), ERROR_MSG
 
 
 if __name__ == "__main__":

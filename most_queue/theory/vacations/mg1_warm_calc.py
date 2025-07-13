@@ -1,6 +1,7 @@
 """
 Class for calculating M/G/1 queue with warm-up.
 """
+
 import numpy as np
 from scipy.misc import derivative
 
@@ -13,9 +14,11 @@ class MG1WarmCalc:
     Class for calculating M/G/1 queue with warm-up.
     """
 
-    def __init__(self, l: float, b: list[float], b_warm: list[float], approximation='gamma'):
+    def __init__(
+        self, l: float, b: list[float], b_warm: list[float], approximation="gamma"
+    ):
         """
-        Initialize the MG1WarmCalc class with arrival rate l, 
+        Initialize the MG1WarmCalc class with arrival rate l,
         service time initial moments b, and warm-up service time moments b_warm.
         Parameters:
         l (float): Arrival rate.
@@ -28,17 +31,16 @@ class MG1WarmCalc:
         tv = self.b_warm[0] / (1 - self.l * self.b[0])
         self.p0_star = 1 / (1 + self.l * tv)
         self.approximation = approximation
-        if approximation == 'gamma':
+        if approximation == "gamma":
             self.b_param = GammaDistribution.get_params(self.b)
             self.b_warm_param = GammaDistribution.get_params(self.b_warm)
             self.lst = lst_gamma
-        elif approximation == 'h2':
+        elif approximation == "h2":
             self.b_param = H2Distribution.get_params(self.b)
             self.b_warm_param = H2Distribution.get_params(self.b_warm)
             self.lst = lst_h2
         else:
-            raise ValueError(
-                "Invalid approximation method. Must be 'gamma' or 'h2'.")
+            raise ValueError("Invalid approximation method. Must be 'gamma' or 'h2'.")
 
     def _calc_v_lst(self, s):
         factor = 1.0 - s / self.l
@@ -63,6 +65,7 @@ class MG1WarmCalc:
         v = [0, 0, 0]
 
         for i in range(3):
-            v[i] = derivative(self._calc_v_lst, 0,
-                              dx=1e-3/self.b[0], n=i + 1, order=9)
+            v[i] = derivative(
+                self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
+            )
         return np.array([-v[0], v[1].real, -v[2]])

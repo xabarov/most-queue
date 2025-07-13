@@ -1,3 +1,10 @@
+"""
+MMnHyperExpWarmAndCold class for calculating M/M/n queueing system with H2-warm-up and H2-cooling
+using numerical Takahashi-Takagi method.
+Complex parameters are used. Complex parameters allow approximating the service time distribution
+with arbitrary coefficients of variation (>1, <=1).
+"""
+
 import math
 from itertools import chain
 
@@ -7,18 +14,28 @@ from scipy.misc import derivative
 from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.transforms import lst_exp
 
+
 class MMnHyperExpWarmAndCold:
     """
     Calculation of M/M/n queueing system with H2-warm-up and H2-cooling
-    using numerical Takahashi-Takagi method.Complex parameters are used. 
-    Complex parameters allow approximating the service time distribution 
+    using numerical Takahashi-Takagi method.Complex parameters are used.
+    Complex parameters allow approximating the service time distribution
     with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, l: float, mu: float, b_warm: list[float], b_cold: list[float],
-                 n: int, buffer: int | None = None,
-                 N: int = 150, accuracy: float = 1e-8, dtype: str = "c16",
-                 verbose: bool = False):
+    def __init__(
+        self,
+        l: float,
+        mu: float,
+        b_warm: list[float],
+        b_cold: list[float],
+        n: int,
+        buffer: int | None = None,
+        N: int = 150,
+        accuracy: float = 1e-8,
+        dtype: str = "c16",
+        verbose: bool = False,
+    ):
         """
         l: arrival rate
         mu: service rate
@@ -46,7 +63,7 @@ class MMnHyperExpWarmAndCold:
         self.l = l
 
         self.b_warm = b_warm
-        if self.dt == 'c16':
+        if self.dt == "c16":
             h2_params_warm = H2Distribution.get_params_clx(b_warm)
         else:
             h2_params_warm = H2Distribution.get_params(b_warm)
@@ -55,7 +72,7 @@ class MMnHyperExpWarmAndCold:
         self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
 
         self.b_cold = b_cold
-        if self.dt == 'c16':
+        if self.dt == "c16":
             h2_params_cold = H2Distribution.get_params_clx(b_cold)
         else:
             h2_params_cold = H2Distribution.get_params(b_cold)
@@ -67,7 +84,7 @@ class MMnHyperExpWarmAndCold:
         self.t = []
         self.b1 = []
         self.b2 = []
-        if self.dt == 'c16':
+        if self.dt == "c16":
             self.x = [0.0 + 0.0j] * N
             self.z = [0.0 + 0.0j] * N
 
@@ -85,6 +102,10 @@ class MMnHyperExpWarmAndCold:
         self.D = []
         self.Y = []
 
+        self.G = []
+        self.AG = []
+        self.BG = []
+
         for i in range(N):
 
             if i < n + 1:
@@ -101,8 +122,10 @@ class MMnHyperExpWarmAndCold:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
+        self._build_matrices()
+        self._initial_probabilities()
+
+        self.num_of_iter_ = 0  # number of iterations for the algorithm
 
     def get_p(self):
         """
@@ -111,28 +134,25 @@ class MMnHyperExpWarmAndCold:
         """
         return [prob.real for prob in self.p]
 
-
     def _calc_w_pls(self, s):
         w = 0
 
         # вычислим ПЛС заранее
         mu_pls = lst_exp(self.mu * self.n, s)
-        mu_w_pls = np.array(
-            [lst_exp(self.mu_w[0], s), lst_exp(self.mu_w[1], s)])
-        mu_c_pls = np.array(
-            [lst_exp(self.mu_c[0], s), lst_exp(self.mu_c[1], s)])
+        mu_w_pls = np.array([lst_exp(self.mu_w[0], s), lst_exp(self.mu_w[1], s)])
+        mu_c_pls = np.array([lst_exp(self.mu_c[0], s), lst_exp(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
         # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
         c_to_w = np.zeros((2, 2), dtype=self.dt)
         for c_phase in range(2):
             for w_phase in range(2):
-                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * \
-                    self.y_w[w_phase] * mu_w_pls[w_phase]
+                c_to_w[c_phase, w_phase] = (
+                    mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
+                )
 
         # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
-        w += self.Y[0][0, 0] * \
-            (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+        w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева
         for k in range(1, self.n):
@@ -145,13 +165,15 @@ class MMnHyperExpWarmAndCold:
             if k == 0:
                 for i in range(2):
                     # Переход в [0] состояние, а из него -> в разогрев
-                    w += self.Y[k][0, i + 1] * mu_c_pls[i] * \
-                        (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+                    w += (
+                        self.Y[k][0, i + 1]
+                        * mu_c_pls[i]
+                        * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
+                    )
             else:
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += self.Y[k][0, 3 + c_phase] * \
-                            c_to_w[c_phase, w_phase]
+                        w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase]
 
         pls_service_total = 1.0
         for k in range(self.n, self.N):
@@ -170,27 +192,34 @@ class MMnHyperExpWarmAndCold:
             # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
             for c_phase in range(2):
                 for w_phase in range(2):
-                    w += self.Y[k][0, 3 + c_phase] * \
-                        c_to_w[c_phase, w_phase] * pls_service_total
+                    w += (
+                        self.Y[k][0, 3 + c_phase]
+                        * c_to_w[c_phase, w_phase]
+                        * pls_service_total
+                    )
 
         return w
 
     def get_w(self):
         """
-        Returns waiting time initial moments 
+        Returns waiting time initial moments
         """
         w = [0.0] * 3
 
         for i in range(3):
-            min_mu = min(chain(np.array([mu.real for mu in self.mu_w]).astype('float'),
-                         np.array([mu.real for mu in self.mu_c]).astype('float'), [self.mu]))
-            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 /
-                              min_mu, n=i + 1, order=9)
+            min_mu = min(
+                chain(
+                    np.array([mu.real for mu in self.mu_w]).astype("float"),
+                    np.array([mu.real for mu in self.mu_c]).astype("float"),
+                    [self.mu],
+                )
+            )
+            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
         return [-w[0], w[1], -w[2]]
 
     def get_b(self):
         """
-        Returns service time initial moments 
+        Returns service time initial moments
         """
         return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
 
@@ -225,9 +254,7 @@ class MMnHyperExpWarmAndCold:
             p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
         return p_warmup.real
 
-
-
-    def initial_probabilities(self):
+    def _initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
         """
@@ -272,7 +299,7 @@ class MMnHyperExpWarmAndCold:
                 self.p[j + 1] = self.p[j] * self.x[j]
                 p_sum += self.p[j + 1]
 
-            if (p_sum > 1.0):
+            if p_sum > 1.0:
                 p0_max = p0_
             else:
                 p0_min = p0_
@@ -280,33 +307,36 @@ class MMnHyperExpWarmAndCold:
         self._norm_probs()
 
     def calculate_y(self):
+        """
+        Calculate the Y matrix based on the probabilities p
+        """
         # sum_y = 0.0
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
             # sum_y += np.sum(self.Y[i])
         # print("Sum Y: ", sum_y)
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
         Формирует матрицы переходов
         """
         for i in range(self.N):
-            self.A.append(self.buildA(i))
-            self.B.append(self.buildB(i))
-            self.C.append(self.buildC(i))
-            self.D.append(self.buildD(i))
+            self.A.append(self._buildA(i))
+            self.B.append(self._buildB(i))
+            self.C.append(self._buildC(i))
+            self.D.append(self._buildD(i))
 
-    def calc_g_matrices(self):
+    def _calc_g_matrices(self):
         self.G = []
         for j in range(0, self.N):
             self.G.append(np.linalg.inv(self.D[j] - self.C[j]))
 
-    def calc_ag_matrices(self):
+    def _calc_ag_matrices(self):
         self.AG = [0]
         for j in range(1, self.N):
             self.AG.append(np.dot(self.A[j - 1], self.G[j]))
 
-    def calc_bg_matrices(self):
+    def _calc_bg_matrices(self):
         self.BG = [0]
         for j in range(1, self.N):
             if j != (self.N - 1):
@@ -314,16 +344,16 @@ class MMnHyperExpWarmAndCold:
             else:
                 self.BG.append(np.dot(self.B[j], self.G[j]))
 
-    def calc_support_matrices(self):
-        self.calc_g_matrices()
-        self.calc_ag_matrices()
-        self.calc_bg_matrices()
+    def _calc_support_matrices(self):
+        self._calc_g_matrices()
+        self._calc_ag_matrices()
+        self._calc_bg_matrices()
 
     def run(self):
         """
         Запускает расчет
         """
-        if self.dt == 'c16':
+        if self.dt == "c16":
             self.b1[0][0, 0] = 0.0 + 0.0j
             self.b2[0][0, 0] = 0.0 + 0.0j
             x_max1 = 0.0 + 0.0j
@@ -334,7 +364,7 @@ class MMnHyperExpWarmAndCold:
             x_max1 = 0.0
             x_max2 = 0.0
 
-        self.calc_support_matrices()
+        self._calc_support_matrices()
 
         self.num_of_iter_ = 0  # кол-во итераций алгоритма
         for i in range(self.N):
@@ -359,14 +389,14 @@ class MMnHyperExpWarmAndCold:
                 c = self.calculate_c(j)
 
                 x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                if self.dt == 'c16':
+                if self.dt == "c16":
                     self.x[j] = 0.0 + 0.0j
                 else:
                     self.x[j] = 0.0
                 for k in range(x_znam.shape[1]):
                     self.x[j] += x_znam[0, k]
 
-                if self.dt == 'c16':
+                if self.dt == "c16":
                     self.x[j] = (1.0 + 0.0j) / self.x[j]
                 else:
                     self.x[j] = 1.0 / self.x[j]
@@ -383,10 +413,11 @@ class MMnHyperExpWarmAndCold:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                        self.x[j], self.b2[j]
+                    )
 
-            if self.dt == 'c16':
+            if self.dt == "c16":
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
             else:
                 self.x[0] = 1.0 / self.z[1]
@@ -424,13 +455,13 @@ class MMnHyperExpWarmAndCold:
 
         return chisl / (znam - znam2)
 
-    def insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
+    def _insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
         row_num = level
         for i in range(row_num):
             mass[i + left_pos, i + bottom_pos] = l * y1
             mass[i + left_pos, i + bottom_pos + 1] = l * (1.0 - y1)
 
-    def buildA(self, num):
+    def _buildA(self, num):
         """
         Формирует матрицу А по заданному номеру яруса
         """
@@ -460,7 +491,7 @@ class MMnHyperExpWarmAndCold:
 
         return output
 
-    def buildB(self, num):
+    def _buildB(self, num):
         """
         Формирует матрицу B по заданному номеру яруса
         """
@@ -496,7 +527,7 @@ class MMnHyperExpWarmAndCold:
 
         return output
 
-    def buildC(self, num):
+    def _buildC(self, num):
         """
         Формирует матрицу C по заданному номеру яруса
         """
@@ -529,9 +560,9 @@ class MMnHyperExpWarmAndCold:
 
         return output
 
-    def buildD(self, num):
+    def _buildD(self, num):
         """
-            Формирует матрицу D по заданному номеру яруса
+        Формирует матрицу D по заданному номеру яруса
         """
         if num < self.n:
             col = self.cols[num]
@@ -547,7 +578,7 @@ class MMnHyperExpWarmAndCold:
             return output
 
         for i in range(row):
-            if self.dt == 'c16':
+            if self.dt == "c16":
                 sumA = 0.0 + 0.0j
                 sumB = 0.0 + 0.0j
                 sumC = 0.0 + 0.0j

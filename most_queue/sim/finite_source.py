@@ -1,6 +1,7 @@
 """
 Simulating a queueing system with finite number of sources.
 """
+
 import numpy as np
 from colorama import Fore, Style, init
 
@@ -15,8 +16,14 @@ class QueueingFiniteSourceSim(QsSim):
     Simulating a queueing system with finite number of sources.
     """
 
-    def __init__(self, num_of_channels: int, number_of_sources: int,
-                 buffer=None, verbose=True, buffer_type="list"):
+    def __init__(
+        self,
+        num_of_channels: int,
+        number_of_sources: int,
+        buffer=None,
+        verbose=True,
+        buffer_type="list",
+    ):
         """
         num_of_channels - number of channels in the system.
         number_of_sources - number of sources.
@@ -34,18 +41,19 @@ class QueueingFiniteSourceSim(QsSim):
         # how many sources are ready to send requests
         self.sources_left = number_of_sources
 
-        super().__init__(num_of_channels, buffer=buffer,
-                         verbose=verbose, buffer_type=buffer_type)
+        super().__init__(
+            num_of_channels, buffer=buffer, verbose=verbose, buffer_type=buffer_type
+        )
 
         self.arrival_times = []
         self.arrived_num = -1
-        self.p = [0.0] * (number_of_sources+1)
+        self.p = [0.0] * (number_of_sources + 1)
 
-    def set_sources(self, params, kendall_notation: str = 'M'):
+    def set_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of source time distribution.
         :param params: dataclass : parameters for the source time distribution
-            for example: H2Params for hyper-exponential distribution 
+            for example: H2Params for hyper-exponential distribution
             (see most_queue.general.distribution_params)
             For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of source time distribution ,
@@ -56,12 +64,11 @@ class QueueingFiniteSourceSim(QsSim):
 
         self.is_set_source_params = True
 
-        self.source = create_distribution(
-            params, kendall_notation, self.generator)
+        self.source = create_distribution(params, kendall_notation, self.generator)
 
         self.arrival_times = [self.source.generate() for i in range(self.m)]
 
-    def arrival(self):
+    def arrival(self, moment=None, ts=None):
         """
         Action on arrival of a request to the queue.
         :return: None
@@ -104,7 +111,7 @@ class QueueingFiniteSourceSim(QsSim):
                             self.start_busy = self.ttek
                     break
 
-    def serving(self, c):
+    def serving(self, c, is_network=False):
         """
         Action when the service is completed.
         c - channel number.
@@ -180,11 +187,11 @@ class QueueingFiniteSourceSim(QsSim):
         """
         Get probabilities of states.
         Returns list with probabilities of states.
-        p[j] - probability that in random moment of time there will be 
+        p[j] - probability that in random moment of time there will be
             exactly j requests in the system
         """
         res = [0.0] * len(self.p)
-        for j in range(0, self.m+1):
+        for j in range(0, self.m + 1):
             res[j] = self.p[j] / self.ttek
         return res
 

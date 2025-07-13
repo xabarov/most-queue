@@ -20,7 +20,7 @@ class PriorityQueueSimulator:
     Simulation of a priority queue system (GI/G/n/r and GI/G/n systems)
     """
 
-    def __init__(self, num_of_channels, num_of_classes, prty_type='No', buffer=None):
+    def __init__(self, num_of_channels, num_of_classes, prty_type="No", buffer=None):
         """
         num_of_channels - number of channels (servers)
         num_of_classes - number of classes of requests
@@ -60,7 +60,7 @@ class PriorityQueueSimulator:
 
         # probability of states of the system (number of requests in it j):
         self.p = []
-        
+
         for _ in range(self.k):
             self.queue.append([])
 
@@ -105,7 +105,7 @@ class PriorityQueueSimulator:
         - params: list, distribution parameters (e.g., [mu], [y1, mu1, mu2])
 
         See supported distributions params in the README.md file or use
-            ``` 
+            ```
             from most_queue.sim.utils.distribution_utils import print_supported_distributions
             print_supported_distributions()
             ```
@@ -114,23 +114,24 @@ class PriorityQueueSimulator:
         self.is_set_source_params = True
 
         for i, source in enumerate(sources):
-            source_type = source['type']
-            params = source['params']
+            source_type = source["type"]
+            params = source["params"]
 
-            self.sources.append(create_distribution(
-                params, source_type, self.generator))
+            self.sources.append(
+                create_distribution(params, source_type, self.generator)
+            )
 
             self.arrival_time[i] = self.sources[i].generate()
 
     def set_servers(self, servers_params):
         """
-        Set the parameters of the servers. Each server is represented 
+        Set the parameters of the servers. Each server is represented
         as a dictionary with the following keys:
         - type: a string representing the distribution type (e.g., 'М', 'Н', 'E', etc.)
         - params: a list of parameters for the distribution
 
         See supported distributions params in the README.md file or use
-            ``` 
+            ```
             from most_queue.sim.utils.distribution_utils import print_supported_distributions
             print_supported_distributions()
             ```
@@ -142,21 +143,22 @@ class PriorityQueueSimulator:
 
         for _ in range(self.n):
             self.servers.append(
-                ServerPriority(self.servers_params, self.prty_type, self.generator))
+                ServerPriority(self.servers_params, self.prty_type, self.generator)
+            )
 
     def set_warm_up(self, warm_up_params):
         """
-        Set the parameters of the warm-up period. Each warm-up period is represented 
+        Set the parameters of the warm-up period. Each warm-up period is represented
         as a dictionary with the following keys:
         - type: a string representing the distribution type (e.g., 'М', 'Н', 'E', etc.)
         - params: a list of parameters for the distribution
 
-        The warm-up period is used to initialize the system before starting the simulation. 
-        It helps to avoid transient effects and provides a more accurate estimate 
+        The warm-up period is used to initialize the system before starting the simulation.
+        It helps to avoid transient effects and provides a more accurate estimate
         of the steady-state behavior of the system.
 
         See supported distributions params in the README.md file or use
-            ``` 
+            ```
             from most_queue.sim.utils.distribution_utils import print_supported_distributions
             print_supported_distributions()
             ```
@@ -166,11 +168,12 @@ class PriorityQueueSimulator:
         self.warm_up = []
 
         for params in warm_up_params:
-            warm_up_type = params['type']
-            params = params['params']
+            warm_up_type = params["type"]
+            params = params["params"]
 
-            self.warm_up.append(create_distribution(
-                params, warm_up_type, self.generator))
+            self.warm_up.append(
+                create_distribution(params, warm_up_type, self.generator)
+            )
 
     def calc_load(self):
         """
@@ -181,94 +184,94 @@ class PriorityQueueSimulator:
 
         for i in range(self.k):
 
-            if self.sources_params[i]['type'] == "M":
-                l_sum += self.sources_params[i]['params']
-            elif self.sources_params[i]['type'] == "H":
-                y1 = self.sources_params[i]['params'][0]
+            if self.sources_params[i]["type"] == "M":
+                l_sum += self.sources_params[i]["params"]
+            elif self.sources_params[i]["type"] == "H":
+                y1 = self.sources_params[i]["params"][0]
                 y2 = 1.0 - y1
-                mu1 = self.sources_params[i]['type'][1]
-                mu2 = self.sources_params[i]['type'][2]
+                mu1 = self.sources_params[i]["type"][1]
+                mu2 = self.sources_params[i]["type"][2]
 
                 f1 = y1 / mu1 + y2 / mu2
                 l_sum += 1.0 / f1
 
-            elif self.sources_params[i]['type'] == "E":
-                r = self.sources_params[i]['params'][0]
-                mu = self.sources_params[i]['params'][1]
+            elif self.sources_params[i]["type"] == "E":
+                r = self.sources_params[i]["params"][0]
+                mu = self.sources_params[i]["params"][1]
                 l_sum += mu / r
 
-            elif self.sources_params[i]['type'] == "Gamma":
-                mu = self.sources_params[i]['params'][0]
-                alpha = self.sources_params[i]['params'][1]
+            elif self.sources_params[i]["type"] == "Gamma":
+                mu = self.sources_params[i]["params"][0]
+                alpha = self.sources_params[i]["params"][1]
                 l_sum += mu / alpha
 
-            elif self.sources_params[i]['type'] == "C":
-                y1 = self.sources_params[i]['params'][0]
+            elif self.sources_params[i]["type"] == "C":
+                y1 = self.sources_params[i]["params"][0]
                 y2 = 1.0 - y1
-                mu1 = self.sources_params[i]['params'][1]
-                mu2 = self.sources_params[i]['params'][2]
+                mu1 = self.sources_params[i]["params"][1]
+                mu2 = self.sources_params[i]["params"][2]
 
                 f1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
                 l_sum += 1.0 / f1
-            elif self.sources_params[i]['type'] == "Pa":
-                if self.sources_params[i]['params'][0] < 1:
+            elif self.sources_params[i]["type"] == "Pa":
+                if self.sources_params[i]["params"][0] < 1:
                     return None
-                else:
-                    a = self.sources_params[i]['params'][0]
-                    k = self.sources_params[i]['params'][1]
-                    f1 = a * k / (a - 1)
-                    l_sum += 1.0 / f1
-            elif self.sources_params[i]['type'] == "Uniform":
-                f1 = self.sources_params[i]['type'][0]
+                
+                a = self.sources_params[i]["params"][0]
+                k = self.sources_params[i]["params"][1]
+                f1 = a * k / (a - 1)
+                l_sum += 1.0 / f1
+            elif self.sources_params[i]["type"] == "Uniform":
+                f1 = self.sources_params[i]["type"][0]
                 l_sum += 1.0 / f1
 
-            elif self.sources_params[i]['type'] == "D":
-                f1 = self.sources_params[i]['type']
+            elif self.sources_params[i]["type"] == "D":
+                f1 = self.sources_params[i]["type"]
                 l_sum += 1.0 / f1
 
-            if self.servers_params[i]['type'] == "M":
-                mu = self.servers_params[i]['params']
+            if self.servers_params[i]["type"] == "M":
+                mu = self.servers_params[i]["params"]
                 b1_sr += 1.0 / mu
 
-            elif self.servers_params[i]['type'] == "H":
-                y1 = self.servers_params[i]['params'][0]
+            elif self.servers_params[i]["type"] == "H":
+                y1 = self.servers_params[i]["params"][0]
                 y2 = 1.0 - y1
-                mu1 = self.servers_params[i]['params'][1]
-                mu2 = self.servers_params[i]['params'][2]
+                mu1 = self.servers_params[i]["params"][1]
+                mu2 = self.servers_params[i]["params"][2]
 
                 b1_sr += y1 / mu1 + y2 / mu2
 
-            elif self.servers_params[i]['type'] == "Gamma":
-                mu = self.servers_params[i]['params'][0]
-                alpha = self.servers_params[i]['params'][1]
+            elif self.servers_params[i]["type"] == "Gamma":
+                mu = self.servers_params[i]["params"][0]
+                alpha = self.servers_params[i]["params"][1]
                 b1_sr += alpha / mu
 
-            elif self.servers_params[i]['type'] == "E":
-                r = self.servers_params[i]['params'][0]
-                mu = self.servers_params[i]['params'][1]
+            elif self.servers_params[i]["type"] == "E":
+                r = self.servers_params[i]["params"][0]
+                mu = self.servers_params[i]["params"][1]
                 b1_sr += r / mu
 
-            elif self.servers_params[i]['type'] == "Uniform":
-                f1 = self.servers_params[i]['params'][0]
+            elif self.servers_params[i]["type"] == "Uniform":
+                f1 = self.servers_params[i]["params"][0]
                 b1_sr += 1.0 / f1
 
-            elif self.servers_params[i]['type'] == "D":
-                f1 = self.servers_params[i]['type']
+            elif self.servers_params[i]["type"] == "D":
+                f1 = self.servers_params[i]["type"]
                 b1_sr += 1.0 / f1
 
-            elif self.servers_params[i]['type'] == "C":
-                y1 = self.servers_params[i]['params'][0]
+            elif self.servers_params[i]["type"] == "C":
+                y1 = self.servers_params[i]["params"][0]
                 y2 = 1.0 - y1
-                mu1 = self.servers_params[i]['params'][1]
-                mu2 = self.servers_params[i]['params'][2]
+                mu1 = self.servers_params[i]["params"][1]
+                mu2 = self.servers_params[i]["params"][2]
 
                 b1_sr += y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
-            elif self.servers_params[i]['type'] == "Pa":
-                if self.servers_params[i]['params'][0] < 1:
+            elif self.servers_params[i]["type"] == "Pa":
+                if self.servers_params[i]["params"][0] < 1:
                     return math.inf
                 else:
-                    a = self.servers_params[i]['params'][0]
-                    k = self.servers_params[i]['params'][1]
+                    a = self.servers_params[i]["params"][0]
+                    k = self.servers_params[i]["params"][1]
                     b1_sr += a * k / (a - 1)
 
         return l_sum * b1_sr / (self.n * self.k)
@@ -278,7 +281,7 @@ class PriorityQueueSimulator:
         Action of arrival of a job to the system
         :param k: class of job
         :param moment: time of arrival
-        :param ts: task 
+        :param ts: task
         """
         if moment:
             self.ttek = moment
@@ -308,7 +311,7 @@ class PriorityQueueSimulator:
 
         # All servers are busy. Check priority type and add task to queue or start service.
 
-        if self.prty_type == 'No':
+        if self.prty_type == "No":
 
             self.arrive_with_no_prty(new_tsk, k)
             return
@@ -328,24 +331,23 @@ class PriorityQueueSimulator:
         Arrive on free channels.
          If there are no free channels and the system is warm up, then start service on the first server.
          Otherwise, start service on the first available server.
-         If there are no free channels and the system is not warm up, then start service on the first available server. 
+         If there are no free channels and the system is not warm up, then start service on the first available server.
         """
         if self.free_channels == self.n and self.is_warm_up_set is True:
             self.taked[k] += 1
             if moment:
                 self.servers[0].start_service(
-                    new_tsk, self.ttek, self.warm_up[k], is_network=True)
+                    new_tsk, self.ttek, self.warm_up[k], is_network=True
+                )
             else:
-                self.servers[0].start_service(
-                    new_tsk, self.ttek, self.warm_up[k])
+                self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k])
             self.free_channels -= 1
         else:
             for s in self.servers:
                 if s.is_free:
                     self.taked[k] += 1
                     if moment:
-                        s.start_service(new_tsk, self.ttek,
-                                        is_network=True)
+                        s.start_service(new_tsk, self.ttek, is_network=True)
                     else:
                         s.start_service(new_tsk, self.ttek)
                     self.free_channels -= 1
@@ -400,30 +402,31 @@ class PriorityQueueSimulator:
                 dropped_tsk = c.end_service()
                 self.taked[k] += 1
 
-                if k != self.class_busy_started and self.class_busy_started != -1 and self.in_sys[
-                        k] == self.n:
+                if (
+                    k != self.class_busy_started
+                    and self.class_busy_started != -1
+                    and self.in_sys[k] == self.n
+                ):
                     self.busy_moments[self.class_busy_started] += 1
                     self.refresh_busy_stat(
-                        self.class_busy_started, self.ttek - self.start_busy)
+                        self.class_busy_started, self.ttek - self.start_busy
+                    )
                     self.start_busy = self.ttek
                     self.class_busy_started = k
 
                 dropped_tsk.start_waiting_time = self.ttek
                 dropped_tsk.is_pr = True
-                if self.prty_type == 'PR':
+                if self.prty_type == "PR":
                     dropped_tsk.time_to_end_service = time_to_end - self.ttek
                 elif self.prty_type == "RS":
-                    dropped_tsk.time_to_end_service = c.dist[k].generate(
-                    )
+                    dropped_tsk.time_to_end_service = c.dist[k].generate()
                 elif self.prty_type == "RW":
                     dropped_tsk.time_to_end_service = total_time
 
                 is_found_weekier = True
                 if moment:
-                    self.queue[dropped_tsk.in_node_class_num].append(
-                        dropped_tsk)
-                    c.start_service(
-                        new_tsk, self.ttek, is_network=True)
+                    self.queue[dropped_tsk.in_node_class_num].append(dropped_tsk)
+                    c.start_service(new_tsk, self.ttek, is_network=True)
                 else:
                     self.queue[dropped_tsk.k].append(dropped_tsk)
                     c.start_service(new_tsk, self.ttek)
@@ -470,7 +473,6 @@ class PriorityQueueSimulator:
         self.refresh_w_stat(k, end_ts.wait_time)
         self.in_sys[k] -= 1
 
-
         if self.prty_type != "No":
             if len(self.queue[k]) == 0 and self.free_channels == 1:
                 if self.in_sys[k] == self.n - 1 and self.class_busy_started != -1:
@@ -478,9 +480,12 @@ class PriorityQueueSimulator:
                     self.busy_moments[k] += 1
                     self.refresh_busy_stat(k, self.ttek - self.start_busy)
 
-
             start_number = 0
-            if self.prty_type == "PR" or self.prty_type == "RS" or self.prty_type == "RW":
+            if (
+                self.prty_type == "PR"
+                or self.prty_type == "RS"
+                or self.prty_type == "RW"
+            ):
                 # we can only look at the queue starting from the current class number
                 start_number = k
 
@@ -498,7 +503,8 @@ class PriorityQueueSimulator:
                     if is_network:
                         que_ts.wait_network += self.ttek - que_ts.start_waiting_time
                         self.servers[c].start_service(
-                            que_ts, self.ttek, is_network=True)
+                            que_ts, self.ttek, is_network=True
+                        )
                     else:
                         self.servers[c].start_service(que_ts, self.ttek)
 
@@ -571,7 +577,7 @@ class PriorityQueueSimulator:
         :return: None
         """
 
-        print(Fore.GREEN + '\rStart simulation')
+        print(Fore.GREEN + "\rStart simulation")
         if is_real_served:
 
             last_percent = 0
@@ -579,18 +585,23 @@ class PriorityQueueSimulator:
             with tqdm(total=100) as pbar:
                 while sum(self.served) < total_served:
                     self.run_one_step()
-                    percent = int(100*(sum(self.served)/total_served))
+                    percent = int(100 * (sum(self.served) / total_served))
                     if last_percent != percent:
                         last_percent = percent
                         pbar.update(1)
-                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{sum(self.served)}/{total_served}' + Fore.LIGHTGREEN_EX)
+                        pbar.set_description(
+                            Fore.MAGENTA
+                            + "\rJob served: "
+                            + Fore.YELLOW
+                            + f"{sum(self.served)}/{total_served}"
+                            + Fore.LIGHTGREEN_EX
+                        )
 
         else:
             for i in tqdm(range(total_served)):
                 self.run_one_step()
 
-        print(Fore.GREEN + '\rSimulation is finished')
+        print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
 
     def refresh_busy_stat(self, k, new_a):
@@ -601,8 +612,10 @@ class PriorityQueueSimulator:
         :return: None
         """
         for i in range(3):
-            self.busy[k][i] = self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k])) + \
-                math.pow(new_a, i + 1) / self.busy_moments[k]
+            self.busy[k][i] = (
+                self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k]))
+                + math.pow(new_a, i + 1) / self.busy_moments[k]
+            )
 
     def refresh_v_stat(self, k, new_a):
         """
@@ -611,9 +624,10 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
         """
         for i in range(3):
-            self.v[k][i] = self.v[k][i] * \
-                (1.0 - (1.0 / self.served[k])) + \
-                math.pow(new_a, i + 1) / self.served[k]
+            self.v[k][i] = (
+                self.v[k][i] * (1.0 - (1.0 / self.served[k]))
+                + math.pow(new_a, i + 1) / self.served[k]
+            )
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -623,9 +637,10 @@ class PriorityQueueSimulator:
 
         """
         for i in range(3):
-            self.w[k][i] = self.w[k][i] * \
-                (1.0 - (1.0 / self.served[k])) + \
-                math.pow(new_a, i + 1) / self.served[k]
+            self.w[k][i] = (
+                self.w[k][i] * (1.0 - (1.0 / self.served[k]))
+                + math.pow(new_a, i + 1) / self.served[k]
+            )
 
     def get_p(self):
         """
@@ -650,39 +665,45 @@ class PriorityQueueSimulator:
 
         res = f"{Fore.GREEN}Queueing system {Style.RESET_ALL}"
         is_the_same_source = True
-        first_source_type = self.sources_params[0]['type']
+        first_source_type = self.sources_params[0]["type"]
         for kk in range(1, self.k):
-            if self.sources_params[kk]['type'] != first_source_type:
+            if self.sources_params[kk]["type"] != first_source_type:
                 is_the_same_source = False
         if is_the_same_source:
             res += f"{Fore.GREEN}{first_source_type}*/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{Fore.GREEN}{self.sources_params[kk]['type']},{Style.RESET_ALL}"
+                res += (
+                    f"{Fore.GREEN}{self.sources_params[kk]['type']},{Style.RESET_ALL}"
+                )
             res += f"{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         is_the_same_serving_type = True
-        first_serv_type = self.servers_params[0]['type']
+        first_serv_type = self.servers_params[0]["type"]
         for kk in range(1, self.k):
-            if self.servers_params[kk]['type'] != first_serv_type:
+            if self.servers_params[kk]["type"] != first_serv_type:
                 is_the_same_serving_type = False
         if is_the_same_serving_type:
             res += f"{Fore.GREEN}{first_serv_type}/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{Fore.GREEN}{self.servers_params[kk]['type']},{Style.RESET_ALL}"
+                res += (
+                    f"{Fore.GREEN}{self.servers_params[kk]['type']},{Style.RESET_ALL}"
+                )
             res += f"{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         res += f"{Fore.BLUE}{str(self.n)}{Style.RESET_ALL}"
 
         if self.buffer is not None:
             res += f"/{Fore.YELLOW}{str(self.buffer)}{Style.RESET_ALL}"
-        if self.prty_type != 'No':
+        if self.prty_type != "No":
             res += f"/{Fore.CYAN}{self.prty_type}{Style.RESET_ALL}"
 
         res += f"\n{Fore.MAGENTA}Load: {self.calc_load():.3f}{Style.RESET_ALL}\n"
         if not is_short:
-            res += f"{Fore.LIGHTGREEN_EX}Current Time {self.ttek:.3f}{Style.RESET_ALL}\n"
+            res += (
+                f"{Fore.LIGHTGREEN_EX}Current Time {self.ttek:.3f}{Style.RESET_ALL}\n"
+            )
         for kk in range(self.k):
             res += f"\n{Fore.CYAN}Class {kk + 1}{Style.RESET_ALL}\n"
             if not is_short:

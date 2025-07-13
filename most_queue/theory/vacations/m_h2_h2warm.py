@@ -1,8 +1,9 @@
 """
 Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
-Use complex parameters, which allow to approximate the service time 
+Use complex parameters, which allow to approximate the service time
 distribution with arbitrary coefficients of variation (>1, <=1).
 """
+
 import math
 
 import numpy as np
@@ -16,15 +17,26 @@ from most_queue.theory.utils.transforms import lst_exp
 class MH2nH2Warm:
     """
     Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
-    Use complex parameters, which allow to approximate the service time 
+    Use complex parameters, which allow to approximate the service time
     distribution with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, l, b, b_warm, n, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False,
-                 is_only_first=False):
+    def __init__(
+        self,
+        l,
+        b,
+        b_warm,
+        n,
+        buffer=None,
+        N=150,
+        accuracy=1e-6,
+        dtype="c16",
+        verbose=False,
+        is_only_first=False,
+    ):
         """
         Initialization of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
-        Use complex parameters, which allow to approximate the service time 
+        Use complex parameters, which allow to approximate the service time
         distribution with arbitrary coefficients of variation (>1, <=1).
         :param l: arrival intensity
         :param b: initial moments of service time distribution
@@ -41,7 +53,9 @@ class MH2nH2Warm:
 
         self.dt = np.dtype(dtype)
         if buffer:
-            self.R = buffer + n  # maximum number of requests in the system - queue + channels
+            self.R = (
+                buffer + n
+            )  # maximum number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels on one more than + zero state
         else:
             self.N = N
@@ -55,7 +69,7 @@ class MH2nH2Warm:
         self.verbose = verbose
         self.l = l
 
-        if self.dt == 'c16':
+        if self.dt == "c16":
             h2_params_service = H2Distribution.get_params_clx(b)
         else:
             h2_params_service = H2Distribution.get_params(b)
@@ -65,7 +79,7 @@ class MH2nH2Warm:
         self.mu = [h2_params_service.mu1, h2_params_service.mu2]
 
         self.b_warm = b_warm
-        if self.dt == 'c16':
+        if self.dt == "c16":
             h2_params_warm = H2Distribution.get_params_clx(b_warm)
         else:
             h2_params_warm = H2Distribution.get_params(b_warm)
@@ -79,7 +93,7 @@ class MH2nH2Warm:
         self.t = []
         self.b1 = []
         self.b2 = []
-        if self.dt == 'c16':
+        if self.dt == "c16":
             self.x = [0.0 + 0.0j] * N
             self.z = [0.0 + 0.0j] * N
 
@@ -98,6 +112,10 @@ class MH2nH2Warm:
         self.C = []
         self.D = []
         self.Y = []
+
+        self.G = []
+        self.AG = []
+        self.BG = []
 
         for i in range(N):
 
@@ -130,6 +148,8 @@ class MH2nH2Warm:
         self.key_numbers = self._get_key_numbers(self.n)
         self.down_probs = self._calc_down_probs(self.n + 1)
 
+        self.num_of_iter_ = 0  # number of iterations
+
     def get_p(self) -> list[float]:
         """
         Get the probabilities of states of the queueing system.
@@ -159,11 +179,11 @@ class MH2nH2Warm:
 
             return w
 
-        else:
-            for i in range(3):
-                w[i] = derivative(self._calc_w_pls, 0,
-                                  dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return [-w[0], w[1].real, -w[2]]
+        for i in range(3):
+            w[i] = derivative(
+                self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
+            )
+        return [-w[0], w[1].real, -w[2]]
 
     def get_v(self):
         """
@@ -201,7 +221,7 @@ class MH2nH2Warm:
 
     def _matrix_pow(self, matrix, k):
         res = np.eye(self.n + 1, dtype=self.dt)
-        for i in range(k):
+        for _ in range(k):
             res = np.dot(res, matrix)
         return res
 
@@ -212,7 +232,8 @@ class MH2nH2Warm:
         :return: Laplace-Stieltjes transform of the waiting time distribution
         """
         w = 0
-        # вероятности попадания в состояния обслуживания, вычисляются с помощью биноминального распределения
+        # вероятности попадания в состояния обслуживания,
+        # вычисляются с помощью биноминального распределения
         probs = calc_binom_probs(self.n + 1, self.y[0])
 
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
@@ -229,8 +250,14 @@ class MH2nH2Warm:
             key_numbers = self._get_key_numbers(self.n)
 
             a = np.array(
-                [lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
-                 range(self.n + 1)])
+                [
+                    lst_exp(
+                        key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1],
+                        s,
+                    )
+                    for j in range(self.n + 1)
+                ]
+            )
 
             P = self._calc_down_probs(k)
             Pa = np.transpose(self._matrix_pow(P * a, k - self.n))  # n+1 x n+1
@@ -240,8 +267,7 @@ class MH2nH2Warm:
             pls_service_total = sum(np.dot(aP_tilda, Pa))
 
             for i in range(2):
-                w += self.Y[k][0, i] * \
-                    lst_exp(self.mu_w[i], s) * pls_service_total
+                w += self.Y[k][0, i] * lst_exp(self.mu_w[i], s) * pls_service_total
 
             # попала в фазу обслуживания
             Ys = [self.Y[k][0, i + 2] for i in range(len(probs))]
@@ -291,7 +317,7 @@ class MH2nH2Warm:
                 self.p[j + 1] = self.p[j] * self.x[j]
                 p_sum += self.p[j + 1]
 
-            if (p_sum > 1.0):
+            if p_sum > 1.0:
                 p0_max = p0_
             else:
                 p0_min = p0_
@@ -339,7 +365,7 @@ class MH2nH2Warm:
         """
         Запускает расчет
         """
-        if self.dt == 'c16':
+        if self.dt == "c16":
             self.b1[0][0, 0] = 0.0 + 0.0j
             self.b2[0][0, 0] = 0.0 + 0.0j
             x_max1 = 0.0 + 0.0j
@@ -375,14 +401,14 @@ class MH2nH2Warm:
                 c = self._calculate_c(j)
 
                 x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                if self.dt == 'c16':
+                if self.dt == "c16":
                     self.x[j] = 0.0 + 0.0j
                 else:
                     self.x[j] = 0.0
                 for k in range(x_znam.shape[1]):
                     self.x[j] += x_znam[0, k]
 
-                if self.dt == 'c16':
+                if self.dt == "c16":
                     self.x[j] = (1.0 + 0.0j) / self.x[j]
                 else:
                     self.x[j] = (1.0) / self.x[j]
@@ -399,15 +425,16 @@ class MH2nH2Warm:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                        self.x[j], self.b2[j]
+                    )
 
-            if self.dt == 'c16':
+            if self.dt == "c16":
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
             else:
                 self.x[0] = 1.0 / self.z[1]
 
-            self.t[0] = self.x[0]*(np.dot(self.t[1], self.B[1]).dot(self.G[0]))
+            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.G[0]))
 
             x_max1 = 0.0 + 0.0j
             for i in range(self.N):
@@ -473,20 +500,24 @@ class MH2nH2Warm:
                 if self.is_only_first:
                     # first block
                     self._insert_standart_A_into(
-                        output, self.l, self.y[0], 0, 0, level=num)
+                        output, self.l, self.y[0], 0, 0, level=num
+                    )
                     # second
                     self._insert_standart_A_into(
-                        output, self.l, self.y[0], num, num + 1, level=num)
+                        output, self.l, self.y[0], num, num + 1, level=num
+                    )
                     # third
                     self._insert_standart_A_into(
-                        output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
+                        output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1
+                    )
                 else:
                     # first block
                     output[0, 0] = self.l
                     output[1, 1] = self.l
                     # second
                     self._insert_standart_A_into(
-                        output, self.l, self.y[0], 2, 2, level=num + 1)
+                        output, self.l, self.y[0], 2, 2, level=num + 1
+                    )
             else:
                 for i in range(row):
                     output[i, i] = self.l
@@ -500,18 +531,19 @@ class MH2nH2Warm:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i +
-                     bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
+                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[
+                    0
+                ] + i * mu[1] * y[1]
                 if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos +
-                         1] = (level - i - 1) * mu[0] * y[1]
+                    mass[i + left_pos, i + bottom_pos + 1] = (
+                        (level - i - 1) * mu[0] * y[1]
+                    )
                 if i != level - 1:
-                    mass[i + + left_pos + 1, i +
-                         bottom_pos] = (i + 1) * mu[1] * y[0]
+                    mass[i + +left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
 
     def _build_big_b_matrix(self, num):
         """
-            Формирует матрицу B по заданному номеру яруса
+        Формирует матрицу B по заданному номеру яруса
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -543,13 +575,16 @@ class MH2nH2Warm:
                 if self.is_only_first:
                     # first block
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 0, 0, num - 1, self.n)
+                        output, self.y, self.mu, 0, 0, num - 1, self.n
+                    )
                     # second
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, num, num - 1, num - 1, self.n)
+                        output, self.y, self.mu, num, num - 1, num - 1, self.n
+                    )
                     # third
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
+                        output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n
+                    )
 
                     # warm block 1
                     for i in range(num):
@@ -560,37 +595,49 @@ class MH2nH2Warm:
                         output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
                 else:
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 2, 2, num, self.n)
+                        output, self.y, self.mu, 2, 2, num, self.n
+                    )
 
             else:
 
                 if self.is_only_first:
                     # first block
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
+                        output, self.y, self.mu, 0, 0, num - 1, self.n - 1
+                    )
                     # second
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
+                        output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1
+                    )
                     # third
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 2 * (num - 1), 2 * (num - 1), num, self.n)
+                        output,
+                        self.y,
+                        self.mu,
+                        2 * (num - 1),
+                        2 * (num - 1),
+                        num,
+                        self.n,
+                    )
 
                     # warm block 1
                     for i in range(num - 1):
                         output[i, i + 2 * (num - 1)] = self.mu_w[0] * self.y[0]
-                        output[i, i + 2 * (num - 1) +
-                               1] = self.mu_w[0] * self.y[1]
+                        output[i, i + 2 * (num - 1) + 1] = self.mu_w[0] * self.y[1]
 
                     # warm block 2
                     for i in range(num - 1):
-                        output[i + num - 1, i + 2 *
-                               (num - 1)] = self.mu_w[1] * self.y[0]
-                        output[i + num - 1, i + 2 *
-                               (num - 1) + 1] = self.mu_w[1] * self.y[1]
+                        output[i + num - 1, i + 2 * (num - 1)] = (
+                            self.mu_w[1] * self.y[0]
+                        )
+                        output[i + num - 1, i + 2 * (num - 1) + 1] = (
+                            self.mu_w[1] * self.y[1]
+                        )
 
                 else:
                     self._insert_standart_B_into(
-                        output, self.y, self.mu, 2, 2, num, self.n)
+                        output, self.y, self.mu, 2, 2, num, self.n
+                    )
 
         return output
 
@@ -613,9 +660,9 @@ class MH2nH2Warm:
         if not self.is_only_first:
             if num > 0:
                 probs = calc_binom_probs(num + 1, self.y[0])
-                for i in range(len(probs)):
-                    output[0, 2 + i] = self.mu_w[0] * probs[i]
-                    output[1, 2 + i] = self.mu_w[1] * probs[i]
+                for i, prob in enumerate(probs):
+                    output[0, 2 + i] = self.mu_w[0] * prob
+                    output[1, 2 + i] = self.mu_w[1] * prob
 
         return output
 
@@ -637,7 +684,7 @@ class MH2nH2Warm:
             return output
 
         for i in range(row):
-            if self.dt == 'c16':
+            if self.dt == "c16":
                 sumA = 0.0 + 0.0j
                 sumB = 0.0 + 0.0j
                 sumC = 0.0 + 0.0j

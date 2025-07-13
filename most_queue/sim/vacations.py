@@ -16,19 +16,23 @@ class VacationQueueingSystemSimulator(QsSim):
     Simulation model of QS GI/G/n/r and GI/G/n
     """
 
-    def __init__(self, num_of_channels,
-                 buffer=None,
-                 verbose=True,
-                 buffer_type="list", is_service_on_warm_up=False):
+    def __init__(
+        self,
+        num_of_channels,
+        buffer=None,
+        verbose=True,
+        buffer_type="list",
+        is_service_on_warm_up=False,
+    ):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system
         :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
-        :param is_service_on_warm_up: bool : 
+        :param is_service_on_warm_up: bool :
             if is True, jobs arrived in empty system will be served with warm_phase distribution
-            if is False, jobs arrived in empty system will be send to queue, 
+            if is False, jobs arrived in empty system will be send to queue,
                 and warm_phase starts with warm_phase distribution
         """
         super().__init__(num_of_channels, buffer, verbose, buffer_type)
@@ -50,7 +54,8 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         if not self.is_set_server_params:
             raise ValueError(
-                "Server parameters are not set. Please call set_servers() first.")
+                "Server parameters are not set. Please call set_servers() first."
+            )
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
@@ -58,8 +63,11 @@ class VacationQueueingSystemSimulator(QsSim):
         if self.is_service_on_warm_up:
             self.servers = []
             for _i in range(self.n):
-                server = Server(self.server_params, self.server_kendall_notation,
-                                generator=self.generator)
+                server = Server(
+                    self.server_params,
+                    self.server_kendall_notation,
+                    generator=self.generator,
+                )
                 server.set_warm(params, kendall_notation, self.generator)
                 self.servers.append(server)
 
@@ -81,12 +89,13 @@ class VacationQueueingSystemSimulator(QsSim):
 
         if not self.cold_phase.is_set:
             raise QsSourseSettingException(
-                "You must first set the cooling time. Use the set_cold() method.")
+                "You must first set the cooling time. Use the set_cold() method."
+            )
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)
 
-    def arrival(self):
+    def arrival(self, moment=None, ts=None):
         """
         Actions upon arrival of the job by the QS.
         """
@@ -114,7 +123,9 @@ class VacationQueueingSystemSimulator(QsSim):
                     # The job was received before the end of the cooling start delay time
                     self.cold_delay_phase.is_start = False
                     self.cold_delay_phase.end_time = 1e16
-                    self.cold_delay_phase.prob += self.ttek - self.cold_delay_phase.start_mom
+                    self.cold_delay_phase.prob += (
+                        self.ttek - self.cold_delay_phase.start_mom
+                    )
                     self.send_task_to_channel()
                     return
 
@@ -147,7 +158,7 @@ class VacationQueueingSystemSimulator(QsSim):
                 # No warm-up. Send a job to the service channel
                 self.send_task_to_channel()
 
-    def serving(self, c):
+    def serving(self, c, is_network=False):
         """
         Actions upon receipt of a service job with - channel number
         """
@@ -251,8 +262,13 @@ class VacationQueueingSystemSimulator(QsSim):
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end
-        times = [serv_earl, self.arrival_time, self.warm_phase.end_time,
-                 self.cold_phase.end_time, self.cold_delay_phase.end_time]
+        times = [
+            serv_earl,
+            self.arrival_time,
+            self.warm_phase.end_time,
+            self.cold_phase.end_time,
+            self.cold_delay_phase.end_time,
+        ]
         min_time_num = np.argmin(times)
         if min_time_num == 0:
             # Serving

@@ -1,6 +1,7 @@
 """
 Calculation of M/G/1 queue characteristics using the method of moments.
 """
+
 import math
 
 from most_queue.rand_distribution import (
@@ -38,9 +39,13 @@ class MG1Calculation:
         for k in range(1, num_of_mom + 1):
             summ = 0
             for j in range(k):
-                summ += math.factorial(k) * self.b[k - j] * w[j] / (
-                    math.factorial(j) * math.factorial(k + 1 - j))
-            w[k] = ((self.l / (1 - self.l * self.b[0])) * summ)
+                summ += (
+                    math.factorial(k)
+                    * self.b[k - j]
+                    * w[j]
+                    / (math.factorial(j) * math.factorial(k + 1 - j))
+                )
+            w[k] = (self.l / (1 - self.l * self.b[0])) * summ
         return w[1:]
 
     def get_v(self, num=3):
@@ -55,8 +60,7 @@ class MG1Calculation:
         if num_of_mom > 1:
             v.append(w[1] + 2 * w[0] * self.b[0] + self.b[1])
         if num_of_mom > 2:
-            v.append(w[2] + 3 * w[1] * self.b[0] +
-                     3 * self.b[1] * w[0] + self.b[2])
+            v.append(w[2] + 3 * w[1] * self.b[0] + 3 * self.b[1] * w[0] + self.b[2])
 
         return v
 
@@ -73,7 +77,8 @@ class MG1Calculation:
         elif dist_type == "Uniform":
             uniform_params = UniformDistribution.get_params(self.b)
             q = get_q_uniform(
-                self.l, uniform_params.mean, uniform_params.half_interval, num)
+                self.l, uniform_params.mean, uniform_params.half_interval, num
+            )
         elif dist_type == "Pa":
             pa_params = ParetoDistribution.get_params(self.b)
             q = get_q_pareto(self.l, pa_params.alpha, pa_params.K, num)

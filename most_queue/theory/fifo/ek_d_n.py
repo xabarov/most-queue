@@ -6,7 +6,9 @@ import cmath
 import math
 
 import numpy as np
+
 from most_queue.rand_distribution import ErlangParams
+
 
 class EkDn:
     """
@@ -14,7 +16,14 @@ class EkDn:
     with deterministic service
     """
 
-    def __init__(self, erlang_params: ErlangParams, b, n, e=1e-12, p_num=100):
+    def __init__(
+        self,
+        erlang_params: ErlangParams,
+        b: float,
+        n,
+        e: float = 1e-12,
+        p_num: int = 100,
+    ):
         """
         erlang_params - parameters of the Erlang input request distribution
         b - service time in a channel
@@ -27,6 +36,8 @@ class EkDn:
         self.n = n
         self.e = e
         self.p = [0.0] * p_num
+        self.q_ = [0.0] * p_num
+        self.z_ = 0
         self.p_num = p_num
         self.w = [0.0] * (2 * p_num)
 
@@ -36,7 +47,7 @@ class EkDn:
         """
         self._calc_q()
         w_up_to_nk = self._calc_w_up_to_nk()
-        self.w[:len(w_up_to_nk)] = w_up_to_nk[:]
+        self.w[: len(w_up_to_nk)] = w_up_to_nk[:]
         for i in range(self.k):
             summ1 = 0
             for m in range(i + 1):
@@ -48,8 +59,7 @@ class EkDn:
             summ3 = 0
             for m in range(i):
                 summ3 += self.q_[i - m] * self.w[self.n * self.k + m]
-            self.w[self.n * self.k +
-                   i] = (self.w[i] - summ1 - summ3) / self.q_[0]
+            self.w[self.n * self.k + i] = (self.w[i] - summ1 - summ3) / self.q_[0]
 
         is_negative = False
 
@@ -100,20 +110,18 @@ class EkDn:
         A = np.zeros((self.n * self.k, self.n * self.k), dtype=complex)
         B = np.zeros(self.n * self.k, dtype=complex)
         row_num = 0
-        for m in range(len(self.z_)):
+        for z_val in self.z_:
             for j in range(self.n):
                 for i in range(self.k):
-                    right_z = np.power(self.z_[m], self.n * self.k + i).real
-                    delta_z = np.power(
-                        self.z_[m], j * self.k + i).real - right_z
+                    right_z = np.power(z_val, self.n * self.k + i).real
+                    delta_z = np.power(z_val, j * self.k + i).real - right_z
                     A[row_num, j * self.k + i] = delta_z
             row_num += 1
-        for m in range(len(self.z_)):
+        for z_val in self.z_:
             for j in range(self.n):
                 for i in range(self.k):
-                    right_z = np.power(self.z_[m], self.n * self.k + i).imag
-                    delta_z = np.power(
-                        self.z_[m], j * self.k + i).imag - right_z
+                    right_z = np.power(z_val, self.n * self.k + i).imag
+                    delta_z = np.power(z_val, j * self.k + i).imag - right_z
                     A[row_num, j * self.k + i] = delta_z
             row_num += 1
 
@@ -140,17 +148,16 @@ class EkDn:
         z = []
         z_num = math.floor((self.n * self.k) / 2)
 
-        for i in range(z_num):
-            z.append(complex(0, 0))
+        z = [complex(0, 0)] * z_num
 
         for m in range(z_num):
-            z[m] = 0.5 * cmath.exp(2.0 * (m + 1) *
-                                   cmath.pi * complex(0, 1) / (self.n * self.k))
+            z[m] = 0.5 * cmath.exp(
+                2.0 * (m + 1) * cmath.pi * complex(0, 1) / (self.n * self.k)
+            )
             z_old = z[m]
             is_close = False
             while not is_close:
-                left = 2 * (m + 1) * cmath.pi * \
-                    complex(0, 1) / (self.n * self.k)
+                left = 2 * (m + 1) * cmath.pi * complex(0, 1) / (self.n * self.k)
                 right = self.l * self.b * (1.0 - z_old) / (self.n * self.k)
                 z_new = cmath.exp(left - right)
                 if math.fabs(z_new.real - z_old.real) < self.e:

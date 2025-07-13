@@ -1,6 +1,7 @@
 """
 Queueing system with batch arrivals.
 """
+
 import numpy as np
 
 from most_queue.sim.base import QsSim, Task
@@ -11,9 +12,10 @@ class QueueingSystemBatchSim(QsSim):
     Queueing system with batch arrivals GI[x]/G/c/m
 
     """
-    def __init__(self, num_of_channels,
-                 batch_prob,
-                 buffer=None, verbose=True, buffer_type="list"):
+
+    def __init__(
+        self, num_of_channels, batch_prob, buffer=None, verbose=True, buffer_type="list"
+    ):
         """
         :param num_of_channels: int : number of channels (servers)
         :param batch_prob: list : probabilities for different batch sizes
@@ -78,8 +80,7 @@ class QueueingSystemBatchSim(QsSim):
                 for s in self.servers:
                     if s.is_free:
                         self.taked += 1
-                        s.start_service(Task(self.ttek),
-                                        self.ttek, False)
+                        s.start_service(Task(self.ttek), self.ttek, False)
                         self.free_channels -= 1
 
                         # Check if busy period has started:

@@ -1,12 +1,13 @@
 """
 ForkJoin Queue with delta
 """
+
 from colorama import Fore, Style, init
 
-from most_queue.theory.utils.conv import get_self_conv_moments
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.fork_join import ForkJoinSim
 from most_queue.sim.utils.tasks import ForkJoinTask
+from most_queue.theory.utils.conv import get_self_conv_moments
 
 init()
 
@@ -16,21 +17,35 @@ class ForkJoinSimDelta(ForkJoinSim):
     Simulation of ForkJoin queue with delta.
     """
 
-    def __init__(self, num_of_channels, num_of_parts, delta: list[float] | float, 
-                 is_sj=False, buffer=None, buffer_type="list", verbose=True):
+    def __init__(
+        self,
+        num_of_channels,
+        num_of_parts,
+        delta: list[float] | float,
+        is_sj=False,
+        buffer=None,
+        buffer_type="list",
+        verbose=True,
+    ):
         """
         :param num_of_channels: int : number of channels (servers)
         :param num_of_parts: int : number of parts on which the task is divided
-        :param delta: list[float] | float : If delta is a list, 
+        :param delta: list[float] | float : If delta is a list,
             then it should contain the moments of time delay
-          caused by reception and restoration operations for each part. 
+          caused by reception and restoration operations for each part.
           If delta is a float, delay is determistic and equal to delta.
-        :param is_sj: bool : if True, that means that the model is Split-Join, 
+        :param is_sj: bool : if True, that means that the model is Split-Join,
                              otherwise it's Fork-Join.
         :param buffer: Optional(int, None) : maximum length of the queue
         """
-        super().__init__(num_of_channels, num_of_parts, is_sj,
-                         buffer, buffer_type=buffer_type, verbose=verbose)
+        super().__init__(
+            num_of_channels,
+            num_of_parts,
+            is_sj,
+            buffer,
+            buffer_type=buffer_type,
+            verbose=verbose,
+        )
         self.delta = delta
         self.subtask_arr_queue = []
         self.serv_task_id = -1
@@ -53,7 +68,10 @@ class ForkJoinSimDelta(ForkJoinSim):
                     self.dropped += 1
                     is_dropped = True
             else:
-                if self.free_channels == 0 and self.queue.size() + self.k - 1 > self.buffer:
+                if (
+                    self.free_channels == 0
+                    and self.queue.size() + self.k - 1 > self.buffer
+                ):
                     self.dropped += 1
                     is_dropped = True
 
@@ -91,8 +109,9 @@ class ForkJoinSimDelta(ForkJoinSim):
                 else:
                     b_delta = get_self_conv_moments(self.delta, i)
                     params_delta = GammaDistribution.get_params(b_delta)
-                    t.subtasks[i].future_arr_time = self.ttek + \
-                        GammaDistribution.generate_static(params_delta)
+                    t.subtasks[i].future_arr_time = (
+                        self.ttek + GammaDistribution.generate_static(params_delta)
+                    )
                 self.subtask_arr_queue.append(t.subtasks[i])
 
     def subtask_arrival(self, subtask_num):
@@ -153,7 +172,8 @@ class ForkJoinSimDelta(ForkJoinSim):
             if self.served_subtask_in_task[end_ts.task_id] == self.k:
                 self.served += 1
                 self.refresh_v_stat(
-                    self.ttek - self.first_subtask_arr_time[end_ts.task_id])
+                    self.ttek - self.first_subtask_arr_time[end_ts.task_id]
+                )
                 self.in_sys -= 1
 
             if self.queue.size() != 0:
@@ -172,8 +192,11 @@ class ForkJoinSimDelta(ForkJoinSim):
 
                     new_task_id = self.queue.queue[0].task_id
 
-                    brothers = [q for q in range(
-                        self.queue.size()) if self.queue.queue[q].task_id == new_task_id]
+                    brothers = [
+                        q
+                        for q in range(self.queue.size())
+                        if self.queue.queue[q].task_id == new_task_id
+                    ]
                     for q in brothers:
                         que_ts = self.queue.queue[q]
                         for serv in self.servers:
@@ -182,11 +205,15 @@ class ForkJoinSimDelta(ForkJoinSim):
                                 self.free_channels -= 1
                                 break
                     self.queue.queue = [
-                        q for q in self.queue.queue if q.task_id != new_task_id]
+                        q for q in self.queue.queue if q.task_id != new_task_id
+                    ]
             else:
                 if self.queue.size() != 0:
-                    brothers = [q for q in range(
-                        self.queue.size()) if self.queue.queue[q].task_id == end_ts.task_id]
+                    brothers = [
+                        q
+                        for q in range(self.queue.size())
+                        if self.queue.queue[q].task_id == end_ts.task_id
+                    ]
                     for q in brothers:
                         que_ts = self.queue.queue[q]
                         for serv in self.servers:
@@ -195,7 +222,8 @@ class ForkJoinSimDelta(ForkJoinSim):
                                 self.free_channels -= 1
                                 break
                     self.queue.queue = [
-                        q for q in self.queue.queue if q.task_id != end_ts.task_id]
+                        q for q in self.queue.queue if q.task_id != end_ts.task_id
+                    ]
 
     def run_one_step(self):
         """
@@ -248,7 +276,9 @@ class ForkJoinSimDelta(ForkJoinSim):
             res += f"{Fore.CYAN}| Fork-Join{Style.RESET_ALL}\n"
 
         res += f"{Fore.MAGENTA}Current Time {self.ttek:8.3f}{Style.RESET_ALL}\n"
-        res += f"{Fore.MAGENTA}Arrival Time: {self.arrival_time:8.3f}{Style.RESET_ALL}\n"
+        res += (
+            f"{Fore.MAGENTA}Arrival Time: {self.arrival_time:8.3f}{Style.RESET_ALL}\n"
+        )
 
         res += f"{Fore.CYAN}Sojourn moments:{Style.RESET_ALL}\n"
         for i in range(3):

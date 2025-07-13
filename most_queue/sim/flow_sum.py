@@ -1,6 +1,7 @@
 """
 Input flows sum simulation
 """
+
 import copy
 import math
 
@@ -19,7 +20,9 @@ class FlowSumSim:
     Input flows sum simulation
     """
 
-    def __init__(self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000):
+    def __init__(
+        self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000
+    ):
         self.n = len(a)
         self.a = a
         self.distr = distr
@@ -34,9 +37,9 @@ class FlowSumSim:
 
     def sum_flows(self):
         """
-            суммирование n потоков
-            a[i][j] - i - номер потока, j номер начального момента интервалов между соседникми заявками i потока
-            """
+        суммирование n потоков
+        a[i][j] - i - номер потока, j номер начального момента интервалов между соседникми заявками i потока
+        """
         n = len(self.a)  # число суммируемых потоков
 
         if self.distr == "Gamma":
@@ -48,25 +51,44 @@ class FlowSumSim:
         elif self.distr == "Pa":
             distr_str = "Pareto"
         else:
-            "Sum of flows. ERROR: Unknown distribution type."
+            print("Sum of flows. ERROR: Unknown distribution type.")
             return 0
 
         for i in range(n - 1):
             if self.verbose:
-                print("Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(i + 1, n - 1,
-                                                                                                    distr_str))
+                print(
+                    "Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(
+                        i + 1, n - 1, distr_str
+                    )
+                )
             if self.distr == "Gamma":
-                f1 = FlowSumSim.sum_2_Gamma_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                  num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Gamma_flows(
+                    self.a[0],
+                    self.a[1],
+                    num_of_sim=self.num_of_jobs,
+                    num_of_moments=self.num_of_moments,
+                )
             elif self.distr == "H":
-                f1 = FlowSumSim.sum_2_H2_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                               num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_H2_flows(
+                    self.a[0],
+                    self.a[1],
+                    num_of_sim=self.num_of_jobs,
+                    num_of_moments=self.num_of_moments,
+                )
             elif self.distr == "Pa":
-                f1 = FlowSumSim.sum_2_Pa_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                               num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Pa_flows(
+                    self.a[0],
+                    self.a[1],
+                    num_of_sim=self.num_of_jobs,
+                    num_of_moments=self.num_of_moments,
+                )
             else:
-                f1 = FlowSumSim.sum_2_Erlang_flows(self.a[0], self.a[1], num_of_sim=self.num_of_jobs,
-                                                   num_of_moments=self.num_of_moments)
+                f1 = FlowSumSim.sum_2_Erlang_flows(
+                    self.a[0],
+                    self.a[1],
+                    num_of_sim=self.num_of_jobs,
+                    num_of_moments=self.num_of_moments,
+                )
 
             self.flows_.append(f1)
             self.coevs.append(self.get_coev(f1))
@@ -264,8 +286,11 @@ class FlowSumSim:
 
         for i in range(n - 1):
             if verbose:
-                print("Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(i + 1, n - 1,
-                                                                                                    distr_str))
+                print(
+                    "Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(
+                        i + 1, n - 1, distr_str
+                    )
+                )
 
             if disr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(a[0], a[1])

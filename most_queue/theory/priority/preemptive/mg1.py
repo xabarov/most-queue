@@ -1,6 +1,7 @@
 """
 Class to calculate M/G/1 queue with preemptive (absolute) priority.
 """
+
 import math
 
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
@@ -13,7 +14,7 @@ class MG1PreemtiveCalculation:
 
     def __init__(self, l: list[float], b: list[list[float]]):
         """
-        :param l: list[float]  - list of arrival intensities for each job class 
+        :param l: list[float]  - list of arrival intensities for each job class
         :param b: list[list[float]] - list of initial moments for each job class
         """
         self.l = l
@@ -48,44 +49,9 @@ class MG1PreemtiveCalculation:
                 w1[j] += self.b[j][0] * R[j - 1] / (1 - R[j - 1])
         return w1
 
-    def climov_waiting_times(self) -> list[float]:
-        """
-        Calculate waiting times using Climov's method.
-        Returns:
-            list: waiting times
-        """
-        # только два первых момента
-        k_num = len(self.l)
-        ro_k_j = []
-        ro_k = []
-        w = []
-        for k in range(k_num):
-            ro_k.append([])
-            ro_k_j.append([0.0] * 3)
-            for j in range(3):
-                for i in range(k + 1):
-                    ro_k_j[k][j] += self.l[i] * self.b[i][j]
-            ro_k[k] = 1 - ro_k_j[k][0]
-        for k in range(k_num):
-            w.append([0.0] * 2)
-            if k != 0:
-                w[k][0] = ro_k_j[k][1] / (2 * ro_k[k - 1] * ro_k[k])
-                w[k][1] = ro_k_j[k][2] / (3 * ro_k[k]) + (ro_k_j[k][2]) / (
-                    2 * math.pow(ro_k[k], 2)) + \
-                    (ro_k_j[k][1]) / (2 * ro_k[k])
-
-            else:
-                w[k][0] = ro_k_j[k][1] / (2 * ro_k[k])
-                w[k][1] = ro_k_j[k][2] / (3 * math.pow(ro_k[k - 1], 3) * ro_k[k]) + (ro_k_j[k][2] * ro_k_j[k - 1][1]) / (
-                    2 * math.pow(ro_k[k - 1], 2) * math.pow(ro_k[k], 2)) + \
-                    (ro_k_j[k][1] * ro_k_j[k - 1][1]) / \
-                    (2 * math.pow(ro_k[k - 1], 3) * ro_k[k])
-
-        return w
-
     def calc_all(self, num=3):
         """
-        Calculate initial moments of sojourn time, waiting 
+        Calculate initial moments of sojourn time, waiting
         for service without and with interruptions, active time
           and busy period in M/G/1 with absolute priority.
         :param num: number of moments to calculate
@@ -126,17 +92,24 @@ class MG1PreemtiveCalculation:
         for i in range(num):
             summ = self.b[0][i + 1] / (i + 2)
             for s in range(1, i + 1):
-                summ += self.b[0][i + 1 - s] * w[0][s] * \
-                    math.factorial(i + 1) / (math.factorial(s)
-                                             * math.factorial(i + 2 - s))
+                summ += (
+                    self.b[0][i + 1 - s]
+                    * w[0][s]
+                    * math.factorial(i + 1)
+                    / (math.factorial(s) * math.factorial(i + 2 - s))
+                )
             w[0][i] = summ * self.l[0] / (1 - self.l[0] * self.b[0][0])
 
         v.append([0.0] * num)
         v[0][0] = w[0][0] + self.b[0][0]
         v[0][1] = w[0][1] + 2 * w[0][0] * self.b[0][0] + self.b[0][1]
         if num > 2:
-            v[0][2] = w[0][2] + 3 * w[0][1] * \
-                self.b[0][0] + 3 * w[0][0] * self.b[0][1] + self.b[0][2]
+            v[0][2] = (
+                w[0][2]
+                + 3 * w[0][1] * self.b[0][0]
+                + 3 * w[0][0] * self.b[0][1]
+                + self.b[0][2]
+            )
 
         h.append(self.b[0])
 
@@ -152,11 +125,11 @@ class MG1PreemtiveCalculation:
 
             for i in range(j):
                 if j == 1:
-                    pi_j_i[j][i] = busy_calc_warm_up(
-                        self.l[j], pi_j[0], pi_j_i[j][j])
+                    pi_j_i[j][i] = busy_calc_warm_up(self.l[j], pi_j[0], pi_j_i[j][j])
                 else:
                     pi_j_i[j][i] = busy_calc_warm_up(
-                        self.l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
+                        self.l[j], pi_j_i[j - 1][i], pi_j_i[j][j]
+                    )
 
             for moment in range(num + 1):
                 summ = 0
@@ -172,34 +145,43 @@ class MG1PreemtiveCalculation:
             for i in range(1, num + 1):
                 summ = 0
                 for m in range(i):
-                    summ += w[j][m] * h[j][i - m] * \
-                        math.factorial(i) / (math.factorial(m) *
-                                             math.factorial(i + 1 - m))
+                    summ += (
+                        w[j][m]
+                        * h[j][i - m]
+                        * math.factorial(i)
+                        / (math.factorial(m) * math.factorial(i + 1 - m))
+                    )
 
-                w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) +
-                           self.l[j] * summ) / (1.0 - self.l[j] * h[j][0])
+                w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) + self.l[j] * summ) / (
+                    1.0 - self.l[j] * h[j][0]
+                )
             w[j] = w[j][1:]
             v[j][0] = w[j][0] + h[j][0]
             v[j][1] = w[j][1] + 2 * w[j][0] * h[j][0] + h[j][1]
             if num > 2:
-                v[j][2] = w[j][2] + 3 * w[j][1] * \
-                    h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
+                v[j][2] = (
+                    w[j][2] + 3 * w[j][1] * h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
+                )
 
         res = {}
-        res['v'] = v
-        res['w'] = w
-        res['h'] = h
+        res["v"] = v
+        res["w"] = w
+        res["h"] = h
         w_with_pr = []
         for j in range(num_of_cl):
             w_with_pr.append([0.0] * 3)
             w_with_pr[j][0] = v[j][0] - self.b[j][0]
-            w_with_pr[j][1] = v[j][1] - 2 * \
-                w_with_pr[j][0] * self.b[j][0] - self.b[j][1]
+            w_with_pr[j][1] = (
+                v[j][1] - 2 * w_with_pr[j][0] * self.b[j][0] - self.b[j][1]
+            )
             if num > 2:
-                w_with_pr[j][2] = v[j][2] - 3 * w_with_pr[j][1] * \
-                    self.b[j][0] - 3 * w_with_pr[j][0] * \
-                    self.b[j][1] - self.b[j][2]
-        res['w_with_pr'] = w_with_pr
-        res['busy'] = pi_j
+                w_with_pr[j][2] = (
+                    v[j][2]
+                    - 3 * w_with_pr[j][1] * self.b[j][0]
+                    - 3 * w_with_pr[j][0] * self.b[j][1]
+                    - self.b[j][2]
+                )
+        res["w_with_pr"] = w_with_pr
+        res["busy"] = pi_j
 
         return res

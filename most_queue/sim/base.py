@@ -1,6 +1,7 @@
 """
 Simulation model of QS GI/G/n/r and GI/G/n
 """
+
 import time
 
 import numpy as np
@@ -8,9 +9,7 @@ from colorama import Fore, Style, init
 from tqdm import tqdm
 
 from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
-from most_queue.sim.utils.exceptions import (
-    QsWrongQueueTypeException,
-)
+from most_queue.sim.utils.exceptions import QsWrongQueueTypeException
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
@@ -24,10 +23,7 @@ class QsSim:
     Base class for Queueing System Simulator
     """
 
-    def __init__(self, num_of_channels,
-                 buffer=None,
-                 verbose=True,
-                 buffer_type="list"):
+    def __init__(self, num_of_channels, buffer=None, verbose=True, buffer_type="list"):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system
@@ -90,12 +86,12 @@ class QsSim:
 
         self.zero_wait_arrivals_num = 0
 
-    def set_sources(self, params, kendall_notation: str = 'M'):
+    def set_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of source time distribution.
         :param params: dataclass : parameters for the source time distribution
-            for example: H2Params for hyper-exponential distribution 
-            (see most_queue.general.distribution_params) 
+            for example: H2Params for hyper-exponential distribution
+            (see most_queue.general.distribution_params)
             For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of source time distribution ,
            for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
@@ -105,17 +101,16 @@ class QsSim:
 
         self.is_set_source_params = True
 
-        self.source = create_distribution(
-            params, kendall_notation, self.generator)
+        self.source = create_distribution(params, kendall_notation, self.generator)
 
         self.arrival_time = self.source.generate()
 
-    def set_servers(self, params, kendall_notation: str = 'M'):
+    def set_servers(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of service time distribution.
         :param params: dataclass : parameters for the service time distribution
-            for example: H2Params for hyper-exponential distribution 
-            (see most_queue.general.distribution_params) 
+            for example: H2Params for hyper-exponential distribution
+            (see most_queue.general.distribution_params)
             For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of source time distribution ,
            for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
@@ -125,18 +120,27 @@ class QsSim:
 
         self.is_set_server_params = True
 
-        self.servers = [Server(self.server_params, self.server_kendall_notation,
-                               generator=self.generator) for _i in range(self.n)]
+        self.servers = [
+            Server(
+                self.server_params,
+                self.server_kendall_notation,
+                generator=self.generator,
+            )
+            for _i in range(self.n)
+        ]
 
     def calc_load(self):
         """
         Calculates the load factor of the QS
         """
 
-        return calc_qs_load(self.source_kendall_notation,
-                            self.source_params,
-                            self.server_kendall_notation,
-                            self.server_params, self.n)
+        return calc_qs_load(
+            self.source_kendall_notation,
+            self.source_params,
+            self.server_kendall_notation,
+            self.server_params,
+            self.n,
+        )
 
     def send_task_to_channel(self, is_warm_start=False, tsk=None):
         """
@@ -186,7 +190,7 @@ class QsSim:
         """
         Actions upon arrival of the job by the QS.
         """
-        
+
         self.arrived += 1
         self.p[self.in_sys] += self.arrival_time - self.ttek
 
@@ -196,13 +200,13 @@ class QsSim:
             ts.wait_time = 0
             ts.start_waiting_time = -1
             ts.time_to_end_service = 0
-            
+
         else:
             self.ttek = self.arrival_time
             self.arrival_time = self.ttek + self.source.generate()
 
         self.in_sys += 1
-        
+
         if self.free_channels == 0:
             self.send_task_to_queue(new_tsk=ts)
 
@@ -235,7 +239,7 @@ class QsSim:
 
         if self.queue.size() != 0:
             self.send_head_of_queue_to_channel(c, is_network=is_network)
-            
+
         if is_network:
             return end_ts
 
@@ -287,7 +291,7 @@ class QsSim:
         """
         start = time.process_time()
 
-        print(Fore.GREEN + '\rStart simulation')
+        print(Fore.GREEN + "\rStart simulation")
 
         if is_real_served:
 
@@ -296,26 +300,30 @@ class QsSim:
             with tqdm(total=100) as pbar:
                 while self.served < total_served:
                     self.run_one_step()
-                    percent = int(100*(self.served/total_served))
+                    percent = int(100 * (self.served / total_served))
                     if last_percent != percent:
                         last_percent = percent
                         pbar.update(1)
-                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{self.served}/{total_served}' +
-                                             Fore.LIGHTGREEN_EX)
+                        pbar.set_description(
+                            Fore.MAGENTA
+                            + "\rJob served: "
+                            + Fore.YELLOW
+                            + f"{self.served}/{total_served}"
+                            + Fore.LIGHTGREEN_EX
+                        )
 
         else:
             for _ in tqdm(range(total_served)):
                 self.run_one_step()
 
-        print(Fore.GREEN + '\rSimulation is finished')
+        print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
 
         self.time_spent = time.process_time() - start
 
     def refresh_busy_stat(self, new_a):
         """
-        Updating statistics of the busy period 
+        Updating statistics of the busy period
         """
         self.busy = refresh_moments_stat(self.busy, new_a, self.busy_moments)
 
@@ -334,7 +342,7 @@ class QsSim:
     def get_p(self):
         """
         Returns a list with probabilities of QS states
-        p[j] - the probability that there will be exactly j jobs 
+        p[j] - the probability that there will be exactly j jobs
         in the QS at a random moment in time
         """
         res = [0.0] * len(self.p)
@@ -358,8 +366,14 @@ class QsSim:
 
     def __str__(self, is_short=False):
 
-        res = "Queueing system " + self.source_kendall_notation + \
-            "/" + self.server_kendall_notation + "/" + str(self.n)
+        res = (
+            "Queueing system "
+            + self.source_kendall_notation
+            + "/"
+            + self.server_kendall_notation
+            + "/"
+            + str(self.n)
+        )
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         res += f"\nLoad: {self.calc_load():4.3f}\n"

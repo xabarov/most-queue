@@ -5,7 +5,7 @@ QS simulation exceptions
 
 class QsSourseSettingException(ValueError):
     """
-        The error indicates incorrect initialization of the distribution parameters
+    The error indicates incorrect initialization of the distribution parameters
     """
 
     def __init__(self, *args):
@@ -22,7 +22,7 @@ class QsSourseSettingException(ValueError):
 
 class QsWrongQueueTypeException(ValueError):
     """
-        The error indicates incorrect initialization of QsQueue
+    The error indicates incorrect initialization of QsQueue
     """
 
     def __init__(self, *args):

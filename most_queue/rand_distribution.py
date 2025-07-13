@@ -1,6 +1,7 @@
 """
 Random distributions for simulation.
 """
+
 import cmath
 import math
 
@@ -16,7 +17,7 @@ from most_queue.general.distribution_params import (
     H2Params,
     ParetoParams,
     UniformParams,
-    WeibullParams
+    WeibullParams,
 )
 from most_queue.general.interfaces import Distribution
 
@@ -35,7 +36,7 @@ class Weibull(Distribution):
         self.k = params.k
         self.W = params.W
         self.params = params
-        self.type = 'Weibull'
+        self.type = "Weibull"
         self.generator = generator
 
     @staticmethod
@@ -47,7 +48,7 @@ class Weibull(Distribution):
             p = generator.random()
         else:
             p = np.random.rand()
-        return math.pow(-math.log(p)*params.W, -1 / params.k)
+        return math.pow(-math.log(p) * params.W, -1 / params.k)
 
     def generate(self) -> float:
         """
@@ -64,33 +65,35 @@ class Weibull(Distribution):
         :param num: number of moments to calculate.
         :return: list[float]
         """
-        f = [0.0]*num
+        f = [0.0] * num
         for i in range(num):
-            f[i] = math.gamma(1 + i/params.k) * math.pow(params.W, i/params.k)
+            f[i] = math.gamma(1 + i / params.k) * math.pow(params.W, i / params.k)
         return f
 
     @staticmethod
     def get_params(moments: list[float]) -> WeibullParams:
         """
-        Parameter selection for the distribution based 
-        on initial moments of the distribution 
+         Parameter selection for the distribution based
+         on initial moments of the distribution
 
-        params:
-            moments: initial moments of the random variable
+         params:
+             moments: initial moments of the random variable
 
-       return:
-            WeibullParams 
+        return:
+             WeibullParams
 
         """
         a = moments[1] / (moments[0] * moments[0])
         u0 = math.log(2 * a) / (2.0 * math.log(2))
         ee = 1e-6
         u1 = (1.0 / (2 * math.log(2))) * math.log(
-            a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
+            a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5)
+        )
         delta = u1 - u0
         while math.fabs(delta) > ee:
             u1 = (1.0 / (2 * math.log(2))) * math.log(
-                a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
+                a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5)
+            )
             delta = u1 - u0
             u0 = u1
         k = 1 / u1
@@ -110,7 +113,7 @@ class Weibull(Distribution):
         """
 
         f = [0, 0, 0]
-        alpha = 1 / (coev ** 2)
+        alpha = 1 / (coev**2)
         f[0] = f1
         f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
         f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
@@ -159,7 +162,7 @@ class NormalDistribution(Distribution):
         self.mean = params.mean
         self.std_dev = params.std_dev
         self.params = params
-        self.type = 'Normal'
+        self.type = "Normal"
         self.generator = generator
 
     def generate(self) -> float:
@@ -191,7 +194,7 @@ class NormalDistribution(Distribution):
 
         f = [0.0] * num
         f[0] = params.mean
-        f[1] = params.mean ** 2 + params.std_dev ** 2
+        f[1] = params.mean**2 + params.std_dev**2
         return f
 
     @staticmethod
@@ -201,7 +204,7 @@ class NormalDistribution(Distribution):
         :return: Parameters for the distribution that correspond to the given moments.
         """
         mean = moments[0]
-        std_dev = np.sqrt(moments[1] - mean ** 2)
+        std_dev = np.sqrt(moments[1] - mean**2)
         return GaussianParams(mean, std_dev)
 
     @staticmethod
@@ -230,7 +233,7 @@ class UniformDistribution(Distribution):
         self.mean = params.mean
         self.half_interval = params.half_interval
         self.params = params
-        self.type = 'Uniform'
+        self.type = "Uniform"
         self.generator = generator
 
     def generate(self):
@@ -262,8 +265,9 @@ class UniformDistribution(Distribution):
         mean, half_interval = params.mean, params.half_interval
         f = [0.0] * num
         for i in range(num):
-            f[i] = (pow(mean + half_interval, i + 2) - pow(mean -
-                    half_interval, i + 2)) / (2 * half_interval * (i + 2))
+            f[i] = (
+                pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)
+            ) / (2 * half_interval * (i + 2))
         return f
 
     @staticmethod
@@ -340,7 +344,7 @@ class H2Distribution(Distribution):
         """
 
         self.params = params
-        self.type = 'H'
+        self.type = "H"
         self.generator = generator
 
     def generate(self) -> float:
@@ -384,8 +388,9 @@ class H2Distribution(Distribution):
         y2 = 1.0 - params.p1
 
         for i in range(num):
-            f[i] = math.factorial(
-                i + 1) * (params.p1 / pow(params.mu1, i + 1) + y2 / pow(params.mu2, i + 1))
+            f[i] = math.factorial(i + 1) * (
+                params.p1 / pow(params.mu1, i + 1) + y2 / pow(params.mu2, i + 1)
+            )
         return f
 
     @staticmethod
@@ -419,8 +424,9 @@ class H2Distribution(Distribution):
         if t_min > moments[2]:
             # one phase distibution
             q_new = q_max
-            mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) /
-                   (2 * (1.0 - q_new)))) * moments[0]
+            mu1 = (
+                1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))
+            ) * moments[0]
             if math.isclose(mu1, 0):
                 mu1 = 1e10
             else:
@@ -435,24 +441,32 @@ class H2Distribution(Distribution):
             while abs(tn - moments[2]) > 1e-8 and tec < max_iteration:
                 tec += 1
                 q_new = (q_max + q_min) / 2.0
-                t1 = (1.0 + math.sqrt((1.0 - q_new) *
-                      (v * v - 1.0) / (2 * q_new))) * moments[0]
-                t2 = (1.0 - math.sqrt(q_new * (v * v - 1.0) /
-                      (2 * (1.0 - q_new)))) * moments[0]
+                t1 = (
+                    1.0 + math.sqrt((1.0 - q_new) * (v * v - 1.0) / (2 * q_new))
+                ) * moments[0]
+                t2 = (
+                    1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))
+                ) * moments[0]
 
-                tn = 6 * (q_new * math.pow(t1, 3) +
-                          (1.0 - q_new) * math.pow(t2, 3))
+                tn = 6 * (q_new * math.pow(t1, 3) + (1.0 - q_new) * math.pow(t2, 3))
 
                 if tn - moments[2] > 0:
                     q_min = q_new
                 else:
                     q_max = q_new
 
-            res = H2Params(p1=q_max, mu1=1.0/t1, mu2=1.0/t2)
+            res = H2Params(p1=q_max, mu1=1.0 / t1, mu2=1.0 / t2)
             return res
 
     @staticmethod
-    def get_params_clx(moments: list[float], verbose=True, ee=0.001, e=0.02, e_percent=0.15, is_fitting=True) -> H2Params:
+    def get_params_clx(
+        moments: list[float],
+        verbose=True,
+        ee=0.001,
+        e=0.02,
+        e_percent=0.15,
+        is_fitting=True,
+    ) -> H2Params:
         """
         Method of fitting H2 distribution parameters to given initial moments.
         Uses the method of moments and optimization to fit the parameters.
@@ -462,7 +476,7 @@ class H2Distribution(Distribution):
         f = [0.0] * 3
         for i in range(3):
             f[i] = complex(moments[i] / math.factorial(i + 1))
-        znam = (f[1] - pow(f[0], 2))
+        znam = f[1] - pow(f[0], 2)
         c0 = (f[0] * f[2] - pow(f[1], 2)) / znam
         c1 = (f[0] * f[1] - f[2]) / znam
 
@@ -474,13 +488,20 @@ class H2Distribution(Distribution):
             if math.fabs(coev.real - 1.0) < ee:
                 if verbose:
                     print(
-                        f"H2 is close to Exp. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}.")
+                        f"H2 is close to Exp. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
+                    )
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
 
-                return H2Distribution.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                                     is_fitting=is_fitting)
+                return H2Distribution.get_params_clx(
+                    f,
+                    verbose=verbose,
+                    ee=ee,
+                    e=e * (1.0 + e_percent),
+                    e_percent=e_percent,
+                    is_fitting=is_fitting,
+                )
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -488,12 +509,19 @@ class H2Distribution(Distribution):
             if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < ee:
                 if verbose:
                     print(
-                        f"H2 is close to E2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}.")
+                        f"H2 is close to E2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
+                    )
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
-                return H2Distribution.get_params_clx(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                                     is_fitting=is_fitting)
+                return H2Distribution.get_params_clx(
+                    f,
+                    verbose=verbose,
+                    ee=ee,
+                    e=e * (1.0 + e_percent),
+                    e_percent=e_percent,
+                    is_fitting=is_fitting,
+                )
 
         res = [0, 0, 0]  # y1, mu1, mu2
         c1 = complex(c1)
@@ -501,7 +529,7 @@ class H2Distribution(Distribution):
         x2 = -c1 / 2 - cmath.sqrt(d)
         y1 = (f[0] - x2) / (x1 - x2)
 
-        res = H2Params(p1=y1, mu1=1.0/x1, mu2=1.0/x2)
+        res = H2Params(p1=y1, mu1=1.0 / x1, mu2=1.0 / x2)
 
         return res
 
@@ -512,7 +540,7 @@ class H2Distribution(Distribution):
         """
 
         f = [0, 0, 0]
-        alpha = 1 / (coev ** 2)
+        alpha = 1 / (coev**2)
 
         f[0] = f1
         f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
@@ -570,7 +598,7 @@ class CoxDistribution(Distribution):
         :param generator: Random number generator.
         """
         self.params = params
-        self.type = 'C'
+        self.type = "C"
         self.generator = generator
 
     def generate(self) -> float:
@@ -610,15 +638,32 @@ class CoxDistribution(Distribution):
         y2 = 1.0 - y1
         f = [0.0] * 3
         f[0] = y2 / m1 + y1 * (1.0 / m1 + 1.0 / m2)
-        f[1] = 2.0 * (y2 / math.pow(m1, 2) + y1 * (1.0 /
-                      math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2)))
-        f[2] = 6.0 * (y2 / (math.pow(m1, 3)) + y1 * (1.0 / math.pow(m1, 3) + 1.0 / (math.pow(m1, 2) * m2) +
-                                                     1.0 / (math.pow(m2, 2) * m1) + 1.0 / math.pow(m2, 3)))
+        f[1] = 2.0 * (
+            y2 / math.pow(m1, 2)
+            + y1 * (1.0 / math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2))
+        )
+        f[2] = 6.0 * (
+            y2 / (math.pow(m1, 3))
+            + y1
+            * (
+                1.0 / math.pow(m1, 3)
+                + 1.0 / (math.pow(m1, 2) * m2)
+                + 1.0 / (math.pow(m2, 2) * m1)
+                + 1.0 / math.pow(m2, 3)
+            )
+        )
 
         return f
 
     @staticmethod
-    def get_params(moments: list[float], ee=0.001, e=0.5, e_percent=0.25, verbose=True, is_fitting=True) -> Cox2Params:
+    def get_params(
+        moments: list[float],
+        ee=0.001,
+        e=0.5,
+        e_percent=0.25,
+        verbose=True,
+        is_fitting=True,
+    ) -> Cox2Params:
         """
         Calculates Cox-2 distribution parameters by three given initial moments [moments].
         """
@@ -630,13 +675,20 @@ class CoxDistribution(Distribution):
             if abs(moments[1] - moments[0] * moments[0]) < ee:
                 if verbose:
                     print(
-                        f"Cox special 1. Multiply moments to (1+je), coev = {coev:5.3f}  e = {e:5.3f}.")
+                        f"Cox special 1. Multiply moments to (1+je), coev = {coev:5.3f}  e = {e:5.3f}."
+                    )
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
 
-                return CoxDistribution.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                                  is_fitting=is_fitting)
+                return CoxDistribution.get_params(
+                    f,
+                    verbose=verbose,
+                    ee=ee,
+                    e=e * (1.0 + e_percent),
+                    e_percent=e_percent,
+                    is_fitting=is_fitting,
+                )
 
             coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
@@ -644,18 +696,26 @@ class CoxDistribution(Distribution):
             if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < ee:
                 if verbose:
                     print(
-                        f"Cox special 2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}.")
+                        f"Cox special 2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
+                    )
                 f = []
                 for i, mom in enumerate(moments):
                     f.append(mom * complex(1, (i + 1) * e))
-                return CoxDistribution.get_params(f, verbose=verbose, ee=ee, e=e * (1.0 + e_percent), e_percent=e_percent,
-                                                  is_fitting=is_fitting)
+                return CoxDistribution.get_params(
+                    f,
+                    verbose=verbose,
+                    ee=ee,
+                    e=e * (1.0 + e_percent),
+                    e_percent=e_percent,
+                    is_fitting=is_fitting,
+                )
 
         for i in range(3):
             f[i] = moments[i] / math.factorial(i + 1)
 
-        d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] -
-                                                     np.power(f[0], 2)) * (f[0] * f[2] - np.power(f[1], 2))
+        d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - np.power(f[0], 2)) * (
+            f[0] * f[2] - np.power(f[1], 2)
+        )
         mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
         mu2 /= 2.0 * (np.power(f[1], 2) - f[0] * f[2])
         mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
@@ -670,7 +730,7 @@ class CoxDistribution(Distribution):
         """
 
         f = [0, 0, 0]
-        alpha = 1 / (coev ** 2)
+        alpha = 1 / (coev**2)
         f[0] = f1
         f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
         f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
@@ -686,7 +746,7 @@ class DeterministicDistribution(Distribution):
         :param b: constant value to generate.
         """
         self.b = b
-        self.type = 'D'
+        self.type = "D"
 
     def generate(self):
         """
@@ -709,7 +769,7 @@ class DeterministicDistribution(Distribution):
         :param num: number of moments to calculate.
         :return: list[float]
         """
-        moments = [params**i for i in range(1, num+1)]
+        moments = [params**i for i in range(1, num + 1)]
         return moments
 
     @staticmethod
@@ -744,7 +804,7 @@ class ParetoDistribution(Distribution):
         self.a = params.alpha
         self.k = params.K
         self.params = params
-        self.type = 'Pa'
+        self.type = "Pa"
         self.generator = generator
 
     def generate(self) -> float:
@@ -775,7 +835,7 @@ class ParetoDistribution(Distribution):
     @staticmethod
     def get_tail(params: ParetoParams, t: float) -> float:
         """
-        Get tail of distribution function value for given time t. 
+        Get tail of distribution function value for given time t.
         Tail is defined as P(X>t).
         """
         if t < 0:
@@ -801,7 +861,7 @@ class ParetoDistribution(Distribution):
         return f
 
     @staticmethod
-    def generate_static(params: ParetoParams,  generator=None) -> float:
+    def generate_static(params: ParetoParams, generator=None) -> float:
         """
         Generate static value according to Pareto distribution.
          :param params: parameters of the distribution
@@ -818,7 +878,7 @@ class ParetoDistribution(Distribution):
     @staticmethod
     def get_params(moments: list[float]):
         """
-        Calc parameters of the distribution. 
+        Calc parameters of the distribution.
         :param moments: list of initial moments
         """
         d = moments[1] - moments[0] * moments[0]
@@ -856,7 +916,7 @@ class ErlangDistribution(Distribution):
         self.r = params.r
         self.mu = params.mu
         self.params = params
-        self.type = 'E'
+        self.type = "E"
         self.generator = generator
 
     def generate(self) -> float:
@@ -921,17 +981,20 @@ class ErlangDistribution(Distribution):
     @staticmethod
     def get_params(moments: list[float]) -> ErlangParams:
         """
-        Calculates parameters of the Erlang distribution by initial moments. 
+        Calculates parameters of the Erlang distribution by initial moments.
         """
-        r = int(math.floor(moments[0] * moments[0] /
-                (moments[1] - moments[0] * moments[0]) + 0.5))
+        r = int(
+            math.floor(
+                moments[0] * moments[0] / (moments[1] - moments[0] * moments[0]) + 0.5
+            )
+        )
         mu = r / moments[0]
         return ErlangParams(r=r, mu=mu)
 
     @staticmethod
     def get_params_by_mean_and_coev(f1: float, coev: float) -> ErlangParams:
         """
-        Method selects the parameters of the Erlang distribution 
+        Method selects the parameters of the Erlang distribution
         by mean and coefficient of variation.
         """
         f = [0, 0]
@@ -950,10 +1013,9 @@ class ExpDistribution(Distribution):
         :param mu: rate parameter (inverse of the mean)
         :param generator: random number generator (optional)
         """
-        self.erl = ErlangDistribution(
-            ErlangParams(r=1, mu=mu), generator=generator)
+        self.erl = ErlangDistribution(ErlangParams(r=1, mu=mu), generator=generator)
         self.params = mu
-        self.type = 'M'
+        self.type = "M"
         self.generator = generator
 
     def generate(self) -> float:
@@ -968,7 +1030,9 @@ class ExpDistribution(Distribution):
         Generates a random number from the exponential distribution.
         :param params (mu): rate parameter (inverse of the mean)
         """
-        return ErlangDistribution.generate_static(ErlangParams(r=1, mu=params), generator)
+        return ErlangDistribution.generate_static(
+            ErlangParams(r=1, mu=params), generator
+        )
 
     @staticmethod
     def calc_theory_moments(params: float, num: int = 3) -> list[float]:
@@ -977,7 +1041,9 @@ class ExpDistribution(Distribution):
         :param params (mu): rate parameter (inverse of the mean)
 
         """
-        return ErlangDistribution.calc_theory_moments(ErlangParams(r=1, mu=params), num=num)
+        return ErlangDistribution.calc_theory_moments(
+            ErlangParams(r=1, mu=params), num=num
+        )
 
     @staticmethod
     def get_params(moments: list[float]):
@@ -1009,7 +1075,7 @@ class GammaDistribution(Distribution):
         self.g = params.g if params.g is not None else []
 
         self.params = params
-        self.type = 'Gamma'
+        self.type = "Gamma"
         self.generator = generator
 
     @staticmethod
@@ -1031,8 +1097,10 @@ class GammaDistribution(Distribution):
                 else:
                     B.append(moments[i - 1])
                 for j in range(len(moments) + 1):
-                    A[i].append(GammaDistribution.get_gamma(alpha + i + j) /
-                                (pow(mu, i + j) * GammaDistribution.get_gamma(alpha)))
+                    A[i].append(
+                        GammaDistribution.get_gamma(alpha + i + j)
+                        / (pow(mu, i + j) * GammaDistribution.get_gamma(alpha))
+                    )
             g = np.linalg.solve(A, B)
             return GammaParams(mu=mu, alpha=alpha, g=g)
 
@@ -1088,8 +1156,7 @@ class GammaDistribution(Distribution):
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
-                main = mu * math.pow(mu * t, alpha - 1) * \
-                    math.exp(-mu * t) / fract
+                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
             else:
                 main = 0
         else:
@@ -1109,8 +1176,7 @@ class GammaDistribution(Distribution):
         fract = sp.gamma(alpha)
         if math.fabs(fract) > 1e-12:
             if math.fabs(mu * t) > 1e-12:
-                main = mu * math.pow(mu * t, alpha - 1) * \
-                    math.exp(-mu * t) / fract
+                main = mu * math.pow(mu * t, alpha - 1) * math.exp(-mu * t) / fract
             else:
                 main = 0
         else:
@@ -1149,7 +1215,9 @@ class GammaDistribution(Distribution):
     @staticmethod
     def get_gamma_incomplete(x, z, e=1e-12):
 
-        return GammaDistribution.get_gamma(x) - GammaDistribution.get_gamma_small(x, z, e)
+        return GammaDistribution.get_gamma(x) - GammaDistribution.get_gamma_small(
+            x, z, e
+        )
 
     @staticmethod
     def get_gamma_small(x, z, e=1e-12):
@@ -1180,7 +1248,9 @@ class GammaDistribution(Distribution):
         if x > 2:
             return (x - 1) * GammaDistribution.get_gamma(x - 1)
         if x <= 0:
-            return math.pi / (math.sin(math.pi * x) * GammaDistribution.get_gamma(1 - x))
+            return math.pi / (
+                math.sin(math.pi * x) * GammaDistribution.get_gamma(1 - x)
+            )
         return GammaDistribution.gamma_approx(x)
 
     @staticmethod
@@ -1188,22 +1258,26 @@ class GammaDistribution(Distribution):
         """
         Get approximation of Gamma function for x in [1,2]
         """
-        p = [-1.71618513886549492533811e+0,
-             2.47656508055759199108314e+1,
-             -3.79804256470945635097577e+2,
-             6.29331155312818442661052e+2,
-             8.66966202790413211295064e+2,
-             -3.14512729688483657254357e+4,
-             -3.61444134186911729807069e+4,
-             6.6456143820240544627855e+4]
-        q = [-3.08402300119738975254354e+1,
-             3.15350626979604161529144e+2,
-             -1.01515636749021914166146e+3,
-             -3.10777167157231109440444e+3,
-             2.253811842098015100330112e+4,
-             4.75584667752788110767815e+3,
-             -1.34659959864969306392456e+5,
-             -1.15132259675553483497211e+5]
+        p = [
+            -1.71618513886549492533811e0,
+            2.47656508055759199108314e1,
+            -3.79804256470945635097577e2,
+            6.29331155312818442661052e2,
+            8.66966202790413211295064e2,
+            -3.14512729688483657254357e4,
+            -3.61444134186911729807069e4,
+            6.6456143820240544627855e4,
+        ]
+        q = [
+            -3.08402300119738975254354e1,
+            3.15350626979604161529144e2,
+            -1.01515636749021914166146e3,
+            -3.10777167157231109440444e3,
+            2.253811842098015100330112e4,
+            4.75584667752788110767815e3,
+            -1.34659959864969306392456e5,
+            -1.15132259675553483497211e5,
+        ]
         z = x - 1.0
         a = 0.0
         b = 1.0

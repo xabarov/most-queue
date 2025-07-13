@@ -2,6 +2,22 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.pylint.messages_control]
+disable = ["invalid-name", 
+          "too-many-positional-arguments",
+          "too-many-instance-attributes",
+          "too-many-arguments",
+          "too-few-public-methods",
+          "duplicate-code",
+          "too-many-locals",
+          "line-too-long",
+          "too-many-branches",
+          "too-many-statements"
+          ]
+[tool.black]
+target-version = ["py312"]
+skip-string-normalization = true
+
 [project]
 name = "most_queue"
 version = "1.62"

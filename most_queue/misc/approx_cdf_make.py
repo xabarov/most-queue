@@ -10,15 +10,15 @@ if __name__ == "__main__":
 
     # Входные данные
 
-    b1 = 3      # мат. ожидание
+    b1 = 3  # мат. ожидание
     coev = 1.2  # коэффициент вариации
-    a_s = 4     # ассиметрия
+    a_s = 4  # ассиметрия
 
     # задаем начальные моменты распределения
 
     b = [0, 0, 0]
     b[0] = b1
-    b[1] = pow(b[0], 2)*(1 + pow(coev, 2))
+    b[1] = pow(b[0], 2) * (1 + pow(coev, 2))
 
     # дисперсия
     D = b[1] - pow(b[0], 2)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     sigma = math.sqrt(D)
 
     # 3 начальный момент
-    b[2] = a_s*pow(sigma, 3) + 3*b[1]*b[0] - 2*pow(b[0], 2)
+    b[2] = a_s * pow(sigma, 3) + 3 * b[1] * b[0] - 2 * pow(b[0], 2)
 
     # Гамма-аппроксимация
     gamma_params = GammaDistribution.get_params(b)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         val_gamma = GammaDistribution.generate_static(gamma_params)
         val_h2 = H2Distribution.generate_static(h2_params)
         for k in range(3):
-            b_approx_gamma[k] += pow(val_gamma, k+1)
+            b_approx_gamma[k] += pow(val_gamma, k + 1)
             b_approx_h2[k] += pow(val_h2, k + 1)
 
     for k in range(3):
@@ -52,22 +52,23 @@ if __name__ == "__main__":
         b_approx_h2[k] /= n
 
     print("{0:^40s}".format("Начальные моменты СВ"))
-    print("{0:^3s}|{1:^15s}|{2:^15s}|{3:^15s}".format(
-        "№", "Реал",  "Gamma", "H2"))
+    print("{0:^3s}|{1:^15s}|{2:^15s}|{3:^15s}".format("№", "Реал", "Gamma", "H2"))
     print("-" * 50)
     for i in range(3):
-        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}|{3:^15.3g}".format(
-            i+1, b[i], b_approx_gamma[i], b_approx_h2[i]))
+        print(
+            "{0:^4d}|{1:^15.3g}|{2:^15.3g}|{3:^15.3g}".format(
+                i + 1, b[i], b_approx_gamma[i], b_approx_h2[i]
+            )
+        )
 
     dots_num = 10000
 
-    x = np.linspace(0, 1*sigma, dots_num)
+    x = np.linspace(0, 1 * sigma, dots_num)
     y_gamma = []
     y_h2 = []
 
     for i in range(dots_num):
-        y_gamma.append(GammaDistribution.get_pdf(
-            gamma_params, x[i]))
+        y_gamma.append(GammaDistribution.get_pdf(gamma_params, x[i]))
         y_h2.append(H2Distribution.get_pdf(h2_params, x[i]))
 
     fig, ax = plt.subplots()

@@ -1,27 +1,29 @@
 """
 QS channels or servers
 """
+
 from colorama import Fore, Style
 
-from most_queue.theory.utils.conv import conv_moments
 from most_queue.rand_distribution import (
     CoxDistribution,
+    ErlangDistribution,
     ExpDistribution,
     GammaDistribution,
     H2Distribution,
-    ParetoDistribution,
     NormalDistribution,
-    ErlangDistribution
+    ParetoDistribution,
 )
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.tasks import Task
+from most_queue.theory.utils.conv import conv_moments
 
 
 class Server:
     """
     QS channel
     """
+
     id = 0
 
     def __init__(self, params, kendall_notation, generator=None):
@@ -45,12 +47,14 @@ class Server:
         Set local warmup period distrubution on server
         """
 
-        self.warm_phase.set_dist(create_distribution(params, kendall_notation, generator))
+        self.warm_phase.set_dist(
+            create_distribution(params, kendall_notation, generator)
+        )
 
     def start_service(self, ts: Task, ttek, is_warm=False):
         """
         Starts serving
-        ttek - current time 
+        ttek - current time
         is_warm - if warmUp needed
         """
 
@@ -76,8 +80,13 @@ class Server:
         if self.is_free:
             res += "\t" + Fore.CYAN + "Free" + Style.RESET_ALL
         else:
-            res += "\t" + Fore.YELLOW + "Serving.." + \
-                Style.RESET_ALL + f"{self.time_to_end_service:8.3f}\n"
+            res += (
+                "\t"
+                + Fore.YELLOW
+                + "Serving.."
+                + Style.RESET_ALL
+                + f"{self.time_to_end_service:8.3f}\n"
+            )
             res += f"\t{Fore.MAGENTA}Task on service:{Style.RESET_ALL}\n\t{self.tsk_on_service}"
         return res
 
@@ -86,6 +95,7 @@ class ServerWarmUp(Server):
     """
     server with warm-up phase
     """
+
     id = 0
 
     def __init__(self, params, kendall_notation, delta=None):
@@ -111,24 +121,20 @@ class ServerWarmUp(Server):
                 self.time_to_end_service = ttek + self.dist.generate() + self.delta
             else:
                 b = [0, 0, 0]
-                if self.dist.type == 'M':
+                if self.dist.type == "M":
                     b = ExpDistribution.calc_theory_moments(self.dist.params)
-                elif self.dist.type == 'H':
+                elif self.dist.type == "H":
                     b = H2Distribution.calc_theory_moments(self.dist.params)
-                elif self.dist.type == 'C':
+                elif self.dist.type == "C":
                     b = CoxDistribution.calc_theory_moments(self.dist.params)
-                elif self.dist.type == 'Pa':
-                    b = ParetoDistribution.calc_theory_moments(
-                        self.dist.params)
-                elif self.dist.type == 'E':
-                    b = ErlangDistribution.calc_theory_moments(
-                        self.dist.params)
-                elif self.dist.type == 'Gamma':
-                    b = GammaDistribution.calc_theory_moments(
-                        self.dist.params)
-                elif self.dist.type == 'Normal':
-                    b = NormalDistribution.calc_theory_moments(
-                        self.dist.params)
+                elif self.dist.type == "Pa":
+                    b = ParetoDistribution.calc_theory_moments(self.dist.params)
+                elif self.dist.type == "E":
+                    b = ErlangDistribution.calc_theory_moments(self.dist.params)
+                elif self.dist.type == "Gamma":
+                    b = GammaDistribution.calc_theory_moments(self.dist.params)
+                elif self.dist.type == "Normal":
+                    b = NormalDistribution.calc_theory_moments(self.dist.params)
                 else:
                     raise ValueError("Unknown distribution type")
 
@@ -136,19 +142,21 @@ class ServerWarmUp(Server):
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = GammaDistribution.get_params(f_summ)
-                self.time_to_end_service = ttek + \
-                    GammaDistribution.generate_static(params)
+                self.time_to_end_service = ttek + GammaDistribution.generate_static(
+                    params
+                )
 
 
 class ServerPriority:
     """
     Priority server. Server can have different priorities and can be preempted or not.
     """
+
     id = 0
 
     def __init__(self, server_params: dict, prty_type, generator):
         """
-        :param server_params: dict with keys: 'params' and 'type'   
+        :param server_params: dict with keys: 'params' and 'type'
         :param prty_type: priority type (str) -
             No  - no priorities, FIFO
             PR  - preemptive resume, with resuming interrupted request
@@ -161,10 +169,9 @@ class ServerPriority:
 
         self.generator = generator
         for params in server_params:
-            dist_type = params['type']
-            params = params['params']
-            self.dist.append(create_distribution(
-                params, dist_type, self.generator))
+            dist_type = params["type"]
+            params = params["params"]
+            self.dist.append(create_distribution(params, dist_type, self.generator))
 
         self.time_to_end_service = 1e10
         self.total_time_to_serve = 0
@@ -200,8 +207,7 @@ class ServerPriority:
                 self.time_to_end_service = ttek + ts.time_to_end_service
                 self.tsk_on_service.time_to_end_service = self.time_to_end_service
             else:
-                self.total_time_to_serve = self.dist[self.class_on_service].generate(
-                )
+                self.total_time_to_serve = self.dist[self.class_on_service].generate()
                 self.time_to_end_service = ttek + self.total_time_to_serve
                 self.tsk_on_service.time_to_end_service = self.time_to_end_service
         self.is_free = False

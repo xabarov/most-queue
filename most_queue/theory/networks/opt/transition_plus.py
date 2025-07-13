@@ -3,6 +3,7 @@ Class for optimizing the transition matrix for an open network.
 Version with additional features and optimizations.
 }
 """
+
 import random
 from dataclasses import dataclass
 from enum import Enum
@@ -21,6 +22,7 @@ class Candidates:
     """
     Results of finding candidates for optimization
     """
+
     optimized: bool
     candidates: list[MaxLoadNodeResults]
 
@@ -29,6 +31,7 @@ class Strategy(Enum):
     """
     Strategy for finding candidates for optimization
     """
+
     ALL = 1
     TOP_K = 2
     MIN_AND_MAX = 3
@@ -42,10 +45,13 @@ class NetworkOptimizerPlus(NetworkOptimizer):
     Version with additional features and optimizations.
     """
 
-    def _find_opt_candidates(self, loads: list[float],
-                             intensities: list[float],
-                             strategy: Strategy = Strategy.RANDOM,
-                             top_k: int = 3) -> Candidates:
+    def _find_opt_candidates(
+        self,
+        loads: list[float],
+        intensities: list[float],
+        strategy: Strategy = Strategy.RANDOM,
+        top_k: int = 3,
+    ) -> Candidates:
         """
         Find candidates for optimization based on the current loads and intensities.
         """
@@ -59,23 +65,30 @@ class NetworkOptimizerPlus(NetworkOptimizer):
             # Find parent with max intesity*P[parent, max_load_node]
             parent = -1
             lam_r_max = -1
-            for i in range(load_node+1):
+            for i in range(load_node + 1):
                 if i == 0:  # source
                     lam = self.arrival_rate
                 else:
-                    lam = intensities[i-1]
+                    lam = intensities[i - 1]
                 lam_r = lam * self.R[i, load_node]
                 if lam_r > lam_r_max:
                     # check if parent has >=2 childrens
                     childrens = np.sum(
-                        [1 if self.R[i, k] > 0 else 0 for k in range(self.rows-1)])
+                        [1 if self.R[i, k] > 0 else 0 for k in range(self.rows - 1)]
+                    )
                     if childrens >= 2:
                         parent = i
                         lam_r_max = lam_r
 
             if parent != -1:
-                candidates.append(MaxLoadNodeResults(optimized=False, lam_r_max=lam_r_max,
-                                                     parent=parent, node=load_node))
+                candidates.append(
+                    MaxLoadNodeResults(
+                        optimized=False,
+                        lam_r_max=lam_r_max,
+                        parent=parent,
+                        node=load_node,
+                    )
+                )
         # sort candidates by their loads
         candidates.sort(key=lambda x: loads[x.node], reverse=True)
 
@@ -95,9 +108,13 @@ class NetworkOptimizerPlus(NetworkOptimizer):
 
         return Candidates(optimized=False, candidates=candidates)
 
-    def run(self, tolerance=1e-6, max_steps=100,
-            strategy: Strategy = Strategy.RANDOM,
-            top_k: int = 3):
+    def run(
+        self,
+        tolerance=1e-6,
+        max_steps=100,
+        strategy: Strategy = Strategy.RANDOM,
+        top_k: int = 3,
+    ):
         """
         Run the optimization algorithm.
         """
@@ -110,9 +127,9 @@ class NetworkOptimizerPlus(NetworkOptimizer):
 
         net_res = self._get_network_calc()
 
-        loads = net_res['loads']
-        intencities = net_res['intensities']
-        current_v1 = net_res['v'][0]
+        loads = net_res["loads"]
+        intencities = net_res["intensities"]
+        current_v1 = net_res["v"][0]
         self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
         if self.verbose:
@@ -127,7 +144,8 @@ class NetworkOptimizerPlus(NetworkOptimizer):
                 break
 
             candidates_res = self._find_opt_candidates(
-                loads, intencities, strategy=strategy, top_k=top_k)
+                loads, intencities, strategy=strategy, top_k=top_k
+            )
 
             if candidates_res.optimized:
                 break
@@ -145,12 +163,11 @@ class NetworkOptimizerPlus(NetworkOptimizer):
 
                 net_res = self._get_network_calc()
 
-                loads = net_res['loads']
-                intencities = net_res['intensities']
-                current_v1 = net_res['v'][0]
+                loads = net_res["loads"]
+                intencities = net_res["intensities"]
+                current_v1 = net_res["v"][0]
 
-                self.dynamics.append(OptimizerDynamic(
-                    v1=current_v1, loads=loads))
+                self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
                 if self.verbose:
                     self._print_state()

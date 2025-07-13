@@ -1,6 +1,7 @@
 """
 Simulation model for queueing systems with impatient tasks
 """
+
 from colorama import Fore, Style, init
 
 from most_queue.sim.base import QsSim
@@ -18,11 +19,11 @@ class ImpatientQueueSim(QsSim):
     def __init__(self, num_of_channels, buffer=None, verbose=True):
         """
         Initialize the queueing system with impatient tasks.
-        The system can have a finite or infinite buffer. 
+        The system can have a finite or infinite buffer.
 
         :param num_of_channels: int : number of channels in the system
         :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
-        :param verbose: bool : whether to print detailed information during simulation  
+        :param verbose: bool : whether to print detailed information during simulation
 
         """
         super().__init__(num_of_channels, buffer, verbose)
@@ -33,11 +34,11 @@ class ImpatientQueueSim(QsSim):
         self.impatience = None
         self.is_set_impatience_params = False
 
-    def set_impatience(self, params, kendall_notation: str='M'):
+    def set_impatience(self, params, kendall_notation: str = "M"):
         """
         Set the impatience distribution for tasks.
         :param params: dataclass : parameters for the impatience time distribution
-            for example: H2Params for hyper-exponential distribution 
+            for example: H2Params for hyper-exponential distribution
             (see most_queue.general.distribution_params)
              For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of source time distribution ,
@@ -84,8 +85,9 @@ class ImpatientQueueSim(QsSim):
             for s in self.servers:
                 if s.is_free:
                     self.taked += 1
-                    s.start_service(ImpatientTask(
-                        self.ttek, moment_to_leave), self.ttek, False)
+                    s.start_service(
+                        ImpatientTask(self.ttek, moment_to_leave), self.ttek, False
+                    )
                     self.free_channels -= 1
 
                     # Проверям, не наступил ли ПНЗ:
@@ -165,8 +167,10 @@ class ImpatientQueueSim(QsSim):
             if tsk.moment_to_leave < moment_to_leave_earlier:
                 moment_to_leave_earlier = tsk.moment_to_leave
                 num_of_task_earlier = i
-        
-        result = f'{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL}\n'
-        result += f'leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}'
+
+        result = f"{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL}\n"
+        result += (
+            f"leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}"
+        )
 
         return result

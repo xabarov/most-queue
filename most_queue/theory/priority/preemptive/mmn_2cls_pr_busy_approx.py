@@ -1,3 +1,8 @@
+"""
+Calculation of M/M/n queue with absolute priority using the numerical method
+by Takahashi-Takami based on the approximation of busy periods by Cox's second-order distribution.
+"""
+
 import math
 
 import numpy as np
@@ -8,19 +13,27 @@ from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 class MMn_PRTY_PNZ_Cox_approx:
     """
-    Расчет СМО M/M/n с абсолютным приоритетом с комплексными параметрами численным методом Такахаси-Таками
-    на основе аппроксимации ПНЗ распределением Кокса второго порядка
-    Комплексные параметры позволяют аппроксимировать распределение времени обслуживания
-    с произволиными коэффициентами вариации (>1, <=1)
+    Calculation of M/M/n queue with absolute priority using the numerical method
+    by Takahashi-Takami based on the approximation of busy periods by Cox's second-order distribution.
     """
 
-    def __init__(self, n, mu_L, mu_H, l_L, l_H, N=150, accuracy=1e-6, dtype="c16"):
+    def __init__(
+        self,
+        n: int,
+        mu_L: float,
+        mu_H: float,
+        l_L: float,
+        l_H: float,
+        N: int = 150,
+        accuracy: float = 1e-6,
+        dtype: str = "c16",
+    ):
         """
-        n: число каналов
-        l_L, l_H: интенсивности вх. потока заявок с низким и высоким приоритетами
-        mu_L, mu_H: интенсивности обслуживания заявок с низким и высоким приоритетами
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
+        n: number of channels
+        l_L, l_H: arrival rates for low and high priority requests
+        mu_L, mu_H: service rates for low and high priority requests
+        N: number of tiers (levels)
+        accuracy: accuracy, parameter for stopping iteration
         """
         self.dt = np.dtype(dtype)
         self.N = N
@@ -30,14 +43,14 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.l_H = l_H
         self.mu_L = mu_L
         self.mu_H = mu_H
-        self.busy_period = self.get_pnz_markov()
-        self.busy_coev = self.get_busy_coev()
+        self.busy_period = self._get_pnz_markov()
+        self.busy_coev = self._get_busy_coev()
         self.param_cox = CoxDistribution.get_params(self.busy_period)
         self.y1_cox = self.param_cox.p1
         self.mu1_cox = self.param_cox.mu1
         self.mu2_cox = self.param_cox.mu2
-        
-        self.n_iter_ = 0 
+
+        self.n_iter_ = 0
         self.inter_level_mom_ = None
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
@@ -67,16 +80,15 @@ class MMn_PRTY_PNZ_Cox_approx:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
+        self._build_matrices()
+        self._initial_probabilities()
 
-    def get_pnz_markov(self):
+    def _get_pnz_markov(self):
 
         b_mom = [0, 0, 0]
 
         for j in range(3):
-            b_mom[j] = math.factorial(
-                j + 1) / math.pow(self.n * self.mu_H, j + 1)
+            b_mom[j] = math.factorial(j + 1) / math.pow(self.n * self.mu_H, j + 1)
 
         pi = [0, 0, 0]
 
@@ -84,22 +96,24 @@ class MMn_PRTY_PNZ_Cox_approx:
 
         pi[0] = b_mom[0] / (1.0 - ro_load)
         pi[1] = b_mom[1] / (math.pow(1 - ro_load, 3))
-        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + \
-            3.0 * self.l_H * b_mom[1] * b_mom[1] / math.pow(1 - ro_load, 5)
+        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + 3.0 * self.l_H * b_mom[
+            1
+        ] * b_mom[1] / math.pow(1 - ro_load, 5)
 
         return pi
 
-    def get_busy_coev(self):
-        return math.sqrt(self.busy_period[1] - self.busy_period[0] * self.busy_period[0]) / self.busy_period[0]
+    def _get_busy_coev(self):
+        return (
+            math.sqrt(self.busy_period[1] - self.busy_period[0] * self.busy_period[0])
+            / self.busy_period[0]
+        )
 
     def get_p(self):
         """
         Возвращает список с вероятностями состояний системы
         p[k] - вероятность пребывания в системе ровно k заявок
         """
-        p_real = [0.0] * self.N
-        for i in range(len(self.p)):
-            p_real[i] = self.p[i].real
+        p_real = [p_val.real for p_val in self.p]
         return p_real
 
     def get_second_class_v1(self):
@@ -112,7 +126,7 @@ class MMn_PRTY_PNZ_Cox_approx:
             l1 += p_real[i] * i
         return l1 / self.l_L
 
-    def initial_probabilities(self):
+    def _initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
         """
@@ -142,11 +156,11 @@ class MMn_PRTY_PNZ_Cox_approx:
             else:
                 p0_min = p0_
 
-    def calculate_y(self):
+    def _calculate_y(self):
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
         Формирует матрицы переходов
         """
@@ -179,8 +193,7 @@ class MMn_PRTY_PNZ_Cox_approx:
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(
-                        self.t[j + 1], np.dot(self.B[j + 1], G))
+                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
                 else:
                     self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
 
@@ -194,8 +207,9 @@ class MMn_PRTY_PNZ_Cox_approx:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                    np.dot(self.x[j], self.b2[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                    self.x[j], self.b2[j]
+                )
 
             self.x[0] = 1.0 / self.z[1]
 
@@ -210,9 +224,9 @@ class MMn_PRTY_PNZ_Cox_approx:
                     x_max1 = self.x[i]
 
         self.calculate_p()
-        self.calculate_y()
+        self._calculate_y()
 
-    def calculate_v(self):
+    def _calculate_v(self):
         v = [0, 0, 0]
         A = []
         B = []
@@ -292,30 +306,26 @@ class MMn_PRTY_PNZ_Cox_approx:
         G_gap = pass_time.G_gap_calc(l_start, l_end)
         Gr_gap = pass_time.Gr_gap_calc(l_start, l_end)
 
-        print(
-            "\nЗначения матрицы Gr_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
+        print(f"\nGr_gap {l_start:d} -> {l_end:d}:\n")
 
         for r in range(3):
-            print("r = {0:^1d}".format(r + 1))
+            print(f"r = {r + 1:^1d}")
             rows = Gr_gap[r].shape[0]
             cols = Gr_gap[r].shape[1]
             for j in range(rows):
                 for t in range(cols):
                     if t == cols - 1:
                         if math.isclose(Gr_gap[r][j, t].imag, 0):
-                            print("{0:^5.3g}  ".format(Gr_gap[r][j, t].real))
+                            print(f"{Gr_gap[r][j, t].real:^5.3g}  ")
                         else:
-                            print("{0:^5.3g}  ".format(Gr_gap[r][j, t]))
+                            print(f"{Gr_gap[r][j, t]:^5.3g}  ")
                     else:
                         if math.isclose(Gr_gap[r][j, t].imag, 0):
-                            print("{0:^5.3g}  ".format(
-                                Gr_gap[r][j, t].real), end='')
+                            print(f"{Gr_gap[r][j, t].real:^5.3g}  ", end="")
                         else:
-                            print("{0:^5.3g}  ".format(
-                                Gr_gap[r][j, t]), end='')
+                            print(f"{Gr_gap[r][j, t]:^5.3g}  ", end="")
 
-        print(
-            "\nЗначения матрицы G_gap {0:d} -> {1:d}:\n".format(l_start, l_end))
+        print(f"\nG_gap {l_start:d} -> {l_end:d}:\n")
 
         rows = G_gap.shape[0]
         cols = G_gap.shape[1]
@@ -323,14 +333,14 @@ class MMn_PRTY_PNZ_Cox_approx:
             for t in range(cols):
                 if t == cols - 1:
                     if math.isclose(G_gap[j, t].imag, 0):
-                        print("{0:^5.3g}  ".format(G_gap[j, t].real))
+                        print(f"{G_gap[j, t].real:^5.3g}")
                     else:
-                        print("{0:^5.3g}  ".format(G_gap[j, t]))
+                        print(f"{G_gap[j, t]:^5.3g}")
                 else:
                     if math.isclose(G_gap[j, t].imag, 0):
-                        print("{0:^5.3g}  ".format(G_gap[j, t].real), end='')
+                        print(f"{G_gap[j, t].real:^5.3g}", end="")
                     else:
-                        print("{0:^5.3g}  ".format(G_gap[j, t]), end='')
+                        print(f"{G_gap[j, t]:^5.3g}", end="")
 
         l_tilda = self.n
         # b_mom = [1 / self.mu_L, 2 / pow(self.mu_L, 2), 6 / pow(self.mu_L, 3)]
@@ -344,26 +354,34 @@ class MMn_PRTY_PNZ_Cox_approx:
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
-                            Zs.append(self.t[i][0, j] * pass_time.G[i]
-                                      [j, s] * pass_time.Z[i][k][j, s])
+                            Zs.append(
+                                self.t[i][0, j]
+                                * pass_time.G[i][j, s]
+                                * pass_time.Z[i][k][j, s]
+                            )
                             # Zs.append(self.t[i][0, j] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[i][k][j, s])
-                        inter_level_mom[i -
-                                        1] = self.binom_calc(inter_level_mom[i - 1], Zs)
+                        inter_level_mom[i - 1] = self.binom_calc(
+                            inter_level_mom[i - 1], Zs
+                        )
             else:
                 for j in range(self.cols[i]):
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
                             Zs.append(
-                                self.t[i][0, j] * pass_time.G[l_tilda][j, s] * pass_time.Z[l_tilda][k][j, s])
+                                self.t[i][0, j]
+                                * pass_time.G[l_tilda][j, s]
+                                * pass_time.Z[l_tilda][k][j, s]
+                            )
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[l_tilda][k][j, s])
-                        inter_level_mom[i -
-                                        1] = self.binom_calc(inter_level_mom[i - 1], Zs)
+                        inter_level_mom[i - 1] = self.binom_calc(
+                            inter_level_mom[i - 1], Zs
+                        )
 
         self.inter_level_mom_ = inter_level_mom
-        
+
         v1_pr = 0
         for i in range(1, self.N):
             # Z_gap = pass_time.Z_gap_calc(i, 0)
@@ -383,15 +401,17 @@ class MMn_PRTY_PNZ_Cox_approx:
                     v = self.binom_calc(v, Zs)
             v1_new = v[0]
             if math.fabs(v1_new.real - v1_pr.real) < 1e-8:
-                print("End v calc iteration on step = {0:d}".format(i))
+                print(f"End v calc iteration on step = {i:d}")
                 break
             v1_pr = v1_new
-         
 
         return v
 
     @staticmethod
     def binom_calc(a, b, num=3):
+        """
+        Calculate binomial coefficients for given vectors.
+        """
         res = []
         if num > 0:
             res.append(a[0] + b[0])
@@ -440,7 +460,7 @@ class MMn_PRTY_PNZ_Cox_approx:
 
     def buildB(self, num):
         """
-            Формирует матрицу B по заданному номеру яруса
+        Формирует матрицу B по заданному номеру яруса
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -458,7 +478,7 @@ class MMn_PRTY_PNZ_Cox_approx:
 
     def buildC(self, num):
         """
-            Формирует матрицу C по заданному номеру яруса
+        Формирует матрицу C по заданному номеру яруса
         """
         col = self.cols[num]
         row = col
@@ -495,7 +515,7 @@ class MMn_PRTY_PNZ_Cox_approx:
 
     def buildD(self, num):
         """
-            Формирует матрицу D по заданному номеру яруса
+        Формирует матрицу D по заданному номеру яруса
         """
         col = self.cols[num]
         row = col

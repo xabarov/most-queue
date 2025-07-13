@@ -1,6 +1,7 @@
 """
 Calculate M/H2/n queue with negative jobs with disasters,
 """
+
 import numpy as np
 from scipy.misc import derivative
 
@@ -21,9 +22,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
     (remove all customer from system)
     """
 
-    def __init__(self, n: int, l_pos: float, l_neg: float, b: list[float],
-                 buffer: int | None = None, N: int = 150,
-                 accuracy: float = 1e-6, dtype="c16", verbose: bool = False):
+    def __init__(
+        self,
+        n: int,
+        l_pos: float,
+        l_neg: float,
+        b: list[float],
+        buffer: int | None = None,
+        N: int = 150,
+        accuracy: float = 1e-6,
+        dtype="c16",
+        verbose: bool = False,
+    ):
         """
         n: number of servers
         l: arrival rate of positive jobs
@@ -36,15 +46,31 @@ class MGnNegativeDisasterCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
-                         accuracy=accuracy, dtype=dtype, verbose=verbose)
+        super().__init__(
+            n=n,
+            l=l_pos,
+            b=b,
+            buffer=buffer,
+            N=N,
+            accuracy=accuracy,
+            dtype=dtype,
+            verbose=verbose,
+        )
 
         self.l_neg = l_neg
-        self.gamma = 1e3*b[0]  # disaster artifitial states intensity
+        self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
 
         # for calc B matrices
-        self.base_mgn = MGnCalc(n=n, l=l_pos, b=b, buffer=buffer, N=N,
-                                accuracy=accuracy, dtype=dtype, verbose=verbose)
+        self.base_mgn = MGnCalc(
+            n=n,
+            l=l_pos,
+            b=b,
+            buffer=buffer,
+            N=N,
+            accuracy=accuracy,
+            dtype=dtype,
+            verbose=verbose,
+        )
         self.base_mgn._fill_cols()
         self.base_mgn._build_matrices()
 
@@ -134,10 +160,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         # fill first col
         if num <= self.n:
-            for j in range(1, num+2):
+            for j in range(1, num + 2):
                 output[j, 0] = self.l_neg
         else:
-            for j in range(1, self.n+2):
+            for j in range(1, self.n + 2):
                 output[j, 0] = self.l_neg
 
         # copy base matrix on position 1,1
@@ -168,8 +194,9 @@ class MGnNegativeDisasterCalc(MGnCalc):
         output[0, 0] = self.gamma
 
         for i in range(1, row):
-            output[i, i] = self.l + self.l_neg + \
-                (num - i + 1) * self.mu[0] + (i-1) * self.mu[1]
+            output[i, i] = (
+                self.l + self.l_neg + (num - i + 1) * self.mu[0] + (i - 1) * self.mu[1]
+            )
 
         return output
 
@@ -226,17 +253,24 @@ class MGnNegativeDisasterCalc(MGnCalc):
         key_numbers = self._get_key_numbers(self.n)
         a = [lst_exp(self.gamma, s)]
         for j in range(self.n + 1):
-            a.append(lst_exp(
-                key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg, s))
+            a.append(
+                lst_exp(
+                    key_numbers[j][0] * self.mu[0]
+                    + key_numbers[j][1] * self.mu[1]
+                    + self.l_neg,
+                    s,
+                )
+            )
 
         a = np.array(a)
 
-        Pn_plus = self._calc_up_probs(self.n+1)
+        Pn_plus = self._calc_up_probs(self.n + 1)
 
         for k in range(self.n, self.N):
 
-            Pa = np.transpose(self._matrix_pow(
-                Pn_plus * a, k - self.n))  # size = (n+2, n+2)
+            Pa = np.transpose(
+                self._matrix_pow(Pn_plus * a, k - self.n)
+            )  # size = (n+2, n+2)
 
             Ys = np.array([self.Y[k][0, i] for i in range(self.n + 2)])
             aPa = np.dot(a, Pa)
@@ -255,8 +289,9 @@ class MGnNegativeDisasterCalc(MGnCalc):
         w = [0.0] * 3
 
         for i in range(3):
-            w[i] = derivative(self._calc_w_pls, 0,
-                              dx=1e-3 / self.b[0], n=i + 1, order=9)
+            w[i] = derivative(
+                self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
+            )
         w = [-w[0], w[1].real, -w[2]]
         self.w = w
 
@@ -270,15 +305,13 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
 
-        params = H2Params(p1=self.y[0],
-                          mu1=self.mu[0],
-                          mu2=self.mu[1])
+        params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
 
         l_neg = self.l_neg
 
-        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
-                                                        mu1=l_neg + params.mu1,
-                                                        mu2=l_neg + params.mu2))
+        b = H2Distribution.calc_theory_moments(
+            H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2)
+        )
 
         return [m.real for m in conv_moments(w, b)]
 
@@ -286,7 +319,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Returns the conditional probabilities of loaded states.
         """
-        ps = np.array([self.p[i] for i in range(1, self.n+1)])
+        ps = np.array([self.p[i] for i in range(1, self.n + 1)])
         ps /= np.sum(ps)
 
         return [prob.real for prob in ps]
@@ -302,11 +335,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n+1):
+        for i in range(1, self.n + 1):
             l_neg = self.l_neg
 
             b = moments_h2_less_than_exp(l_neg, h2_params)
-            b_cum += service_probs[i-1].real*b
+            b_cum += service_probs[i - 1].real * b
 
         return [m.real for m in conv_moments(w, b_cum)]
 
@@ -321,10 +354,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n+1):
+        for i in range(1, self.n + 1):
             l_neg = self.l_neg
             b = moments_exp_less_than_h2(l_neg, h2_params)
-            b_cum += service_probs[i-1].real*b
+            b_cum += service_probs[i - 1].real * b
 
         return [m.real for m in conv_moments(w, b_cum)]
 
@@ -339,8 +372,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
         v_served = self.get_v_served()
         v_broken = self.get_v_broken()
         w = self.get_w()
-        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
-    
+        return NegativeArrivalsResults(
+            p=p, v=v, v_served=v_served, v_broken=v_broken, w=w
+        )
+
     def run(self):
         """
         Run the algorithm.
@@ -395,14 +430,14 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                        self.x[j], self.b2[j]
+                    )
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 
             # Why ????
-            self.t[0] = self.x[0] * \
-                (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
+            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
 
             x_max1 = np.max(self.x)
 

@@ -1,21 +1,24 @@
 """
-Calculation of the GI/M/n queueing system 
+Calculation of the GI/M/n queueing system
 """
+
 import math
 
 import numpy as np
 
-from most_queue.theory.utils.conv import conv_moments
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
 class GiMn:
     """
-    Calculation of the GI/M/n queueing system 
+    Calculation of the GI/M/n queueing system
     """
 
-    def __init__(self, a: float, mu: float, n: int,  e=1e-10, approx_distr="Gamma", pi_num=100):
+    def __init__(
+        self, a: float, mu: float, n: int, e=1e-10, approx_distr="Gamma", pi_num=100
+    ):
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
         mu - service intensity
@@ -45,8 +48,12 @@ class GiMn:
         else:
             w = self.w
 
-        b = [1 / self.mu, 2 / pow(self.mu, 2), 6 /
-             pow(self.mu, 3), 24 / pow(self.mu, 4)]
+        b = [
+            1 / self.mu,
+            2 / pow(self.mu, 2),
+            6 / pow(self.mu, 3),
+            24 / pow(self.mu, 4),
+        ]
         v = conv_moments(w, b, len(w))
         return v
 
@@ -62,8 +69,8 @@ class GiMn:
             pls.append(self._get_w_pls(pn, self.w_param, s))
             s += h
         w = diff5dots(pls, h)
-        w[0] = - w[0]
-        w[2] = - w[2]
+        w[0] = -w[0]
+        w[2] = -w[2]
         self.w = w
         return w
 
@@ -101,13 +108,30 @@ class GiMn:
             for j in range(k - 1, self.n):
                 A[k, j] = 0
                 for i in range(j + 2 - k):
-                    A[k, j] += pow(-1, i) * math.factorial(j + 1) * self._get_b0(k + i) / (
-                        math.factorial(k) * math.factorial(i) * math.factorial(j + 1 - (k + i)))
+                    A[k, j] += (
+                        pow(-1, i)
+                        * math.factorial(j + 1)
+                        * self._get_b0(k + i)
+                        / (
+                            math.factorial(k)
+                            * math.factorial(i)
+                            * math.factorial(j + 1 - (k + i))
+                        )
+                    )
 
             A[k, self.n] = 0
             for i in range(self.n - k + 1):
-                A[k, self.n] += pow(-1, i) * math.factorial(self.n) * (self._get_b0(k + i) - self.w_param) / (
-                    math.factorial(k) * math.factorial(i) * math.factorial(self.n - k - i) * (self.n * (1 - self.w_param) - (k + i)))
+                val2 = math.factorial(self.n)
+                val3 = math.factorial(k)
+                val4 = math.factorial(i)
+                val5 = math.factorial(self.n - k - i)
+                val6 = self.n * (1 - self.w_param) - (k + i)
+                A[k, self.n] += (
+                    pow(-1, i)
+                    * val2
+                    * (self._get_b0(k + i) - self.w_param)
+                    / (val3 * val4 * val5 * val6)
+                )
             A[k, self.n] = self.n * A[k, self.n]
             A[k, k] = A[k, k] - 1
         pi_to_n = np.linalg.solve(A, B)
@@ -124,22 +148,22 @@ class GiMn:
             summ = 0
             for i, g_value in enumerate(gs):
                 summ += (g_value / pow(self.mu * j + v, i)) * (
-                    GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
+                    GammaDistribution.get_gamma(alpha + i)
+                    / GammaDistribution.get_gamma(alpha)
+                )
             left = pow(v / (self.mu * j + v), alpha)
             b0 = left * summ
             return b0
 
-        elif self.approx_distr == "Pa":
+        if self.approx_distr == "Pa":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
             left = alpha * pow(K * self.mu * j, alpha)
-            b0 = left * \
-                GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
+            b0 = left * GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
             return b0
 
-        else:
-            print("w_param calc. Unknown type of distr_type")
+        print("w_param calc. Unknown type of distr_type")
 
         return 0
 
@@ -162,7 +186,9 @@ class GiMn:
                 summ = 0
                 for i, q_value in enumerate(gs):
                     summ += (q_value / pow(self.mu * self.n * (1.0 - w_old) + v, i)) * (
-                        GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha))
+                        GammaDistribution.get_gamma(alpha + i)
+                        / GammaDistribution.get_gamma(alpha)
+                    )
                 left = pow(v / (self.mu * self.n * (1.0 - w_old) + v), alpha)
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
@@ -170,21 +196,20 @@ class GiMn:
                 w_old = w_new
             return w_new
 
-        elif self.approx_distr == "Pa":
+        if self.approx_distr == "Pa":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
             while True:
                 left = alpha * pow(K * self.mu * self.n * (1.0 - w_old), alpha)
-                w_new = left * \
-                    GammaDistribution.get_gamma_incomplete(-alpha,
-                                                           K * self.mu * self.n * (1.0 - w_old))
+                w_new = left * GammaDistribution.get_gamma_incomplete(
+                    -alpha, K * self.mu * self.n * (1.0 - w_old)
+                )
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new
             return w_new
 
-        else:
-            print("w_param calc. Unknown type of distr_type")
+        print("w_param calc. Unknown type of distr_type")
 
         return 0

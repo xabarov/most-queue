@@ -1,6 +1,7 @@
 """
 Simulation of a ForkJoin Queueing System (Fork-Join, Split-Join)
 """
+
 from colorama import Fore, Style, init
 
 from most_queue.sim.base import QsSim
@@ -14,40 +15,52 @@ class ForkJoinSim(QsSim):
     Simulation of a ForkJoin (n, k) Queueing System (Fork-Join, Split-Join)
     In a fork-join queueing system, a job is forked into n sub-tasks
     when it arrives at a control node, and each sub-task is sent to a
-    single node to be conquered. 
+    single node to be conquered.
 
     A basic fork-join queue (when n = k) considers a job is done after all results
     of the job have been received at the join node
 
     The (n, k) fork-join queues, only require the job’s any k out of n sub-tasks to be finished,
-    and thus have performance advantages in such scenarios. 
+    and thus have performance advantages in such scenarios.
 
-    Split-Join queue differs from a basic FJ queueing system in that it has blocking behavior. 
+    Split-Join queue differs from a basic FJ queueing system in that it has blocking behavior.
     New jobs are not allowed to enter the system, until current job has finished.
 
-    There are mainly two versions of (n, k) fork-join queues: 
+    There are mainly two versions of (n, k) fork-join queues:
     The purging one removes all the remaining sub-tasks of a job from both sub-queues
     and service stations once it receives the job’s k the answer.
     As a contrast, the non-purging one keeps queuing and executing remaining sub-tasks
     """
 
-    def __init__(self, num_of_channels, k, is_sj=False, is_purge=False, 
-                 buffer=None, buffer_type="list", verbose=True):
+    def __init__(
+        self,
+        num_of_channels,
+        k,
+        is_sj=False,
+        is_purge=False,
+        buffer=None,
+        buffer_type="list",
+        verbose=True,
+    ):
         """
-        :param num_of_channels: int : number of channels in the system 
+        :param num_of_channels: int : number of channels in the system
                                       (number of parts a task is split into)
-        :param k: int : number of sub-tasks that need to be completed 
+        :param k: int : number of sub-tasks that need to be completed
                         before a job is considered done
                         if n = k, then it's a basic fork-join queueing system.
-        :param is_sj: bool : if True, then Split-Join model is used, 
+        :param is_sj: bool : if True, then Split-Join model is used,
                              otherwise Fork-Join model is used
         :param buffer: Optional(int, None) : maximum length of the queue
-        :param is_purge: bool : if True, then purging version is used, 
+        :param is_purge: bool : if True, then purging version is used,
                                 otherwise non-purging version is used
         :param buffer: Optional(int, None) : maximum length of the queue
         """
-        super().__init__(num_of_channels=num_of_channels,
-                         buffer=buffer, verbose=verbose, buffer_type=buffer_type)
+        super().__init__(
+            num_of_channels=num_of_channels,
+            buffer=buffer,
+            verbose=verbose,
+            buffer_type=buffer_type,
+        )
 
         self.k = k
         self.is_sj = is_sj
@@ -64,7 +77,7 @@ class ForkJoinSim(QsSim):
         calculates the load of the system.
         """
 
-    def arrival(self):
+    def arrival(self, moment=None, ts=None):
         """
         Action on arrival of a task in the system.
         """
@@ -83,7 +96,10 @@ class ForkJoinSim(QsSim):
                     self.dropped += 1
                     is_dropped = True
             else:
-                if self.free_channels == 0 and self.queue.size() + self.k - 1 > self.buffer:
+                if (
+                    self.free_channels == 0
+                    and self.queue.size() + self.k - 1 > self.buffer
+                ):
                     self.dropped += 1
                     is_dropped = True
 
@@ -100,8 +116,7 @@ class ForkJoinSim(QsSim):
                         self.queues[i].append(t.subtasks[i])
                     else:  # there are free channels:
                         if self.servers[i].is_free:
-                            self.servers[i].start_service(
-                                t.subtasks[i], self.ttek)
+                            self.servers[i].start_service(t.subtasks[i], self.ttek)
                             self.free_channels -= 1
                         else:
                             self.queues[i].append(t.subtasks[i])
@@ -116,7 +131,7 @@ class ForkJoinSim(QsSim):
                         self.servers[i].start_service(t.subtasks[i], self.ttek)
                         self.free_channels -= 1
 
-    def serving(self, c):
+    def serving(self, c, is_network=False):
         """
         Action when a service is completed on channel c.
         :param c: int : number of channel where service is completed.
@@ -170,25 +185,32 @@ class ForkJoinSim(QsSim):
     def __str__(self, is_short=False):
         """
         Prints the model of the queueing system
-        :param is_short: bool : if True, then short information about the model 
+        :param is_short: bool : if True, then short information about the model
             of the queueing system is returned
         :return: str : string representation of the model of the queueing system
         """
 
-        res = Fore.GREEN + "Queueing system " + self.source_kendall_notation + \
-            "/" + self.server_kendall_notation + "/" + str(self.n) + Style.RESET_ALL
+        res = (
+            Fore.GREEN
+            + "Queueing system "
+            + self.source_kendall_notation
+            + "/"
+            + self.server_kendall_notation
+            + "/"
+            + str(self.n)
+            + Style.RESET_ALL
+        )
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         if self.is_sj:
-            res += '| Split-Join'
+            res += "| Split-Join"
         else:
-            res += '| Fork-Join'
+            res += "| Fork-Join"
 
         res += "\n"
         # res += "Load: " + "{0:4.3f}".format(self.calc_load()) + "\n"
         res += Fore.CYAN + f"Current Time {self.ttek:8.3f}\n" + Style.RESET_ALL
-        res += Fore.CYAN + \
-            f"Arrival Time: {self.arrival_time:8.3f}\n" + Style.RESET_ALL
+        res += Fore.CYAN + f"Arrival Time: {self.arrival_time:8.3f}\n" + Style.RESET_ALL
 
         res += Fore.YELLOW + "Sojourn moments:\n" + Style.RESET_ALL
         for i in range(3):
@@ -203,8 +225,7 @@ class ForkJoinSim(QsSim):
             res += "\n"
             res += Fore.CYAN + f"Arrived: {self.arrived}\n" + Style.RESET_ALL
             if self.buffer is not None:
-                res += Fore.CYAN + \
-                    f"Dropped: {self.dropped}\n" + Style.RESET_ALL
+                res += Fore.CYAN + f"Dropped: {self.dropped}\n" + Style.RESET_ALL
             res += Fore.CYAN + f"Served: {self.served}\n" + Style.RESET_ALL
             res += Fore.CYAN + f"In System: {self.in_sys}\n" + Style.RESET_ALL
 

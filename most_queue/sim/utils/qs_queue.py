@@ -7,8 +7,8 @@ from collections import deque
 
 
 class QSQueue(ABCMeta):
-    """abstract Queue class
-    """
+    """abstract Queue class"""
+
     @abstractmethod
     def append(cls, item):
         """
@@ -49,7 +49,7 @@ class QsQueueList:
         Get first task (from head of queue)
         """
         return self.queue.pop(0)
-    
+
     def tail(self):
         """
         Get last task (from tail of queue)
@@ -61,13 +61,13 @@ class QsQueueList:
         Get size of queue
         """
         return len(self.queue)
-    
+
     def clear(self):
         """
         Creal the queue
         """
         self.queue.clear()
-    
+
     def __len__(self):
         return len(self.queue)
 
@@ -99,7 +99,7 @@ class QsQueueDeque:
         Get last task (from tail of queue)
         """
         return self.queue.pop() if self.queue else None
-    
+
     def clear(self):
         """
         Creal the queue

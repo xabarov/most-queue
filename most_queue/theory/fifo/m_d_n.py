@@ -95,7 +95,7 @@ class MDn:
 
         return qs
 
-    def _get_z(self)->list[float]:
+    def _get_z(self) -> list[float]:
         """
         Find the roots of z.
         """
@@ -104,8 +104,7 @@ class MDn:
         zs = [complex(0, 0) for _ in range(z_num)]
 
         for m in range(z_num):
-            zs[m] = 0.5 * cmath.exp(2.0 * (m + 1) *
-                                   cmath.pi * complex(0, 1) / self.n)
+            zs[m] = 0.5 * cmath.exp(2.0 * (m + 1) * cmath.pi * complex(0, 1) / self.n)
             z_old = zs[m]
             is_close = False
             while not is_close:
@@ -116,5 +115,4 @@ class MDn:
                     is_close = True
                 z_old = z_new
             zs[m] = z_old
-        
         return zs

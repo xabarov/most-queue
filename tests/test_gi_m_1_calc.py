@@ -1,7 +1,8 @@
 """
 Test of GI/M/1 queueing system calculation.
-For verification, we use simulation 
+For verification, we use simulation
 """
+
 import os
 
 import numpy as np
@@ -13,37 +14,36 @@ from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.gi_m_1 import GiM1
 
 cur_dir = os.getcwd()
-params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
 
-with open(params_path, 'r', encoding='utf-8') as file:
+with open(params_path, "r", encoding="utf-8") as file:
     params = yaml.safe_load(file)
 
-ARRIVAL_RATE = float(params['arrival']['rate'])
-ARRIVAL_CV = float(params['arrival']['cv'])
+ARRIVAL_RATE = float(params["arrival"]["rate"])
+ARRIVAL_CV = float(params["arrival"]["cv"])
 
-NUM_OF_JOBS = int(params['num_of_jobs'])
-UTILIZATION_FACTOR = float(params['utilization_factor'])
-ERROR_MSG = params['error_msg']
+NUM_OF_JOBS = int(params["num_of_jobs"])
+UTILIZATION_FACTOR = float(params["utilization_factor"])
+ERROR_MSG = params["error_msg"]
 
-PROBS_ATOL = float(params['probs_atol'])
-PROBS_RTOL = float(params['probs_rtol'])
+PROBS_ATOL = float(params["probs_atol"])
+PROBS_RTOL = float(params["probs_rtol"])
 
-MOMENTS_ATOL = float(params['moments_atol'])
-MOMENTS_RTOL = float(params['moments_rtol'])
+MOMENTS_ATOL = float(params["moments_atol"])
+MOMENTS_RTOL = float(params["moments_rtol"])
 
 
 def test_gi_m_1():
     """
     Test of GI/M/1 queueing system calculation.
-    For verification, we use simulation 
+    For verification, we use simulation
     """
 
-    a1 = 1 / ARRIVAL_RATE    # average interval between requests
+    a1 = 1 / ARRIVAL_RATE  # average interval between requests
     mu = ARRIVAL_RATE / UTILIZATION_FACTOR  # service intensity
 
     # calculation of parameters approximating Gamma-distribution for arrival times
-    gamma_params = GammaDistribution.get_params_by_mean_and_coev(
-        a1, ARRIVAL_CV)
+    gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, ARRIVAL_CV)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
@@ -85,8 +85,9 @@ def test_gi_m_1():
     probs_print(p_sim, p_num)
 
     assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(p_sim[:10], p_num[:10],
-                       rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
+    assert np.allclose(
+        p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL
+    ), ERROR_MSG
 
 
 if __name__ == "__main__":

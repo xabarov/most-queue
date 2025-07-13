@@ -1,7 +1,8 @@
 """
-Utils for distribution from random_distributions 
+Utils for distribution from random_distributions
 
 """
+
 import math
 
 from colorama import Fore, Style
@@ -21,7 +22,7 @@ from most_queue.sim.utils.exceptions import QsSourseSettingException
 
 
 def print_supported_distributions():
-    """ Prints supported distributions """
+    """Prints supported distributions"""
     print(f"{Fore.GREEN}Supported distributions:{Style.RESET_ALL}")
     separator = f"{Fore.BLUE}--------------------------------------------------------------------{Style.RESET_ALL}"
 
@@ -44,7 +45,7 @@ def print_supported_distributions():
 
 
 def create_distribution(params, kendall_notation: str, generator):
-    """ Creates distribution from random_distributions 
+    """Creates distribution from random_distributions
 
     --------------------------------------------------------------------
     Distribution                    kendall_notation    params
@@ -59,8 +60,8 @@ def create_distribution(params, kendall_notation: str, generator):
     Gaussian                             'Norm'    [mean, standard_deviation]
 
     Args:
-        params (_type_): params of distribution. 
-                         For "M": one single value "mu". 
+        params (_type_): params of distribution.
+                         For "M": one single value "mu".
                          For "H": H2Params
         kendall_notation (str): like "M", "H", "E"
         generator (_type_): random numbers generator, for ex np.random.default_rng()
@@ -69,7 +70,7 @@ def create_distribution(params, kendall_notation: str, generator):
         QsSourseSettingException: Incorrect distribution type specified
 
     Returns:
-        _type_: distribution from random_distributions 
+        _type_: distribution from random_distributions
     """
     dist = None
     if kendall_notation == "M":
@@ -93,18 +94,24 @@ def create_distribution(params, kendall_notation: str, generator):
     else:
         raise QsSourseSettingException(
             "Incorrect distribution type specified. Options \
-             М, Н, Е, С, Pa, Uniform, Norm, D")
+             М, Н, Е, С, Pa, Uniform, Norm, D"
+        )
 
     return dist
 
 
-def calc_qs_load(source_kendall_notation: str, source_params,
-                 server_kendall_notation: str, server_params, n) -> float:
+def calc_qs_load(
+    source_kendall_notation: str,
+    source_params,
+    server_kendall_notation: str,
+    server_params,
+    n,
+) -> float:
     """Calculates the utilization (load factor) of the QS
 
     Args:
-        source_kendall_notation: str,  Kendall notation of source 
-        server_kendall_notation: str, Kendall notation of source 
+        source_kendall_notation: str,  Kendall notation of source
+        server_kendall_notation: str, Kendall notation of source
         n (int): number of QS channels
 
     Returns:
@@ -148,11 +155,11 @@ def calc_qs_load(source_kendall_notation: str, source_params,
     elif source_kendall_notation == "Pa":
         if source_params[0] < 1:
             return None
-        else:
-            a = source_params.alpha
-            k = source_params.K
-            f1 = a * k / (a - 1)
-            l = 1.0 / f1
+        
+        a = source_params.alpha
+        k = source_params.K
+        f1 = a * k / (a - 1)
+        l = 1.0 / f1
 
     b1 = 0
     if server_kendall_notation == "M":
@@ -191,10 +198,10 @@ def calc_qs_load(source_kendall_notation: str, source_params,
     elif server_kendall_notation == "Pa":
         if server_params[0] < 1:
             return math.inf
-        else:
-            a = server_params.alpha
-            k = server_params.K
-            b1 = a * k / (a - 1)
+        
+        a = server_params.alpha
+        k = server_params.K
+        b1 = a * k / (a - 1)
 
     return l * b1 / n
 

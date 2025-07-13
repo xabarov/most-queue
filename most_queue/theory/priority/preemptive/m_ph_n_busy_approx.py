@@ -1,8 +1,9 @@
 """
 Calculation of M/PH, M/n queue with two classes of requests and absolute priority
-using the Takahashi-Takagi numerical method based on the approximation 
+using the Takahashi-Takagi numerical method based on the approximation
 of the busy-time distribution by a Cox second-order distribution.
 """
+
 import math
 
 import numpy as np
@@ -15,17 +16,31 @@ from most_queue.theory.utils.passage_time import PassageTimeCalculation
 class MPhNPrty(MGnCalc):
     """
     Calculation of M/PH, M/n queue with two classes of requests and absolute priority
-    using the Takahashi-Takagi numerical method based on the approximation 
+    using the Takahashi-Takagi numerical method based on the approximation
     of the busy-time distribution by a Cox second-order distribution.
     """
 
-    def __init__(self, mu_L: float, b_high: list[float], l_L: float, l_H: float, n: int, N: int = 250,
-                 accuracy: float = 1e-8, max_iter: int = 300, is_cox: bool = True,
-                 approx_ee: float = 0.1, approx_e: float = 0.5, is_fitting: bool = True,
-                 buffer=None, verbose: bool = True, dtype="c16"):
+    def __init__(
+        self,
+        mu_L: float,
+        b_high: list[float],
+        l_L: float,
+        l_H: float,
+        n: int,
+        N: int = 250,
+        accuracy: float = 1e-8,
+        max_iter: int = 300,
+        is_cox: bool = True,
+        approx_ee: float = 0.1,
+        approx_e: float = 0.5,
+        is_fitting: bool = True,
+        buffer=None,
+        verbose: bool = True,
+        dtype="c16",
+    ):
         """
         Calculation of M/PH, M/n queue with two classes of requests and absolute priority
-        based on the Takahashi-Takagi numerical method based on the approximation 
+        based on the Takahashi-Takagi numerical method based on the approximation
         of the busy-time distribution by a Cox second-order distribution.
 
         :param l_L: intensity of the arrivals with low priority,
@@ -35,13 +50,21 @@ class MPhNPrty(MGnCalc):
         :param N: number of levels (stages)
         :param accuracy: accuracy parameter for stopping the iteration
         :param max_iter: maximum number of iterations
-        :param is_cox: if True, use Cox2 distribution for approximating service time 
+        :param is_cox: if True, use Cox2 distribution for approximating service time
             of low-priority jobs, otherwise use H2 distribution.
-        :param approx_ee, approx_e: approximation paramters 
+        :param approx_ee, approx_e: approximation paramters
         """
 
-        super().__init__(n=n, l=0, b=b_high, buffer=buffer,
-                         N=N, accuracy=accuracy, dtype=dtype, verbose=verbose)
+        super().__init__(
+            n=n,
+            l=0,
+            b=b_high,
+            buffer=buffer,
+            N=N,
+            accuracy=accuracy,
+            dtype=dtype,
+            verbose=verbose,
+        )
 
         self.l_L = l_L
         self.l_H = l_H
@@ -86,7 +109,7 @@ class MPhNPrty(MGnCalc):
     def _fill_cols(self):
         # Cols depends on number of channels. cols = number of all microstates transitions
         # from Cox2 to level
-        self.cols_length_ = 2 * self.n ** 2
+        self.cols_length_ = 2 * self.n**2
         for i in range(self.n):
             self.cols_length_ += i + 1
 
@@ -127,14 +150,15 @@ class MPhNPrty(MGnCalc):
         if num == 0:
             output = np.zeros((1, 1), dtype=self.dt)
             return output
-        elif num <= self.n:
+
+        if num <= self.n:
             col = num
             row = num + 1
         elif num == self.n + 1:
             col = num
             row = num
             output = np.zeros((row, col), dtype=self.dt)
-            output[:, :self.n] = self.big_b_for_busy[self.n]
+            output[:, : self.n] = self.big_b_for_busy[self.n]
             return output
         else:
             output = self.big_b_for_busy[self.n + 1]
@@ -160,7 +184,8 @@ class MPhNPrty(MGnCalc):
         if num == 0:
             output = np.zeros((1, 1), dtype=self.dt)
             return output
-        elif num <= self.n:
+
+        if num <= self.n:
             col = num + 1
             row = num + 1
         else:
@@ -226,11 +251,17 @@ class MPhNPrty(MGnCalc):
             self.big_c_for_busy.append(self._build_big_c_for_busy_periods(i))
             self.big_d_for_busy.append(self._build_big_d_for_busy_periods(i))
 
-        pass_time = PassageTimeCalculation(self.big_a_for_busy, self.big_b_for_busy,
-                                           self.big_c_for_busy, self.big_d_for_busy, is_clx=True, is_verbose=self.verbose)
+        pass_time = PassageTimeCalculation(
+            self.big_a_for_busy,
+            self.big_b_for_busy,
+            self.big_c_for_busy,
+            self.big_d_for_busy,
+            is_clx=True,
+            is_verbose=self.verbose,
+        )
         pass_time.calc()
 
-        self.pnz_num_ = self.n ** 2
+        self.pnz_num_ = self.n**2
 
         for j in range(self.pnz_num_):
             self.busy_periods.append([0, 0, 0])
@@ -246,7 +277,7 @@ class MPhNPrty(MGnCalc):
             under_sqrt = self.busy_periods[j][1] - self.busy_periods[j][0] ** 2
             if under_sqrt > 0:
                 coev = math.sqrt(under_sqrt.real)
-                self.alphas.append(1 / (coev ** 2))
+                self.alphas.append(1 / (coev**2))
                 self.busy_periods_coevs.append(coev / self.busy_periods[j][0])
             else:
                 self.busy_periods_coevs.append(math.inf)
@@ -256,17 +287,13 @@ class MPhNPrty(MGnCalc):
             for j in range(self.pnz_num_):
                 for r in range(3):
                     if math.isclose(self.busy_periods[j][r].imag, 0):
-                        print("{0:^8.3g}".format(
-                            self.busy_periods[j][r].real), end=" ")
+                        print(f"{self.busy_periods[j][r].real:^8.3g}", end=" ")
                     else:
-                        print("{0:^8.3g}".format(
-                            self.busy_periods[j][r]), end=" ")
+                        print(f"{self.busy_periods[j][r]:^8.3g}", end=" ")
                 if math.isclose(self.busy_periods_coevs[j].imag, 0):
-                    print("coev = {0:^4.3g}".format(
-                        self.busy_periods_coevs[j].real))
+                    print(f"coev = {self.busy_periods_coevs[j].real:^4.3g}")
                 else:
-                    print("coev = {0:^4.3g}".format(
-                        self.busy_periods_coevs[j]))
+                    print(f"coev = {self.busy_periods_coevs[j]:^4.3g}")
 
         # pp - список из n**2 вероятностей переходов
         for j in range(self.pnz_num_):
@@ -279,9 +306,9 @@ class MPhNPrty(MGnCalc):
             print("\nTransition probabilities of busy periods:\n")
             for j in range(self.pnz_num_):
                 if math.isclose(self.pp[j].imag, 0):
-                    print("{0:^8.3g}".format(self.pp[j].real), end=" ")
+                    print(f"{self.pp[j].real:^8.3g}", end=" ")
                 else:
-                    print("{0:^8.3g}".format(self.pp[j]), end=" ")
+                    print(f"{self.pp[j]:^8.3g}", end=" ")
 
     def _initial_probabilities(self):
         """
@@ -384,23 +411,35 @@ class MPhNPrty(MGnCalc):
         for i in range(self.pnz_num_):
             if not self.is_cox:
                 h2_param = H2Distribution.get_params_clx(
-                    self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
+                    self.busy_periods[i],
+                    ee=self.approx_ee,
+                    e=self.approx_e,
+                    is_fitting=self.is_fitting,
+                    verbose=self.verbose,
+                )
                 # h2_param = H2Distribution.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param.p1)
                 m1_mass.append(h2_param.mu1)
                 m2_mass.append(h2_param.mu2)
                 if self.verbose:
-                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, h2_param.p1, h2_param.mu1,
-                                                                                 h2_param.mu2))
+                    print(
+                        f"Params for B{i+1}: {h2_param.p1:3.3f}, {h2_param.mu1:3.3f}, {h2_param.mu2:3.3f}"
+                    )
             else:
                 cox_params = CoxDistribution.get_params(
-                    self.busy_periods[i], ee=self.approx_ee, e=self.approx_e, is_fitting=self.is_fitting, verbose=self.verbose)
+                    self.busy_periods[i],
+                    ee=self.approx_ee,
+                    e=self.approx_e,
+                    is_fitting=self.is_fitting,
+                    verbose=self.verbose,
+                )
                 y1_mass.append(cox_params.p1)
                 m1_mass.append(cox_params.mu1)
                 m2_mass.append(cox_params.mu2)
                 if self.verbose:
-                    print("Params for B{0}: {1:3.3f}, {2:3.3f}, {3:3.3f}".format(i + 1, cox_params.p1, cox_params.mu1,
-                                                                                 cox_params.mu2))
+                    print(
+                        f"Params for B{i + 1}: {cox_params.p1:3.3f}, {cox_params.mu1:3.3f}, {cox_params.mu2:3.3f}"
+                    )
 
         # first quad
 
@@ -442,10 +481,10 @@ class MPhNPrty(MGnCalc):
         for i in range(self.n):
             for j in range(self.n):
                 if not self.is_cox:
-                    output[l_start + i, l_end] = lh * \
-                        y1_mass[num] * self.pp[num]
-                    output[l_start + i, l_end + 1] = lh * \
-                        (1 - y1_mass[num]) * self.pp[num]
+                    output[l_start + i, l_end] = lh * y1_mass[num] * self.pp[num]
+                    output[l_start + i, l_end + 1] = (
+                        lh * (1 - y1_mass[num]) * self.pp[num]
+                    )
                 else:
                     output[l_start + i, l_end] = lh * self.pp[num]
                     output[l_start + i, l_end + 1] = 0

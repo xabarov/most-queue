@@ -1,6 +1,7 @@
 """
-Calculation of the GI/M/1 queueing system 
+Calculation of the GI/M/1 queueing system
 """
+
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
@@ -10,10 +11,12 @@ from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
 
 class GiM1:
     """
-    Calculation of the GI/M/1 queueing system 
+    Calculation of the GI/M/1 queueing system
     """
 
-    def __init__(self, a: list[float], mu: float, tolerance: float = 1e-10, approx_distr="Gamma"):
+    def __init__(
+        self, a: list[float], mu: float, tolerance: float = 1e-10, approx_distr="Gamma"
+    ):
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
         mu - service intensity
@@ -59,8 +62,7 @@ class GiM1:
         """
         v = [0.0] * num
         for k in range(num):
-            v[k] = math.factorial(k + 1) / pow(self.mu *
-                                               (1 - self.w_param), k + 1)
+            v[k] = math.factorial(k + 1) / pow(self.mu * (1 - self.w_param), k + 1)
         return v
 
     def get_w(self, num=3):
@@ -72,8 +74,12 @@ class GiM1:
         if self.v is None:
             self.v = self.get_v(num)
 
-        b = [1.0 / self.mu, 2.0 /
-             pow(self.mu, 2), 6.0 / pow(self.mu, 3), 24.0 / pow(self.mu, 4)]
+        b = [
+            1.0 / self.mu,
+            2.0 / pow(self.mu, 2),
+            6.0 / pow(self.mu, 3),
+            24.0 / pow(self.mu, 4),
+        ]
         w = conv_moments_minus(self.v, b, num)
 
         return w
@@ -103,31 +109,36 @@ class GiM1:
             while True:
                 summ = 0
                 for i, q in enumerate(gamma_params.g):
+                    numerator = GammaDistribution.get_gamma(gamma_params.alpha + i)
+                    denominator = GammaDistribution.get_gamma(gamma_params.alpha)
+
                     summ += (q / pow(self.mu * (1.0 - w_old) + gamma_params.mu, i)) * (
-                        GammaDistribution.get_gamma(gamma_params.alpha + i) / GammaDistribution.get_gamma(gamma_params.alpha))
-                left = pow(gamma_params.mu / (self.mu *
-                           (1.0 - w_old) + gamma_params.mu), gamma_params.alpha)
+                        numerator / denominator
+                    )
+                left = pow(
+                    gamma_params.mu / (self.mu * (1.0 - w_old) + gamma_params.mu),
+                    gamma_params.alpha,
+                )
                 w_new = left * summ
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new
             return w_new
 
-        elif self.approx_distr == "Pa":
+        if self.approx_distr == "Pa":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
             while True:
                 left = alpha * pow(K * self.mu * (1.0 - w_old), alpha)
-                w_new = left * \
-                    GammaDistribution.get_gamma_incomplete(-alpha,
-                                                           K * self.mu * (1.0 - w_old))
+                w_new = left * GammaDistribution.get_gamma_incomplete(
+                    -alpha, K * self.mu * (1.0 - w_old)
+                )
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new
             return w_new
 
-        else:
-            print("w_param calc. Unknown type of distr_type")
+        print("w_param calc. Unknown type of distr_type")
 
         return 0

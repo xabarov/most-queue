@@ -1,6 +1,7 @@
 """
 Numerical calculation of Fork-Join queuing systems
 """
+
 import math
 
 import numpy as np
@@ -21,24 +22,24 @@ class SplitJoinCalc:
 
     In a fork-join queueing system, a job is forked into n sub-tasks
     when it arrives at a control node, and each sub-task is sent to a
-    single node to be conquered. 
+    single node to be conquered.
 
     A basic fork-join queue considers a job is done after all results
     of the job have been received at the join node
 
-    Split-Join queue differs from a basic fork-join queueing system 
-    in that it has blocking behavior. 
+    Split-Join queue differs from a basic fork-join queueing system
+    in that it has blocking behavior.
 
     New jobs are not allowed to enter the system, until current job has finished.
 
     """
 
-    def __init__(self, l: float, n: int, b: list[float], approximation='gamma'):
+    def __init__(self, l: float, n: int, b: list[float], approximation="gamma"):
         """
         :param l: arrival rate
         :param n: number of servers
         :param b: list of initial moments of service time
-        :param approximation: str : type of approximation 
+        :param approximation: str : type of approximation
             for the initial moments of service time, can be 'gamma', 'h2' or 'erlang'
             default is 'gamma'
         """
@@ -50,24 +51,39 @@ class SplitJoinCalc:
         self.b_max_warm = None
         self.approximation = approximation
 
-        if approximation not in ['gamma', 'h2', 'erlang']:
-            raise ValueError(
-                "Approximation must be one of 'gamma', 'h2' or 'erlang'.")
+        if approximation not in ["gamma", "h2", "erlang"]:
+            raise ValueError("Approximation must be one of 'gamma', 'h2' or 'erlang'.")
 
-        self.a_big = [1.37793470540E-1, 7.29454549503E-1, 1.808342901740E0,
-                      3.401433697855E0, 5.552496140064E0, 8.330152746764E0,
-                      1.1843785837900E1, 1.6279257831378E1, 2.1996585811981E1,
-                      2.9920697012274E1]
-        self.g = [3.08441115765E-1, 4.01119929155E-1, 2.18068287612E-1,
-                  6.20874560987E-2, 9.50151697518E-3, 7.53008388588E-4,
-                  2.82592334960E-5, 4.24931398496E-7, 1.83956482398E-9,
-                  9.91182721961E-13]
+        self.a_big = [
+            1.37793470540e-1,
+            7.29454549503e-1,
+            1.808342901740e0,
+            3.401433697855e0,
+            5.552496140064e0,
+            8.330152746764e0,
+            1.1843785837900e1,
+            1.6279257831378e1,
+            2.1996585811981e1,
+            2.9920697012274e1,
+        ]
+        self.g = [
+            3.08441115765e-1,
+            4.01119929155e-1,
+            2.18068287612e-1,
+            6.20874560987e-2,
+            9.50151697518e-3,
+            7.53008388588e-4,
+            2.82592334960e-5,
+            4.24931398496e-7,
+            1.83956482398e-9,
+            9.91182721961e-13,
+        ]
 
     def get_v(self) -> list[float]:
         """
         Calculate sojourn time initial moments for Split-Join queueing systems
 
-        :return: list[float] : initial moments of sojourn time distribution 
+        :return: list[float] : initial moments of sojourn time distribution
         """
 
         # Calc Split-Join max of n channels service time distribution
@@ -83,15 +99,17 @@ class SplitJoinCalc:
         """
         Calculate sojourn time initial moments for Split-Join queueing systems with delta
         :param b_delta:  If delta is a list, it should contain the moments of
-        time delay caused by reception and restoration operations for each part. 
+        time delay caused by reception and restoration operations for each part.
         If delta is a float, delay is determistic and equal to delta.
-        :return: list[float] : initial moments of sojourn time distribution 
+        :return: list[float] : initial moments of sojourn time distribution
         """
 
         self.b_max_warm = self.get_max_moments_delta(b_delta)
         self.b_max = self.get_max_moments()
-        mg1_approx = 'gamma' if self.approximation == 'erlang' else self.approximation
-        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm, approximation=mg1_approx)
+        mg1_approx = "gamma" if self.approximation == "erlang" else self.approximation
+        mg1_warm = MG1WarmCalc(
+            self.l, self.b_max, self.b_max_warm, approximation=mg1_approx
+        )
         return mg1_warm.get_v()
 
     def get_ro(self):
@@ -110,14 +128,15 @@ class SplitJoinCalc:
         The maximum utilization is set to 0.8 by default.
         :param n: number of channels
         :param b: service rate in a channel
-        :param num: number of output initial moments of the maximum SV, 
+        :param num: number of output initial moments of the maximum SV,
         by default one less than the number of initial moments of b
         :return: maximum value of lambda for a given number of channels and service rate.
         """
 
-        if self.approximation == 'gamma':
+        if self.approximation == "gamma":
             return self._calc_f_gamma()
-        elif self.approximation == 'h2':
+
+        if self.approximation == "h2":
             return self._calc_f_h2()
 
         return self._calc_f_erlang()
@@ -128,16 +147,18 @@ class SplitJoinCalc:
         params = H2Distribution.get_params(self.b)
 
         for j in range(10):
-            p = self.g[j] * \
-                self._dfr_h2_mult(
-                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            p = (
+                self.g[j]
+                * self._dfr_h2_mult(params, self.a_big[j])
+                * math.exp(self.a_big[j])
+            )
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]
                 f[i] += p
 
         for i in range(num - 1):
-            f[i + 1] *= (i + 2)
+            f[i + 1] *= i + 2
         return f
 
     def _calc_f_gamma(self):
@@ -146,16 +167,18 @@ class SplitJoinCalc:
         params = GammaDistribution.get_params(self.b)
 
         for j in range(10):
-            p = self.g[j] * \
-                self._dfr_gamma_mult(
-                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            p = (
+                self.g[j]
+                * self._dfr_gamma_mult(params, self.a_big[j])
+                * math.exp(self.a_big[j])
+            )
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]
                 f[i] += p
 
         for i in range(num - 1):
-            f[i + 1] *= (i + 2)
+            f[i + 1] *= i + 2
         return f
 
     def _calc_f_erlang(self):
@@ -166,16 +189,18 @@ class SplitJoinCalc:
         params = ErlangDistribution.get_params(self.b)
 
         for j in range(10):
-            p = self.g[j] * \
-                self._dfr_erl_mult(
-                    params, self.a_big[j]) * math.exp(self.a_big[j])
+            p = (
+                self.g[j]
+                * self._dfr_erl_mult(params, self.a_big[j])
+                * math.exp(self.a_big[j])
+            )
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]
                 f[i] += p
 
         for i in range(num - 1):
-            f[i + 1] *= (i + 2)
+            f[i + 1] *= i + 2
         return f
 
     def get_max_moments_delta(self, delta=0):
@@ -196,15 +221,18 @@ class SplitJoinCalc:
             params = GammaDistribution.get_params(b)
 
             for j in range(10):
-                p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j],
-                                                delta) * math.exp(self.a_big[j])
+                p = (
+                    self.g[j]
+                    * self._dfr_gamma_mult(params, self.a_big[j], delta)
+                    * math.exp(self.a_big[j])
+                )
                 f[0] += p
                 for i in range(1, num):
                     p = p * self.a_big[j]
                     f[i] += p
 
             for i in range(num - 1):
-                f[i + 1] *= (i + 2)
+                f[i + 1] *= i + 2
 
         return f
 

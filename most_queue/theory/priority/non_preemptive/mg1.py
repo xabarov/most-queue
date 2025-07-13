@@ -1,6 +1,7 @@
 """
 Class to calculate the average waiting time in an M/G/1 queue with non-preemptive priority.
 """
+
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.conv import conv_moments
@@ -15,7 +16,7 @@ class MG1NonPreemtiveCalculation:
 
     def __init__(self, l: list[float], b: list[list[float]]):
         """
-        :param l: list[float]  - list of arrival intensities for each job class 
+        :param l: list[float]  - list of arrival intensities for each job class
         :param b: list[list[float]] - list of initial moments for each job class
         """
         self.l = l
@@ -146,11 +147,9 @@ class MG1NonPreemtiveCalculation:
                 chisl = (1 - ro) * summ
 
                 if j != len(self.l) - 1:
-                    chisl += lb * \
-                        (1 - lst_gamma(b_b_param, summ))
+                    chisl += lb * (1 - lst_gamma(b_b_param, summ))
 
-                znam = self.l[j] * \
-                    lst_gamma(b_k_param, summ) - self.l[j] + s
+                znam = self.l[j] * lst_gamma(b_k_param, summ) - self.l[j] + s
 
                 w_pls.append(chisl / znam)
 

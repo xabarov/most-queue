@@ -1,3 +1,7 @@
+"""
+Student statistical functions
+"""
+
 import math
 
 
@@ -12,150 +16,132 @@ def get_ty(gamma, n):
         print('Student calc error. Param "n" must be greater then 5!')
         return 0
 
-    gammas = [0.95, 0.99, 0.999]
+    ty_data = {
+        0.95: [
+            2.78,
+            2.57,
+            2.45,
+            2.37,
+            2.31,
+            2.26,
+            2.23,
+            2.20,
+            2.18,
+            2.16,
+            2.15,
+            2.13,
+            2.12,
+            2.11,
+            2.10,
+            2.093,
+            2.064,
+            2.045,
+            2.032,
+            2.023,
+            2.016,
+            2.009,
+            2.001,
+            1.996,
+            1.001,
+            1.987,
+            1.984,
+            1.980,
+            1.960,
+        ],
+        0.99: [
+            4.60,
+            4.03,
+            3.71,
+            3.50,
+            3.36,
+            3.25,
+            3.17,
+            3.11,
+            3.06,
+            3.01,
+            2.98,
+            2.95,
+            2.92,
+            2.90,
+            2.88,
+            2.861,
+            2.797,
+            2.756,
+            2.720,
+            2.708,
+            2.692,
+            2.679,
+            2.662,
+            2.649,
+            2.640,
+            2.633,
+            2.627,
+            2.617,
+            2.576,
+        ],
+        0.999: [
+            8.61,
+            6.86,
+            5.96,
+            5.41,
+            5.04,
+            4.78,
+            4.59,
+            4.44,
+            4.32,
+            4.22,
+            4.14,
+            4.07,
+            4.02,
+            3.97,
+            3.92,
+            3.883,
+            3.745,
+            3.659,
+            3.600,
+            3.558,
+            3.527,
+            3.502,
+            3.464,
+            3.439,
+            3.418,
+            3.403,
+            3.392,
+            3.374,
+            3.291,
+        ],
+    }
 
-    if not gammas.__contains__(gamma):
-        print('Student calc error. Param "gamma" must take one of the following values: 0.95, 0.99, 0.999!')
+    if gamma not in ty_data:
+        print(
+            'Student calc error. Param "gamma" must take one of the following values: 0.95, 0.99, 0.999!'
+        )
         return 0
 
-    gamma_095 = [2.78, 2.57, 2.45, 2.37, 2.31,
-                 2.26, 2.23, 2.20, 2.18, 2.16,
-                 2.15, 2.13, 2.12, 2.11, 2.10,
-                 2.093, 2.064, 2.045, 2.032, 2.023,
-                 2.016, 2.009, 2.001, 1.996, 1.001,
-                 1.987, 1.984, 1.980, 1.960]
-    gamma_099 = [4.60, 4.03, 3.71, 3.50, 3.36,
-                 3.25, 3.17, 3.11, 3.06, 3.01,
-                 2.98, 2.95, 2.92, 2.90, 2.88,
-                 2.861, 2.797, 2.756, 2.720, 2.708,
-                 2.692, 2.679, 2.662, 2.649, 2.640,
-                 2.633, 2.627, 2.617, 2.576]
-    gamma_0999 = [8.61, 6.86, 5.96, 5.41, 5.04,
-                  4.78, 4.59, 4.44, 4.32, 4.22,
-                  4.14, 4.07, 4.02, 3.97, 3.92,
-                  3.883, 3.745, 3.659, 3.600, 3.558,
-                  3.527, 3.502, 3.464, 3.439, 3.418,
-                  3.403, 3.392, 3.374, 3.291]
+    # Define ranges and their corresponding indices
+    n_ranges = [
+        (5, 20, lambda n_val: n_val - 5),  # For 5 <= n < 20, index is n - 5
+        (20, 23, 16),
+        (23, 28, 17),
+        (28, 33, 18),
+        (33, 38, 19),
+        (38, 43, 20),
+        (43, 48, 21),
+        (48, 56, 22),
+        (56, 76, 23),
+        (76, 86, 24),
+        (86, 96, 25),
+        (96, 111, 26),
+        (111, 121, 27),  # Changed upper bound to 121 to include 120
+    ]
 
-    if n >= 5 and n < 20:
-        if gamma == 0.95:
-            return gamma_095[n - 5]
-        if gamma == 0.99:
-            return gamma_099[n - 5]
-        if gamma == 0.999:
-            return gamma_0999[n - 5]
+    for lower, upper, index_val in n_ranges:
+        if lower <= n < upper:
+            index = index_val if isinstance(index_val, int) else index_val(n)
+            return ty_data[gamma][index]
 
-    elif n >= 20 and n < 23:
-        if gamma == 0.95:
-            return gamma_095[16]
-        if gamma == 0.99:
-            return gamma_099[16]
-        if gamma == 0.999:
-            return gamma_0999[16]
-
-    elif n >= 23 and n < 28:
-        if gamma == 0.95:
-            return gamma_095[17]
-        if gamma == 0.99:
-            return gamma_099[17]
-        if gamma == 0.999:
-            return gamma_0999[17]
-
-    elif n >= 28 and n < 33:
-        if gamma == 0.95:
-            return gamma_095[18]
-        if gamma == 0.99:
-            return gamma_099[18]
-        if gamma == 0.999:
-            return gamma_0999[18]
-
-    elif n >= 33 and n < 38:
-        if gamma == 0.95:
-            return gamma_095[19]
-        if gamma == 0.99:
-            return gamma_099[19]
-        if gamma == 0.999:
-            return gamma_0999[19]
-
-    elif n >= 38 and n < 43:
-        if gamma == 0.95:
-            return gamma_095[20]
-        if gamma == 0.99:
-            return gamma_099[20]
-        if gamma == 0.999:
-            return gamma_0999[20]
-
-    elif n >= 43 and n < 48:
-        if gamma == 0.95:
-            return gamma_095[21]
-        if gamma == 0.99:
-            return gamma_099[21]
-        if gamma == 0.999:
-            return gamma_0999[21]
-
-    elif n >= 48 and n < 56:
-        if gamma == 0.95:
-            return gamma_095[22]
-        if gamma == 0.99:
-            return gamma_099[22]
-        if gamma == 0.999:
-            return gamma_0999[22]
-
-    elif n >= 56 and n < 66:
-        if gamma == 0.95:
-            return gamma_095[23]
-        if gamma == 0.99:
-            return gamma_099[23]
-        if gamma == 0.999:
-            return gamma_0999[23]
-
-    elif n >= 66 and n < 76:
-        if gamma == 0.95:
-            return gamma_095[23]
-        if gamma == 0.99:
-            return gamma_099[23]
-        if gamma == 0.999:
-            return gamma_0999[23]
-
-    elif n >= 76 and n < 86:
-        if gamma == 0.95:
-            return gamma_095[24]
-        if gamma == 0.99:
-            return gamma_099[24]
-        if gamma == 0.999:
-            return gamma_0999[24]
-
-    elif n >= 86 and n < 96:
-        if gamma == 0.95:
-            return gamma_095[25]
-        if gamma == 0.99:
-            return gamma_099[25]
-        if gamma == 0.999:
-            return gamma_0999[25]
-
-    elif n >= 96 and n < 111:
-        if gamma == 0.95:
-            return gamma_095[26]
-        if gamma == 0.99:
-            return gamma_099[26]
-        if gamma == 0.999:
-            return gamma_0999[26]
-
-    elif n >= 111 and n <= 120:
-        if gamma == 0.95:
-            return gamma_095[27]
-        if gamma == 0.99:
-            return gamma_099[27]
-        if gamma == 0.999:
-            return gamma_0999[27]
-
-    else:
-        if gamma == 0.95:
-            return gamma_095[28]
-        if gamma == 0.99:
-            return gamma_099[28]
-        if gamma == 0.999:
-            return gamma_0999[28]
+    # If n is 121 or greater, return the last value
+    return ty_data[gamma][28]
 
 
 def get_conf_intervals(gamma, n, mean, std):
@@ -172,13 +158,13 @@ def get_conf_intervals(gamma, n, mean, std):
     return mean - fract, mean + fract
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Пример из учебника Гмурман. Стр. 217
-    n = 16
-    x = 20.2
-    s = 0.8
-    gamma = 0.95
+    N = 16
+    X = 20.2
+    S = 0.8
+    GAMMA_TEST = 0.95
 
-    left, right = get_conf_intervals(gamma, n, x, s)
+    left, right = get_conf_intervals(GAMMA_TEST, N, X, S)
 
-    print("{0:5.3f} < a < {1:5.3f}".format(left, right))
+    print(f"{left:5.3f} < a < {right:5.3f}")

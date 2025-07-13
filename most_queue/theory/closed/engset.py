@@ -1,6 +1,7 @@
 """
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
+
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 
@@ -109,7 +110,7 @@ class Engset:
 
     def get_v(self):
         """
-        Get sojourn time initial moments trough convolution with service 
+        Get sojourn time initial moments trough convolution with service
         and diff Laplace-Stieltjes transform of waiting time
         """
         w = self.get_w()
@@ -121,7 +122,7 @@ class Engset:
         m_i.append(1)
         prod = 1
         for i in range(self.m):
-            prod *= (self.m - i)
+            prod *= self.m - i
             m_i.append(prod)
         self.m_i = m_i
 

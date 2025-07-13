@@ -1,6 +1,7 @@
 """
 Supporting structures for the queueing system with negative arrivals.
 """
+
 import json
 from dataclasses import asdict, dataclass, is_dataclass
 
@@ -13,6 +14,7 @@ class NegativeArrivalsResults:
      sojourn times of served jobs (v_served), sojourn times of broken jobs (v_broken),
      and probabilities (p).
     """
+
     w: list[float]
 
     v: list[float]
@@ -30,6 +32,7 @@ class DependsOnChannelsResults:
      as well as parameters such as the number of channels,
      utilization factor, and service time variation coefficient.
     """
+
     calc: list[NegativeArrivalsResults]
     sim: list[NegativeArrivalsResults]
     channels: list[int]
@@ -45,6 +48,7 @@ class DependsOnUtilizationResults:
      as well as parameters such as the number of channels,
      utilization factor, and service time variation coefficient.
     """
+
     calc: list[NegativeArrivalsResults]
     sim: list[NegativeArrivalsResults]
     utilization_factor: list[float]
@@ -60,6 +64,7 @@ class DependsOnVariationResults:
      as well as parameters such as the number of channels,
      utilization factor, and service time variation coefficient.
     """
+
     calc: list[NegativeArrivalsResults]
     sim: list[NegativeArrivalsResults]
     service_time_variation_coef: list[float]
@@ -74,8 +79,12 @@ class DependsOnJSONEncoder(json.JSONEncoder):
 
     def default(self, o):
         if is_dataclass(o):
-            json_res = {'service_time_variation_coef': o.service_time_variation_coef,
-                        'channels': o.channels, 'utilization_factor': o.utilization_factor,
-                        'calc': [asdict(r) for r in o.calc], 'sim': [asdict(r) for r in o.sim]}
+            json_res = {
+                "service_time_variation_coef": o.service_time_variation_coef,
+                "channels": o.channels,
+                "utilization_factor": o.utilization_factor,
+                "calc": [asdict(r) for r in o.calc],
+                "sim": [asdict(r) for r in o.sim],
+            }
             return json_res
         return super().default(o)

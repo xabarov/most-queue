@@ -1,6 +1,7 @@
 """
 Plotting utilities for simulation results.
 """
+
 from enum import Enum
 
 import matplotlib.pyplot as plt
@@ -10,16 +11,22 @@ class DependsType(Enum):
     """
     Enum to specify the type of dependency for plotting.
     """
+
     NONE = 0
     UTILIZATION_FACTOR = 1
     CHANNELS_NUMBER = 2
     COEFFICIENT_OF_VARIATION = 3
 
 
-def plot_sim_vs_calc_moments(xs: list[float], sim_results: list[float],
-                             calc_results: list[float],
-                             depends_on: DependsType = DependsType.CHANNELS_NUMBER,
-                             is_errors=False, is_waiting_time=True, save_path=None):
+def plot_sim_vs_calc_moments(
+    xs: list[float],
+    sim_results: list[float],
+    calc_results: list[float],
+    depends_on: DependsType = DependsType.CHANNELS_NUMBER,
+    is_errors=False,
+    is_waiting_time=True,
+    save_path=None,
+):
     """
     Plots the simulation and calculated moments for a given list of x values.
     :param xs: A list of x values (e.g., utilization factors or number of channels).
@@ -39,14 +46,16 @@ def plot_sim_vs_calc_moments(xs: list[float], sim_results: list[float],
     """
     _fig, ax = plt.subplots()
     if is_errors:
-        errors = [100 * (w_sim - w_tt) / w_tt for w_sim,
-                  w_tt in zip(sim_results, calc_results)]
+        errors = [
+            100 * (w_sim - w_tt) / w_tt
+            for w_sim, w_tt in zip(sim_results, calc_results)
+        ]
 
-        ax.plot(xs, errors, color='black')
+        ax.plot(xs, errors, color="black")
         ax.set_ylabel(r"$\varepsilon$, %")
     else:
-        ax.plot(xs, sim_results, label="Sim", color='black', linestyle='--')
-        ax.plot(xs, calc_results, label="Calc", color='black')
+        ax.plot(xs, sim_results, label="Sim", color="black", linestyle="--")
+        ax.plot(xs, calc_results, label="Calc", color="black")
         if is_waiting_time:
             ax.set_ylabel(r"$\omega_{1}$")
         else:

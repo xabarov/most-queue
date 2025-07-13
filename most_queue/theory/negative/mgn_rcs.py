@@ -3,8 +3,9 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
 (remove customer from service)
 """
 
-import numpy as np
 import math
+
+import numpy as np
 
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
@@ -22,9 +23,18 @@ class MGnNegativeRCSCalc(MGnCalc):
     (remove customer from service)
     """
 
-    def __init__(self, n: int, l_pos: float, l_neg: float, b: list[float],
-                 buffer: int | None = None, N: int = 150,
-                 accuracy: float = 1e-6, dtype="c16", verbose: bool = False):
+    def __init__(
+        self,
+        n: int,
+        l_pos: float,
+        l_neg: float,
+        b: list[float],
+        buffer: int | None = None,
+        N: int = 150,
+        accuracy: float = 1e-6,
+        dtype="c16",
+        verbose: bool = False,
+    ):
         """
         n: number of servers
         l: arrival rate of positive jobs
@@ -37,8 +47,16 @@ class MGnNegativeRCSCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, N=N,
-                         accuracy=accuracy, dtype=dtype, verbose=verbose)
+        super().__init__(
+            n=n,
+            l=l_pos,
+            b=b,
+            buffer=buffer,
+            N=N,
+            accuracy=accuracy,
+            dtype=dtype,
+            verbose=verbose,
+        )
 
         self.l_neg = l_neg
 
@@ -46,13 +64,13 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Calculation of the conditional probability of successful service completion at a node
         """
-        return 1.0 - (self.l_neg/self.l)*(1.0-self.p[0].real)
+        return 1.0 - (self.l_neg / self.l) * (1.0 - self.p[0].real)
 
     def _calc_service_probs(self) -> list[float]:
         """
         Returns the conditional probabilities of loaded states.
         """
-        ps = np.array([self.p[i] for i in range(1, self.n+1)])
+        ps = np.array([self.p[i] for i in range(1, self.n + 1)])
         ps /= np.sum(ps)
 
         return ps
@@ -65,19 +83,17 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
 
-        params = H2Params(p1=self.y[0],
-                          mu1=self.mu[0],
-                          mu2=self.mu[1])
+        params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
 
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
-        for i in range(1, self.n+1):
-            l_neg = self.l_neg/i
+        for i in range(1, self.n + 1):
+            l_neg = self.l_neg / i
 
-            b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1,
-                                                            mu1=l_neg + params.mu1,
-                                                            mu2=l_neg + params.mu2))
-            b_cum += service_probs[i-1].real*np.array([mom.real for mom in b])
+            b = H2Distribution.calc_theory_moments(
+                H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2)
+            )
+            b_cum += service_probs[i - 1].real * np.array([mom.real for mom in b])
 
         return [mom.real for mom in conv_moments(w, b_cum)]
 
@@ -92,11 +108,11 @@ class MGnNegativeRCSCalc(MGnCalc):
         service_probs = self._calc_service_probs()
         b_served = np.array([0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n+1):
-            l_neg = self.l_neg/i
+        for i in range(1, self.n + 1):
+            l_neg = self.l_neg / i
 
             b = moments_h2_less_than_exp(l_neg, h2_params)
-            b_served += service_probs[i-1].real*b
+            b_served += service_probs[i - 1].real * b
 
         return [mom.real for mom in conv_moments(w, b_served)]
 
@@ -111,10 +127,10 @@ class MGnNegativeRCSCalc(MGnCalc):
         service_probs = self._calc_service_probs()
         b_cum = np.array([0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n+1):
-            l_neg = self.l_neg/i
+        for i in range(1, self.n + 1):
+            l_neg = self.l_neg / i
             b = moments_exp_less_than_h2(l_neg, h2_params)
-            b_cum += service_probs[i-1].real*b
+            b_cum += service_probs[i - 1].real * b
 
         return [mom.real for mom in conv_moments(w, b_cum)]
 
@@ -129,7 +145,9 @@ class MGnNegativeRCSCalc(MGnCalc):
         v_served = self.get_v_served()
         v_broken = self.get_v_broken()
         w = self.get_w()
-        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
+        return NegativeArrivalsResults(
+            p=p, v=v, v_served=v_served, v_broken=v_broken, w=w
+        )
 
     def _build_big_b_matrix(self, num):
         """
@@ -159,8 +177,10 @@ class MGnNegativeRCSCalc(MGnCalc):
                 #  x 0
                 #  x y
                 #  0 y
-                first_neg, second_neg = self.l_neg * \
-                    (num-i)/num, self.l_neg*(i+1)/num
+                first_neg, second_neg = (
+                    self.l_neg * (num - i) / num,
+                    self.l_neg * (i + 1) / num,
+                )
                 output[i, i] = (num - i) * self.mu[0] + first_neg
                 output[i + 1, i] = (i + 1) * self.mu[1] + second_neg
             else:
@@ -170,19 +190,20 @@ class MGnNegativeRCSCalc(MGnCalc):
                 #  x x 0
                 #  x y y
                 #  0 y 0
-                left = self.l_neg * (num-i-1)/(num-1)
-                right = self.l_neg * i/(num-1)
-                left_from_next = self.l_neg*(i+1)/(num-1)
+                left = self.l_neg * (num - i - 1) / (num - 1)
+                right = self.l_neg * i / (num - 1)
+                left_from_next = self.l_neg * (i + 1) / (num - 1)
 
-                output[i, i] = ((num - i - 1) * self.mu[0] + left) * \
-                    self.y[0] + (i * self.mu[1] + right) * self.y[1]
+                output[i, i] = ((num - i - 1) * self.mu[0] + left) * self.y[0] + (
+                    i * self.mu[1] + right
+                ) * self.y[1]
 
                 if i != num - 1:
-                    output[i, i + 1] = ((num - i - 1) * self.mu[0] +
-                                        left) * self.y[1]
+                    output[i, i + 1] = ((num - i - 1) * self.mu[0] + left) * self.y[1]
 
-                    output[i + 1, i] = ((i + 1) * self.mu[1] +
-                                        left_from_next) * self.y[0]
+                    output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[
+                        0
+                    ]
         return output
 
     def _build_big_d_matrix(self, num):
@@ -203,11 +224,10 @@ class MGnNegativeRCSCalc(MGnCalc):
             return output
 
         for i in range(row):
-            output[i, i] = self.l + self.l_neg + \
-                (num - i) * self.mu[0] + i * self.mu[1]
+            output[i, i] = self.l + self.l_neg + (num - i) * self.mu[0] + i * self.mu[1]
 
         return output
-    
+
     def run(self):
         """
         Run the algorithm.
@@ -262,8 +282,9 @@ class MGnNegativeRCSCalc(MGnCalc):
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                        self.x[j], self.b2[j]
+                    )
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 

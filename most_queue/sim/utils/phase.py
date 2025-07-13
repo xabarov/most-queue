@@ -12,7 +12,7 @@ class QsPhase:
         """
         Args:
             name (str, optional): Name of simulation phase like Cold, WarmUP. Defaults to "".
-            dist (_type_, optional): distribution object from random_distrubution 
+            dist (_type_, optional): distribution object from random_distrubution
                                      like ExpDistribution. Defaults to None.
         """
         self.name = name
@@ -59,4 +59,4 @@ class QsPhase:
         """
         Get probability of be in phase
         """
-        return self.prob/ttek
+        return self.prob / ttek

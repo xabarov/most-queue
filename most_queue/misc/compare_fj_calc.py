@@ -1,6 +1,7 @@
 """
 Test approximation for Fork-Join queues
 """
+
 import matplotlib.pyplot as plt
 
 from most_queue.sim.fork_join import ForkJoinSim
@@ -14,14 +15,14 @@ def calc_error(calc: float, sim: float) -> float:
     :param sim: объект класса ForkJoinSim
     :return:
     """
-    return 100*(calc-sim)/calc
+    return 100 * (calc - sim) / calc
 
 
 def test_fj_calc():
     """
     Тестирование аппроксимаций для системы Fork-Join
         - R. D. Nelson and A. N. Tantawi, “Approximate analysis of fork/join
-            synchronization in parallel queues.” IEEE Trans. Computers, vol. 37, 
+            synchronization in parallel queues.” IEEE Trans. Computers, vol. 37,
             no. 6, pp. 739–743, 1988.
 
         - S. Varma and A. M. Makowski, “Interpolation approximations for
@@ -63,11 +64,11 @@ def test_fj_calc():
 
         # задаем входной поток. Методу нужно передать параметры распределения и тип распределения.
         #  М - экспоненциальное
-        qs.set_sources(l, 'M')
+        qs.set_sources(l, "M")
 
         # задаем каналы обслуживания. Методу нужно передать параметры распределения и тип распределения.
         #  М - экспоненциальное
-        qs.set_servers(mu, 'M')
+        qs.set_servers(mu, "M")
 
         # запускаем ИМ
         qs.run(num_of_jobs)

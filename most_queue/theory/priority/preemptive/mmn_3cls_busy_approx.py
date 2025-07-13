@@ -1,3 +1,7 @@
+"""
+Calculation of busy periods for M/M/2 queue with three classes of requests and absolute priority.
+"""
+
 import math
 
 import numpy as np
@@ -9,11 +13,13 @@ from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 class Mmn3_pnz_cox:
     """
-    Расчет СМО M/M/2 с 3-мя классами заявок, абсолютным приоритетом
-    численным методом Такахаси-Таками на основе аппроксимации ПНЗ распределением Кокса второго порядка
+    Calculation of busy periods for M/M/2 queue with three classes of requests and absolute priority
+    using Cox distribution for passage time approximation.
     """
 
-    def __init__(self, mu_L, mu_M, mu_H, l_L, l_M, l_H, N=150, accuracy=1e-6, dtype="c16"):
+    def __init__(
+        self, mu_L, mu_M, mu_H, l_L, l_M, l_H, N=150, accuracy=1e-6, dtype="c16"
+    ):
         """
         l_L, l_M, l_H: интенсивности вх. потока заявок с низким, средним и высоким приоритетами
         mu_L, mu_M, mu_H: интенсивности обслуживания заявок с низким, средним и высоким приоритетами
@@ -30,11 +36,13 @@ class Mmn3_pnz_cox:
         self.mu_M = mu_M
         self.mu_H = mu_H
 
-        self.busy_periods = []  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
+        self.busy_periods = (
+            []
+        )  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
         self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
         self.pp = []  # список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
 
-        self.calc_busy_periods()
+        self._calc_busy_periods()
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
         self.cols = [] * N
@@ -63,12 +71,12 @@ class Mmn3_pnz_cox:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self.build_matrices()
-        self.initial_probabilities()
+        self._build_matrices()
+        self._initial_probabilities()
 
         self.iter_num_ = 0
 
-    def calc_busy_periods(self):
+    def _calc_busy_periods(self):
 
         l_M = self.l_M
         l_H = self.l_H
@@ -95,30 +103,51 @@ class Mmn3_pnz_cox:
         A = []
         A.append(np.array([[l_H, l_M]], dtype=self.dt))
         A.append(np.array([[l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
-        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [
-                 l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
-        A.append(np.array([[l_M, 0, 0, 0], [0, l_M, 0, 0], [
-                 l_H, 0, l_M, 0], [0, 0, l_H, l_M]], dtype=self.dt))
+        A.append(
+            np.array(
+                [[l_M, 0, 0, 0], [0, l_M, 0, 0], [l_H, 0, l_M, 0], [0, 0, l_H, l_M]],
+                dtype=self.dt,
+            )
+        )
+        A.append(
+            np.array(
+                [[l_M, 0, 0, 0], [0, l_M, 0, 0], [l_H, 0, l_M, 0], [0, 0, l_H, l_M]],
+                dtype=self.dt,
+            )
+        )
 
         B = []
         B.append(np.array([[0]], dtype=self.dt))
         B.append(np.array([[mu_H], [mu_M]], dtype=self.dt))
         B.append(
-            np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt))
-        B.append(np.array([[0, 0, t1, 0], [0, 0, t2, 0], [
-                 0, 0, mu_M, mu_H], [0, 0, 0, 2 * mu_M]], dtype=self.dt))
+            np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt)
+        )
+        B.append(
+            np.array(
+                [[0, 0, t1, 0], [0, 0, t2, 0], [0, 0, mu_M, mu_H], [0, 0, 0, 2 * mu_M]],
+                dtype=self.dt,
+            )
+        )
 
         C = []
         C.append(np.array([[0]], dtype=self.dt))
         C.append(np.array([[0, 0], [0, 0]], dtype=self.dt))
-        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [
-                 0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
-        C.append(np.array([[0, t12, 0, 0], [0, 0, 0, 0], [
-                 0, 0, 0, 0], [0, 0, 0, 0]], dtype=self.dt))
+        C.append(
+            np.array(
+                [[0, t12, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+                dtype=self.dt,
+            )
+        )
+        C.append(
+            np.array(
+                [[0, t12, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+                dtype=self.dt,
+            )
+        )
 
         D = []
-        for i in range(len(C)):
-            d_rows = C[i].shape[0]
+        for i, c_matrix in enumerate(C):
+            d_rows = c_matrix.shape[0]
             D.append(np.zeros((d_rows, d_rows), dtype=self.dt))
 
             for row in range(d_rows):
@@ -131,11 +160,10 @@ class Mmn3_pnz_cox:
                 for j in range(b_cols):
                     b_sum += B[i][row, j]
                 c_sum = 0.0 + 0.0j
-                c_cols = C[i].shape[1]
+                c_cols = c_matrix.shape[1]
                 for j in range(c_cols):
-                    c_sum += C[i][row, j]
+                    c_sum += c_matrix[row, j]
                 D[i][row, row] = a_sum + b_sum + c_sum
-
         pass_time = PassageTimeCalculation(A, B, C, D)
 
         pass_time.calc()
@@ -151,8 +179,12 @@ class Mmn3_pnz_cox:
             self.busy_periods[5][r] = pass_time.Gr[2][r][0, 0]
 
         for j in range(6):
-            coev = math.sqrt(self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2)) / \
-                self.busy_periods[j][0].real
+            coev = (
+                math.sqrt(
+                    self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2)
+                )
+                / self.busy_periods[j][0].real
+            )
             self.busy_periods_coevs.append(coev.real)
 
         # pp - список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
@@ -169,9 +201,7 @@ class Mmn3_pnz_cox:
         Возвращает список с вероятностями состояний системы
         p[k] - вероятность пребывания в системе ровно k заявок класса L
         """
-        p_real = [0.0] * self.N
-        for i in range(len(self.p)):
-            p_real[i] = self.p[i].real
+        p_real = [p_val.real for p_val in self.p]
         return p_real
 
     def get_low_class_v1(self):
@@ -184,7 +214,7 @@ class Mmn3_pnz_cox:
             l1 += p_real[i] * i
         return l1 / self.l_L
 
-    def initial_probabilities(self):
+    def _initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
         """
@@ -214,11 +244,11 @@ class Mmn3_pnz_cox:
             else:
                 p0_min = p0_
 
-    def calculate_y(self):
+    def _calculate_y(self):
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def build_matrices(self):
+    def _build_matrices(self):
         """
         Формирует матрицы переходов
         """
@@ -251,8 +281,7 @@ class Mmn3_pnz_cox:
 
                 # b":
                 if j != (self.N - 1):
-                    self.b2[j] = np.dot(
-                        self.t[j + 1], np.dot(self.B[j + 1], G))
+                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
                 else:
                     self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
 
@@ -266,8 +295,9 @@ class Mmn3_pnz_cox:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                    np.dot(self.x[j], self.b2[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                    self.x[j], self.b2[j]
+                )
 
             self.x[0] = 1.0 / self.z[1]
 
@@ -282,7 +312,7 @@ class Mmn3_pnz_cox:
                     x_max1 = self.x[i]
 
         self.calculate_p()
-        self.calculate_y()
+        self._calculate_y()
 
     def calculate_c(self, j):
         """
@@ -323,7 +353,7 @@ class Mmn3_pnz_cox:
 
     def buildB(self, num):
         """
-            Формирует матрицу B по заданному номеру яруса
+        Формирует матрицу B по заданному номеру яруса
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -343,7 +373,7 @@ class Mmn3_pnz_cox:
 
     def buildC(self, num):
         """
-            Формирует матрицу C по заданному номеру яруса
+        Формирует матрицу C по заданному номеру яруса
         """
         col = self.cols[num]
         row = col
@@ -427,7 +457,7 @@ class Mmn3_pnz_cox:
 
     def buildD(self, num):
         """
-            Формирует матрицу D по заданному номеру яруса
+        Формирует матрицу D по заданному номеру яруса
         """
         col = self.cols[num]
         row = col

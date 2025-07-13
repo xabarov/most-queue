@@ -1,7 +1,8 @@
 """
 Testing the M/D/n queueing system calculation.
-For verification, we use simulation modeling 
+For verification, we use simulation modeling
 """
+
 import os
 
 import numpy as np
@@ -12,33 +13,34 @@ from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 
 cur_dir = os.getcwd()
-params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
 
-with open(params_path, 'r', encoding='utf-8') as file:
+with open(params_path, "r", encoding="utf-8") as file:
     params = yaml.safe_load(file)
 
 
-NUM_OF_CHANNELS = int(params['num_of_channels'])
+NUM_OF_CHANNELS = int(params["num_of_channels"])
 
-ARRIVAL_RATE = float(params['arrival']['rate'])
-ARRIVAL_CV = float(params['arrival']['cv'])
+ARRIVAL_RATE = float(params["arrival"]["rate"])
+ARRIVAL_CV = float(params["arrival"]["cv"])
 
-NUM_OF_JOBS = int(params['num_of_jobs'])
-UTILIZATION_FACTOR = float(params['utilization_factor'])
-ERROR_MSG = params['error_msg']
+NUM_OF_JOBS = int(params["num_of_jobs"])
+UTILIZATION_FACTOR = float(params["utilization_factor"])
+ERROR_MSG = params["error_msg"]
 
-PROBS_ATOL = float(params['probs_atol'])
-PROBS_RTOL = float(params['probs_rtol'])
+PROBS_ATOL = float(params["probs_atol"])
+PROBS_RTOL = float(params["probs_rtol"])
 
 
 def test_mdn():
     """
     Testing the M/D/n queueing system calculation.
-    For verification, we use simulation modeling 
+    For verification, we use simulation modeling
     """
 
-    b = UTILIZATION_FACTOR * NUM_OF_CHANNELS / \
-        ARRIVAL_RATE  # service time from given ro
+    b = (
+        UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE
+    )  # service time from given ro
 
     # calculation of the probabilities of queueing system states
     mdn = MDn(ARRIVAL_RATE, b, NUM_OF_CHANNELS)
@@ -64,7 +66,9 @@ def test_mdn():
     # Output results
     probs_print(p_num, p_sim)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(
+        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
+    ), ERROR_MSG
 
 
 if __name__ == "__main__":

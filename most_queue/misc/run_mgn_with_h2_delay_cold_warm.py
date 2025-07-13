@@ -2,6 +2,7 @@
 Test for M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling.
 Theoretical calculation is compared with simulation results.
 """
+
 import os
 import time
 
@@ -23,7 +24,7 @@ from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
 
 def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):
     """
-    Get simulation statistics for an M/H2/n queue with H2-warming, 
+    Get simulation statistics for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay of the start of cooling.
 
     :param stat: statistic object
@@ -37,7 +38,7 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
     :param num_of_jobs: number of jobs to simulate
     :param p_limit: limit for the probability of state
     :param sim_ave: number of simulations to average the results
-    :return: tuple of lists with simulated statistics (w_sim_mass, p_sim_mass, 
+    :return: tuple of lists with simulated statistics (w_sim_mass, p_sim_mass,
     warm_prob_sim_mass, cold_prob_sim_mass,
     """
     im_start = time.process_time()
@@ -50,17 +51,17 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
     for j in range(sim_ave):
         print(f"\nStart {j + 1}/{sim_ave} simulation")
         sim = VacationQueueingSystemSimulator(n, buffer=buff)
-        sim.set_sources(l, 'M')
+        sim.set_sources(l, "M")
 
         gamma_params = GammaDistribution.get_params(b)
         gamma_params_warm = GammaDistribution.get_params(b_w)
         gamma_params_cold = GammaDistribution.get_params(b_c)
         gamma_params_cold_delay = GammaDistribution.get_params(b_d)
 
-        sim.set_servers(gamma_params, 'Gamma')
-        sim.set_warm(gamma_params_warm, 'Gamma')
-        sim.set_cold(gamma_params_cold, 'Gamma')
-        sim.set_cold_delay(gamma_params_cold_delay, 'Gamma')
+        sim.set_servers(gamma_params, "Gamma")
+        sim.set_warm(gamma_params_warm, "Gamma")
+        sim.set_cold(gamma_params_cold, "Gamma")
+        sim.set_cold_delay(gamma_params_cold_delay, "Gamma")
 
         sim.run(num_of_jobs)
 
@@ -97,7 +98,9 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
     stat["sim_cold_delay_prob"] = np.array(cold_delay_prob_sim_mass).mean()
 
 
-def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_pls, verbose=False):
+def get_tt_stat(
+    stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_pls, verbose=False
+):
     """
     Get statistics from Takahasi-Takami method.
 
@@ -111,14 +114,24 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
     :param b_d: initial moments of delay time before cooling starts
     :param p_limit: limit for the sum of probabilities in the Takahasi-Takami method
     :param w_pls_dt: step for the Laplace-Stieltjes transform calculation
-    :param stable_w_pls: flag for using a stable version 
+    :param stable_w_pls: flag for using a stable version
       of the Laplace-Stieltjes transform calculation
     :param verbose: flag for printing debug information
     :return: None
     """
     tt_start = time.process_time()
-    tt = MGnH2ServingColdWarmDelay(l, b, b_w, b_c, b_d, n,
-                                   buffer=buff, verbose=verbose, w_pls_dt=w_pls_dt, stable_w_pls=stable_w_pls)
+    tt = MGnH2ServingColdWarmDelay(
+        l,
+        b,
+        b_w,
+        b_c,
+        b_d,
+        n,
+        buffer=buff,
+        verbose=verbose,
+        w_pls_dt=w_pls_dt,
+        stable_w_pls=stable_w_pls,
+    )
 
     tt.run()
     p_tt = tt.get_p()
@@ -136,14 +149,26 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
     stat["tt_cold_delay_prob"] = tt.get_cold_delay_prob()
 
 
-def run_ro(b1_service, coev_service,
-           b1_warm, coev_warm,
-           b1_cold, coev_cold,
-           b1_cold_delay, coev_cold_delay,
-           n=1, num_of_jobs=300000,
-           num_of_roes=12, min_ro=0.1, max_ro=0.9,
-           p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-           verbose=False):
+def run_ro(
+    b1_service,
+    coev_service,
+    b1_warm,
+    coev_warm,
+    b1_cold,
+    coev_cold,
+    b1_cold_delay,
+    coev_cold_delay,
+    n=1,
+    num_of_jobs=300000,
+    num_of_roes=12,
+    min_ro=0.1,
+    max_ro=0.9,
+    p_limit=20,
+    w_pls_dt=1e-3,
+    stable_w_pls=False,
+    sim_ave=3,
+    verbose=False,
+):
     """
     Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay of the start of cooling depending on load factor (rho).
@@ -213,25 +238,47 @@ def run_ro(b1_service, coev_service,
         stat["b_d"] = b_d
         stat["coev_cold_delay"] = coev_cold_delay
 
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
+        get_tt_stat(
+            stat,
+            n,
+            l,
+            None,
+            b,
+            b_c,
+            b_w,
+            b_d,
+            p_limit,
+            w_pls_dt,
+            stable_w_pls,
+            verbose=verbose,
+        )
 
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
+        get_sim_stat(stat, n, l, None, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave)
 
         experiment_stats.append(stat)
 
     return experiment_stats
 
 
-def run_n(b1_service, coev_service,
-          b1_warm, coev_warm,
-          b1_cold, coev_cold,
-          b1_cold_delay, coev_cold_delay,
-          num_of_jobs=300000,
-          ro=0.7, n_min=1, n_max=30,
-          p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-          verbose=False):
+def run_n(
+    b1_service,
+    coev_service,
+    b1_warm,
+    coev_warm,
+    b1_cold,
+    coev_cold,
+    b1_cold_delay,
+    coev_cold_delay,
+    num_of_jobs=300000,
+    ro=0.7,
+    n_min=1,
+    n_max=30,
+    p_limit=20,
+    w_pls_dt=1e-3,
+    stable_w_pls=False,
+    sim_ave=3,
+    verbose=False,
+):
     """
     Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay of the start of cooling depending on the number of servers.
@@ -302,25 +349,48 @@ def run_n(b1_service, coev_service,
         stat["b_d"] = b_d
         stat["coev_cold_delay"] = coev_cold_delay
 
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
+        get_tt_stat(
+            stat,
+            n,
+            l,
+            None,
+            b,
+            b_c,
+            b_w,
+            b_d,
+            p_limit,
+            w_pls_dt,
+            stable_w_pls,
+            verbose=verbose,
+        )
 
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
+        get_sim_stat(stat, n, l, None, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave)
 
         experiment_stats.append(stat)
 
     return experiment_stats
 
 
-def run_delay_mean(b1_service, coev_service,
-                   b1_warm, coev_warm,
-                   b1_cold, coev_cold,
-                   coev_cold_delay,
-                   n=1, num_of_jobs=300000, ro=0.7,
-                   num_of_delays=12, min_delay=0.1, max_delay=10,
-                   p_limit=20, w_pls_dt=1e-3, stable_w_pls=False, sim_ave=3,
-                   verbose=False):
+def run_delay_mean(
+    b1_service,
+    coev_service,
+    b1_warm,
+    coev_warm,
+    b1_cold,
+    coev_cold,
+    coev_cold_delay,
+    n=1,
+    num_of_jobs=300000,
+    ro=0.7,
+    num_of_delays=12,
+    min_delay=0.1,
+    max_delay=10,
+    p_limit=20,
+    w_pls_dt=1e-3,
+    stable_w_pls=False,
+    sim_ave=3,
+    verbose=False,
+):
     """
     Run a series of simulations and theoretical calculations for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay of the start of cooling depending on mean delay time.
@@ -388,10 +458,21 @@ def run_delay_mean(b1_service, coev_service,
         stat["b_d"] = b_d
         stat["coev_cold_delay"] = coev_cold_delay
 
-        get_tt_stat(stat, n, l, None, b, b_c, b_w, b_d, p_limit,
-                    w_pls_dt, stable_w_pls, verbose=verbose)
-        get_sim_stat(stat, n, l, None, b, b_c, b_w,
-                     b_d, num_of_jobs, p_limit, sim_ave)
+        get_tt_stat(
+            stat,
+            n,
+            l,
+            None,
+            b,
+            b_c,
+            b_w,
+            b_d,
+            p_limit,
+            w_pls_dt,
+            stable_w_pls,
+            verbose=verbose,
+        )
+        get_sim_stat(stat, n, l, None, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave)
 
         experiment_stats.append(stat)
 
@@ -400,7 +481,7 @@ def run_delay_mean(b1_service, coev_service,
 
 def test_all():
     """
-    Runs all tests for the M/H2/n queue with H2-warming, 
+    Runs all tests for the M/H2/n queue with H2-warming,
     H2-cooling and H2-delay of the start of cooling.
     """
 
@@ -408,7 +489,7 @@ def test_all():
     ro = 0.7
 
     # if results directory does not exist, create it
-    results_path = os.path.join(os.path.dirname(__file__), 'results')
+    results_path = os.path.join(os.path.dirname(__file__), "results")
     if not os.path.exists(results_path):
         os.makedirs(results_path)
 
@@ -420,13 +501,24 @@ def test_all():
         if not os.path.exists(ro_dir):
             os.makedirs(ro_dir)
 
-        ro_stat = run_ro(b1_service=10.0, coev_service=1.2,
-                         b1_warm=3.1, coev_warm=0.87,
-                         b1_cold=4.1, coev_cold=1.1,
-                         b1_cold_delay=3.71, coev_cold_delay=1.2,
-                         n=n, num_of_jobs=300000,
-                         num_of_roes=10, min_ro=0.1, max_ro=0.9, w_pls_dt=1e-3,
-                         stable_w_pls=True, sim_ave=1)
+        ro_stat = run_ro(
+            b1_service=10.0,
+            coev_service=1.2,
+            b1_warm=3.1,
+            coev_warm=0.87,
+            b1_cold=4.1,
+            coev_cold=1.1,
+            b1_cold_delay=3.71,
+            coev_cold_delay=1.2,
+            n=n,
+            num_of_jobs=300000,
+            num_of_roes=10,
+            min_ro=0.1,
+            max_ro=0.9,
+            w_pls_dt=1e-3,
+            stable_w_pls=True,
+            sim_ave=1,
+        )
 
         dump_stat(ro_stat, save_name=ro_json_filename)
 
@@ -443,13 +535,23 @@ def test_all():
         if not os.path.exists(n_dir):
             os.makedirs(n_dir)
 
-        n_stat = run_n(b1_service=10.0, coev_service=1.2,
-                       b1_warm=3.1, coev_warm=0.87,
-                       b1_cold=4.1, coev_cold=1.1,
-                       b1_cold_delay=3.71, coev_cold_delay=1.2,
-                       num_of_jobs=300000,
-                       n_min=1, n_max=10, ro=ro, w_pls_dt=1e-3,
-                       stable_w_pls=True, sim_ave=1)
+        n_stat = run_n(
+            b1_service=10.0,
+            coev_service=1.2,
+            b1_warm=3.1,
+            coev_warm=0.87,
+            b1_cold=4.1,
+            coev_cold=1.1,
+            b1_cold_delay=3.71,
+            coev_cold_delay=1.2,
+            num_of_jobs=300000,
+            n_min=1,
+            n_max=10,
+            ro=ro,
+            w_pls_dt=1e-3,
+            stable_w_pls=True,
+            sim_ave=1,
+        )
 
         dump_stat(n_stat, save_name=n_json_filename)
 
@@ -469,13 +571,24 @@ def test_all():
         if not os.path.exists(delay_dir):
             os.makedirs(delay_dir)
 
-        delay_stat = run_delay_mean(b1_service=10.0, coev_service=1.2,
-                                    b1_warm=3.1, coev_warm=0.87,
-                                    b1_cold=4.1, coev_cold=1.1, ro=ro,
-                                    coev_cold_delay=1.2,
-                                    n=n, num_of_jobs=1000000,
-                                    num_of_delays=10, min_delay=0.1, max_delay=10,
-                                    w_pls_dt=1e-3, stable_w_pls=True, sim_ave=1)
+        delay_stat = run_delay_mean(
+            b1_service=10.0,
+            coev_service=1.2,
+            b1_warm=3.1,
+            coev_warm=0.87,
+            b1_cold=4.1,
+            coev_cold=1.1,
+            ro=ro,
+            coev_cold_delay=1.2,
+            n=n,
+            num_of_jobs=1000000,
+            num_of_delays=10,
+            min_delay=0.1,
+            max_delay=10,
+            w_pls_dt=1e-3,
+            stable_w_pls=True,
+            sim_ave=1,
+        )
 
         dump_stat(delay_stat, save_name=delay_json_filename)
 
@@ -491,14 +604,25 @@ if __name__ == "__main__":
 
     # test_all()
     UTILIZATION = 0.7
-    N_STAT = run_n(b1_service=10.0, coev_service=1.2,
-                   b1_warm=3.1, coev_warm=0.87,
-                   b1_cold=4.1, coev_cold=1.1,
-                   b1_cold_delay=3.71, coev_cold_delay=1.2,
-                   num_of_jobs=300000,
-                   n_min=1, n_max=10, ro=UTILIZATION, w_pls_dt=1e-3,
-                   stable_w_pls=True, sim_ave=1)
+    N_STAT = run_n(
+        b1_service=10.0,
+        coev_service=1.2,
+        b1_warm=3.1,
+        coev_warm=0.87,
+        b1_cold=4.1,
+        coev_cold=1.1,
+        b1_cold_delay=3.71,
+        coev_cold_delay=1.2,
+        num_of_jobs=300000,
+        n_min=1,
+        n_max=10,
+        ro=UTILIZATION,
+        w_pls_dt=1e-3,
+        stable_w_pls=True,
+        sim_ave=1,
+    )
 
     print_table(N_STAT)
-    make_plot(N_STAT, param_name='n', mode='abs',
-              save_path="tests/vacations_ro_0.7.png")
+    make_plot(
+        N_STAT, param_name="n", mode="abs", save_path="tests/vacations_ro_0.7.png"
+    )

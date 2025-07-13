@@ -1,6 +1,7 @@
 """
-Classes for QS Job (Task) 
+Classes for QS Job (Task)
 """
+
 from colorama import Fore, Style
 
 
@@ -8,17 +9,18 @@ class Task:
     """
     QS Simple Job
     """
+
     id = 0
 
     def __init__(self, arr_time, is_network=False):
         """
         :param arr_time: Момент прибытия в СМО
         """
-        
+
         if is_network:
             self.arr_network = arr_time
             self.wait_network = 0
-            
+
         self.arr_time = arr_time
 
         self.start_waiting_time = 0
@@ -38,6 +40,7 @@ class SubTask:
     """
     ForkJoin Sub Task
     """
+
     sub_task_id = 0
 
     def __init__(self, arr_time, task_id):
@@ -56,13 +59,14 @@ class ForkJoinTask:
     """
     Job, that contains subtask_num SubTask's
     """
+
     task_id = 0
 
     def __init__(self, subtask_num, arr_time):
         self.subtask_num = subtask_num
         self.arr_time = arr_time
         self.subtasks = []
-        for i in range(subtask_num):
+        for _ in range(subtask_num):
             self.subtasks.append(SubTask(arr_time, ForkJoinTask.task_id))
         self.id = ForkJoinTask.task_id
         ForkJoinTask.task_id += 1
@@ -77,6 +81,7 @@ class TaskPriority:
     """
     TaskPriority class represents a task with priority in the system.
     """
+
     id = 0
 
     def __init__(self, k, arr_time, is_network=False):
@@ -100,10 +105,13 @@ class TaskPriority:
         self.id = Task.id
         self.is_pr = False
 
-    def __str__(self, tab=''):
+    def __str__(self, tab=""):
         tab = "  "
-        arr_time_str = f"{self.arr_time:8.3f}" if isinstance(
-            self.arr_time, float) else str(self.arr_time)
+        arr_time_str = (
+            f"{self.arr_time:8.3f}"
+            if isinstance(self.arr_time, float)
+            else str(self.arr_time)
+        )
         res = f"{Fore.GREEN}Task #{self.id}{Style.RESET_ALL}"
         res += f" Class: {Fore.BLUE}{self.k + 1}{Style.RESET_ALL}\n"
         res += f"{tab}\t{Fore.YELLOW}Arrival moment:{Style.RESET_ALL}"
@@ -125,9 +133,11 @@ class ImpatientTask(Task):
         self.moment_to_leave = moment_to_leave
 
     def __str__(self):
-        report = f'{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n'
-        report += f'{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n'
-        report += f'{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}'
+        report = f"{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n"
+        report += f"{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n"
+        report += (
+            f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}"
+        )
         return report
 
 
@@ -137,14 +147,18 @@ class ImpatientTaskWithRepairs(ImpatientTask):
     Tracking if the task arrived in repair mode or not.
     """
 
-    def __init__(self, arr_time, moment_to_leave, arrive_in_repair_mode=False, is_network=False):
+    def __init__(
+        self, arr_time, moment_to_leave, arrive_in_repair_mode=False, is_network=False
+    ):
         super().__init__(arr_time, moment_to_leave, is_network)
         self.arrive_in_repair_mode = arrive_in_repair_mode
         self.end_repair_time = 1e16
         self.is_end_repair = False
 
     def __str__(self):
-        return f'{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n' \
-            f'{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n' \
-            f'{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}\n' \
-            f'{Fore.MAGENTA}Arrive in repair mode: {self.arrive_in_repair_mode}{Style.RESET_ALL}'
+        return (
+            f"{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n"
+            f"{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n"
+            f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}\n"
+            f"{Fore.MAGENTA}Arrive in repair mode: {self.arrive_in_repair_mode}{Style.RESET_ALL}"
+        )

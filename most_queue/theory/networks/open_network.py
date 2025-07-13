@@ -1,6 +1,7 @@
 """
 Calculates queueing network.
 """
+
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
@@ -15,8 +16,9 @@ class OpenNetworkCalc:
     Calculates queueing network.
     """
 
-    def __init__(self, R: np.matrix, b: list[list[float]],
-                 n: list[int], arrival_rate: float):
+    def __init__(
+        self, R: np.matrix, b: list[list[float]], n: list[int], arrival_rate: float
+    ):
         """
         R: routing matrix
         b: list of theoretical moments of service time distribution for each node.
@@ -71,25 +73,27 @@ class OpenNetworkCalc:
         res = {}
 
         nodes = len(self.n)
-        res['loads'] = [0.0] * nodes
-        res['v'] = []
+        res["loads"] = [0.0] * nodes
+        res["v"] = []
 
         intensities = self.balance_equation(self.arrival_rate, self.R)
 
-        res['v_node'] = []
+        res["v_node"] = []
         for i in range(nodes):
             node_arrival_rate = intensities[i]
             b1_node = self.b[i][0]
 
-            res['loads'][i] = node_arrival_rate * b1_node / self.n[i]
-            
+            res["loads"][i] = node_arrival_rate * b1_node / self.n[i]
+
             if is_markovian:
-                mmnr_calc = MMnrCalc(l=node_arrival_rate, mu=1/b1_node, n=self.n[i], r=100)
-                res['v_node'].append(mmnr_calc.get_v())
+                mmnr_calc = MMnrCalc(
+                    l=node_arrival_rate, mu=1 / b1_node, n=self.n[i], r=100
+                )
+                res["v_node"].append(mmnr_calc.get_v())
             else:
                 mgn_calc = MGnCalc(n=self.n[i], l=node_arrival_rate, b=self.b[i])
                 mgn_calc.run()
-                res['v_node'].append(mgn_calc.get_v())
+                res["v_node"].append(mgn_calc.get_v())
 
         h = 0.0001
         s = [h * (i + 1) for i in range(4)]
@@ -100,13 +104,14 @@ class OpenNetworkCalc:
         T = self.R[1:, nodes].reshape(-1, 1)
         Q = self.R[1:, :nodes]
 
-        gamma_mu_alpha = [GammaDistribution.get_params(
-            [res['v_node'][i][0], res['v_node'][i][1]]) for i in range(nodes)]
+        gamma_mu_alpha = [
+            GammaDistribution.get_params([res["v_node"][i][0], res["v_node"][i][1]])
+            for i in range(nodes)
+        ]
 
         g_PLS = []
         for i in range(4):
-            N = np.diag([lst_gamma(
-                gamma_mu_alpha[j], s[i]) for j in range(nodes)])
+            N = np.diag([lst_gamma(gamma_mu_alpha[j], s[i]) for j in range(nodes)])
 
             G = np.dot(N, Q)
             FF = I - G
@@ -114,13 +119,12 @@ class OpenNetworkCalc:
             F = np.dot(P, np.dot(F, np.dot(N, T)))
             g_PLS.append(F[0, 0])
 
-        res['v'] = diff5dots(g_PLS, h)
-        res['v'][0] = -res['v'][0]
-        res['v'][2] = -res['v'][2]
-        
-        res['intensities'] = intensities
-        res['v'] = [float(v) for v in res['v']]
-        res['loads'] = [float(l) for l in res['loads']]
+        res["v"] = diff5dots(g_PLS, h)
+        res["v"][0] = -res["v"][0]
+        res["v"][2] = -res["v"][2]
 
+        res["intensities"] = intensities
+        res["v"] = [float(v) for v in res["v"]]
+        res["loads"] = [float(l) for l in res["loads"]]
 
         return res

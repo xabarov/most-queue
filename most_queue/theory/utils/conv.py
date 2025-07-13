@@ -1,7 +1,9 @@
 """
 Functions for calculating convolutions of distributions.
 """
+
 import numpy as np
+
 
 def conv_moments(a: list[float], b: list[float], num: int = 3) -> list[float]:
     """
@@ -54,13 +56,12 @@ def conv_moments_minus(a: list[float], b: list[float], num: int = 3) -> list[flo
         res[2] = a[2] - b[2] - 3 * a[1] * b[0] - 3 * a[0] * b[1]
     return res
 
+
 def get_residual_distr_moments(a):
     """
     Calculates the residual distribution moments from the original distribution moments.
     :param a: Original distribution moments.
     :return: Residual distribution moments.
     """
-    f = [0.0] * (len(a) - 1)
-    for i in range(len(f)):
-        f[i] = a[i + 1] / ((i + 2) * a[0])
+    f = (a[i + 1] / ((i + 2) * a[0]) for i in range(len(a) - 1))
     return f

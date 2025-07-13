@@ -1,6 +1,7 @@
 """
 Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
 """
+
 import random
 from enum import Enum
 
@@ -16,6 +17,7 @@ class NegativeServiceType(Enum):
     """
     Negative service types
     """
+
     DISASTER = 1  # remove all customers
     RCS = 2  # remove customer in service
     RCH = 3  # remove customer at the Head
@@ -27,11 +29,14 @@ class QsSimNegatives(QsSim):
     Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
     """
 
-    def __init__(self, num_of_channels: int,
-                 type_of_negatives: NegativeServiceType = NegativeServiceType.DISASTER,
-                 buffer: int | None = None,
-                 verbose: bool = True,
-                 buffer_type="list"):
+    def __init__(
+        self,
+        num_of_channels: int,
+        type_of_negatives: NegativeServiceType = NegativeServiceType.DISASTER,
+        buffer: int | None = None,
+        verbose: bool = True,
+        buffer_type="list",
+    ):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system
@@ -49,7 +54,9 @@ class QsSimNegatives(QsSim):
         # initial moments of sojourn time of broken by negative jobs
         self.v_broken = [0, 0, 0]
 
-        self.served = 0  # number of job serviced by the system without negative job breaks
+        self.served = (
+            0  # number of job serviced by the system without negative job breaks
+        )
         self.broken = 0  # number of job broken by negatives
         self.total = 0  # number of job broken by negatives and served without breaks
 
@@ -69,12 +76,12 @@ class QsSimNegatives(QsSim):
         self.negative_source_kendall_notation = None
         self.is_set_negative_source_params = False
 
-    def set_positive_sources(self, params, kendall_notation: str = 'M'):
+    def set_positive_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of positives source time distribution.
         :param params: dataclass : parameters for the positives source time distribution
-            for example: H2Params for hyper-exponential distribution 
-            (see most_queue.general.distribution_params) 
+            for example: H2Params for hyper-exponential distribution
+            (see most_queue.general.distribution_params)
             For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of positives source time distribution ,
            for example: 'H' for hyper-exponential, 'M' for exponential, 'C' for Coxian
@@ -85,15 +92,16 @@ class QsSimNegatives(QsSim):
         self.is_set_positive_source_params = True
 
         self.positive_source = create_distribution(
-            params, kendall_notation, self.generator)
+            params, kendall_notation, self.generator
+        )
 
         self.positive_arrival_time = self.positive_source.generate()
 
-    def set_negative_sources(self, params, kendall_notation: str = 'M'):
+    def set_negative_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of negative source time distribution.
         :param params: dataclass : parameters for the negative source time distribution
-            for example: H2Params for hyper-exponential distribution 
+            for example: H2Params for hyper-exponential distribution
             (see most_queue.general.distribution_params)
             For 'M' (exponential) params is a float number, that represent single parameter
         :param kendall_notation: str : types of negative source time distribution ,
@@ -105,7 +113,8 @@ class QsSimNegatives(QsSim):
         self.is_set_negative_source_params = True
 
         self.negative_source = create_distribution(
-            params, kendall_notation, self.generator)
+            params, kendall_notation, self.generator
+        )
 
         self.negative_arrival_time = self.negative_source.generate()
 
@@ -114,10 +123,13 @@ class QsSimNegatives(QsSim):
         Calculates the load factor of the QS if has no disatsers
         """
 
-        return calc_qs_load(self.positive_source_kendall_notation,
-                            self.positive_source_params,
-                            self.server_kendall_notation,
-                            self.server_params, self.n)
+        return calc_qs_load(
+            self.positive_source_kendall_notation,
+            self.positive_source_params,
+            self.server_kendall_notation,
+            self.server_params,
+            self.n,
+        )
 
     def positive_arrival(self):
         """
@@ -152,8 +164,7 @@ class QsSimNegatives(QsSim):
 
         if self.type_of_negatives == NegativeServiceType.DISASTER:
 
-            not_free_servers = [c for c in range(
-                self.n) if not self.servers[c].is_free]
+            not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
             for c in not_free_servers:
                 end_ts = self.servers[c].end_service()
                 self.broken += 1
@@ -208,8 +219,7 @@ class QsSimNegatives(QsSim):
 
         elif self.type_of_negatives == NegativeServiceType.RCS:
 
-            not_free_servers = [c for c in range(
-                self.n) if not self.servers[c].is_free]
+            not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
             c = random.choice(not_free_servers)
             end_ts = self.servers[c].end_service()
             self.total += 1
@@ -262,8 +272,7 @@ class QsSimNegatives(QsSim):
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end
-        times = [serv_earl, self.positive_arrival_time,
-                 self.negative_arrival_time]
+        times = [serv_earl, self.positive_arrival_time, self.negative_arrival_time]
         min_time_num = np.argmin(times)
         if min_time_num == 0:
             # Serving
@@ -285,8 +294,7 @@ class QsSimNegatives(QsSim):
         """
         Updating statistics of sojourn times of broken jobs
         """
-        self.v_broken = refresh_moments_stat(
-            self.v_broken, new_a, self.broken)
+        self.v_broken = refresh_moments_stat(self.v_broken, new_a, self.broken)
 
     def refresh_v_stat_served(self, new_a):
         """
@@ -316,25 +324,32 @@ class QsSimNegatives(QsSim):
             v=self.v,
             w=self.w,
             v_served=self.v_served,
-            v_broken=self.v_broken)
+            v_broken=self.v_broken,
+        )
 
     def __str__(self, is_short=False):
 
-        type_of_neg_str = ''
+        type_of_neg_str = ""
         if self.type_of_negatives == NegativeServiceType.DISASTER:
-            type_of_neg_str = 'Disaster'
+            type_of_neg_str = "Disaster"
         elif self.type_of_negatives == NegativeServiceType.RCE:
-            type_of_neg_str = 'Remove customer from the End of the Queue'
+            type_of_neg_str = "Remove customer from the End of the Queue"
         elif self.type_of_negatives == NegativeServiceType.RCH:
-            type_of_neg_str = 'Remove customer from the Head of the Queue'
+            type_of_neg_str = "Remove customer from the Head of the Queue"
         elif self.type_of_negatives == NegativeServiceType.RCS:
-            type_of_neg_str = 'Remove customer from the Service'
+            type_of_neg_str = "Remove customer from the Service"
         else:
-            type_of_neg_str = 'Unknown'
+            type_of_neg_str = "Unknown"
 
-        res = "Queueing system " + self.positive_source_kendall_notation + \
-            "/" + self.server_kendall_notation + \
-            "/" + str(self.n) + type_of_neg_str
+        res = (
+            "Queueing system "
+            + self.positive_source_kendall_notation
+            + "/"
+            + self.server_kendall_notation
+            + "/"
+            + str(self.n)
+            + type_of_neg_str
+        )
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         res += f"\nLoad: {self.calc_positive_load():4.3f}\n"

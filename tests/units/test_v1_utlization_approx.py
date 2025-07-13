@@ -1,5 +1,5 @@
-from most_queue.theory.utils.utilization_approx import v1_on_utilization_approx, find_delta_utilization
-
+from most_queue.theory.utils.utilization_approx import (
+    find_delta_utilization, v1_on_utilization_approx)
 
 if __name__ == "__main__":
     poly1 = v1_on_utilization_approx(3, 1)

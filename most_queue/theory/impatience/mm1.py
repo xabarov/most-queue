@@ -10,8 +10,14 @@ class MM1Impatience:
     Calc M/M/1 queue with exponential impatience.
     """
 
-    def __init__(self, l: float, mu: float, gamma: float,
-                 tol: float = 1e-12, probs_max_num: int = 100000):
+    def __init__(
+        self,
+        l: float,
+        mu: float,
+        gamma: float,
+        tol: float = 1e-12,
+        probs_max_num: int = 100000,
+    ):
         """
         Initialization of the MM1Impatience class.
         :param l: Arrival rate
@@ -81,7 +87,7 @@ class MM1Impatience:
             znam = self.mu
             j = 1
             while j < i:
-                znam *= (self.mu + j * self.gamma)
+                znam *= self.mu + j * self.gamma
                 j += 1
 
             pi = p0 * chisl / znam
@@ -105,7 +111,7 @@ class MM1Impatience:
             znam = self.mu
             j = 1
             while j < i:
-                znam *= (self.mu + j * self.gamma)
+                znam *= self.mu + j * self.gamma
                 j += 1
 
             elem_old = elem_new

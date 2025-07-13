@@ -1,23 +1,26 @@
 """
 Calculate M/H2/n queue with complex parameters using the Takahasi-Takagi method.
 """
+
 import math
 
 import numpy as np
+from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.transforms import lst_exp
-from scipy.misc import derivative
 
 
 class MGnCalc:
     """
     Calculate M/H2/n queue with complex parameters using the Takahasi-Takagi method.
-    Complex parameters allow approximating the service time distribution 
+    Complex parameters allow approximating the service time distribution
     with arbitrary coefficients of variation (>1, <=1).
     """
 
-    def __init__(self, n, l, b, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False):
+    def __init__(
+        self, n, l, b, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False
+    ):
         """
         n: number of servers
         l: arrival rate
@@ -30,7 +33,9 @@ class MGnCalc:
         """
         self.dt = np.dtype(dtype)
         if buffer:
-            self.R = buffer + n  # max number of requests in the system - queue + channels
+            self.R = (
+                buffer + n
+            )  # max number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels in the system
         else:
             self.N = N
@@ -46,7 +51,9 @@ class MGnCalc:
         self.y = [h2_params.p1, 1.0 - h2_params.p1]
         self.l = l
         self.mu = [h2_params.mu1, h2_params.mu2]
-        # Cols massive holds the number of columns for each level, it is more convenient to calculate it once:
+
+        # Cols massive holds the number of columns for each level,
+        # it is more convenient to calculate it once:
         self.cols = [] * N
 
         # Parameters for Takahashi's method
@@ -143,13 +150,13 @@ class MGnCalc:
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + \
-                        np.dot(self.x[j], self.b2[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
+                        self.x[j], self.b2[j]
+                    )
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 
-            self.t[0] = self.x[0] * \
-                (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
+            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
 
             x_max1 = np.max(self.x)
 
@@ -161,7 +168,7 @@ class MGnCalc:
 
     def get_p(self) -> list[float]:
         """
-        Calculate the probabilities of states 
+        Calculate the probabilities of states
         """
         return [prob.real for prob in self.p]
 
@@ -177,8 +184,9 @@ class MGnCalc:
 
         if derivate:
             for i in range(3):
-                w[i] = derivative(self._calc_w_lst, 0,
-                                  dx=1e-3 / self.b[0], n=i + 1, order=9)
+                w[i] = derivative(
+                    self._calc_w_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
+                )
             return np.array([-w[0], w[1].real, -w[2]])
 
         for j in range(1, len(self.p) - self.n):
@@ -246,8 +254,9 @@ class MGnCalc:
         term_f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
 
         # Calculate the denominator (znam) more efficiently using list comprehensions
-        znam = self.n + sum((self.n - j) *
-                            np.prod(self.x[:j]) for j in range(1, self.n))
+        znam = self.n + sum(
+            (self.n - j) * np.prod(self.x[:j]) for j in range(1, self.n)
+        )
 
         if self.R:
             product_r = np.prod([self.x[i] for i in range(self.N)])
@@ -370,8 +379,9 @@ class MGnCalc:
                 output[i, i] = (num - i) * self.mu[0]
                 output[i + 1, i] = (i + 1) * self.mu[1]
             else:
-                output[i, i] = (num - i - 1) * self.mu[0] * \
-                    self.y[0] + i * self.mu[1] * self.y[1]
+                output[i, i] = (num - i - 1) * self.mu[0] * self.y[0] + i * self.mu[
+                    1
+                ] * self.y[1]
                 if i != num - 1:
                     output[i, i + 1] = (num - i - 1) * self.mu[0] * self.y[1]
                     output[i + 1, i] = (i + 1) * self.mu[1] * self.y[0]
@@ -451,15 +461,19 @@ class MGnCalc:
         key_numbers = self._get_key_numbers(self.n)
 
         a = np.array(
-            [lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in
-             range(self.n + 1)])
+            [
+                lst_exp(
+                    key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s
+                )
+                for j in range(self.n + 1)
+            ]
+        )
 
-        up_transition_mrx = self._calc_up_probs(self.n+1)  # (n + 1 x n + 1)
+        up_transition_mrx = self._calc_up_probs(self.n + 1)  # (n + 1 x n + 1)
 
         for k in range(self.n, self.N):
 
-            Pa = np.linalg.matrix_power(
-                up_transition_mrx * a, k - self.n)  # n+1 x n+1
+            Pa = np.linalg.matrix_power(up_transition_mrx * a, k - self.n)  # n+1 x n+1
 
             Ys = [self.Y[k][0, i] for i in range(self.n + 1)]
             aPa = np.dot(Pa, a)

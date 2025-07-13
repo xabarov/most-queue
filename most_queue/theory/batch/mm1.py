@@ -1,11 +1,11 @@
 """
-Calculation of M/M/1 QS with batch arrival 
+Calculation of M/M/1 QS with batch arrival
 """
 
 
 class BatchMM1:
     """
-    Calculation of M/M/1 QS with batch arrival 
+    Calculation of M/M/1 QS with batch arrival
     """
 
     def __init__(self, lam, mu, batch_probs, p_num=100000, tol=1e-12):
@@ -13,7 +13,7 @@ class BatchMM1:
         Args:
             lam: (float): arrival Exp distribution param
             mu (float): serving Exp distribution param
-            batch_probs (list[float]): batch probs 
+            batch_probs (list[float]): batch probs
             p_num (int, optional): size of probs to calc. Defaults to 100000.
             tol (float, optional): tol, precision of calcs. Defaults to 1e-12.
         """
@@ -41,7 +41,7 @@ class BatchMM1:
         """
         moments = [0.0] * len(self.ls)
         for i, prob in enumerate(self.ls):
-            for j in range(len(moments)):
+            for j, _ in enumerate(moments):
                 moments[j] += pow(i + 1, j + 1) * prob
         return moments
 

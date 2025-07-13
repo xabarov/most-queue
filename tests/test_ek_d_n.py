@@ -5,6 +5,7 @@ with deterministic service
 For calling - use the EkDn class of the most_queue.theory.ek_d_n_calc package
 For verification, we use simulation modeling (sim).
 """
+
 import os
 
 import numpy as np
@@ -16,23 +17,23 @@ from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 
 cur_dir = os.getcwd()
-params_path = os.path.join(cur_dir, 'tests', 'default_params.yaml')
+params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
 
-with open(params_path, 'r', encoding='utf-8') as file:
+with open(params_path, "r", encoding="utf-8") as file:
     params = yaml.safe_load(file)
 
 # Import constants from params file
-NUM_OF_CHANNELS = int(params['num_of_channels'])
+NUM_OF_CHANNELS = int(params["num_of_channels"])
 
-ARRIVAL_TIME_AVERAGE = 1.0/float(params['arrival']['rate'])
-ARRIVAL_TIME_CV = float(params['arrival']['cv'])
+ARRIVAL_TIME_AVERAGE = 1.0 / float(params["arrival"]["rate"])
+ARRIVAL_TIME_CV = float(params["arrival"]["cv"])
 
-NUM_OF_JOBS = int(params['num_of_jobs'])
-UTILIZATION_FACTOR = float(params['utilization_factor'])
-ERROR_MSG = params['error_msg']
+NUM_OF_JOBS = int(params["num_of_jobs"])
+UTILIZATION_FACTOR = float(params["utilization_factor"])
+ERROR_MSG = params["error_msg"]
 
-PROBS_ATOL = float(params['probs_atol'])
-PROBS_RTOL = float(params['probs_rtol'])
+PROBS_ATOL = float(params["probs_atol"])
+PROBS_RTOL = float(params["probs_rtol"])
 
 
 def test_ek_d_n():
@@ -52,7 +53,8 @@ def test_ek_d_n():
     # using the ErlangDistribution.get_params_by_mean_and_coev() method
 
     erl_params = ErlangDistribution.get_params_by_mean_and_coev(
-        ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV)
+        ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV
+    )
 
     # service time will be determined based on the specified utilization factor
 
@@ -81,15 +83,16 @@ def test_ek_d_n():
     # and probability distribution of the system state
     v_sim = qs.v
 
-    print(f'v_sim: {v_sim}')
+    print(f"v_sim: {v_sim}")
     p_sim = qs.get_p()
 
     probs_print(p_sim, p_num, 10)
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert np.allclose(p_sim[:10], p_num[:10],
-                       atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(
+        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
+    ), ERROR_MSG
 
 
 if __name__ == "__main__":

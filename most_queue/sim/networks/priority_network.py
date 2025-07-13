@@ -1,6 +1,7 @@
 """
 Simulation of a priority network with priorities and multiple channels.
 """
+
 import math
 
 import numpy as np
@@ -19,15 +20,23 @@ class PriorityNetwork:
     Simulation of a priority network with priorities and multiple channels.
     """
 
-    def __init__(self, k_num: int, L: list[float], R: list[np.matrix], n: list[int],
-                 prty: list[str], serv_params, nodes_prty: list[list[int]]):
+    def __init__(
+        self,
+        k_num: int,
+        L: list[float],
+        R: list[np.matrix],
+        n: list[int],
+        prty: list[str],
+        serv_params,
+        nodes_prty: list[list[int]],
+    ):
         """
         k_num: number of classes.
         L: list of arrival intensities for each class.
         R: list of routing matrices for each class.
         n: list of number of channels in each node.
 
-        prty: list of priority types for each node. 
+        prty: list of priority types for each node.
             No  - no priorities, FIFO
             PR  - preemptive resume, with resuming interrupted request
             RS  - preemptive repeat with resampling, re-sampling duration for new service
@@ -36,23 +45,23 @@ class PriorityNetwork:
 
         serv_params: list of list of dictionaries with service parameters for each node and class.
             [m][k][dict(type, params)]
-            where m - node number, k - class number,  
+            where m - node number, k - class number,
             type - distribution type, params - distribution parameters.
 
             See supported distributions params in the README.md file or use
-                ``` 
+                ```
                 from most_queue.sim.utils.distribution_utils import print_supported_distributions
                 print_supported_distributions()
                 ```
 
-        nodes_prty: Priority distribution among requests for each node in the network 
+        nodes_prty: Priority distribution among requests for each node in the network
             [m][x1, x2 .. x_k],
             m - node number, xi - priority for i-th class, k - number of classes
-            For example: 
+            For example:
                 [0][0,1,2] - for the first node, a direct order of priorities is set,
-                [2][0,2,1] - for the third node, such an order of priorities is set: 
+                [2][0,2,1] - for the third node, such an order of priorities is set:
                             for the first class - the oldest (0),
-                            for the second - the youngest (2), 
+                            for the second - the youngest (2),
                             for the third - intermediate (1)
         """
 
@@ -115,11 +124,12 @@ class PriorityNetwork:
         :param k: The class of the task.
         :param new_a: The new arrival time.
         """
-        factor = (1.0 - (1.0 / self.served[k]))
+        factor = 1.0 - (1.0 / self.served[k])
         a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.v_network[k][i] = self.v_network[k][i] * \
-                factor + a_pow[i] / self.served[k]
+            self.v_network[k][i] = (
+                self.v_network[k][i] * factor + a_pow[i] / self.served[k]
+            )
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -128,19 +138,24 @@ class PriorityNetwork:
         :param new_a: The new arrival time.
 
         """
-        factor = (1.0 - (1.0 / self.served[k]))
+        factor = 1.0 - (1.0 / self.served[k])
         a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.w_network[k][i] = self.w_network[k][i] * \
-                factor + a_pow[i] / self.served[k]
+            self.w_network[k][i] = (
+                self.w_network[k][i] * factor + a_pow[i] / self.served[k]
+            )
 
     def run_one_step(self):
         """
         Run one step of the simulation.
         """
-        num_of_serv_ch_earlier = -1  # номер канала узла, мин время до окончания обслуживания
+        num_of_serv_ch_earlier = (
+            -1
+        )  # номер канала узла, мин время до окончания обслуживания
         num_of_k_earlier = -1  # номер класса, прибывающего через мин время
-        num_of_node_earlier = -1  # номер узла, в котором раньше всех закончится обслуживание
+        num_of_node_earlier = (
+            -1
+        )  # номер узла, в котором раньше всех закончится обслуживание
         arrival_earlier = 1e10  # момент прибытия ближайшего
         serving_earlier = 1e10  # момент ближайшего обслуживания
 
@@ -159,8 +174,9 @@ class PriorityNetwork:
         if arrival_earlier < serving_earlier:
             self.on_arrival(arrival_earlier, num_of_k_earlier)
         else:
-            self.on_serving(serving_earlier,
-                            num_of_serv_ch_earlier, num_of_node_earlier)
+            self.on_serving(
+                serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier
+            )
 
     def on_arrival(self, arrival_earlier, num_of_k_earlier):
         """
@@ -170,8 +186,9 @@ class PriorityNetwork:
         self.arrived[num_of_k_earlier] += 1
         self.in_sys[num_of_k_earlier] += 1
 
-        self.arrival_time[num_of_k_earlier] = self.ttek + \
-            self.sources[num_of_k_earlier].generate()
+        self.arrival_time[num_of_k_earlier] = (
+            self.ttek + self.sources[num_of_k_earlier].generate()
+        )
 
         next_node = self.choose_next_node(num_of_k_earlier, -1)
 
@@ -188,8 +205,7 @@ class PriorityNetwork:
         Handle serving event
         """
         self.ttek = serving_earlier
-        ts = self.qs[num_of_node_earlier].serving(
-            num_of_serv_ch_earlier, True)
+        ts = self.qs[num_of_node_earlier].serving(num_of_serv_ch_earlier, True)
 
         real_class = ts.k
         next_node = self.choose_next_node(real_class, num_of_node_earlier)
@@ -216,18 +232,23 @@ class PriorityNetwork:
             with tqdm(total=100) as pbar:
                 while sum(self.served) < job_served:
                     self.run_one_step()
-                    percent = int(100*(sum(self.served)/job_served))
+                    percent = int(100 * (sum(self.served) / job_served))
                     if last_percent != percent:
                         last_percent = percent
                         pbar.update(1)
-                        pbar.set_description(Fore.MAGENTA + '\rJob served: ' +
-                                             Fore.YELLOW + f'{sum(self.served)}/{job_served}' + Fore.LIGHTGREEN_EX)
+                        pbar.set_description(
+                            Fore.MAGENTA
+                            + "\rJob served: "
+                            + Fore.YELLOW
+                            + f"{sum(self.served)}/{job_served}"
+                            + Fore.LIGHTGREEN_EX
+                        )
         else:
-            print(Fore.GREEN + '\rStart simulation')
+            print(Fore.GREEN + "\rStart simulation")
             print(Style.RESET_ALL)
 
             for _ in tqdm(range(job_served)):
                 self.run_one_step()
 
-            print(Fore.GREEN + '\rSimulation is finished')
+            print(Fore.GREEN + "\rSimulation is finished")
             print(Style.RESET_ALL)

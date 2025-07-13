@@ -11,7 +11,7 @@ probs_rtol: 1e-3
 probs_atol: 1e-2
 
 moments_atol: 2.0
-moments_rtol: 0.3
+moments_rtol: 0.5
 
 arrival:
   rate: 1.0

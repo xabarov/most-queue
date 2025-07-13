@@ -1,6 +1,7 @@
 """
 Numerical calculation of Fork-Join queuing systems
 """
+
 import math
 
 import scipy.special as sp
@@ -12,15 +13,15 @@ class ForkJoinMarkovianCalc:
 
     In a fork-join queueing system, a job is forked into n sub-tasks
     when it arrives at a control node, and each sub-task is sent to a
-    single node to be conquered. 
+    single node to be conquered.
 
     A basic fork-join queue considers a job is done after all results
     of the job have been received at the join node
 
     The (n, k) fork-join queues, only require the job’s any k out of n sub-tasks to be finished,
-    and thus have performance advantages in such scenarios. 
+    and thus have performance advantages in such scenarios.
 
-    There are mainly two versions of (n, k) fork-join queues: 
+    There are mainly two versions of (n, k) fork-join queues:
     The purging one removes all the remaining sub-tasks of a job from both sub-queues
     and service stations once it receives the job’s k the answer.
     As a contrast, the non-purging one keeps queuing and executing remaining sub-tasks
@@ -32,7 +33,8 @@ class ForkJoinMarkovianCalc:
         :param l: Arrival rate
         :param mu: Service rate
         :param n: Number of servers
-        :param k: Number of sub-tasks that need to be completed before the job is considered done (default is n)
+        :param k: Number of sub-tasks that need to be completed before the job
+        is considered done (default is n)
         """
         self.l = l
         self.n = n
@@ -120,15 +122,27 @@ class ForkJoinMarkovianCalc:
             summ = 0
 
             for i in range(2, self.n + 1):
-                summ += self._get_w_big(self.n, 1, i) * (11 * self._get_h_big(i) + 4 * self.ro *
-                                                         (self._get_h_big(2) - self._get_h_big(i))) / self._get_h_big(2)
+                summ += (
+                    self._get_w_big(self.n, 1, i)
+                    * (
+                        11 * self._get_h_big(i)
+                        + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i))
+                    )
+                    / self._get_h_big(2)
+                )
 
             res += coeff * summ
         else:
             summ = 0
             for i in range(self.k, self.n + 1):
-                summ += self._get_w_big(self.n, self.k, i) * (11 * self._get_h_big(i) + 4 * self.ro *
-                                                              (self._get_h_big(2) - self._get_h_big(i))) / self._get_h_big(2)
+                summ += (
+                    self._get_w_big(self.n, self.k, i)
+                    * (
+                        11 * self._get_h_big(i)
+                        + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i))
+                    )
+                    / self._get_h_big(2)
+                )
             res = coeff * summ
 
         return res
@@ -153,10 +167,13 @@ class ForkJoinMarkovianCalc:
         for i in range(self.k, self.n + 1):
             Hn = self._get_h_big(i)
             Vn = self._get_v_big(i)
-            delta_ro = (Vn - Hn)*self.ro
+            delta_ro = (Vn - Hn) * self.ro
 
-            summ += self._get_w_big(self.n, self.k, i) * \
-                (Hn + delta_ro) / (self.mu - self.l)
+            summ += (
+                self._get_w_big(self.n, self.k, i)
+                * (Hn + delta_ro)
+                / (self.mu - self.l)
+            )
 
         return summ
 
@@ -204,23 +221,23 @@ class ForkJoinMarkovianCalc:
     def _get_a_big(self, n, k, i):
         """
         Coefficient A from paper
-        Wang H. et al. Approximations and bounds for (n, k) fork-join queues: 
+        Wang H. et al. Approximations and bounds for (n, k) fork-join queues:
         a linear transformation approach //2018 18th IEEE/ACM International Symposium on Cluster,
         Cloud and Grid Computing (CCGRID). – IEEE, 2018. – С. 422-431.
         """
         if i == k:
             return 1
-        else:
-            summ = 0
-            for j in range(1, i - k + 1):
-                summ += sp.binom(n - i + j, j) * self._get_a_big(n, k, i - j)
 
-            return (-1) * summ
+        summ = 0
+        for j in range(1, i - k + 1):
+            summ += sp.binom(n - i + j, j) * self._get_a_big(n, k, i - j)
+
+        return (-1) * summ
 
     def _get_w_big(self, n, k, i):
         """
         Coefficient W from paper
-        Wang H. et al. Approximations and bounds for (n, k) fork-join queues: 
+        Wang H. et al. Approximations and bounds for (n, k) fork-join queues:
         a linear transformation approach //2018 18th IEEE/ACM International Symposium on Cluster,
         Cloud and Grid Computing (CCGRID). – IEEE, 2018. – С. 422-431.
         """
