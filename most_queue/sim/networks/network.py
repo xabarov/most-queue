@@ -97,12 +97,8 @@ class NetworkSimulator:
         """
         Run one step of the simulation.
         """
-        num_of_serv_ch_earlier = (
-            -1
-        )  # номер канала узла, мин время до окончания обслуживания
-        num_of_node_earlier = (
-            -1
-        )  # номер узла, в котором раньше всех закончится обслуживание
+        num_of_serv_ch_earlier = -1  # номер канала узла, мин время до окончания обслуживания
+        num_of_node_earlier = -1  # номер узла, в котором раньше всех закончится обслуживание
         arrival_earlier = 1e10  # момент прибытия ближайшего
         serving_earlier = 1e10  # момент ближайшего обслуживания
 
@@ -118,9 +114,7 @@ class NetworkSimulator:
         if arrival_earlier < serving_earlier:
             self.on_arrival(arrival_earlier)
         else:
-            self.on_serving(
-                serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier
-            )
+            self.on_serving(serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier)
 
     def on_arrival(self, arrival_earlier):
         """

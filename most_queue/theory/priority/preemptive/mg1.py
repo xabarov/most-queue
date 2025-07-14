@@ -105,10 +105,7 @@ class MG1PreemtiveCalculation:
         v[0][1] = w[0][1] + 2 * w[0][0] * self.b[0][0] + self.b[0][1]
         if num > 2:
             v[0][2] = (
-                w[0][2]
-                + 3 * w[0][1] * self.b[0][0]
-                + 3 * w[0][0] * self.b[0][1]
-                + self.b[0][2]
+                w[0][2] + 3 * w[0][1] * self.b[0][0] + 3 * w[0][0] * self.b[0][1] + self.b[0][2]
             )
 
         h.append(self.b[0])
@@ -127,9 +124,7 @@ class MG1PreemtiveCalculation:
                 if j == 1:
                     pi_j_i[j][i] = busy_calc_warm_up(self.l[j], pi_j[0], pi_j_i[j][j])
                 else:
-                    pi_j_i[j][i] = busy_calc_warm_up(
-                        self.l[j], pi_j_i[j - 1][i], pi_j_i[j][j]
-                    )
+                    pi_j_i[j][i] = busy_calc_warm_up(self.l[j], pi_j_i[j - 1][i], pi_j_i[j][j])
 
             for moment in range(num + 1):
                 summ = 0
@@ -159,9 +154,7 @@ class MG1PreemtiveCalculation:
             v[j][0] = w[j][0] + h[j][0]
             v[j][1] = w[j][1] + 2 * w[j][0] * h[j][0] + h[j][1]
             if num > 2:
-                v[j][2] = (
-                    w[j][2] + 3 * w[j][1] * h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
-                )
+                v[j][2] = w[j][2] + 3 * w[j][1] * h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
 
         res = {}
         res["v"] = v
@@ -171,9 +164,7 @@ class MG1PreemtiveCalculation:
         for j in range(num_of_cl):
             w_with_pr.append([0.0] * 3)
             w_with_pr[j][0] = v[j][0] - self.b[j][0]
-            w_with_pr[j][1] = (
-                v[j][1] - 2 * w_with_pr[j][0] * self.b[j][0] - self.b[j][1]
-            )
+            w_with_pr[j][1] = v[j][1] - 2 * w_with_pr[j][0] * self.b[j][0] - self.b[j][1]
             if num > 2:
                 w_with_pr[j][2] = (
                     v[j][2]

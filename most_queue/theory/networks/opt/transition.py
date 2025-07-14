@@ -112,9 +112,7 @@ class NetworkOptimizer:
                 for j in range(self.rows):
                     if j != self.rows - 1:
                         self.R[i, j] = (
-                            self.R[i, j]
-                            * (1 - self.maximum_rates_to_end[i])
-                            / (1 - old_value)
+                            self.R[i, j] * (1 - self.maximum_rates_to_end[i]) / (1 - old_value)
                         )
 
     def _optimize_loops(self):
@@ -147,12 +145,7 @@ class NetworkOptimizer:
     def _print_state(self):
         state = self.dynamics[-1]
         print(
-            Fore.CYAN
-            + "|"
-            + Fore.YELLOW
-            + f"{len(self.dynamics):^8}"
-            + Fore.CYAN
-            + "|",
+            Fore.CYAN + "|" + Fore.YELLOW + f"{len(self.dynamics):^8}" + Fore.CYAN + "|",
             end="",
         )
         for load in state.loads:
@@ -198,9 +191,7 @@ class NetworkOptimizer:
         """
 
         if self._check_if_optimized():
-            return MaxLoadNodeResults(
-                optimized=True, lam_r_max=None, parent=None, node=None
-            )
+            return MaxLoadNodeResults(optimized=True, lam_r_max=None, parent=None, node=None)
 
         max_load_node = -1
         max_load = -1
@@ -222,9 +213,7 @@ class NetworkOptimizer:
             lam_r = lam * self.R[i, max_load_node]
             if lam_r > lam_r_max:
                 # check if parent has >=2 childrens
-                childrens = np.sum(
-                    [1 if self.R[i, k] > 0 else 0 for k in range(self.rows - 1)]
-                )
+                childrens = np.sum([1 if self.R[i, k] > 0 else 0 for k in range(self.rows - 1)])
                 if childrens >= 2:
                     parent = i
                     lam_r_max = lam_r
@@ -252,9 +241,7 @@ class NetworkOptimizer:
         lam_r_max = max_node_res.lam_r_max
 
         childrens = [
-            k
-            for k in range(self.rows - 1)
-            if self.R[parent, k] > 0 and k != max_load_node
+            k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node
         ]
 
         sum1 = 0
@@ -280,9 +267,7 @@ class NetworkOptimizer:
 
         return LoadBalanceResults(z=z, children=children_res)
 
-    def _balance(
-        self, parent: int, max_load_node: int, balance_results: LoadBalanceResults
-    ):
+    def _balance(self, parent: int, max_load_node: int, balance_results: LoadBalanceResults):
         """
         Balance the network loads
         """

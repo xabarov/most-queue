@@ -7,11 +7,12 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.general.distribution_fitting import \
+    gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -42,9 +43,7 @@ def test_mgn():
     Test QS M/G/n queue with disasters.
     """
 
-    b1 = (
-        NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE
-    )  # average service time
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
 
     b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
@@ -88,9 +87,7 @@ def test_mgn():
 
     assert np.allclose(v_sim, v_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(
-        p_sim[:10], p_calc[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_calc[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

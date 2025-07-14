@@ -8,13 +8,15 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
 class MMn_PRTY_PNZ_Cox_approx:
     """
     Calculation of M/M/n queue with absolute priority using the numerical method
-    by Takahashi-Takami based on the approximation of busy periods by Cox's second-order distribution.
+    by Takahashi-Takami based on the approximation
+    of busy periods by Cox's second-order distribution.
     """
 
     def __init__(
@@ -24,9 +26,7 @@ class MMn_PRTY_PNZ_Cox_approx:
         mu_H: float,
         l_L: float,
         l_H: float,
-        N: int = 150,
-        accuracy: float = 1e-6,
-        dtype: str = "c16",
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of channels
@@ -35,9 +35,12 @@ class MMn_PRTY_PNZ_Cox_approx:
         N: number of tiers (levels)
         accuracy: accuracy, parameter for stopping iteration
         """
-        self.dt = np.dtype(dtype)
-        self.N = N
-        self.e1 = accuracy
+
+        if calc_params is None:
+            calc_params = TakahashiTakamiParams()
+        self.dt = np.dtype(calc_params.dtype)
+        self.N = calc_params.N
+        self.e1 = calc_params.accuracy
         self.n = n
         self.l_L = l_L
         self.l_H = l_H
@@ -54,17 +57,17 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.inter_level_mom_ = None
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
-        self.cols = [] * N
+        self.cols = [] * self.N
 
         # переменные
         self.t = []
         self.b1 = []
         self.b2 = []
-        self.x = [0.0] * N
-        self.z = [0.0] * N
+        self.x = [0.0] * self.N
+        self.z = [0.0] * self.N
 
         # искомые вреоятности состояний СМО
-        self.p = [0.0 + 0.0j] * N
+        self.p = [0.0 + 0.0j] * self.N
 
         # матрицы переходов
         self.A = []
@@ -73,7 +76,7 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.D = []
         self.Y = []
 
-        for i in range(N):
+        for i in range(self.N):
             self.cols.append(n + 2)
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
@@ -96,9 +99,9 @@ class MMn_PRTY_PNZ_Cox_approx:
 
         pi[0] = b_mom[0] / (1.0 - ro_load)
         pi[1] = b_mom[1] / (math.pow(1 - ro_load, 3))
-        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + 3.0 * self.l_H * b_mom[
+        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + 3.0 * self.l_H * b_mom[1] * b_mom[
             1
-        ] * b_mom[1] / math.pow(1 - ro_load, 5)
+        ] / math.pow(1 - ro_load, 5)
 
         return pi
 
@@ -207,9 +210,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                    self.x[j], self.b2[j]
-                )
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = 1.0 / self.z[1]
 
@@ -248,7 +249,8 @@ class MMn_PRTY_PNZ_Cox_approx:
             if num != 0:
                 if num > self.n:
                     output = B[self.n]
-                # Матрица B - диагональная. Количество ненулевых элементов = n (все, кроме состояний с ПНЗ)
+                # Матрица B - диагональная.
+                # Количество ненулевых элементов = n (все, кроме состояний с ПНЗ)
                 else:
                     for i in range(self.n):
                         output[i, i] = min(num, self.n - i) * self.mu_L
@@ -345,7 +347,8 @@ class MMn_PRTY_PNZ_Cox_approx:
         l_tilda = self.n
         # b_mom = [1 / self.mu_L, 2 / pow(self.mu_L, 2), 6 / pow(self.mu_L, 3)]
 
-        # вычислим начальные моменты переходов с яруса на ярус с учетом вероятностей микросостояний внутри яруса
+        # вычислим начальные моменты переходов с яруса на ярус
+        # с учетом вероятностей микросостояний внутри яруса
         inter_level_mom = []
         for i in range(1, self.N):
             inter_level_mom.append([0, 0, 0])
@@ -355,15 +358,11 @@ class MMn_PRTY_PNZ_Cox_approx:
                         Zs = []
                         for k in range(3):
                             Zs.append(
-                                self.t[i][0, j]
-                                * pass_time.G[i][j, s]
-                                * pass_time.Z[i][k][j, s]
+                                self.t[i][0, j] * pass_time.G[i][j, s] * pass_time.Z[i][k][j, s]
                             )
                             # Zs.append(self.t[i][0, j] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[i][k][j, s])
-                        inter_level_mom[i - 1] = self.binom_calc(
-                            inter_level_mom[i - 1], Zs
-                        )
+                        inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)
             else:
                 for j in range(self.cols[i]):
                     for s in range(self.cols[i - 1]):
@@ -376,9 +375,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                             )
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[l_tilda][k][j, s])
-                        inter_level_mom[i - 1] = self.binom_calc(
-                            inter_level_mom[i - 1], Zs
-                        )
+                        inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)
 
         self.inter_level_mom_ = inter_level_mom
 

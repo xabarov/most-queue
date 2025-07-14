@@ -65,14 +65,12 @@ def get_q_pareto(l, alpha, K, num=100):
     q = [0.0] * num
     gammas = [0.0] * num
     z = l * K
-    gammas[0] = GammaDistribution.get_minus_gamma(
-        alpha
-    ) - GammaDistribution.get_gamma_small(-alpha, z)
+    gammas[0] = GammaDistribution.get_minus_gamma(alpha) - GammaDistribution.get_gamma_small(
+        -alpha, z
+    )
 
     for j in range(1, num):
-        gammas[j] = (j - alpha - 1) * gammas[j - 1] + pow(z, j - alpha - 1) * math.exp(
-            -z
-        )
+        gammas[j] = (j - alpha - 1) * gammas[j - 1] + pow(z, j - alpha - 1) * math.exp(-z)
     forw = alpha * pow(z, alpha)
     for j in range(num):
         q[j] = forw * gammas[j] / math.factorial(j)

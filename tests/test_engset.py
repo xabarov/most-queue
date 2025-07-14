@@ -79,9 +79,7 @@ def test_engset():
 
     probs_print(p_sim, p_num)
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
     times_print(w_sim, w_num, is_w=True)
     times_print(v_sim, v_num, is_w=False)

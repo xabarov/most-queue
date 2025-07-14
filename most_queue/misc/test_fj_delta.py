@@ -44,9 +44,7 @@ def test_fj_delta():
     Test for ForkJoin queue with delta.
     """
 
-    b_params = GammaDistribution.get_params_by_mean_and_coev(
-        SERVICE_TIME_AVERAGE, SERVICE_TIME_CV
-    )
+    b_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
     delta_params = GammaDistribution.get_params_by_mean_and_coev(
         SERVICE_TIME_DELTA_AVERAGE, SERVICE_TIME_CV

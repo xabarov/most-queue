@@ -10,9 +10,7 @@ import numpy as np
 from graphviz import Digraph
 
 
-def create_DG(
-    network, engine="networkx", graphviz_format="png", colorize_source_and_drain=True
-):
+def create_DG(network, engine="networkx", graphviz_format="png", colorize_source_and_drain=True):
     """
     network - np.matrix - матрица смежности (N+1) * (N+1)
     engine - библиотека для построения графа. Варианты: networkx, graphviz
@@ -63,9 +61,7 @@ def show_DG(DG, engine="networkx", graphviz_format="png"):
     elif engine == "graphviz":
         DG.render(directory="doctest-output").replace("\\", "/")
         qs = plt.imread(
-            os.path.join(
-                os.getcwd(), "doctest-output", f"{DG.name}.gv.{graphviz_format}"
-            )
+            os.path.join(os.getcwd(), "doctest-output", f"{DG.name}.gv.{graphviz_format}")
         )
         fig, ax = plt.subplots()
         ax.imshow(qs)
@@ -73,9 +69,7 @@ def show_DG(DG, engine="networkx", graphviz_format="png"):
         fig.tight_layout()
         plt.show()
     else:
-        print(
-            f"Unknown type of engine {engine}. Please choose from: networkx, graphviz"
-        )
+        print(f"Unknown type of engine {engine}. Please choose from: networkx, graphviz")
 
 
 def save_in_gephi(G, save_name):

@@ -6,18 +6,18 @@ build-backend = "hatchling.build"
 disable = ["invalid-name", 
           "too-many-positional-arguments",
           "too-many-instance-attributes",
-          "too-many-arguments",
           "too-few-public-methods",
           "duplicate-code",
           "too-many-locals",
-          "line-too-long",
           "too-many-branches",
           "too-many-statements",
+          "too-many-arguments",
           "too-many-lines"
           ]
 [tool.black]
 target-version = ["py312"]
 skip-string-normalization = true
+line-length = 100
 
 [project]
 name = "most_queue"

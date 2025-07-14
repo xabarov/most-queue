@@ -9,9 +9,8 @@ import yaml
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.priority import PriorityQueueSimulator
-from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import (
-    MMn_PRTY_PNZ_Cox_approx,
-)
+from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import \
+    MMn_PRTY_PNZ_Cox_approx
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -56,9 +55,7 @@ def test_mmn_prty():
     arrival_rates = [ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW]
 
     mu_high = ARRIVAL_RATE_HIGH / (NUM_OF_CHANNELS * UTILIZATION_HIGH)
-    mu_low = ARRIVAL_RATE_LOW / (
-        NUM_OF_CHANNELS * (UTILIZATION_FACTOR - UTILIZATION_HIGH)
-    )
+    mu_low = ARRIVAL_RATE_LOW / (NUM_OF_CHANNELS * (UTILIZATION_FACTOR - UTILIZATION_HIGH))
     service_rates = [mu_high, mu_low]
 
     for j in range(num_priority):
@@ -86,9 +83,7 @@ def test_mmn_prty():
     v_num = tt.get_second_class_v1()
 
     # Printing comparison results
-    print(
-        "\nComparison of theoretical calculation with Cox approximation and simulation results."
-    )
+    print("\nComparison of theoretical calculation with Cox approximation and simulation results.")
     print(f"Utilization factor for low-priority class: {UTILIZATION_FACTOR:^6.2f}")
     print(f"Utilization factor for high-priority class: {UTILIZATION_HIGH:^6.2f}")
 
@@ -103,13 +98,9 @@ def test_mmn_prty():
     times_print(sim_moments=[v_sim[1][0]], calc_moments=[v_num], is_w=False)
 
     # Asserting the accuracy of the results
-    assert np.allclose(
-        v_sim[1][0], v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(v_sim[1][0], v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(
-        p_sim[1][:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[1][:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

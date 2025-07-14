@@ -9,27 +9,15 @@ import scipy.special as sp
 from scipy import stats
 
 from most_queue.general.distribution_fitting import (
-    fit_cox,
-    fit_h2,
-    fit_h2_clx,
-    fit_pareto_by_mean_and_coev,
-    fit_pareto_moments,
-    fit_erlang,
-    fit_gamma,
-    calc_gamma_func,
-    fit_weibull,
-    gamma_moments_by_mean_and_coev,
-)
-from most_queue.general.distribution_params import (
-    Cox2Params,
-    ErlangParams,
-    GammaParams,
-    GaussianParams,
-    H2Params,
-    ParetoParams,
-    UniformParams,
-    WeibullParams,
-)
+    FittingParams, calc_gamma_func, fit_cox, fit_erlang, fit_gamma, fit_h2,
+    fit_h2_clx, fit_pareto_by_mean_and_coev, fit_pareto_moments, fit_weibull,
+    gamma_moments_by_mean_and_coev)
+from most_queue.general.distribution_params import (Cox2Params, ErlangParams,
+                                                    GammaParams,
+                                                    GaussianParams, H2Params,
+                                                    ParetoParams,
+                                                    UniformParams,
+                                                    WeibullParams)
 from most_queue.general.interfaces import Distribution
 
 
@@ -127,7 +115,8 @@ class Weibull(Distribution):
     @staticmethod
     def get_cdf(params: WeibullParams, t: float) -> float:
         """
-        Calculate the cumulative distribution function (CDF) of a Weibull distribution for a given set of values.
+        Calculate the cumulative distribution function (CDF)
+        of a Weibull distribution for a given set of values.
          Args:
             params (WeibullParams): The parameters of Weibull distribution
             t: The value at which to calculate the cdf probability.
@@ -203,7 +192,8 @@ class NormalDistribution(Distribution):
         """
         :param f1: mean of the distribution.
         :param coev: coefficient of variation (std_dev / mean).
-        :return: Parameters for the distribution that correspond to the given mean and coefficient of variation.
+        :return: Parameters for the distribution that correspond
+        to the given mean and coefficient of variation.
         """
         mean = f1
         std_dev = coev * mean
@@ -256,9 +246,9 @@ class UniformDistribution(Distribution):
         mean, half_interval = params.mean, params.half_interval
         f = [0.0] * num
         for i in range(num):
-            f[i] = (
-                pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)
-            ) / (2 * half_interval * (i + 2))
+            f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (
+                2 * half_interval * (i + 2)
+            )
         return f
 
     @staticmethod
@@ -405,12 +395,7 @@ class H2Distribution(Distribution):
 
     @staticmethod
     def get_params_clx(
-        moments: list[float],
-        verbose=True,
-        ee=0.001,
-        e=0.02,
-        e_percent=0.15,
-        is_fitting=True,
+        moments: list[float], fitting_params: FittingParams | None = None
     ) -> H2Params:
         """
         Method of fitting H2 distribution parameters to given initial moments.
@@ -418,7 +403,7 @@ class H2Distribution(Distribution):
         Returns H2Params object with fitted parameters.
         """
 
-        return fit_h2_clx(moments, verbose, ee, e, e_percent, is_fitting)
+        return fit_h2_clx(moments, fitting_params=fitting_params)
 
     @staticmethod
     def get_params_by_mean_and_coev(f1: float, coev: float, is_clx=False) -> H2Params:
@@ -538,25 +523,11 @@ class CoxDistribution(Distribution):
         return f
 
     @staticmethod
-    def get_params(
-        moments: list[float],
-        ee=0.001,
-        e=0.5,
-        e_percent=0.25,
-        verbose=True,
-        is_fitting=True,
-    ) -> Cox2Params:
+    def get_params(moments: list[float], fitting_params: FittingParams | None = None) -> Cox2Params:
         """
         Calculates Cox-2 distribution parameters by three given initial moments [moments].
         """
-        return fit_cox(
-            moments,
-            ee=ee,
-            e=e,
-            e_percent=e_percent,
-            verbose=verbose,
-            is_fitting=is_fitting,
-        )
+        return fit_cox(moments, fitting_params=fitting_params)
 
     @staticmethod
     def get_params_by_mean_and_coev(f1: float, coev: float) -> Cox2Params:
@@ -588,7 +559,8 @@ class DeterministicDistribution(Distribution):
     @staticmethod
     def generate_static(params, generator=None):
         """
-        Generate a constant value b. Static method for use without creating an instance of the class.
+        Generate a constant value b. Static method for use
+        without creating an instance of the class.
         """
         return params
 
@@ -616,7 +588,8 @@ class DeterministicDistribution(Distribution):
         """
         :param f1: mean of the distribution.
         :param coev: coefficient of variation (std_dev / mean).
-        :return: Parameters for the distribution that correspond to the given mean and coefficient of variation.
+        :return: Parameters for the distribution that correspond
+        to the given mean and coefficient of variation.
         """
         b = f1
         return b
@@ -847,9 +820,7 @@ class ExpDistribution(Distribution):
         Generates a random number from the exponential distribution.
         :param params (mu): rate parameter (inverse of the mean)
         """
-        return ErlangDistribution.generate_static(
-            ErlangParams(r=1, mu=params), generator
-        )
+        return ErlangDistribution.generate_static(ErlangParams(r=1, mu=params), generator)
 
     @staticmethod
     def calc_theory_moments(params: float, num: int = 3) -> list[float]:
@@ -858,9 +829,7 @@ class ExpDistribution(Distribution):
         :param params (mu): rate parameter (inverse of the mean)
 
         """
-        return ErlangDistribution.calc_theory_moments(
-            ErlangParams(r=1, mu=params), num=num
-        )
+        return ErlangDistribution.calc_theory_moments(ErlangParams(r=1, mu=params), num=num)
 
     @staticmethod
     def get_params(moments: list[float]):

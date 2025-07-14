@@ -15,7 +15,8 @@ import time
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import \
+    gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
@@ -90,9 +91,7 @@ def test_mgn_tt():
 
     # print results
 
-    print(
-        "\nComparison of calculation results by the Takahasi-Takami method and simulation."
-    )
+    print("\nComparison of calculation results by the Takahasi-Takami method and simulation.")
     print(f"Simulation - M/Gamma/{NUM_OF_CHANNELS:^2d}")
     print(f"Takahasi-Takami - M/H2/{NUM_OF_CHANNELS:^2d} with complex parameters")
     print(f"Utilization factor: {UTILIZATION_FACTOR:^1.2f}")
@@ -106,9 +105,7 @@ def test_mgn_tt():
 
     assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

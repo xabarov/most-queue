@@ -6,17 +6,13 @@ Version with additional features and optimizations.
 
 import numpy as np
 
-from most_queue.theory.networks.opt.transition import (
-    ChildLoadBalanceResults,
-    LoadBalanceResults,
-    MaxLoadNodeResults,
-    NetworkOptimizer,
-    OptimizerDynamic,
-)
+from most_queue.theory.networks.opt.transition import (ChildLoadBalanceResults,
+                                                       LoadBalanceResults,
+                                                       MaxLoadNodeResults,
+                                                       NetworkOptimizer,
+                                                       OptimizerDynamic)
 from most_queue.theory.utils.utilization_approx import (
-    find_delta_utilization,
-    v1_on_utilization_approx,
-)
+    find_delta_utilization, v1_on_utilization_approx)
 
 
 class NetworkOptimizerWithApprox(NetworkOptimizer):
@@ -43,9 +39,7 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
         max_load_node = max_node_res.node
 
         childrens = [
-            k
-            for k in range(self.rows - 1)
-            if self.R[parent, k] > 0 and k != max_load_node
+            k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node
         ]
 
         min_load_child = -1
@@ -80,11 +74,7 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
             lam = intencities[parent - 1]
 
         r_d = self.R[parent, max_load_node]
-        z = (
-            delta_ro
-            * self.num_channels[max_load_node]
-            / (r_d * lam * self.b[max_load_node][0])
-        )
+        z = delta_ro * self.num_channels[max_load_node] / (r_d * lam * self.b[max_load_node][0])
         return LoadBalanceResults(
             z=z, children=[ChildLoadBalanceResults(child=min_load_child, z=z)]
         )
@@ -123,9 +113,7 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
             if max_node_res.optimized:
                 break
 
-            z_res = self._find_balance_approx(
-                loads, max_node_res, intencities, deg=approx_deg
-            )
+            z_res = self._find_balance_approx(loads, max_node_res, intencities, deg=approx_deg)
 
             parent = max_node_res.parent
             max_load_node = max_node_res.node

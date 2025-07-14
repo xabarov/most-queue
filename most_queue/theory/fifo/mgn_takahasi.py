@@ -3,28 +3,13 @@ Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method
 """
 
 import math
-from dataclasses import dataclass
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.transforms import lst_exp
-
-
-@dataclass
-class TakahashiTakamiParams:
-    """Parameters for the Takahashi-Takami method."""
-
-    N: int = 150
-    accuracy: float = 1e-8
-    dtype: str = "c16"
-    verbose: bool = False
-    max_iter: int = 300
-    is_cox: bool = True
-    approx_ee: float = 0.1
-    approx_e: float = 0.5
-    is_fitting: bool = True
 
 
 class MGnCalc:
@@ -35,18 +20,19 @@ class MGnCalc:
     """
 
     def __init__(
-        self, n, l, b, buffer=None, calc_params: TakahashiTakamiParams|None=None
-
+        self,
+        n: int,
+        l: float,
+        b: list[float],
+        buffer=None,
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
         l: arrival rate
         b: initial moments of service time distribution
         buffer: size of the buffer (optional)
-        N: number of levels in the system (default is 150)
-        accuracy: accuracy parameter for stopping the iteration
-        dtype: data type for calculations (default is complex double precision)
-        verbose: whether to print intermediate results (default is False)
+        calc_params: parameters for the Takahashi-Takami method
         """
 
         if calc_params is None:
@@ -54,9 +40,7 @@ class MGnCalc:
 
         self.dt = np.dtype(calc_params.dtype)
         if buffer:
-            self.R = (
-                buffer + n
-            )  # max number of requests in the system - queue + channels
+            self.R = buffer + n  # max number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels in the system
         else:
             self.N = calc_params.N
@@ -171,9 +155,7 @@ class MGnCalc:
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 
@@ -205,9 +187,7 @@ class MGnCalc:
 
         if derivate:
             for i in range(3):
-                w[i] = derivative(
-                    self._calc_w_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
-                )
+                w[i] = derivative(self._calc_w_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
             return np.array([-w[0], w[1].real, -w[2]])
 
         for j in range(1, len(self.p) - self.n):
@@ -275,9 +255,7 @@ class MGnCalc:
         term_f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
 
         # Calculate the denominator (znam) more efficiently using list comprehensions
-        znam = self.n + sum(
-            (self.n - j) * np.prod(self.x[:j]) for j in range(1, self.n)
-        )
+        znam = self.n + sum((self.n - j) * np.prod(self.x[:j]) for j in range(1, self.n))
 
         if self.R:
             product_r = np.prod([self.x[i] for i in range(self.N)])
@@ -400,9 +378,7 @@ class MGnCalc:
                 output[i, i] = (num - i) * self.mu[0]
                 output[i + 1, i] = (i + 1) * self.mu[1]
             else:
-                output[i, i] = (num - i - 1) * self.mu[0] * self.y[0] + i * self.mu[
-                    1
-                ] * self.y[1]
+                output[i, i] = (num - i - 1) * self.mu[0] * self.y[0] + i * self.mu[1] * self.y[1]
                 if i != num - 1:
                     output[i, i + 1] = (num - i - 1) * self.mu[0] * self.y[1]
                     output[i + 1, i] = (i + 1) * self.mu[1] * self.y[0]
@@ -486,9 +462,7 @@ class MGnCalc:
 
         a = np.array(
             [
-                lst_exp(
-                    key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s
-                )
+                lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s)
                 for j in range(self.n + 1)
             ]
         )

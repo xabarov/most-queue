@@ -8,10 +8,8 @@ from scipy.misc import derivative
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.negative.structs import NegativeArrivalsResults
-from most_queue.theory.utils.conditional import (
-    moments_exp_less_than_h2,
-    moments_h2_less_than_exp,
-)
+from most_queue.theory.utils.conditional import (moments_exp_less_than_h2,
+                                                 moments_h2_less_than_exp)
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
@@ -29,7 +27,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         l_neg: float,
         b: list[float],
         buffer: int | None = None,
-        calc_params: TakahashiTakamiParams|None=None
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
@@ -43,25 +41,13 @@ class MGnNegativeDisasterCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        super().__init__(
-            n=n,
-            l=l_pos,
-            b=b,
-            buffer=buffer,
-            calc_params=calc_params
-        )
+        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
 
         self.l_neg = l_neg
         self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
 
         # for calc B matrices
-        self.base_mgn = MGnCalc(
-            n=n,
-            l=l_pos,
-            b=b,
-            buffer=buffer,
-            calc_params=calc_params
-        )
+        self.base_mgn = MGnCalc(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
         self.base_mgn._fill_cols()
         self.base_mgn._build_matrices()
 
@@ -185,9 +171,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         output[0, 0] = self.gamma
 
         for i in range(1, row):
-            output[i, i] = (
-                self.l + self.l_neg + (num - i + 1) * self.mu[0] + (i - 1) * self.mu[1]
-            )
+            output[i, i] = self.l + self.l_neg + (num - i + 1) * self.mu[0] + (i - 1) * self.mu[1]
 
         return output
 
@@ -246,9 +230,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         for j in range(self.n + 1):
             a.append(
                 lst_exp(
-                    key_numbers[j][0] * self.mu[0]
-                    + key_numbers[j][1] * self.mu[1]
-                    + self.l_neg,
+                    key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg,
                     s,
                 )
             )
@@ -259,9 +241,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         for k in range(self.n, self.N):
 
-            Pa = np.transpose(
-                self._matrix_pow(Pn_plus * a, k - self.n)
-            )  # size = (n+2, n+2)
+            Pa = np.transpose(self._matrix_pow(Pn_plus * a, k - self.n))  # size = (n+2, n+2)
 
             Ys = np.array([self.Y[k][0, i] for i in range(self.n + 2)])
             aPa = np.dot(a, Pa)
@@ -280,9 +260,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         w = [0.0] * 3
 
         for i in range(3):
-            w[i] = derivative(
-                self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
-            )
+            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
         w = [-w[0], w[1].real, -w[2]]
         self.w = w
 
@@ -363,9 +341,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         v_served = self.get_v_served()
         v_broken = self.get_v_broken()
         w = self.get_w()
-        return NegativeArrivalsResults(
-            p=p, v=v, v_served=v_served, v_broken=v_broken, w=w
-        )
+        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
 
     def run(self):
         """
@@ -421,9 +397,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 

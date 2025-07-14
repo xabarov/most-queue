@@ -143,13 +143,12 @@ class MMnHyperExpWarmAndCold:
         mu_c_pls = np.array([lst_exp(self.mu_c[0], s), lst_exp(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
-        # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
+        # [i,j] = охлаждение в i, переход из состояния i охлаждения
+        # в j состояние разогрева, разогрев j
         c_to_w = np.zeros((2, 2), dtype=self.dt)
         for c_phase in range(2):
             for w_phase in range(2):
-                c_to_w[c_phase, w_phase] = (
-                    mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
-                )
+                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
         # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
         w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
@@ -192,11 +191,7 @@ class MMnHyperExpWarmAndCold:
             # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
             for c_phase in range(2):
                 for w_phase in range(2):
-                    w += (
-                        self.Y[k][0, 3 + c_phase]
-                        * c_to_w[c_phase, w_phase]
-                        * pls_service_total
-                    )
+                    w += self.Y[k][0, 3 + c_phase] * c_to_w[c_phase, w_phase] * pls_service_total
 
         return w
 
@@ -413,9 +408,7 @@ class MMnHyperExpWarmAndCold:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             if self.dt == "c16":
                 self.x[0] = (1.0 + 0.0j) / self.z[1]

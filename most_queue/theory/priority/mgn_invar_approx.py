@@ -9,7 +9,8 @@ import math
 
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemtiveCalculation
+from most_queue.theory.priority.non_preemptive.mg1 import \
+    MG1NonPreemtiveCalculation
 from most_queue.theory.priority.preemptive.mg1 import MG1PreemtiveCalculation
 from most_queue.theory.utils.conv import conv_moments
 

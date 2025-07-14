@@ -9,17 +9,12 @@ import time
 import numpy as np
 
 from most_queue.misc.vacations_paper_utils import (
-    calc_moments_by_mean_and_coev,
-    dump_stat,
-    load_stat,
-    make_plot,
-    print_table,
-)
+    calc_moments_by_mean_and_coev, dump_stat, load_stat, make_plot,
+    print_table)
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
-    MGnH2ServingColdWarmDelay,
-)
+from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import \
+    MGnH2ServingColdWarmDelay
 
 
 def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):
@@ -98,9 +93,7 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
     stat["sim_cold_delay_prob"] = np.array(cold_delay_prob_sim_mass).mean()
 
 
-def get_tt_stat(
-    stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_pls, verbose=False
-):
+def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_pls, verbose=False):
     """
     Get statistics from Takahasi-Takami method.
 
@@ -623,6 +616,4 @@ if __name__ == "__main__":
     )
 
     print_table(N_STAT)
-    make_plot(
-        N_STAT, param_name="n", mode="abs", save_path="tests/vacations_ro_0.7.png"
-    )
+    make_plot(N_STAT, param_name="n", mode="abs", save_path="tests/vacations_ro_0.7.png")

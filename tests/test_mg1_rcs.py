@@ -7,7 +7,8 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import \
+    gamma_moments_by_mean_and_coev
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -67,9 +68,7 @@ def test_mg1_gamma_rcs():
     )
 
     # assert is all close with rtol 10%
-    assert np.allclose(
-        v_sim[0], v1_gamma_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(v_sim[0], v1_gamma_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

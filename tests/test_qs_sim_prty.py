@@ -30,9 +30,11 @@ ERROR_MSG = params["error_msg"]
 def test_sim():
     """
     Testing the simulation model of an M/G/c queue with priorities.
-    For verification, comparing results with those calculated using the method of invariant relations:
-        Ryzhikov Yu.I., Khomonenko A.D. Calculation of multi-channel service systems with absolute and
-        relative priorities based on invariant relations // Intelligent technologies
+    For verification, comparing results with those calculated
+    using the method of invariant relations:
+        Ryzhikov Yu.I., Khomonenko A.D. Calculation of multi-channel
+        service systems with absolute and relative priorities based
+        on invariant relations // Intelligent technologies
         for transportation. 2015. №3
     """
     lsum = sum(ARRIVAL_RATES)
@@ -58,7 +60,8 @@ def test_sim():
         b.append(GammaDistribution.calc_theory_moments(gamma_params[j], 4))
 
     print(
-        "\nComparison of data from the simulation and results calculated using the method of invariant relations (R) \n"
+        "\nComparison of data from the simulation and results calculated"
+        "using the method of invariant relations (R) \n"
         "time spent in a multi-channel queue with priorities"
     )
     print(f"Number of servers: {NUM_OF_CHANNELS}")
@@ -67,14 +70,17 @@ def test_sim():
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV:<1.2f}")
     print("PR (Preamptive) priority")
 
-    # when creating the simulation, pass the number of servers, number of classes and type of priority.
+    # when creating the simulation, pass the number of servers,
+    # number of classes and type of priority.
     # PR - absolute with re-service of requests
     qs = PriorityQueueSimulator(NUM_OF_CHANNELS, NUM_OF_CLASSES, "PR")
 
-    # to set up sources of requests and service servers, we need to specify a set of dictionaries with fields
+    # to set up sources of requests and service servers,
+    # we need to specify a set of dictionaries with fields
     # type - distribution type,
     # params - its parameters.
-    # The number of such dictionaries in the lists sources and servers_params corresponds to the number of classes
+    # The number of such dictionaries in the lists sources
+    # and servers_params corresponds to the number of classes
 
     sources = []
     servers_params = []

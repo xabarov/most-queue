@@ -1,0 +1,24 @@
+- name: Exponential
+  kendall_notation: M
+  params: mu
+- name: Hyperexponential of the 2nd order
+  kendall_notation: H
+  params: H2Params dataclass
+- name: Erlang
+  kendall_notation: E
+  params: r, mu
+- name: Cox 2nd order
+  kendall_notation: C
+  params: Cox2Params dataclass
+- name: Pareto
+  kendall_notation: Pa
+  params: alpha, K
+- name: Deterministic
+  kendall_notation: D
+  params: b
+- name: Uniform
+  kendall_notation: Uniform
+  params: mean, half_interval
+- name: Gaussian
+  kendall_notation: Norm
+  params: mean, standard_deviation

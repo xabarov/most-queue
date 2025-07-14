@@ -5,6 +5,7 @@ Calculation of the GI/M/1 queueing system
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
 
@@ -14,9 +15,7 @@ class GiM1:
     Calculation of the GI/M/1 queueing system
     """
 
-    def __init__(
-        self, a: list[float], mu: float, tolerance: float = 1e-10, approx_distr="Gamma"
-    ):
+    def __init__(self, a: list[float], mu: float, calc_params: CalcParams | None = None):
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
         mu - service intensity
@@ -24,8 +23,12 @@ class GiM1:
         """
         self.a = a
         self.mu = mu
-        self.e = tolerance
-        self.approx_distr = approx_distr
+
+        if not calc_params:
+            calc_params = CalcParams()
+        self.e = calc_params.e
+        self.approx_distr = calc_params.approx_distr
+        self.p_num = calc_params.p_num
 
         self.w_param = self._get_w_param()
 
@@ -33,14 +36,14 @@ class GiM1:
         self.w = None
         self.pi = None
 
-    def get_pi(self, num=100):
+    def get_pi(self):
         """
         Calculation of the probabilities of states before arrival of GI/M/1 queueing system.
         params:
         num - number of states to calculate
         """
 
-        pi = [0.0] * num
+        pi = [0.0] * self.p_num
 
         gamma_params = GammaDistribution.get_params(self.a)
 
@@ -49,7 +52,7 @@ class GiM1:
         for i, q in enumerate(qs):
             summ += q * pow(self.w_param, i)
         pi[0] = 1.0 - summ
-        for k in range(1, num):
+        for k in range(1, self.p_num):
             pi[k] = (1.0 - self.w_param) * pow(self.w_param, k)
         return pi
 
@@ -84,15 +87,15 @@ class GiM1:
 
         return w
 
-    def get_p(self, num=100):
+    def get_p(self):
         """
         Calculation of probabilities of QS states
         num - number of states
         """
         ro = 1.0 / (self.a[0] * self.mu)
-        p = [0.0] * num
+        p = [0.0] * self.p_num
         p[0] = 1 - ro
-        for i in range(1, num):
+        for i in range(1, self.p_num):
             p[i] = ro * (1.0 - self.w_param) * pow(self.w_param, i - 1)
         return p
 

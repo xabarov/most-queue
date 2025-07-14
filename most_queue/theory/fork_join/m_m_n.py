@@ -169,11 +169,7 @@ class ForkJoinMarkovianCalc:
             Vn = self._get_v_big(i)
             delta_ro = (Vn - Hn) * self.ro
 
-            summ += (
-                self._get_w_big(self.n, self.k, i)
-                * (Hn + delta_ro)
-                / (self.mu - self.l)
-            )
+            summ += self._get_w_big(self.n, self.k, i) * (Hn + delta_ro) / (self.mu - self.l)
 
         return summ
 

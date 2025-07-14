@@ -20,9 +20,7 @@ def print_table(experiments_stat):
     """
     for stat in experiments_stat:
         # Print header information
-        print(
-            f"\nComparison of M/H2/{stat['n']} with H2-warm-up, H2-cooling and H2-cooling delay"
-        )
+        print(f"\nComparison of M/H2/{stat['n']} with H2-warm-up, H2-cooling and H2-cooling delay")
         print(f"Utilization factor: {stat['ro']:0.2f}")
         # Service time coefficients of variation
         coeff_variants = [
@@ -45,9 +43,7 @@ def print_table(experiments_stat):
 
         # Print run times
         print("\nAlgorithm run times:")
-        print(
-            f"Running time of the Takahashi-Takami algorithm: {stat['tt_time']:0.3f} c"
-        )
+        print(f"Running time of the Takahashi-Takami algorithm: {stat['tt_time']:0.3f} c")
         print(f"Simulation time: {stat['sim_time']:0.3f} c")
 
         probs_print(p_sim=stat["p_sim"], p_num=stat["p_tt"], size=10)
@@ -74,9 +70,7 @@ def load_stat(stat_name):
         return json.load(f)
 
 
-def make_plot(
-    experiments_stat, w_moments_num=0, param_name="ro", mode="error", save_path=None
-):
+def make_plot(experiments_stat, w_moments_num=0, param_name="ro", mode="error", save_path=None):
     """
     Build plot for wait times initial moments
     :param experiments_stat: list of experiment statistics

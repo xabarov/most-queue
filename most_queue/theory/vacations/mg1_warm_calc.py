@@ -14,9 +14,7 @@ class MG1WarmCalc:
     Class for calculating M/G/1 queue with warm-up.
     """
 
-    def __init__(
-        self, l: float, b: list[float], b_warm: list[float], approximation="gamma"
-    ):
+    def __init__(self, l: float, b: list[float], b_warm: list[float], approximation="gamma"):
         """
         Initialize the MG1WarmCalc class with arrival rate l,
         service time initial moments b, and warm-up service time moments b_warm.
@@ -65,7 +63,5 @@ class MG1WarmCalc:
         v = [0, 0, 0]
 
         for i in range(3):
-            v[i] = derivative(
-                self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
-            )
+            v[i] = derivative(self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
         return np.array([-v[0], v[1].real, -v[2]])

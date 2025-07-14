@@ -43,9 +43,7 @@ def test_gi_m_n():
     """
 
     a1 = 1.0 / ARRIVAL_RATE  # average interval between arrivals
-    b1 = (
-        UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE
-    )  # average service time given ro
+    b1 = UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE  # average service time given ro
     mu = 1 / b1  # service intensity
 
     # calculate parameters of the approximating Gamma distribution for arrival times
@@ -93,9 +91,7 @@ def test_gi_m_n():
     probs_print(p_sim, p_num)
 
     assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(
-        p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

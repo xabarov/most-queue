@@ -6,11 +6,8 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import (
-    ErlangDistribution,
-    GammaDistribution,
-    H2Distribution,
-)
+from most_queue.rand_distribution import (ErlangDistribution,
+                                          GammaDistribution, H2Distribution)
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
 from most_queue.theory.vacations.mg1_warm_calc import MG1WarmCalc
@@ -107,9 +104,7 @@ class SplitJoinCalc:
         self.b_max_warm = self.get_max_moments_delta(b_delta)
         self.b_max = self.get_max_moments()
         mg1_approx = "gamma" if self.approximation == "erlang" else self.approximation
-        mg1_warm = MG1WarmCalc(
-            self.l, self.b_max, self.b_max_warm, approximation=mg1_approx
-        )
+        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm, approximation=mg1_approx)
         return mg1_warm.get_v()
 
     def get_ro(self):
@@ -147,11 +142,7 @@ class SplitJoinCalc:
         params = H2Distribution.get_params(self.b)
 
         for j in range(10):
-            p = (
-                self.g[j]
-                * self._dfr_h2_mult(params, self.a_big[j])
-                * math.exp(self.a_big[j])
-            )
+            p = self.g[j] * self._dfr_h2_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]
@@ -167,11 +158,7 @@ class SplitJoinCalc:
         params = GammaDistribution.get_params(self.b)
 
         for j in range(10):
-            p = (
-                self.g[j]
-                * self._dfr_gamma_mult(params, self.a_big[j])
-                * math.exp(self.a_big[j])
-            )
+            p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]
@@ -189,11 +176,7 @@ class SplitJoinCalc:
         params = ErlangDistribution.get_params(self.b)
 
         for j in range(10):
-            p = (
-                self.g[j]
-                * self._dfr_erl_mult(params, self.a_big[j])
-                * math.exp(self.a_big[j])
-            )
+            p = self.g[j] * self._dfr_erl_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
             f[0] += p
             for i in range(1, num):
                 p = p * self.a_big[j]

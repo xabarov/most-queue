@@ -108,9 +108,7 @@ class TaskPriority:
     def __str__(self, tab=""):
         tab = "  "
         arr_time_str = (
-            f"{self.arr_time:8.3f}"
-            if isinstance(self.arr_time, float)
-            else str(self.arr_time)
+            f"{self.arr_time:8.3f}" if isinstance(self.arr_time, float) else str(self.arr_time)
         )
         res = f"{Fore.GREEN}Task #{self.id}{Style.RESET_ALL}"
         res += f" Class: {Fore.BLUE}{self.k + 1}{Style.RESET_ALL}\n"
@@ -135,9 +133,7 @@ class ImpatientTask(Task):
     def __str__(self):
         report = f"{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n"
         report += f"{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n"
-        report += (
-            f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}"
-        )
+        report += f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}"
         return report
 
 
@@ -147,9 +143,7 @@ class ImpatientTaskWithRepairs(ImpatientTask):
     Tracking if the task arrived in repair mode or not.
     """
 
-    def __init__(
-        self, arr_time, moment_to_leave, arrive_in_repair_mode=False, is_network=False
-    ):
+    def __init__(self, arr_time, moment_to_leave, arrive_in_repair_mode=False, is_network=False):
         super().__init__(arr_time, moment_to_leave, is_network)
         self.arrive_in_repair_mode = arrive_in_repair_mode
         self.end_repair_time = 1e16

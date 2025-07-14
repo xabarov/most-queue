@@ -42,15 +42,9 @@ def times_print(
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments))):
             calc_mom = (
-                calc_moments[j].real
-                if isinstance(calc_moments[j], complex)
-                else calc_moments[j]
+                calc_moments[j].real if isinstance(calc_moments[j], complex) else calc_moments[j]
             )
-            sim_mom = (
-                sim_moments[j].real
-                if isinstance(sim_moments[j], complex)
-                else sim_moments[j]
-            )
+            sim_mom = sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
             print(
                 Fore.CYAN
                 + f"{j + 1:^15d}|"
@@ -62,9 +56,7 @@ def times_print(
                 + f"{sim_mom:^15.5g}"
             )
     else:
-        calc_mom = (
-            calc_moments.real if isinstance(calc_moments, complex) else calc_moments
-        )
+        calc_mom = calc_moments.real if isinstance(calc_moments, complex) else calc_moments
         sim_mom = sim_moments.real if isinstance(sim_moments, complex) else sim_moments
         print(
             Fore.CYAN
@@ -112,20 +104,12 @@ def times_print_with_two_numerical(
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments1), len(calc_moments2))):
             calc_mom1 = (
-                calc_moments1[j].real
-                if isinstance(calc_moments1[j], complex)
-                else calc_moments1[j]
+                calc_moments1[j].real if isinstance(calc_moments1[j], complex) else calc_moments1[j]
             )
             calc_mom2 = (
-                calc_moments2[j].real
-                if isinstance(calc_moments2[j], complex)
-                else calc_moments2[j]
+                calc_moments2[j].real if isinstance(calc_moments2[j], complex) else calc_moments2[j]
             )
-            sim_mom = (
-                sim_moments[j].real
-                if isinstance(sim_moments[j], complex)
-                else sim_moments[j]
-            )
+            sim_mom = sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
             print(
                 Fore.CYAN
                 + f"{j + 1:^15d}|"
@@ -141,12 +125,8 @@ def times_print_with_two_numerical(
                 + f"{sim_mom:^15.5g}"
             )
     else:
-        calc_mom1 = (
-            calc_moments1.real if isinstance(calc_moments1, complex) else calc_moments1
-        )
-        calc_mom2 = (
-            calc_moments2.real if isinstance(calc_moments2, complex) else calc_moments2
-        )
+        calc_mom1 = calc_moments1.real if isinstance(calc_moments1, complex) else calc_moments1
+        calc_mom2 = calc_moments2.real if isinstance(calc_moments2, complex) else calc_moments2
 
         sim_mom = sim_moments.real if isinstance(sim_moments, complex) else sim_moments
         print(
@@ -186,11 +166,7 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
         print("-" * 45)
         if isinstance(wait_times, list):
             for j in range(min(len(wait_times), len(sojourn_times))):
-                w_mom = (
-                    wait_times[j].real
-                    if isinstance(wait_times[j], complex)
-                    else wait_times[j]
-                )
+                w_mom = wait_times[j].real if isinstance(wait_times[j], complex) else wait_times[j]
                 v_mom = (
                     sojourn_times[j].real
                     if isinstance(sojourn_times[j], complex)
@@ -208,11 +184,7 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
                 )
         else:
             w_mom = wait_times.real if isinstance(wait_times, complex) else wait_times
-            v_mom = (
-                sojourn_times.real
-                if isinstance(sojourn_times, complex)
-                else sojourn_times
-            )
+            v_mom = sojourn_times.real if isinstance(sojourn_times, complex) else sojourn_times
             print(
                 Fore.CYAN
                 + f"{1:^15d}|"
@@ -240,13 +212,7 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
         if isinstance(times, list):
             for j, mom in enumerate(times):
                 mom = mom.real if isinstance(mom, complex) else mom
-                print(
-                    Fore.CYAN
-                    + f"{j + 1:^15d}|"
-                    + Fore.YELLOW
-                    + f"{mom:^15.5g}"
-                    + Fore.CYAN
-                )
+                print(Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW + f"{mom:^15.5g}" + Fore.CYAN)
         else:
             mom = times.real if isinstance(times, complex) else times
 
@@ -356,9 +322,7 @@ def times_print_with_classes(sim_moments, calc_moments, is_w=True):
         print(Fore.CYAN + " " * 5 + "|", end="")
         print(Fore.CYAN + f"{num_col:^5}|", end="")
         for j in range(size):
-            print(
-                Fore.YELLOW + f"{calc_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end=""
-            )
+            print(Fore.YELLOW + f"{calc_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end="")
         print("")
         print(Fore.CYAN + "-" * 60)
 

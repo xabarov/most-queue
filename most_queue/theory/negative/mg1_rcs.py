@@ -66,9 +66,7 @@ class MG1NegativeCalcRCS:
         Calculate utilization factor for M/H2/1 queue
         with negative jobs and RCS discipline.
         """
-        return (
-            self.l_pos * (1 - self.lst_function(self.params, self.l_neg)) / self.l_neg
-        )
+        return self.l_pos * (1 - self.lst_function(self.params, self.l_neg)) / self.l_neg
 
     def calc_average_jobs_in_system(self) -> float:
         """

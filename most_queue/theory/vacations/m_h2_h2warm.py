@@ -10,6 +10,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp
 
@@ -23,16 +24,13 @@ class MH2nH2Warm:
 
     def __init__(
         self,
-        l,
-        b,
-        b_warm,
-        n,
-        buffer=None,
-        N=150,
-        accuracy=1e-6,
-        dtype="c16",
-        verbose=False,
-        is_only_first=False,
+        l: float,
+        b: list[float],
+        b_warm: list[float],
+        n: int,
+        buffer: int | None = None,
+        calc_params: TakahashiTakamiParams | None = None,
+        is_only_first: bool = False,
     ):
         """
         Initialization of the M/H2/n system with H2-warming using the Takahashi-Takami method.
@@ -43,30 +41,28 @@ class MH2nH2Warm:
         :param b_warm: initial moments of warming time distribution
         :param n: number of servers
         :param buffer: size of the buffer (optional)
-        :param N: number of levels (default is 150)
-        :param accuracy: accuracy, parameter for stopping iteration
-        :param dtype: data type for calculations (default is complex)
-        :param verbose: if True, print intermediate results
+        :param calc_params: parameters for the Takahashi-Takami method
         :param is_only_first: if True, calculate only the first level of the hierarchy
 
         """
 
-        self.dt = np.dtype(dtype)
+        if calc_params is None:
+            calc_params = TakahashiTakamiParams()
+
+        self.dt = np.dtype(calc_params.dtype)
         if buffer:
-            self.R = (
-                buffer + n
-            )  # maximum number of requests in the system - queue + channels
+            self.R = buffer + n  # maximum number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels on one more than + zero state
         else:
-            self.N = N
+            self.N = calc_params.N
             self.R = None
 
         self.is_only_first = is_only_first
 
-        self.e1 = accuracy
+        self.e1 = calc_params.accuracy
         self.n = n
         self.b = b
-        self.verbose = verbose
+        self.verbose = calc_params.verbose
         self.l = l
 
         if self.dt == "c16":
@@ -86,25 +82,26 @@ class MH2nH2Warm:
         self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
         self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
 
-        # Cols - array that stores the number of columns for each level, it is convenient to calculate it once:
-        self.cols = [] * N
+        # Cols - array that stores the number of columns
+        # for each level, it is convenient to calculate it once:
+        self.cols = [] * self.N
 
         # init parameters for the Takahashi-Takami method
         self.t = []
         self.b1 = []
         self.b2 = []
         if self.dt == "c16":
-            self.x = [0.0 + 0.0j] * N
-            self.z = [0.0 + 0.0j] * N
+            self.x = [0.0 + 0.0j] * self.N
+            self.z = [0.0 + 0.0j] * self.N
 
             # probabilities of states of the queueing system
-            self.p = [0.0 + 0.0j] * N
+            self.p = [0.0 + 0.0j] * self.N
         else:
-            self.x = [0.0] * N
-            self.z = [0.0] * N
+            self.x = [0.0] * self.N
+            self.z = [0.0] * self.N
 
             # probabilities of states of the queueing system
-            self.p = [0.0] * N
+            self.p = [0.0] * self.N
 
         # Transition matrices for the Takahashi-Takami method
         self.A = []
@@ -117,7 +114,7 @@ class MH2nH2Warm:
         self.AG = []
         self.BG = []
 
-        for i in range(N):
+        for i in range(self.N):
 
             if self.is_only_first:
                 if i < n + 1:
@@ -180,9 +177,7 @@ class MH2nH2Warm:
             return w
 
         for i in range(3):
-            w[i] = derivative(
-                self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
-            )
+            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
         return [-w[0], w[1].real, -w[2]]
 
     def get_v(self):
@@ -425,9 +420,7 @@ class MH2nH2Warm:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             if self.dt == "c16":
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
@@ -499,13 +492,9 @@ class MH2nH2Warm:
             if num < self.n:
                 if self.is_only_first:
                     # first block
-                    self._insert_standart_A_into(
-                        output, self.l, self.y[0], 0, 0, level=num
-                    )
+                    self._insert_standart_A_into(output, self.l, self.y[0], 0, 0, level=num)
                     # second
-                    self._insert_standart_A_into(
-                        output, self.l, self.y[0], num, num + 1, level=num
-                    )
+                    self._insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
                     # third
                     self._insert_standart_A_into(
                         output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1
@@ -515,9 +504,7 @@ class MH2nH2Warm:
                     output[0, 0] = self.l
                     output[1, 1] = self.l
                     # second
-                    self._insert_standart_A_into(
-                        output, self.l, self.y[0], 2, 2, level=num + 1
-                    )
+                    self._insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
             else:
                 for i in range(row):
                     output[i, i] = self.l
@@ -531,13 +518,11 @@ class MH2nH2Warm:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[
-                    0
-                ] + i * mu[1] * y[1]
+                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[
+                    1
+                ]
                 if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos + 1] = (
-                        (level - i - 1) * mu[0] * y[1]
-                    )
+                    mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:
                     mass[i + +left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
 
@@ -574,9 +559,7 @@ class MH2nH2Warm:
 
                 if self.is_only_first:
                     # first block
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, 0, 0, num - 1, self.n
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
                     # second
                     self._insert_standart_B_into(
                         output, self.y, self.mu, num, num - 1, num - 1, self.n
@@ -594,17 +577,13 @@ class MH2nH2Warm:
                     for i in range(num):
                         output[i + num, i + 2 * (num - 1)] = self.mu_w[1]
                 else:
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, 2, 2, num, self.n
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
 
             else:
 
                 if self.is_only_first:
                     # first block
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, 0, 0, num - 1, self.n - 1
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
                     # second
                     self._insert_standart_B_into(
                         output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1
@@ -627,17 +606,11 @@ class MH2nH2Warm:
 
                     # warm block 2
                     for i in range(num - 1):
-                        output[i + num - 1, i + 2 * (num - 1)] = (
-                            self.mu_w[1] * self.y[0]
-                        )
-                        output[i + num - 1, i + 2 * (num - 1) + 1] = (
-                            self.mu_w[1] * self.y[1]
-                        )
+                        output[i + num - 1, i + 2 * (num - 1)] = self.mu_w[1] * self.y[0]
+                        output[i + num - 1, i + 2 * (num - 1) + 1] = self.mu_w[1] * self.y[1]
 
                 else:
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, 2, 2, num, self.n
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, 2, 2, num, self.n)
 
         return output
 

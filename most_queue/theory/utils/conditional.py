@@ -23,13 +23,7 @@ def moments_h2_less_than_exp(gamma: float, h2_params: H2Params):
     coef = sum((y[i] * mu[i] / (mu[i] + gamma) for i in range(2)))
 
     b = [
-        sum(
-            (
-                math.factorial(k + 1) * ps[i] / pow(mu[i] + gamma, k + 2)
-                for i in range(2)
-            )
-        )
-        / coef
+        sum((math.factorial(k + 1) * ps[i] / pow(mu[i] + gamma, k + 2) for i in range(2))) / coef
         for k in range(3)
     ]
 

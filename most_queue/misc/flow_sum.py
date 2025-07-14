@@ -20,9 +20,7 @@ def test():
     coev = 0.74  # коэффициент вариации каждого потока
     mean = 1  # среднее каждого потока
     num_of_jobs = 400000  # количество заявок для ИМ
-    is_semi = (
-        False  # True, если необходимо использовать метод семиинвариантов вместо H2
-    )
+    is_semi = False  # True, если необходимо использовать метод семиинвариантов вместо H2
     distr_sim = "Gamma"  # распределение, используемое для ИМ
 
     # число суммируемых потоков
@@ -87,12 +85,8 @@ def test():
             )
         )
         print("-" * 80)
-        errors1.append(
-            SummatorNumeric.get_error(s.flows_[i][0].real, s_sim.flows_[i][0])
-        )
-        errors2.append(
-            SummatorNumeric.get_error(s.flows_[i][1].real, s_sim.flows_[i][1])
-        )
+        errors1.append(SummatorNumeric.get_error(s.flows_[i][0].real, s_sim.flows_[i][0]))
+        errors2.append(SummatorNumeric.get_error(s.flows_[i][1].real, s_sim.flows_[i][1]))
         errors_coev.append(SummatorNumeric.get_error(coevs_num[i], coevs_sim[i]))
 
     fig, ax = plt.subplots()

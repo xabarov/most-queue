@@ -4,15 +4,10 @@ QS channels or servers
 
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (
-    CoxDistribution,
-    ErlangDistribution,
-    ExpDistribution,
-    GammaDistribution,
-    H2Distribution,
-    NormalDistribution,
-    ParetoDistribution,
-)
+from most_queue.rand_distribution import (CoxDistribution, ErlangDistribution,
+                                          ExpDistribution, GammaDistribution,
+                                          H2Distribution, NormalDistribution,
+                                          ParetoDistribution)
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.tasks import Task
@@ -47,9 +42,7 @@ class Server:
         Set local warmup period distrubution on server
         """
 
-        self.warm_phase.set_dist(
-            create_distribution(params, kendall_notation, generator)
-        )
+        self.warm_phase.set_dist(create_distribution(params, kendall_notation, generator))
 
     def start_service(self, ts: Task, ttek, is_warm=False):
         """
@@ -142,9 +135,7 @@ class ServerWarmUp(Server):
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
                 # coev = math.sqrt(variance)/f_summ[0]
                 params = GammaDistribution.get_params(f_summ)
-                self.time_to_end_service = ttek + GammaDistribution.generate_static(
-                    params
-                )
+                self.time_to_end_service = ttek + GammaDistribution.generate_static(params)
 
 
 class ServerPriority:

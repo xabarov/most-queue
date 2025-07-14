@@ -34,9 +34,11 @@ def plot_sim_vs_calc_moments(
     :param sim_results: A list of simulated results.
     :type sim_results: list[float]
     :param calc_results: A list of calculated results using some analytical or numerical method.
-    :param depends_on: The type of dependency for plotting (utilization factor, number of channels, etc.).
+    :param depends_on: The type of dependency for plotting
+    (utilization factor, number of channels, etc.).
     :type depends_on: DependsType
-    :param is_errors: If True, plots the percentage error between simulation and calculation results.
+    :param is_errors: If True, plots the percentage error between
+    simulation and calculation results.
     :type is_errors: bool
     :param is_waiting_time: If True, labels the y-axis as waiting time; otherwise, as sojourn time.
     :type is_waiting_time: bool
@@ -46,10 +48,7 @@ def plot_sim_vs_calc_moments(
     """
     _fig, ax = plt.subplots()
     if is_errors:
-        errors = [
-            100 * (w_sim - w_tt) / w_tt
-            for w_sim, w_tt in zip(sim_results, calc_results)
-        ]
+        errors = [100 * (w_sim - w_tt) / w_tt for w_sim, w_tt in zip(sim_results, calc_results)]
 
         ax.plot(xs, errors, color="black")
         ax.set_ylabel(r"$\varepsilon$, %")

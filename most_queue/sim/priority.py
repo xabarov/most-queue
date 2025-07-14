@@ -117,9 +117,7 @@ class PriorityQueueSimulator:
             source_type = source["type"]
             params = source["params"]
 
-            self.sources.append(
-                create_distribution(params, source_type, self.generator)
-            )
+            self.sources.append(create_distribution(params, source_type, self.generator))
 
             self.arrival_time[i] = self.sources[i].generate()
 
@@ -142,9 +140,7 @@ class PriorityQueueSimulator:
         self.is_set_server_params = True
 
         for _ in range(self.n):
-            self.servers.append(
-                ServerPriority(self.servers_params, self.prty_type, self.generator)
-            )
+            self.servers.append(ServerPriority(self.servers_params, self.prty_type, self.generator))
 
     def set_warm_up(self, warm_up_params):
         """
@@ -171,9 +167,7 @@ class PriorityQueueSimulator:
             warm_up_type = params["type"]
             params = params["params"]
 
-            self.warm_up.append(
-                create_distribution(params, warm_up_type, self.generator)
-            )
+            self.warm_up.append(create_distribution(params, warm_up_type, self.generator))
 
     def calc_load(self):
         """
@@ -329,16 +323,16 @@ class PriorityQueueSimulator:
     def arrive_on_free_channels(self, moment, k, new_tsk):
         """
         Arrive on free channels.
-         If there are no free channels and the system is warm up, then start service on the first server.
+         If there are no free channels and the system is warm up,
+         then start service on the first server.
          Otherwise, start service on the first available server.
-         If there are no free channels and the system is not warm up, then start service on the first available server.
+         If there are no free channels and the system is not warm up,
+         then start service on the first available server.
         """
         if self.free_channels == self.n and self.is_warm_up_set is True:
             self.taked[k] += 1
             if moment:
-                self.servers[0].start_service(
-                    new_tsk, self.ttek, self.warm_up[k], is_network=True
-                )
+                self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k], is_network=True)
             else:
                 self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k])
             self.free_channels -= 1
@@ -408,9 +402,7 @@ class PriorityQueueSimulator:
                     and self.in_sys[k] == self.n
                 ):
                     self.busy_moments[self.class_busy_started] += 1
-                    self.refresh_busy_stat(
-                        self.class_busy_started, self.ttek - self.start_busy
-                    )
+                    self.refresh_busy_stat(self.class_busy_started, self.ttek - self.start_busy)
                     self.start_busy = self.ttek
                     self.class_busy_started = k
 
@@ -498,9 +490,7 @@ class PriorityQueueSimulator:
                     que_ts.wait_time += self.ttek - que_ts.start_waiting_time
                     if is_network:
                         que_ts.wait_network += self.ttek - que_ts.start_waiting_time
-                        self.servers[c].start_service(
-                            que_ts, self.ttek, is_network=True
-                        )
+                        self.servers[c].start_service(que_ts, self.ttek, is_network=True)
                     else:
                         self.servers[c].start_service(que_ts, self.ttek)
 
@@ -669,9 +659,7 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_source_type}*/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += (
-                    f"{Fore.GREEN}{self.sources_params[kk]['type']},{Style.RESET_ALL}"
-                )
+                res += f"{Fore.GREEN}{self.sources_params[kk]['type']},{Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         is_the_same_serving_type = True
@@ -683,9 +671,7 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_serv_type}/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += (
-                    f"{Fore.GREEN}{self.servers_params[kk]['type']},{Style.RESET_ALL}"
-                )
+                res += f"{Fore.GREEN}{self.servers_params[kk]['type']},{Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         res += f"{Fore.BLUE}{str(self.n)}{Style.RESET_ALL}"
@@ -697,13 +683,12 @@ class PriorityQueueSimulator:
 
         res += f"\n{Fore.MAGENTA}Load: {self.calc_load():.3f}{Style.RESET_ALL}\n"
         if not is_short:
-            res += (
-                f"{Fore.LIGHTGREEN_EX}Current Time {self.ttek:.3f}{Style.RESET_ALL}\n"
-            )
+            res += f"{Fore.LIGHTGREEN_EX}Current Time {self.ttek:.3f}{Style.RESET_ALL}\n"
         for kk in range(self.k):
             res += f"\n{Fore.CYAN}Class {kk + 1}{Style.RESET_ALL}\n"
             if not is_short:
-                res += f"{Fore.LIGHTBLUE_EX}\tArrival time: {self.arrival_time[kk]:.3f}{Style.RESET_ALL}\n"
+                res += f"{Fore.LIGHTBLUE_EX}\tArrival time:"
+                res += f"\t{self.arrival_time[kk]:.3f}{Style.RESET_ALL}\n"
             res += "\tSojourn moments:\n"
             for i in range(3):
                 res += f"\t{Fore.GREEN}{self.v[kk][i]:8.4g}\t"

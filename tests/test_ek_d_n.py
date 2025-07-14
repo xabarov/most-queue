@@ -90,9 +90,7 @@ def test_ek_d_n():
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

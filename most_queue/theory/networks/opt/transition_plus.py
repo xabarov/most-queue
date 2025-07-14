@@ -10,11 +10,9 @@ from enum import Enum
 
 import numpy as np
 
-from most_queue.theory.networks.opt.transition import (
-    MaxLoadNodeResults,
-    NetworkOptimizer,
-    OptimizerDynamic,
-)
+from most_queue.theory.networks.opt.transition import (MaxLoadNodeResults,
+                                                       NetworkOptimizer,
+                                                       OptimizerDynamic)
 
 
 @dataclass
@@ -73,9 +71,7 @@ class NetworkOptimizerPlus(NetworkOptimizer):
                 lam_r = lam * self.R[i, load_node]
                 if lam_r > lam_r_max:
                     # check if parent has >=2 childrens
-                    childrens = np.sum(
-                        [1 if self.R[i, k] > 0 else 0 for k in range(self.rows - 1)]
-                    )
+                    childrens = np.sum([1 if self.R[i, k] > 0 else 0 for k in range(self.rows - 1)])
                     if childrens >= 2:
                         parent = i
                         lam_r_max = lam_r

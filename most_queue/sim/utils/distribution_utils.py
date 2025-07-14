@@ -5,43 +5,52 @@ Utils for distribution from random_distributions
 
 import math
 
+import yaml
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (
-    CoxDistribution,
-    DeterministicDistribution,
-    ErlangDistribution,
-    ExpDistribution,
-    GammaDistribution,
-    H2Distribution,
-    NormalDistribution,
-    ParetoDistribution,
-    UniformDistribution,
-)
+from most_queue.rand_distribution import (CoxDistribution,
+                                          DeterministicDistribution,
+                                          ErlangDistribution, ExpDistribution,
+                                          GammaDistribution, H2Distribution,
+                                          NormalDistribution,
+                                          ParetoDistribution,
+                                          UniformDistribution)
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 
 
 def print_supported_distributions():
-    """Prints supported distributions"""
+    """Prints supported distributions loaded from a YAML file."""
     print(f"{Fore.GREEN}Supported distributions:{Style.RESET_ALL}")
-    separator = f"{Fore.BLUE}--------------------------------------------------------------------{Style.RESET_ALL}"
+    separator = f"{Fore.BLUE}{'-' * 80}{Style.RESET_ALL}"
 
-    table = (
+    dist_path = 'most_queue/sim/utils/distributions.yaml'
+    try:
+        with open(dist_path, 'r', encoding='utf-8') as file:
+            distributions = yaml.safe_load(file)
+    except FileNotFoundError:
+        print(f"{Fore.RED}Error: distributions.yaml not found.{Style.RESET_ALL}")
+        return
+    except yaml.YAMLError as e:
+        print(f"{Fore.RED}Error parsing distributions.yaml: {e}{Style.RESET_ALL}")
+        return
+
+    header = (
         f"{separator}\n"
-        f"{Fore.CYAN}Distribution                    {Fore.YELLOW}kendall_notation    params{Style.RESET_ALL}\n"
-        f"{separator}\n"
-        f"{Fore.MAGENTA}Exponential                           {Fore.GREEN}М{Style.RESET_ALL}             {Fore.RED}mu{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Hyperexponential of the 2nd order     {Fore.GREEN}Н{Style.RESET_ALL}         {Fore.RED}H2Params dataclass{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Erlang                                {Fore.GREEN}E{Style.RESET_ALL}           {Fore.RED}r, mu{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Cox 2nd order                         {Fore.GREEN}C{Style.RESET_ALL}         {Fore.RED}Cox2Params dataclass{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Pareto                                {Fore.GREEN}Pa{Style.RESET_ALL}         {Fore.RED}alpha, K{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Deterministic                         {Fore.GREEN}D{Style.RESET_ALL}         {Fore.RED}b{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Uniform                            {Fore.GREEN}Uniform{Style.RESET_ALL}     {Fore.RED}mean, half_interval{Style.RESET_ALL}\n"
-        f"{Fore.MAGENTA}Gaussian                             {Fore.GREEN}Norm{Style.RESET_ALL}    {Fore.RED}mean, standard_deviation{Style.RESET_ALL}\n"
+        f"{Fore.CYAN}Distribution{'-':20}"
+        f"{Fore.GREEN}Kendall notation{'-':15}"
+        f"{Fore.RED}Parameters{Style.RESET_ALL}\n"
         f"{separator}"
     )
+    print(header)
 
-    print(table)
+    for dist in distributions:
+        name = dist.get('name', 'N/A')
+        kendall = dist.get('kendall_notation', 'N/A')
+        params = dist.get('params', 'N/A')
+        print(
+            f"{Fore.MAGENTA}{name:<38}{Fore.GREEN}{kendall:<19}{Fore.RED}{params}{Style.RESET_ALL}"
+        )
+    print(separator)
 
 
 def create_distribution(params, kendall_notation: str, generator):

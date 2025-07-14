@@ -6,9 +6,7 @@ import numpy as np
 
 from most_queue.rand_distribution import ExpDistribution
 from most_queue.theory.networks.opt.transition_plus import (
-    NetworkOptimizerPlus,
-    Strategy,
-)
+    NetworkOptimizerPlus, Strategy)
 
 
 def test_network_opt_plus():

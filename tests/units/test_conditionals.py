@@ -9,12 +9,11 @@ import pytest
 import yaml
 
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import ExpDistribution, H2Distribution, H2Params
-from most_queue.theory.utils.conditional import (
-    calc_b_min_h2_and_exp,
-    moments_exp_less_than_h2,
-    moments_h2_less_than_exp,
-)
+from most_queue.rand_distribution import (ExpDistribution, H2Distribution,
+                                          H2Params)
+from most_queue.theory.utils.conditional import (calc_b_min_h2_and_exp,
+                                                 moments_exp_less_than_h2,
+                                                 moments_h2_less_than_exp)
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -82,16 +81,12 @@ def test_moments_exp_less_than_h2(setup_params):
     else:
         sim_moments = [np.mean(valid_exp), np.mean(valid_exp**2), np.mean(valid_exp**3)]
 
-    calc_moments = moments_exp_less_than_h2(
-        gamma=params["gamma"], h2_params=params["h2_params"]
-    )
+    calc_moments = moments_exp_less_than_h2(gamma=params["gamma"], h2_params=params["h2_params"])
 
     times_print(sim_moments, calc_moments, is_w=False, header="Results for exp < h2")
 
     # Add assertions
-    np.testing.assert_allclose(
-        sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL
-    )
+    np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)
 
 
 def test_moments_h2_less_than_exp(setup_params):
@@ -114,16 +109,12 @@ def test_moments_h2_less_than_exp(setup_params):
     else:
         sim_moments = [np.mean(valid_h2), np.mean(valid_h2**2), np.mean(valid_h2**3)]
 
-    calc_moments = moments_h2_less_than_exp(
-        gamma=params["gamma"], h2_params=params["h2_params"]
-    )
+    calc_moments = moments_h2_less_than_exp(gamma=params["gamma"], h2_params=params["h2_params"])
 
     times_print(sim_moments, calc_moments, is_w=False, header="Results for h2 < exp")
 
     # Add assertions
-    np.testing.assert_allclose(
-        sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL
-    )
+    np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)
 
 
 def test_min_h2_and_exp(setup_params):
@@ -146,15 +137,9 @@ def test_min_h2_and_exp(setup_params):
             np.mean(min_h2_exp**3),
         ]
 
-    calc_moments = calc_b_min_h2_and_exp(
-        h2_params=params["h2_params"], mu=params["gamma"]
-    )
+    calc_moments = calc_b_min_h2_and_exp(h2_params=params["h2_params"], mu=params["gamma"])
 
-    times_print(
-        sim_moments, calc_moments, is_w=False, header="Results for min(H2, Exp)"
-    )
+    times_print(sim_moments, calc_moments, is_w=False, header="Results for min(H2, Exp)")
 
     # Add assertions
-    np.testing.assert_allclose(
-        sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL
-    )
+    np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)

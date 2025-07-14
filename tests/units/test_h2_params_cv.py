@@ -8,9 +8,7 @@ import numpy as np
 from most_queue.rand_distribution import H2Distribution
 
 
-def plot_h2_params_less_than_exp(
-    start_cv=0.5, end_cv=0.95, num_points=100, y_ax_threshold=3
-):
+def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax_threshold=3):
     """
     Plot the parameters of the H2-distribution for a given set of initial moments,
       that are less than the exponential distribution.
@@ -39,18 +37,12 @@ def plot_h2_params_less_than_exp(
         p1_values_imag.append(h2_params.p1.imag)
 
     # plot mu1
-    ax.plot(
-        cv_values, mu1_values_real, label="mu1_real", color="orange", linestyle="--"
-    )
+    ax.plot(cv_values, mu1_values_real, label="mu1_real", color="orange", linestyle="--")
     ax.plot(cv_values, mu1_values_imag, label="mu1_imag", linestyle="-.", color="red")
 
     # plot mu2
-    ax.plot(
-        cv_values, mu2_values_real, label="mu2_real", color="blue", linestyle="dotted"
-    )
-    ax.plot(
-        cv_values, mu2_values_imag, label="mu2_imag", linestyle="dashed", color="blue"
-    )
+    ax.plot(cv_values, mu2_values_real, label="mu2_real", color="blue", linestyle="dotted")
+    ax.plot(cv_values, mu2_values_imag, label="mu2_imag", linestyle="dashed", color="blue")
     # plot p1
     ax.plot(cv_values, p1_values_real, label="p1_real", color="green")
     ax.plot(cv_values, p1_values_imag, label="p1_imag", linestyle="-.", color="green")

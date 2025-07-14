@@ -27,15 +27,11 @@ def busy_calc(l: float, b: list[float], num: int = 5):
     if num > 1:
         busy_moments.append(b[1] / math.pow(1 - ro, 3))
     if num > 2:
-        busy_moments.append(
-            b[2] / math.pow(1 - ro, 4) + 3 * l * b[1] * b[1] / math.pow(1 - ro, 5)
-        )
+        busy_moments.append(b[2] / math.pow(1 - ro, 4) + 3 * l * b[1] * b[1] / math.pow(1 - ro, 5))
     if num > 3:
         numerator = b[3] * math.pow(z, 4)
         numerator += 6 * b[2] * l * busy_moments[1] * z * z
-        numerator += b[1] * (
-            3 * math.pow(l * busy_moments[1], 2) + 4 * l * busy_moments[2] * z
-        )
+        numerator += b[1] * (3 * math.pow(l * busy_moments[1], 2) + 4 * l * busy_moments[2] * z)
         busy_moments.append(numerator / (1 - ro))
     if num > 4:
         numerator = b[4] * math.pow(z, 5)
@@ -149,9 +145,7 @@ def busy_calc_warm_up(l: float, f: list[float], b_busy: list[float], num: int = 
     if num > 4:
         g5 = fl * b_busy[4]
         g5 += f[1] * (5 * l * b_busy[3] * z + 10 * l * l * b_busy[1] * b_busy[2])
-        g5 += f[2] * (
-            15 * math.pow(l * b_busy[1], 2) * z + 10 * l * b_busy[2] * math.pow(z, 2)
-        )
+        g5 += f[2] * (15 * math.pow(l * b_busy[1], 2) * z + 10 * l * b_busy[2] * math.pow(z, 2))
         g5 += 10 * f[3] * l * b_busy[1] * math.pow(z, 3) + fzs[4]
         gs.append(g5)
 

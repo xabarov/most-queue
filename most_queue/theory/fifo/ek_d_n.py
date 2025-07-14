@@ -8,6 +8,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import ErlangParams
+from most_queue.theory.calc_params import CalcParams
 
 
 class EkDn:
@@ -17,12 +18,7 @@ class EkDn:
     """
 
     def __init__(
-        self,
-        erlang_params: ErlangParams,
-        b: float,
-        n,
-        e: float = 1e-12,
-        p_num: int = 100,
+        self, erlang_params: ErlangParams, b: float, n: int, calc_params: CalcParams | None = None
     ):
         """
         erlang_params - parameters of the Erlang input request distribution
@@ -30,16 +26,20 @@ class EkDn:
         n - number of channels
         e - accuracy of calculations
         """
+
+        if not calc_params:
+            calc_params = CalcParams()
+
         self.l = erlang_params.mu
         self.k = erlang_params.r
         self.b = b
         self.n = n
-        self.e = e
-        self.p = [0.0] * p_num
-        self.q_ = [0.0] * p_num
+        self.e = calc_params.e
+        self.p = [0.0] * calc_params.p_num
+        self.q_ = [0.0] * calc_params.p_num
         self.z_ = 0
-        self.p_num = p_num
-        self.w = [0.0] * (2 * p_num)
+        self.p_num = calc_params.p_num
+        self.w = [0.0] * (2 * calc_params.p_num)
 
     def calc_w(self):
         """
@@ -151,9 +151,7 @@ class EkDn:
         z = [complex(0, 0)] * z_num
 
         for m in range(z_num):
-            z[m] = 0.5 * cmath.exp(
-                2.0 * (m + 1) * cmath.pi * complex(0, 1) / (self.n * self.k)
-            )
+            z[m] = 0.5 * cmath.exp(2.0 * (m + 1) * cmath.pi * complex(0, 1) / (self.n * self.k))
             z_old = z[m]
             is_close = False
             while not is_close:

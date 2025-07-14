@@ -1,14 +1,32 @@
 """
-Calculation of busy periods for M/M/2 queue with three classes of requests and absolute priority.
+Calculation M/M/2 queue with three classes of requests and absolute priority.
 """
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
+
+
+@dataclass
+class InputParamsThreeClasses:
+    """
+    Input params for M/M/2 queue calculation
+    with three classes of requests and absolute priority.
+    """
+
+    mu_low: float  # service rate for low priority requests
+    mu_med: float  # service rate for medium priority requests
+    mu_high: float  # service rate for high priority requests
+
+    l_low: float  # arrival rate for low priority requests
+    l_med: float  # arrival rate for medium priority requests
+    l_high: float  # arrival rate for high priority requests
 
 
 class Mmn3_pnz_cox:
@@ -18,7 +36,9 @@ class Mmn3_pnz_cox:
     """
 
     def __init__(
-        self, mu_L, mu_M, mu_H, l_L, l_M, l_H, N=150, accuracy=1e-6, dtype="c16"
+        self,
+        input_params: InputParamsThreeClasses,
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         l_L, l_M, l_H: интенсивности вх. потока заявок с низким, средним и высоким приоритетами
@@ -26,36 +46,37 @@ class Mmn3_pnz_cox:
         N: число ярусов
         accuracy: точность, параметр для остановки итерации
         """
-        self.dt = np.dtype(dtype)
-        self.N = N
-        self.e1 = accuracy
-        self.l_L = l_L
-        self.l_M = l_M
-        self.l_H = l_H
-        self.mu_L = mu_L
-        self.mu_M = mu_M
-        self.mu_H = mu_H
 
-        self.busy_periods = (
-            []
-        )  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
+        if not calc_params:
+            calc_params = TakahashiTakamiParams()
+        self.dt = np.dtype(calc_params.dtype)
+        self.N = calc_params.N
+        self.e1 = calc_params.accuracy
+        self.l_L = input_params.l_low
+        self.l_M = input_params.l_med
+        self.l_H = input_params.l_high
+        self.mu_L = input_params.mu_low
+        self.mu_M = input_params.mu_med
+        self.mu_H = input_params.mu_high
+
+        self.busy_periods = []  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
         self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
         self.pp = []  # список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
 
         self._calc_busy_periods()
 
         # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
-        self.cols = [] * N
+        self.cols = [] * self.N
 
         # переменные
         self.t = []
         self.b1 = []
         self.b2 = []
-        self.x = [0.0] * N
-        self.z = [0.0] * N
+        self.x = [0.0] * self.N
+        self.z = [0.0] * self.N
 
         # искомые вреоятности состояний СМО
-        self.p = [0.0 + 0.0j] * N
+        self.p = [0.0 + 0.0j] * self.N
 
         # матрицы переходов
         self.A = []
@@ -64,7 +85,7 @@ class Mmn3_pnz_cox:
         self.D = []
         self.Y = []
 
-        for i in range(N):
+        for i in range(self.N):
             self.cols.append(15)
             self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
@@ -119,9 +140,7 @@ class Mmn3_pnz_cox:
         B = []
         B.append(np.array([[0]], dtype=self.dt))
         B.append(np.array([[mu_H], [mu_M]], dtype=self.dt))
-        B.append(
-            np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt)
-        )
+        B.append(np.array([[t1, 0], [t2, 0], [mu_M, mu_H], [0, 2 * mu_M]], dtype=self.dt))
         B.append(
             np.array(
                 [[0, 0, t1, 0], [0, 0, t2, 0], [0, 0, mu_M, mu_H], [0, 0, 0, 2 * mu_M]],
@@ -180,9 +199,7 @@ class Mmn3_pnz_cox:
 
         for j in range(6):
             coev = (
-                math.sqrt(
-                    self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2)
-                )
+                math.sqrt(self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2))
                 / self.busy_periods[j][0].real
             )
             self.busy_periods_coevs.append(coev.real)
@@ -295,9 +312,7 @@ class Mmn3_pnz_cox:
                 self.x[j] = 1 / self.x[j]
 
                 self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                    self.x[j], self.b2[j]
-                )
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = 1.0 / self.z[1]
 

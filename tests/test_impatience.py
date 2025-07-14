@@ -61,9 +61,7 @@ def test_impatience():
 
     assert abs(v1 - v1_sim) < 0.02
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

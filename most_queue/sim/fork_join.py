@@ -96,10 +96,7 @@ class ForkJoinSim(QsSim):
                     self.dropped += 1
                     is_dropped = True
             else:
-                if (
-                    self.free_channels == 0
-                    and self.queue.size() + self.k - 1 > self.buffer
-                ):
+                if self.free_channels == 0 and self.queue.size() + self.k - 1 > self.buffer:
                     self.dropped += 1
                     is_dropped = True
 
@@ -147,10 +144,7 @@ class ForkJoinSim(QsSim):
         Purges all subtasks belonging to a given task_id from servers and queues.
         """
         for i in range(self.n):
-            if (
-                self.servers[i].tsk_on_service
-                and self.servers[i].tsk_on_service.task_id == task_id
-            ):
+            if self.servers[i].tsk_on_service and self.servers[i].tsk_on_service.task_id == task_id:
                 self.servers[i].end_service()
         for i in range(self.n):
             self.queues[i] = [ts for ts in self.queues[i] if ts.task_id != task_id]
@@ -170,9 +164,7 @@ class ForkJoinSim(QsSim):
         """
         if self.queue.size() != 0:
             for i in range(self.n):
-                if (
-                    not len(self.queue) == 0
-                ):  # Added check to prevent popping from empty queue
+                if not len(self.queue) == 0:  # Added check to prevent popping from empty queue
                     que_ts = self.queue.pop()
                     self.servers[i].start_service(que_ts, self.ttek)
                     self.free_channels -= 1

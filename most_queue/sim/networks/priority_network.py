@@ -127,9 +127,7 @@ class PriorityNetwork:
         factor = 1.0 - (1.0 / self.served[k])
         a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.v_network[k][i] = (
-                self.v_network[k][i] * factor + a_pow[i] / self.served[k]
-            )
+            self.v_network[k][i] = self.v_network[k][i] * factor + a_pow[i] / self.served[k]
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -141,21 +139,15 @@ class PriorityNetwork:
         factor = 1.0 - (1.0 / self.served[k])
         a_pow = [math.pow(new_a, i + 1) for i in range(3)]
         for i in range(3):
-            self.w_network[k][i] = (
-                self.w_network[k][i] * factor + a_pow[i] / self.served[k]
-            )
+            self.w_network[k][i] = self.w_network[k][i] * factor + a_pow[i] / self.served[k]
 
     def run_one_step(self):
         """
         Run one step of the simulation.
         """
-        num_of_serv_ch_earlier = (
-            -1
-        )  # номер канала узла, мин время до окончания обслуживания
+        num_of_serv_ch_earlier = -1  # номер канала узла, мин время до окончания обслуживания
         num_of_k_earlier = -1  # номер класса, прибывающего через мин время
-        num_of_node_earlier = (
-            -1
-        )  # номер узла, в котором раньше всех закончится обслуживание
+        num_of_node_earlier = -1  # номер узла, в котором раньше всех закончится обслуживание
         arrival_earlier = 1e10  # момент прибытия ближайшего
         serving_earlier = 1e10  # момент ближайшего обслуживания
 
@@ -174,9 +166,7 @@ class PriorityNetwork:
         if arrival_earlier < serving_earlier:
             self.on_arrival(arrival_earlier, num_of_k_earlier)
         else:
-            self.on_serving(
-                serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier
-            )
+            self.on_serving(serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier)
 
     def on_arrival(self, arrival_earlier, num_of_k_earlier):
         """
@@ -186,9 +176,7 @@ class PriorityNetwork:
         self.arrived[num_of_k_earlier] += 1
         self.in_sys[num_of_k_earlier] += 1
 
-        self.arrival_time[num_of_k_earlier] = (
-            self.ttek + self.sources[num_of_k_earlier].generate()
-        )
+        self.arrival_time[num_of_k_earlier] = self.ttek + self.sources[num_of_k_earlier].generate()
 
         next_node = self.choose_next_node(num_of_k_earlier, -1)
 

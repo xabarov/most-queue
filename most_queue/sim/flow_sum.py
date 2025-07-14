@@ -7,12 +7,9 @@ import math
 
 from tqdm import tqdm
 
-from most_queue.rand_distribution import (
-    ErlangDistribution,
-    GammaDistribution,
-    H2Distribution,
-    ParetoDistribution,
-)
+from most_queue.rand_distribution import (ErlangDistribution,
+                                          GammaDistribution, H2Distribution,
+                                          ParetoDistribution)
 
 
 class FlowSumSim:
@@ -20,9 +17,7 @@ class FlowSumSim:
     Input flows sum simulation
     """
 
-    def __init__(
-        self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000
-    ):
+    def __init__(self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000):
         self.n = len(a)
         self.a = a
         self.distr = distr
@@ -38,7 +33,8 @@ class FlowSumSim:
     def sum_flows(self):
         """
         суммирование n потоков
-        a[i][j] - i - номер потока, j номер начального момента интервалов между соседникми заявками i потока
+        a[i][j] - i - номер потока, j номер начального момента
+        интервалов между соседникми заявками i потока
         """
         n = len(self.a)  # число суммируемых потоков
 
@@ -56,9 +52,7 @@ class FlowSumSim:
 
         for i in range(n - 1):
             if self.verbose:
-                print(
-                    f"Summation of flows. Start simulation {i + 1} from {n - 1}. Distribution: {distr_str}"
-                )
+                print(f"Summation of flows. Start sim {i + 1} from {n - 1}. Dist: {distr_str}")
             if self.distr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(
                     self.a[0],
@@ -274,7 +268,8 @@ class FlowSumSim:
     def sum_n_flows(a, disr="Gamma", verbose=True):
         """
         суммирование n потоков
-        a[i][j] - i - номер потока, j номер начального момента интервалов между соседникми заявками i потока
+        a[i][j] - i - номер потока, j номер начального момента
+        интервалов между соседникми заявками i потока
         """
         n = len(a)  # число суммируемых потоков
 
@@ -290,9 +285,7 @@ class FlowSumSim:
 
         for i in range(n - 1):
             if verbose:
-                print(
-                    f"Summation of flows. Start simulation {i + 1} from {n - 1}. Distribution: {distr_str}"
-                )
+                print(f"Summation of flows. Start sim {i + 1} from {n - 1}. Dist: {distr_str}")
 
             if disr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(a[0], a[1])

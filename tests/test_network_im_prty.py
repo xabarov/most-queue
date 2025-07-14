@@ -11,7 +11,8 @@ import yaml
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
-from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
+from most_queue.theory.networks.open_network_prty import \
+    OpenNetworkCalcPriorities
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -91,9 +92,7 @@ def test_network():
             else:
                 nodes_prty[m].append(NUM_OF_CLASSES - j - 1)
 
-            h2_params.append(
-                H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CVS[j])
-            )
+            h2_params.append(H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CVS[j]))
             serv_params[m].append({"type": "H", "params": h2_params[m]})
 
     for k in range(NUM_OF_CLASSES):
@@ -121,9 +120,7 @@ def test_network():
     v_sim = qn.v_network
 
     #  Get initial moments of soujorney time from calculation:
-    net_calc = OpenNetworkCalcPriorities(
-        big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty
-    )
+    net_calc = OpenNetworkCalcPriorities(big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
     net_calc = net_calc.run()
     v_num = net_calc["v"]
 
@@ -157,9 +154,7 @@ def test_network():
     qn.run(NUM_OF_JOBS)
     v_sim = qn.v_network
 
-    net_calc = OpenNetworkCalcPriorities(
-        big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty
-    )
+    net_calc = OpenNetworkCalcPriorities(big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
     net_calc = net_calc.run()
     v_num = net_calc["v"]
 

@@ -8,7 +8,8 @@ import time
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import \
+    gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -45,8 +46,6 @@ def test_m_h2_h2warm():
     """
     Test M/H2/n system with H2-warming using the Takahashi-Takami method.
     """
-    verbose = False  # do not output explanations during calculations
-
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE
     b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
@@ -67,7 +66,7 @@ def test_m_h2_h2warm():
     im_time = time.process_time() - im_start
 
     tt_start = time.process_time()
-    tt = MH2nH2Warm(ARRIVAL_RATE, b, b_w, NUM_OF_CHANNELS, verbose=verbose)
+    tt = MH2nH2Warm(ARRIVAL_RATE, b, b_w, NUM_OF_CHANNELS)
 
     tt.run()
     p_num = tt.get_p()
@@ -76,9 +75,7 @@ def test_m_h2_h2warm():
 
     num_of_iter = tt.num_of_iter_
 
-    print(
-        "\nComparison of results calculated by the Takacs-Takaichi method and Simulation."
-    )
+    print("\nComparison of results calculated by the Takacs-Takaichi method and Simulation.")
     print(f"Simulation - M/Gamma/{NUM_OF_CHANNELS:^2d}")
     print(f" Takasi-Takaichi - M/H2/{NUM_OF_CHANNELS:^2d} with complex parameters")
     print(f"Load factor: {UTILIZATION_FACTOR:^1.2f}")
@@ -93,9 +90,7 @@ def test_m_h2_h2warm():
 
     assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

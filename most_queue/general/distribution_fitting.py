@@ -4,17 +4,27 @@ Methods for fitting distributions to given initial moments.
 
 import cmath
 import math
+from dataclasses import dataclass
 
 import numpy as np
 
-from most_queue.general.distribution_params import (
-    Cox2Params,
-    ErlangParams,
-    H2Params,
-    ParetoParams,
-    GammaParams,
-    WeibullParams,
-)
+from most_queue.general.distribution_params import (Cox2Params, ErlangParams,
+                                                    GammaParams, H2Params,
+                                                    ParetoParams,
+                                                    WeibullParams)
+
+
+@dataclass
+class FittingParams:
+    """
+    Parameters for distribution fitting.
+    """
+
+    verbose: bool = True
+    ee: float = 0.001
+    e: float = 0.02
+    e_percent: float = 0.15
+    is_fitting: bool = True
 
 
 def fit_h2(moments: list[float]) -> H2Params:
@@ -38,9 +48,7 @@ def fit_h2(moments: list[float]) -> H2Params:
     if t_min > moments[2]:
         # one phase distibution
         q_new = q_max
-        mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))) * moments[
-            0
-        ]
+        mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))) * moments[0]
         if math.isclose(mu1, 0):
             mu1 = 1e10
         else:
@@ -69,19 +77,15 @@ def fit_h2(moments: list[float]) -> H2Params:
     return res
 
 
-def fit_h2_clx(
-    moments: list[float],
-    verbose=True,
-    ee=0.001,
-    e=0.02,
-    e_percent=0.15,
-    is_fitting=True,
-) -> H2Params:
+def fit_h2_clx(moments: list[float], fitting_params: FittingParams | None = None) -> H2Params:
     """
     Method of fitting H2 distribution parameters to given initial moments.
     Uses the method of moments and optimization to fit the parameters.
     Returns H2Params object with fitted parameters.
     """
+
+    if fitting_params is None:
+        fitting_params = FittingParams()
 
     f = [0.0] * 3
     for i in range(3):
@@ -92,46 +96,34 @@ def fit_h2_clx(
 
     d = pow(c1 / 2.0, 2.0) - c0
 
-    if is_fitting:
+    if fitting_params.is_fitting:
         # проверка на близость распределения к экспоненциальному
         coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-        if math.fabs(coev.real - 1.0) < ee:
-            if verbose:
+        if math.fabs(coev.real - 1.0) < fitting_params.ee:
+            if fitting_params.verbose:
                 print(
-                    f"H2 is close to Exp. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
+                    f"H2 is close to Exp. Multiply moments to (1+je)"
+                    f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
                 )
             f = []
             for i, mom in enumerate(moments):
-                f.append(mom * complex(1, (i + 1) * e))
+                f.append(mom * complex(1, (i + 1) * fitting_params.e))
 
-            return fit_h2_clx(
-                f,
-                verbose=verbose,
-                ee=ee,
-                e=e * (1.0 + e_percent),
-                e_percent=e_percent,
-                is_fitting=is_fitting,
-            )
+            return fit_h2_clx(f, fitting_params=fitting_params)
 
         coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
         # проверка на близость распределения к Эрланга 2-го порядка
-        if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < ee:
-            if verbose:
+        if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < fitting_params.ee:
+            if fitting_params.verbose:
                 print(
-                    f"H2 is close to E2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
+                    f"H2 is close to E2. Multiply moments to (1+je)"
+                    f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
                 )
             f = []
             for i, mom in enumerate(moments):
-                f.append(mom * complex(1, (i + 1) * e))
-            return fit_h2_clx(
-                f,
-                verbose=verbose,
-                ee=ee,
-                e=e * (1.0 + e_percent),
-                e_percent=e_percent,
-                is_fitting=is_fitting,
-            )
+                f.append(mom * complex(1, (i + 1) * fitting_params.e))
+            return fit_h2_clx(f, fitting_params=fitting_params)
 
     res = [0, 0, 0]  # y1, mu1, mu2
     c1 = complex(c1)
@@ -144,59 +136,42 @@ def fit_h2_clx(
     return res
 
 
-def fit_cox(
-    moments: list[float],
-    ee=0.001,
-    e=0.5,
-    e_percent=0.25,
-    verbose=True,
-    is_fitting=True,
-) -> Cox2Params:
+def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -> Cox2Params:
     """
     Calculates Cox-2 distribution parameters by three given initial moments [moments].
     """
+
+    if not fitting_params:
+        fitting_params = FittingParams()
+
     f = [0.0] * 3
 
-    if is_fitting:
+    if fitting_params.is_fitting:
         # проверка на близость распределения к экспоненциальному
         coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-        if abs(moments[1] - moments[0] * moments[0]) < ee:
-            if verbose:
+        if abs(moments[1] - moments[0] * moments[0]) < fitting_params.ee:
+            if fitting_params.verbose:
                 print(
-                    f"Cox special 1. Multiply moments to (1+je), coev = {coev:5.3f}  e = {e:5.3f}."
+                    f"Cox special 1. Multiply moments to (1+je)"
+                    f"coev = {coev:5.3f}  e = {fitting_params.e:5.3f}."
                 )
             f = []
             for i, mom in enumerate(moments):
-                f.append(mom * complex(1, (i + 1) * e))
+                f.append(mom * complex(1, (i + 1) * fitting_params.e))
 
-            return fit_cox(
-                f,
-                verbose=verbose,
-                ee=ee,
-                e=e * (1.0 + e_percent),
-                e_percent=e_percent,
-                is_fitting=is_fitting,
-            )
+            return fit_cox(f, fitting_params=fitting_params)
 
         coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
         # проверка на близость распределения к Эрланга 2-го порядка
-        if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < ee:
-            if verbose:
-                print(
-                    f"Cox special 2. Multiply moments to (1+je), coev = {coev:5.3f}, e = {e:5.3f}."
-                )
+        if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < fitting_params.ee:
+            if fitting_params.verbose:
+                print("Cox special 2. Multiply moments to (1+je)")
+                print(f"\tcoev = {coev:5.3f}, e = {fitting_params.e:5.3f}")
             f = []
             for i, mom in enumerate(moments):
-                f.append(mom * complex(1, (i + 1) * e))
-            return fit_cox(
-                f,
-                verbose=verbose,
-                ee=ee,
-                e=e * (1.0 + e_percent),
-                e_percent=e_percent,
-                is_fitting=is_fitting,
-            )
+                f.append(mom * complex(1, (i + 1) * fitting_params.e))
+            return fit_cox(f, fitting_params=fitting_params)
 
     for i in range(3):
         f[i] = moments[i] / math.factorial(i + 1)
@@ -243,11 +218,7 @@ def fit_erlang(moments: list[float]) -> ErlangParams:
     """
     Calculates parameters of the Erlang distribution by initial moments.
     """
-    r = int(
-        math.floor(
-            moments[0] * moments[0] / (moments[1] - moments[0] * moments[0]) + 0.5
-        )
-    )
+    r = int(math.floor(moments[0] * moments[0] / (moments[1] - moments[0] * moments[0]) + 0.5))
     mu = r / moments[0]
     return ErlangParams(r=r, mu=mu)
 
@@ -317,8 +288,7 @@ def fit_gamma(moments: list[float]) -> GammaParams:
                 B.append(moments[i - 1])
             for j in range(len(moments) + 1):
                 A[i].append(
-                    calc_gamma_func(alpha + i + j)
-                    / (pow(mu, i + j) * calc_gamma_func(alpha))
+                    calc_gamma_func(alpha + i + j) / (pow(mu, i + j) * calc_gamma_func(alpha))
                 )
         g = np.linalg.solve(A, B)
         return GammaParams(mu=mu, alpha=alpha, g=g)

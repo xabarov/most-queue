@@ -41,9 +41,7 @@ class QueueingFiniteSourceSim(QsSim):
         # how many sources are ready to send requests
         self.sources_left = number_of_sources
 
-        super().__init__(
-            num_of_channels, buffer=buffer, verbose=verbose, buffer_type=buffer_type
-        )
+        super().__init__(num_of_channels, buffer=buffer, verbose=verbose, buffer_type=buffer_type)
 
         self.arrival_times = []
         self.arrived_num = -1

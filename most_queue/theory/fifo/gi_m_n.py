@@ -7,6 +7,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 
@@ -16,9 +17,7 @@ class GiMn:
     Calculation of the GI/M/n queueing system
     """
 
-    def __init__(
-        self, a: float, mu: float, n: int, e=1e-10, approx_distr="Gamma", pi_num=100
-    ):
+    def __init__(self, a: float, mu: float, n: int, calc_params: CalcParams | None = None):
         """
         a - list of initial moments of the distribution of inter-renewal intervals of arrival
         mu - service intensity
@@ -30,9 +29,13 @@ class GiMn:
         self.a = a
         self.mu = mu
         self.n = n
-        self.e = e
-        self.approx_distr = approx_distr
-        self.pi_num = pi_num
+
+        if calc_params is None:
+            calc_params = CalcParams()
+
+        self.e = calc_params.e
+        self.approx_distr = calc_params.approx_distr
+        self.pi_num = calc_params.p_num
 
         self.w_param = self._get_w_param()
         self.pi = self._get_pi()
@@ -112,11 +115,7 @@ class GiMn:
                         pow(-1, i)
                         * math.factorial(j + 1)
                         * self._get_b0(k + i)
-                        / (
-                            math.factorial(k)
-                            * math.factorial(i)
-                            * math.factorial(j + 1 - (k + i))
-                        )
+                        / (math.factorial(k) * math.factorial(i) * math.factorial(j + 1 - (k + i)))
                     )
 
             A[k, self.n] = 0
@@ -148,8 +147,7 @@ class GiMn:
             summ = 0
             for i, g_value in enumerate(gs):
                 summ += (g_value / pow(self.mu * j + v, i)) * (
-                    GammaDistribution.get_gamma(alpha + i)
-                    / GammaDistribution.get_gamma(alpha)
+                    GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha)
                 )
             left = pow(v / (self.mu * j + v), alpha)
             b0 = left * summ
@@ -186,8 +184,7 @@ class GiMn:
                 summ = 0
                 for i, q_value in enumerate(gs):
                     summ += (q_value / pow(self.mu * self.n * (1.0 - w_old) + v, i)) * (
-                        GammaDistribution.get_gamma(alpha + i)
-                        / GammaDistribution.get_gamma(alpha)
+                        GammaDistribution.get_gamma(alpha + i) / GammaDistribution.get_gamma(alpha)
                     )
                 left = pow(v / (self.mu * self.n * (1.0 - w_old) + v), alpha)
                 w_new = left * summ

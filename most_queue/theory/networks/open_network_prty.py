@@ -26,7 +26,8 @@ class OpenNetworkCalcPriorities:
     ):
         """
         R: list of routing matrices for each class.
-        b: list of lists of theoretical moments of service time distribution for each class in each node.
+        b: list of lists of theoretical moments of service time distribution
+        for each class in each node.
         n: list of number of channels in each node.
         L: list of arrival intensities for each class.
 
@@ -37,12 +38,14 @@ class OpenNetworkCalcPriorities:
             RW  - preemptive repeat without resampling, repeating service with previous duration
             NP  - non preemptive, relative priority
 
-        nodes_prty: Priority distribution among requests for each node in the network [m][x1, x2 .. x_k],
+        nodes_prty: Priority distribution among requests for each
+        node in the network [m][x1, x2 .. x_k],
             m - node number, xi - priority for i-th class, k - number of classes
             For example:
                 [0][0,1,2] - for the first node, a direct order of priorities is set,
-                [2][0,2,1] - for the third node, such an order of priorities is set: for the first class - the oldest (0),
-                            for the second - the youngest (2), for the third - intermediate (1)
+                [2][0,2,1] - for the third node, such an order of
+                priorities is set: for the first class - the oldest (0),
+                for the second - the youngest (2), for the third - intermediate (1)
         """
         self.R = R
         self.b = b
@@ -92,9 +95,7 @@ class OpenNetworkCalcPriorities:
         Order the loads and intensities based on node priority.
         """
 
-        intensities = [
-            self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)
-        ]
+        intensities = [self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)]
 
         b_order = []
         l_order = []
@@ -141,9 +142,7 @@ class OpenNetworkCalcPriorities:
             Q = self.R[k][1:, :nodes]
 
             gamma_mu_alpha = [
-                GammaDistribution.get_params(
-                    [res["v_node"][i][k][0], res["v_node"][i][k][1]]
-                )
+                GammaDistribution.get_params([res["v_node"][i][k][0], res["v_node"][i][k][1]])
                 for i in range(nodes)
             ]
 

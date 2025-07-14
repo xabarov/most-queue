@@ -18,9 +18,7 @@ class MG1Disasters:
     Class for calculating M/G/1 queue with disasters.
     """
 
-    def __init__(
-        self, l_pos: float, l_neg: float, b: list[float], approximation="gamma"
-    ):
+    def __init__(self, l_pos: float, l_neg: float, b: list[float], approximation="gamma"):
         """
         Parameters
         ----------

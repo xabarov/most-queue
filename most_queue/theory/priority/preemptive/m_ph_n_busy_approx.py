@@ -8,7 +8,8 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import CoxDistribution, H2Distribution
+from most_queue.rand_distribution import (CoxDistribution, FittingParams,
+                                          H2Distribution)
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
@@ -28,7 +29,7 @@ class MPhNPrty(MGnCalc):
         l_H: float,
         n: int,
         buffer=None,
-        calc_params:TakahashiTakamiParams|None=None
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         Calculation of M/PH, M/n queue with two classes of requests and absolute priority
@@ -47,13 +48,7 @@ class MPhNPrty(MGnCalc):
         :param approx_ee, approx_e: approximation paramters
         """
 
-        super().__init__(
-            n=n,
-            l=0,
-            b=b_high,
-            buffer=buffer,
-            calc_params=calc_params
-        )
+        super().__init__(n=n, l=0, b=b_high, buffer=buffer, calc_params=calc_params)
 
         self.l_L = l_L
         self.l_H = l_H
@@ -64,11 +59,15 @@ class MPhNPrty(MGnCalc):
         self.mu1_H = cox_param_H.mu1
         self.mu2_H = cox_param_H.mu2
         self.p_H = cox_param_H.p1
+
+        self.fitting_params = FittingParams(
+            ee=calc_params.approx_ee,
+            e=calc_params.approx_e,
+            is_fitting=calc_params.is_fitting,
+            verbose=calc_params.verbose,
+        )
         self.max_iter = calc_params.max_iter
         self.is_cox = calc_params.is_cox
-        self.approx_ee = calc_params.approx_ee
-        self.approx_e = calc_params.approx_e
-        self.is_fitting = calc_params.is_fitting
 
         self.busy_periods = []  # list of busy periods initial moments
         self.busy_periods_coevs = []  # list of busy periods coefficients of variation
@@ -400,35 +399,25 @@ class MPhNPrty(MGnCalc):
         for i in range(self.pnz_num_):
             if not self.is_cox:
                 h2_param = H2Distribution.get_params_clx(
-                    self.busy_periods[i],
-                    ee=self.approx_ee,
-                    e=self.approx_e,
-                    is_fitting=self.is_fitting,
-                    verbose=self.verbose,
+                    self.busy_periods[i], fitting_params=self.fitting_params
                 )
                 # h2_param = H2Distribution.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param.p1)
                 m1_mass.append(h2_param.mu1)
                 m2_mass.append(h2_param.mu2)
                 if self.verbose:
-                    print(
-                        f"Params for B{i+1}: {h2_param.p1:3.3f}, {h2_param.mu1:3.3f}, {h2_param.mu2:3.3f}"
-                    )
+                    print(f"Params for B{i+1}:")
+                    print(f"\t{h2_param.p1:3.3f}, {h2_param.mu1:3.3f}, {h2_param.mu2:3.3f}")
             else:
                 cox_params = CoxDistribution.get_params(
-                    self.busy_periods[i],
-                    ee=self.approx_ee,
-                    e=self.approx_e,
-                    is_fitting=self.is_fitting,
-                    verbose=self.verbose,
+                    self.busy_periods[i], fitting_params=self.fitting_params
                 )
                 y1_mass.append(cox_params.p1)
                 m1_mass.append(cox_params.mu1)
                 m2_mass.append(cox_params.mu2)
                 if self.verbose:
-                    print(
-                        f"Params for B{i + 1}: {cox_params.p1:3.3f}, {cox_params.mu1:3.3f}, {cox_params.mu2:3.3f}"
-                    )
+                    print(f"Params for B{i + 1}:")
+                    print(f"\t{cox_params.p1:3.3f}, {cox_params.mu1:3.3f}, {cox_params.mu2:3.3f}")
 
         # first quad
 
@@ -471,9 +460,7 @@ class MPhNPrty(MGnCalc):
             for j in range(self.n):
                 if not self.is_cox:
                     output[l_start + i, l_end] = lh * y1_mass[num] * self.pp[num]
-                    output[l_start + i, l_end + 1] = (
-                        lh * (1 - y1_mass[num]) * self.pp[num]
-                    )
+                    output[l_start + i, l_end + 1] = lh * (1 - y1_mass[num]) * self.pp[num]
                 else:
                     output[l_start + i, l_end] = lh * self.pp[num]
                     output[l_start + i, l_end + 1] = 0

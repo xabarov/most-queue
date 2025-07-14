@@ -83,9 +83,7 @@ class MMnrCalc:
         for k in range(1, q_num + 1):
             summ = 0
             for nn in range(k, self.r + 1):
-                summ += (math.factorial(nn) / math.factorial(nn - k)) * self.p[
-                    nn + self.n
-                ]
+                summ += (math.factorial(nn) / math.factorial(nn - k)) * self.p[nn + self.n]
             q_s.append(summ)
         return q_s
 
@@ -110,11 +108,7 @@ class MMnrCalc:
             p[i] = pow(self.ro, i) * p[0] / math.factorial(i)
 
         for i in range(self.n, self.n + self.r + 1):
-            p[i] = (
-                pow(self.ro, i)
-                * p[0]
-                / (math.factorial(self.n) * pow(self.n, i - self.n))
-            )
+            p[i] = pow(self.ro, i) * p[0] / (math.factorial(self.n) * pow(self.n, i - self.n))
 
         self.p = p
 

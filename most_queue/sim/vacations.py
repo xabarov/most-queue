@@ -18,11 +18,11 @@ class VacationQueueingSystemSimulator(QsSim):
 
     def __init__(
         self,
-        num_of_channels,
-        buffer=None,
-        verbose=True,
-        buffer_type="list",
-        is_service_on_warm_up=False,
+        num_of_channels: int,
+        buffer: int | None = None,
+        verbose: bool = True,
+        buffer_type: str = "list",
+        is_service_on_warm_up: bool = False,
     ):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
@@ -53,9 +53,7 @@ class VacationQueueingSystemSimulator(QsSim):
 
         """
         if not self.is_set_server_params:
-            raise ValueError(
-                "Server parameters are not set. Please call set_servers() first."
-            )
+            raise ValueError("Server parameters are not set. Please call set_servers() first.")
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.warm_phase.set_dist(dist)
@@ -84,7 +82,8 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Set the type and parameters of the cooling start delay time distribution
         :param params: list : parameters for the cooling start delay time distribution
-        :param kendall_notation: str : Kendall notation for the cooling start delay time distribution
+        :param kendall_notation: str : Kendall notation for
+        the cooling start delay time distribution
         """
 
         if not self.cold_phase.is_set:
@@ -123,9 +122,7 @@ class VacationQueueingSystemSimulator(QsSim):
                     # The job was received before the end of the cooling start delay time
                     self.cold_delay_phase.is_start = False
                     self.cold_delay_phase.end_time = 1e16
-                    self.cold_delay_phase.prob += (
-                        self.ttek - self.cold_delay_phase.start_mom
-                    )
+                    self.cold_delay_phase.prob += self.ttek - self.cold_delay_phase.start_mom
                     self.send_task_to_channel()
                     return
 

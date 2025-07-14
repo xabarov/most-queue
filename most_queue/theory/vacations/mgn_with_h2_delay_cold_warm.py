@@ -10,6 +10,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls
 
@@ -31,12 +32,7 @@ class MGnH2ServingColdWarmDelay:
         b_cold_delay: list[float],
         n: int,
         buffer: int | None = None,
-        N: int = 150,
-        accuracy: float = 1e-6,
-        dtype: str = "c16",
-        verbose: bool = False,
-        stable_w_pls: bool = False,
-        w_pls_dt: float = 1e-3,
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
@@ -52,21 +48,24 @@ class MGnH2ServingColdWarmDelay:
         stable_w_pls: flag to use a more stable method for calculating w_plus
         w_pls_dt: time step for calculating w_plus when stable_w_pls is True
         """
-        self.dt = np.dtype(dtype)
+
+        if calc_params is None:
+            calc_params = TakahashiTakamiParams()
+        self.dt = np.dtype(calc_params.dtype)
         if buffer:
             self.R = buffer + n
             self.N = self.R + 1
         else:
-            self.N = N
+            self.N = calc_params.N
             self.R = None
 
-        self.e1 = accuracy
+        self.e1 = calc_params.accuracy
         self.n = n
         self.b = b
-        self.verbose = verbose
+        self.verbose = calc_params.verbose
         self.l = l
-        self.stable_w_pls = stable_w_pls
-        self.w_pls_dt = w_pls_dt
+        self.stable_w_pls = calc_params.stable_w_pls
+        self.w_pls_dt = calc_params.w_pls_dt
 
         if self.dt == "c16":
             h2_params_service = H2Distribution.get_params_clx(b)
@@ -104,22 +103,22 @@ class MGnH2ServingColdWarmDelay:
         self.y_c_delay = [h2_params_cold_delay.p1, 1.0 - h2_params_cold_delay.p1]
         self.mu_c_delay = [h2_params_cold_delay.mu1, h2_params_cold_delay.mu2]
 
-        self.cols = [] * N
+        self.cols = [] * self.N
 
         # Takahasi-Takami method parameters
         self.t = []
         self.b1 = []
         self.b2 = []
         if self.dt == "c16":
-            self.x = np.array([0.0 + 0.0j] * N)
-            self.z = np.array([0.0 + 0.0j] * N)
+            self.x = np.array([0.0 + 0.0j] * self.N)
+            self.z = np.array([0.0 + 0.0j] * self.N)
             # Probabilities of states to be searched for
-            self.p = np.array([0.0 + 0.0j] * N)
+            self.p = np.array([0.0 + 0.0j] * self.N)
         else:
-            self.x = np.array([0.0] * N)
-            self.z = np.array([0.0] * N)
+            self.x = np.array([0.0] * self.N)
+            self.z = np.array([0.0] * self.N)
             # Probabilities of states to be searched for
-            self.p = np.array([0.0] * N)
+            self.p = np.array([0.0] * self.N)
 
         self.num_of_iter_ = 0  # number of iterations of the algorithm
 
@@ -134,7 +133,7 @@ class MGnH2ServingColdWarmDelay:
         self.AG = []
         self.BG = []
 
-        for i in range(N):
+        for i in range(self.N):
 
             if i < n + 1:
                 if i == 0:
@@ -246,9 +245,7 @@ class MGnH2ServingColdWarmDelay:
                 else:
 
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             if self.dt == "c16":
                 self.x[0] = (1.0 + 0.0j) / self.z[1]
@@ -325,10 +322,7 @@ class MGnH2ServingColdWarmDelay:
                 dx = self.w_pls_dt
             w[i] = derivative(self._calc_w_pls, 0, dx=dx, n=i + 1, order=9)
 
-        w = [
-            w_moment.real if isinstance(w_moment, complex) else w_moment
-            for w_moment in w
-        ]
+        w = [w_moment.real if isinstance(w_moment, complex) else w_moment for w_moment in w]
         return [-w[0].real, w[1].real, -w[2].real]
 
     def get_v(self):
@@ -342,10 +336,7 @@ class MGnH2ServingColdWarmDelay:
         v[1] = w[1] + 2 * w[0] * b[0] + b[1]
         v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
 
-        v = [
-            v_moment.real if isinstance(v_moment, complex) else v_moment
-            for v_moment in v
-        ]
+        v = [v_moment.real if isinstance(v_moment, complex) else v_moment for v_moment in v]
         return v
 
     def _get_key_numbers(self, level):
@@ -377,13 +368,12 @@ class MGnH2ServingColdWarmDelay:
         mu_c_pls = np.array([pls(self.mu_c[0], s), pls(self.mu_c[1], s)])
 
         # Комбо переходов: охлаждение + разогрев
-        # [i,j] = охлаждение в i, переход из состояния i охлаждения в j состояние разогрева, разогрев j
+        # [i,j] = охлаждение в i, переход из состояния i охлаждения
+        # в j состояние разогрева, разогрев j
         c_to_w = np.zeros((2, 2), dtype=self.dt)
         for c_phase in range(2):
             for w_phase in range(2):
-                c_to_w[c_phase, w_phase] = (
-                    mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
-                )
+                c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
         # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
         w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
@@ -424,7 +414,8 @@ class MGnH2ServingColdWarmDelay:
         )
         waits_service_on_level_before = None
 
-        # вероятности попадания в состояния обслуживания, вычисляются с помощью биноминального распределения
+        # вероятности попадания в состояния обслуживания,
+        # вычисляются с помощью биноминального распределения
         probs = calc_binom_probs(self.n + 1, self.y[0])
 
         for k in range(self.n, self.N):
@@ -641,9 +632,7 @@ class MGnH2ServingColdWarmDelay:
                 output[0, 0] = self.l
                 output[1, 1] = self.l
                 # second
-                self._insert_standart_A_into(
-                    output, self.l, self.y[0], 2, 2, level=num + 1
-                )
+                self._insert_standart_A_into(output, self.l, self.y[0], 2, 2, level=num + 1)
                 # cold block
                 output[-2, -2] = self.l
                 output[-1, -1] = self.l
@@ -660,13 +649,11 @@ class MGnH2ServingColdWarmDelay:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[
-                    0
-                ] + i * mu[1] * y[1]
+                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[
+                    1
+                ]
                 if i != level - 1:
-                    mass[i + left_pos, i + bottom_pos + 1] = (
-                        (level - i - 1) * mu[0] * y[1]
-                    )
+                    mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:
                     mass[i + +left_pos + 1, i + bottom_pos] = (i + 1) * mu[1] * y[0]
 

@@ -10,10 +10,8 @@ import numpy as np
 from most_queue.rand_distribution import H2Distribution, H2Params
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.negative.structs import NegativeArrivalsResults
-from most_queue.theory.utils.conditional import (
-    moments_exp_less_than_h2,
-    moments_h2_less_than_exp,
-)
+from most_queue.theory.utils.conditional import (moments_exp_less_than_h2,
+                                                 moments_h2_less_than_exp)
 from most_queue.theory.utils.conv import conv_moments
 
 
@@ -30,7 +28,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         l_neg: float,
         b: list[float],
         buffer: int | None = None,
-        calc_params:TakahashiTakamiParams|None=None
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
@@ -44,13 +42,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        super().__init__(
-            n=n,
-            l=l_pos,
-            b=b,
-            buffer=buffer,
-            calc_params=calc_params
-        )
+        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
 
         self.l_neg = l_neg
 
@@ -139,9 +131,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         v_served = self.get_v_served()
         v_broken = self.get_v_broken()
         w = self.get_w()
-        return NegativeArrivalsResults(
-            p=p, v=v, v_served=v_served, v_broken=v_broken, w=w
-        )
+        return NegativeArrivalsResults(p=p, v=v, v_served=v_served, v_broken=v_broken, w=w)
 
     def _build_big_b_matrix(self, num):
         """
@@ -195,9 +185,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                 if i != num - 1:
                     output[i, i + 1] = ((num - i - 1) * self.mu[0] + left) * self.y[1]
 
-                    output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[
-                        0
-                    ]
+                    output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[0]
         return output
 
     def _build_big_d_matrix(self, num):
@@ -276,9 +264,7 @@ class MGnNegativeRCSCalc(MGnCalc):
 
                 else:
                     self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(
-                        self.x[j], self.b2[j]
-                    )
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
 
             self.x[0] = (1.0 + 0.0j) / self.z[1]
 

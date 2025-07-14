@@ -38,9 +38,7 @@ def test_mdn():
     For verification, we use simulation modeling
     """
 
-    b = (
-        UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE
-    )  # service time from given ro
+    b = UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE  # service time from given ro
 
     # calculation of the probabilities of queueing system states
     mdn = MDn(ARRIVAL_RATE, b, NUM_OF_CHANNELS)
@@ -66,9 +64,7 @@ def test_mdn():
     # Output results
     probs_print(p_num, p_sim)
 
-    assert np.allclose(
-        p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

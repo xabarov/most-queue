@@ -10,11 +10,13 @@ import time
 
 import yaml
 
+from most_queue.general.distribution_fitting import \
+    gamma_moments_by_mean_and_coev
 from most_queue.rand_distribution import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
-from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty, TakahashiTakamiParams
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import (
+    MPhNPrty, TakahashiTakamiParams)
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -72,7 +74,7 @@ def test_m_ph_n_prty():
         ARRIVAL_RATE_LOW,
         ARRIVAL_RATE_HIGH,
         n=NUM_OF_CHANNELS,
-        calc_params=calc_params
+        calc_params=calc_params,
     )
     tt.run()
     tt_time = time.process_time() - tt_start
@@ -89,9 +91,7 @@ def test_m_ph_n_prty():
     b.append(b_low)
 
     invar_start = time.process_time()
-    invar_calc = MGnInvarApproximation(
-        [ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_CHANNELS
-    )
+    invar_calc = MGnInvarApproximation([ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_CHANNELS)
     v = invar_calc.get_v(priority="PR", num=2)
     v_low_invar = v[1][0]
     invar_time = time.process_time() - invar_start
@@ -119,9 +119,7 @@ def test_m_ph_n_prty():
 
     sim_time = time.process_time() - im_start
 
-    print(
-        "\nComparison of the results calculated using the numerical method with approximation"
-    )
+    print("\nComparison of the results calculated using the numerical method with approximation")
     print(" of busy periods by Cox's second-order distribution and simulation.")
     print(f"ro: {UTILIZATION_FACTOR:1.2f}")
     print(f"n : {NUM_OF_CHANNELS}")

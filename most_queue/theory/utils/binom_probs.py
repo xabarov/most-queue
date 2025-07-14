@@ -15,9 +15,7 @@ def calc_binom_probs(size: int, y1: float):
     q = 1.0 - y1
     probs = []
     for i in range(size):
-        probs.append(
-            special.comb(size - 1, size - 1 - i) * pow(p, size - 1 - i) * pow(q, i)
-        )
+        probs.append(special.comb(size - 1, size - 1 - i) * pow(p, size - 1 - i) * pow(q, i))
     return probs
 
 

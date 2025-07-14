@@ -59,5 +59,6 @@ class Distribution(ABC):
         """
         :param f1: mean of the distribution.
         :param coev: coefficient of variation (std_dev / mean).
-        :return: Parameters for the distribution that correspond to the given mean and coefficient of variation.
+        :return: Parameters for the distribution that correspond
+        to the given mean and coefficient of variation.
         """

@@ -5,7 +5,8 @@ Test the NetworkOptimizerWithApprox class.
 import numpy as np
 
 from most_queue.rand_distribution import ExpDistribution
-from most_queue.theory.networks.opt.transition_approx import NetworkOptimizerWithApprox
+from most_queue.theory.networks.opt.transition_approx import \
+    NetworkOptimizerWithApprox
 
 
 def test_network_opt_approx():
@@ -45,9 +46,7 @@ def test_network_opt_approx():
 
     _best_transition_matrix, best_v1 = optimizer.run()
 
-    assert (
-        best_v1 < 16.0
-    ), f"The best V1 value should be less than 16.0. Found: {best_v1}"
+    assert best_v1 < 16.0, f"The best V1 value should be less than 16.0. Found: {best_v1}"
 
 
 if __name__ == "__main__":

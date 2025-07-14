@@ -28,7 +28,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         l_neg: float,
         b: list[float],
         buffer: int | None = None,
-        calc_params: TakahashiTakamiParams | None = None
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
@@ -44,13 +44,7 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         self.l_neg = l_neg
 
-        super().__init__(
-            n=n,
-            l=l_pos,
-            b=b,
-            buffer=buffer,
-            calc_params=calc_params
-        )
+        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
 
     def get_q(self) -> float:
         """
@@ -67,9 +61,7 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         if derivate:
             for i in range(3):
-                w[i] = derivative(
-                    self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9
-                )
+                w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
             return np.array([-w[0], w[1].real, -w[2]])
 
         for j in range(1, len(self.p) - self.n):
@@ -183,9 +175,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         a_n = np.array(
             [
                 lst_exp(
-                    key_numbers[j][0] * self.mu[0]
-                    + key_numbers[j][1] * self.mu[1]
-                    + self.l_neg,
+                    key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg,
                     s,
                 )
                 for j in range(self.n + 1)
@@ -225,9 +215,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         a = np.array(
             [
                 lst_exp(
-                    key_numbers[j][0] * self.mu[0]
-                    + key_numbers[j][1] * self.mu[1]
-                    + self.l_neg,
+                    key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg,
                     s,
                 )
                 for j in range(self.n + 1)
@@ -319,9 +307,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                 if i != num - 1:
                     output[i, i + 1] = ((num - i - 1) * self.mu[0] + left) * self.y[1]
 
-                    output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[
-                        0
-                    ]
+                    output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[0]
         return output
 
     def _build_big_d_matrix(self, num):

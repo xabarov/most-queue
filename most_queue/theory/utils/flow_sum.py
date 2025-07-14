@@ -32,7 +32,8 @@ class SummatorNumeric:
     def sum_flows(self):
         """
         суммирование n потоков
-        a[i][j] - i - номер потока, j номер начального момента интервалов между соседникми заявками i потока
+        a[i][j] - i - номер потока, j номер начального момента
+        интервалов между соседникми заявками i потока
         """
         n = len(self.a)  # число суммируемых потоков
 
@@ -106,7 +107,8 @@ class SummatorNumeric:
     @staticmethod
     def get_k_by_v(v):
         """
-        Вычисление семиинвариантов по v -нормированным семиинвариантам числа событий рекуррентного потока
+        Вычисление семиинвариантов по v -нормированным
+        семиинвариантам числа событий рекуррентного потока
         """
         k = []
         k.append(1.0 / v[0])
@@ -133,11 +135,7 @@ class SummatorNumeric:
             a.append(k[2] + 3 * k[0] * k[1] + pow(k[0], 3))
         if len(k) > 3:
             a.append(
-                k[3]
-                + 4 * k[2] * k[0]
-                + 3 * pow(k[1], 2)
-                + 6 * k[1] * pow(k[0], 2)
-                + pow(k[0], 4)
+                k[3] + 4 * k[2] * k[0] + 3 * pow(k[1], 2) + 6 * k[1] * pow(k[0], 2) + pow(k[0], 4)
             )
 
         return a
@@ -207,12 +205,7 @@ class SummatorNumeric:
             summ = 0
             for i in range(2):
                 for j in range(2):
-                    summ += (
-                        y[i]
-                        * u[j]
-                        * math.factorial(k + 1)
-                        / pow(mu[i] + lambdas[j], k + 1)
-                    )
+                    summ += y[i] * u[j] * math.factorial(k + 1) / pow(mu[i] + lambdas[j], k + 1)
             f_first[k] = summ
 
         # Вычисляем начальныем моменты второго произведения A1*, A2
@@ -233,12 +226,7 @@ class SummatorNumeric:
             summ = 0
             for i in range(2):
                 for j in range(2):
-                    summ += (
-                        y[i]
-                        * u[j]
-                        * math.factorial(k + 1)
-                        / pow(mu[i] + lambdas[j], k + 1)
-                    )
+                    summ += y[i] * u[j] * math.factorial(k + 1) / pow(mu[i] + lambdas[j], k + 1)
             f_second[k] = summ
 
         # Итоговые моменты:

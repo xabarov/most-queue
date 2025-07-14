@@ -8,7 +8,8 @@ from enum import Enum
 import numpy as np
 
 from most_queue.sim.base import QsSim
-from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
+from most_queue.sim.utils.distribution_utils import (calc_qs_load,
+                                                     create_distribution)
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.theory.negative.structs import NegativeArrivalsResults
 
@@ -35,7 +36,7 @@ class QsSimNegatives(QsSim):
         type_of_negatives: NegativeServiceType = NegativeServiceType.DISASTER,
         buffer: int | None = None,
         verbose: bool = True,
-        buffer_type="list",
+        buffer_type: str = "list",
     ):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
@@ -54,9 +55,7 @@ class QsSimNegatives(QsSim):
         # initial moments of sojourn time of broken by negative jobs
         self.v_broken = [0, 0, 0]
 
-        self.served = (
-            0  # number of job serviced by the system without negative job breaks
-        )
+        self.served = 0  # number of job serviced by the system without negative job breaks
         self.broken = 0  # number of job broken by negatives
         self.total = 0  # number of job broken by negatives and served without breaks
 
@@ -91,9 +90,7 @@ class QsSimNegatives(QsSim):
 
         self.is_set_positive_source_params = True
 
-        self.positive_source = create_distribution(
-            params, kendall_notation, self.generator
-        )
+        self.positive_source = create_distribution(params, kendall_notation, self.generator)
 
         self.positive_arrival_time = self.positive_source.generate()
 
@@ -112,9 +109,7 @@ class QsSimNegatives(QsSim):
 
         self.is_set_negative_source_params = True
 
-        self.negative_source = create_distribution(
-            params, kendall_notation, self.generator
-        )
+        self.negative_source = create_distribution(params, kendall_notation, self.generator)
 
         self.negative_arrival_time = self.negative_source.generate()
 

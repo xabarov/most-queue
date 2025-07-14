@@ -7,13 +7,15 @@ import math
 
 import numpy as np
 
+from most_queue.theory.calc_params import CalcParams
+
 
 class MDn:
     """
     Numerical calculation of an M/D/n system.
     """
 
-    def __init__(self, l, b, n, e=1e-12, p_num=100):
+    def __init__(self, l, b, n, calc_params: CalcParams | None = None):
         """
         Parameters:
         l - arrival rate of incoming stream
@@ -22,12 +24,15 @@ class MDn:
         e - tolerance for convergence in iterative calculations. Default is 1e-12.
         p_num - maximum number of probabilities to calculate. Default is 100.
         """
+
+        if calc_params is None:
+            calc_params = CalcParams()
         self.l = l
         self.b = b
         self.n = n
-        self.e = e
-        self.p = [0.0] * p_num
-        self.p_num = p_num
+        self.p_num = calc_params.p_num
+        self.e = calc_params.e
+        self.p = [0.0] * calc_params.p_num
 
     def calc_p(self):
         """

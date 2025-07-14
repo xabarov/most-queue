@@ -16,9 +16,7 @@ class OpenNetworkCalc:
     Calculates queueing network.
     """
 
-    def __init__(
-        self, R: np.matrix, b: list[list[float]], n: list[int], arrival_rate: float
-    ):
+    def __init__(self, R: np.matrix, b: list[list[float]], n: list[int], arrival_rate: float):
         """
         R: routing matrix
         b: list of theoretical moments of service time distribution for each node.
@@ -86,9 +84,7 @@ class OpenNetworkCalc:
             res["loads"][i] = node_arrival_rate * b1_node / self.n[i]
 
             if is_markovian:
-                mmnr_calc = MMnrCalc(
-                    l=node_arrival_rate, mu=1 / b1_node, n=self.n[i], r=100
-                )
+                mmnr_calc = MMnrCalc(l=node_arrival_rate, mu=1 / b1_node, n=self.n[i], r=100)
                 res["v_node"].append(mmnr_calc.get_v())
             else:
                 mgn_calc = MGnCalc(n=self.n[i], l=node_arrival_rate, b=self.b[i])

@@ -35,9 +35,7 @@ def v1_on_utilization_approx(channels: int, arrival_rate: float, deg: int = 3):
     return poly
 
 
-def find_delta_utilization(
-    poly1: callable, poly2: callable, load1: float, load2: float
-) -> float:
+def find_delta_utilization(poly1: callable, poly2: callable, load1: float, load2: float) -> float:
     """
     Find the amount of load that needs to be removed from load1 to minimize
     the sum of V1 and V2
