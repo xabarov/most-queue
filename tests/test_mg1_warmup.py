@@ -8,8 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -41,7 +40,7 @@ MEAN_WARMUP_FACTOR = 1.5  # Mean time for warm-up phase is factor*mean service t
 
 def test_mg1_warm():
     """
-    Test M/G/1 queue with warm-up phase.
+    Test M/G/1 queue with warm-up  phase.
     Compare theoretical and simulated moments.
     """
 
