@@ -10,7 +10,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution, H2Params
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
@@ -28,10 +28,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         l_neg: float,
         b: list[float],
         buffer: int | None = None,
-        N: int = 150,
-        accuracy: float = 1e-6,
-        dtype="c16",
-        verbose: bool = False,
+        calc_params: TakahashiTakamiParams | None = None
     ):
         """
         n: number of servers
@@ -52,10 +49,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             l=l_pos,
             b=b,
             buffer=buffer,
-            N=N,
-            accuracy=accuracy,
-            dtype=dtype,
-            verbose=verbose,
+            calc_params=calc_params
         )
 
     def get_q(self) -> float:

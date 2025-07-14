@@ -1,5 +1,5 @@
 """
-Test M/H2/n system with H2-warming using the Takahasi-Takagi method.
+Test M/H2/n system with H2-warming using the Takahashi-Takami method.
 """
 
 import os
@@ -43,7 +43,7 @@ WARM_AP_AVE_PERCENT = 0.3
 
 def test_m_h2_h2warm():
     """
-    Test M/H2/n system with H2-warming using the Takahasi-Takagi method.
+    Test M/H2/n system with H2-warming using the Takahashi-Takami method.
     """
     verbose = False  # do not output explanations during calculations
 

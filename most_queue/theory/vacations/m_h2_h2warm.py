@@ -1,5 +1,5 @@
 """
-Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+Calculation of the M/H2/n system with H2-warming using the Takahashi-Takami method.
 Use complex parameters, which allow to approximate the service time
 distribution with arbitrary coefficients of variation (>1, <=1).
 """
@@ -16,7 +16,7 @@ from most_queue.theory.utils.transforms import lst_exp
 
 class MH2nH2Warm:
     """
-    Calculation of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+    Calculation of the M/H2/n system with H2-warming using the Takahashi-Takami method.
     Use complex parameters, which allow to approximate the service time
     distribution with arbitrary coefficients of variation (>1, <=1).
     """
@@ -35,7 +35,7 @@ class MH2nH2Warm:
         is_only_first=False,
     ):
         """
-        Initialization of the M/H2/n system with H2-warming using the Takahasi-Takagi method.
+        Initialization of the M/H2/n system with H2-warming using the Takahashi-Takami method.
         Use complex parameters, which allow to approximate the service time
         distribution with arbitrary coefficients of variation (>1, <=1).
         :param l: arrival intensity
@@ -89,7 +89,7 @@ class MH2nH2Warm:
         # Cols - array that stores the number of columns for each level, it is convenient to calculate it once:
         self.cols = [] * N
 
-        # init parameters for the Takahasi-Takagi method
+        # init parameters for the Takahashi-Takami method
         self.t = []
         self.b1 = []
         self.b2 = []
@@ -106,7 +106,7 @@ class MH2nH2Warm:
             # probabilities of states of the queueing system
             self.p = [0.0] * N
 
-        # Transition matrices for the Takahasi-Takagi method
+        # Transition matrices for the Takahashi-Takami method
         self.A = []
         self.B = []
         self.C = []

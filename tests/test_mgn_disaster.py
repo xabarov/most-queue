@@ -70,8 +70,6 @@ def test_mgn():
         ARRIVAL_RATE_POSITIVE,
         ARRIVAL_RATE_NEGATIVE,
         b,
-        verbose=False,
-        accuracy=1e-8,
     )
 
     queue_calc.run()

@@ -13,7 +13,7 @@ import yaml
 from most_queue.rand_distribution import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
-from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
+from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty, TakahashiTakamiParams
 from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 
 cur_dir = os.getcwd()
@@ -61,6 +61,10 @@ def test_m_ph_n_prty():
     mu_low = 1.0 / b1_low
 
     # calculation using the numerical method:
+    calc_params = TakahashiTakamiParams()
+    calc_params.is_cox = IS_COX
+    calc_params.max_iter = MAX_ITER
+
     tt_start = time.process_time()
     tt = MPhNPrty(
         mu_low,
@@ -68,9 +72,7 @@ def test_m_ph_n_prty():
         ARRIVAL_RATE_LOW,
         ARRIVAL_RATE_HIGH,
         n=NUM_OF_CHANNELS,
-        is_cox=IS_COX,
-        max_iter=MAX_ITER,
-        verbose=False,
+        calc_params=calc_params
     )
     tt.run()
     tt_time = time.process_time() - tt_start

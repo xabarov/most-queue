@@ -9,7 +9,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution, H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
@@ -27,16 +27,8 @@ class MPhNPrty(MGnCalc):
         l_L: float,
         l_H: float,
         n: int,
-        N: int = 250,
-        accuracy: float = 1e-8,
-        max_iter: int = 300,
-        is_cox: bool = True,
-        approx_ee: float = 0.1,
-        approx_e: float = 0.5,
-        is_fitting: bool = True,
         buffer=None,
-        verbose: bool = True,
-        dtype="c16",
+        calc_params:TakahashiTakamiParams|None=None
     ):
         """
         Calculation of M/PH, M/n queue with two classes of requests and absolute priority
@@ -60,10 +52,7 @@ class MPhNPrty(MGnCalc):
             l=0,
             b=b_high,
             buffer=buffer,
-            N=N,
-            accuracy=accuracy,
-            dtype=dtype,
-            verbose=verbose,
+            calc_params=calc_params
         )
 
         self.l_L = l_L
@@ -75,11 +64,11 @@ class MPhNPrty(MGnCalc):
         self.mu1_H = cox_param_H.mu1
         self.mu2_H = cox_param_H.mu2
         self.p_H = cox_param_H.p1
-        self.max_iter = max_iter
-        self.is_cox = is_cox
-        self.approx_ee = approx_ee
-        self.approx_e = approx_e
-        self.is_fitting = is_fitting
+        self.max_iter = calc_params.max_iter
+        self.is_cox = calc_params.is_cox
+        self.approx_ee = calc_params.approx_ee
+        self.approx_e = calc_params.approx_e
+        self.is_fitting = calc_params.is_fitting
 
         self.busy_periods = []  # list of busy periods initial moments
         self.busy_periods_coevs = []  # list of busy periods coefficients of variation
@@ -88,7 +77,7 @@ class MPhNPrty(MGnCalc):
 
         self._calc_busy_periods()
 
-        self.cols = [] * N
+        self.cols = [] * calc_params.N
 
         self.run_iterations_num_ = 0
         self.p_iteration_num_ = 0

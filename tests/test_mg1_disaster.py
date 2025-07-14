@@ -40,7 +40,7 @@ def test_mg1():
         Jain, Gautam, and Karl Sigman. "A Pollaczek–Khintchine formula
         for M/G/1 queues with disasters."
         Journal of Applied Probability 33.4 (1996): 1191-1200.
-    T-T is ours method (based on Takahasi-Takagi)
+    T-T is ours method (based on Takahashi-Takami)
     """
 
     b1 = 1 * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time

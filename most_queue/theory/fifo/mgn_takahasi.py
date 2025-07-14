@@ -1,8 +1,9 @@
 """
-Calculate M/H2/n queue with complex parameters using the Takahasi-Takagi method.
+Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method.
 """
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 from scipy.misc import derivative
@@ -11,15 +12,31 @@ from most_queue.rand_distribution import H2Distribution
 from most_queue.theory.utils.transforms import lst_exp
 
 
+@dataclass
+class TakahashiTakamiParams:
+    """Parameters for the Takahashi-Takami method."""
+
+    N: int = 150
+    accuracy: float = 1e-8
+    dtype: str = "c16"
+    verbose: bool = False
+    max_iter: int = 300
+    is_cox: bool = True
+    approx_ee: float = 0.1
+    approx_e: float = 0.5
+    is_fitting: bool = True
+
+
 class MGnCalc:
     """
-    Calculate M/H2/n queue with complex parameters using the Takahasi-Takagi method.
+    Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method.
     Complex parameters allow approximating the service time distribution
     with arbitrary coefficients of variation (>1, <=1).
     """
 
     def __init__(
-        self, n, l, b, buffer=None, N=150, accuracy=1e-6, dtype="c16", verbose=False
+        self, n, l, b, buffer=None, calc_params: TakahashiTakamiParams|None=None
+
     ):
         """
         n: number of servers
@@ -31,20 +48,24 @@ class MGnCalc:
         dtype: data type for calculations (default is complex double precision)
         verbose: whether to print intermediate results (default is False)
         """
-        self.dt = np.dtype(dtype)
+
+        if calc_params is None:
+            calc_params = TakahashiTakamiParams()
+
+        self.dt = np.dtype(calc_params.dtype)
         if buffer:
             self.R = (
                 buffer + n
             )  # max number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels in the system
         else:
-            self.N = N
+            self.N = calc_params.N
             self.R = None
 
-        self.e1 = accuracy
+        self.e1 = calc_params.accuracy
         self.n = n
         self.b = b
-        self.verbose = verbose
+        self.verbose = calc_params.verbose
 
         h2_params = H2Distribution.get_params_clx(b)
         # params of H2-distribution:
@@ -54,7 +75,7 @@ class MGnCalc:
 
         # Cols massive holds the number of columns for each level,
         # it is more convenient to calculate it once:
-        self.cols = [] * N
+        self.cols = [] * self.N
 
         # Parameters for Takahashi's method
         self.t = []
@@ -62,11 +83,11 @@ class MGnCalc:
         self.b2 = []
 
         # convert to numpy arrays for faster calculations
-        self.x = np.array([0.0 + 0.0j] * N)
-        self.z = np.array([0.0 + 0.0j] * N)
+        self.x = np.array([0.0 + 0.0j] * self.N)
+        self.z = np.array([0.0 + 0.0j] * self.N)
 
         # Probabilities of states to be searched for
-        self.p = np.array([0.0 + 0.0j] * N)
+        self.p = np.array([0.0 + 0.0j] * self.N)
 
         self.num_of_iter_ = 0  # numer of iterations of the algorithm
 
