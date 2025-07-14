@@ -7,8 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -34,7 +33,7 @@ ARRIVAL_RATE_NEGATIVE = 0.8 * ARRIVAL_RATE_POSITIVE
 
 def test_mg1_gamma_rcs():
     """
-    Test the  M/Gamma/1 queueing systems with RCS discipline.
+    Test the M/Gamma/1 queueing systems with RCS discipline.
     """
 
     b1 = UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE

@@ -10,22 +10,22 @@ repos:
       - id: check-added-large-files
       - id: check-json
       - id: check-toml
-  - repo: https://github.com/pycqa/isort
-    rev: 6.0.1
-    hooks:
-      - id: isort
-        name: isort (python)
+#   - repo: https://github.com/pycqa/isort
+#     rev: 6.0.1
+#     hooks:
+#       - id: isort
+#         name: isort (python)
 
-  - repo: https://github.com/psf/black
-    rev: 25.1.0
-    hooks:
-      - id: black
-        language_version: python3.12
+#   - repo: https://github.com/psf/black
+#     rev: 25.1.0
+#     hooks:
+#       - id: black
+#         language_version: python3.12
   - repo: local
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
+        entry: ./.venv/bin/pylint
         language: system
         types: [ python ]
         require_serial: true
