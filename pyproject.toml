@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.pylint.messages_control]
-disable = ["invalid-name", 
+disable = ["invalid-name",
           "too-many-positional-arguments",
           "too-many-instance-attributes",
           "too-few-public-methods",
@@ -21,7 +21,7 @@ line-length = 100
 
 [project]
 name = "most_queue"
-version = "1.62"
+version = "1.63"
 authors = [
   { name="Xabarov Roman", email="xabarov1985@gmail.com" },
 ]
@@ -47,5 +47,3 @@ dependencies = [
 ]
 [project.urls]
 "Homepage" = "https://github.com/xabarov/most-queue"
-
-

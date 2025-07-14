@@ -4,7 +4,7 @@ Test the behavior of V1 as a function of the number of channels.
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import os
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
 
@@ -56,7 +56,8 @@ def test_v1_on_channels():
     ax.set_ylabel("v1")
     plt.legend()
 
-    save_path = "tests/units/v1_on_channels.png"  # Replace with your desired path
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    save_path = os.path.join(cur_dir, "v1_on_channels.png")  # Replace with your desired path
     plt.savefig(save_path)
 
     plt.close(_fig)
