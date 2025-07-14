@@ -52,14 +52,12 @@ class FlowSumSim:
             distr_str = "Pareto"
         else:
             print("Sum of flows. ERROR: Unknown distribution type.")
-            return 0
+            return
 
         for i in range(n - 1):
             if self.verbose:
                 print(
-                    "Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(
-                        i + 1, n - 1, distr_str
-                    )
+                    f"Summation of flows. Start simulation {i + 1} from {n - 1}. Distribution: {distr_str}"
                 )
             if self.distr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(
@@ -100,9 +98,7 @@ class FlowSumSim:
 
             self.a = copy.deepcopy(f)
 
-        for i in range(len(self.flows_)):
-            self.a1_sum.append(self.flows_[i][0])
-            self.a2_sum.append(self.flows_[i][1])
+        self.a1_sum, self.a2_sum = zip(*self.flows_)
 
         self.result_flow = self.a[0]
 
@@ -147,7 +143,10 @@ class FlowSumSim:
         return f
 
     @staticmethod
-    def get_coev(a):
+    def get_coev(a: list[complex]):
+        """
+        Calculating coefficient of variation for distribution.
+        """
         D = a[1] - pow(a[0], 2)
         coev = math.sqrt(D) / a[0]
         return coev
@@ -194,6 +193,11 @@ class FlowSumSim:
 
     @staticmethod
     def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
+        """
+        Summing two Erlang flows with parameters a1 and a2.
+        num_of_moments: number of moments to calculate.
+        num_of_sim: number of simulations.
+        """
 
         params1 = ErlangDistribution.get_params(a1)
         arr1 = ErlangDistribution(params1)
@@ -281,15 +285,13 @@ class FlowSumSim:
         elif disr == "E":
             distr_str = "Erlang"
         else:
-            "Sum of flows. ERROR: Unknown distribution type."
+            print("Sum of flows. ERROR: Unknown distribution type.")
             return 0
 
         for i in range(n - 1):
             if verbose:
                 print(
-                    "Summation of flows. Start simulation {0} from {1}. Distribution: {2}".format(
-                        i + 1, n - 1, distr_str
-                    )
+                    f"Summation of flows. Start simulation {i + 1} from {n - 1}. Distribution: {distr_str}"
                 )
 
             if disr == "Gamma":

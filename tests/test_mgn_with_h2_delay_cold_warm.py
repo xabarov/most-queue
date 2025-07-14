@@ -3,18 +3,19 @@ Run one simulation vs calculation for queueing system.
 with H2-warming, H2-cooling and H2-delay of cooling starts.
 """
 
-import math
 import os
 import time
 
 import numpy as np
 import yaml
 
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import \
-    MGnH2ServingColdWarmDelay
+from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
+    MGnH2ServingColdWarmDelay,
+)
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -47,22 +48,6 @@ PROBS_RTOL = float(params["probs_rtol"])
 
 MOMENTS_ATOL = float(params["moments_atol"])
 MOMENTS_RTOL = float(params["moments_rtol"])
-
-
-def calc_moments_by_mean_and_coev(mean, coev):
-    """
-    Calculate the E[X^k] for k=0,1,2
-    for a distribution with given mean and coefficient of variation.
-    :param mean: The mean value of the distribution.
-    :param coev: The coefficient of variation (standard deviation divided by the mean).
-    :return: A list containing the calculated moments
-    """
-    b = [0.0] * 3
-    alpha = 1 / (coev**2)
-    b[0] = mean
-    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-    return b
 
 
 def run_calculation(
@@ -193,10 +178,10 @@ def test_mgn_h2_delay_cold_warm():
 
     # Calculate initial moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
-    b_service = calc_moments_by_mean_and_coev(service_time_mean, SERVICE_TIME_CV)
-    b_warmup = calc_moments_by_mean_and_coev(WARM_UP_MEAN, WARM_UP_CV)
-    b_cooling = calc_moments_by_mean_and_coev(COOLING_MEAN, COOLING_CV)
-    b_delay = calc_moments_by_mean_and_coev(COOLING_DELAY_MEAN, COOLING_DELAY_CV)
+    b_service = gamma_moments_by_mean_and_coev(service_time_mean, SERVICE_TIME_CV)
+    b_warmup = gamma_moments_by_mean_and_coev(WARM_UP_MEAN, WARM_UP_CV)
+    b_cooling = gamma_moments_by_mean_and_coev(COOLING_MEAN, COOLING_CV)
+    b_delay = gamma_moments_by_mean_and_coev(COOLING_DELAY_MEAN, COOLING_DELAY_CV)
 
     num_results = run_calculation(
         arrival_rate=ARRIVAL_RATE,

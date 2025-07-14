@@ -240,8 +240,7 @@ class QsSim:
         if self.queue.size() != 0:
             self.send_head_of_queue_to_channel(c, is_network=is_network)
 
-        if is_network:
-            return end_ts
+        return end_ts
 
     def send_head_of_queue_to_channel(self, channel_num, is_network=False):
         """

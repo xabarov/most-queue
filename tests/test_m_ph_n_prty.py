@@ -5,7 +5,6 @@ based on the approximation of busy periods by Cox's second-order distribution.
 For verification, we use simulation
 """
 
-import math
 import os
 import time
 
@@ -15,6 +14,7 @@ from most_queue.rand_distribution import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -54,11 +54,7 @@ def test_m_ph_n_prty():
     bsr = NUM_OF_CHANNELS * UTILIZATION_FACTOR / lsum
     b1_high = lsum * bsr / (ARRIVAL_RATE_LOW * SERVICE_PROPORTION + ARRIVAL_RATE_HIGH)
     b1_low = SERVICE_PROPORTION * b1_high
-    b_high = [0.0] * 3
-    alpha = 1 / (SERVICE_TIME_CV**2)
-    b_high[0] = b1_high
-    b_high[1] = math.pow(b_high[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
-    b_high[2] = b_high[1] * b_high[0] * (1.0 + 2 / alpha)
+    b_high = gamma_moments_by_mean_and_coev(b1_high, SERVICE_TIME_CV)
 
     gamma_params = GammaDistribution.get_params([b_high[0], b_high[1]])
 

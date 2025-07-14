@@ -131,6 +131,52 @@ class ForkJoinSim(QsSim):
                         self.servers[i].start_service(t.subtasks[i], self.ttek)
                         self.free_channels -= 1
 
+    def _handle_task_completion(self, end_ts):
+        """
+        Handles actions when a task (all its subtasks) is completed.
+        """
+        if self.is_purge:
+            self._purge_task(end_ts.task_id)
+
+        self.served += 1
+        self.refresh_v_stat(self.ttek - end_ts.arr_time)
+        self.in_sys -= 1
+
+    def _purge_task(self, task_id):
+        """
+        Purges all subtasks belonging to a given task_id from servers and queues.
+        """
+        for i in range(self.n):
+            if (
+                self.servers[i].tsk_on_service
+                and self.servers[i].tsk_on_service.task_id == task_id
+            ):
+                self.servers[i].end_service()
+        for i in range(self.n):
+            self.queues[i] = [ts for ts in self.queues[i] if ts.task_id != task_id]
+
+    def _process_queue_fifo(self, c):
+        """
+        Processes the queue for a specific channel in FIFO manner.
+        """
+        if len(self.queues[c]) != 0:
+            que_ts = self.queues[c].pop(0)
+            self.servers[c].start_service(que_ts, self.ttek)
+            self.free_channels -= 1
+
+    def _process_queue_sj(self):
+        """
+        Processes the shared queue for SJ discipline.
+        """
+        if self.queue.size() != 0:
+            for i in range(self.n):
+                if (
+                    not len(self.queue) == 0
+                ):  # Added check to prevent popping from empty queue
+                    que_ts = self.queue.pop()
+                    self.servers[i].start_service(que_ts, self.ttek)
+                    self.free_channels -= 1
+
     def serving(self, c, is_network=False):
         """
         Action when a service is completed on channel c.
@@ -146,41 +192,13 @@ class ForkJoinSim(QsSim):
         self.sub_task_in_sys -= 1
 
         if not self.is_sj:
-
             if self.served_subtask_in_task[end_ts.task_id] == self.k:
-
-                if self.is_purge:
-                    # purging all tasks with the same id as the completed one
-                    task_id = end_ts.task_id
-                    for i in range(self.n):
-                        if self.servers[i].tsk_on_service.task_id == task_id:
-                            self.servers[c].end_service()
-                    for i in range(self.n):
-                        for j in range(len(self.queues[i])):
-                            if self.queues[i][j].task_id == task_id:
-                                self.queues[i].pop(j)
-
-                self.served += 1
-                self.refresh_v_stat(self.ttek - end_ts.arr_time)
-                self.in_sys -= 1
-
-            if len(self.queues[c]) != 0:
-                que_ts = self.queues[c].pop(0)
-                self.servers[c].start_service(que_ts, self.ttek)
-                self.free_channels -= 1
-
+                self._handle_task_completion(end_ts)
+            self._process_queue_fifo(c)
         else:
             if self.served_subtask_in_task[end_ts.task_id] == self.n:
-
-                self.served += 1
-                self.refresh_v_stat(self.ttek - end_ts.arr_time)
-                self.in_sys -= 1
-
-                if self.queue.size() != 0:
-                    for i in range(self.n):
-                        que_ts = self.queue.pop()
-                        self.servers[i].start_service(que_ts, self.ttek)
-                        self.free_channels -= 1
+                self._handle_task_completion(end_ts)
+                self._process_queue_sj()
 
     def __str__(self, is_short=False):
         """

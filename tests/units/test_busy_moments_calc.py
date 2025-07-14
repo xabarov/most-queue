@@ -7,6 +7,7 @@ import time
 
 from most_queue.general.tables import times_print
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_lst
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 
 
 def test_busy_calc_variants():
@@ -19,11 +20,7 @@ def test_busy_calc_variants():
     b1 = 1 * ro / arrival_rate  # average service time
     b_coev = 0.57
 
-    b = [0.0] * 3
-    alpha = 1 / (b_coev**2)
-    b[0] = b1
-    b[1] = math.pow(b[0], 2) * (math.pow(b_coev, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    b = gamma_moments_by_mean_and_coev(b1, b_coev)  # gamma distribution parameters
 
     start = time.time()
     busy_1 = busy_calc_lst(arrival_rate, b)

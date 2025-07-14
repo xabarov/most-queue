@@ -12,7 +12,8 @@ disable = ["invalid-name",
           "too-many-locals",
           "line-too-long",
           "too-many-branches",
-          "too-many-statements"
+          "too-many-statements",
+          "too-many-lines"
           ]
 [tool.black]
 target-version = ["py312"]

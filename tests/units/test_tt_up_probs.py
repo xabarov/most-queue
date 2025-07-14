@@ -9,8 +9,7 @@ For verification, simulation is used.
 
 """
 
-import math
-
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import print_mrx
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 
@@ -21,28 +20,25 @@ UTILIZATION = 0.7
 SERVICE_TIME_CV = 1.2
 
 
-def test_calc_up_probs():
+def testcalc_up_probs():
     """
     Testing the Takahasi-Takami method calculation of up-probabilities
     """
 
     # calculate initial moments of service time based
     # on the given average and coefficient of variation
-    b = [0.0] * 3
-    alpha = 1 / (SERVICE_TIME_CV**2)
-    b[0] = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE  # average service time
-    b[1] = math.pow(b[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    b1 = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE  # average service time
+    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
     # run Takahasi-Takami method
     tt = MGnCalc(NUM_OF_CHANNELS, ARRIVAL_RATE, b)
     tt.run()
 
     for i in range(1, NUM_OF_CHANNELS + 2):
-        probs_mrx = tt._calc_up_probs(i)
+        probs_mrx = tt.calc_up_probs(i)
 
         print_mrx(probs_mrx)
 
 
 if __name__ == "__main__":
-    test_calc_up_probs()
+    testcalc_up_probs()

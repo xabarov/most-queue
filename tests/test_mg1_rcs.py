@@ -2,12 +2,12 @@
 Test the M/H2/1 and M/Gamma/1 queueing systems with RCS discipline.
 """
 
-import math
 import os
 
 import numpy as np
 import yaml
 
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -31,29 +31,13 @@ ARRIVAL_RATE_POSITIVE = float(params["arrival"]["rate"])
 ARRIVAL_RATE_NEGATIVE = 0.8 * ARRIVAL_RATE_POSITIVE
 
 
-def calc_service_moments(
-    utilization_factor: float, service_time_variation_coef: float, l_pos: float
-):
-    """
-    Gamma service time moments calculation.
-    """
-    b1 = 1 * utilization_factor / l_pos  # average service time
-
-    b = [0.0] * 3
-    alpha = 1 / (service_time_variation_coef**2)
-    b[0] = b1
-    b[1] = math.pow(b[0], 2) * (math.pow(service_time_variation_coef, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-
-    return b
-
-
 def test_mg1_gamma_rcs():
     """
     Test the  M/Gamma/1 queueing systems with RCS discipline.
     """
 
-    b = calc_service_moments(UTILIZATION_FACTOR, SERVICE_TIME_CV, ARRIVAL_RATE_POSITIVE)
+    b1 = UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE
+    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
     # Run simulation
     queue_sim = QsSimNegatives(1, NegativeServiceType.RCS)

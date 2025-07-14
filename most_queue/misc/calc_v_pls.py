@@ -101,7 +101,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                 key_numbers.append((level - i, i))
         return np.array(key_numbers, dtype=self.dt)
 
-    def _calc_up_probs(self, from_level):
+    def calc_up_probs(self, from_level):
         if from_level == self.n:
             return np.eye(self.n + 1)
         b_matrix = self.B[from_level]
@@ -198,7 +198,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             ]
         )
 
-        Pn_plus = self._calc_up_probs(self.n + 1)  # size=(4, 4)
+        Pn_plus = self.calc_up_probs(self.n + 1)  # size=(4, 4)
 
         Pa = Pn_plus * a_n  # 4,4
 
@@ -240,7 +240,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             ]
         )
 
-        Pn_plus = self._calc_up_probs(self.n + 1)
+        Pn_plus = self.calc_up_probs(self.n + 1)
 
         for k in range(self.n, self.N):
 

@@ -1,3 +1,7 @@
+"""
+Utilities to update statistics
+"""
+
 import math
 
 

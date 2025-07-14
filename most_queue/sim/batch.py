@@ -37,7 +37,36 @@ class QueueingSystemBatchSim(QsSim):
             summ += p
             self.batch_cdf.append(summ)
 
-    def arrival(self):
+    def _handle_queueing(self, ttek):
+        """Helper to manage task queuing when no free channels."""
+        if self.buffer is None:  # infinite buffer
+            new_tsk = Task(ttek)
+            new_tsk.start_waiting_time = ttek
+            self.queue.append(new_tsk)
+        else:
+            if len(self.queue) < self.buffer:
+                new_tsk = Task(ttek)
+                new_tsk.start_waiting_time = ttek
+                self.queue.append(new_tsk)
+            else:
+                self.dropped += 1
+                self.in_sys -= 1
+
+    def _handle_service_start(self, ttek):
+        """Helper to manage task service start when channels are free."""
+        for s in self.servers:
+            if s.is_free:
+                self.taked += 1
+                s.start_service(Task(ttek), ttek, False)
+                self.free_channels -= 1
+
+                # Check if busy period has started:
+                if self.free_channels == 0:
+                    if self.in_sys == self.n:
+                        self.start_busy = ttek
+                break
+
+    def arrival(self, moment=None, ts=None):
         """
         Actions upon arrival of job to QS
         """
@@ -50,41 +79,14 @@ class QueueingSystemBatchSim(QsSim):
                 break
 
         self.ttek = self.arrival_time
-
         self.arrival_time = self.ttek + self.source.generate()
 
         for _tsk in range(batch_size):
             self.arrived += 1
             self.p[self.in_sys] += self.arrival_time - self.ttek
-
             self.in_sys += 1
 
             if self.free_channels == 0:
-                if self.buffer is None:  # infinite buffer
-                    new_tsk = Task(self.ttek)
-                    new_tsk.start_waiting_time = self.ttek
-                    self.queue.append(new_tsk)
-                else:
-                    if len(self.queue) < self.buffer:
-                        new_tsk = Task(self.ttek)
-                        new_tsk.start_waiting_time = self.ttek
-                        self.queue.append(new_tsk)
-                    else:
-                        self.dropped += 1
-                        self.in_sys -= 1
-
-            else:  # there are free channels:
-
-                # check if its a warm phase:
-
-                for s in self.servers:
-                    if s.is_free:
-                        self.taked += 1
-                        s.start_service(Task(self.ttek), self.ttek, False)
-                        self.free_channels -= 1
-
-                        # Check if busy period has started:
-                        if self.free_channels == 0:
-                            if self.in_sys == self.n:
-                                self.start_busy = self.ttek
-                        break
+                self._handle_queueing(self.ttek)
+            else:
+                self._handle_service_start(self.ttek)

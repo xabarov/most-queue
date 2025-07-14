@@ -234,7 +234,7 @@ class QsSimNegatives(QsSim):
             if self.queue.size() != 0:
                 self.send_head_of_queue_to_channel(c)
 
-    def serving(self, c):
+    def serving(self, c, is_network=False):
         """
         Actions upon receipt of a service job with - channel number
         """

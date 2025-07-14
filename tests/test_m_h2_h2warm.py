@@ -2,13 +2,13 @@
 Test M/H2/n system with H2-warming using the Takahasi-Takagi method.
 """
 
-import math
 import os
 import time
 
 import numpy as np
 import yaml
 
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -47,17 +47,11 @@ def test_m_h2_h2warm():
     """
     verbose = False  # do not output explanations during calculations
 
-    b = [0.0] * 3
-    alpha = 1 / (SERVICE_TIME_CV**2)
-    b[0] = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE
-    b[1] = math.pow(b[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE
+    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
-    b_w = [0.0] * 3
-    b_w[0] = b[0] * WARM_AP_AVE_PERCENT
-    alpha = 1 / (WARM_UP_CV**2)
-    b_w[1] = math.pow(b_w[0], 2) * (math.pow(WARM_UP_CV, 2) + 1)
-    b_w[2] = b_w[1] * b_w[0] * (1.0 + 2 / alpha)
+    b_w1 = b[0] * WARM_AP_AVE_PERCENT
+    b_w = gamma_moments_by_mean_and_coev(b_w1, WARM_UP_CV)
 
     im_start = time.process_time()
     qs = VacationQueueingSystemSimulator(NUM_OF_CHANNELS)

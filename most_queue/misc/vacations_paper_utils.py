@@ -74,22 +74,6 @@ def load_stat(stat_name):
         return json.load(f)
 
 
-def calc_moments_by_mean_and_coev(mean, coev):
-    """
-    Calculate the initial three moments (mean, variance, and skewness)
-    based on the mean and coefficient of variation.
-    :param mean: The mean value of the distribution.
-    :param coev: The coefficient of variation (standard deviation divided by the mean).
-    :return: A list containing the calculated moments [mean, variance, skewness].
-    """
-    b = [0.0] * 3
-    alpha = 1 / (coev**2)
-    b[0] = mean
-    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-    return b
-
-
 def make_plot(
     experiments_stat, w_moments_num=0, param_name="ro", mode="error", save_path=None
 ):

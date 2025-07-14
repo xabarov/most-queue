@@ -1,8 +1,7 @@
-
 """
 Utils module for vacations paper
 """
-import math
+
 import os
 
 import matplotlib.pyplot as plt
@@ -12,23 +11,7 @@ import yaml
 
 def calc_rel_error_percent(sim_value: float, calc_value: float) -> float:
     """Calculate the relative error percent between a simulation value and a calculated value."""
-    return 100*(sim_value - calc_value) / sim_value if sim_value != 0 else np.inf
-
-
-def calc_moments_by_mean_and_coev(mean, coev):
-    """
-    Calculate the E[X^k] for k=0,1,2
-    for a distribution with given mean and coefficient of variation.
-    :param mean: The mean value of the distribution.
-    :param coev: The coefficient of variation (standard deviation divided by the mean).
-    :return: A list containing the calculated moments
-    """
-    b = [0.0] * 3
-    alpha = 1 / (coev ** 2)
-    b[0] = mean
-    b[1] = math.pow(b[0], 2) * (math.pow(coev, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
-    return b
+    return 100 * (sim_value - calc_value) / sim_value if sim_value != 0 else np.inf
 
 
 def plot_w1(xs, w1_num, w1_sim, x_label: str, save_path=None, is_xs_int=False):
@@ -49,7 +32,7 @@ def plot_w1(xs, w1_num, w1_sim, x_label: str, save_path=None, is_xs_int=False):
     ax.set_xlabel(x_label)
     # set xticks to be integers
     if is_xs_int:
-        ax.set_xticks(np.arange(min(xs), max(xs)+1, 1.0))
+        ax.set_xticks(np.arange(min(xs), max(xs) + 1, 1.0))
     ax.set_ylabel(r"$\omega_{1}$")
 
     if save_path:
@@ -74,7 +57,7 @@ def plot_w1_errors(xs, w1_rel_errors, x_label, save_path=None, is_xs_int=False):
     ax.set_xlabel(x_label)
     # set xticks to be integers
     if is_xs_int:
-        ax.set_xticks(np.arange(min(xs), max(xs)+1, 1.0))
+        ax.set_xticks(np.arange(min(xs), max(xs) + 1, 1.0))
     ax.set_ylabel(r"$\varepsilon$, %")
 
     if save_path:

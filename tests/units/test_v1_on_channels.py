@@ -1,3 +1,7 @@
+"""
+Test the behavior of V1 as a function of the number of channels.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,6 +22,9 @@ def linear_appoximation(channels, v1_array):
 
 
 def test_v1_on_channels():
+    """
+    Test the behavior of V1 as a function of the number of channels.
+    """
     # Define parameters
 
     utilizations = [0.5, 0.75, 0.9]  # Utilization levels to test
@@ -51,7 +58,6 @@ def test_v1_on_channels():
 
     save_path = "tests/units/v1_on_channels.png"  # Replace with your desired path
     plt.savefig(save_path)
-    plt.show()
 
     plt.close(_fig)
 

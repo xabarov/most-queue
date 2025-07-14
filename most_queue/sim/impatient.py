@@ -52,7 +52,7 @@ class ImpatientQueueSim(QsSim):
 
         self.impatience = create_distribution(params, kendall_notation, self.generator)
 
-    def arrival(self):
+    def arrival(self, moment=None, ts=None):
         """
         Actions on arrival of a task.
         """

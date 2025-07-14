@@ -9,13 +9,13 @@ For verification, simulation is used.
 
 """
 
-import math
 import os
 import time
 
 import numpy as np
 import yaml
 
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
@@ -51,11 +51,9 @@ def test_mgn_tt():
 
     # calculate initial moments of service time based
     # on the given average and coefficient of variation
-    b = [0.0] * 3
-    alpha = 1 / (SERVICE_TIME_CV**2)
-    b[0] = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
-    b[1] = math.pow(b[0], 2) * (math.pow(SERVICE_TIME_CV, 2) + 1)
-    b[2] = b[1] * b[0] * (1.0 + 2 / alpha)
+
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
+    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
     tt_start = time.process_time()
     # run Takahasi-Takami method

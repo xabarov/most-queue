@@ -106,8 +106,7 @@ class NetworkSimulator:
         arrival_earlier = 1e10  # момент прибытия ближайшего
         serving_earlier = 1e10  # момент ближайшего обслуживания
 
-        if self.arrival_time < arrival_earlier:
-            arrival_earlier = self.arrival_time
+        arrival_earlier = min(arrival_earlier, self.arrival_time)
 
         for node in range(self.n_num):
             for c in range(self.nodes[node]):

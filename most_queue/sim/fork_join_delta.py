@@ -153,7 +153,41 @@ class ForkJoinSimDelta(ForkJoinSim):
                 else:
                     self.queue.append(subtsk)
 
-    def serving(self, c):
+    def _handle_non_sj_serving(self, c, end_ts):
+        if self.served_subtask_in_task[end_ts.task_id] == self.k:
+            self.served += 1
+            self.refresh_v_stat(self.ttek - self.first_subtask_arr_time[end_ts.task_id])
+            self.in_sys -= 1
+
+        if self.queue.size() != 0:
+            que_ts = self.queue.pop()
+            self.servers[c].start_service(que_ts, self.ttek)
+            self.free_channels -= 1
+
+    def _start_service_for_brothers(self, task_id):
+        brothers_in_queue = [q for q in self.queue.queue if q.task_id == task_id]
+        for que_ts in brothers_in_queue:
+            for serv in self.servers:
+                if serv.is_free:
+                    serv.start_service(que_ts, self.ttek)
+                    self.free_channels -= 1
+                    break
+        self.queue.queue = [q for q in self.queue.queue if q.task_id != task_id]
+
+    def _handle_sj_serving(self, end_ts):
+        if self.served_subtask_in_task[end_ts.task_id] == self.k:
+            self.served += 1
+            self.refresh_v_stat(self.ttek - end_ts.arr_time)
+            self.in_sys -= 1
+
+            if self.queue.size() != 0:
+                new_task_id = self.queue.queue[0].task_id
+                self._start_service_for_brothers(new_task_id)
+        else:
+            if self.queue.size() != 0:
+                self._start_service_for_brothers(end_ts.task_id)
+
+    def serving(self, c, is_network=False):
         """
         Action on the arrival of a request for service.
         c - channel number
@@ -168,62 +202,9 @@ class ForkJoinSimDelta(ForkJoinSim):
         self.free_channels += 1
 
         if not self.is_sj:
-
-            if self.served_subtask_in_task[end_ts.task_id] == self.k:
-                self.served += 1
-                self.refresh_v_stat(
-                    self.ttek - self.first_subtask_arr_time[end_ts.task_id]
-                )
-                self.in_sys -= 1
-
-            if self.queue.size() != 0:
-                que_ts = self.queue.pop()
-                self.servers[c].start_service(que_ts, self.ttek)
-                self.free_channels -= 1
-
+            self._handle_non_sj_serving(c, end_ts)
         else:
-            if self.served_subtask_in_task[end_ts.task_id] == self.k:
-
-                self.served += 1
-                self.refresh_v_stat(self.ttek - end_ts.arr_time)
-                self.in_sys -= 1
-
-                if self.queue.size() != 0:
-
-                    new_task_id = self.queue.queue[0].task_id
-
-                    brothers = [
-                        q
-                        for q in range(self.queue.size())
-                        if self.queue.queue[q].task_id == new_task_id
-                    ]
-                    for q in brothers:
-                        que_ts = self.queue.queue[q]
-                        for serv in self.servers:
-                            if serv.is_free:
-                                serv.start_service(que_ts, self.ttek)
-                                self.free_channels -= 1
-                                break
-                    self.queue.queue = [
-                        q for q in self.queue.queue if q.task_id != new_task_id
-                    ]
-            else:
-                if self.queue.size() != 0:
-                    brothers = [
-                        q
-                        for q in range(self.queue.size())
-                        if self.queue.queue[q].task_id == end_ts.task_id
-                    ]
-                    for q in brothers:
-                        que_ts = self.queue.queue[q]
-                        for serv in self.servers:
-                            if serv.is_free:
-                                serv.start_service(que_ts, self.ttek)
-                                self.free_channels -= 1
-                                break
-                    self.queue.queue = [
-                        q for q in self.queue.queue if q.task_id != end_ts.task_id
-                    ]
+            self._handle_sj_serving(end_ts)
 
     def run_one_step(self):
         """

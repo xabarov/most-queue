@@ -427,7 +427,10 @@ class MGnCalc:
 
         return output
 
-    def _calc_up_probs(self, from_level):
+    def calc_up_probs(self, from_level):
+        """
+        Calculate up-probabilities for the given level.
+        """
 
         b_matrix = self.B[from_level]
         low_level_size = self.cols[from_level - 1]
@@ -469,7 +472,7 @@ class MGnCalc:
             ]
         )
 
-        up_transition_mrx = self._calc_up_probs(self.n + 1)  # (n + 1 x n + 1)
+        up_transition_mrx = self.calc_up_probs(self.n + 1)  # (n + 1 x n + 1)
 
         for k in range(self.n, self.N):
 

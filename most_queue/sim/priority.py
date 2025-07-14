@@ -216,7 +216,7 @@ class PriorityQueueSimulator:
             elif self.sources_params[i]["type"] == "Pa":
                 if self.sources_params[i]["params"][0] < 1:
                     return None
-                
+
                 a = self.sources_params[i]["params"][0]
                 k = self.sources_params[i]["params"][1]
                 f1 = a * k / (a - 1)
@@ -269,10 +269,10 @@ class PriorityQueueSimulator:
             elif self.servers_params[i]["type"] == "Pa":
                 if self.servers_params[i]["params"][0] < 1:
                     return math.inf
-                else:
-                    a = self.servers_params[i]["params"][0]
-                    k = self.servers_params[i]["params"][1]
-                    b1_sr += a * k / (a - 1)
+
+                a = self.servers_params[i]["params"][0]
+                k = self.servers_params[i]["params"][1]
+                b1_sr += a * k / (a - 1)
 
         return l_sum * b1_sr / (self.n * self.k)
 
@@ -481,11 +481,7 @@ class PriorityQueueSimulator:
                     self.refresh_busy_stat(k, self.ttek - self.start_busy)
 
             start_number = 0
-            if (
-                self.prty_type == "PR"
-                or self.prty_type == "RS"
-                or self.prty_type == "RW"
-            ):
+            if self.prty_type in ["PR", "RS", "RW"]:
                 # we can only look at the queue starting from the current class number
                 start_number = k
 
@@ -529,8 +525,8 @@ class PriorityQueueSimulator:
                 que_ts.wait_time += self.ttek - que_ts.start_waiting_time
                 self.servers[c].start_service(que_ts, self.ttek)
                 self.free_channels -= 1
-        if is_network:
-            return end_ts
+
+        return end_ts
 
     def swap_queue(self, last_class, new_class):
         """
@@ -598,7 +594,7 @@ class PriorityQueueSimulator:
                         )
 
         else:
-            for i in tqdm(range(total_served)):
+            for _ in tqdm(range(total_served)):
                 self.run_one_step()
 
         print(Fore.GREEN + "\rSimulation is finished")

@@ -4,9 +4,11 @@ Compare queue implementation performance
 
 import time
 
-from most_queue.rand_distribution import \
-    GammaDistribution  # For generating gamma distribution parameters
+from most_queue.rand_distribution import (
+    GammaDistribution,
+)  # For generating gamma distribution parameters
 from most_queue.sim.base import QsSim  # Main queueing system simulation class
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 
 
 def compare_calc_times():
@@ -29,12 +31,7 @@ def compare_calc_times():
 
     for buffer_type in buffer_types:
         # Calculate initial moments of service time based on mean and variation coefficient
-        moments = [0.0] * 3
-        alpha = 1 / (variation_coeff**2)
-
-        moments[0] = mean_service_time
-        moments[1] = (moments[0] ** 2) * (variation_coeff**2 + 1)
-        moments[2] = moments[1] * moments[0] * (1.0 + 2 / alpha)
+        moments = gamma_moments_by_mean_and_coev(mean_service_time, variation_coeff)
 
         # Start simulation timing for this buffer type
         sim_start_time = time.process_time()

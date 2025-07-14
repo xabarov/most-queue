@@ -220,7 +220,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
                 key_numbers.append((level - i, i))
         return np.array(key_numbers, dtype=self.dt)
 
-    def _calc_up_probs(self, from_level):
+    def calc_up_probs(self, from_level):
         if from_level == self.n:
             return np.eye(self.n + 2)
         b_matrix = self.B[from_level]
@@ -264,7 +264,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         a = np.array(a)
 
-        Pn_plus = self._calc_up_probs(self.n + 1)
+        Pn_plus = self.calc_up_probs(self.n + 1)
 
         for k in range(self.n, self.N):
 

@@ -155,7 +155,7 @@ def calc_qs_load(
     elif source_kendall_notation == "Pa":
         if source_params[0] < 1:
             return None
-        
+
         a = source_params.alpha
         k = source_params.K
         f1 = a * k / (a - 1)
@@ -198,7 +198,7 @@ def calc_qs_load(
     elif server_kendall_notation == "Pa":
         if server_params[0] < 1:
             return math.inf
-        
+
         a = server_params.alpha
         k = server_params.K
         b1 = a * k / (a - 1)

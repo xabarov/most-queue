@@ -9,8 +9,9 @@ import yaml
 
 from most_queue.general.tables import probs_print, times_print
 from most_queue.sim.priority import PriorityQueueSimulator
-from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import \
-    MMn_PRTY_PNZ_Cox_approx
+from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import (
+    MMn_PRTY_PNZ_Cox_approx,
+)
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
