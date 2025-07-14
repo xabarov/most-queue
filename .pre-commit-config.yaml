@@ -36,3 +36,13 @@ repos:
                 "-rn", # Only display messages
                 "-sn"
             ] # Don't display the score
+
+  - repo: https://github.com/christophmeissner/pytest-pre-commit
+    rev: 1.0.0
+    hooks:
+    - id: pytest
+      entry: ./.venv/bin/pytest
+      pass_filenames: false
+      always_run: true
+      args:
+      - "tests"
