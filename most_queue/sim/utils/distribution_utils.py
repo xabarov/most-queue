@@ -8,13 +8,17 @@ import math
 import yaml
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (CoxDistribution,
-                                          DeterministicDistribution,
-                                          ErlangDistribution, ExpDistribution,
-                                          GammaDistribution, H2Distribution,
-                                          NormalDistribution,
-                                          ParetoDistribution,
-                                          UniformDistribution)
+from most_queue.rand_distribution import (
+    CoxDistribution,
+    DeterministicDistribution,
+    ErlangDistribution,
+    ExpDistribution,
+    GammaDistribution,
+    H2Distribution,
+    NormalDistribution,
+    ParetoDistribution,
+    UniformDistribution,
+)
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 
 

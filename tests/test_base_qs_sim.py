@@ -78,7 +78,9 @@ def test_sim_mdn():
 
     qs.run(NUM_OF_JOBS)
 
-    mdn = MDn(ARRIVAL_RATE, 1 / mu, NUM_OF_CHANNELS)
+    mdn = MDn(n=NUM_OF_CHANNELS)
+    mdn.set_sources(l=ARRIVAL_RATE)
+    mdn.set_servers(b=1.0 / mu)
     p_num = mdn.calc_p()
     p_sim = qs.get_p()
 

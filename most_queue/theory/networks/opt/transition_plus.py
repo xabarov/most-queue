@@ -10,9 +10,11 @@ from enum import Enum
 
 import numpy as np
 
-from most_queue.theory.networks.opt.transition import (MaxLoadNodeResults,
-                                                       NetworkOptimizer,
-                                                       OptimizerDynamic)
+from most_queue.theory.networks.opt.transition import (
+    MaxLoadNodeResults,
+    NetworkOptimizer,
+    OptimizerDynamic,
+)
 
 
 @dataclass

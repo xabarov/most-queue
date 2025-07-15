@@ -5,8 +5,7 @@ Test different variants of the busy period calculation for M/G/1 queue.
 import math
 import time
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import times_print
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_lst
 

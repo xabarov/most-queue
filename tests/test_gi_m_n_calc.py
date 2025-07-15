@@ -53,7 +53,11 @@ def test_gi_m_n():
 
     # calculate initial moments of sojourn and waiting times in the queueing system
 
-    gi_m_n_calc = GiMn(a, mu, NUM_OF_CHANNELS)
+    gi_m_n_calc = GiMn(n=NUM_OF_CHANNELS)
+
+    gi_m_n_calc.set_sources(a=a)
+    gi_m_n_calc.set_servers(mu=mu)
+
     v_num = gi_m_n_calc.get_v()
     w_num = gi_m_n_calc.get_w()
 

@@ -8,8 +8,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import (CoxDistribution, FittingParams,
-                                          H2Distribution)
+from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 

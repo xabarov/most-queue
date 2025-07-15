@@ -9,8 +9,7 @@ For verification, simulation is used.
 
 """
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import print_mrx
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 

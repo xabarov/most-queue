@@ -8,10 +8,14 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from most_queue.general.distribution_params import (Cox2Params, ErlangParams,
-                                                    GammaParams, H2Params,
-                                                    ParetoParams,
-                                                    WeibullParams)
+from most_queue.general.distribution_params import (
+    Cox2Params,
+    ErlangParams,
+    GammaParams,
+    H2Params,
+    ParetoParams,
+    WeibullParams,
+)
 
 
 @dataclass

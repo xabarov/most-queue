@@ -6,8 +6,7 @@ import math
 
 import numpy as np
 
-from most_queue.rand_distribution import (ErlangDistribution,
-                                          GammaDistribution, H2Distribution)
+from most_queue.rand_distribution import ErlangDistribution, GammaDistribution, H2Distribution
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
 from most_queue.theory.vacations.mg1_warm_calc import MG1WarmCalc

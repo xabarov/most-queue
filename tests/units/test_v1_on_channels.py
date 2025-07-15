@@ -2,9 +2,11 @@
 Test the behavior of V1 as a function of the number of channels.
 """
 
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
 

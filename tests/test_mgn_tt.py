@@ -15,8 +15,7 @@ import time
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim

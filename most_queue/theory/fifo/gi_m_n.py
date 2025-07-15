@@ -7,39 +7,51 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.theory.base import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
-class GiMn:
+class GiMn(BaseQueue):
     """
     Calculation of the GI/M/n queueing system
     """
 
-    def __init__(self, a: float, mu: float, n: int, calc_params: CalcParams | None = None):
+    def __init__(self, n: int, calc_params: CalcParams | None = None):
         """
-        a - list of initial moments of the distribution of inter-renewal intervals of arrival
-        mu - service intensity
         n - number of servers in the system
-        e - tolerance for convergence
-        approx_distr - distribution approximation method, "Gamma" or "Pa" (Pareto)
-        pi_num - number of probabilities to calculate
+        calc_params - calculation parameters
         """
-        self.a = a
-        self.mu = mu
+
+        super().__init__(n=n, calc_params=calc_params)
+
         self.n = n
 
-        if calc_params is None:
-            calc_params = CalcParams()
+        self.e = self.calc_params.e
+        self.approx_distr = self.calc_params.approx_distr
+        self.pi_num = self.calc_params.p_num
 
-        self.e = calc_params.e
-        self.approx_distr = calc_params.approx_distr
-        self.pi_num = calc_params.p_num
-
-        self.w_param = self._get_w_param()
-        self.pi = self._get_pi()
+        self.w_param = None
+        self.pi = None
         self.w = None
+        self.mu = None
+        self.a = None
+
+    def set_servers(self, mu: float):
+        """
+        Setting the service intensity of GI/M/1 queueing system.
+        params:
+        mu - service intensity
+        """
+        self.mu = mu
+
+    def set_sources(self, a: list[float]):
+        """
+        Setting the sources of GI/M/1 queueing system.
+        params: a - list of initial moments of arrival distribution.
+        """
+        self.a = a
 
     def get_v(self) -> list[float]:
         """
@@ -64,6 +76,10 @@ class GiMn:
         """
         Calculate wainig time first 3 initial moments
         """
+
+        self.w_param = self.w_param or self._get_w_param()
+        self.pi = self._get_pi() or self.pi
+
         pn = self.pi[self.n]
         pls = []
         h = 0.001
@@ -81,6 +97,10 @@ class GiMn:
         """
         Calculate probabilities of states
         """
+
+        self.w_param = self.w_param or self._get_w_param()
+        self.pi = self._get_pi() or self.pi
+
         p = [0.0] * self.pi_num
         for i in range(1, self.n + 1):
             p[i] = self.pi[i - 1] / (i * self.mu * self.a[0])
@@ -97,6 +117,8 @@ class GiMn:
         """
         Calc pi probabilities using the method of moments.
         """
+        self.w_param = self.w_param or self._get_w_param()
+
         pi = [0.0] * self.pi_num
         A = np.zeros((self.n + 1, self.n + 1))
         B = np.zeros(self.n + 1)
@@ -141,6 +163,7 @@ class GiMn:
         return pi
 
     def _get_b0(self, j):
+
         if self.approx_distr == "Gamma":
             gamma_params = GammaDistribution.get_params(self.a)
             v, alpha, gs = gamma_params.mu, gamma_params.alpha, gamma_params.g
@@ -161,7 +184,7 @@ class GiMn:
             b0 = left * GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
             return b0
 
-        print("w_param calc. Unknown type of distr_type")
+        print("b0 calc. Unknown type of distr_type")
 
         return 0
 

@@ -9,17 +9,18 @@ from dataclasses import asdict
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
-from most_queue.theory.negative.structs import (DependsOnChannelsResults,
-                                                DependsOnJSONEncoder,
-                                                DependsOnUtilizationResults,
-                                                DependsOnVariationResults)
+from most_queue.theory.negative.structs import (
+    DependsOnChannelsResults,
+    DependsOnJSONEncoder,
+    DependsOnUtilizationResults,
+    DependsOnVariationResults,
+)
 
 
 def collect_calc_results(
@@ -101,9 +102,7 @@ def run_depends_on_channels(
         calc_results.append(
             collect_calc_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p)
         )
-        sim_results.append(
-            collect_sim_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p)
-        )
+        sim_results.append(collect_sim_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p))
 
     return DependsOnChannelsResults(
         calc=calc_results,
@@ -135,9 +134,7 @@ def run_depends_on_varience(
     for coef in service_time_variation_coefs:
         print(f'Service time variation coefficient: {coef:0.2f}')
         service_mean = (
-            qp['channels']['base']
-            * qp['utilization']['base']
-            / qp['arrival_rate']['positive']
+            qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']['positive']
         )
 
         b = gamma_moments_by_mean_and_coev(service_mean, coef)

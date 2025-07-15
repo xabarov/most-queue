@@ -10,13 +10,11 @@ import time
 
 import yaml
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
 from most_queue.rand_distribution import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
-from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import (
-    MPhNPrty, TakahashiTakamiParams)
+from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty, TakahashiTakamiParams
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")

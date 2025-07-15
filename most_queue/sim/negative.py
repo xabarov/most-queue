@@ -8,8 +8,7 @@ from enum import Enum
 import numpy as np
 
 from most_queue.sim.base import QsSim
-from most_queue.sim.utils.distribution_utils import (calc_qs_load,
-                                                     create_distribution)
+from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.theory.negative.structs import NegativeArrivalsResults
 

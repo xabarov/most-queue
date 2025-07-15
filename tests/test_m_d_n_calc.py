@@ -41,7 +41,10 @@ def test_mdn():
     b = UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE  # service time from given ro
 
     # calculation of the probabilities of queueing system states
-    mdn = MDn(ARRIVAL_RATE, b, NUM_OF_CHANNELS)
+    mdn = MDn(n=NUM_OF_CHANNELS)
+    mdn.set_sources(l=ARRIVAL_RATE)
+    mdn.set_servers(b=b)
+
     p_num = mdn.calc_p()
 
     # for verification, we use simulation modeling

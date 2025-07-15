@@ -8,38 +8,54 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import ErlangParams
+from most_queue.theory.base import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
-class EkDn:
+class EkDn(BaseQueue):
     """
     Numerical calculation of a multi-channel system Ek/D/n
     with deterministic service
     """
 
-    def __init__(
-        self, erlang_params: ErlangParams, b: float, n: int, calc_params: CalcParams | None = None
-    ):
+    def __init__(self, n: int, calc_params: CalcParams | None = None):
         """
-        erlang_params - parameters of the Erlang input request distribution
-        b - service time in a channel
-        n - number of channels
-        e - accuracy of calculations
+        Initializes the EkDn class.
+        :param erlang_params: parameters of the Erlang distribution.
+        :param b: service rate of the server, constant value.
+        :param n: number of channels.
+        :param calc_params: calculation parameters.
         """
 
-        if not calc_params:
-            calc_params = CalcParams()
+        super().__init__(n=n, calc_params=calc_params, buffer=None)
 
+        self.e = self.calc_params.e
+        self.p_num = self.calc_params.p_num
+
+        self.p = [0.0] * self.p_num
+        self.q_ = [0.0] * self.p_num
+        self.z_ = 0
+
+        self.w = [0.0] * (2 * self.p_num)
+
+        self.l = None
+        self.k = None
+        self.b = None
+
+    def set_sources(self, erlang_params: ErlangParams):
+        """
+        Set sources of the system.
+        :param erlang_params: parameters of the arrival process.
+        """
         self.l = erlang_params.mu
         self.k = erlang_params.r
+
+    def set_servers(self, b: float):
+        """
+        Set service rate of the server.
+        :param b: service rate of the server, constant time.
+        """
         self.b = b
-        self.n = n
-        self.e = calc_params.e
-        self.p = [0.0] * calc_params.p_num
-        self.q_ = [0.0] * calc_params.p_num
-        self.z_ = 0
-        self.p_num = calc_params.p_num
-        self.w = [0.0] * (2 * calc_params.p_num)
 
     def calc_w(self):
         """

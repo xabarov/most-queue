@@ -13,7 +13,7 @@ class CalcParams:
 
     e: float = 1e-10  # tolerance for convergence
     approx_distr: str = "Gamma"  # distribution approximation method
-    p_num: int = 100  # number of probabilities to calculate
+    p_num: int = 1000  # number of probabilities to calculate
 
 
 @dataclass

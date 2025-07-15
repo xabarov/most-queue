@@ -7,9 +7,12 @@ import math
 
 from tqdm import tqdm
 
-from most_queue.rand_distribution import (ErlangDistribution,
-                                          GammaDistribution, H2Distribution,
-                                          ParetoDistribution)
+from most_queue.rand_distribution import (
+    ErlangDistribution,
+    GammaDistribution,
+    H2Distribution,
+    ParetoDistribution,
+)
 
 
 class FlowSumSim:

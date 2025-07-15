@@ -8,8 +8,7 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.sim.utils.distribution_utils import (calc_qs_load,
-                                                     create_distribution)
+from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
 from most_queue.sim.utils.exceptions import QsWrongQueueTypeException
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server

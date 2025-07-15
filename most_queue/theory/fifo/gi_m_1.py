@@ -5,36 +5,49 @@ Calculation of the GI/M/1 queueing system
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
+from most_queue.theory.base import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
 
 
-class GiM1:
+class GiM1(BaseQueue):
     """
     Calculation of the GI/M/1 queueing system
     """
 
-    def __init__(self, a: list[float], mu: float, calc_params: CalcParams | None = None):
+    def __init__(self, calc_params: CalcParams | None = None):
         """
-        a - list of initial moments of the distribution of inter-renewal intervals of arrival
-        mu - service intensity
-        approx_distr - distribution approximation method, "Gamma" or "Pa" (Pareto)
+        calc_params: calculation parameters
         """
-        self.a = a
-        self.mu = mu
 
-        if not calc_params:
-            calc_params = CalcParams()
-        self.e = calc_params.e
-        self.approx_distr = calc_params.approx_distr
-        self.p_num = calc_params.p_num
+        super().__init__(n=1, calc_params=calc_params)
 
-        self.w_param = self._get_w_param()
+        self.e = self.calc_params.e
+        self.approx_distr = self.calc_params.approx_distr
+        self.p_num = self.calc_params.p_num
 
+        self.w_param = None
+        self.mu = None
+        self.a = None
         self.v = None
         self.w = None
         self.pi = None
+
+    def set_servers(self, mu: float):
+        """
+        Setting the service intensity of GI/M/1 queueing system.
+        params:
+        mu - service intensity
+        """
+        self.mu = mu
+
+    def set_sources(self, a: list[float]):
+        """
+        Setting the sources of GI/M/1 queueing system.
+        params: a - list of initial moments of arrival distribution.
+        """
+        self.a = a
 
     def get_pi(self):
         """
@@ -42,6 +55,8 @@ class GiM1:
         params:
         num - number of states to calculate
         """
+
+        self.w_param = self.w_param or self._get_w_param()
 
         pi = [0.0] * self.p_num
 
@@ -63,6 +78,8 @@ class GiM1:
         e - accuracy
         approx_distr - approximation distribution for the arrival process
         """
+
+        self.w_param = self.w_param or self._get_w_param()
         v = [0.0] * num
         for k in range(num):
             v[k] = math.factorial(k + 1) / pow(self.mu * (1 - self.w_param), k + 1)
@@ -73,6 +90,8 @@ class GiM1:
         Calculation of the initial moments of the waiting time
          num - number of moments
         """
+
+        self.w_param = self.w_param or self._get_w_param()
 
         if self.v is None:
             self.v = self.get_v(num)
@@ -92,6 +111,9 @@ class GiM1:
         Calculation of probabilities of QS states
         num - number of states
         """
+
+        self.w_param = self.w_param or self._get_w_param()
+
         ro = 1.0 / (self.a[0] * self.mu)
         p = [0.0] * self.p_num
         p[0] = 1 - ro

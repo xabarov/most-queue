@@ -4,10 +4,15 @@ QS channels or servers
 
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (CoxDistribution, ErlangDistribution,
-                                          ExpDistribution, GammaDistribution,
-                                          H2Distribution, NormalDistribution,
-                                          ParetoDistribution)
+from most_queue.rand_distribution import (
+    CoxDistribution,
+    ErlangDistribution,
+    ExpDistribution,
+    GammaDistribution,
+    H2Distribution,
+    NormalDistribution,
+    ParetoDistribution,
+)
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.tasks import Task

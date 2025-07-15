@@ -5,11 +5,7 @@ from cooling import run_cool_ave, run_cool_cv
 from cooling_delay import run_cool_delay_average, run_cool_delay_cv
 from service import run_service_cv
 from utilization import run_utilization
-from utils import (
-    create_new_experiment_dir,
-    read_parameters_from_yaml,
-    save_parameters_as_yaml,
-)
+from utils import create_new_experiment_dir, read_parameters_from_yaml, save_parameters_as_yaml
 from warmup import run_warmup_ave, run_warmup_cv
 
 

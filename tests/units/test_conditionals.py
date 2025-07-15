@@ -9,11 +9,12 @@ import pytest
 import yaml
 
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import (ExpDistribution, H2Distribution,
-                                          H2Params)
-from most_queue.theory.utils.conditional import (calc_b_min_h2_and_exp,
-                                                 moments_exp_less_than_h2,
-                                                 moments_h2_less_than_exp)
+from most_queue.rand_distribution import ExpDistribution, H2Distribution, H2Params
+from most_queue.theory.utils.conditional import (
+    calc_b_min_h2_and_exp,
+    moments_exp_less_than_h2,
+    moments_h2_less_than_exp,
+)
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")

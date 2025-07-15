@@ -4,10 +4,10 @@ Compare queue implementation performance
 
 import time
 
-from most_queue.general.distribution_fitting import \
-    gamma_moments_by_mean_and_coev
-from most_queue.rand_distribution import \
-    GammaDistribution  # For generating gamma distribution parameters
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.rand_distribution import (
+    GammaDistribution,
+)  # For generating gamma distribution parameters
 from most_queue.sim.base import QsSim  # Main queueing system simulation class
 
 

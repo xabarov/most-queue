@@ -4,12 +4,8 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 
 import math
 
-from most_queue.rand_distribution import (GammaDistribution,
-                                          ParetoDistribution,
-                                          UniformDistribution)
-from most_queue.theory.utils.q_poisson_arrival_calc import (get_q_gamma,
-                                                            get_q_pareto,
-                                                            get_q_uniform)
+from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
+from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
 
 
 class MG1Calculation:

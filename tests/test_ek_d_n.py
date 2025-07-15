@@ -61,7 +61,10 @@ def test_ek_d_n():
     b = ARRIVAL_TIME_AVERAGE * NUM_OF_CHANNELS * UTILIZATION_FACTOR
 
     # create an instance of the class for numerical calculation
-    ekdn = EkDn(erl_params, b, NUM_OF_CHANNELS)
+    ekdn = EkDn(n=NUM_OF_CHANNELS)
+
+    ekdn.set_sources(erl_params)
+    ekdn.set_servers(b)
 
     # start calculating the probabilities of the QS states
     p_num = ekdn.calc_p()

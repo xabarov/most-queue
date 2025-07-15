@@ -6,13 +6,17 @@ Version with additional features and optimizations.
 
 import numpy as np
 
-from most_queue.theory.networks.opt.transition import (ChildLoadBalanceResults,
-                                                       LoadBalanceResults,
-                                                       MaxLoadNodeResults,
-                                                       NetworkOptimizer,
-                                                       OptimizerDynamic)
+from most_queue.theory.networks.opt.transition import (
+    ChildLoadBalanceResults,
+    LoadBalanceResults,
+    MaxLoadNodeResults,
+    NetworkOptimizer,
+    OptimizerDynamic,
+)
 from most_queue.theory.utils.utilization_approx import (
-    find_delta_utilization, v1_on_utilization_approx)
+    find_delta_utilization,
+    v1_on_utilization_approx,
+)
 
 
 class NetworkOptimizerWithApprox(NetworkOptimizer):

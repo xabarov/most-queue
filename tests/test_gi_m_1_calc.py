@@ -48,7 +48,10 @@ def test_gi_m_1():
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
     # calculation of initial moments of time spent and waiting in the queueing system
-    gm1_calc = GiM1(a, mu)
+    gm1_calc = GiM1()
+    gm1_calc.set_sources(a)
+    gm1_calc.set_servers(mu)
+
     v_num = gm1_calc.get_v()
     w_num = gm1_calc.get_w()
 

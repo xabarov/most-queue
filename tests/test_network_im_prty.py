@@ -11,8 +11,7 @@ import yaml
 from most_queue.general.tables import times_print_with_classes
 from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
-from most_queue.theory.networks.open_network_prty import \
-    OpenNetworkCalcPriorities
+from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")

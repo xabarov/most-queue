@@ -7,32 +7,43 @@ import math
 
 import numpy as np
 
+from most_queue.theory.base import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
-class MDn:
+class MDn(BaseQueue):
     """
     Numerical calculation of an M/D/n system.
     """
 
-    def __init__(self, l, b, n, calc_params: CalcParams | None = None):
+    def __init__(self, n: int, calc_params: CalcParams | None = None):
         """
         Parameters:
-        l - arrival rate of incoming stream
-        b - service time in the channel
         n - number of channels
-        e - tolerance for convergence in iterative calculations. Default is 1e-12.
-        p_num - maximum number of probabilities to calculate. Default is 100.
+        calc_params - parameters for calculation
         """
 
-        if calc_params is None:
-            calc_params = CalcParams()
+        super().__init__(n=n, calc_params=calc_params)
+
+        self.p_num = self.calc_params.p_num
+        self.e = self.calc_params.e
+        self.p = [0.0] * self.calc_params.p_num
+
+        self.l = None
+        self.b = None
+
+    def set_sources(self, l: float):
+        """
+        Set the arrival rate of markovian arrival distribution.
+        :param l: arrival rate
+        """
         self.l = l
+
+    def set_servers(self, b: float):
+        """
+        Set service time of deterministic service.
+        """
         self.b = b
-        self.n = n
-        self.p_num = calc_params.p_num
-        self.e = calc_params.e
-        self.p = [0.0] * calc_params.p_num
 
     def calc_p(self):
         """

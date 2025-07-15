@@ -9,15 +9,28 @@ import scipy.special as sp
 from scipy import stats
 
 from most_queue.general.distribution_fitting import (
-    FittingParams, calc_gamma_func, fit_cox, fit_erlang, fit_gamma, fit_h2,
-    fit_h2_clx, fit_pareto_by_mean_and_coev, fit_pareto_moments, fit_weibull,
-    gamma_moments_by_mean_and_coev)
-from most_queue.general.distribution_params import (Cox2Params, ErlangParams,
-                                                    GammaParams,
-                                                    GaussianParams, H2Params,
-                                                    ParetoParams,
-                                                    UniformParams,
-                                                    WeibullParams)
+    FittingParams,
+    calc_gamma_func,
+    fit_cox,
+    fit_erlang,
+    fit_gamma,
+    fit_h2,
+    fit_h2_clx,
+    fit_pareto_by_mean_and_coev,
+    fit_pareto_moments,
+    fit_weibull,
+    gamma_moments_by_mean_and_coev,
+)
+from most_queue.general.distribution_params import (
+    Cox2Params,
+    ErlangParams,
+    GammaParams,
+    GaussianParams,
+    H2Params,
+    ParetoParams,
+    UniformParams,
+    WeibullParams,
+)
 from most_queue.general.interfaces import Distribution
 
 

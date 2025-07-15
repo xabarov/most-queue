@@ -2,24 +2,28 @@
 Run one simulation vs calculation for queueing system.
 with H2-warming, H2-cooling and H2-delay of cooling starts.
 """
+
 import time
 
 import numpy as np
+from utils import calc_moments_by_mean_and_coev
+
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
-    MGnH2ServingColdWarmDelay,
-)
-
-from utils import calc_moments_by_mean_and_coev
+from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
 
 
-def run_calculation(arrival_rate: float, b: list[float],
-                    b_w: list[float], b_c: list[float], b_d: list[float],
-                    num_channels: int):
+def run_calculation(
+    arrival_rate: float,
+    b: list[float],
+    b_w: list[float],
+    b_c: list[float],
+    b_d: list[float],
+    num_channels: int,
+):
     """
-    Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay 
+    Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay
     of the start of cooling using Takahasi-Takami method.
     Args:
        arrival_rate (float): The arrival rate of the queue.
@@ -33,8 +37,7 @@ def run_calculation(arrival_rate: float, b: list[float],
     """
     num_start = time.process_time()
 
-    solver = MGnH2ServingColdWarmDelay(
-        arrival_rate, b, b_w, b_c, b_d, num_channels)
+    solver = MGnH2ServingColdWarmDelay(arrival_rate, b, b_w, b_c, b_d, num_channels)
 
     solver.run()
 
@@ -51,11 +54,18 @@ def run_calculation(arrival_rate: float, b: list[float],
     return stat
 
 
-def run_simulation(arrival_rate: float, b: list[float],
-                   b_w: list[float], b_c: list[float], b_d: list[float],
-                   num_channels: int, num_of_jobs: int = 300_000, ave_num: int = 10):
+def run_simulation(
+    arrival_rate: float,
+    b: list[float],
+    b_w: list[float],
+    b_c: list[float],
+    b_d: list[float],
+    num_channels: int,
+    num_of_jobs: int = 300_000,
+    ave_num: int = 10,
+):
     """
-    Run simulation for an M/H2/n queue with H2-warming, 
+    Run simulation for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay before cooling starts.
     Args:
        arrival_rate (float): The arrival rate of the queue.
@@ -118,28 +128,39 @@ def run_simulation(arrival_rate: float, b: list[float],
 if __name__ == "__main__":
 
     from utils import read_parameters_from_yaml
-    
+
     qp = read_parameters_from_yaml("works/vacations/base_parameters.yaml")
 
-    SERVICE_TIME_MEAN = qp['channels']['base']*qp['utilization']['base']/qp['arrival_rate']
+    SERVICE_TIME_MEAN = qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']
 
     # Calculate initial moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
-    b_service = calc_moments_by_mean_and_coev(
-        SERVICE_TIME_MEAN, qp['service']['cv']['base'])
+    b_service = calc_moments_by_mean_and_coev(SERVICE_TIME_MEAN, qp['service']['cv']['base'])
     b_warmup = calc_moments_by_mean_and_coev(
-        qp['warmup']['mean']['base'], qp['warmup']['cv']['base'])
-    b_cooling = calc_moments_by_mean_and_coev(qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
+        qp['warmup']['mean']['base'], qp['warmup']['cv']['base']
+    )
+    b_cooling = calc_moments_by_mean_and_coev(
+        qp['cooling']['mean']['base'], qp['cooling']['cv']['base']
+    )
     b_delay = calc_moments_by_mean_and_coev(qp['delay']['mean']['base'], qp['delay']['cv']['base'])
 
     num_results = run_calculation(
-        arrival_rate=qp['arrival_rate'], num_channels=qp['channels']['base'], b=b_service,
-        b_w=b_warmup, b_c=b_cooling, b_d=b_delay
+        arrival_rate=qp['arrival_rate'],
+        num_channels=qp['channels']['base'],
+        b=b_service,
+        b_w=b_warmup,
+        b_c=b_cooling,
+        b_d=b_delay,
     )
     sim_results = run_simulation(
-        arrival_rate=qp['arrival_rate'], num_channels=qp['channels']['base'], b=b_service,
-        b_w=b_warmup, b_c=b_cooling, b_d=b_delay, num_of_jobs=qp['jobs_per_sim'],
-        ave_num=qp['sim_to_average']
+        arrival_rate=qp['arrival_rate'],
+        num_channels=qp['channels']['base'],
+        b=b_service,
+        b_w=b_warmup,
+        b_c=b_cooling,
+        b_d=b_delay,
+        num_of_jobs=qp['jobs_per_sim'],
+        ave_num=qp['sim_to_average'],
     )
 
     probs_print(p_sim=sim_results["p"], p_num=num_results["p"], size=10)

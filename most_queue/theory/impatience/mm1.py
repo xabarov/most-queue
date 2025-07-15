@@ -4,6 +4,8 @@ Calc M/M/1 queue with exponential impatience.
 
 import math
 
+from most_queue.theory.calc_params import CalcParams
+
 
 class MM1Impatience:
     """
@@ -15,22 +17,24 @@ class MM1Impatience:
         l: float,
         mu: float,
         gamma: float,
-        tol: float = 1e-12,
-        probs_max_num: int = 100000,
+        calc_params: CalcParams | None = None,
     ):
         """
         Initialization of the MM1Impatience class.
-        :param l: Arrival rate
-        :param mu: Service rate
-        :param gamma: Impatience rate
-        :param tol: Tolerance for convergence in iterative calculations. Default is 1e-12.
-        :param probs_max_num: Maximum number of probabilities to calculate. Default is 100000.
+        :param l: Arrival rate.
+        :param mu: Service rate.
+        :param gamma: Impatience rate.
+        :param calc_params: Calculation parameters.
         """
+
+        if calc_params is None:
+            calc_params = CalcParams()
+
         self.l = l
         self.mu = mu
         self.gamma = gamma
-        self.tol = tol
-        self.probs_max_num = probs_max_num
+        self.tol = calc_params.e
+        self.probs_max_num = calc_params.p_num
 
         self.probs = self._calc_p()
 

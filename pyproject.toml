@@ -12,7 +12,9 @@ disable = ["invalid-name",
           "too-many-branches",
           "too-many-statements",
           "too-many-arguments",
-          "too-many-lines"
+          "too-many-lines",
+          "import-error",
+          "ungrouped-imports"
           ]
 [tool.black]
 target-version = ["py312"]
