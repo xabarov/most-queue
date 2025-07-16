@@ -20,7 +20,7 @@ class CalcParams:
 class TakahashiTakamiParams(CalcParams):
     """Parameters for the Takahashi-Takami method."""
 
-    N: int = 150
+    N: int = 200
     dtype: str = "c16"
     verbose: bool = False
     max_iter: int = 300

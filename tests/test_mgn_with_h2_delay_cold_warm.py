@@ -55,7 +55,7 @@ def run_calculation(
     b_c: list[float],
     b_d: list[float],
     num_channels: int,
-):
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay
     of the start of cooling using Takahasi-Takami method.
@@ -99,7 +99,7 @@ def run_simulation(
     num_channels: int,
     num_of_jobs: int = 300_000,
     ave_num: int = 10,
-):
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Run simulation for an M/H2/n queue with H2-warming,
     H2-cooling and H2-delay before cooling starts.

@@ -13,7 +13,9 @@ class QueueingSystemBatchSim(QsSim):
 
     """
 
-    def __init__(self, num_of_channels, batch_prob, buffer=None, verbose=True, buffer_type="list"):
+    def __init__(
+        self, num_of_channels, batch_prob, buffer=None, verbose=True, buffer_type="list"
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         :param num_of_channels: int : number of channels (servers)
         :param batch_prob: list : probabilities for different batch sizes

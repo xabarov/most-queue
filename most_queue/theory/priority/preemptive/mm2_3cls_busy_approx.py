@@ -9,7 +9,7 @@ import numpy as np
 from most_queue.rand_distribution import CoxDistribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.busy_periods import busy_calc
-from most_queue.theory.utils.passage_time import PassageTimeCalculation
+from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
 class MM2BusyApprox3Classes(MGnCalc):
@@ -186,7 +186,7 @@ class MM2BusyApprox3Classes(MGnCalc):
                 for j in range(c_cols):
                     c_sum += c_matrix[row, j]
                 D[i][row, row] = a_sum + b_sum + c_sum
-        pass_time = PassageTimeCalculation(A, B, C, D)
+        pass_time = PassageTimeCalculation(transition_matrices=TransitionMatrices(A, B, C, D))
 
         pass_time.calc()
 

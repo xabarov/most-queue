@@ -26,7 +26,7 @@ class ForkJoinSimDelta(ForkJoinSim):
         buffer=None,
         buffer_type="list",
         verbose=True,
-    ):
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         :param num_of_channels: int : number of channels (servers)
         :param num_of_parts: int : number of parts on which the task is divided

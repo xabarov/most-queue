@@ -26,7 +26,7 @@ def plot_sim_vs_calc_moments(
     is_errors=False,
     is_waiting_time=True,
     save_path=None,
-):
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Plots the simulation and calculated moments for a given list of x values.
     :param xs: A list of x values (e.g., utilization factors or number of channels).

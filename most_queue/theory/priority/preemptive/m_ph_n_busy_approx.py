@@ -10,7 +10,7 @@ import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
-from most_queue.theory.utils.passage_time import PassageTimeCalculation
+from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
 class MPhNPrty(MGnCalc):
@@ -263,10 +263,9 @@ class MPhNPrty(MGnCalc):
             self.big_d_for_busy.append(self._build_big_d_for_busy_periods(i))
 
         pass_time = PassageTimeCalculation(
-            self.big_a_for_busy,
-            self.big_b_for_busy,
-            self.big_c_for_busy,
-            self.big_d_for_busy,
+            transition_matrices=TransitionMatrices(
+                A=self.big_a_for_busy, B=self.big_b_for_busy, C=self.big_c_for_busy, D=self.big_d_for_busy
+            ),
             is_clx=True,
             is_verbose=self.verbose,
         )

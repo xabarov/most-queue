@@ -16,7 +16,7 @@ def times_print(
     header=None,
     sim_header="Sim",
     calc_header="Num",
-):
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:
@@ -76,7 +76,7 @@ def times_print_with_two_numerical(
     is_w=True,
     num1_header="Num1",
     num2_header="Num2",
-):
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:

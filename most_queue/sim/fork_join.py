@@ -41,7 +41,7 @@ class ForkJoinSim(QsSim):
         buffer=None,
         buffer_type="list",
         verbose=True,
-    ):
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         :param num_of_channels: int : number of channels in the system
                                       (number of parts a task is split into)

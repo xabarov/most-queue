@@ -33,11 +33,6 @@ disable = [
   "too-many-locals",
   "too-many-branches",
   "too-many-statements",
-  "too-many-arguments",
-  "too-many-lines",
-  "import-error",
-  "ungrouped-imports",
-  "too-many-positional-arguments"
 ]
 
 [tool.pylint.format]

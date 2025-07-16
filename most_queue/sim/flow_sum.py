@@ -20,7 +20,9 @@ class FlowSumSim:
     Input flows sum simulation
     """
 
-    def __init__(self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000):
+    def __init__(
+        self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         self.n = len(a)
         self.a = a
         self.distr = distr

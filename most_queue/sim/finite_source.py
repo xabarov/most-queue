@@ -23,7 +23,7 @@ class QueueingFiniteSourceSim(QsSim):
         buffer=None,
         verbose=True,
         buffer_type="list",
-    ):
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         num_of_channels - number of channels in the system.
         number_of_sources - number of sources.

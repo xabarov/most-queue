@@ -36,7 +36,7 @@ class QsSimNegatives(QsSim):
         buffer: int | None = None,
         verbose: bool = True,
         buffer_type: str = "list",
-    ):
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system

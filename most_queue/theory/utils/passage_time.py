@@ -4,9 +4,22 @@ Class for calculating the passage time of a Markov chain.
 
 import copy
 import math
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+
+
+@dataclass
+class TransitionMatrices:
+    """
+    Transition matrices of a Markov chain.
+    """
+
+    A: list[npt.ArrayLike]
+    B: list[npt.ArrayLike]
+    C: list[npt.ArrayLike]
+    D: list[npt.ArrayLike]
 
 
 class PassageTimeCalculation:
@@ -16,31 +29,25 @@ class PassageTimeCalculation:
 
     def __init__(
         self,
-        A: list[npt.ArrayLike],
-        B: list[npt.ArrayLike],
-        C: list[npt.ArrayLike],
-        D: list[npt.ArrayLike],
+        transition_matrices: TransitionMatrices,
         is_clx=True,
         is_verbose=False,
         l_tilda=None,
     ):
         """
         Initialize the PassageTimeCalculation class.
-        :param A: list of matrices A for each level
-        :param B: list of matrices B for each level
-        :param C: list of matrices C for each level
-        :param D: list of matrices D for each level
+        :param transition_matrices: TransitionMatrices object containing the transition matrices for each levels
         :param is_clx: if True, the chain is complex (has different levels)
         :param is_verbose: if True, print intermediate results
         :param l_tilda: index of the last level with different matrices, default is len(D) - 1
         """
-        self.A_input = A
-        self.B_input = B
-        self.C_input = C
-        self.D_input = D
+        self.A_input = transition_matrices.A
+        self.B_input = transition_matrices.B
+        self.C_input = transition_matrices.C
+        self.D_input = transition_matrices.D
         if not l_tilda:
             # number of levels with different matrices
-            self.l_tilda = len(D) - 1
+            self.l_tilda = len(transition_matrices.D) - 1
         else:
             self.l_tilda = l_tilda
         self.e = 1e-9
@@ -52,7 +59,7 @@ class PassageTimeCalculation:
         self.Lr = []
         self.G = []
         self.is_clx = is_clx
-        n_l_max = D[self.l_tilda].shape[0]
+        n_l_max = transition_matrices.D[self.l_tilda].shape[0]
         if is_clx:
             self.G_l_tilda = np.zeros((n_l_max, n_l_max), dtype="complex64")
         else:

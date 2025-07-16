@@ -493,7 +493,9 @@ class MH2nH2Warm(MGnCalc):
 
         return chisl / (znam - znam2)
 
-    def _insert_standart_A_into(self, mass, l, y1, left_pos, bottom_pos, level):
+    def _insert_standart_A_into(
+        self, mass, l, y1, left_pos, bottom_pos, level
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         row_num = level
         for i in range(row_num):
             mass[i + left_pos, i + bottom_pos] = l * y1
@@ -540,7 +542,9 @@ class MH2nH2Warm(MGnCalc):
 
         return output
 
-    def _insert_standart_B_into(self, mass, y, mu, left_pos, bottom_pos, level, n):
+    def _insert_standart_B_into(
+        self, mass, y, mu, left_pos, bottom_pos, level, n
+    ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         col = level
         for i in range(col):
             if level <= n:

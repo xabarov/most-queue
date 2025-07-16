@@ -10,7 +10,7 @@ import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
-from most_queue.theory.utils.passage_time import PassageTimeCalculation
+from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
 class MMnPR2ClsBusyApprox(MGnCalc):
@@ -326,7 +326,7 @@ class MMnPR2ClsBusyApprox(MGnCalc):
                     output[i, i] = sumA + sumB + sumC
             D.append(output)
 
-        pass_time = PassageTimeCalculation(A, B, C, D, is_clx=True)
+        pass_time = PassageTimeCalculation(transition_matrices=TransitionMatrices(A, B, C, D), is_clx=True)
         pass_time.calc()
 
         # Z_gap = pass_time.Z_gap_calc(10,0)
