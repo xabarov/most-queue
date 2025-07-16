@@ -68,7 +68,10 @@ def test_fj_delta():
     print(f"{'Split-Join QS with service start delay':^60s}")
     print("-" * 60)
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV}")
-    print(f"Average delay before service start: {SERVICE_TIME_DELTA_AVERAGE:.3f}")
+    print(
+        f"Average delay before service start: {
+            SERVICE_TIME_DELTA_AVERAGE:.3f}"
+    )
     print(f"Coefficient of variation of delay: {SERVICE_TIME_CV:.3f}")
     print(f"Utilization coefficient: {ro:.3f}")
 

@@ -7,25 +7,43 @@ import math
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
 
+from most_queue.theory.base import BaseQueue
 
-class MG1Calculation:
+
+class MG1Calculation(BaseQueue):
     """
     Calculation of M/G/1 queue characteristics using the method of moments.
     """
 
-    def __init__(self, l: float, b: list[float]):
+    def __init__(self):
         """
-        :param l: arrival rate
-        :param b: initial moments of service time distribution
+        Initialize the MG1Calculation class.
+        """
+        super().__init__(n=1)
+
+    def set_sources(self, l: float):
+        """
+        Set the arrival rate.
         """
         self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):
+        """
+        Set the initial moments of service time distribution.
+        """
         self.b = b
+        self.is_servers_set = True
 
     def get_w(self, num=3) -> list[float]:
         """
         Calculate the initial moments of waiting time for M/G/1 queue.
         """
+
+        self._check_if_servers_and_sources_set()
+
         num_of_mom = min(len(self.b) - 1, num)
+
         w = [0.0] * (num_of_mom + 1)
         w[0] = 1
         for k in range(1, num_of_mom + 1):
@@ -44,6 +62,9 @@ class MG1Calculation:
         """
         Calculate the initial moments of sojournin the system for M/G/1 queue.
         """
+
+        self._check_if_servers_and_sources_set()
+
         num_of_mom = min(len(self.b) - 1, num)
 
         w = self.get_w(num_of_mom)
@@ -62,6 +83,8 @@ class MG1Calculation:
         num: number of state probabilities to output
         dist_type: type of service time distribution
         """
+
+        self._check_if_servers_and_sources_set()
 
         if dist_type == "Gamma":
             gamma_param = GammaDistribution.get_params(self.b)

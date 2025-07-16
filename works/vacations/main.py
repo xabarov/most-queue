@@ -25,21 +25,21 @@ def run_all(qp: dict):
     run_service_cv(qp, save_path=results_path)
     run_utilization(qp, save_path=results_path)
 
-    cool_delay_path = os.path.join(results_path, 'cooling_delay')
+    cool_delay_path = os.path.join(results_path, "cooling_delay")
     if not os.path.exists(cool_delay_path):
         os.makedirs(cool_delay_path)
 
     run_cool_delay_average(qp, save_path=cool_delay_path)
     run_cool_delay_cv(qp, save_path=cool_delay_path)
 
-    cooling_path = os.path.join(results_path, 'cooling')
+    cooling_path = os.path.join(results_path, "cooling")
     if not os.path.exists(cooling_path):
         os.makedirs(cooling_path)
 
     run_cool_ave(qp, save_path=cooling_path)
     run_cool_cv(qp, save_path=cooling_path)
 
-    warmup_path = os.path.join(results_path, 'warmup')
+    warmup_path = os.path.join(results_path, "warmup")
     if not os.path.exists(warmup_path):
         os.makedirs(warmup_path)
 
@@ -51,6 +51,6 @@ if __name__ == "__main__":
 
     # read parameters from yaml file with path base_parameters.yaml
 
-    base_qp = read_parameters_from_yaml('works/vacations/base_parameters.yaml')
+    base_qp = read_parameters_from_yaml("works/vacations/base_parameters.yaml")
 
     run_all(base_qp)

@@ -164,7 +164,7 @@ class NetworkOptimizer:
 
         print(f"|{first_col:^8}|", end="")
         for i in range(self.rows - 1):
-            print(f"{i+1:^8}|", end="")
+            print(f"{i + 1:^8}|", end="")
 
         print(f"{v1_header:^12}|")
 

@@ -50,7 +50,11 @@ class SubTask:
         SubTask.sub_task_id += 1
 
     def __str__(self):
-        res = f"{Fore.GREEN}\tSubTask #{self.id}{Style.RESET_ALL} parent Task #{self.task_id}\n"
+        res = f"{
+            Fore.GREEN}\tSubTask #{
+            self.id}{
+            Style.RESET_ALL} parent Task #{
+                self.task_id}\n"
         res += f"\t\t{Fore.BLUE}Arrival time: {self.arr_time}{Style.RESET_ALL}\n"
         return res
 
@@ -116,7 +120,10 @@ class TaskPriority:
         res += f"  {Fore.CYAN}{arr_time_str}{Style.RESET_ALL}\n"
         if self.time_to_end_service != 0:
             res += f"{tab}\t{Fore.MAGENTA}End service moment:{Style.RESET_ALL}"
-            res += f" {Fore.LIGHTGREEN_EX}{self.time_to_end_service:.3f}{Style.RESET_ALL}\n"
+            res += f" {
+                Fore.LIGHTGREEN_EX}{
+                self.time_to_end_service:.3f}{
+                Style.RESET_ALL}\n"
 
         return res
 
@@ -132,8 +139,14 @@ class ImpatientTask(Task):
 
     def __str__(self):
         report = f"{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n"
-        report += f"{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n"
-        report += f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}"
+        report += f"{
+            Fore.BLUE}Arrival moment: {
+            self.arr_time:8.3f}{
+            Style.RESET_ALL}\n"
+        report += f"{
+            Fore.CYAN}Moment to leave: {
+            self.moment_to_leave:8.3f}{
+            Style.RESET_ALL}"
         return report
 
 
@@ -154,5 +167,8 @@ class ImpatientTaskWithRepairs(ImpatientTask):
             f"{Fore.GREEN}Task # {self.id}{Style.RESET_ALL}\n"
             f"{Fore.BLUE}Arrival moment: {self.arr_time:8.3f}{Style.RESET_ALL}\n"
             f"{Fore.CYAN}Moment to leave: {self.moment_to_leave:8.3f}{Style.RESET_ALL}\n"
-            f"{Fore.MAGENTA}Arrive in repair mode: {self.arrive_in_repair_mode}{Style.RESET_ALL}"
+            f"{
+                Fore.MAGENTA}Arrive in repair mode: {
+                self.arrive_in_repair_mode}{
+                Style.RESET_ALL}"
         )

@@ -39,7 +39,13 @@ class SummatorNumeric:
 
         for i in range(n - 1):
             if self.verbose:
-                print(f"Summation of flows. Start calculation {i + 1} from {n - 1}.")
+                print(
+                    f"Summation of flows. Start calculation {
+                        i +
+                        1} from {
+                        n -
+                        1}."
+                )
             if not self.is_semi:
                 f1 = self.sum_2_H2_flows(self.a[0], self.a[1])
             else:

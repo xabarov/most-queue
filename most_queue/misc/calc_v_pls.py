@@ -241,7 +241,8 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         w = self.get_w(derivate=False)
 
-        # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg, mu2=mu2+l_neg)
+        # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg,
+        # mu2=mu2+l_neg)
 
         params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         #

@@ -14,7 +14,7 @@ def run_channels(qp, save_path: str = None):
     """
     Run simulation and calculation for different number of channels and plot the results.
     """
-    channels = np.arange(qp['channels']['min'], qp['channels']['max'] + 1)
+    channels = np.arange(qp["channels"]["min"], qp["channels"]["max"] + 1)
 
     w1_num = []
     w1_sim = []
@@ -23,28 +23,28 @@ def run_channels(qp, save_path: str = None):
     total_num_time = 0
     total_sim_time = 0
 
-    b_w = calc_moments_by_mean_and_coev(qp['warmup']['mean']['base'], qp['warmup']['cv']['base'])
-    b_c = calc_moments_by_mean_and_coev(qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
-    b_d = calc_moments_by_mean_and_coev(qp['delay']['mean']['base'], qp['delay']['cv']['base'])
+    b_w = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     for n in channels:
         print(f"Start {n} channels...")
-        service_mean = n * qp['utilization']['base'] / qp['arrival_rate']
+        service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]
 
-        b = calc_moments_by_mean_and_coev(service_mean, qp['service']['cv']['base'])
+        b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
         num_results = run_calculation(
-            arrival_rate=qp['arrival_rate'], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d
+            arrival_rate=qp["arrival_rate"], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d
         )
         sim_results = run_simulation(
-            arrival_rate=qp['arrival_rate'],
+            arrival_rate=qp["arrival_rate"],
             num_channels=n,
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
-            num_of_jobs=qp['jobs_per_sim'],
-            ave_num=qp['sim_to_average'],
+            num_of_jobs=qp["jobs_per_sim"],
+            ave_num=qp["sim_to_average"],
         )
 
         w1_num.append(num_results["w"][0])
@@ -60,7 +60,7 @@ def run_channels(qp, save_path: str = None):
     print(f"Total process time for sim: {total_sim_time:.4g}")
 
     if save_path:
-        w1_save_path = os.path.join(save_path, 'w1_vs_channels.png')
+        w1_save_path = os.path.join(save_path, "w1_vs_channels.png")
         plot_w1(
             channels,
             w1_num,
@@ -70,7 +70,7 @@ def run_channels(qp, save_path: str = None):
             is_xs_int=True,
         )
 
-        w1_errors_save_path = os.path.join(save_path, 'w1_errors_vs_channels.png')
+        w1_errors_save_path = os.path.join(save_path, "w1_errors_vs_channels.png")
         plot_w1_errors(
             channels,
             w1_rel_errors,

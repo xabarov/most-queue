@@ -88,7 +88,9 @@ class SplitJoinCalc:
 
         # Further calculation as in a regular M/G/1 queueing system with
         # initial moments of the distribution maximum of the random variable
-        mg1 = MG1Calculation(self.l, self.b_max)
+        mg1 = MG1Calculation()
+        mg1.set_sources(self.l)
+        mg1.set_servers(self.b_max)
         return mg1.get_v()
 
     def get_v_delta(self, b_delta: list[float] | float) -> list[float]:

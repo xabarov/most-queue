@@ -42,12 +42,14 @@ def test_gi_m_1():
     a1 = 1 / ARRIVAL_RATE  # average interval between requests
     mu = ARRIVAL_RATE / UTILIZATION_FACTOR  # service intensity
 
-    # calculation of parameters approximating Gamma-distribution for arrival times
+    # calculation of parameters approximating Gamma-distribution for arrival
+    # times
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, ARRIVAL_CV)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
-    # calculation of initial moments of time spent and waiting in the queueing system
+    # calculation of initial moments of time spent and waiting in the queueing
+    # system
     gm1_calc = GiM1()
     gm1_calc.set_sources(a)
     gm1_calc.set_servers(mu)
@@ -59,7 +61,8 @@ def test_gi_m_1():
     p_num = gm1_calc.get_p()
 
     # for verification, we use sim.
-    # create an instance of the sim class and pass the number of service channels
+    # create an instance of the sim class and pass the number of service
+    # channels
     qs = QsSim(1)
 
     # set the input stream. The method needs to be passed parameters
@@ -73,7 +76,8 @@ def test_gi_m_1():
     # start simulation
     qs.run(NUM_OF_JOBS)
 
-    # get the list of initial moments of time spent and waiting in the queueing system
+    # get the list of initial moments of time spent and waiting in the
+    # queueing system
     v_sim = qs.v
     w_sim = qs.w
 

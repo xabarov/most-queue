@@ -324,7 +324,10 @@ class PassageTimeCalculation:
                 n_iter += 1
 
             if self.is_verbose:
-                print(f"Number of iterations to calculate matrix  G{self.l_tilda - i} = {n_iter}")
+                print(
+                    f"Number of iterations to calculate matrix  G{
+                        self.l_tilda - i} = {n_iter}"
+                )
 
             self.G[self.l_tilda - i - 1] = G
 
@@ -368,7 +371,8 @@ class PassageTimeCalculation:
 
             if self.is_verbose:
                 print(
-                    f"Number of iterations to calculate matrix  Gr{self.l_tilda - i}[0] = {n_iter}"
+                    f"Number of iterations to calculate matrix  Gr{
+                        self.l_tilda - i}[0] = {n_iter}"
                 )
 
             # вычисляем 2 момент
@@ -410,7 +414,8 @@ class PassageTimeCalculation:
             self.Gr[self.l_tilda - i - 1].append(G2)
             if self.is_verbose:
                 print(
-                    f"Number of iterations to calculate matrix  Gr{self.l_tilda - i}[1] = {n_iter}"
+                    f"Number of iterations to calculate matrix  Gr{
+                        self.l_tilda - i}[1] = {n_iter}"
                 )
 
             # вычисляем 3 момент
@@ -459,7 +464,8 @@ class PassageTimeCalculation:
             self.Gr[self.l_tilda - i - 1].append(G3)
             if self.is_verbose:
                 print(
-                    f"Number of iterations to calculate matrix  Gr{self.l_tilda - i}[2] = {n_iter}"
+                    f"Number of iterations to calculate matrix  Gr{
+                        self.l_tilda - i}[2] = {n_iter}"
                 )
 
     def _Z_calc(self):

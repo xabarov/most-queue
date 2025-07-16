@@ -2,10 +2,11 @@
 Base class for queueing systems.
 """
 
+from abc import ABC, abstractmethod
 from most_queue.theory.calc_params import CalcParams
 
 
-class BaseQueue:
+class BaseQueue(ABC):
     """
     Base class for queueing systems.
     """
@@ -21,6 +22,35 @@ class BaseQueue:
         self.n = n
         self.calc_params = calc_params if calc_params else CalcParams()
         self.buffer = buffer
+
+        self.is_servers_set = False
+        self.is_sources_set = False
+
+    @abstractmethod
+    def set_sources(self):  # pylint: disable=arguments-differ
+        """
+        Set sources for the queueing system. This method should be implemented by subclasses.
+        :param args: arguments for setting sources
+
+        After setting the sources, self.is_sources_set should be True.
+        """
+
+    @abstractmethod
+    def set_servers(self):  # pylint: disable=arguments-differ
+        """
+        Set servers for the queueing system. This method should be implemented by subclasses.
+        :param args: arguments for setting servers
+
+        After setting the servers, self.is_servers_set should be True.
+        """
+
+    def _check_if_servers_and_sources_set(self):
+        if not self.is_servers_set or not self.is_sources_set:
+            error_msg = "Both servers and sources must be set before calling this method."
+            error_msg += (
+                "For setting servers and sources, use set_servers() and set_sources() methods."
+            )
+            raise ValueError(error_msg)
 
     def get_p(self) -> list[float]:
         """

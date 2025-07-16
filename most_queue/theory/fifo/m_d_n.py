@@ -32,23 +32,28 @@ class MDn(BaseQueue):
         self.l = None
         self.b = None
 
-    def set_sources(self, l: float):
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """
         Set the arrival rate of markovian arrival distribution.
         :param l: arrival rate
         """
         self.l = l
+        self.is_sources_set = True
 
-    def set_servers(self, b: float):
+    def set_servers(self, b: float):  # pylint: disable=arguments-differ
         """
         Set service time of deterministic service.
         """
         self.b = b
+        self.is_servers_set = True
 
     def calc_p(self):
         """
         Calculate the probabilities of states.
         """
+
+        self._check_if_servers_and_sources_set()
+
         p_up_to_n = self._calc_p_up_to_n()
         qs = self._calc_q()
         summ = 0
@@ -75,6 +80,7 @@ class MDn(BaseQueue):
         return self.p
 
     def _calc_p_up_to_n(self):
+
         zs = self._get_z()
         A = np.zeros((self.n, self.n), dtype=complex)
         B = np.zeros(self.n, dtype=complex)
@@ -103,6 +109,7 @@ class MDn(BaseQueue):
         return p_real
 
     def _calc_q(self):
+
         q0 = math.exp(-self.b * self.l)
         qs = [0.0] * self.p_num
         qs[0] = q0

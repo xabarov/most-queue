@@ -46,12 +46,14 @@ def test_gi_m_n():
     b1 = UTILIZATION_FACTOR * NUM_OF_CHANNELS / ARRIVAL_RATE  # average service time given ro
     mu = 1 / b1  # service intensity
 
-    # calculate parameters of the approximating Gamma distribution for arrival times
+    # calculate parameters of the approximating Gamma distribution for arrival
+    # times
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, ARRIVAL_CV)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 
-    # calculate initial moments of sojourn and waiting times in the queueing system
+    # calculate initial moments of sojourn and waiting times in the queueing
+    # system
 
     gi_m_n_calc = GiMn(n=NUM_OF_CHANNELS)
 
@@ -69,7 +71,8 @@ def test_gi_m_n():
     qs = QsSim(NUM_OF_CHANNELS)
 
     # set the ariival distribution paprams.
-    # The method needs to be passed parameters as a list and the type of distribution.
+    # The method needs to be passed parameters as a list and the type of
+    # distribution.
     qs.set_sources(gamma_params, "Gamma")
 
     # set the service channels.
@@ -80,7 +83,8 @@ def test_gi_m_n():
     # start the simulation:
     qs.run(NUM_OF_JOBS)
 
-    # get the list of initial moments of sojourn and waiting times in the queueing system
+    # get the list of initial moments of sojourn and waiting times in the
+    # queueing system
     v_sim = qs.v
     w_sim = qs.w
 

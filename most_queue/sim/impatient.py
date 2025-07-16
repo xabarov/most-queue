@@ -167,6 +167,9 @@ class ImpatientQueueSim(QsSim):
                 num_of_task_earlier = i
 
         result = f"{Fore.GREEN}Task {num_of_task_earlier}{Style.RESET_ALL}\n"
-        result += f"leave at {Fore.YELLOW}{moment_to_leave_earlier:8.3f}{Style.RESET_ALL}"
+        result += f"leave at {
+            Fore.YELLOW}{
+            moment_to_leave_earlier:8.3f}{
+            Style.RESET_ALL}"
 
         return result

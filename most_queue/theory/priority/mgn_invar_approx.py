@@ -80,7 +80,10 @@ class MGnInvarApproximation:
         for k in range(k_num):
             l_sum += self.l[k]
 
-        mg1_num = MG1Calculation(l_sum, b_sr)
+        mg1_num = MG1Calculation()
+        mg1_num.set_sources(l_sum)
+        mg1_num.set_servers(b_sr)
+
         p1 = mg1_num.get_p(N)
         q1 = 0
         for i in range(1, N):

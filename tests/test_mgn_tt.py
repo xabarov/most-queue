@@ -76,7 +76,8 @@ def test_mgn_tt():
     qs.set_sources(ARRIVAL_RATE, "M")
 
     # set server parameters as Gamma distribution.
-    # Distribution parameters are selected using the method from the random_distribution library
+    # Distribution parameters are selected using the method from the
+    # random_distribution library
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     qs.set_servers(gamma_params, "Gamma")
 

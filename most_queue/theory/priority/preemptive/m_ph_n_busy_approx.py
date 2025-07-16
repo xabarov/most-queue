@@ -365,7 +365,8 @@ class MPhNPrty(MGnCalc):
             output = self.B[self.n]
             return output
 
-        # Матрица B - диагональная. Количество ненулевых элементов зависит от числа n.
+        # Матрица B - диагональная. Количество ненулевых элементов зависит от
+        # числа n.
         lev = 0
         for i in range(self.n):  # количество ярусов до перехода в ПНЗ
             for _ in range(i + 1):  # количество микросочтояний в этом ярусе
@@ -405,8 +406,13 @@ class MPhNPrty(MGnCalc):
                 m1_mass.append(h2_param.mu1)
                 m2_mass.append(h2_param.mu2)
                 if self.verbose:
-                    print(f"Params for B{i+1}:")
-                    print(f"\t{h2_param.p1:3.3f}, {h2_param.mu1:3.3f}, {h2_param.mu2:3.3f}")
+                    print(f"Params for B{i + 1}:")
+                    print(
+                        f"\t{
+                            h2_param.p1:3.3f}, {
+                            h2_param.mu1:3.3f}, {
+                            h2_param.mu2:3.3f}"
+                    )
             else:
                 cox_params = CoxDistribution.get_params(
                     self.busy_periods[i], fitting_params=self.fitting_params
@@ -416,7 +422,12 @@ class MPhNPrty(MGnCalc):
                 m2_mass.append(cox_params.mu2)
                 if self.verbose:
                     print(f"Params for B{i + 1}:")
-                    print(f"\t{cox_params.p1:3.3f}, {cox_params.mu1:3.3f}, {cox_params.mu2:3.3f}")
+                    print(
+                        f"\t{
+                            cox_params.p1:3.3f}, {
+                            cox_params.mu1:3.3f}, {
+                            cox_params.mu2:3.3f}"
+                    )
 
         # first quad
 

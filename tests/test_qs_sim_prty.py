@@ -98,7 +98,8 @@ def test_sim():
 
     v_sim = qs.v
 
-    # calculate them as well using the method of invariant relations (for comparison)
+    # calculate them as well using the method of invariant relations (for
+    # comparison)
     invar_calc = MGnInvarApproximation(ARRIVAL_RATES, b, n=NUM_OF_CHANNELS)
     v_num = invar_calc.get_v("PR")
 

@@ -15,7 +15,7 @@ def run_warmup_ave(qp, save_path: str = None):
     Run simulation and calculation for different warm-up mean times
     """
     warmups = np.linspace(
-        qp['warmup']['mean']['min'], qp['warmup']['mean']['max'], qp['warmup']['mean']['num_points']
+        qp["warmup"]["mean"]["min"], qp["warmup"]["mean"]["max"], qp["warmup"]["mean"]["num_points"]
     )
 
     w1_num = []
@@ -29,35 +29,35 @@ def run_warmup_ave(qp, save_path: str = None):
     total_num_time = 0
     total_sim_time = 0
 
-    service_mean = qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']
+    service_mean = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]
 
-    b = calc_moments_by_mean_and_coev(service_mean, qp['service']['cv']['base'])
+    b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
-    b_c = calc_moments_by_mean_and_coev(qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
-    b_d = calc_moments_by_mean_and_coev(qp['delay']['mean']['base'], qp['delay']['cv']['base'])
+    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     for warmup_num, warmup_ave in enumerate(warmups):
         print(f"Start {warmup_num + 1}/{len(warmups)} with warmup time={warmup_ave:0.3f}... ")
 
-        b_w = calc_moments_by_mean_and_coev(warmup_ave, qp['warmup']['cv']['base'])
+        b_w = calc_moments_by_mean_and_coev(warmup_ave, qp["warmup"]["cv"]["base"])
 
         num_results = run_calculation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
         )
         sim_results = run_simulation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
-            num_of_jobs=qp['jobs_per_sim'],
-            ave_num=qp['sim_to_average'],
+            num_of_jobs=qp["jobs_per_sim"],
+            ave_num=qp["sim_to_average"],
         )
 
         w1_num.append(num_results["w"][0])
@@ -76,23 +76,23 @@ def run_warmup_ave(qp, save_path: str = None):
     print(f"Total process time for sim: {total_sim_time:.4g}")
 
     if save_path:
-        wait_time_save_path = os.path.join(save_path, 'w1_vs_warmup_ave.png')
+        wait_time_save_path = os.path.join(save_path, "w1_vs_warmup_ave.png")
 
-        plot_w1(warmups, w1_num, w1_sim, x_label='Warm-Up Average', save_path=wait_time_save_path)
+        plot_w1(warmups, w1_num, w1_sim, x_label="Warm-Up Average", save_path=wait_time_save_path)
 
-        w1_error_save_path = os.path.join(save_path, 'w1_error_vs_warmup_ave.png')
+        w1_error_save_path = os.path.join(save_path, "w1_error_vs_warmup_ave.png")
 
         plot_w1_errors(
-            warmups, w1_rel_errors, x_label='Warm-Up Average', save_path=w1_error_save_path
+            warmups, w1_rel_errors, x_label="Warm-Up Average", save_path=w1_error_save_path
         )
 
-        cool_probs_save_path = os.path.join(save_path, 'warmup_probs_vs_warmup_ave.png')
+        cool_probs_save_path = os.path.join(save_path, "warmup_probs_vs_warmup_ave.png")
 
         plot_probs(
             warmups,
             warmup_probs_num,
             warmup_probs_sim,
-            x_label='Warm-Up Average',
+            x_label="Warm-Up Average",
             save_path=cool_probs_save_path,
         )
 
@@ -104,7 +104,7 @@ def run_warmup_cv(qp, save_path=None):
     Run simulation and calculation for different warm-up coefficient of variation
     """
     warmups = np.linspace(
-        qp['warmup']['cv']['min'], qp['warmup']['cv']['max'], qp['warmup']['cv']['num_points']
+        qp["warmup"]["cv"]["min"], qp["warmup"]["cv"]["max"], qp["warmup"]["cv"]["num_points"]
     )
 
     w1_num = []
@@ -118,35 +118,35 @@ def run_warmup_cv(qp, save_path=None):
     total_num_time = 0
     total_sim_time = 0
 
-    service_mean = qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']
+    service_mean = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]
 
-    b = calc_moments_by_mean_and_coev(service_mean, qp['service']['cv']['base'])
+    b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
-    b_c = calc_moments_by_mean_and_coev(qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
-    b_d = calc_moments_by_mean_and_coev(qp['delay']['mean']['base'], qp['delay']['cv']['base'])
+    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     for warmup_num, warmup_cv in enumerate(warmups):
         print(f"Start {warmup_num + 1}/{len(warmups)} with warmup cv={warmup_cv:0.3f}... ")
 
-        b_w = calc_moments_by_mean_and_coev(qp['warmup']['mean']['base'], warmup_cv)
+        b_w = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], warmup_cv)
 
         num_results = run_calculation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
         )
         sim_results = run_simulation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
-            num_of_jobs=qp['jobs_per_sim'],
-            ave_num=qp['sim_to_average'],
+            num_of_jobs=qp["jobs_per_sim"],
+            ave_num=qp["sim_to_average"],
         )
 
         w1_num.append(num_results["w"][0])
@@ -165,21 +165,21 @@ def run_warmup_cv(qp, save_path=None):
     print(f"Total process time for sim: {total_sim_time:.4g}")
 
     if save_path:
-        wait_time_save_path = os.path.join(save_path, 'w1_vs_warmup_cv.png')
+        wait_time_save_path = os.path.join(save_path, "w1_vs_warmup_cv.png")
 
-        plot_w1(warmups, w1_num, w1_sim, x_label='Warm-Up CV', save_path=wait_time_save_path)
+        plot_w1(warmups, w1_num, w1_sim, x_label="Warm-Up CV", save_path=wait_time_save_path)
 
-        w1_error_save_path = os.path.join(save_path, 'w1_error_vs_warmup_cv.png')
+        w1_error_save_path = os.path.join(save_path, "w1_error_vs_warmup_cv.png")
 
-        plot_w1_errors(warmups, w1_rel_errors, x_label='Warm-Up CV', save_path=w1_error_save_path)
+        plot_w1_errors(warmups, w1_rel_errors, x_label="Warm-Up CV", save_path=w1_error_save_path)
 
-        cool_probs_save_path = os.path.join(save_path, 'warmup_probs_vs_warmup_cv.png')
+        cool_probs_save_path = os.path.join(save_path, "warmup_probs_vs_warmup_cv.png")
 
         plot_probs(
             warmups,
             warmup_probs_num,
             warmup_probs_sim,
-            x_label='Warm-Up CV',
+            x_label="Warm-Up CV",
             save_path=cool_probs_save_path,
         )
 

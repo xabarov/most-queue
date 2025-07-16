@@ -56,7 +56,8 @@ class MMn_PRTY_PNZ_Cox_approx:
         self.n_iter_ = 0
         self.inter_level_mom_ = None
 
-        # массив cols хранит число столбцов для каждого яруса, удобней рассчитать его один раз:
+        # массив cols хранит число столбцов для каждого яруса, удобней
+        # рассчитать его один раз:
         self.cols = [] * self.N
 
         # переменные
@@ -250,7 +251,8 @@ class MMn_PRTY_PNZ_Cox_approx:
                 if num > self.n:
                     output = B[self.n]
                 # Матрица B - диагональная.
-                # Количество ненулевых элементов = n (все, кроме состояний с ПНЗ)
+                # Количество ненулевых элементов = n (все, кроме состояний с
+                # ПНЗ)
                 else:
                     for i in range(self.n):
                         output[i, i] = min(num, self.n - i) * self.mu_L
@@ -468,7 +470,8 @@ class MMn_PRTY_PNZ_Cox_approx:
         if num > self.n + 1:
             output = self.B[self.n + 1]
             return output
-        # Матрица B - диагональная. Количество ненулевых элементов = n (все, кроме состояний с ПНЗ)
+        # Матрица B - диагональная. Количество ненулевых элементов = n (все,
+        # кроме состояний с ПНЗ)
         for i in range(self.n):
             output[i, i] = min(num, self.n - i) * self.mu_L
         return output

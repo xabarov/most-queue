@@ -231,14 +231,16 @@ class MGnCalc:
         self.x[0] = 0.4
 
     def _norm_probs(self):
-        # Calculate the sum of probabilities in one pass using a generator expression
+        # Calculate the sum of probabilities in one pass using a generator
+        # expression
         total = sum(value for value in self.p)
 
         # Normalize each probability in a single list comprehension
         self.p = [value / total for value in self.p]
 
         if self.verbose:
-            # Check if the sum is approximately 1 (using a generator expression)
+            # Check if the sum is approximately 1 (using a generator
+            # expression)
             print(f"Summ of probs = {sum(self.p):.5f}")
 
     def _calculate_p(self):
@@ -254,7 +256,8 @@ class MGnCalc:
         # Compute initial terms for f1 and znam
         term_f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
 
-        # Calculate the denominator (znam) more efficiently using list comprehensions
+        # Calculate the denominator (znam) more efficiently using list
+        # comprehensions
         znam = self.n + sum((self.n - j) * np.prod(self.x[:j]) for j in range(1, self.n))
 
         if self.R:

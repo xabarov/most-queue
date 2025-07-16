@@ -27,9 +27,9 @@ def print_supported_distributions():
     print(f"{Fore.GREEN}Supported distributions:{Style.RESET_ALL}")
     separator = f"{Fore.BLUE}{'-' * 80}{Style.RESET_ALL}"
 
-    dist_path = 'most_queue/sim/utils/distributions.yaml'
+    dist_path = "most_queue/sim/utils/distributions.yaml"
     try:
-        with open(dist_path, 'r', encoding='utf-8') as file:
+        with open(dist_path, "r", encoding="utf-8") as file:
             distributions = yaml.safe_load(file)
     except FileNotFoundError:
         print(f"{Fore.RED}Error: distributions.yaml not found.{Style.RESET_ALL}")
@@ -48,11 +48,17 @@ def print_supported_distributions():
     print(header)
 
     for dist in distributions:
-        name = dist.get('name', 'N/A')
-        kendall = dist.get('kendall_notation', 'N/A')
-        params = dist.get('params', 'N/A')
+        name = dist.get("name", "N/A")
+        kendall = dist.get("kendall_notation", "N/A")
+        params = dist.get("params", "N/A")
         print(
-            f"{Fore.MAGENTA}{name:<38}{Fore.GREEN}{kendall:<19}{Fore.RED}{params}{Style.RESET_ALL}"
+            f"{
+                Fore.MAGENTA}{
+                name:<38}{
+                Fore.GREEN}{
+                kendall:<19}{
+                    Fore.RED}{params}{
+                        Style.RESET_ALL}"
         )
     print(separator)
 

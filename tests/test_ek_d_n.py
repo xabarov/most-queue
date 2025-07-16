@@ -70,13 +70,16 @@ def test_ek_d_n():
     p_num = ekdn.calc_p()
 
     # for verification we use simulation.
-    # create an instance of the QsSim class, pass the number of service channels
+    # create an instance of the QsSim class, pass the number of service
+    # channels
     qs = QsSim(NUM_OF_CHANNELS)
 
     # we set the input stream. The method needs to be passed
-    # the distribution parameters as a list and the distribution type. E - Erlang
+    # the distribution parameters as a list and the distribution type. E -
+    # Erlang
     qs.set_sources(erl_params, "E")
-    # we set the service channels. The input is the service time and the distribution type - D.
+    # we set the service channels. The input is the service time and the
+    # distribution type - D.
     qs.set_servers(b, "D")
 
     # run simulation

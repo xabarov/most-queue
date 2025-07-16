@@ -85,7 +85,10 @@ class Server:
                 + Style.RESET_ALL
                 + f"{self.time_to_end_service:8.3f}\n"
             )
-            res += f"\t{Fore.MAGENTA}Task on service:{Style.RESET_ALL}\n\t{self.tsk_on_service}"
+            res += f"\t{
+                Fore.MAGENTA}Task on service:{
+                Style.RESET_ALL}\n\t{
+                self.tsk_on_service}"
         return res
 
 

@@ -30,7 +30,8 @@ def compare_calc_times():
     execution_times = {"list": 0, "deque": 0}
 
     for buffer_type in buffer_types:
-        # Calculate initial moments of service time based on mean and variation coefficient
+        # Calculate initial moments of service time based on mean and variation
+        # coefficient
         moments = gamma_moments_by_mean_and_coev(mean_service_time, variation_coeff)
 
         # Start simulation timing for this buffer type
@@ -42,7 +43,8 @@ def compare_calc_times():
         # Configure arrival process (Exponential distribution with rate λ)
         qs.set_sources(arrival_rate, kendall_notation="M")
 
-        # Configure service process (Gamma distribution with parameters derived from moments)
+        # Configure service process (Gamma distribution with parameters derived
+        # from moments)
         gamma_params = GammaDistribution.get_params(moments[:2])
         qs.set_servers(gamma_params, kendall_notation="Gamma")
 

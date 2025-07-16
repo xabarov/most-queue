@@ -59,7 +59,8 @@ def test_v1_on_channels():
     plt.legend()
 
     cur_dir = os.path.dirname(os.path.abspath(__file__))
-    save_path = os.path.join(cur_dir, "v1_on_channels.png")  # Replace with your desired path
+    # Replace with your desired path
+    save_path = os.path.join(cur_dir, "v1_on_channels.png")
     plt.savefig(save_path)
 
     plt.close(_fig)

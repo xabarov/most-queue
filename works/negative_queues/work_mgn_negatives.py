@@ -34,22 +34,22 @@ def collect_calc_results(
     if discipline == NegativeServiceType.RCS:
         queue_calc = MGnNegativeRCSCalc(
             n,
-            float(qp['arrival_rate']['positive']),
-            float(qp['arrival_rate']['negative']),
+            float(qp["arrival_rate"]["positive"]),
+            float(qp["arrival_rate"]["negative"]),
             b,
             verbose=False,
-            accuracy=float(qp['accuracy']),
+            accuracy=float(qp["accuracy"]),
         )
 
     else:
         # disasters
         queue_calc = MGnNegativeDisasterCalc(
             n,
-            float(qp['arrival_rate']['positive']),
-            float(qp['arrival_rate']['negative']),
+            float(qp["arrival_rate"]["positive"]),
+            float(qp["arrival_rate"]["negative"]),
             b,
             verbose=False,
-            accuracy=float(qp['accuracy']),
+            accuracy=float(qp["accuracy"]),
         )
 
     queue_calc.run()
@@ -67,12 +67,12 @@ def collect_sim_results(
     # Run simulation
     queue_sim = QsSimNegatives(n, discipline)
 
-    queue_sim.set_negative_sources(float(qp['arrival_rate']['negative']), 'M')
-    queue_sim.set_positive_sources(float(qp['arrival_rate']['positive']), 'M')
+    queue_sim.set_negative_sources(float(qp["arrival_rate"]["negative"]), "M")
+    queue_sim.set_positive_sources(float(qp["arrival_rate"]["positive"]), "M")
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
-    queue_sim.set_servers(gamma_params, 'Gamma')
+    queue_sim.set_servers(gamma_params, "Gamma")
 
-    queue_sim.run(int(qp['num_of_jobs']))
+    queue_sim.run(int(qp["num_of_jobs"]))
 
     return queue_sim.get_results(max_p=max_p)
 
@@ -86,17 +86,17 @@ def run_depends_on_channels(
     :param qp: Dictionary with queue parameters.
     :return: DependsOnChannelsResults object with calculated and simulated moments.
     """
-    channels = list(range(1, qp['channels']['max'] + 1))
+    channels = list(range(1, qp["channels"]["max"] + 1))
 
     calc_results = []
     sim_results = []
 
     for n in channels:
-        print(f'Channels: {n}')
+        print(f"Channels: {n}")
 
-        service_mean = n * qp['utilization']['base'] / qp['arrival_rate']['positive']
+        service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_coev(service_mean, qp['service']['cv']['base'])
+        b = gamma_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
         # collect results
         calc_results.append(
@@ -108,8 +108,8 @@ def run_depends_on_channels(
         calc=calc_results,
         sim=sim_results,
         channels=channels,
-        utilization_factor=qp['utilization']['base'],
-        service_time_variation_coef=qp['service']['cv']['base'],
+        utilization_factor=qp["utilization"]["base"],
+        service_time_variation_coef=qp["service"]["cv"]["base"],
     )
 
 
@@ -124,29 +124,29 @@ def run_depends_on_varience(
       :return: A DependsOnVariationResults object containing the simulation and calculation results.
     """
     service_time_variation_coefs = np.linspace(
-        qp['service']['cv']['min'],
-        qp['service']['cv']['max'],
-        qp['service']['cv']['num_points'],
+        qp["service"]["cv"]["min"],
+        qp["service"]["cv"]["max"],
+        qp["service"]["cv"]["num_points"],
     )
     calc_results = []
     sim_results = []
 
     for coef in service_time_variation_coefs:
-        print(f'Service time variation coefficient: {coef:0.2f}')
+        print(f"Service time variation coefficient: {coef:0.2f}")
         service_mean = (
-            qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']['positive']
+            qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
         )
 
         b = gamma_moments_by_mean_and_coev(service_mean, coef)
         # collect results
         calc_results.append(
             collect_calc_results(
-                n=qp['channels']['base'], qp=qp, b=b, discipline=discipline, max_p=max_p
+                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
             )
         )
         sim_results.append(
             collect_sim_results(
-                n=qp['channels']['base'], qp=qp, b=b, discipline=discipline, max_p=max_p
+                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
             )
         )
 
@@ -154,8 +154,8 @@ def run_depends_on_varience(
         service_time_variation_coef=service_time_variation_coefs.tolist(),
         calc=calc_results,
         sim=sim_results,
-        channels=qp['channels']['base'],
-        utilization_factor=qp['utilization']['base'],
+        channels=qp["channels"]["base"],
+        utilization_factor=qp["utilization"]["base"],
     )
 
 
@@ -169,27 +169,27 @@ def run_depends_on_utilization(
     :rtype: DependsOnUtilizationResults
     """
     utilization_factors = np.linspace(
-        qp['utilization']['min'],
-        qp['utilization']['max'],
-        qp['utilization']['num_points'],
+        qp["utilization"]["min"],
+        qp["utilization"]["max"],
+        qp["utilization"]["num_points"],
     )
     sim_results = []
     calc_results = []
     for rho in utilization_factors:
         print(f"Utilization factor: {rho:0.2f}")
-        service_mean = qp['channels']['base'] * rho / qp['arrival_rate']['positive']
+        service_mean = qp["channels"]["base"] * rho / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_coev(service_mean, qp['service']['cv']['base'])
+        b = gamma_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
         # collect results
         calc_results.append(
             collect_calc_results(
-                n=qp['channels']['base'], qp=qp, b=b, discipline=discipline, max_p=max_p
+                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
             )
         )
         sim_results.append(
             collect_sim_results(
-                n=qp['channels']['base'], qp=qp, b=b, discipline=discipline, max_p=max_p
+                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
             )
         )
 
@@ -197,8 +197,8 @@ def run_depends_on_utilization(
         utilization_factor=utilization_factors.tolist(),
         calc=calc_results,
         sim=sim_results,
-        channels=qp['channels']['base'],
-        service_time_variation_coef=qp['service']['cv']['base'],
+        channels=qp["channels"]["base"],
+        service_time_variation_coef=qp["service"]["cv"]["base"],
     )
 
 
@@ -214,19 +214,19 @@ if __name__ == "__main__":
 
     base_qp = read_parameters_from_yaml("works/negative_queues/base_parameters.yaml")
 
-    L_NEG = base_qp['arrival_rate']['negative']
-    UTILIZATION_FACTOR = base_qp['utilization']['base']
-    CHANNELS_NUM = base_qp['channels']['base']
-    SERVICE_TIME_COEF_VARIANCE = base_qp['service']['cv']['base']
+    L_NEG = base_qp["arrival_rate"]["negative"]
+    UTILIZATION_FACTOR = base_qp["utilization"]["base"]
+    CHANNELS_NUM = base_qp["channels"]["base"]
+    SERVICE_TIME_COEF_VARIANCE = base_qp["service"]["cv"]["base"]
 
     APPENDIX = f"n_{CHANNELS_NUM}_"
     APPENDIX += "_".join(
         [
             f"{k}_{v:.2f}"
             for k, v in [
-                ('u', UTILIZATION_FACTOR),
-                ('b', SERVICE_TIME_COEF_VARIANCE),
-                ('l_neg', L_NEG),
+                ("u", UTILIZATION_FACTOR),
+                ("b", SERVICE_TIME_COEF_VARIANCE),
+                ("l_neg", L_NEG),
             ]
         ]
     )
@@ -237,10 +237,10 @@ if __name__ == "__main__":
 
     if IS_RCS:
         queue_discipline = NegativeServiceType.RCS
-        EXP_DIR_NAME = f'results/rcs/{APPENDIX}'
+        EXP_DIR_NAME = f"results/rcs/{APPENDIX}"
     else:
         queue_discipline = NegativeServiceType.DISASTER
-        EXP_DIR_NAME = f'results/disaster/{APPENDIX}'
+        EXP_DIR_NAME = f"results/disaster/{APPENDIX}"
 
     EXP_DIR_NAME = os.path.join(CUR_DIR, EXP_DIR_NAME)
 
@@ -284,7 +284,7 @@ if __name__ == "__main__":
 
         os.makedirs(save_path, exist_ok=True)
 
-        with open(os.path.join(save_path, 'results.json'), 'w', encoding='utf-8') as f:
+        with open(os.path.join(save_path, "results.json"), "w", encoding="utf-8") as f:
             json.dump(asdict(results), f, cls=DependsOnJSONEncoder)
 
         plot_params = [
@@ -354,5 +354,5 @@ if __name__ == "__main__":
                 depends_on=depends_on,
                 save_path=params["save_path"],
                 is_errors=params["is_errors"],
-                is_waiting_time=params['is_waiting_time'],
+                is_waiting_time=params["is_waiting_time"],
             )

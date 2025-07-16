@@ -114,9 +114,9 @@ def get_ty(gamma, n):
 
     if gamma not in ty_data:
         print(
-            'Student calc error.'
+            "Student calc error."
             'Param "gamma" must take one of the following values:'
-            '0.95, 0.99, 0.999!'
+            "0.95, 0.99, 0.999!"
         )
         return 0
 

@@ -48,10 +48,12 @@ def test_mdn():
     p_num = mdn.calc_p()
 
     # for verification, we use simulation modeling
-    # create an instance of the simulation class and pass the number of service channels
+    # create an instance of the simulation class and pass the number of
+    # service channels
     qs = QsSim(NUM_OF_CHANNELS)
 
-    # set arrivals. The method needs to be passed distribution parameters and type of distribution.
+    # set arrivals. The method needs to be passed distribution parameters and
+    # type of distribution.
     qs.set_sources(ARRIVAL_RATE, "M")
 
     # set the service channels. To the method we pass parameters (in our case, service time)

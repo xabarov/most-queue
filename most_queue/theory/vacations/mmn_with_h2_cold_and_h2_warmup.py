@@ -112,7 +112,8 @@ class MMnHyperExpWarmAndCold:
                 if i == 0:
                     self.cols.append(3)  # 0 state normal + 0_cold_1 + 0_cold_2
                 else:
-                    # i_warm_1 + i_warm_2 i state normal + i_cold_1 + i_cold_2...
+                    # i_warm_1 + i_warm_2 i state normal + i_cold_1 +
+                    # i_cold_2...
                     self.cols.append(5)
             else:
                 self.cols.append(5)
@@ -150,7 +151,8 @@ class MMnHyperExpWarmAndCold:
             for w_phase in range(2):
                 c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
-        # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
+        # Если заявка попала в состояние [0] ей придется подождать окончание
+        # разогрева
         w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
         # ей придется подождать окончание разогрева

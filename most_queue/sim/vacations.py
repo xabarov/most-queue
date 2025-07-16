@@ -119,7 +119,8 @@ class VacationQueueingSystemSimulator(QsSim):
 
             if self.cold_delay_phase.is_set:
                 if self.cold_delay_phase.is_start:
-                    # The job was received before the end of the cooling start delay time
+                    # The job was received before the end of the cooling start
+                    # delay time
                     self.cold_delay_phase.is_start = False
                     self.cold_delay_phase.end_time = 1e16
                     self.cold_delay_phase.prob += self.ttek - self.cold_delay_phase.start_mom
@@ -144,11 +145,13 @@ class VacationQueueingSystemSimulator(QsSim):
                         if self.is_service_on_warm_up:
                             self.send_task_to_channel(is_warm_start=True)
                         else:
-                            # 2. It is empty and was turned off after cooling. We start warm-up
+                            # 2. It is empty and was turned off after cooling.
+                            # We start warm-up
                             self.warm_phase.start(self.ttek)
                             self.send_task_to_queue()
                     else:
-                        # 3. Not empty and warmed up -> then we send it for servicing
+                        # 3. Not empty and warmed up -> then we send it for
+                        # servicing
                         self.send_task_to_channel()
 
             else:
@@ -221,7 +224,8 @@ class VacationQueueingSystemSimulator(QsSim):
 
         if self.warm_phase.is_set:
             if self.queue.size() != 0:
-                # We start warming up only if there are jobs accumulated in the queue.
+                # We start warming up only if there are jobs accumulated in the
+                # queue.
                 self.warm_after_cold_starts += 1
                 self.warm_phase.start(self.ttek)
 

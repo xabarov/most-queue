@@ -38,20 +38,22 @@ class GiMn(BaseQueue):
         self.mu = None
         self.a = None
 
-    def set_servers(self, mu: float):
+    def set_servers(self, mu: float):  # pylint: disable=arguments-differ
         """
         Setting the service intensity of GI/M/1 queueing system.
         params:
         mu - service intensity
         """
         self.mu = mu
+        self.is_servers_set = True
 
-    def set_sources(self, a: list[float]):
+    def set_sources(self, a: list[float]):  # pylint: disable=arguments-differ
         """
         Setting the sources of GI/M/1 queueing system.
         params: a - list of initial moments of arrival distribution.
         """
         self.a = a
+        self.is_sources_set = True
 
     def get_v(self) -> list[float]:
         """
@@ -195,6 +197,9 @@ class GiMn(BaseQueue):
         return self.n * self.mu * pn / (self.n * self.mu * (1.0 - w) + s)
 
     def _get_w_param(self):
+
+        self._check_if_servers_and_sources_set()
+
         ro = 1.0 / (self.a[0] * self.mu * self.n)
         coev_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))

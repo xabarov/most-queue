@@ -49,7 +49,10 @@ def test_mg1():
     b = H2Distribution.calc_theory_moments(h2_params, 4)
 
     # calculation using numerical methods
-    mg1_num = MG1Calculation(ARRIVAL_RATE, b)
+    mg1_num = MG1Calculation()
+    mg1_num.set_sources(ARRIVAL_RATE)
+    mg1_num.set_servers(b)
+
     w_num = mg1_num.get_w()
     p_num = mg1_num.get_p()
     v_num = mg1_num.get_v()

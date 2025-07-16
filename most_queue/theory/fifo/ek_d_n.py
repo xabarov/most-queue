@@ -42,25 +42,30 @@ class EkDn(BaseQueue):
         self.k = None
         self.b = None
 
-    def set_sources(self, erlang_params: ErlangParams):
+    def set_sources(self, erlang_params: ErlangParams):  # pylint: disable=arguments-differ
         """
         Set sources of the system.
         :param erlang_params: parameters of the arrival process.
         """
         self.l = erlang_params.mu
         self.k = erlang_params.r
+        self.is_sources_set = True
 
-    def set_servers(self, b: float):
+    def set_servers(self, b: float):  # pylint: disable=arguments-differ
         """
         Set service rate of the server.
         :param b: service rate of the server, constant time.
         """
         self.b = b
+        self.is_servers_set = True
 
     def calc_w(self):
         """
         Calc waiting time moments
         """
+
+        self._check_if_servers_and_sources_set()
+
         self._calc_q()
         w_up_to_nk = self._calc_w_up_to_nk()
         self.w[: len(w_up_to_nk)] = w_up_to_nk[:]
@@ -101,6 +106,7 @@ class EkDn(BaseQueue):
         Calc probabilities of system states
         """
         w = self.calc_w()
+
         is_zero = False
         for j in range(len(self.w)):
             if is_zero:

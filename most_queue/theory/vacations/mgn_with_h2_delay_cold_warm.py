@@ -160,7 +160,8 @@ class MGnH2ServingColdWarmDelay:
 
         probs = np.zeros((self.n + 1), dtype=self.dt)
 
-        # servers are not busy, when system in [0,0] state, in cooling, and warming up states.
+        # servers are not busy, when system in [0,0] state, in cooling, and
+        # warming up states.
 
         probs[0] += self.Y[0][0, 0] + self.Y[0][0, 3] + self.Y[0][0, 4]
 
@@ -375,7 +376,8 @@ class MGnH2ServingColdWarmDelay:
             for w_phase in range(2):
                 c_to_w[c_phase, w_phase] = mu_c_pls[c_phase] * self.y_w[w_phase] * mu_w_pls[w_phase]
 
-        # Если заявка попала в состояние [0] ей придется подождать окончание разогрева
+        # Если заявка попала в состояние [0] ей придется подождать окончание
+        # разогрева
         w += self.Y[0][0, 0] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
 
         # Если заявка попала в фазу разогрева, хотя каналы свободны,
@@ -421,7 +423,8 @@ class MGnH2ServingColdWarmDelay:
         for k in range(self.n, self.N):
 
             # Если заявка попала в фазу разогрева и каналы заняты. Также есть k-n заявок в очереди
-            # ей придется подождать окончание разогрева + обслуживание всех накопленных заявок
+            # ей придется подождать окончание разогрева + обслуживание всех
+            # накопленных заявок
 
             if k == self.n:
                 # переходы вниз считать не нужно
@@ -439,7 +442,8 @@ class MGnH2ServingColdWarmDelay:
                 for i in range(2):
                     w += self.Y[k][0, i] * mu_w_pls[i] * pls_service_total
 
-                # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
+                # попала в фазу охлаждения - охлаждение + разогрев +
+                # обслуживание
                 cold_pos = self.n + 3
 
                 for c_phase in range(2):
@@ -459,7 +463,8 @@ class MGnH2ServingColdWarmDelay:
                 )
                 # вектор размерности числа состояний стандартного обслуживания.
                 aPa_before = a * Pa_before
-                # Каждый элемент - обслуживание в случае нахожения в данной позиции
+                # Каждый элемент - обслуживание в случае нахожения в данной
+                # позиции
 
                 waits_service_on_level_before = aPa_before
 
@@ -474,7 +479,8 @@ class MGnH2ServingColdWarmDelay:
                 for i in range(2):
                     w += self.Y[k][0, i] * mu_w_pls[i] * pls_service_total
 
-                # попала в фазу охлаждения - охлаждение + разогрев + обслуживание
+                # попала в фазу охлаждения - охлаждение + разогрев +
+                # обслуживание
                 cold_pos = self.n + 3
 
                 for c_phase in range(2):

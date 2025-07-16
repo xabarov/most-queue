@@ -132,7 +132,8 @@ def test_fj_sim():
 
     print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=NUM_OF_CHANNELS)
 
-    # Run Fork-Join (n, k) simulation and calculation of the average sojourn time
+    # Run Fork-Join (n, k) simulation and calculation of the average sojourn
+    # time
     v1_sim = run_sim_fj(JOBS_REQUIRED, mu)[0]
 
     fj_calc_markov = ForkJoinMarkovianCalc(ARRIVAL_RATE, mu, NUM_OF_CHANNELS, JOBS_REQUIRED)

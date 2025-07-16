@@ -15,9 +15,9 @@ def run_service_cv(qp, save_path: str = None):
     Run simulation and calculation for different service time coefficient of variation
     """
     cvs = np.linspace(
-        qp['service']['cv']['min'],
-        qp['service']['cv']['max'],
-        qp['service']['cv']['num_points'] + 1,
+        qp["service"]["cv"]["min"],
+        qp["service"]["cv"]["max"],
+        qp["service"]["cv"]["num_points"] + 1,
     )
 
     w1_num = []
@@ -28,11 +28,11 @@ def run_service_cv(qp, save_path: str = None):
     total_num_time = 0
     total_sim_time = 0
 
-    b_w = calc_moments_by_mean_and_coev(qp['warmup']['mean']['base'], qp['warmup']['cv']['base'])
-    b_c = calc_moments_by_mean_and_coev(qp['cooling']['mean']['base'], qp['cooling']['cv']['base'])
-    b_d = calc_moments_by_mean_and_coev(qp['delay']['mean']['base'], qp['delay']['cv']['base'])
+    b_w = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
-    service_mean = qp['channels']['base'] * qp['utilization']['base'] / qp['arrival_rate']
+    service_mean = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]
 
     for cv_num, cv in enumerate(cvs):
         print(f"Start {cv_num + 1}/{len(cvs)} with service time cv={cv:0.3f}... ")
@@ -40,22 +40,22 @@ def run_service_cv(qp, save_path: str = None):
         b = calc_moments_by_mean_and_coev(service_mean, cv)
 
         num_results = run_calculation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
         )
         sim_results = run_simulation(
-            arrival_rate=qp['arrival_rate'],
-            num_channels=qp['channels']['base'],
+            arrival_rate=qp["arrival_rate"],
+            num_channels=qp["channels"]["base"],
             b=b,
             b_w=b_w,
             b_c=b_c,
             b_d=b_d,
-            num_of_jobs=qp['jobs_per_sim'],
-            ave_num=qp['sim_to_average'],
+            num_of_jobs=qp["jobs_per_sim"],
+            ave_num=qp["sim_to_average"],
         )
 
         w1_num.append(num_results["w"][0])
@@ -71,12 +71,12 @@ def run_service_cv(qp, save_path: str = None):
     print(f"Total process time for sim: {total_sim_time:.4g}")
 
     if save_path:
-        w1_save_path = os.path.join(save_path, 'w1_vs_service_cv.png')
+        w1_save_path = os.path.join(save_path, "w1_vs_service_cv.png")
         plot_w1(
             cvs, w1_num, w1_sim, save_path=w1_save_path, x_label="Service time CV", is_xs_int=False
         )
 
-        w1_errors_save_path = os.path.join(save_path, 'w1_errors_vs_service_cv.png')
+        w1_errors_save_path = os.path.join(save_path, "w1_errors_vs_service_cv.png")
         plot_w1_errors(
             cvs,
             w1_rel_errors,

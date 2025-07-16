@@ -283,7 +283,8 @@ class PriorityQueueSimulator:
             new_tsk = ts
             new_tsk.in_node_class_num = k
             new_tsk.arr_time = moment
-            # в текущем узле обнуляем время ожидания. Общее время ожидания - ts.wait_network
+            # в текущем узле обнуляем время ожидания. Общее время ожидания -
+            # ts.wait_network
             new_tsk.wait_time = 0
             new_tsk.is_pr = False
             new_tsk.start_waiting_time = -1
@@ -303,7 +304,8 @@ class PriorityQueueSimulator:
             self.arrive_on_free_channels(moment, k, new_tsk)
             return
 
-        # All servers are busy. Check priority type and add task to queue or start service.
+        # All servers are busy. Check priority type and add task to queue or
+        # start service.
 
         if self.prty_type == "No":
 
@@ -474,7 +476,8 @@ class PriorityQueueSimulator:
 
             start_number = 0
             if self.prty_type in ["PR", "RS", "RW"]:
-                # we can only look at the queue starting from the current class number
+                # we can only look at the queue starting from the current class
+                # number
                 start_number = k
 
             for kk in range(start_number, self.k):
@@ -659,7 +662,10 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_source_type}*/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{Fore.GREEN}{self.sources_params[kk]['type']},{Style.RESET_ALL}"
+                res += f"{
+                    Fore.GREEN}{
+                    self.sources_params[kk]['type']},{
+                    Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         is_the_same_serving_type = True
@@ -671,7 +677,10 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_serv_type}/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{Fore.GREEN}{self.servers_params[kk]['type']},{Style.RESET_ALL}"
+                res += f"{
+                    Fore.GREEN}{
+                    self.servers_params[kk]['type']},{
+                    Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         res += f"{Fore.BLUE}{str(self.n)}{Style.RESET_ALL}"
@@ -683,7 +692,10 @@ class PriorityQueueSimulator:
 
         res += f"\n{Fore.MAGENTA}Load: {self.calc_load():.3f}{Style.RESET_ALL}\n"
         if not is_short:
-            res += f"{Fore.LIGHTGREEN_EX}Current Time {self.ttek:.3f}{Style.RESET_ALL}\n"
+            res += f"{
+                Fore.LIGHTGREEN_EX}Current Time {
+                self.ttek:.3f}{
+                Style.RESET_ALL}\n"
         for kk in range(self.k):
             res += f"\n{Fore.CYAN}Class {kk + 1}{Style.RESET_ALL}\n"
             if not is_short:
@@ -719,6 +731,7 @@ class PriorityQueueSimulator:
                 res += str(self.servers[c]) + "\n"
 
         for kk in range(self.k):
-            res += f"{Fore.GREEN}Queue #{kk + 1}{Style.RESET_ALL} count {len(self.queue[kk])}\n"
+            res += f"{Fore.GREEN}Queue #{kk +
+                                         1}{Style.RESET_ALL} count {len(self.queue[kk])}\n"
 
         return res
