@@ -42,9 +42,7 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
         parent = max_node_res.parent
         max_load_node = max_node_res.node
 
-        childrens = [
-            k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node
-        ]
+        childrens = [k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node]
 
         min_load_child = -1
         min_loads = 1e10
@@ -79,9 +77,7 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
 
         r_d = self.R[parent, max_load_node]
         z = delta_ro * self.num_channels[max_load_node] / (r_d * lam * self.b[max_load_node][0])
-        return LoadBalanceResults(
-            z=z, children=[ChildLoadBalanceResults(child=min_load_child, z=z)]
-        )
+        return LoadBalanceResults(z=z, children=[ChildLoadBalanceResults(child=min_load_child, z=z)])
 
     def run(self, tolerance=1e-8, max_steps=100, approx_deg: int = 4):
         """
@@ -96,9 +92,9 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
 
         net_res = self._get_network_calc()
 
-        loads = net_res["loads"]
-        intencities = net_res["intensities"]
-        current_v1 = net_res["v"][0]
+        loads = net_res.loads
+        intencities = net_res.intensities
+        current_v1 = net_res.v[0]
         self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
         if self.verbose:
@@ -128,9 +124,9 @@ class NetworkOptimizerWithApprox(NetworkOptimizer):
 
             net_res = self._get_network_calc()
 
-            loads = net_res["loads"]
-            intencities = net_res["intensities"]
-            current_v1 = net_res["v"][0]
+            loads = net_res.loads
+            intencities = net_res.intensities
+            current_v1 = net_res.v[0]
 
             self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 

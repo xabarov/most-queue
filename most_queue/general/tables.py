@@ -41,9 +41,7 @@ def times_print(
     print("-" * 45)
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments))):
-            calc_mom = (
-                calc_moments[j].real if isinstance(calc_moments[j], complex) else calc_moments[j]
-            )
+            calc_mom = calc_moments[j].real if isinstance(calc_moments[j], complex) else calc_moments[j]
             sim_mom = sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
             print(
                 Fore.CYAN
@@ -103,12 +101,8 @@ def times_print_with_two_numerical(
     print("-" * 60)
     if isinstance(sim_moments, list):
         for j in range(min(len(sim_moments), len(calc_moments1), len(calc_moments2))):
-            calc_mom1 = (
-                calc_moments1[j].real if isinstance(calc_moments1[j], complex) else calc_moments1[j]
-            )
-            calc_mom2 = (
-                calc_moments2[j].real if isinstance(calc_moments2[j], complex) else calc_moments2[j]
-            )
+            calc_mom1 = calc_moments1[j].real if isinstance(calc_moments1[j], complex) else calc_moments1[j]
+            calc_mom2 = calc_moments2[j].real if isinstance(calc_moments2[j], complex) else calc_moments2[j]
             sim_mom = sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
             print(
                 Fore.CYAN
@@ -167,11 +161,7 @@ def times_print_no_compare(wait_times=None, sojourn_times=None):
         if isinstance(wait_times, list):
             for j in range(min(len(wait_times), len(sojourn_times))):
                 w_mom = wait_times[j].real if isinstance(wait_times[j], complex) else wait_times[j]
-                v_mom = (
-                    sojourn_times[j].real
-                    if isinstance(sojourn_times[j], complex)
-                    else sojourn_times[j]
-                )
+                v_mom = sojourn_times[j].real if isinstance(sojourn_times[j], complex) else sojourn_times[j]
                 print(
                     Fore.CYAN
                     + f"{j + 1:^15d}|"
@@ -352,10 +342,6 @@ def print_mrx(mrx, is_short=False):
                 print(f"{color}{mrx[i, j].real:^4.2f} | ", end="")
             else:
                 print(f"{color}{mrx[i, j]:^5.3f} | ", end="")
-        print(
-            "\n" + "-------" * col
-            if is_short or mrx[i, j].imag == 0.0
-            else "\n" + "---------------" * col
-        )
+        print("\n" + "-------" * col if is_short or mrx[i, j].imag == 0.0 else "\n" + "---------------" * col)
 
     print(f"{Style.RESET_ALL}")

@@ -14,9 +14,7 @@ def run_utilization(qp, save_path: str = None):
     """
     Run simulation and calculation for different utilizations and plot the results.
     """
-    rhoes = np.linspace(
-        qp["utilization"]["min"], qp["utilization"]["max"], qp["utilization"]["num_points"] + 1
-    )
+    rhoes = np.linspace(qp["utilization"]["min"], qp["utilization"]["max"], qp["utilization"]["num_points"] + 1)
 
     w1_num = []
     w1_sim = []
@@ -72,8 +70,6 @@ def run_utilization(qp, save_path: str = None):
         plot_w1(rhoes, w1_num, w1_sim, save_path=w1_save_path, x_label=r"$\rho$", is_xs_int=False)
 
         w1_errors_save_path = os.path.join(save_path, "w1_errors_vs_utilization.png")
-        plot_w1_errors(
-            rhoes, w1_rel_errors, save_path=w1_errors_save_path, x_label=r"$\rho$", is_xs_int=False
-        )
+        plot_w1_errors(rhoes, w1_rel_errors, save_path=w1_errors_save_path, x_label=r"$\rho$", is_xs_int=False)
 
     return rhoes, w1_num, w1_sim, w1_rel_errors

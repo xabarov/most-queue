@@ -56,7 +56,9 @@ def test_sim_mmnr():
     # probabilities of states .get_p(), periods of continuous occupancy .pppz
     w_sim = qs.w
 
-    mmnr = MMnrCalc(ARRIVAL_RATE, mu, NUM_OF_CHANNELS, BUFFER)
+    mmnr = MMnrCalc(n=NUM_OF_CHANNELS, r=BUFFER)
+    mmnr.set_sources(l=ARRIVAL_RATE)
+    mmnr.set_servers(mu=mu)
     w = mmnr.get_w()
     times_print(w_sim, w)
 

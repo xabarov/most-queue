@@ -52,9 +52,7 @@ def test_ek_d_n():
     # based on the mean value and the coefficient of variation
     # using the ErlangDistribution.get_params_by_mean_and_coev() method
 
-    erl_params = ErlangDistribution.get_params_by_mean_and_coev(
-        ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV
-    )
+    erl_params = ErlangDistribution.get_params_by_mean_and_coev(ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV)
 
     # service time will be determined based on the specified utilization factor
 

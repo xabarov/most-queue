@@ -23,27 +23,46 @@ class MGnNegativeRCSCalc(MGnCalc):
     def __init__(
         self,
         n: int,
-        l_pos: float,
-        l_neg: float,
-        b: list[float],
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
-        l: arrival rate of positive jobs
-        l_neg: arrival rate of negative jobs
-        b: initial moments of service time distribution
         buffer: size of the buffer (optional)
-        N: number of levels in the system (default is 150)
-        accuracy: accuracy parameter for stopping the iteration
-        dtype: data type for calculations (default is complex double precision)
-        verbose: whether to print intermediate results (default is False)
+        calc_params: TakahashiTakamiParams object with parameters for calculation
         """
 
-        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
+        super().__init__(n=n, buffer=buffer, calc_params=calc_params)
 
+        self.l_pos = None
+        self.l_neg = None
+        self.base_mgn = None
+        self.w = None
+
+    def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates of positive and negative jobs
+        :param l_pos: arrival rate of positive jobs
+        :param l_neg: arrival rate of negative jobs
+        """
+        self.l_pos = l_pos
+        self.l = l_pos
         self.l_neg = l_neg
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param b: initial moments of service time distribution
+        """
+        self.b = b
+
+        h2_params = H2Distribution.get_params_clx(b)
+        # params of H2-distribution:
+        self.y = [h2_params.p1, 1.0 - h2_params.p1]
+        self.mu = [h2_params.mu1, h2_params.mu2]
+
+        self.is_servers_set = True
 
     def get_q(self) -> float:
         """
@@ -178,9 +197,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                 right = self.l_neg * i / (num - 1)
                 left_from_next = self.l_neg * (i + 1) / (num - 1)
 
-                output[i, i] = ((num - i - 1) * self.mu[0] + left) * self.y[0] + (
-                    i * self.mu[1] + right
-                ) * self.y[1]
+                output[i, i] = ((num - i - 1) * self.mu[0] + left) * self.y[0] + (i * self.mu[1] + right) * self.y[1]
 
                 if i != num - 1:
                     output[i, i + 1] = ((num - i - 1) * self.mu[0] + left) * self.y[1]
@@ -215,9 +232,9 @@ class MGnNegativeRCSCalc(MGnCalc):
         Run the algorithm.
         """
 
-        self._fill_cols()
+        self.fill_cols()
         self._fill_t_b()
-        self._build_matrices()
+        self.build_matrices()
         self._initial_probabilities()
 
         self.b1[0][0, 0] = 0.0 + 0.0j

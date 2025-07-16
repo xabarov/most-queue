@@ -10,12 +10,12 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls
 
 
-class MGnH2ServingColdWarmDelay:
+class MGnH2ServingColdWarmDelay(MGnCalc):
     """
     Calculation of an M/H2/n queue with H2-warming, H2-cooling and H2-delay of the start of cooling
     using Takahasi-Takami method.
@@ -25,83 +25,39 @@ class MGnH2ServingColdWarmDelay:
 
     def __init__(
         self,
-        l: float,
-        b: list[float],
-        b_warm: list[float],
-        b_cold: list[float],
-        b_cold_delay: list[float],
         n: int,
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
-        n: number of servers
-        l: arrival rate
-        b: initial moments of service time
-        b_warm: initial moments of warming time
-        b_cold: initial moments of cooling time
-        b_cold_delay: initial moments of delay time before cooling starts
-        N: number of levels for the Markov chain approximation
-        accuracy: accuracy parameter for stopping iterations
-        dtype: data type for calculations (default is complex16)
-        verbose: flag to print intermediate results
-        stable_w_pls: flag to use a more stable method for calculating w_plus
-        w_pls_dt: time step for calculating w_plus when stable_w_pls is True
+        Initialization of the class.
+        :param n: number of servers
+        :param buffer: size of the buffer
+        :param calc_params: parameters for calculation
         """
 
-        if calc_params is None:
-            calc_params = TakahashiTakamiParams()
-        self.dt = np.dtype(calc_params.dtype)
+        super().__init__(n=n, calc_params=calc_params, buffer=buffer)
+
+        self.calc_params = calc_params or TakahashiTakamiParams()
+
+        self.dt = np.dtype(self.calc_params.dtype)
         if buffer:
             self.R = buffer + n
             self.N = self.R + 1
         else:
-            self.N = calc_params.N
+            self.N = self.calc_params.N
             self.R = None
 
-        self.e1 = calc_params.accuracy
+        self.e1 = self.calc_params.tolerance
         self.n = n
-        self.b = b
-        self.verbose = calc_params.verbose
-        self.l = l
-        self.stable_w_pls = calc_params.stable_w_pls
-        self.w_pls_dt = calc_params.w_pls_dt
-
-        if self.dt == "c16":
-            h2_params_service = H2Distribution.get_params_clx(b)
-        else:
-            h2_params_service = H2Distribution.get_params(b)
-
-        # H2-parameters for service time
-        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
-        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
-
-        # H2-parameters for warm-up time
-        self.b_warm = b_warm
-        if self.dt == "c16":
-            h2_params_warm = H2Distribution.get_params_clx(b_warm)
-        else:
-            h2_params_warm = H2Distribution.get_params(b_warm)
-        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
-        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
-
-        # H2-parameters for cold-down time
-        self.b_cold = b_cold
-        if self.dt == "c16":
-            h2_params_cold = H2Distribution.get_params_clx(b_cold)
-        else:
-            h2_params_cold = H2Distribution.get_params(b_cold)
-        self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
-        self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
-
-        # H2-parameters for cold-down delay time
-        self.b_cold_delay = b_cold_delay
-        if self.dt == "c16":
-            h2_params_cold_delay = H2Distribution.get_params_clx(b_cold_delay)
-        else:
-            h2_params_cold_delay = H2Distribution.get_params(b_cold_delay)
-        self.y_c_delay = [h2_params_cold_delay.p1, 1.0 - h2_params_cold_delay.p1]
-        self.mu_c_delay = [h2_params_cold_delay.mu1, h2_params_cold_delay.mu2]
+        self.b = None
+        self.b_warm = None
+        self.b_cold = None
+        self.b_cold_delay = None
+        self.verbose = self.calc_params.verbose
+        self.l = None
+        self.stable_w_pls = self.calc_params.stable_w_pls
+        self.w_pls_dt = self.calc_params.w_pls_dt
 
         self.cols = [] * self.N
 
@@ -149,8 +105,76 @@ class MGnH2ServingColdWarmDelay:
             self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self._build_matrices()
-        self._initial_probabilities()
+        self.y, self.mu = None, None
+        self.y_w, self.mu_w = None, None
+        self.y_c, self.mu_c = None, None
+        self.y_c_delay, self.mu_c_delay = None, None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate
+        """
+        self.l = l
+        self.is_sources_set = True
+
+    def set_servers(
+        self,
+        b: list[float],
+        b_warm: list[float],
+        b_cold: list[float],
+        b_cold_delay: list[float],
+    ):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time
+        warming time, cooling and cooling-delay distributions
+
+        :param b: initial moments of service time distribution
+        :param b_warm: initial moments of warming time distribution
+        :param b_cold: initial moments of cooling time distribution
+        :param b_cold_delay: initial moments of cooling-delay distribution
+        """
+        self.b = b
+        self.b_warm = b_warm
+        self.b_cold = b_cold
+        self.b_cold_delay = b_cold_delay
+
+        if self.dt == "c16":
+            h2_params_service = H2Distribution.get_params_clx(b)
+        else:
+            h2_params_service = H2Distribution.get_params(b)
+
+        # H2-parameters for service time
+        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
+        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
+
+        # H2-parameters for warm-up time
+        self.b_warm = b_warm
+        if self.dt == "c16":
+            h2_params_warm = H2Distribution.get_params_clx(b_warm)
+        else:
+            h2_params_warm = H2Distribution.get_params(b_warm)
+        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
+        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
+
+        # H2-parameters for cold-down time
+        self.b_cold = b_cold
+        if self.dt == "c16":
+            h2_params_cold = H2Distribution.get_params_clx(b_cold)
+        else:
+            h2_params_cold = H2Distribution.get_params(b_cold)
+        self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
+        self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
+
+        # H2-parameters for cold-down delay time
+        self.b_cold_delay = b_cold_delay
+        if self.dt == "c16":
+            h2_params_cold_delay = H2Distribution.get_params_clx(b_cold_delay)
+        else:
+            h2_params_cold_delay = H2Distribution.get_params(b_cold_delay)
+        self.y_c_delay = [h2_params_cold_delay.p1, 1.0 - h2_params_cold_delay.p1]
+        self.mu_c_delay = [h2_params_cold_delay.mu1, h2_params_cold_delay.mu2]
+
+        self.is_servers_set = True
 
     def get_probs_of_servers_busy(self):
         """
@@ -188,6 +212,10 @@ class MGnH2ServingColdWarmDelay:
         """
         Запускает расчет
         """
+        self._check_if_servers_and_sources_set()
+        self._build_matrices()
+        self._initial_probabilities()
+
         if self.dt == "c16":
             self.b1[0][0, 0] = 0.0 + 0.0j
             self.b2[0][0, 0] = 0.0 + 0.0j
@@ -300,7 +328,7 @@ class MGnH2ServingColdWarmDelay:
         """
         return self.Y[0][0, 0]
 
-    def get_w(self):
+    def get_w(self, _derivate=False):
         """
         Get first three moments of waiting time in the queue.
         """
@@ -394,11 +422,7 @@ class MGnH2ServingColdWarmDelay:
                 # Поэтому у Y смещение + 3
                 for i in range(2):
                     # Переход в [0] состояние, а из него -> в разогрев
-                    w += (
-                        self.Y[k][0, i + 3]
-                        * mu_c_pls[i]
-                        * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
-                    )
+                    w += self.Y[k][0, i + 3] * mu_c_pls[i] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
             else:
                 cold_pos = k + 3
                 for c_phase in range(2):
@@ -409,10 +433,7 @@ class MGnH2ServingColdWarmDelay:
         # ключи яруса n, для n=3 [(3,0) (2,1) (1,2) (0,3)]
         key_numbers = self._get_key_numbers(self.n)
         a = np.array(
-            [
-                pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s)
-                for j in range(self.n + 1)
-            ]
+            [pls(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in range(self.n + 1)]
         )
         waits_service_on_level_before = None
 
@@ -448,11 +469,7 @@ class MGnH2ServingColdWarmDelay:
 
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += (
-                            self.Y[k][0, cold_pos + c_phase]
-                            * pls_service_total
-                            * c_to_w[c_phase, w_phase]
-                        )
+                        w += self.Y[k][0, cold_pos + c_phase] * pls_service_total * c_to_w[c_phase, w_phase]
 
             else:
 
@@ -485,11 +502,7 @@ class MGnH2ServingColdWarmDelay:
 
                 for c_phase in range(2):
                     for w_phase in range(2):
-                        w += (
-                            self.Y[k][0, cold_pos + c_phase]
-                            * c_to_w[c_phase, w_phase]
-                            * pls_service_total
-                        )
+                        w += self.Y[k][0, cold_pos + c_phase] * c_to_w[c_phase, w_phase] * pls_service_total
 
         return w
 
@@ -655,9 +668,7 @@ class MGnH2ServingColdWarmDelay:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[
-                    1
-                ]
+                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
                 if i != level - 1:
                     mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:

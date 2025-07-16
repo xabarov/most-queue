@@ -22,10 +22,6 @@ class MPhNPrty(MGnCalc):
 
     def __init__(
         self,
-        mu_L: float,
-        b_high: list[float],
-        l_L: float,
-        l_H: float,
         n: int,
         buffer=None,
         calc_params: TakahashiTakamiParams | None = None,
@@ -35,29 +31,12 @@ class MPhNPrty(MGnCalc):
         based on the Takahashi-Takagi numerical method based on the approximation
         of the busy-time distribution by a Cox second-order distribution.
 
-        :param l_L: intensity of the arrivals with low priority,
-        :param l_H: intensity of the arrivals with high priority,
-        :param mu_L: intensity of service for low-priority requests,
-        :param b_high: list of E[X^k], k =1,2,3 for service time for high priority jobs
-        :param N: number of levels (stages)
-        :param accuracy: accuracy parameter for stopping the iteration
-        :param max_iter: maximum number of iterations
-        :param is_cox: if True, use Cox2 distribution for approximating service time
-            of low-priority jobs, otherwise use H2 distribution.
-        :param approx_ee, approx_e: approximation paramters
+        :param n: number of servers,
+        :param buffer: size of the buffer, if None then infinite buffer is used,
+        :param calc_params: parameters for the calculation of the busy-time distribution.
         """
 
-        super().__init__(n=n, l=0, b=b_high, buffer=buffer, calc_params=calc_params)
-
-        self.l_L = l_L
-        self.l_H = l_H
-        self.mu_L = mu_L
-
-        cox_param_H = CoxDistribution.get_params(b_high)
-
-        self.mu1_H = cox_param_H.mu1
-        self.mu2_H = cox_param_H.mu2
-        self.p_H = cox_param_H.p1
+        super().__init__(n=n, buffer=buffer, calc_params=calc_params)
 
         self.fitting_params = FittingParams(
             ee=calc_params.approx_ee,
@@ -73,13 +52,58 @@ class MPhNPrty(MGnCalc):
         self.alphas = []
         self.pp = []  # list of transition probabilities to the busy periods states
 
-        self._calc_busy_periods()
-
         self.cols = [] * calc_params.N
 
         self.run_iterations_num_ = 0
         self.p_iteration_num_ = 0
         self.cols_length_ = 0
+
+        self.l_L = None
+        self.l_H = None
+        self.b_high = None
+        self.mu_L = None
+        self.mu1_H = None
+        self.mu2_H = None
+        self.p_H = None
+        self.busy_num_ = None
+        self.big_a_for_busy = []
+        self.big_b_for_busy = []
+        self.big_c_for_busy = []
+        self.big_d_for_busy = []
+
+    def set_sources(self, l_low: float, l_high: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates
+        :param l_low: intensity of the arrivals with low priority,
+        :param l_high: intensity of the arrivals with high priority,
+        """
+        self.l_L = l_low
+        self.l_H = l_high
+        self.is_sources_set = True
+
+    def set_servers(self, b_high: list[float], mu_low: float):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param mu_low: intensity of service for low-priority requests,
+        :param b_high: list of E[X^k], k =1,2,3 for service time for high priority jobs
+        """
+        self.b_high = b_high
+        self.mu_L = mu_low
+
+        cox_param_H = CoxDistribution.get_params(b_high)
+
+        self.mu1_H = cox_param_H.mu1
+        self.mu2_H = cox_param_H.mu2
+        self.p_H = cox_param_H.p1
+
+        self.is_servers_set = True
+
+    def run(self):
+
+        self._check_if_servers_and_sources_set()
+
+        self._calc_busy_periods()
+        return super().run()
 
     def get_low_class_v1(self) -> float:
         """
@@ -93,7 +117,7 @@ class MPhNPrty(MGnCalc):
             l1 += p_real[i] * i
         return l1 / self.l_L
 
-    def _fill_cols(self):
+    def fill_cols(self):
         # Cols depends on number of channels. cols = number of all microstates transitions
         # from Cox2 to level
         self.cols_length_ = 2 * self.n**2
@@ -248,9 +272,9 @@ class MPhNPrty(MGnCalc):
         )
         pass_time.calc()
 
-        self.pnz_num_ = self.n**2
+        self.busy_num_ = self.n**2
 
-        for j in range(self.pnz_num_):
+        for j in range(self.busy_num_):
             self.busy_periods.append([0, 0, 0])
 
         num = 0
@@ -260,7 +284,7 @@ class MPhNPrty(MGnCalc):
                     self.busy_periods[num][r] = pass_time.Z[self.n][r][i, j]
                 num = num + 1
 
-        for j in range(self.pnz_num_):
+        for j in range(self.busy_num_):
             under_sqrt = self.busy_periods[j][1] - self.busy_periods[j][0] ** 2
             if under_sqrt > 0:
                 coev = math.sqrt(under_sqrt.real)
@@ -271,7 +295,7 @@ class MPhNPrty(MGnCalc):
 
         if self.verbose:
             print("\nBusy periods:\n")
-            for j in range(self.pnz_num_):
+            for j in range(self.busy_num_):
                 for r in range(3):
                     if math.isclose(self.busy_periods[j][r].imag, 0):
                         print(f"{self.busy_periods[j][r].real:^8.3g}", end=" ")
@@ -283,7 +307,7 @@ class MPhNPrty(MGnCalc):
                     print(f"coev = {self.busy_periods_coevs[j]:^4.3g}")
 
         # pp - список из n**2 вероятностей переходов
-        for j in range(self.pnz_num_):
+        for j in range(self.busy_num_):
             num = 0
             for i in range(self.n):
                 for j in range(self.n):
@@ -291,7 +315,7 @@ class MPhNPrty(MGnCalc):
                     num = num + 1
         if self.verbose:
             print("\nTransition probabilities of busy periods:\n")
-            for j in range(self.pnz_num_):
+            for j in range(self.busy_num_):
                 if math.isclose(self.pp[j].imag, 0):
                     print(f"{self.pp[j].real:^8.3g}", end=" ")
                 else:
@@ -396,38 +420,24 @@ class MPhNPrty(MGnCalc):
         m2_mass = []
         print("\n")
 
-        for i in range(self.pnz_num_):
+        for i in range(self.busy_num_):
             if not self.is_cox:
-                h2_param = H2Distribution.get_params_clx(
-                    self.busy_periods[i], fitting_params=self.fitting_params
-                )
+                h2_param = H2Distribution.get_params_clx(self.busy_periods[i], fitting_params=self.fitting_params)
                 # h2_param = H2Distribution.get_params(self.busy_periods[i])
                 y1_mass.append(h2_param.p1)
                 m1_mass.append(h2_param.mu1)
                 m2_mass.append(h2_param.mu2)
                 if self.verbose:
                     print(f"Params for B{i + 1}:")
-                    print(
-                        f"\t{
-                            h2_param.p1:3.3f}, {
-                            h2_param.mu1:3.3f}, {
-                            h2_param.mu2:3.3f}"
-                    )
+                    print(f"\t{h2_param.p1:3.3f}, {h2_param.mu1:3.3f}, {h2_param.mu2:3.3f}")
             else:
-                cox_params = CoxDistribution.get_params(
-                    self.busy_periods[i], fitting_params=self.fitting_params
-                )
+                cox_params = CoxDistribution.get_params(self.busy_periods[i], fitting_params=self.fitting_params)
                 y1_mass.append(cox_params.p1)
                 m1_mass.append(cox_params.mu1)
                 m2_mass.append(cox_params.mu2)
                 if self.verbose:
                     print(f"Params for B{i + 1}:")
-                    print(
-                        f"\t{
-                            cox_params.p1:3.3f}, {
-                            cox_params.mu1:3.3f}, {
-                            cox_params.mu2:3.3f}"
-                    )
+                    print(f"\t{cox_params.p1: 3.3f}, {cox_params.mu1: 3.3f}, {cox_params.mu2: 3.3f}")
 
         # first quad
 

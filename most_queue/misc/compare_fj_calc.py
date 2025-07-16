@@ -81,7 +81,9 @@ def test_fj_calc():
         # расчет средних времен пребывания с помощью аппроксимаций. \
         # На вход каждого из методов - l, mu, nn (число каналов СМО)
 
-        calcs = ForkJoinMarkovianCalc(l, mu, nn)
+        calcs = ForkJoinMarkovianCalc(n=nn)
+        calcs.set_sources(l=l)
+        calcs.set_servers(mu=mu)
 
         v_varki.append(calcs.get_v1_fj_varki_merchant())
         v_varma.append(calcs.get_v1_fj_varma())

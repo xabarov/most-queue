@@ -4,27 +4,45 @@ Class to calculate M/G/1 queue with preemptive (absolute) priority.
 
 import math
 
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
 
 
-class MG1PreemtiveCalculation:
+class MG1PreemtiveCalculation(BaseQueue):
     """
     Class to calculate M/G/1 queue with preemptive (absolute) priority.
     """
 
-    def __init__(self, l: list[float], b: list[list[float]]):
+    def __init__(self):
         """
-        :param l: list[float]  - list of arrival intensities for each job class
-        :param b: list[list[float]] - list of initial moments for each job class
+        Initialize the MG1NonPreemtiveCalculation class.
+        """
+        super().__init__(n=1)
+        self.l = None
+        self.b = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate.
         """
         self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution.
+        param b: initial moments of service time distribution.
+        """
         self.b = b
+        self.is_servers_set = True
 
     def get_w1(self):
         """
         Calculation of the average waiting time in M/G/1 with absolute priority.
 
         """
+
+        self._check_if_servers_and_sources_set()
         k = len(self.l)
         w1 = [0.0] * k
         R = [0.0] * k
@@ -68,6 +86,7 @@ class MG1PreemtiveCalculation:
         res['busy'][k][j] - initial moments of busy period
         res['w_with_pr'][k][j] - initial moments of waiting for service with interruptions
         """
+        self._check_if_servers_and_sources_set()
         num_of_cl = len(self.l)
         L = []
         for i in range(num_of_cl):
@@ -104,9 +123,7 @@ class MG1PreemtiveCalculation:
         v[0][0] = w[0][0] + self.b[0][0]
         v[0][1] = w[0][1] + 2 * w[0][0] * self.b[0][0] + self.b[0][1]
         if num > 2:
-            v[0][2] = (
-                w[0][2] + 3 * w[0][1] * self.b[0][0] + 3 * w[0][0] * self.b[0][1] + self.b[0][2]
-            )
+            v[0][2] = w[0][2] + 3 * w[0][1] * self.b[0][0] + 3 * w[0][0] * self.b[0][1] + self.b[0][2]
 
         h.append(self.b[0])
 
@@ -140,16 +157,9 @@ class MG1PreemtiveCalculation:
             for i in range(1, num + 1):
                 summ = 0
                 for m in range(i):
-                    summ += (
-                        w[j][m]
-                        * h[j][i - m]
-                        * math.factorial(i)
-                        / (math.factorial(m) * math.factorial(i + 1 - m))
-                    )
+                    summ += w[j][m] * h[j][i - m] * math.factorial(i) / (math.factorial(m) * math.factorial(i + 1 - m))
 
-                w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) + self.l[j] * summ) / (
-                    1.0 - self.l[j] * h[j][0]
-                )
+                w[j][i] = (c * L[j] * pi_j[j - 1][i] / (i + 1) + self.l[j] * summ) / (1.0 - self.l[j] * h[j][0])
             w[j] = w[j][1:]
             v[j][0] = w[j][0] + h[j][0]
             v[j][1] = w[j][1] + 2 * w[j][0] * h[j][0] + h[j][1]
@@ -167,10 +177,7 @@ class MG1PreemtiveCalculation:
             w_with_pr[j][1] = v[j][1] - 2 * w_with_pr[j][0] * self.b[j][0] - self.b[j][1]
             if num > 2:
                 w_with_pr[j][2] = (
-                    v[j][2]
-                    - 3 * w_with_pr[j][1] * self.b[j][0]
-                    - 3 * w_with_pr[j][0] * self.b[j][1]
-                    - self.b[j][2]
+                    v[j][2] - 3 * w_with_pr[j][1] * self.b[j][0] - 3 * w_with_pr[j][0] * self.b[j][1] - self.b[j][2]
                 )
         res["w_with_pr"] = w_with_pr
         res["busy"] = pi_j

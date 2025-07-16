@@ -24,16 +24,11 @@ class MGnNegativeRCSCalc(MGnCalc):
     def __init__(
         self,
         n: int,
-        l_pos: float,
-        l_neg: float,
-        b: list[float],
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
-        l: arrival rate of positive jobs
-        l_neg: arrival rate of negative jobs
         b: initial moments of service time distribution
         buffer: size of the buffer (optional)
         N: number of levels in the system (default is 150)
@@ -42,9 +37,29 @@ class MGnNegativeRCSCalc(MGnCalc):
         verbose: whether to print intermediate results (default is False)
         """
 
-        self.l_neg = l_neg
+        super().__init__(n=n, buffer=buffer, calc_params=calc_params)
 
-        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
+        self.l_pos = None
+        self.l_neg = None
+        self.b = None
+
+    def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates of positive and negative jobs
+        :param l_pos: arrival rate of positive jobs
+        :param l_neg: arrival rate of negative jobs
+        """
+        self.l_pos = l_pos
+        self.l_neg = l_neg
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param b: initial moments of service time distribution
+        """
+        self.b = b
+        self.is_servers_set = True
 
     def get_q(self) -> float:
         """
@@ -150,9 +165,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             a = np.array(
                 [
                     lst_exp(
-                        key_numbers[j][0] * self.mu[0]
-                        + key_numbers[j][1] * self.mu[1]
-                        + self.l_neg,
+                        key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1] + self.l_neg,
                         s,
                     )
                     for j in range(k + 2)
@@ -250,9 +263,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         for i in range(1, self.n):
             l_neg += self.p[i] * self.l_neg / i
 
-        b = H2Distribution.calc_theory_moments(
-            H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2)
-        )
+        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2))
 
         return conv_moments(w, b)
 
@@ -301,9 +312,7 @@ class MGnNegativeRCSCalc(MGnCalc):
                 right = self.l_neg * i / (num - 1)
                 left_from_next = self.l_neg * (i + 1) / (num - 1)
 
-                output[i, i] = ((num - i - 1) * self.mu[0] + left) * self.y[0] + (
-                    i * self.mu[1] + right
-                ) * self.y[1]
+                output[i, i] = ((num - i - 1) * self.mu[0] + left) * self.y[0] + (i * self.mu[1] + right) * self.y[1]
 
                 if i != num - 1:
                     output[i, i + 1] = ((num - i - 1) * self.mu[0] + left) * self.y[1]

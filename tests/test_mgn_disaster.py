@@ -63,12 +63,9 @@ def test_mgn():
     w_sim = queue_sim.get_w()
 
     # Run calc
-    queue_calc = MGnNegativeDisasterCalc(
-        NUM_OF_CHANNELS,
-        ARRIVAL_RATE_POSITIVE,
-        ARRIVAL_RATE_NEGATIVE,
-        b,
-    )
+    queue_calc = MGnNegativeDisasterCalc(n=NUM_OF_CHANNELS)
+    queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    queue_calc.set_servers(b=b)
 
     queue_calc.run()
 

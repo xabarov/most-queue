@@ -102,29 +102,26 @@ def test_network():
     prty = ["NP"] * NUM_OF_NODES
 
     # Create simulation of priority network:
-    qn = PriorityNetwork(
-        NUM_OF_CLASSES,
-        ARRIVAL_RATES,
-        big_r,
-        NUM_OF_CHANNELS,
-        prty,
-        serv_params,
-        nodes_prty,
-    )
+    qn = PriorityNetwork(NUM_OF_CLASSES)
+
+    qn.set_sources(L=ARRIVAL_RATES, R=big_r)
+    qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS, prty=prty, nodes_prty=nodes_prty)
 
     #  Run simulation of priority network:
     qn.run(NUM_OF_JOBS)
 
     # Get initial moments of soujorney time from simulation:
-    v_sim = qn.v_network
+    v_sim = qn.get_v()
 
     #  Get initial moments of soujorney time from calculation:
-    net_calc = OpenNetworkCalcPriorities(big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
+    net_calc = OpenNetworkCalcPriorities()
+    net_calc.set_sources(R=big_r, L=ARRIVAL_RATES)
+    net_calc.set_nodes(n=NUM_OF_CHANNELS, b=b, prty=prty, nodes_prty=nodes_prty)
     net_calc = net_calc.run()
-    v_num = net_calc["v"]
+    v_num = net_calc.v
 
     # Get utilization factor of each node
-    loads = net_calc["loads"]
+    loads = net_calc.loads
 
     #  Print results
 
@@ -141,21 +138,18 @@ def test_network():
     assert abs(v_sim[2][0] - v_num[2][0] < 2.0), ERROR_MSG
 
     prty = ["PR"] * NUM_OF_NODES  # Absolute priority at each node
-    qn = PriorityNetwork(
-        NUM_OF_CLASSES,
-        ARRIVAL_RATES,
-        big_r,
-        NUM_OF_CHANNELS,
-        prty,
-        serv_params,
-        nodes_prty,
-    )
-    qn.run(NUM_OF_JOBS)
-    v_sim = qn.v_network
+    qn = PriorityNetwork(NUM_OF_CLASSES)
 
-    net_calc = OpenNetworkCalcPriorities(big_r, b, NUM_OF_CHANNELS, ARRIVAL_RATES, prty, nodes_prty)
+    qn.set_sources(L=ARRIVAL_RATES, R=big_r)
+    qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS, prty=prty, nodes_prty=nodes_prty)
+    qn.run(NUM_OF_JOBS)
+    v_sim = qn.get_v()
+
+    net_calc = OpenNetworkCalcPriorities()
+    net_calc.set_sources(R=big_r, L=ARRIVAL_RATES)
+    net_calc.set_nodes(n=NUM_OF_CHANNELS, b=b, prty=prty, nodes_prty=nodes_prty)
     net_calc = net_calc.run()
-    v_num = net_calc["v"]
+    v_num = net_calc.v
 
     print("-" * 60)
     print("Absolute Priority ('PR')")

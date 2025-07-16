@@ -125,7 +125,9 @@ def test_fj_sim():
 
     v1_sim = run_sim_fj(NUM_OF_CHANNELS, mu)[0]
 
-    fj_calc_markov = ForkJoinMarkovianCalc(ARRIVAL_RATE, mu, NUM_OF_CHANNELS)
+    fj_calc_markov = ForkJoinMarkovianCalc(n=NUM_OF_CHANNELS)
+    fj_calc_markov.set_sources(l=ARRIVAL_RATE)
+    fj_calc_markov.set_servers(mu=mu)
 
     v1_varma = fj_calc_markov.get_v1_fj_varma()
     v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_tantawi()
@@ -136,7 +138,9 @@ def test_fj_sim():
     # time
     v1_sim = run_sim_fj(JOBS_REQUIRED, mu)[0]
 
-    fj_calc_markov = ForkJoinMarkovianCalc(ARRIVAL_RATE, mu, NUM_OF_CHANNELS, JOBS_REQUIRED)
+    fj_calc_markov = ForkJoinMarkovianCalc(n=NUM_OF_CHANNELS)
+    fj_calc_markov.set_sources(l=ARRIVAL_RATE)
+    fj_calc_markov.set_servers(mu=mu, k=JOBS_REQUIRED)
 
     v1_varma = fj_calc_markov.get_v1_varma_nk()
     v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_nk()
@@ -158,22 +162,20 @@ def test_sj_sim():
 
     """
 
-    gamma_params = GammaDistribution.get_params_by_mean_and_coev(
-        SERVICE_TIME_AVERAGE, SERVICE_TIME_CV
-    )
+    gamma_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
     b = GammaDistribution.calc_theory_moments(gamma_params)
     v_sim = run_sim_sj(gamma_params)
 
-    sj_calc = SplitJoinCalc(ARRIVAL_RATE, NUM_OF_CHANNELS, b)
+    sj_calc = SplitJoinCalc(n=NUM_OF_CHANNELS)
+    sj_calc.set_sources(l=ARRIVAL_RATE)
+    sj_calc.set_servers(b=b)
     v_num = sj_calc.get_v()
     ro = sj_calc.get_ro()
 
     print_results_sj(SERVICE_TIME_CV, ro, v_sim, v_num)
 
-    assert np.allclose(
-        np.array(v_sim[:2]), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(np.array(v_sim[:2]), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

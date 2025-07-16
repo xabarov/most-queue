@@ -38,7 +38,9 @@ def test_impatience():
     mu = ARRIVAL_RATE / (UTILIZATION_FACTOR * NUM_OF_CHANNELS)  # service rate
 
     # Calculate theoretical results
-    imp_calc = MM1Impatience(ARRIVAL_RATE, mu, IMPATIENCE_RATE)
+    imp_calc = MM1Impatience(gamma=IMPATIENCE_RATE)
+    imp_calc.set_sources(ARRIVAL_RATE)
+    imp_calc.set_servers(mu)
     v1 = imp_calc.get_v1()
     p_num = imp_calc.probs
 

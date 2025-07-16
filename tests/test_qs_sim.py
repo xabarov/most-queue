@@ -62,7 +62,9 @@ def test_sim():
     p_sim = qs.get_p()
 
     # Calculate theoretical waiting times using MMnr model
-    mmnr = MMnrCalc(ARRIVAL_RATE, service_rate, NUM_OF_CHANNELS, QUEUE_LENGTH)
+    mmnr = MMnrCalc(n=NUM_OF_CHANNELS, r=QUEUE_LENGTH)
+    mmnr.set_sources(l=ARRIVAL_RATE)
+    mmnr.set_servers(mu=service_rate)
     w_num = mmnr.get_w()
     p_num = mmnr.get_p()
 

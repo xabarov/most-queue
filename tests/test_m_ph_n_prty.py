@@ -67,13 +67,11 @@ def test_m_ph_n_prty():
 
     tt_start = time.process_time()
     tt = MPhNPrty(
-        mu_low,
-        b_high,
-        ARRIVAL_RATE_LOW,
-        ARRIVAL_RATE_HIGH,
         n=NUM_OF_CHANNELS,
         calc_params=calc_params,
     )
+    tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_high=ARRIVAL_RATE_HIGH)
+    tt.set_servers(b_high=b_high, mu_low=mu_low)
     tt.run()
     tt_time = time.process_time() - tt_start
 
@@ -89,7 +87,9 @@ def test_m_ph_n_prty():
     b.append(b_low)
 
     invar_start = time.process_time()
-    invar_calc = MGnInvarApproximation([ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW], b, n=NUM_OF_CHANNELS)
+    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS)
+    invar_calc.set_sources([ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW])
+    invar_calc.set_servers(b)
     v = invar_calc.get_v(priority="PR", num=2)
     v_low_invar = v[1][0]
     invar_time = time.process_time() - invar_start

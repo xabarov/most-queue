@@ -5,32 +5,60 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
+from most_queue.theory.networks.base_network_calc import BaseNetworkPriority, NetworkCalcResultsPriority
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
 
-class OpenNetworkCalcPriorities:
+class OpenNetworkCalcPriorities(BaseNetworkPriority):
     """
     Calculates queueing network.
     """
 
-    def __init__(
-        self,
-        R: list[np.matrix],
-        b: list[list[list[float]]],
-        n: list[int],
-        L: list[float],
-        prty: list[str],
-        nodes_prty: list[list[int]],
-    ):
+    def __init__(self):
+        """
+        Initializes the network calculator.
+        """
+
+        super().__init__()
+        self.R = None
+        self.b = None
+        self.n = None
+        self.L = None
+        self.prty = None
+        self.nodes_prty = None
+        self.is_sources_set = False
+        self.is_nodes_set = False
+        self.intensities = None
+
+    def set_sources(self, L: list[float], R: list[np.matrix]):  # pylint: disable=arguments-differ
         """
         R: list of routing matrices for each class.
+        L: list of arrival intensities for each class.
+        each routing matrix, dim (m + 1 x m + 1), where m is number of nodes.
+            For example:
+            R[0][0, 0] is transition frome source to first node for the first class.
+            R[0][0, m] is transition from source to out of system for the first class.
+
+        """
+        self.L = L
+        self.R = R
+        self.is_sources_set = True
+
+    def set_nodes(
+        self,
+        b: list[list[list[float]]],
+        n: list[int],
+        prty: list[str],
+        nodes_prty: list[list[int]],
+    ):  # pylint: disable=arguments-differ
+        """
+        Set nodes of queueing network.
+        Parameters:
         b: list of lists of theoretical moments of service time distribution
         for each class in each node.
         n: list of number of channels in each node.
-        L: list of arrival intensities for each class.
-
         prty: list of priority types for each node.
             No  - no priorities, FIFO
             PR  - preemptive resume, with resuming interrupted request
@@ -47,12 +75,11 @@ class OpenNetworkCalcPriorities:
                 priorities is set: for the first class - the oldest (0),
                 for the second - the youngest (2), for the third - intermediate (1)
         """
-        self.R = R
         self.b = b
         self.n = n
-        self.L = L
         self.prty = prty
         self.nodes_prty = nodes_prty
+        self.is_nodes_set = True
 
     def balance_equation(self, L, R):
         """
@@ -95,7 +122,7 @@ class OpenNetworkCalcPriorities:
         Order the loads and intensities based on node priority.
         """
 
-        intensities = [self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)]
+        self.intensities = [self.balance_equation(self.L[k], self.R[k]) for k in range(k_num)]
 
         b_order = []
         l_order = []
@@ -103,33 +130,36 @@ class OpenNetworkCalcPriorities:
         for m in range(nodes):
             orders = [self.nodes_prty[m][k] for k in range(k_num)]
             b_order.append([self.b[o][m] for o in orders])
-            l_order.append([intensities[o][m] for o in orders])
+            l_order.append([self.intensities[o][m] for o in orders])
 
         return b_order, l_order
 
-    def run(self):
+    def run(self) -> NetworkCalcResultsPriority:
         """
         Run the simulation and calculate the results.
         """
-        res = {}
+
+        self._check_sources_and_nodes_is_set()
 
         k_num = len(self.L)
         nodes = self.R[0].shape[0] - 1
-        res["loads"] = [0.0] * nodes
-        res["v"] = []
+        loads = [0.0] * nodes
+        v = []
 
         b_order, l_order = self.order_b_l(k_num, nodes)
 
-        res["v_node"] = []
+        v_node = []
         for i in range(nodes):
             l_sum = np.sum(l_order[i])
             b_sr = np.mean(b_order[i], axis=0)
 
-            res["loads"][i] = l_sum * b_sr[0] / self.n[i]
-            invar_calc = MGnInvarApproximation(l_order[i], b_order[i], self.n[i])
-            res["v_node"].append(invar_calc.get_v(priority=self.prty[i]))
+            loads[i] = l_sum * b_sr[0] / self.n[i]
+            invar_calc = MGnInvarApproximation(n=self.n[i])
+            invar_calc.set_sources(l_order[i])
+            invar_calc.set_servers(b_order[i])
+            v_node.append(invar_calc.get_v(priority=self.prty[i]))
             for k in range(k_num):
-                res["v_node"][i][self.nodes_prty[i][k]] = res["v_node"][i][k]
+                v_node[i][self.nodes_prty[i][k]] = v_node[i][k]
 
         h = 0.0001
         s = [h * (i + 1) for i in range(4)]
@@ -141,10 +171,7 @@ class OpenNetworkCalcPriorities:
             T = self.R[k][1:, nodes].reshape(-1, 1)
             Q = self.R[k][1:, :nodes]
 
-            gamma_mu_alpha = [
-                GammaDistribution.get_params([res["v_node"][i][k][0], res["v_node"][i][k][1]])
-                for i in range(nodes)
-            ]
+            gamma_mu_alpha = [GammaDistribution.get_params([v_node[i][k][0], v_node[i][k][1]]) for i in range(nodes)]
 
             g_PLS = []
             for i in range(4):
@@ -156,9 +183,11 @@ class OpenNetworkCalcPriorities:
                 F = np.dot(P, np.dot(F, np.dot(N, T)))
                 g_PLS.append(F[0, 0])
 
-            res["v"].append([])
-            res["v"][k] = diff5dots(g_PLS, h)
-            res["v"][k][0] = -res["v"][k][0]
-            res["v"][k][2] = -res["v"][k][2]
+            v.append([])
+            v[k] = diff5dots(g_PLS, h)
+            v[k][0] = -v[k][0]
+            v[k][2] = -v[k][2]
 
-        return res
+        self.results = NetworkCalcResultsPriority(v=v, intensities=self.intensities, loads=loads)
+
+        return self.results

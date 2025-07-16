@@ -40,7 +40,9 @@ def test_engset():
     """
     # Calculation of the Engset model
     service_rate = ARRIVAL_RATE / UTILIZATION_FACTOR
-    engset = Engset(ARRIVAL_RATE, service_rate, SOURCE_NUM)
+    engset = Engset()
+    engset.set_sources(l=ARRIVAL_RATE, number_of_sources=SOURCE_NUM)
+    engset.set_servers(mu=service_rate)
 
     # Get probabilities of states of the system
     p_num = engset.get_p()

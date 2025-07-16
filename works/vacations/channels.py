@@ -33,9 +33,7 @@ def run_channels(qp, save_path: str = None):
 
         b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
-        num_results = run_calculation(
-            arrival_rate=qp["arrival_rate"], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d
-        )
+        num_results = run_calculation(arrival_rate=qp["arrival_rate"], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d)
         sim_results = run_simulation(
             arrival_rate=qp["arrival_rate"],
             num_channels=n,

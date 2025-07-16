@@ -15,9 +15,7 @@ def run_cool_delay_average(qp, save_path: str = None):
     """
     Run simulation and calculation for different cooling delay mean times
     """
-    cools = np.linspace(
-        qp["delay"]["mean"]["min"], qp["delay"]["mean"]["max"], qp["delay"]["mean"]["num_points"]
-    )
+    cools = np.linspace(qp["delay"]["mean"]["min"], qp["delay"]["mean"]["max"], qp["delay"]["mean"]["num_points"])
 
     w1_num = []
     w1_sim = []
@@ -78,15 +76,11 @@ def run_cool_delay_average(qp, save_path: str = None):
     if save_path:
         wait_time_save_path = os.path.join(save_path, "w1_vs_cool_delay_ave.png")
 
-        plot_w1(
-            cools, w1_num, w1_sim, x_label="Cooling Delay Average", save_path=wait_time_save_path
-        )
+        plot_w1(cools, w1_num, w1_sim, x_label="Cooling Delay Average", save_path=wait_time_save_path)
 
         w1_error_save_path = os.path.join(save_path, "w1_error_vs_cool_delay_ave.png")
 
-        plot_w1_errors(
-            cools, w1_rel_errors, x_label="Cooling Delay Average", save_path=w1_error_save_path
-        )
+        plot_w1_errors(cools, w1_rel_errors, x_label="Cooling Delay Average", save_path=w1_error_save_path)
 
         cool_probs_save_path = os.path.join(save_path, "cooling_delay_probs_vs_cool_delay_ave.png")
 
@@ -105,9 +99,7 @@ def run_cool_delay_cv(qp, save_path: str = None):
     """
     Run simulation and calculation for different cooling delay coefficient of variation
     """
-    cool_cvs = np.linspace(
-        qp["delay"]["cv"]["min"], qp["delay"]["cv"]["max"], qp["delay"]["cv"]["num_points"]
-    )
+    cool_cvs = np.linspace(qp["delay"]["cv"]["min"], qp["delay"]["cv"]["max"], qp["delay"]["cv"]["num_points"])
 
     w1_num = []
     w1_sim = []
@@ -172,9 +164,7 @@ def run_cool_delay_cv(qp, save_path: str = None):
 
         w1_error_save_path = os.path.join(save_path, "w1_error_vs_cool_delay_cv.png")
 
-        plot_w1_errors(
-            cool_cvs, w1_rel_errors, x_label="Cooling Delay CV", save_path=w1_error_save_path
-        )
+        plot_w1_errors(cool_cvs, w1_rel_errors, x_label="Cooling Delay CV", save_path=w1_error_save_path)
 
         cool_probs_save_path = os.path.join(save_path, "cooling_delay_probs_vs_cool_delay_cv.png")
 

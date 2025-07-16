@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 from colorama import Fore, Style, init
 
-from most_queue.theory.networks.open_network import OpenNetworkCalc
+from most_queue.theory.networks.open_network import NetworkCalcResults, OpenNetworkCalc
 
 init()
 
@@ -67,10 +67,7 @@ class NetworkOptimizer:
 
     def __init__(
         self,
-        transition_matrix: np.ndarray,
-        arrival_rate: float,
-        b: list[list[float]],
-        num_channels: list[int],
+        network: OpenNetworkCalc,
         maximum_rates_to_end: list[float] | None,
         is_service_markovian=False,
         verbose: bool = False,
@@ -84,15 +81,18 @@ class NetworkOptimizer:
         :param is_markovian: If service time distribution of the network is markovian or not.
 
         """
-        self.R = transition_matrix.copy()
+
+        self.base_network = network
+
+        self.R = network.R.copy()
         self.rows = self.R.shape[0]
         if maximum_rates_to_end is None:
             maximum_rates_to_end = [self.R[i, -1] for i in range(self.rows)]
 
         self.maximum_rates_to_end = maximum_rates_to_end
-        self.b = b
-        self.num_channels = num_channels
-        self.arrival_rate = arrival_rate
+        self.b = network.b
+        self.num_channels = network.n
+        self.arrival_rate = network.arrival_rate
         self.is_markovian = is_service_markovian
         self.nodes_optimized = [False] * (self.rows - 1)
         self.dynamics = []
@@ -111,9 +111,7 @@ class NetworkOptimizer:
                 self.R[i, -1] = self.maximum_rates_to_end[i]
                 for j in range(self.rows):
                     if j != self.rows - 1:
-                        self.R[i, j] = (
-                            self.R[i, j] * (1 - self.maximum_rates_to_end[i]) / (1 - old_value)
-                        )
+                        self.R[i, j] = self.R[i, j] * (1 - self.maximum_rates_to_end[i]) / (1 - old_value)
 
     def _optimize_loops(self):
         """
@@ -127,12 +125,14 @@ class NetworkOptimizer:
                     for k in range(i, self.rows):
                         self.R[i, k] = self.R[i, k] / (1.0 - backward_rate)
 
-    def _get_network_calc(self):
+    def _get_network_calc(self) -> NetworkCalcResults:
         """
         Calculate the network using OpenNetworkCalc
         """
-        net_calc = OpenNetworkCalc(self.R, self.b, self.num_channels, self.arrival_rate)
-        return net_calc.run(is_markovian=self.is_markovian)
+        net_calc = OpenNetworkCalc(is_markovian=self.is_markovian)
+        net_calc.set_sources(R=self.R, arrival_rate=self.arrival_rate)
+        net_calc.set_nodes(b=self.b, n=self.num_channels)
+        return net_calc.run()
 
     def print_last_state(self, header="Load balance dynamics"):
         """
@@ -183,9 +183,7 @@ class NetworkOptimizer:
 
         return False
 
-    def _find_max_load_node(
-        self, loads: list[float], intensities: list[float]
-    ) -> MaxLoadNodeResults:
+    def _find_max_load_node(self, loads: list[float], intensities: list[float]) -> MaxLoadNodeResults:
         """
         Find the node with the maximum load
         """
@@ -222,13 +220,9 @@ class NetworkOptimizer:
             self.nodes_optimized[max_load_node] = True
             return self._find_max_load_node(loads, intensities)
 
-        return MaxLoadNodeResults(
-            optimized=False, lam_r_max=lam_r_max, parent=parent, node=max_load_node
-        )
+        return MaxLoadNodeResults(optimized=False, lam_r_max=lam_r_max, parent=parent, node=max_load_node)
 
-    def _find_balance(
-        self, loads: list[float], max_node_res: MaxLoadNodeResults
-    ) -> LoadBalanceResults:
+    def _find_balance(self, loads: list[float], max_node_res: MaxLoadNodeResults) -> LoadBalanceResults:
         """
         Load balancing algorithm. Moves load from max load node to its children nodes.
         :param loads: list of loads on nodes
@@ -240,9 +234,7 @@ class NetworkOptimizer:
         max_load_node = max_node_res.node
         lam_r_max = max_node_res.lam_r_max
 
-        childrens = [
-            k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node
-        ]
+        childrens = [k for k in range(self.rows - 1) if self.R[parent, k] > 0 and k != max_load_node]
 
         sum1 = 0
         sum2 = 0
@@ -293,9 +285,9 @@ class NetworkOptimizer:
 
         net_res = self._get_network_calc()
 
-        loads = net_res["loads"]
-        intencities = net_res["intensities"]
-        current_v1 = net_res["v"][0]
+        loads = net_res.loads
+        intencities = net_res.intensities
+        current_v1 = net_res.v[0]
         self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
         if self.verbose:
@@ -325,9 +317,9 @@ class NetworkOptimizer:
 
             net_res = self._get_network_calc()
 
-            loads = net_res["loads"]
-            intencities = net_res["intensities"]
-            current_v1 = net_res["v"][0]
+            loads = net_res.loads
+            intencities = net_res.intensities
+            current_v1 = net_res.v[0]
 
             self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
@@ -337,5 +329,7 @@ class NetworkOptimizer:
 
         if self.verbose:
             self._print_line()
+
+        self.base_network.R = self.R
 
         return self.R, current_v1

@@ -40,7 +40,9 @@ def test_v1_on_channels():
         for c in channels:
             # Calculate arrival rate based on utilization
             mu = arrival_rate / (u * c)
-            mmnr_calc = MMnrCalc(l=arrival_rate, mu=mu, n=c, r=100)
+            mmnr_calc = MMnrCalc(n=c, r=100)
+            mmnr_calc.set_sources(l=arrival_rate)
+            mmnr_calc.set_servers(mu=mu)
             v1_array.append(mmnr_calc.get_v()[0])
 
         ax.plot(channels, v1_array, label=r"$\rho$" + f" ={u}")

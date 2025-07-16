@@ -284,7 +284,7 @@ class QsSim:
             # Arrival
             self.arrival()
 
-    def run(self, total_served, is_real_served=True):
+    def run(self, total_served):
         """
         Run simulation process
         """
@@ -292,28 +292,22 @@ class QsSim:
 
         print(Fore.GREEN + "\rStart simulation")
 
-        if is_real_served:
+        last_percent = 0
 
-            last_percent = 0
-
-            with tqdm(total=100) as pbar:
-                while self.served < total_served:
-                    self.run_one_step()
-                    percent = int(100 * (self.served / total_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(
-                            Fore.MAGENTA
-                            + "\rJob served: "
-                            + Fore.YELLOW
-                            + f"{self.served}/{total_served}"
-                            + Fore.LIGHTGREEN_EX
-                        )
-
-        else:
-            for _ in tqdm(range(total_served)):
+        with tqdm(total=100) as pbar:
+            while self.served < total_served:
                 self.run_one_step()
+                percent = int(100 * (self.served / total_served))
+                if last_percent != percent:
+                    last_percent = percent
+                    pbar.update(1)
+                    pbar.set_description(
+                        Fore.MAGENTA
+                        + "\rJob served: "
+                        + Fore.YELLOW
+                        + f"{self.served}/{total_served}"
+                        + Fore.LIGHTGREEN_EX
+                    )
 
         print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
@@ -365,14 +359,7 @@ class QsSim:
 
     def __str__(self, is_short=False):
 
-        res = (
-            "Queueing system "
-            + self.source_kendall_notation
-            + "/"
-            + self.server_kendall_notation
-            + "/"
-            + str(self.n)
-        )
+        res = "Queueing system " + self.source_kendall_notation + "/" + self.server_kendall_notation + "/" + str(self.n)
         if self.buffer is not None:
             res += "/" + str(self.buffer)
         res += f"\nLoad: {self.calc_load():4.3f}\n"

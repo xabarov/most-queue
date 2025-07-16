@@ -5,9 +5,8 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
-
-from most_queue.theory.base import BaseQueue
 
 
 class MG1Calculation(BaseQueue):
@@ -21,16 +20,20 @@ class MG1Calculation(BaseQueue):
         """
         super().__init__(n=1)
 
-    def set_sources(self, l: float):
+        self.l = None
+        self.b = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """
         Set the arrival rate.
         """
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[float]):
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
         Set the initial moments of service time distribution.
+        param b: initial moments of service time distribution.
         """
         self.b = b
         self.is_servers_set = True
@@ -49,12 +52,7 @@ class MG1Calculation(BaseQueue):
         for k in range(1, num_of_mom + 1):
             summ = 0
             for j in range(k):
-                summ += (
-                    math.factorial(k)
-                    * self.b[k - j]
-                    * w[j]
-                    / (math.factorial(j) * math.factorial(k + 1 - j))
-                )
+                summ += math.factorial(k) * self.b[k - j] * w[j] / (math.factorial(j) * math.factorial(k + 1 - j))
             w[k] = (self.l / (1 - self.l * self.b[0])) * summ
         return w[1:]
 

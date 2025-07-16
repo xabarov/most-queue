@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 
 from most_queue.general.tables import times_print_with_two_numerical
-from most_queue.rand_distribution import GammaDistribution, H2Distribution
+from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_disasters import MG1Disasters
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
@@ -47,21 +47,18 @@ def test_mg1():
 
     approximation = "gamma"
 
-    if approximation == "h2":
-        b_params = H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
-        b = H2Distribution.calc_theory_moments(b_params)
-    else:
-        b_params = GammaDistribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
-        b = GammaDistribution.calc_theory_moments(b_params)
+    b_params = GammaDistribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = GammaDistribution.calc_theory_moments(b_params)
 
     # Run calc
-    mg1_queue_calc = MG1Disasters(
-        ARRIVAL_RATE_POSITIVE, ARRIVAL_RATE_NEGATIVE, b, approximation=approximation
-    )
-
+    mg1_queue_calc = MG1Disasters()
+    mg1_queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    mg1_queue_calc.set_servers(b=b)
     v_calc1 = mg1_queue_calc.get_v()
 
-    mgn_queue_calc = MGnNegativeDisasterCalc(1, ARRIVAL_RATE_POSITIVE, ARRIVAL_RATE_NEGATIVE, b)
+    mgn_queue_calc = MGnNegativeDisasterCalc(n=1)
+    mgn_queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    mgn_queue_calc.set_servers(b=b)
 
     mgn_queue_calc.run()
 
@@ -82,9 +79,7 @@ def test_mg1():
 
     v_sim = queue_sim.get_v()
 
-    times_print_with_two_numerical(
-        v_sim, v_calc1, v_calc_tt, is_w=False, num1_header="MG1", num2_header="T-T"
-    )
+    times_print_with_two_numerical(v_sim, v_calc1, v_calc_tt, is_w=False, num1_header="MG1", num2_header="T-T")
 
     assert np.allclose(v_sim, v_calc_tt, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 

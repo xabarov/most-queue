@@ -8,11 +8,12 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.transforms import lst_exp
 
 
-class MGnCalc:
+class MGnCalc(BaseQueue):
     """
     Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method.
     Complex parameters allow approximating the service time distribution
@@ -22,40 +23,30 @@ class MGnCalc:
     def __init__(
         self,
         n: int,
-        l: float,
-        b: list[float],
         buffer=None,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
-        l: arrival rate
-        b: initial moments of service time distribution
         buffer: size of the buffer (optional)
         calc_params: parameters for the Takahashi-Takami method
         """
 
-        if calc_params is None:
-            calc_params = TakahashiTakamiParams()
+        super().__init__(n=n, calc_params=calc_params)
 
-        self.dt = np.dtype(calc_params.dtype)
+        self.calc_params = calc_params or TakahashiTakamiParams()
+
+        self.dt = np.dtype(self.calc_params.dtype)
         if buffer:
             self.R = buffer + n  # max number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels in the system
         else:
-            self.N = calc_params.N
+            self.N = self.calc_params.N
             self.R = None
 
-        self.e1 = calc_params.accuracy
+        self.e1 = self.calc_params.tolerance
         self.n = n
-        self.b = b
-        self.verbose = calc_params.verbose
-
-        h2_params = H2Distribution.get_params_clx(b)
-        # params of H2-distribution:
-        self.y = [h2_params.p1, 1.0 - h2_params.p1]
-        self.l = l
-        self.mu = [h2_params.mu1, h2_params.mu2]
+        self.verbose = self.calc_params.verbose
 
         # Cols massive holds the number of columns for each level,
         # it is more convenient to calculate it once:
@@ -87,8 +78,37 @@ class MGnCalc:
         self.big_bg = []
 
         self.w = None
+        self.l = None
+        self.b = None
+        self.y = None
+        self.mu = None
 
-    def _fill_cols(self):
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
+        """
+        self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        param b: initial moments of service time distribution.
+        """
+        self.b = b
+
+        h2_params = H2Distribution.get_params_clx(b)
+        # params of H2-distribution:
+        self.y = [h2_params.p1, 1.0 - h2_params.p1]
+        self.mu = [h2_params.mu1, h2_params.mu2]
+
+        self.is_servers_set = True
+
+    def fill_cols(self):
+        """
+        Fill columns for B-matrix
+        """
         for i in range(self.N):
             if i < self.n + 1:
                 self.cols.append(i + 1)
@@ -106,9 +126,10 @@ class MGnCalc:
         Run the algorithm.
         """
 
-        self._fill_cols()
+        self._check_if_servers_and_sources_set()
+        self.fill_cols()
         self._fill_t_b()
-        self._build_matrices()
+        self.build_matrices()
         self._initial_probabilities()
 
         self.b1[0][0, 0] = 0.0 + 0.0j
@@ -282,7 +303,7 @@ class MGnCalc:
         for i in range(self.N):
             self.Y.append(np.dot(self.p[i], self.t[i]))
 
-    def _build_matrices(self):
+    def build_matrices(self):
         """
         Form transition matrices
         """
@@ -464,10 +485,7 @@ class MGnCalc:
         key_numbers = self._get_key_numbers(self.n)
 
         a = np.array(
-            [
-                lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s)
-                for j in range(self.n + 1)
-            ]
+            [lst_exp(key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1], s) for j in range(self.n + 1)]
         )
 
         up_transition_mrx = self.calc_up_probs(self.n + 1)  # (n + 1 x n + 1)

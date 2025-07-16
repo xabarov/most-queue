@@ -5,7 +5,7 @@ Calculation of the GI/M/1 queueing system
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.theory.base import BaseQueue
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
@@ -23,7 +23,7 @@ class GiM1(BaseQueue):
 
         super().__init__(n=1, calc_params=calc_params)
 
-        self.e = self.calc_params.e
+        self.e = self.calc_params.tolerance
         self.approx_distr = self.calc_params.approx_distr
         self.p_num = self.calc_params.p_num
 
@@ -134,7 +134,7 @@ class GiM1(BaseQueue):
         coev_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
-        if self.approx_distr == "Gamma":
+        if self.approx_distr == "gamma":
             gamma_params = GammaDistribution.get_params(self.a)
             while True:
                 summ = 0
@@ -142,9 +142,7 @@ class GiM1(BaseQueue):
                     numerator = GammaDistribution.get_gamma(gamma_params.alpha + i)
                     denominator = GammaDistribution.get_gamma(gamma_params.alpha)
 
-                    summ += (q / pow(self.mu * (1.0 - w_old) + gamma_params.mu, i)) * (
-                        numerator / denominator
-                    )
+                    summ += (q / pow(self.mu * (1.0 - w_old) + gamma_params.mu, i)) * (numerator / denominator)
                 left = pow(
                     gamma_params.mu / (self.mu * (1.0 - w_old) + gamma_params.mu),
                     gamma_params.alpha,
@@ -155,15 +153,13 @@ class GiM1(BaseQueue):
                 w_old = w_new
             return w_new
 
-        if self.approx_distr == "Pa":
+        if self.approx_distr == "pareto":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
             while True:
                 left = alpha * pow(K * self.mu * (1.0 - w_old), alpha)
-                w_new = left * GammaDistribution.get_gamma_incomplete(
-                    -alpha, K * self.mu * (1.0 - w_old)
-                )
+                w_new = left * GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * (1.0 - w_old))
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new

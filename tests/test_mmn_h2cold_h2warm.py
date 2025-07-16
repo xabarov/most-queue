@@ -79,15 +79,9 @@ def test_mmn_h2cold_h2_warm():
     im_execution_time = time.process_time() - im_start_time
 
     tt_start_time = time.process_time()
-    tt = MMnHyperExpWarmAndCold(
-        ARRIVAL_RATE,
-        service_rate,
-        b_w,
-        b_c,
-        NUM_OF_CHANNELS,
-        buffer=None,
-        accuracy=1e-14,
-    )
+    tt = MMnHyperExpWarmAndCold(n=NUM_OF_CHANNELS)
+    tt.set_sources(ARRIVAL_RATE)
+    tt.set_servers(mu=service_rate, b_warm=b_w, b_cold=b_c)
     tt.run()
     tt_execution_time = time.process_time() - tt_start_time
 

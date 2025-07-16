@@ -3,29 +3,46 @@ Class to calculate the average waiting time in an M/G/1 queue with non-preemptiv
 """
 
 from most_queue.rand_distribution import GammaDistribution
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
 
-class MG1NonPreemtiveCalculation:
+class MG1NonPreemtiveCalculation(BaseQueue):
     """
     Class to calculate the average waiting time in an M/G/1 queue with non-preemptive priority.
     """
 
-    def __init__(self, l: list[float], b: list[list[float]]):
+    def __init__(self):
         """
-        :param l: list[float]  - list of arrival intensities for each job class
-        :param b: list[list[float]] - list of initial moments for each job class
+        Initialize the MG1NonPreemtiveCalculation class.
+        """
+        super().__init__(n=1)
+        self.l = None
+        self.b = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate.
         """
         self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution.
+        param b: initial moments of service time distribution.
+        """
         self.b = b
+        self.is_servers_set = True
 
     def get_w1(self):
         """
         Calculation of the average waiting time in M/G/1 with non-preemptive priority.
         """
+        self._check_if_servers_and_sources_set()
         k = len(self.l)
         w1 = [0.0] * k
         R = [0, 0] * k
@@ -53,9 +70,10 @@ class MG1NonPreemtiveCalculation:
         :param num: number of moments to calculate
         :return: list of initial moments of sojourn time for each class
         """
+
+        w = self.get_w()
         k = len(self, self.l)
         v = []
-        w = self.get_w()
 
         v = [conv_moments(w[i], self.b[i], num) for i in range(k)]
 
@@ -69,6 +87,8 @@ class MG1NonPreemtiveCalculation:
         # a - lower pr
         # j - the same
         # e - higher pr
+
+        self._check_if_servers_and_sources_set()
 
         num_of_cl = len(self.l)
         w = []

@@ -36,12 +36,8 @@ def busy_calc(l: float, b: list[float], num: int = 5):
     if num > 4:
         numerator = b[4] * math.pow(z, 5)
         numerator += 10 * b[3] * l * busy_moments[1] * math.pow(z, 3)
-        numerator += b[2] * (
-            15 * math.pow(l * busy_moments[1], 2) * z + 10 * l * busy_moments[2] * z * z
-        )
-        numerator += b[1] * (
-            5 * l * busy_moments[3] * z + 10 * l * l * busy_moments[1] * busy_moments[2]
-        )
+        numerator += b[2] * (15 * math.pow(l * busy_moments[1], 2) * z + 10 * l * busy_moments[2] * z * z)
+        numerator += b[1] * (5 * l * busy_moments[3] * z + 10 * l * l * busy_moments[1] * busy_moments[2])
         busy_moments.append(numerator / (1 - ro))
 
     return busy_moments

@@ -5,35 +5,56 @@ Calculate queue M/M/n/r
 import math
 
 from most_queue.rand_distribution import ExpDistribution
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.conv import conv_moments
 
 
-class MMnrCalc:
+class MMnrCalc(BaseQueue):
     """
     Calculate queue M/M/n/r
     """
 
-    def __init__(self, l: float, mu: float, n: int, r: int):
+    def __init__(self, n: int, r: int):
         """
         :param l: arrival intensity
         :param mu: service intensity
         :param n: number of servers
         :param r: number of places in the queue (including servers)
         """
-        self.l = l  # arrival intensity
-        self.mu = mu  # service intensity
-        self.n = n  # number of servers
+
+        super().__init__(n=n)
+
         self.r = r  # number of places in the queue (including servers)
 
-        self.ro = l / mu  # utilization factor
-
-        self.p = self._calc_p()
+        self.l = None  # arrival intensity
+        self.mu = None  # service intensity
         self.w = None
+        self.p = None
+        self.ro = None  # utilization factor
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
+        """
+        self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, mu: float):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        :param mu: service rate
+        """
+        self.mu = mu
+
+        self.is_servers_set = True
 
     def getPI(self) -> float:
         """
         Calculate probability that all servers are busy and there is no free place in the queue
         """
+
+        self.p = self.p or self._calc_p()
         chisl = math.pow(self.ro, self.n + self.r) * self.p[0]
         znam = math.factorial(self.n) * math.pow(self.n, self.r)
         return chisl / znam
@@ -43,6 +64,7 @@ class MMnrCalc:
         Calculate mean queue length
         """
 
+        self.p = self.p or self._calc_p()
         summ = 0
         for i in range(1, self.r + 1):
             summ += i * math.pow(self.ro / self.n, i)
@@ -52,6 +74,7 @@ class MMnrCalc:
         """
         Calculate initial moments of waiting time in the queue
         """
+        self.p = self.p or self._calc_p()
         qs = self._get_qs(q_num=num)
         w = [0] * num
         for k in range(num):
@@ -75,6 +98,7 @@ class MMnrCalc:
         Get probabilities of states
         :return: list of probabilities of states from 0 to n+r
         """
+        self.p = self.p or self._calc_p()
         return self.p
 
     def _get_qs(self, q_num=3):
@@ -92,6 +116,9 @@ class MMnrCalc:
         Calc probability of states
         :return: list of probabilities of states from 0 to n+r
         """
+
+        self._check_if_servers_and_sources_set()
+        self.ro = self.l / self.mu  # utilization factor
 
         p = [0] * (self.n + self.r + 1)
         summ1 = 0

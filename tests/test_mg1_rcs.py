@@ -51,12 +51,9 @@ def test_mg1_gamma_rcs():
 
     v_sim = queue_sim.get_v()
 
-    m_gamma_1_calc = MG1NegativeCalcRCS(
-        ARRIVAL_RATE_POSITIVE,
-        ARRIVAL_RATE_NEGATIVE,
-        b,
-        service_time_approx_dist="gamma",
-    )
+    m_gamma_1_calc = MG1NegativeCalcRCS()
+    m_gamma_1_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    m_gamma_1_calc.set_servers(b=b)
     v1_gamma_calc = m_gamma_1_calc.get_v1()
 
     times_print(

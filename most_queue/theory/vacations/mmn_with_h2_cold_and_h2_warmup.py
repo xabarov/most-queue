@@ -12,10 +12,11 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.transforms import lst_exp
 
 
-class MMnHyperExpWarmAndCold:
+class MMnHyperExpWarmAndCold(MGnCalc):
     """
     Calculation of M/M/n queueing system with H2-warm-up and H2-cooling
     using numerical Takahashi-Takagi method.Complex parameters are used.
@@ -25,42 +26,109 @@ class MMnHyperExpWarmAndCold:
 
     def __init__(
         self,
-        l: float,
-        mu: float,
-        b_warm: list[float],
-        b_cold: list[float],
         n: int,
         buffer: int | None = None,
-        N: int = 150,
-        accuracy: float = 1e-8,
-        dtype: str = "c16",
-        verbose: bool = False,
+        calc_params: TakahashiTakamiParams | None = None,
     ):
         """
-        l: arrival rate
-        mu: service rate
-        b_warm: initial moments of warm-up time
-        b_cold: initial moments of cooling time
         n: number of servers
         buffer: size of the buffer (optional)
-        N: number of levels for the Markov chain approximation
-        accuracy: accuracy parameter for stopping iterations
-        dtype: data type for calculations (default is complex16)
-        verbose: flag to print intermediate results
+        calc_params: parameters for the calculation (optional)
         """
-        self.dt = np.dtype(dtype)
+
+        super().__init__(n=n, calc_params=calc_params, buffer=buffer)
+
+        self.calc_params = calc_params or TakahashiTakamiParams()
+
+        self.dt = np.dtype(self.calc_params.dtype)
         if buffer:
             self.R = buffer + n
             self.N = self.R + 1
         else:
-            self.N = N
+            self.N = self.calc_params.N
             self.R = None
 
-        self.e1 = accuracy
+        self.e1 = self.calc_params.tolerance
         self.n = n
-        self.mu = mu
-        self.verbose = verbose
+        self.mu = None
+        self.verbose = self.calc_params.verbose
+        self.l = None
+
+        self.cols = [] * self.N
+
+        self.t = []
+        self.b1 = []
+        self.b2 = []
+        if self.dt == "c16":
+            self.x = [0.0 + 0.0j] * self.N
+            self.z = [0.0 + 0.0j] * self.N
+
+            self.p = [0.0 + 0.0j] * self.N
+        else:
+            self.x = [0.0] * self.N
+            self.z = [0.0] * self.N
+
+            self.p = [0.0] * self.N
+
+        # transient matrices for the Markov chain approximation
+        self.A = []
+        self.B = []
+        self.C = []
+        self.D = []
+        self.Y = []
+
+        self.G = []
+        self.AG = []
+        self.BG = []
+
+        for i in range(self.N):
+
+            if i < n + 1:
+                if i == 0:
+                    self.cols.append(3)  # 0 state normal + 0_cold_1 + 0_cold_2
+                else:
+                    # i_warm_1 + i_warm_2 i state normal + i_cold_1 +
+                    # i_cold_2...
+                    self.cols.append(5)
+            else:
+                self.cols.append(5)
+
+            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+
+        self.num_of_iter_ = 0  # number of iterations for the algorithm
+
+        self.y_w, self.mu_w = None, None
+        self.y_c, self.mu_c = None, None
+        self.b_warm = None
+        self.b_cold = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate
+        """
         self.l = l
+        self.is_sources_set = True
+
+    def set_servers(
+        self,
+        mu: float,
+        b_warm: list[float],
+        b_cold: list[float],
+    ):  # pylint: disable=arguments-differ
+        """
+        Set the service rate and initial moments of distributions for vacation states:
+        warming time, cooling
+
+        :param mu: service rate of Exp distribution
+        :param b_warm: initial moments of warming time distribution
+        :param b_cold: initial moments of cooling time distribution
+        """
+        self.mu = mu
+        self.b_warm = b_warm
+        self.b_cold = b_cold
 
         self.b_warm = b_warm
         if self.dt == "c16":
@@ -79,54 +147,7 @@ class MMnHyperExpWarmAndCold:
         self.y_c = [h2_params_cold.p1, 1.0 - h2_params_cold.p1]
         self.mu_c = [h2_params_cold.mu1, h2_params_cold.mu2]
 
-        self.cols = [] * N
-
-        self.t = []
-        self.b1 = []
-        self.b2 = []
-        if self.dt == "c16":
-            self.x = [0.0 + 0.0j] * N
-            self.z = [0.0 + 0.0j] * N
-
-            self.p = [0.0 + 0.0j] * N
-        else:
-            self.x = [0.0] * N
-            self.z = [0.0] * N
-
-            self.p = [0.0] * N
-
-        # transient matrices for the Markov chain approximation
-        self.A = []
-        self.B = []
-        self.C = []
-        self.D = []
-        self.Y = []
-
-        self.G = []
-        self.AG = []
-        self.BG = []
-
-        for i in range(N):
-
-            if i < n + 1:
-                if i == 0:
-                    self.cols.append(3)  # 0 state normal + 0_cold_1 + 0_cold_2
-                else:
-                    # i_warm_1 + i_warm_2 i state normal + i_cold_1 +
-                    # i_cold_2...
-                    self.cols.append(5)
-            else:
-                self.cols.append(5)
-
-            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-
-        self._build_matrices()
-        self._initial_probabilities()
-
-        self.num_of_iter_ = 0  # number of iterations for the algorithm
+        self.is_servers_set = True
 
     def get_p(self):
         """
@@ -166,11 +187,7 @@ class MMnHyperExpWarmAndCold:
             if k == 0:
                 for i in range(2):
                     # Переход в [0] состояние, а из него -> в разогрев
-                    w += (
-                        self.Y[k][0, i + 1]
-                        * mu_c_pls[i]
-                        * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
-                    )
+                    w += self.Y[k][0, i + 1] * mu_c_pls[i] * (self.y_w[0] * mu_w_pls[0] + self.y_w[1] * mu_w_pls[1])
             else:
                 for c_phase in range(2):
                     for w_phase in range(2):
@@ -197,7 +214,7 @@ class MMnHyperExpWarmAndCold:
 
         return w
 
-    def get_w(self):
+    def get_w(self, _derivate=False):
         """
         Returns waiting time initial moments
         """
@@ -348,8 +365,14 @@ class MMnHyperExpWarmAndCold:
 
     def run(self):
         """
-        Запускает расчет
+        Run calculation for queueing system.
         """
+
+        self._check_if_servers_and_sources_set()
+
+        self._build_matrices()
+        self._initial_probabilities()
+
         if self.dt == "c16":
             self.b1[0][0, 0] = 0.0 + 0.0j
             self.b2[0][0, 0] = 0.0 + 0.0j

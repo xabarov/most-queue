@@ -22,37 +22,48 @@ class MGnNegativeDisasterCalc(MGnCalc):
     def __init__(
         self,
         n: int,
-        l_pos: float,
-        l_neg: float,
-        b: list[float],
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
         n: number of servers
-        l: arrival rate of positive jobs
-        l_neg: arrival rate of negative jobs
-        b: initial moments of service time distribution
         buffer: size of the buffer (optional)
-        N: number of levels in the system (default is 150)
-        accuracy: accuracy parameter for stopping the iteration
-        dtype: data type for calculations (default is complex double precision)
-        verbose: whether to print intermediate results (default is False)
+        calc_params: TakahashiTakamiParams object with parameters for calculation
         """
 
-        super().__init__(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
+        super().__init__(n=n, buffer=buffer, calc_params=calc_params)
 
-        self.l_neg = l_neg
-        self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
-
-        # for calc B matrices
-        self.base_mgn = MGnCalc(n=n, l=l_pos, b=b, buffer=buffer, calc_params=calc_params)
-        self.base_mgn._fill_cols()
-        self.base_mgn._build_matrices()
-
+        self.l_pos = None
+        self.l_neg = None
+        self.gamma = None
+        self.base_mgn = None
         self.w = None
 
-    def _fill_cols(self):
+    def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates of positive and negative jobs
+        :param l_pos: arrival rate of positive jobs
+        :param l_neg: arrival rate of negative jobs
+        """
+        self.l_pos = l_pos
+        self.l = l_pos
+        self.l_neg = l_neg
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param b: initial moments of service time distribution
+        """
+        self.b = b
+        h2_params = H2Distribution.get_params_clx(b)
+        # params of H2-distribution:
+        self.y = [h2_params.p1, 1.0 - h2_params.p1]
+        self.mu = [h2_params.mu1, h2_params.mu2]
+        self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
+        self.is_servers_set = True
+
+    def fill_cols(self):
         """
         Add disasters states.
         For n=3 example (D - disaster state)
@@ -278,9 +289,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         l_neg = self.l_neg
 
-        b = H2Distribution.calc_theory_moments(
-            H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2)
-        )
+        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2))
 
         return [m.real for m in conv_moments(w, b)]
 
@@ -348,9 +357,16 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Run the algorithm.
         """
 
-        self._fill_cols()
+        self.base_mgn = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+        self.base_mgn.set_sources(l=self.l_pos)
+        self.base_mgn.set_servers(b=self.b)
+
+        self.base_mgn.fill_cols()
+        self.base_mgn.build_matrices()
+
+        self.fill_cols()
         self._fill_t_b()
-        self._build_matrices()
+        self.build_matrices()
         self._initial_probabilities()
 
         self.b1[0][0, 0] = 0.0 + 0.0j

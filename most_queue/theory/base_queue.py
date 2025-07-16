@@ -3,6 +3,7 @@ Base class for queueing systems.
 """
 
 from abc import ABC, abstractmethod
+
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -47,9 +48,7 @@ class BaseQueue(ABC):
     def _check_if_servers_and_sources_set(self):
         if not self.is_servers_set or not self.is_sources_set:
             error_msg = "Both servers and sources must be set before calling this method."
-            error_msg += (
-                "For setting servers and sources, use set_servers() and set_sources() methods."
-            )
+            error_msg += "For setting servers and sources, use set_servers() and set_sources() methods."
             raise ValueError(error_msg)
 
     def get_p(self) -> list[float]:

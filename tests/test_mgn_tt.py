@@ -57,7 +57,10 @@ def test_mgn_tt():
 
     tt_start = time.process_time()
     # run Takahasi-Takami method
-    tt = MGnCalc(NUM_OF_CHANNELS, ARRIVAL_RATE, b)
+    tt = MGnCalc(n=NUM_OF_CHANNELS)
+    tt.set_sources(l=ARRIVAL_RATE)
+    tt.set_servers(b=b)
+
     tt.run()
     # get numerical calculation results
     p_num = tt.get_p()

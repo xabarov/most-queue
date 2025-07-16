@@ -11,17 +11,16 @@ class CalcParams:
     Parameters for queueing system calculation
     """
 
-    e: float = 1e-10  # tolerance for convergence
-    approx_distr: str = "Gamma"  # distribution approximation method
+    tolerance: float = 1e-10  # tolerance for convergence
+    approx_distr: str = "gamma"  # distribution approximation method
     p_num: int = 1000  # number of probabilities to calculate
 
 
 @dataclass
-class TakahashiTakamiParams:
+class TakahashiTakamiParams(CalcParams):
     """Parameters for the Takahashi-Takami method."""
 
     N: int = 150
-    accuracy: float = 1e-8
     dtype: str = "c16"
     verbose: bool = False
     max_iter: int = 300

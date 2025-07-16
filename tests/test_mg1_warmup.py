@@ -67,7 +67,9 @@ def test_mg1_warm():
     simulator.run(NUM_OF_JOBS)
     v_sim = simulator.get_v()
 
-    mg1_calc = MG1WarmCalc(ARRIVAL_RATE, b_s, b_w)
+    mg1_calc = MG1WarmCalc()
+    mg1_calc.set_sources(ARRIVAL_RATE)
+    mg1_calc.set_servers(b=b_s, b_warm=b_w)
     v_num = mg1_calc.get_v()
 
     times_print(v_sim, v_num, is_w=False)

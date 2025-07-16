@@ -14,9 +14,7 @@ def run_warmup_ave(qp, save_path: str = None):
     """
     Run simulation and calculation for different warm-up mean times
     """
-    warmups = np.linspace(
-        qp["warmup"]["mean"]["min"], qp["warmup"]["mean"]["max"], qp["warmup"]["mean"]["num_points"]
-    )
+    warmups = np.linspace(qp["warmup"]["mean"]["min"], qp["warmup"]["mean"]["max"], qp["warmup"]["mean"]["num_points"])
 
     w1_num = []
     w1_sim = []
@@ -82,9 +80,7 @@ def run_warmup_ave(qp, save_path: str = None):
 
         w1_error_save_path = os.path.join(save_path, "w1_error_vs_warmup_ave.png")
 
-        plot_w1_errors(
-            warmups, w1_rel_errors, x_label="Warm-Up Average", save_path=w1_error_save_path
-        )
+        plot_w1_errors(warmups, w1_rel_errors, x_label="Warm-Up Average", save_path=w1_error_save_path)
 
         cool_probs_save_path = os.path.join(save_path, "warmup_probs_vs_warmup_ave.png")
 
@@ -103,9 +99,7 @@ def run_warmup_cv(qp, save_path=None):
     """
     Run simulation and calculation for different warm-up coefficient of variation
     """
-    warmups = np.linspace(
-        qp["warmup"]["cv"]["min"], qp["warmup"]["cv"]["max"], qp["warmup"]["cv"]["num_points"]
-    )
+    warmups = np.linspace(qp["warmup"]["cv"]["min"], qp["warmup"]["cv"]["max"], qp["warmup"]["cv"]["num_points"])
 
     w1_num = []
     w1_sim = []

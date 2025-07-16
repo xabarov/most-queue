@@ -10,12 +10,12 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp
 
 
-class MH2nH2Warm:
+class MH2nH2Warm(MGnCalc):
     """
     Calculation of the M/H2/n system with H2-warming using the Takahashi-Takami method.
     Use complex parameters, which allow to approximate the service time
@@ -24,9 +24,6 @@ class MH2nH2Warm:
 
     def __init__(
         self,
-        l: float,
-        b: list[float],
-        b_warm: list[float],
         n: int,
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
@@ -46,41 +43,29 @@ class MH2nH2Warm:
 
         """
 
-        if calc_params is None:
-            calc_params = TakahashiTakamiParams()
+        super().__init__(n=n, calc_params=calc_params)
 
-        self.dt = np.dtype(calc_params.dtype)
+        self.calc_params = calc_params or TakahashiTakamiParams()
+
+        self.dt = np.dtype(self.calc_params.dtype)
         if buffer:
             self.R = buffer + n  # maximum number of requests in the system - queue + channels
             self.N = self.R + 1  # number of levels on one more than + zero state
         else:
-            self.N = calc_params.N
+            self.N = self.calc_params.N
             self.R = None
 
         self.is_only_first = is_only_first
 
-        self.e1 = calc_params.accuracy
-        self.n = n
-        self.b = b
-        self.verbose = calc_params.verbose
-        self.l = l
+        self.e1 = self.calc_params.tolerance
 
-        if self.dt == "c16":
-            h2_params_service = H2Distribution.get_params_clx(b)
-        else:
-            h2_params_service = H2Distribution.get_params(b)
-
-        # Parameters of the H2 distribution
-        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
-        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
-
-        self.b_warm = b_warm
-        if self.dt == "c16":
-            h2_params_warm = H2Distribution.get_params_clx(b_warm)
-        else:
-            h2_params_warm = H2Distribution.get_params(b_warm)
-        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
-        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
+        self.b = None
+        self.b_warm = None
+        self.y = None
+        self.mu = None
+        self.y_w = None
+        self.mu_w = None
+        self.l = None
 
         # Cols - array that stores the number of columns
         # for each level, it is convenient to calculate it once:
@@ -139,26 +124,65 @@ class MH2nH2Warm:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self._build_matrices()
-        self._initial_probabilities()
-        # Keys of the levels n, for n=3 [(3,0) (2,1) (1,2) (0,3)]
-        self.key_numbers = self._get_key_numbers(self.n)
-        self.down_probs = self._calc_down_probs(self.n + 1)
-
         self.num_of_iter_ = 0  # number of iterations
+        self.key_numbers = None
+        self.down_probs = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate
+        """
+        self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float], b_warm: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution and warming time distribution
+
+        :param b: initial moments of service time distribution
+        :param b_warm: initial moments of warming time distribution
+        """
+        self.b = b
+        self.b_warm = b_warm
+
+        if self.dt == "c16":
+            h2_params_service = H2Distribution.get_params_clx(b)
+        else:
+            h2_params_service = H2Distribution.get_params(b)
+
+        # Parameters of the H2 distribution
+        self.y = [h2_params_service.p1, 1.0 - h2_params_service.p1]
+        self.mu = [h2_params_service.mu1, h2_params_service.mu2]
+
+        self.b_warm = b_warm
+        if self.dt == "c16":
+            h2_params_warm = H2Distribution.get_params_clx(b_warm)
+        else:
+            h2_params_warm = H2Distribution.get_params(b_warm)
+        self.y_w = [h2_params_warm.p1, 1.0 - h2_params_warm.p1]
+        self.mu_w = [h2_params_warm.mu1, h2_params_warm.mu2]
+
+        h2_params = H2Distribution.get_params_clx(b)
+        # params of H2-distribution:
+        self.y = [h2_params.p1, 1.0 - h2_params.p1]
+        self.mu = [h2_params.mu1, h2_params.mu2]
+
+        self.is_servers_set = True
 
     def get_p(self) -> list[float]:
         """
         Get the probabilities of states of the queueing system.
         """
+
         self.p = [prob.real for prob in self.p]
 
         return self.p
 
-    def get_w(self):
+    def get_w(self, _derivate=False):
         """
         Get the first three moments of the waiting time distribution.
         """
+
         w = [0.0] * 3
 
         if self.is_only_first:
@@ -360,6 +384,13 @@ class MH2nH2Warm:
         """
         Запускает расчет
         """
+        self._check_if_servers_and_sources_set()
+        self._build_matrices()
+        self._initial_probabilities()
+        # Keys of the levels n, for n=3 [(3,0) (2,1) (1,2) (0,3)]
+        self.key_numbers = self._get_key_numbers(self.n)
+        self.down_probs = self._calc_down_probs(self.n + 1)
+
         if self.dt == "c16":
             self.b1[0][0, 0] = 0.0 + 0.0j
             self.b2[0][0, 0] = 0.0 + 0.0j
@@ -496,9 +527,7 @@ class MH2nH2Warm:
                     # second
                     self._insert_standart_A_into(output, self.l, self.y[0], num, num + 1, level=num)
                     # third
-                    self._insert_standart_A_into(
-                        output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1
-                    )
+                    self._insert_standart_A_into(output, self.l, self.y[0], 2 * num, 2 * (num + 1), level=num + 1)
                 else:
                     # first block
                     output[0, 0] = self.l
@@ -518,9 +547,7 @@ class MH2nH2Warm:
                 mass[i + left_pos, i + bottom_pos] = (level - i) * mu[0]
                 mass[i + left_pos + 1, i + bottom_pos] = (i + 1) * mu[1]
             else:
-                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[
-                    1
-                ]
+                mass[i + left_pos, i + bottom_pos] = (level - i - 1) * mu[0] * y[0] + i * mu[1] * y[1]
                 if i != level - 1:
                     mass[i + left_pos, i + bottom_pos + 1] = (level - i - 1) * mu[0] * y[1]
                 if i != level - 1:
@@ -561,13 +588,9 @@ class MH2nH2Warm:
                     # first block
                     self._insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n)
                     # second
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, num, num - 1, num - 1, self.n
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, num, num - 1, num - 1, self.n)
                     # third
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, 2 * num, 2 * (num - 1), num, self.n)
 
                     # warm block 1
                     for i in range(num):
@@ -585,9 +608,7 @@ class MH2nH2Warm:
                     # first block
                     self._insert_standart_B_into(output, self.y, self.mu, 0, 0, num - 1, self.n - 1)
                     # second
-                    self._insert_standart_B_into(
-                        output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1
-                    )
+                    self._insert_standart_B_into(output, self.y, self.mu, num - 1, num - 1, num - 1, self.n - 1)
                     # third
                     self._insert_standart_B_into(
                         output,

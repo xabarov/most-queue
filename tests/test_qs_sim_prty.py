@@ -100,7 +100,9 @@ def test_sim():
 
     # calculate them as well using the method of invariant relations (for
     # comparison)
-    invar_calc = MGnInvarApproximation(ARRIVAL_RATES, b, n=NUM_OF_CHANNELS)
+    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS)
+    invar_calc.set_sources(ARRIVAL_RATES)
+    invar_calc.set_servers(b)
     v_num = invar_calc.get_v("PR")
 
     assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG

@@ -7,26 +7,55 @@ import numpy as np
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.fifo.mmnr import MMnrCalc
+from most_queue.theory.networks.base_network_calc import BaseNetwork, NetworkCalcResults
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
 
-class OpenNetworkCalc:
+class OpenNetworkCalc(BaseNetwork):
     """
     Calculates queueing network.
     """
 
-    def __init__(self, R: np.matrix, b: list[list[float]], n: list[int], arrival_rate: float):
+    def __init__(self, is_markovian=False):
         """
-        R: routing matrix
-        b: list of theoretical moments of service time distribution for each node.
-        n: list of number of channels in each node.
-        L: arrival intensitiy.
+        Initializes the OpenNetworkCalc class
+        :param is_markovian: if True the nodes service distributions are Markovian (exponential)
         """
+        super().__init__()
+
+        self.R = None
+        self.b = None
+        self.n = None
+        self.arrival_rate = None
+        self.is_markovian = is_markovian
+
+    def set_sources(self, arrival_rate: float, R: np.matrix):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate and routing matrix.
+        Parameters:
+            arrival_rate: arrival rate of customers.
+            R: routing matrix, dim (m + 1 x m + 1), where m is number of nodes.
+
+            For example:
+            R[0, 0] is transition frome source to first node.
+            R[0, m] is transition from source to out of system.
+
+        """
+        self.arrival_rate = arrival_rate
         self.R = R
+        self.is_sources_set = True
+
+    def set_nodes(self, b: list[list[float]], n: list[int]):  # pylint: disable=arguments-differ
+        """
+        Set the service time distribution parameters and number of channels for each node.
+        Parameters:
+            b: list of theoretical moments of service time distribution for each node.
+            n: list of number of channels in each node.
+        """
         self.b = b
         self.n = n
-        self.arrival_rate = arrival_rate
+        self.is_nodes_set = True
 
     def balance_equation(self, L, R):
         """
@@ -64,32 +93,40 @@ class OpenNetworkCalc:
 
         return l_out
 
-    def run(self, is_markovian=False):
+    def run(self) -> NetworkCalcResults:
         """
         Run the simulation and calculate the results.
         """
-        res = {}
+
+        self._check_sources_and_nodes_is_set()
 
         nodes = len(self.n)
-        res["loads"] = [0.0] * nodes
-        res["v"] = []
+        loads = [0.0] * nodes
+        v = []
 
         intensities = self.balance_equation(self.arrival_rate, self.R)
+        intensities = [float(intensity) for intensity in intensities]
 
-        res["v_node"] = []
+        v_node = []
         for i in range(nodes):
             node_arrival_rate = intensities[i]
             b1_node = self.b[i][0]
 
-            res["loads"][i] = node_arrival_rate * b1_node / self.n[i]
+            loads[i] = node_arrival_rate * b1_node / self.n[i]
 
-            if is_markovian:
-                mmnr_calc = MMnrCalc(l=node_arrival_rate, mu=1 / b1_node, n=self.n[i], r=100)
-                res["v_node"].append(mmnr_calc.get_v())
+            if self.is_markovian:
+                mmnr_calc = MMnrCalc(n=self.n[i], r=100)
+                mmnr_calc.set_sources(l=node_arrival_rate)
+                mmnr_calc.set_servers(mu=1 / b1_node)
+
+                v_node.append(mmnr_calc.get_v())
             else:
-                mgn_calc = MGnCalc(n=self.n[i], l=node_arrival_rate, b=self.b[i])
+                mgn_calc = MGnCalc(n=self.n[i])
+                mgn_calc.set_sources(l=node_arrival_rate)
+                mgn_calc.set_servers(b=self.b[i])
+
                 mgn_calc.run()
-                res["v_node"].append(mgn_calc.get_v())
+                v_node.append(mgn_calc.get_v())
 
         h = 0.0001
         s = [h * (i + 1) for i in range(4)]
@@ -100,10 +137,7 @@ class OpenNetworkCalc:
         T = self.R[1:, nodes].reshape(-1, 1)
         Q = self.R[1:, :nodes]
 
-        gamma_mu_alpha = [
-            GammaDistribution.get_params([res["v_node"][i][0], res["v_node"][i][1]])
-            for i in range(nodes)
-        ]
+        gamma_mu_alpha = [GammaDistribution.get_params([v_node[i][0], v_node[i][1]]) for i in range(nodes)]
 
         g_PLS = []
         for i in range(4):
@@ -115,12 +149,13 @@ class OpenNetworkCalc:
             F = np.dot(P, np.dot(F, np.dot(N, T)))
             g_PLS.append(F[0, 0])
 
-        res["v"] = diff5dots(g_PLS, h)
-        res["v"][0] = -res["v"][0]
-        res["v"][2] = -res["v"][2]
+        v = diff5dots(g_PLS, h)
+        v[0] = -v[0]
+        v[2] = -v[2]
 
-        res["intensities"] = intensities
-        res["v"] = [float(v) for v in res["v"]]
-        res["loads"] = [float(l) for l in res["loads"]]
+        v = [float(v) for v in v]
+        loads = [float(l) for l in loads]
 
-        return res
+        self.results = NetworkCalcResults(v=v, loads=loads, intensities=intensities)
+
+        return self.results

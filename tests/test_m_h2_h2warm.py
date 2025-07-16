@@ -65,7 +65,9 @@ def test_m_h2_h2warm():
     im_time = time.process_time() - im_start
 
     tt_start = time.process_time()
-    tt = MH2nH2Warm(ARRIVAL_RATE, b, b_w, NUM_OF_CHANNELS)
+    tt = MH2nH2Warm(n=NUM_OF_CHANNELS)
+    tt.set_sources(ARRIVAL_RATE)
+    tt.set_servers(b=b, b_warm=b_w)
 
     tt.run()
     p_num = tt.get_p()

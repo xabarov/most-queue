@@ -5,58 +5,88 @@ Simulation of a priority network with priorities and multiple channels.
 import math
 
 import numpy as np
-from colorama import Fore, Style, init
+from colorama import Fore, init
 from tqdm import tqdm
 
 from most_queue.rand_distribution import ExpDistribution
 from most_queue.sim.base import QsSim
+from most_queue.sim.networks.base_network_sim import BaseSimNetwork, NetworkSimResults
 from most_queue.sim.utils.tasks import Task
 
 init()
 
 
-class NetworkSimulator:
+class NetworkSimulator(BaseSimNetwork):
     """
     Simulation of network with multiple channels in each node.
     """
 
-    def __init__(self, arrival_rate: float, R: np.matrix, n: list[int], serv_params):
+    def __init__(self):
         """
-        arrival_rate: arrival rate of tasks.
-
-        R: routing matrix
-        n: list of number of channels in each node.
-
-        serv_params: list of dictionaries with service parameters for each node
-            [m][dict(type, params)]
-            where m - node number,
-            type - distribution type, params - distribution parameters.
+        Initialize the network simulator.
         """
-        self.arrival_time = arrival_rate
-        self.R = R
-        self.n_num = len(n)  # number of nodes
-        self.nodes = n  # n[i] - number of channels in node i
 
-        self.serv_params = serv_params
+        super().__init__()
+
+        self.arrival_time = None
+        self.R = None
+        self.n_num = None  # number of nodes
+        self.nodes = None  # n[i] - number of channels in node i
+
+        self.serv_params = None
+        self.arrival_rate = None
+        self.arrival_time = None
+        self.source = None
 
         self.qs = []
 
-        for m in range(self.n_num):
-            self.qs.append(QsSim(n[m]))
-            self.qs[m].set_servers(
-                serv_params[m]["params"], kendall_notation=serv_params[m]["type"]
-            )
-
-        self.source = ExpDistribution(self.arrival_time)
-        self.arrival_time = self.source.generate()
         self.v_network = [0.0] * 3
         self.w_network = [0.0] * 3
 
         self.ttek = 0
-        self.total = 0
         self.served = 0
         self.in_sys = 0
         self.arrived = 0
+
+    def set_sources(self, arrival_rate: float, R: np.matrix):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rate and routing matrix.
+        Parameters:
+            arrival_rate: arrival rate of customers.
+            R: routing matrix, dim (m + 1 x m + 1), where m is number of nodes.
+
+            For example:
+            R[0, 0] is transition frome source to first node.
+            R[0, m] is transition from source to out of system.
+
+        """
+        self.arrival_rate = arrival_rate
+
+        self.source = ExpDistribution(self.arrival_rate)
+        self.arrival_time = self.source.generate()
+
+        self.R = R
+        self.is_sources_set = True
+
+    def set_nodes(self, serv_params: list[dict], n: list[int]):  # pylint: disable=arguments-differ
+        """
+        Set the service time distribution parameters and number of channels for each node.
+        Parameters:
+            serv_params: list of dictionaries with service parameters for each node
+                [m][dict(type, params)]
+                where m - node number,
+                type - distribution type, params - distribution parameters.
+            n: list of number of channels in each node.
+        """
+        self.serv_params = serv_params
+        self.nodes = n
+        self.n_num = len(n)  # number of nodes
+
+        for m in range(self.n_num):
+            self.qs.append(QsSim(n[m]))
+            self.qs[m].set_servers(serv_params[m]["params"], kendall_notation=serv_params[m]["type"])
+
+        self.is_nodes_set = True
 
     def choose_next_node(self, current_node):
         """
@@ -151,33 +181,33 @@ class NetworkSimulator:
         else:
             self.qs[next_node].arrival(self.ttek, ts)
 
-    def run(self, job_served, is_real_served=True):
+    def run(self, job_served: int) -> NetworkSimResults:
         """
         Run simulation
+        Parameters:
+           job_served (int): Number of jobs to serve.
+
         """
-        if is_real_served:
-            last_percent = 0
 
-            with tqdm(total=100) as pbar:
-                while self.served < job_served:
-                    self.run_one_step()
-                    percent = int(100 * (self.served / job_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(
-                            Fore.MAGENTA
-                            + "\rJob served: "
-                            + Fore.YELLOW
-                            + f"{self.served}/{job_served}"
-                            + Fore.LIGHTGREEN_EX
-                        )
-        else:
-            print(Fore.GREEN + "\rStart simulation")
-            print(Style.RESET_ALL)
+        self._check_sources_and_nodes_is_set()
 
-            for _ in tqdm(range(job_served)):
+        last_percent = 0
+
+        with tqdm(total=100) as pbar:
+            while self.served < job_served:
                 self.run_one_step()
+                percent = int(100 * (self.served / job_served))
+                if last_percent != percent:
+                    last_percent = percent
+                    pbar.update(1)
+                    pbar.set_description(
+                        Fore.MAGENTA
+                        + "\rJob served: "
+                        + Fore.YELLOW
+                        + f"{self.served}/{job_served}"
+                        + Fore.LIGHTGREEN_EX
+                    )
 
-            print(Fore.GREEN + "\rSimulation is finished")
-            print(Style.RESET_ALL)
+        self.results = NetworkSimResults(v=self.v_network, served=self.served, arrived=self.arrived)
+
+        return self.results

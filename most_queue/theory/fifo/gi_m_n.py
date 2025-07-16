@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.theory.base import BaseQueue
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
@@ -28,7 +28,7 @@ class GiMn(BaseQueue):
 
         self.n = n
 
-        self.e = self.calc_params.e
+        self.e = self.calc_params.tolerance
         self.approx_distr = self.calc_params.approx_distr
         self.pi_num = self.calc_params.p_num
 
@@ -149,12 +149,7 @@ class GiMn(BaseQueue):
                 val4 = math.factorial(i)
                 val5 = math.factorial(self.n - k - i)
                 val6 = self.n * (1 - self.w_param) - (k + i)
-                A[k, self.n] += (
-                    pow(-1, i)
-                    * val2
-                    * (self._get_b0(k + i) - self.w_param)
-                    / (val3 * val4 * val5 * val6)
-                )
+                A[k, self.n] += pow(-1, i) * val2 * (self._get_b0(k + i) - self.w_param) / (val3 * val4 * val5 * val6)
             A[k, self.n] = self.n * A[k, self.n]
             A[k, k] = A[k, k] - 1
         pi_to_n = np.linalg.solve(A, B)
@@ -166,7 +161,7 @@ class GiMn(BaseQueue):
 
     def _get_b0(self, j):
 
-        if self.approx_distr == "Gamma":
+        if self.approx_distr == "gamma":
             gamma_params = GammaDistribution.get_params(self.a)
             v, alpha, gs = gamma_params.mu, gamma_params.alpha, gamma_params.g
             summ = 0
@@ -178,7 +173,7 @@ class GiMn(BaseQueue):
             b0 = left * summ
             return b0
 
-        if self.approx_distr == "Pa":
+        if self.approx_distr == "pareto":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
@@ -204,7 +199,7 @@ class GiMn(BaseQueue):
         coev_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
         w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
 
-        if self.approx_distr == "Gamma":
+        if self.approx_distr == "gamma":
             gamma_params = GammaDistribution.get_params(self.a)
             v, alpha, gs = gamma_params.mu, gamma_params.alpha, gamma_params.g
 
@@ -221,15 +216,13 @@ class GiMn(BaseQueue):
                 w_old = w_new
             return w_new
 
-        if self.approx_distr == "Pa":
+        if self.approx_distr == "pareto":
             pa_params = ParetoDistribution.get_params(self.a)
             alpha, K = pa_params.alpha, pa_params.K
 
             while True:
                 left = alpha * pow(K * self.mu * self.n * (1.0 - w_old), alpha)
-                w_new = left * GammaDistribution.get_gamma_incomplete(
-                    -alpha, K * self.mu * self.n * (1.0 - w_old)
-                )
+                w_new = left * GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * self.n * (1.0 - w_old))
                 if math.fabs(w_new - w_old) < self.e:
                     break
                 w_old = w_new

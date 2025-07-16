@@ -18,9 +18,7 @@ def lst_h2(h2_params: H2Params, s: float) -> float:
     """
     Calculate the Laplace-Stieltjes transform of an H2 distribution.
     """
-    return h2_params.p1 * lst_exp(h2_params.mu1, s) + (1.0 - h2_params.p1) * lst_exp(
-        h2_params.mu2, s
-    )
+    return h2_params.p1 * lst_exp(h2_params.mu1, s) + (1.0 - h2_params.p1) * lst_exp(h2_params.mu2, s)
 
 
 def lst_gamma(gamma_params: GammaParams, s: float) -> float:

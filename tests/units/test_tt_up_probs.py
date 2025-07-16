@@ -31,7 +31,9 @@ def testcalc_up_probs():
     b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
     # run Takahasi-Takami method
-    tt = MGnCalc(NUM_OF_CHANNELS, ARRIVAL_RATE, b)
+    tt = MGnCalc(n=NUM_OF_CHANNELS)
+    tt.set_sources(l=ARRIVAL_RATE)
+    tt.set_servers(b=b)
     tt.run()
 
     for i in range(1, NUM_OF_CHANNELS + 2):

@@ -25,9 +25,7 @@ def create_DG(network, engine="networkx", graphviz_format="png", colorize_source
         return DG
 
     # if engine == "graphviz":
-    DG = Digraph(
-        name="QS", format=graphviz_format, graph_attr={"rankdir": "LR"}
-    )  # LR = left to right
+    DG = Digraph(name="QS", format=graphviz_format, graph_attr={"rankdir": "LR"})  # LR = left to right
     shape = network.shape
     nodes_size = shape[0]
 
@@ -60,9 +58,7 @@ def show_DG(DG, engine="networkx", graphviz_format="png"):
         plt.show()
     elif engine == "graphviz":
         DG.render(directory="doctest-output").replace("\\", "/")
-        qs = plt.imread(
-            os.path.join(os.getcwd(), "doctest-output", f"{DG.name}.gv.{graphviz_format}")
-        )
+        qs = plt.imread(os.path.join(os.getcwd(), "doctest-output", f"{DG.name}.gv.{graphviz_format}"))
         fig, ax = plt.subplots()
         ax.imshow(qs)
         plt.axis("off")

@@ -1,6 +1,7 @@
 """
-Calculation of M/M/n queue with absolute priority using the numerical method
-by Takahashi-Takami based on the approximation of busy periods by Cox's second-order distribution.
+Calculation of M/M/n queue with absolute priority and two classes
+using the numerical method by Takahashi-Takami based
+on the approximation of busy periods by Cox's second-order distribution.
 """
 
 import math
@@ -8,84 +9,69 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
-class MMn_PRTY_PNZ_Cox_approx:
+class MMnPR2ClsBusyApprox(MGnCalc):
     """
-    Calculation of M/M/n queue with absolute priority using the numerical method
-    by Takahashi-Takami based on the approximation
+    Calculation of M/M/n queue with absolute priority and two classes
+    using the numerical method by Takahashi-Takami based on the approximation
     of busy periods by Cox's second-order distribution.
     """
 
     def __init__(
         self,
         n: int,
-        mu_L: float,
-        mu_H: float,
-        l_L: float,
-        l_H: float,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
-        n: number of channels
-        l_L, l_H: arrival rates for low and high priority requests
-        mu_L, mu_H: service rates for low and high priority requests
-        N: number of tiers (levels)
-        accuracy: accuracy, parameter for stopping iteration
+        :param n: Number of servers.
+        :param calc_params: Parameters for the calculation.
+        If not provided, default parameters will be used.
         """
 
-        if calc_params is None:
-            calc_params = TakahashiTakamiParams()
-        self.dt = np.dtype(calc_params.dtype)
-        self.N = calc_params.N
-        self.e1 = calc_params.accuracy
+        super().__init__(n=n, calc_params=calc_params)
+
+        self.dt = np.dtype(self.calc_params.dtype)
+        self.N = self.calc_params.N
+        self.e1 = self.calc_params.tolerance
         self.n = n
-        self.l_L = l_L
-        self.l_H = l_H
-        self.mu_L = mu_L
-        self.mu_H = mu_H
-        self.busy_period = self._get_pnz_markov()
-        self.busy_coev = self._get_busy_coev()
-        self.param_cox = CoxDistribution.get_params(self.busy_period)
-        self.y1_cox = self.param_cox.p1
-        self.mu1_cox = self.param_cox.mu1
-        self.mu2_cox = self.param_cox.mu2
+        self.l_L = None
+        self.l_H = None
+        self.mu_L = None
+        self.mu_H = None
+
+        self.busy_period = None
+        self.busy_coev = None
+        self.param_cox = None
+        self.y1_cox = None
+        self.mu1_cox = None
+        self.mu2_cox = None
 
         self.n_iter_ = 0
         self.inter_level_mom_ = None
 
-        # массив cols хранит число столбцов для каждого яруса, удобней
-        # рассчитать его один раз:
-        self.cols = [] * self.N
+    def set_sources(self, l_low: float, l_high: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates
+        :param l_low: intensity of the arrivals with low priority,
+        :param l_high: intensity of the arrivals with high priority,
+        """
+        self.l_L = l_low
+        self.l_H = l_high
+        self.is_sources_set = True
 
-        # переменные
-        self.t = []
-        self.b1 = []
-        self.b2 = []
-        self.x = [0.0] * self.N
-        self.z = [0.0] * self.N
+    def set_servers(self, mu_low: float, mu_high: float):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param mu_low: intensity of service for low-priority requests,
+        :param mu_high: intensity of service for high priority requests,
+        """
+        self.mu_H = mu_high
+        self.mu_L = mu_low
 
-        # искомые вреоятности состояний СМО
-        self.p = [0.0 + 0.0j] * self.N
-
-        # матрицы переходов
-        self.A = []
-        self.B = []
-        self.C = []
-        self.D = []
-        self.Y = []
-
-        for i in range(self.N):
-            self.cols.append(n + 2)
-            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-
-        self._build_matrices()
-        self._initial_probabilities()
+        self.is_servers_set = True
 
     def _get_pnz_markov(self):
 
@@ -100,17 +86,14 @@ class MMn_PRTY_PNZ_Cox_approx:
 
         pi[0] = b_mom[0] / (1.0 - ro_load)
         pi[1] = b_mom[1] / (math.pow(1 - ro_load, 3))
-        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + 3.0 * self.l_H * b_mom[1] * b_mom[
-            1
-        ] / math.pow(1 - ro_load, 5)
+        pi[2] = (b_mom[2] / math.pow(1.0 - ro_load, 4)) + 3.0 * self.l_H * b_mom[1] * b_mom[1] / math.pow(
+            1 - ro_load, 5
+        )
 
         return pi
 
     def _get_busy_coev(self):
-        return (
-            math.sqrt(self.busy_period[1] - self.busy_period[0] * self.busy_period[0])
-            / self.busy_period[0]
-        )
+        return math.sqrt(self.busy_period[1] - self.busy_period[0] * self.busy_period[0]) / self.busy_period[0]
 
     def get_p(self):
         """
@@ -178,6 +161,48 @@ class MMn_PRTY_PNZ_Cox_approx:
         """
         Запускает расчет
         """
+
+        self.busy_period = self._get_pnz_markov()
+        self.busy_coev = self._get_busy_coev()
+        self.param_cox = CoxDistribution.get_params(self.busy_period)
+        self.y1_cox = self.param_cox.p1
+        self.mu1_cox = self.param_cox.mu1
+        self.mu2_cox = self.param_cox.mu2
+
+        self.n_iter_ = 0
+        self.inter_level_mom_ = None
+
+        # массив cols хранит число столбцов для каждого яруса, удобней
+        # рассчитать его один раз:
+        self.cols = [] * self.N
+
+        # переменные
+        self.t = []
+        self.b1 = []
+        self.b2 = []
+        self.x = [0.0] * self.N
+        self.z = [0.0] * self.N
+
+        # искомые вреоятности состояний СМО
+        self.p = [0.0 + 0.0j] * self.N
+
+        # матрицы переходов
+        self.A = []
+        self.B = []
+        self.C = []
+        self.D = []
+        self.Y = []
+
+        for i in range(self.N):
+            self.cols.append(self.n + 2)
+            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+
+        self._build_matrices()
+        self._initial_probabilities()
+
         self.b1[0][0, 0] = 0
         self.b2[0][0, 0] = 0
         x_max1 = 0
@@ -359,9 +384,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
-                            Zs.append(
-                                self.t[i][0, j] * pass_time.G[i][j, s] * pass_time.Z[i][k][j, s]
-                            )
+                            Zs.append(self.t[i][0, j] * pass_time.G[i][j, s] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[i][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[i][k][j, s])
                         inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)
@@ -370,11 +393,7 @@ class MMn_PRTY_PNZ_Cox_approx:
                     for s in range(self.cols[i - 1]):
                         Zs = []
                         for k in range(3):
-                            Zs.append(
-                                self.t[i][0, j]
-                                * pass_time.G[l_tilda][j, s]
-                                * pass_time.Z[l_tilda][k][j, s]
-                            )
+                            Zs.append(self.t[i][0, j] * pass_time.G[l_tilda][j, s] * pass_time.Z[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Gr[l_tilda][k][j, s])
                             # Zs.append(self.t[i][0, j] * pass_time.Z[l_tilda][k][j, s])
                         inter_level_mom[i - 1] = self.binom_calc(inter_level_mom[i - 1], Zs)

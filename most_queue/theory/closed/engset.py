@@ -2,34 +2,62 @@
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
 
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
 
 
-class Engset:
+class Engset(BaseQueue):
     """
     Calculation of the Engset model for M/M/1 with a finite number of sources.
     """
 
-    def __init__(self, lam: float, mu: float, m: int):
+    def __init__(self):
         """
         lam - arrival rate of requests from each source
         mu - service rate
         m - number of request sources
         """
-        self.lam = lam
-        self.mu = mu
-        self.ro = lam / mu
-        self.m = m
-        self._calc_m_i()
+
+        super().__init__(n=1)
+        self.lam = None
+        self.mu = None
+        self.m_i = None
+        self.m = None
+        self.ro = None
 
         self.p = None
         self.p0 = None
+
+    def set_sources(self, l: float, number_of_sources: int):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
+        :param number_of_sources: number of sources
+        """
+        self.lam = l
+        self.m = number_of_sources
+        self._calc_m_i()
+        self.is_sources_set = True
+
+    def set_servers(self, mu: float):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        :param mu: service rate
+        """
+        self.mu = mu
+
+        self.is_servers_set = True
 
     def get_p(self) -> list[float]:
         """
         Get probabilities of states of the system
         """
+
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.lam / self.mu
+
         summ = 0
         for i, mm in enumerate(self.m_i):
             summ += mm * pow(self.ro, i)
@@ -48,9 +76,7 @@ class Engset:
         """
         Get average number of jobs in the system
         """
-
-        if self.p is None:
-            self.get_p()
+        self.p = self.p or self.get_p()
 
         N = 0
         for i, mm in enumerate(self.m_i):
@@ -63,9 +89,6 @@ class Engset:
         """
         Get average number of jobs in the queue
         """
-        if self.p is None:
-            self.get_p()
-
         return self.get_N() - (1.0 - self.p0)
 
     def get_kg(self):
@@ -73,8 +96,8 @@ class Engset:
         Get probability that a randomly chosen source can send a request,
         i.e. the readiness coefficient
         """
-        if self.p is None:
-            self.get_p()
+
+        self.p = self.p or self.get_p()
 
         return self.mu * (1.0 - self.p0) / (self.lam * self.m)
 
@@ -95,8 +118,7 @@ class Engset:
         Get waiting time initial moments through the diff Laplace-Stieltjes transform
         """
 
-        if self.p is None:
-            self.get_p()
+        self.p = self.p or self.get_p()
 
         h = 0.01
         ss = [x * h for x in range(5)]

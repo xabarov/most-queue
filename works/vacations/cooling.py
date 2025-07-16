@@ -83,9 +83,7 @@ def run_cool_ave(qp, save_path: str = None):
 
         w1_error_save_path = os.path.join(save_path, "w1_error_vs_cool_ave.png")
 
-        plot_w1_errors(
-            cools, w1_rel_errors, x_label="Cooling Average", save_path=w1_error_save_path
-        )
+        plot_w1_errors(cools, w1_rel_errors, x_label="Cooling Average", save_path=w1_error_save_path)
 
         cool_probs_save_path = os.path.join(save_path, "cooling_probs_vs_cool_ave.png")
 
@@ -104,9 +102,7 @@ def run_cool_cv(qp, save_path: str = None):
     """
     Run simulation and calculation for different cooling coefficient of variation
     """
-    cools = np.linspace(
-        qp["cooling"]["cv"]["min"], qp["cooling"]["cv"]["max"], qp["cooling"]["cv"]["num_points"]
-    )
+    cools = np.linspace(qp["cooling"]["cv"]["min"], qp["cooling"]["cv"]["max"], qp["cooling"]["cv"]["num_points"])
 
     w1_num = []
     w1_sim = []

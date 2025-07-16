@@ -71,8 +71,9 @@ def run_calculation(
     """
     num_start = time.process_time()
 
-    solver = MGnH2ServingColdWarmDelay(arrival_rate, b, b_w, b_c, b_d, num_channels)
-
+    solver = MGnH2ServingColdWarmDelay(n=num_channels)
+    solver.set_sources(l=arrival_rate)
+    solver.set_servers(b=b, b_warm=b_w, b_cold=b_c, b_cold_delay=b_d)
     solver.run()
 
     stat = {}
@@ -208,13 +209,9 @@ def test_mgn_h2_delay_cold_warm():
     for i, prob in enumerate(num_results["servers_busy_probs"]):
         print(f"\t{i}: {prob: 0.4f}")
 
-    assert np.allclose(
-        sim_results["w"], num_results["w"], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(sim_results["w"], num_results["w"], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(
-        sim_results["p"][:10], num_results["p"][:10], atol=PROBS_ATOL, rtol=PROBS_RTOL
-    ), ERROR_MSG
+    assert np.allclose(sim_results["p"][:10], num_results["p"][:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

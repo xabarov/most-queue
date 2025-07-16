@@ -5,6 +5,7 @@ Test the NetworkOptimizerWithApprox class.
 import numpy as np
 
 from most_queue.rand_distribution import ExpDistribution
+from most_queue.theory.networks.open_network import OpenNetworkCalc
 from most_queue.theory.networks.opt.transition_approx import NetworkOptimizerWithApprox
 
 
@@ -33,11 +34,12 @@ def test_network_opt_approx():
         ExpDistribution.calc_theory_moments(1.0) for _m in range(num_of_nodes)
     ]  # List of service time moments for each node
 
+    network = OpenNetworkCalc()
+    network.set_sources(R=transition_mrx, arrival_rate=arrival_rate)
+    network.set_nodes(b=service_times, n=num_of_channels)
+
     optimizer = NetworkOptimizerWithApprox(
-        transition_matrix=transition_mrx,
-        arrival_rate=arrival_rate,
-        b=service_times,
-        num_channels=num_of_channels,
+        network=network,
         maximum_rates_to_end=max_ends,
         is_service_markovian=True,
         verbose=True,

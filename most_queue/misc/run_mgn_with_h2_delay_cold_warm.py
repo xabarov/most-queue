@@ -17,7 +17,7 @@ from most_queue.misc.vacations_paper_utils import (
 )
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
-from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
+from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay, TakahashiTakamiParams
 
 
 def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_ave):
@@ -116,18 +116,12 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
     :return: None
     """
     tt_start = time.process_time()
-    tt = MGnH2ServingColdWarmDelay(
-        l,
-        b,
-        b_w,
-        b_c,
-        b_d,
-        n,
-        buffer=buff,
-        verbose=verbose,
-        w_pls_dt=w_pls_dt,
-        stable_w_pls=stable_w_pls,
-    )
+
+    tt_params = TakahashiTakamiParams(verbose=verbose, w_pls_dt=w_pls_dt, stable_w_pls=stable_w_pls)
+    tt = MGnH2ServingColdWarmDelay(n=n, buffer=buff, calc_params=tt_params)
+
+    tt.set_sources(l=l)
+    tt.set_servers(b=b, b_warm=b_w, b_cold=b_c, b_cold_delay=b_d)
 
     tt.run()
     p_tt = tt.get_p()

@@ -39,13 +39,7 @@ class SummatorNumeric:
 
         for i in range(n - 1):
             if self.verbose:
-                print(
-                    f"Summation of flows. Start calculation {
-                        i +
-                        1} from {
-                        n -
-                        1}."
-                )
+                print(f"Summation of flows. Start calculation {i + 1} from {n - 1}.")
             if not self.is_semi:
                 f1 = self.sum_2_H2_flows(self.a[0], self.a[1])
             else:
@@ -100,13 +94,7 @@ class SummatorNumeric:
         if len(a) > 2:
             k.append(a[2] - 3 * a[1] * a[0] + 2 * pow(a[0], 3))
         if len(a) > 3:
-            k.append(
-                a[3]
-                - 4 * a[2] * a[0]
-                - 3 * pow(a[1], 2)
-                + 12 * a[1] * pow(a[0], 2)
-                - 6 * pow(a[0], 4)
-            )
+            k.append(a[3] - 4 * a[2] * a[0] - 3 * pow(a[1], 2) + 12 * a[1] * pow(a[0], 2) - 6 * pow(a[0], 4))
 
         return k
 
@@ -140,9 +128,7 @@ class SummatorNumeric:
         if len(k) > 2:
             a.append(k[2] + 3 * k[0] * k[1] + pow(k[0], 3))
         if len(k) > 3:
-            a.append(
-                k[3] + 4 * k[2] * k[0] + 3 * pow(k[1], 2) + 6 * k[1] * pow(k[0], 2) + pow(k[0], 4)
-            )
+            a.append(k[3] + 4 * k[2] * k[0] + 3 * pow(k[1], 2) + 6 * k[1] * pow(k[0], 2) + pow(k[0], 4))
 
         return a
 

@@ -6,8 +6,10 @@ import math
 
 import scipy.special as sp
 
+from most_queue.theory.base_queue import BaseQueue
 
-class ForkJoinMarkovianCalc:
+
+class ForkJoinMarkovianCalc(BaseQueue):
     """
     Numerical calculation of Fork-Join queueuing systems
 
@@ -28,23 +30,39 @@ class ForkJoinMarkovianCalc:
 
     """
 
-    def __init__(self, l, mu, n, k=None):
+    def __init__(self, n):
         """
-        :param l: Arrival rate
-        :param mu: Service rate
         :param n: Number of servers
-        :param k: Number of sub-tasks that need to be completed before the job
-        is considered done (default is n)
+        """
+
+        super().__init__(n=n)
+
+        self.l = None
+        self.mu = None
+        self.k = None
+        self.ro = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
         """
         self.l = l
-        self.n = n
+
+        self.is_sources_set = True
+
+    def set_servers(self, mu: float, k: int | None = None):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        :param mu: service rate
+        :param k: Number of sub-tasks that need to be completed before the job
+        if k is None, then k is set to n (default)
+        """
         self.mu = mu
 
-        if k is None:
-            k = n
+        self.k = k or self.n
 
-        self.k = k
-        self.ro = self.l / self.mu
+        self.is_servers_set = True
 
     def get_v1_fj2(self):
         """
@@ -55,6 +73,10 @@ class ForkJoinMarkovianCalc:
         """
 
         assert self.n == 2, "n must be equal to 2"
+
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.l / self.mu
 
         h2 = 1.5
         v1_m = 1 / (self.mu - self.l)
@@ -74,6 +96,9 @@ class ForkJoinMarkovianCalc:
         :param n: number of channels
         :return: mean sojourn time for FJ system with n channels
         """
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.l / self.mu
 
         Vn = self._get_v_big(self.n)
         Hn = self._get_h_big(self.n)
@@ -93,6 +118,10 @@ class ForkJoinMarkovianCalc:
         :param n: number of channels
         :return: mean sojourn time for FJ system with n channels
         """
+
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.l / self.mu
 
         Hn = self._get_h_big(self.n)
         v1 = (Hn / 1.5) + (4.0 / 11) * (1.0 - Hn / 1.5) * self.ro
@@ -114,6 +143,10 @@ class ForkJoinMarkovianCalc:
                 if n = k, then it's a basic fork-join queueing system.
         :return: mean sojourn time for FJ system with n channels
         """
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.l / self.mu
+
         res = 0
         coeff = (12 - self.ro) / (88 * self.mu * (1 - self.ro))
 
@@ -124,10 +157,7 @@ class ForkJoinMarkovianCalc:
             for i in range(2, self.n + 1):
                 summ += (
                     self._get_w_big(self.n, 1, i)
-                    * (
-                        11 * self._get_h_big(i)
-                        + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i))
-                    )
+                    * (11 * self._get_h_big(i) + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i)))
                     / self._get_h_big(2)
                 )
 
@@ -137,10 +167,7 @@ class ForkJoinMarkovianCalc:
             for i in range(self.k, self.n + 1):
                 summ += (
                     self._get_w_big(self.n, self.k, i)
-                    * (
-                        11 * self._get_h_big(i)
-                        + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i))
-                    )
+                    * (11 * self._get_h_big(i) + 4 * self.ro * (self._get_h_big(2) - self._get_h_big(i)))
                     / self._get_h_big(2)
                 )
             res = coeff * summ
@@ -162,6 +189,10 @@ class ForkJoinMarkovianCalc:
                 if n = k, then it's a basic fork-join queueing system.
         :return: mean sojourn time for FJ system with n channels
         """
+        self._check_if_servers_and_sources_set()
+
+        self.ro = self.ro or self.l / self.mu
+
         summ = 0
 
         for i in range(self.k, self.n + 1):
@@ -184,6 +215,9 @@ class ForkJoinMarkovianCalc:
         :param n: number of channels
         :return: mean sojourn time for FJ system with n channels
         """
+        self._check_if_servers_and_sources_set()
+        self.ro = self.ro or self.l / self.mu
+
         Hn = self._get_h_big(self.n)
         summ = 0
         summ2 = 0

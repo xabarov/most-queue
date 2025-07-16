@@ -121,8 +121,7 @@ def fit_h2_clx(moments: list[float], fitting_params: FittingParams | None = None
         if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < fitting_params.ee:
             if fitting_params.verbose:
                 print(
-                    f"H2 is close to E2. Multiply moments to (1+je)"
-                    f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
+                    f"H2 is close to E2. Multiply moments to (1+je)" f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
                 )
             f = []
             for i, mom in enumerate(moments):
@@ -155,10 +154,7 @@ def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -
         coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
         if abs(moments[1] - moments[0] * moments[0]) < fitting_params.ee:
             if fitting_params.verbose:
-                print(
-                    f"Cox special 1. Multiply moments to (1+je)"
-                    f"coev = {coev:5.3f}  e = {fitting_params.e:5.3f}."
-                )
+                print(f"Cox special 1. Multiply moments to (1+je)" f"coev = {coev:5.3f}  e = {fitting_params.e:5.3f}.")
             f = []
             for i, mom in enumerate(moments):
                 f.append(mom * complex(1, (i + 1) * fitting_params.e))
@@ -180,9 +176,7 @@ def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -
     for i in range(3):
         f[i] = moments[i] / math.factorial(i + 1)
 
-    d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - np.power(f[0], 2)) * (
-        f[0] * f[2] - np.power(f[1], 2)
-    )
+    d = np.power(f[2] - f[0] * f[1], 2) - 4.0 * (f[1] - np.power(f[0], 2)) * (f[0] * f[2] - np.power(f[1], 2))
     mu2 = f[0] * f[1] - f[2] + cmath.sqrt(d)
     mu2 /= 2.0 * (np.power(f[1], 2) - f[0] * f[2])
     mu1 = (mu2 * f[0] - 1.0) / (mu2 * f[1] - f[0])
@@ -291,9 +285,7 @@ def fit_gamma(moments: list[float]) -> GammaParams:
             else:
                 B.append(moments[i - 1])
             for j in range(len(moments) + 1):
-                A[i].append(
-                    calc_gamma_func(alpha + i + j) / (pow(mu, i + j) * calc_gamma_func(alpha))
-                )
+                A[i].append(calc_gamma_func(alpha + i + j) / (pow(mu, i + j) * calc_gamma_func(alpha)))
         g = np.linalg.solve(A, B)
         return GammaParams(mu=mu, alpha=alpha, g=g)
 
@@ -315,14 +307,10 @@ def fit_weibull(moments: list[float]) -> WeibullParams:
     a = moments[1] / (moments[0] * moments[0])
     u0 = math.log(2 * a) / (2.0 * math.log(2))
     ee = 1e-6
-    u1 = (1.0 / (2 * math.log(2))) * math.log(
-        a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5)
-    )
+    u1 = (1.0 / (2 * math.log(2))) * math.log(a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
     delta = u1 - u0
     while math.fabs(delta) > ee:
-        u1 = (1.0 / (2 * math.log(2))) * math.log(
-            a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5)
-        )
+        u1 = (1.0 / (2 * math.log(2))) * math.log(a * math.sqrt(math.pi) * math.gamma(u0 + 1) / math.gamma(u0 + 0.5))
         delta = u1 - u0
         u0 = u1
     k = 1 / u1

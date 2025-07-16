@@ -259,9 +259,7 @@ class UniformDistribution(Distribution):
         mean, half_interval = params.mean, params.half_interval
         f = [0.0] * num
         for i in range(num):
-            f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (
-                2 * half_interval * (i + 2)
-            )
+            f[i] = (pow(mean + half_interval, i + 2) - pow(mean - half_interval, i + 2)) / (2 * half_interval * (i + 2))
         return f
 
     @staticmethod
@@ -382,9 +380,7 @@ class H2Distribution(Distribution):
         y2 = 1.0 - params.p1
 
         for i in range(num):
-            f[i] = math.factorial(i + 1) * (
-                params.p1 / pow(params.mu1, i + 1) + y2 / pow(params.mu2, i + 1)
-            )
+            f[i] = math.factorial(i + 1) * (params.p1 / pow(params.mu1, i + 1) + y2 / pow(params.mu2, i + 1))
         return f
 
     @staticmethod
@@ -407,9 +403,7 @@ class H2Distribution(Distribution):
         return fit_h2(moments)
 
     @staticmethod
-    def get_params_clx(
-        moments: list[float], fitting_params: FittingParams | None = None
-    ) -> H2Params:
+    def get_params_clx(moments: list[float], fitting_params: FittingParams | None = None) -> H2Params:
         """
         Method of fitting H2 distribution parameters to given initial moments.
         Uses the method of moments and optimization to fit the parameters.
@@ -518,10 +512,7 @@ class CoxDistribution(Distribution):
         y2 = 1.0 - y1
         f = [0.0] * 3
         f[0] = y2 / m1 + y1 * (1.0 / m1 + 1.0 / m2)
-        f[1] = 2.0 * (
-            y2 / math.pow(m1, 2)
-            + y1 * (1.0 / math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2))
-        )
+        f[1] = 2.0 * (y2 / math.pow(m1, 2) + y1 * (1.0 / math.pow(m1, 2) + 1.0 / (m1 * m2) + 1.0 / math.pow(m2, 2)))
         f[2] = 6.0 * (
             y2 / (math.pow(m1, 3))
             + y1

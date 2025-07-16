@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from most_queue.theory.base import BaseQueue
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -26,7 +26,7 @@ class MDn(BaseQueue):
         super().__init__(n=n, calc_params=calc_params)
 
         self.p_num = self.calc_params.p_num
-        self.e = self.calc_params.e
+        self.e = self.calc_params.tolerance
         self.p = [0.0] * self.calc_params.p_num
 
         self.l = None

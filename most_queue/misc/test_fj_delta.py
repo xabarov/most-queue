@@ -46,13 +46,13 @@ def test_fj_delta():
 
     b_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
-    delta_params = GammaDistribution.get_params_by_mean_and_coev(
-        SERVICE_TIME_DELTA_AVERAGE, SERVICE_TIME_CV
-    )
+    delta_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_DELTA_AVERAGE, SERVICE_TIME_CV)
     b_delta = GammaDistribution.calc_theory_moments(delta_params)
     b = GammaDistribution.calc_theory_moments(b_params)
 
-    sj_delta = SplitJoinCalc(ARRIVAL_RATE, NUM_OF_CHANNELS, b, approximation="gamma")
+    sj_delta = SplitJoinCalc(n=NUM_OF_CHANNELS)
+    sj_delta.set_sources(l=ARRIVAL_RATE)
+    sj_delta.set_servers(b=b)
 
     v_num = sj_delta.get_v_delta(b_delta)
     ro = sj_delta.get_ro()
@@ -68,19 +68,14 @@ def test_fj_delta():
     print(f"{'Split-Join QS with service start delay':^60s}")
     print("-" * 60)
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV}")
-    print(
-        f"Average delay before service start: {
-            SERVICE_TIME_DELTA_AVERAGE:.3f}"
-    )
+    print(f"Average delay before service start: { SERVICE_TIME_DELTA_AVERAGE:.3f}")
     print(f"Coefficient of variation of delay: {SERVICE_TIME_CV:.3f}")
     print(f"Utilization coefficient: {ro:.3f}")
 
     times_print(v_sim, v_num, is_w=False)
 
     assert len(v_sim) == len(v_num)
-    assert np.allclose(
-        np.array(v_sim), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
-    ), ERROR_MSG
+    assert np.allclose(np.array(v_sim), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

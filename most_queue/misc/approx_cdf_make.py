@@ -55,11 +55,7 @@ if __name__ == "__main__":
     print("{0:^3s}|{1:^15s}|{2:^15s}|{3:^15s}".format("№", "Реал", "Gamma", "H2"))
     print("-" * 50)
     for i in range(3):
-        print(
-            "{0:^4d}|{1:^15.3g}|{2:^15.3g}|{3:^15.3g}".format(
-                i + 1, b[i], b_approx_gamma[i], b_approx_h2[i]
-            )
-        )
+        print("{0:^4d}|{1:^15.3g}|{2:^15.3g}|{3:^15.3g}".format(i + 1, b[i], b_approx_gamma[i], b_approx_h2[i]))
 
     dots_num = 10000
 

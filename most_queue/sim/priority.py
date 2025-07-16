@@ -398,11 +398,7 @@ class PriorityQueueSimulator:
                 dropped_tsk = c.end_service()
                 self.taked[k] += 1
 
-                if (
-                    k != self.class_busy_started
-                    and self.class_busy_started != -1
-                    and self.in_sys[k] == self.n
-                ):
+                if k != self.class_busy_started and self.class_busy_started != -1 and self.in_sys[k] == self.n:
                     self.busy_moments[self.class_busy_started] += 1
                     self.refresh_busy_stat(self.class_busy_started, self.ttek - self.start_busy)
                     self.start_busy = self.ttek
@@ -558,37 +554,31 @@ class PriorityQueueSimulator:
         else:
             self.serving(num_of_server_earlier)
 
-    def run(self, total_served, is_real_served=True):
+    def run(self, total_served):
         """
         Run simulation for total_served jobs.
         :param total_served: int, number of jobs to serve
-        :param is_real_served: bool, if True then show progress bar and print job served percentage.
         :return: None
         """
 
         print(Fore.GREEN + "\rStart simulation")
-        if is_real_served:
 
-            last_percent = 0
+        last_percent = 0
 
-            with tqdm(total=100) as pbar:
-                while sum(self.served) < total_served:
-                    self.run_one_step()
-                    percent = int(100 * (sum(self.served) / total_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(
-                            Fore.MAGENTA
-                            + "\rJob served: "
-                            + Fore.YELLOW
-                            + f"{sum(self.served)}/{total_served}"
-                            + Fore.LIGHTGREEN_EX
-                        )
-
-        else:
-            for _ in tqdm(range(total_served)):
+        with tqdm(total=100) as pbar:
+            while sum(self.served) < total_served:
                 self.run_one_step()
+                percent = int(100 * (sum(self.served) / total_served))
+                if last_percent != percent:
+                    last_percent = percent
+                    pbar.update(1)
+                    pbar.set_description(
+                        Fore.MAGENTA
+                        + "\rJob served: "
+                        + Fore.YELLOW
+                        + f"{sum(self.served)}/{total_served}"
+                        + Fore.LIGHTGREEN_EX
+                    )
 
         print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
@@ -602,8 +592,7 @@ class PriorityQueueSimulator:
         """
         for i in range(3):
             self.busy[k][i] = (
-                self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k]))
-                + math.pow(new_a, i + 1) / self.busy_moments[k]
+                self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k])) + math.pow(new_a, i + 1) / self.busy_moments[k]
             )
 
     def refresh_v_stat(self, k, new_a):
@@ -613,10 +602,7 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
         """
         for i in range(3):
-            self.v[k][i] = (
-                self.v[k][i] * (1.0 - (1.0 / self.served[k]))
-                + math.pow(new_a, i + 1) / self.served[k]
-            )
+            self.v[k][i] = self.v[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -626,10 +612,7 @@ class PriorityQueueSimulator:
 
         """
         for i in range(3):
-            self.w[k][i] = (
-                self.w[k][i] * (1.0 - (1.0 / self.served[k]))
-                + math.pow(new_a, i + 1) / self.served[k]
-            )
+            self.w[k][i] = self.w[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
 
     def get_p(self):
         """
@@ -662,10 +645,7 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_source_type}*/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{
-                    Fore.GREEN}{
-                    self.sources_params[kk]['type']},{
-                    Style.RESET_ALL}"
+                res += f"{ Fore.GREEN}{self.sources_params[kk]['type']},{ Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         is_the_same_serving_type = True
@@ -677,10 +657,7 @@ class PriorityQueueSimulator:
             res += f"{Fore.GREEN}{first_serv_type}/{Style.RESET_ALL}"
         else:
             for kk in range(self.k - 1):
-                res += f"{
-                    Fore.GREEN}{
-                    self.servers_params[kk]['type']},{
-                    Style.RESET_ALL}"
+                res += f"{Fore.GREEN}{self.servers_params[kk]['type']},{ Style.RESET_ALL}"
             res += f"{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         res += f"{Fore.BLUE}{str(self.n)}{Style.RESET_ALL}"
@@ -692,10 +669,7 @@ class PriorityQueueSimulator:
 
         res += f"\n{Fore.MAGENTA}Load: {self.calc_load():.3f}{Style.RESET_ALL}\n"
         if not is_short:
-            res += f"{
-                Fore.LIGHTGREEN_EX}Current Time {
-                self.ttek:.3f}{
-                Style.RESET_ALL}\n"
+            res += f"{Fore.LIGHTGREEN_EX}Current Time { self.ttek:.3f}{Style.RESET_ALL}\n"
         for kk in range(self.k):
             res += f"\n{Fore.CYAN}Class {kk + 1}{Style.RESET_ALL}\n"
             if not is_short:
@@ -731,7 +705,6 @@ class PriorityQueueSimulator:
                 res += str(self.servers[c]) + "\n"
 
         for kk in range(self.k):
-            res += f"{Fore.GREEN}Queue #{kk +
-                                         1}{Style.RESET_ALL} count {len(self.queue[kk])}\n"
+            res += f"{Fore.GREEN}Queue #{kk + 1}{Style.RESET_ALL} count {len(self.queue[kk])}\n"
 
         return res

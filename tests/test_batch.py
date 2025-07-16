@@ -56,7 +56,9 @@ def test_batch_mm1():
 
     mu = ARRIVAL_RATE * mean_batch_size / UTILIZATION_FACTOR  # serving intensity
 
-    batch_calc = BatchMM1(ARRIVAL_RATE, mu, BATCH_PROBABILITIES)
+    batch_calc = BatchMM1()
+    batch_calc.set_sources(l=ARRIVAL_RATE, batch_probs=BATCH_PROBABILITIES)
+    batch_calc.set_servers(mu=mu)
 
     v1 = batch_calc.get_v1()
 

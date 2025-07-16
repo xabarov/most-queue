@@ -23,9 +23,7 @@ from most_queue.theory.negative.structs import (
 )
 
 
-def collect_calc_results(
-    qp: dict, n: int, b: list[float], discipline: NegativeServiceType, max_p: int = 100
-):
+def collect_calc_results(qp: dict, n: int, b: list[float], discipline: NegativeServiceType, max_p: int = 100):
     """
     Collects calculation results for a given number of channels.
     :param qp: Dictionary containing the parameters for the simulation.
@@ -57,9 +55,7 @@ def collect_calc_results(
     return queue_calc.get_results(max_p=max_p)
 
 
-def collect_sim_results(
-    qp: dict, b: list[float], n: int, discipline: NegativeServiceType, max_p: int = 100
-):
+def collect_sim_results(qp: dict, b: list[float], n: int, discipline: NegativeServiceType, max_p: int = 100):
     """
     Collects simulation results for a given number of channels.
     :param qp: Dictionary containing the parameters for the simulation.
@@ -77,9 +73,7 @@ def collect_sim_results(
     return queue_sim.get_results(max_p=max_p)
 
 
-def run_depends_on_channels(
-    qp: dict, discipline: NegativeServiceType, max_p: int = 100
-) -> DependsOnChannelsResults:
+def run_depends_on_channels(qp: dict, discipline: NegativeServiceType, max_p: int = 100) -> DependsOnChannelsResults:
     """
     Collect results for M/G/n queue with negative jobs
     and RCS discipline depends on number of channels.
@@ -99,9 +93,7 @@ def run_depends_on_channels(
         b = gamma_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
 
         # collect results
-        calc_results.append(
-            collect_calc_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p)
-        )
+        calc_results.append(collect_calc_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p))
         sim_results.append(collect_sim_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p))
 
     return DependsOnChannelsResults(
@@ -113,9 +105,7 @@ def run_depends_on_channels(
     )
 
 
-def run_depends_on_varience(
-    qp: dict, discipline: NegativeServiceType, max_p: int = 100
-) -> DependsOnVariationResults:
+def run_depends_on_varience(qp: dict, discipline: NegativeServiceType, max_p: int = 100) -> DependsOnVariationResults:
     """
     Collects simulation and calculation results for a given set of parameters,
       varying the service time variation coefficient
@@ -133,21 +123,15 @@ def run_depends_on_varience(
 
     for coef in service_time_variation_coefs:
         print(f"Service time variation coefficient: {coef:0.2f}")
-        service_mean = (
-            qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
-        )
+        service_mean = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
 
         b = gamma_moments_by_mean_and_coev(service_mean, coef)
         # collect results
         calc_results.append(
-            collect_calc_results(
-                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
-            )
+            collect_calc_results(n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p)
         )
         sim_results.append(
-            collect_sim_results(
-                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
-            )
+            collect_sim_results(n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p)
         )
 
     return DependsOnVariationResults(
@@ -183,14 +167,10 @@ def run_depends_on_utilization(
 
         # collect results
         calc_results.append(
-            collect_calc_results(
-                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
-            )
+            collect_calc_results(n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p)
         )
         sim_results.append(
-            collect_sim_results(
-                n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p
-            )
+            collect_sim_results(n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p)
         )
 
     return DependsOnUtilizationResults(

@@ -55,13 +55,7 @@ class FlowSumSim:
 
         for i in range(n - 1):
             if self.verbose:
-                print(
-                    f"Summation of flows. Start sim {
-                        i +
-                        1} from {
-                        n -
-                        1}. Dist: {distr_str}"
-                )
+                print(f"Summation of flows. Start sim {i + 1} from {n - 1}. Dist: {distr_str}")
             if self.distr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(
                     self.a[0],
@@ -294,13 +288,7 @@ class FlowSumSim:
 
         for i in range(n - 1):
             if verbose:
-                print(
-                    f"Summation of flows. Start sim {
-                        i +
-                        1} from {
-                        n -
-                        1}. Dist: {distr_str}"
-                )
+                print(f"Summation of flows. Start sim {i + 1} from { n - 1}. Dist: {distr_str}")
 
             if disr == "Gamma":
                 f1 = FlowSumSim.sum_2_Gamma_flows(a[0], a[1])

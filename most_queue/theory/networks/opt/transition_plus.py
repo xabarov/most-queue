@@ -125,9 +125,9 @@ class NetworkOptimizerPlus(NetworkOptimizer):
 
         net_res = self._get_network_calc()
 
-        loads = net_res["loads"]
-        intencities = net_res["intensities"]
-        current_v1 = net_res["v"][0]
+        loads = net_res.loads
+        intencities = net_res.intensities
+        current_v1 = net_res.v[0]
         self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 
         if self.verbose:
@@ -141,9 +141,7 @@ class NetworkOptimizerPlus(NetworkOptimizer):
             if step_num > max_steps:
                 break
 
-            candidates_res = self._find_opt_candidates(
-                loads, intencities, strategy=strategy, top_k=top_k
-            )
+            candidates_res = self._find_opt_candidates(loads, intencities, strategy=strategy, top_k=top_k)
 
             if candidates_res.optimized:
                 break
@@ -161,9 +159,9 @@ class NetworkOptimizerPlus(NetworkOptimizer):
 
                 net_res = self._get_network_calc()
 
-                loads = net_res["loads"]
-                intencities = net_res["intensities"]
-                current_v1 = net_res["v"][0]
+                loads = net_res.loads
+                intencities = net_res.intensities
+                current_v1 = net_res.v[0]
 
                 self.dynamics.append(OptimizerDynamic(v1=current_v1, loads=loads))
 

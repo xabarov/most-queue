@@ -7,6 +7,8 @@ The approximation is based on method of invariant moments for M/G/n queues.
 
 import math
 
+from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemtiveCalculation
@@ -14,22 +16,39 @@ from most_queue.theory.priority.preemptive.mg1 import MG1PreemtiveCalculation
 from most_queue.theory.utils.conv import conv_moments
 
 
-class MGnInvarApproximation:
+class MGnInvarApproximation(BaseQueue):
     """
     Approximation of the initial moments of waiting and sojourn times
     for a multi-channel queue with priorities and general service times.
       The approximation is based on method of invariant moments for M/G/n queues.
     """
 
-    def __init__(self, l: list[float], b: list[list[float]], n: int):
+    def __init__(self, n: int, calc_params: CalcParams | None = None):
         """
-        :param l: list of input intensities l[k], k - class number
-        :param b: b[k][j] - initial moments of service time, j - moment number
-        :param n: number of channels
+        Initialize the MGnInvarApproximation class.
+        :param n: number of channels.
+        :param calc_params: calculation parameters.
+        """
+
+        super().__init__(n=n, calc_params=calc_params)
+        self.l = None
+        self.b = None
+
+    def set_sources(self, l: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set arrival rates for each class.
+        :param l: list of arrival rates.
         """
         self.l = l
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[list[float]]):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution for each class.
+        :param b: list of lists where each sublist contains initial moments of service time.
+        """
         self.b = b
-        self.n = n
+        self.is_servers_set = True
 
     def get_w(self, priority="NP", N: int = 150, num=3) -> list[list[float]]:
         """
@@ -43,6 +62,8 @@ class MGnInvarApproximation:
         calculated for M/G/1
         :return: w[k][j] - initial moments of waiting time for all classes
         """
+        self._check_if_servers_and_sources_set()
+
         w = []
         k_num = len(self.l)
         j_num = len(self.b[0])
@@ -60,10 +81,14 @@ class MGnInvarApproximation:
                 b1[k][j] = self.b[k][j] / math.pow(self.n, j + 1)
 
         if priority == "NP":
-            calc_np1 = MG1NonPreemtiveCalculation(self.l, b1)
+            calc_np1 = MG1NonPreemtiveCalculation()
+            calc_np1.set_sources(self.l)
+            calc_np1.set_servers(b1)
             w1_prty = calc_np1.get_w()
         elif priority == "PR":
-            calc_pr1 = MG1PreemtiveCalculation(self.l, b1)
+            calc_pr1 = MG1PreemtiveCalculation()
+            calc_pr1.set_sources(self.l)
+            calc_pr1.set_servers(b1)
             pr_prty_calc = calc_pr1.calc_all(num=num)
             w1_prty = pr_prty_calc["w_with_pr"]
         else:
@@ -100,7 +125,9 @@ class MGnInvarApproximation:
         for k in range(k_num):
             l_sum += self.l[k]
 
-        tt_n = MGnCalc(self.n, l_sum, b_sr)
+        tt_n = MGnCalc(self.n)
+        tt_n.set_sources(l_sum)
+        tt_n.set_servers(b_sr)
         tt_n.run()
         p_n = tt_n.get_p()
         qn = 0

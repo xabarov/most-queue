@@ -3,33 +3,16 @@ Calculation M/M/2 queue with three classes of requests and absolute priority.
 """
 
 import math
-from dataclasses import dataclass
 
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation
 
 
-@dataclass
-class InputParamsThreeClasses:
-    """
-    Input params for M/M/2 queue calculation
-    with three classes of requests and absolute priority.
-    """
-
-    mu_low: float  # service rate for low priority requests
-    mu_med: float  # service rate for medium priority requests
-    mu_high: float  # service rate for high priority requests
-
-    l_low: float  # arrival rate for low priority requests
-    l_med: float  # arrival rate for medium priority requests
-    l_high: float  # arrival rate for high priority requests
-
-
-class Mmn3_pnz_cox:
+class MM2BusyApprox3Classes(MGnCalc):
     """
     Calculation of busy periods for M/M/2 queue with three classes of requests and absolute priority
     using Cox distribution for passage time approximation.
@@ -37,33 +20,31 @@ class Mmn3_pnz_cox:
 
     def __init__(
         self,
-        input_params: InputParamsThreeClasses,
         calc_params: TakahashiTakamiParams | None = None,
     ):
         """
-        l_L, l_M, l_H: интенсивности вх. потока заявок с низким, средним и высоким приоритетами
-        mu_L, mu_M, mu_H: интенсивности обслуживания заявок с низким, средним и высоким приоритетами
-        N: число ярусов
-        accuracy: точность, параметр для остановки итерации
+        Init method for MM2BusyApprox3Classes class.
+        :param calc_params: Parameters for calculation.
         """
 
-        if not calc_params:
-            calc_params = TakahashiTakamiParams()
-        self.dt = np.dtype(calc_params.dtype)
-        self.N = calc_params.N
-        self.e1 = calc_params.accuracy
-        self.l_L = input_params.l_low
-        self.l_M = input_params.l_med
-        self.l_H = input_params.l_high
-        self.mu_L = input_params.mu_low
-        self.mu_M = input_params.mu_med
-        self.mu_H = input_params.mu_high
+        super().__init__(n=2, calc_params=calc_params)
+
+        self.l_H = None
+        self.l_M = None
+        self.l_L = None
+        self.mu_H = None
+        self.mu_M = None
+        self.mu_L = None
+
+        self.dt = np.dtype(self.calc_params.dtype)
+        self.N = self.calc_params.N
+        self.e1 = self.calc_params.tolerance
+
+        self.iter_num_ = 0
 
         self.busy_periods = []  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
         self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
         self.pp = []  # список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
-
-        self._calc_busy_periods()
 
         # массив cols хранит число столбцов для каждого яруса, удобней
         # рассчитать его один раз:
@@ -93,10 +74,31 @@ class Mmn3_pnz_cox:
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
-        self._build_matrices()
-        self._initial_probabilities()
+    def set_sources(self, l_low: float, l_med: float, l_high: float):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates
+        :param l_low: intensity of the arrivals with low priority,
+        :param l_med: intensity of the arrivals with med priority,
+        :param l_high: intensity of the arrivals with high priority,
+        """
+        self.l_L = l_low
+        self.l_M = l_med
+        self.l_H = l_high
+        self.is_sources_set = True
 
-        self.iter_num_ = 0
+    def set_servers(self, mu_low: float, mu_med: float, mu_high: float):  # pylint: disable=arguments-differ
+        """
+        Set the initial moments of service time distribution
+        :param mu_low: intensity of service for low-priority requests,
+        :param mu_med: intensity of service for med-priority requests,
+        :param mu_high: intensity of service for high priority requests,
+
+        """
+        self.mu_H = mu_high
+        self.mu_M = mu_med
+        self.mu_L = mu_low
+
+        self.is_servers_set = True
 
     def _calc_busy_periods(self):
 
@@ -110,9 +112,9 @@ class Mmn3_pnz_cox:
         for j in range(3):
             b_mom[j] = math.factorial(j + 1) / math.pow(2 * mu_H, j + 1)
 
-        pnz = busy_calc(l_H, b_mom, 3)
+        busy = busy_calc(l_H, b_mom, 3)
 
-        param_cox = CoxDistribution.get_params(pnz)
+        param_cox = CoxDistribution.get_params(busy)
 
         y1_cox = param_cox.p1
         mu1_cox = param_cox.mu1
@@ -250,7 +252,7 @@ class Mmn3_pnz_cox:
         p_sum = 0 + 0j
         p0_max = 1.0
         p0_min = 0.0
-        while math.fabs(1.0 - p_sum.real) > 1e-6:
+        while math.fabs(1.0 - p_sum.real) > self.calc_params.tolerance:
             p0_ = (p0_max + p0_min) / 2.0
             p_sum = p0_
             self.p[0] = p0_
@@ -261,6 +263,8 @@ class Mmn3_pnz_cox:
                 p0_max = p0_
             else:
                 p0_min = p0_
+
+        self._norm_probs()
 
     def _calculate_y(self):
         for i in range(self.N):
@@ -280,11 +284,18 @@ class Mmn3_pnz_cox:
         """
         Запускает расчет. Не зависит от структуры матриц
         """
+
+        self._calc_busy_periods()
+
+        self._build_matrices()
+        self._initial_probabilities()
+
+        self.iter_num_ = 0
         self.b1[0][0, 0] = 0
         self.b2[0][0, 0] = 0
         x_max1 = 0
         x_max2 = 0
-        self.iter_num_ = 0
+
         for i in range(self.N):
             if self.x[i] > x_max1:
                 x_max1 = self.x[i]
@@ -322,7 +333,6 @@ class Mmn3_pnz_cox:
             self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
 
             x_max1 = 0
-
             for i in range(self.N):
                 if self.x[i] > x_max1:
                     x_max1 = self.x[i]

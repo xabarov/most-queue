@@ -37,7 +37,9 @@ def run_calculation(
     """
     num_start = time.process_time()
 
-    solver = MGnH2ServingColdWarmDelay(arrival_rate, b, b_w, b_c, b_d, num_channels)
+    solver = MGnH2ServingColdWarmDelay(n=num_channels)
+    solver.set_sources(l=arrival_rate)
+    solver.set_servers(b=b, b_warm=b_w, b_cold=b_c, b_cold_delay=b_d)
 
     solver.run()
 
@@ -136,12 +138,8 @@ if __name__ == "__main__":
     # Calculate initial moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
     b_service = calc_moments_by_mean_and_coev(SERVICE_TIME_MEAN, qp["service"]["cv"]["base"])
-    b_warmup = calc_moments_by_mean_and_coev(
-        qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"]
-    )
-    b_cooling = calc_moments_by_mean_and_coev(
-        qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"]
-    )
+    b_warmup = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_cooling = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
     b_delay = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     num_results = run_calculation(

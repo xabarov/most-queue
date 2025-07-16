@@ -20,7 +20,10 @@ def v1_on_utilization_approx(channels: int, arrival_rate: float, deg: int = 3):
     for u in utilizations:
         # Calculate arrival rate based on utilization
         mu = arrival_rate / (u * channels)
-        mmnr_calc = MMnrCalc(l=arrival_rate, mu=mu, n=channels, r=100)
+        mmnr_calc = MMnrCalc(n=channels, r=100)
+        mmnr_calc.set_sources(l=arrival_rate)
+        mmnr_calc.set_servers(mu=mu)
+
         v1_array.append(mmnr_calc.get_v()[0])
 
     xs = np.array(utilizations)

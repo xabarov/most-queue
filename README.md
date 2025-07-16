@@ -2,7 +2,7 @@
 
 ![Queue](assets/3.gif)
 
-A Python package for simulating and analyzing queueing systems (QS) and networks. 
+A Python package for simulating and analyzing queueing systems (QS) and networks.
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)
 
@@ -35,13 +35,13 @@ Or install from the repository:
   pip install -e .
 ```
 
---- 
+---
 
 ## 📚 Project Overview
 
 Most_queue consists of two main parts:
- - **most_queue.theory** contains programs that implement methods for calculating queueing theory models. 
- - **most_queue.sim** contains simulation programs. 
+ - **most_queue.theory** contains programs that implement methods for calculating queueing theory models.
+ - **most_queue.sim** contains simulation programs.
 
 ## 🧪 Example Use Cases
 
@@ -62,7 +62,7 @@ Most_queue consists of two main parts:
 | #   | Kendall Notations |  Description      | Example | Tutorial |
 |-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
 | 1.  | M/Ph/c/PR     |  Numerical calculation of QS M/Ph/c with 2 classes and PR - priority. Based on the approximation of busy periods            | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_ph_n_prty.py) | |
-| 2.  | M/M/c/PR           |  Numerical calculation of QS M/M/c with 2 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of the busy period by the Cox distribution      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_prty_pnz_approx.py) | |
+| 2.  | M/M/c/PR           |  Numerical calculation of QS M/M/c with 2 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of the busy period by the Cox distribution      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_prty_busy_approx.py) | |
 | 3.  | M/G/1/PR           |  Calculating QS with preemtive priorities (single-channel).     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
 | 4.  | M/G/1/NP           |  Calculating QS with non-preemtive priorities (single-channel).     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
 | 5.  | M/G/c/Priority           | Calculating QS with NP and PR (multi-channel) by method of relation      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
@@ -122,7 +122,7 @@ Most_queue consists of two main parts:
 - Look [here](https://github.com/xabarov/most-queue/tree/main/tests) for examples
 - Look [here](https://github.com/xabarov/most-queue/tree/main/tutorials) for jupyter tutorials
 
---- 
+---
 
 ### 👥 Contributing
 

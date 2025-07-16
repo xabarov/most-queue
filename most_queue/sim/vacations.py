@@ -87,9 +87,7 @@ class VacationQueueingSystemSimulator(QsSim):
         """
 
         if not self.cold_phase.is_set:
-            raise QsSourseSettingException(
-                "You must first set the cooling time. Use the set_cold() method."
-            )
+            raise QsSourseSettingException("You must first set the cooling time. Use the set_cold() method.")
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)

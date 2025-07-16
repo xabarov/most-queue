@@ -4,51 +4,70 @@ Calc M/M/1 queue with exponential impatience.
 
 import math
 
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
-class MM1Impatience:
+class MM1Impatience(BaseQueue):
     """
     Calc M/M/1 queue with exponential impatience.
     """
 
     def __init__(
         self,
-        l: float,
-        mu: float,
         gamma: float,
         calc_params: CalcParams | None = None,
     ):
         """
         Initialization of the MM1Impatience class.
-        :param l: Arrival rate.
-        :param mu: Service rate.
         :param gamma: Impatience rate.
         :param calc_params: Calculation parameters.
         """
 
+        super().__init__(n=1, calc_params=calc_params)
+
         if calc_params is None:
             calc_params = CalcParams()
 
-        self.l = l
-        self.mu = mu
+        self.l = None
+        self.mu = None
         self.gamma = gamma
-        self.tol = calc_params.e
+        self.tol = calc_params.tolerance
         self.probs_max_num = calc_params.p_num
 
-        self.probs = self._calc_p()
+        self.probs = None
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
+        """
+        self.l = l
+
+        self.is_sources_set = True
+
+    def set_servers(self, mu: float):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        :param mu: service rate
+        """
+        self.mu = mu
+
+        self.is_servers_set = True
 
     def get_p(self) -> list[float]:
         """
         Get the probabilities of states.
         :return: List of probabilities.
         """
+        self.probs = self.probs or self._calc_p()
         return self.probs
 
     def get_N(self):
         """
         Get average number of jobs in the system.
         """
+        self.probs = self.probs or self._calc_p()
         N = 0
         for i, p in enumerate(self.probs):
             N += i * p
@@ -59,6 +78,8 @@ class MM1Impatience:
         """
         Get average number of jobs in the queue.
         """
+
+        self.probs = self.probs or self._calc_p()
         Q = 0
         for i, p in enumerate(self.probs):
             if i == 0:
@@ -83,6 +104,9 @@ class MM1Impatience:
         """
         Probabilities of states in the system
         """
+
+        self._check_if_servers_and_sources_set()
+
         p0 = self._calc_p0()
         ps = [p0]
 
@@ -98,7 +122,6 @@ class MM1Impatience:
             ps.append(pi)
             if pi < self.tol:
                 break
-        self.p = ps
         return ps
 
     def _calc_p0(self) -> float:

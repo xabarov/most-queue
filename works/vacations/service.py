@@ -72,9 +72,7 @@ def run_service_cv(qp, save_path: str = None):
 
     if save_path:
         w1_save_path = os.path.join(save_path, "w1_vs_service_cv.png")
-        plot_w1(
-            cvs, w1_num, w1_sim, save_path=w1_save_path, x_label="Service time CV", is_xs_int=False
-        )
+        plot_w1(cvs, w1_num, w1_sim, save_path=w1_save_path, x_label="Service time CV", is_xs_int=False)
 
         w1_errors_save_path = os.path.join(save_path, "w1_errors_vs_service_cv.png")
         plot_w1_errors(

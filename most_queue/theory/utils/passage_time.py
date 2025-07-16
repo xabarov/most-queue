@@ -183,9 +183,7 @@ class PassageTimeCalculation:
         if is_max:
             return max(sum(math.fabs(mrx[r, j].real) for j in range(cols)) for r in range(rows))
 
-        return sum(math.fabs(mrx[r, j].real) for r in range(rows) for j in range(cols)) / (
-            rows * cols
-        )
+        return sum(math.fabs(mrx[r, j].real) for r in range(rows) for j in range(cols)) / (rows * cols)
 
     def _Gr_tilda_calc(self):
         """
@@ -242,11 +240,7 @@ class PassageTimeCalculation:
         not_dep_on_G2 = copy.deepcopy(G2)
         g1g1 = np.dot(G1, G1)
         while abs(max_elem - max_elem_pr) > self.e:
-            G2 = (
-                not_dep_on_G2
-                + np.dot(L, G2)
-                + np.dot(F, (np.dot(G2, G) + 2 * g1g1 + np.dot(G, G2)))
-            )
+            G2 = not_dep_on_G2 + np.dot(L, G2) + np.dot(F, (np.dot(G2, G) + 2 * g1g1 + np.dot(G, G2)))
 
             max_elem_pr = max_elem
             max_elem = self._norm_mrx(G2)
@@ -282,11 +276,7 @@ class PassageTimeCalculation:
         not_dep_on_G3 = copy.deepcopy(G3)
 
         while abs(max_elem - max_elem_pr) > self.e:
-            G3 = (
-                not_dep_on_G3
-                + np.dot(L, G3)
-                + np.dot(F, (np.dot(G3, G) + 3 * G2G1 + 3 * G1G2 + np.dot(G, G3)))
-            )
+            G3 = not_dep_on_G3 + np.dot(L, G3) + np.dot(F, (np.dot(G3, G) + 3 * G2G1 + 3 * G1G2 + np.dot(G, G3)))
 
             max_elem_pr = max_elem
             max_elem = self._norm_mrx(G3)
@@ -324,10 +314,7 @@ class PassageTimeCalculation:
                 n_iter += 1
 
             if self.is_verbose:
-                print(
-                    f"Number of iterations to calculate matrix  G{
-                        self.l_tilda - i} = {n_iter}"
-                )
+                print(f"Number of iterations to calculate matrix  G{self.l_tilda - i} = {n_iter}")
 
             self.G[self.l_tilda - i - 1] = G
 
@@ -370,10 +357,7 @@ class PassageTimeCalculation:
             self.Gr[self.l_tilda - i - 1].append(G1)
 
             if self.is_verbose:
-                print(
-                    f"Number of iterations to calculate matrix  Gr{
-                        self.l_tilda - i}[0] = {n_iter}"
-                )
+                print(f"Number of iterations to calculate matrix  Gr{self.l_tilda - i}[0] = {n_iter}")
 
             # вычисляем 2 момент
             B2 = self.Br[self.l_tilda - i - 1][1]
@@ -401,11 +385,7 @@ class PassageTimeCalculation:
                     + np.dot(L, G2)
                     + np.dot(
                         F,
-                        (
-                            np.dot(G2plus_one, G)
-                            + 2.0 * np.dot(G1plus_one, G1)
-                            + np.dot(Gplus_one, G2)
-                        ),
+                        (np.dot(G2plus_one, G) + 2.0 * np.dot(G1plus_one, G1) + np.dot(Gplus_one, G2)),
                     )
                 )
                 max_elem_pr = max_elem
@@ -413,10 +393,7 @@ class PassageTimeCalculation:
                 n_iter += 1
             self.Gr[self.l_tilda - i - 1].append(G2)
             if self.is_verbose:
-                print(
-                    f"Number of iterations to calculate matrix  Gr{
-                        self.l_tilda - i}[1] = {n_iter}"
-                )
+                print(f"Number of iterations to calculate matrix  Gr{ self.l_tilda - i}[1] = {n_iter}")
 
             # вычисляем 3 момент
             B3 = self.Br[self.l_tilda - i - 1][2]
@@ -463,10 +440,7 @@ class PassageTimeCalculation:
                 n_iter += 1
             self.Gr[self.l_tilda - i - 1].append(G3)
             if self.is_verbose:
-                print(
-                    f"Number of iterations to calculate matrix  Gr{
-                        self.l_tilda - i}[2] = {n_iter}"
-                )
+                print(f"Number of iterations to calculate matrix  Gr{ self.l_tilda - i}[2] = {n_iter}")
 
     def _Z_calc(self):
         for i in range(self.l_tilda + 1):

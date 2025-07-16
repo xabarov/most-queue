@@ -7,12 +7,13 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import ErlangDistribution, GammaDistribution, H2Distribution
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
-from most_queue.theory.vacations.mg1_warm_calc import MG1WarmCalc
+from most_queue.theory.vacations.mg1_warm_calc import CalcParams, MG1WarmCalc
 
 
-class SplitJoinCalc:
+class SplitJoinCalc(BaseQueue):
     """
     Numerical calculation of Split-Join queueuing systems
 
@@ -30,24 +31,25 @@ class SplitJoinCalc:
 
     """
 
-    def __init__(self, l: float, n: int, b: list[float], approximation="gamma"):
+    def __init__(self, n: int, calc_params: CalcParams | None = None):
         """
-        :param l: arrival rate
         :param n: number of servers
-        :param b: list of initial moments of service time
-        :param approximation: str : type of approximation
-            for the initial moments of service time, can be 'gamma', 'h2' or 'erlang'
-            default is 'gamma'
+        :param calc_params: calculation parameters
+        Notice:
+            calc_params.approx_distr for the initial moments of service time
+            can be 'gamma', 'h2' or 'erlang', default is 'gamma'
         """
-        self.n = n
-        self.b = b
-        self.l = l
+
+        super().__init__(n=n, calc_params=calc_params)
+
+        self.l = None
+        self.b = None
 
         self.b_max = None
         self.b_max_warm = None
-        self.approximation = approximation
+        self.approximation = self.calc_params.approx_distr
 
-        if approximation not in ["gamma", "h2", "erlang"]:
+        if self.approximation not in ["gamma", "h2", "erlang"]:
             raise ValueError("Approximation must be one of 'gamma', 'h2' or 'erlang'.")
 
         self.a_big = [
@@ -74,6 +76,24 @@ class SplitJoinCalc:
             1.83956482398e-9,
             9.91182721961e-13,
         ]
+
+    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+        """
+        Set sources
+        :param l: arrival rate
+        """
+        self.l = l
+
+        self.is_sources_set = True
+
+    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+        """
+        Set servers
+        :param b: list of initial moments of service time
+        """
+        self.b = b
+
+        self.is_servers_set = True
 
     def get_v(self) -> list[float]:
         """
@@ -105,7 +125,10 @@ class SplitJoinCalc:
         self.b_max_warm = self.get_max_moments_delta(b_delta)
         self.b_max = self.get_max_moments()
         mg1_approx = "gamma" if self.approximation == "erlang" else self.approximation
-        mg1_warm = MG1WarmCalc(self.l, self.b_max, self.b_max_warm, approximation=mg1_approx)
+        calc_params = CalcParams(approx_distr=mg1_approx)
+        mg1_warm = MG1WarmCalc(calc_params=calc_params)
+        mg1_warm.set_sources(self.l)
+        mg1_warm.set_servers(self.b_max, self.b_max_warm)
         return mg1_warm.get_v()
 
     def get_ro(self):
@@ -205,11 +228,7 @@ class SplitJoinCalc:
             params = GammaDistribution.get_params(b)
 
             for j in range(10):
-                p = (
-                    self.g[j]
-                    * self._dfr_gamma_mult(params, self.a_big[j], delta)
-                    * math.exp(self.a_big[j])
-                )
+                p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j], delta) * math.exp(self.a_big[j])
                 f[0] += p
                 for i in range(1, num):
                     p = p * self.a_big[j]

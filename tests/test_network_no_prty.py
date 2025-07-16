@@ -62,21 +62,28 @@ def test_network():
 
         b.append(H2Distribution.calc_theory_moments(h2_params, 4))
 
-    net_calc = OpenNetworkCalc(TRANSITION_MATRIX, b, NUM_OF_CHANNELS, ARRIVAL_RATE)
-    net_calc = net_calc.run()
-    v_num = net_calc["v"]
+    net_calc = OpenNetworkCalc()
+    net_calc.set_sources(R=TRANSITION_MATRIX, arrival_rate=ARRIVAL_RATE)
+    net_calc.set_nodes(b=b, n=NUM_OF_CHANNELS)
+    net_results = net_calc.run()
+    v_num = net_results.v
+
+    print(f"Intensities: {net_results.intensities}")
 
     # Get utilization factor of each node
-    loads = net_calc["loads"]
+    loads = net_results.loads
 
     # Create simulation
-    qn = NetworkSimulator(ARRIVAL_RATE, TRANSITION_MATRIX, NUM_OF_CHANNELS, serv_params)
+    qn = NetworkSimulator()
+
+    qn.set_sources(arrival_rate=ARRIVAL_RATE, R=TRANSITION_MATRIX)
+    qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS)
 
     #  Run simulation
     qn.run(NUM_OF_JOBS)
 
     # Get initial moments of sojourn time from simulation:
-    v_sim = qn.v_network
+    v_sim = qn.get_v()
 
     print("-" * 60)
     print(f"Channels at nodes: {NUM_OF_CHANNELS}")

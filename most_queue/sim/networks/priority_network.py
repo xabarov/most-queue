@@ -5,103 +5,126 @@ Simulation of a priority network with priorities and multiple channels.
 import math
 
 import numpy as np
-from colorama import Fore, Style, init
+from colorama import Fore, init
 from tqdm import tqdm
 
 from most_queue.rand_distribution import ExpDistribution
+from most_queue.sim.networks.base_network_sim import BaseSimNetworkPriority, NetworkSimResultsPriority
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.sim.utils.tasks import TaskPriority
 
 init()
 
 
-class PriorityNetwork:
+class PriorityNetwork(BaseSimNetworkPriority):
     """
     Simulation of a priority network with priorities and multiple channels.
     """
 
-    def __init__(
-        self,
-        k_num: int,
-        L: list[float],
-        R: list[np.matrix],
-        n: list[int],
-        prty: list[str],
-        serv_params,
-        nodes_prty: list[list[int]],
-    ):
+    def __init__(self, k_num: int):
         """
+        Initializes the network simulator.
+
         k_num: number of classes.
-        L: list of arrival intensities for each class.
-        R: list of routing matrices for each class.
-        n: list of number of channels in each node.
-
-        prty: list of priority types for each node.
-            No  - no priorities, FIFO
-            PR  - preemptive resume, with resuming interrupted request
-            RS  - preemptive repeat with resampling, re-sampling duration for new service
-            RW  - preemptive repeat without resampling, repeating service with previous duration
-            NP  - non preemptive, relative priority
-
-        serv_params: list of list of dictionaries with service parameters for each node and class.
-            [m][k][dict(type, params)]
-            where m - node number, k - class number,
-            type - distribution type, params - distribution parameters.
-
-            See supported distributions params in the README.md file or use
-                ```
-                from most_queue.sim.utils.distribution_utils import print_supported_distributions
-                print_supported_distributions()
-                ```
-
-        nodes_prty: Priority distribution among requests for each node in the network
-            [m][x1, x2 .. x_k],
-            m - node number, xi - priority for i-th class, k - number of classes
-            For example:
-                [0][0,1,2] - for the first node, a direct order of priorities is set,
-                [2][0,2,1] - for the third node, such an order of priorities is set:
-                            for the first class - the oldest (0),
-                            for the second - the youngest (2),
-                            for the third - intermediate (1)
         """
+
+        super().__init__()
 
         self.k_num = k_num  # number of classes
-        self.L = L  # list of arrival intensities for each class
-        self.R = R  # list of routing matrices for each class
-        self.n_num = len(n)  # number of nodes
-        self.nodes = n  # n[i] - number of channels in node i
+        self.L = None  # list of arrival intensities for each class
+        self.R = None  # list of routing matrices for each class
+        self.n_num = None  # number of nodes
+        self.nodes = None  # n[i] - number of channels in node i
 
-        self.prty = prty  # prty[n] - priority type of node n
+        self.prty = None  # prty[n] - priority type of node n
 
-        self.serv_params = serv_params
-        self.nodes_prty = nodes_prty
+        self.serv_params = None
+        self.nodes_prty = None
 
         self.qs = []
-
-        for m in range(self.n_num):
-            self.qs.append(PriorityQueueSimulator(n[m], k_num, prty[m]))
-            param_serv_reset = []
-
-            for k in range(k_num):
-                param_serv_reset.append(serv_params[m][nodes_prty[m][k]])
-
-            self.qs[m].set_servers(param_serv_reset)
 
         self.arrival_time = []
         self.sources = []
         self.v_network = []
         self.w_network = []
-        for k in range(k_num):
+
+        self.ttek = 0
+        self.served = [0] * self.k_num
+        self.in_sys = [0] * self.k_num
+        self.arrived = [0] * self.k_num
+
+    def set_sources(self, L: list[float], R: list[np.matrix]):  # pylint: disable=arguments-differ
+        """
+        Set the arrival rates and routing matrix for each class.
+        Parameters:
+            L: list of arrival intensities for each class.
+            R: list of routing matrices for each class.
+
+            each routing matrix, dim (m + 1 x m + 1), where m is number of nodes.
+            For example:
+            R[0][0, 0] is transition frome source to first node for the first class.
+            R[0][0, m] is transition from source to out of system for the first class.
+
+        """
+        self.L = L
+        self.R = R
+
+        for k in range(self.k_num):
             self.sources.append(ExpDistribution(L[k]))
             self.arrival_time.append(self.sources[k].generate())
             self.v_network.append([0.0] * 3)
             self.w_network.append([0.0] * 3)
 
-        self.ttek = 0
-        self.total = 0
-        self.served = [0] * self.k_num
-        self.in_sys = [0] * self.k_num
-        self.arrived = [0] * self.k_num
+        self.is_sources_set = True
+
+    def set_nodes(
+        self, serv_params: list[list[dict]], n: list[int], prty: list[str], nodes_prty: list[list[int]]
+    ):  # pylint: disable=arguments-differ
+        """
+        Set the service time distribution parameters and number of channels for each node.
+        Parameters:
+            serv_params: list of list of dictionaries with service parameters for each node and class.
+                [m][k][dict(type, params)]
+                where m - node number, k - class number,
+                type - distribution type, params - distribution parameters.
+
+            n: list of number of channels in each node.
+
+            prty: list of priority types for each node.
+                No  - no priorities, FIFO
+                PR  - preemptive resume, with resuming interrupted request
+                RS  - preemptive repeat with resampling, re-sampling duration for new service
+                RW  - preemptive repeat without resampling, repeating service with previous duration
+                NP  - non preemptive, relative priority
+
+            nodes_prty: Priority distribution among requests for each
+            node in the network [m][x1, x2 .. x_k],
+                m - node number, xi - priority for i-th class, k - number of classes
+                For example:
+                    [0][0,1,2] - for the first node, a direct order of priorities is set,
+                    [2][0,2,1] - for the third node, such an order of
+                    priorities is set: for the first class - the oldest (0),
+                    for the second - the youngest (2), for the third - intermediate (1)
+        """
+        self.serv_params = serv_params
+
+        self.n_num = len(n)  # number of nodes
+        self.nodes = n  # n[i] - number of channels in node i
+
+        self.prty = prty  # prty[n] - priority type of node n
+
+        self.nodes_prty = nodes_prty
+
+        for m in range(self.n_num):
+            self.qs.append(PriorityQueueSimulator(n[m], self.k_num, prty[m]))
+            param_serv_reset = []
+
+            for k in range(self.k_num):
+                param_serv_reset.append(serv_params[m][nodes_prty[m][k]])
+
+            self.qs[m].set_servers(param_serv_reset)
+
+        self.is_nodes_set = True
 
     def choose_next_node(self, real_class, current_node):
         """
@@ -210,33 +233,33 @@ class PriorityNetwork:
 
             self.qs[next_node].arrival(next_node_class, self.ttek, ts)
 
-    def run(self, job_served, is_real_served=True):
+    def run(self, job_served: int) -> NetworkSimResultsPriority:
         """
         Run simulation
+
+        Parameters:
+           job_served: int - number of jobs to serve.
+        Returns:
+            NetworkSimResultsPriority - simulation results.
         """
-        if is_real_served:
-            last_percent = 0
 
-            with tqdm(total=100) as pbar:
-                while sum(self.served) < job_served:
-                    self.run_one_step()
-                    percent = int(100 * (sum(self.served) / job_served))
-                    if last_percent != percent:
-                        last_percent = percent
-                        pbar.update(1)
-                        pbar.set_description(
-                            Fore.MAGENTA
-                            + "\rJob served: "
-                            + Fore.YELLOW
-                            + f"{sum(self.served)}/{job_served}"
-                            + Fore.LIGHTGREEN_EX
-                        )
-        else:
-            print(Fore.GREEN + "\rStart simulation")
-            print(Style.RESET_ALL)
+        self._check_sources_and_nodes_is_set()
 
-            for _ in tqdm(range(job_served)):
+        last_percent = 0
+
+        with tqdm(total=100) as pbar:
+            while sum(self.served) < job_served:
                 self.run_one_step()
+                percent = int(100 * (sum(self.served) / job_served))
+                if last_percent != percent:
+                    last_percent = percent
+                    pbar.update(1)
+                    pbar.set_description(
+                        Fore.MAGENTA
+                        + "\rJob served: "
+                        + Fore.YELLOW
+                        + f"{sum(self.served)}/{job_served}"
+                        + Fore.LIGHTGREEN_EX
+                    )
 
-            print(Fore.GREEN + "\rSimulation is finished")
-            print(Style.RESET_ALL)
+        self.results = NetworkSimResultsPriority(v=self.v_network, arrived=self.arrived, served=self.served)
