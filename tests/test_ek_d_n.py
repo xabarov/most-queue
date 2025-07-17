@@ -67,6 +67,8 @@ def test_ek_d_n():
     # start calculating the probabilities of the QS states
     ekdn_results = ekdn.run()
 
+    print(f"utilization: {ekdn_results.utilization: 0.4f}")
+
     # for verification we use simulation.
     # create an instance of the QsSim class, pass the number of service
     # channels
