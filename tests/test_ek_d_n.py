@@ -65,7 +65,7 @@ def test_ek_d_n():
     ekdn.set_servers(b)
 
     # start calculating the probabilities of the QS states
-    p_num = ekdn.calc_p()
+    ekdn_results = ekdn.run()
 
     # for verification we use simulation.
     # create an instance of the QsSim class, pass the number of service
@@ -90,11 +90,11 @@ def test_ek_d_n():
     print(f"v_sim: {v_sim}")
     p_sim = qs.get_p()
 
-    probs_print(p_sim, p_num, 10)
+    probs_print(p_sim, ekdn_results.p, 10)
 
     # probs of zero jobs in queue are 0.084411 | 0.084...
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], ekdn_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

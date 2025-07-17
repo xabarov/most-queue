@@ -4,12 +4,23 @@ Numerical calculation of a multi-channel system Ek/D/n
 
 import cmath
 import math
+from dataclasses import dataclass
 
 import numpy as np
 
 from most_queue.rand_distribution import ErlangParams
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+
+
+@dataclass
+class EkDnResult:
+    """
+    Result of calculation for Ek/D/n system
+    """
+
+    utilization: float  # utilization factor
+    p: list[float]  # list of probabilities for each state
 
 
 class EkDn(BaseQueue):
@@ -36,7 +47,7 @@ class EkDn(BaseQueue):
         self.q_ = [0.0] * self.p_num
         self.z_ = 0
 
-        self.w = [0.0] * (2 * self.p_num)
+        self.x = [0.0] * (2 * self.p_num)
 
         self.l = None
         self.k = None
@@ -59,56 +70,22 @@ class EkDn(BaseQueue):
         self.b = b
         self.is_servers_set = True
 
-    def calc_w(self):
+    def run(self) -> EkDnResult:
         """
-        Calc waiting time moments
+        Run calculation
         """
+        utilization = self.l * self.b / (self.k * self.n)
+        p = self.get_p()
+        return EkDnResult(p=p, utilization=utilization)
 
-        self._check_if_servers_and_sources_set()
-
-        self._calc_q()
-        w_up_to_nk = self._calc_w_up_to_nk()
-        self.w[: len(w_up_to_nk)] = w_up_to_nk[:]
-        for i in range(self.k):
-            summ1 = 0
-            for m in range(i + 1):
-                q = self.q_[i - m]
-                summ2 = 0
-                for j in range(self.n):
-                    summ2 += self.w[j * self.k + m]
-                summ1 += q * summ2
-            summ3 = 0
-            for m in range(i):
-                summ3 += self.q_[i - m] * self.w[self.n * self.k + m]
-            self.w[self.n * self.k + i] = (self.w[i] - summ1 - summ3) / self.q_[0]
-
-        is_negative = False
-
-        for i in range(self.k, self.p_num):
-            if is_negative:
-                break
-            summ1 = 0
-            for m in range(self.k):
-                summ1 += self._get_big_w(self.n, m) * self.q_[i - m]
-            summ2 = 0
-            for m in range(1, i - self.k + 1):
-                summ2 += self.q_[m] * self.w[self.n * self.k + i - m]
-            value = (self.w[i] - summ1 - summ2) / self.q_[0]
-            if value < 0:
-                is_negative = True
-            else:
-                self.w[self.n * self.k + i] = value
-
-        return self.w
-
-    def calc_p(self):
+    def get_p(self):
         """
         Calc probabilities of system states
         """
-        w = self.calc_w()
+        w = self._calc_x()
 
         is_zero = False
-        for j in range(len(self.w)):
+        for j in range(len(self.x)):
             if is_zero:
                 break
             summ = 0
@@ -121,10 +98,49 @@ class EkDn(BaseQueue):
 
         return self.p
 
+    def _calc_x(self):
+
+        self._check_if_servers_and_sources_set()
+
+        self._calc_q()
+        w_up_to_nk = self._calc_w_up_to_nk()
+        self.x[: len(w_up_to_nk)] = w_up_to_nk[:]
+        for i in range(self.k):
+            summ1 = 0
+            for m in range(i + 1):
+                q = self.q_[i - m]
+                summ2 = 0
+                for j in range(self.n):
+                    summ2 += self.x[j * self.k + m]
+                summ1 += q * summ2
+            summ3 = 0
+            for m in range(i):
+                summ3 += self.q_[i - m] * self.x[self.n * self.k + m]
+            self.x[self.n * self.k + i] = (self.x[i] - summ1 - summ3) / self.q_[0]
+
+        is_negative = False
+
+        for i in range(self.k, self.p_num):
+            if is_negative:
+                break
+            summ1 = 0
+            for m in range(self.k):
+                summ1 += self._get_big_w(self.n, m) * self.q_[i - m]
+            summ2 = 0
+            for m in range(1, i - self.k + 1):
+                summ2 += self.q_[m] * self.x[self.n * self.k + i - m]
+            value = (self.x[i] - summ1 - summ2) / self.q_[0]
+            if value < 0:
+                is_negative = True
+            else:
+                self.x[self.n * self.k + i] = value
+
+        return self.x
+
     def _get_big_w(self, n, i):
         summ = 0
         for j in range(n + 1):
-            summ += self.w[j * self.k + i]
+            summ += self.x[j * self.k + i]
         return summ
 
     def _calc_w_up_to_nk(self):

@@ -6,6 +6,7 @@ import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
 from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
 
 
@@ -66,12 +67,7 @@ class MG1Calculation(BaseQueue):
         num_of_mom = min(len(self.b) - 1, num)
 
         w = self.get_w(num_of_mom)
-        v = []
-        v.append(w[0] + self.b[0])
-        if num_of_mom > 1:
-            v.append(w[1] + 2 * w[0] * self.b[0] + self.b[1])
-        if num_of_mom > 2:
-            v.append(w[2] + 3 * w[1] * self.b[0] + 3 * self.b[1] * w[0] + self.b[2])
+        v = conv_moments(w, self.b)
 
         return v
 

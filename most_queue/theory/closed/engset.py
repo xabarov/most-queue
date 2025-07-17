@@ -15,7 +15,7 @@ class EngsetResult:
     Data class to store results for the Engset model.
     """
 
-    kg: float  # probability that a randomly chosen source can send a job
+    readiness: float  # probability that a randomly chosen source can send a job
     utilization: float  # utilization factor
 
     v: list[float]  # initial moments of sojourn time
@@ -112,7 +112,7 @@ class Engset(BaseQueue):
         self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
         return self.mean_jobs_in_system - (1.0 - self.p0)
 
-    def get_kg(self):
+    def get_readiness(self):
         """
         Get probability that a randomly chosen source can send a request,
         i.e. the readiness coefficient
@@ -204,7 +204,7 @@ class Engset(BaseQueue):
         v = self.get_v()
         w = self.get_w()
         p = self.get_p()
-        kg = self.get_kg()
+        readiness = self.get_readiness()
         mean_jobs_in_system = self.get_mean_jobs_in_system()
         mean_jobs_on_queue = self.get_mean_jobs_on_queue()
 
@@ -212,7 +212,7 @@ class Engset(BaseQueue):
             v=v,
             w=w,
             p=p,
-            kg=kg,
+            readiness=readiness,
             mean_jobs_in_system=mean_jobs_in_system,
             mean_jobs_on_queue=mean_jobs_on_queue,
             utilization=self.ro,
