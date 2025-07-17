@@ -5,7 +5,10 @@ Calculates queueing network.
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
-from most_queue.theory.networks.base_network_calc import BaseNetworkPriority, NetworkCalcResultsPriority
+from most_queue.theory.networks.base_network_calc import (
+    BaseNetworkPriority,
+    NetworkCalcResultsPriority,
+)
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma

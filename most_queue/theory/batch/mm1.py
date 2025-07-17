@@ -2,8 +2,24 @@
 Calculation of M/M/1 QS with batch arrival
 """
 
+from dataclasses import dataclass
+
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+
+
+@dataclass
+class BatchMM1Result:
+    """
+    Data class to store results for M/M/1 QS with batch arrival
+    """
+
+    utilization: float  # utilization factor
+    v1: float  # mean sojourn time
+    w1: float  # mean waiting time
+    p: list[float]  # probabilities of states
+    mean_jobs_on_queue: float  # mean number of jobs in queue
+    mean_jobs_in_system: float  # mean number of jobs in system
 
 
 class BatchMM1(BaseQueue):
@@ -22,14 +38,10 @@ class BatchMM1(BaseQueue):
 
         self.lam = None
         self.mu = None
-        self.ls = None
-        self.p_num = self.calc_params.p_num
-        self.tol = self.calc_params.tolerance
 
-        self.l = None
-        self.l2 = None
+        self.ls = None
+        self.l_moments = None
         self.ro_tilda = None
-        self.ro = None
 
     def set_sources(self, l: float, batch_probs: list[float]):  # pylint: disable=arguments-differ
         """
@@ -38,9 +50,7 @@ class BatchMM1(BaseQueue):
         """
         self.lam = l
         self.ls = list(batch_probs)
-        moments = self.calc_l_moments()
-        self.l = moments[0]
-        self.l2 = moments[1]
+        self.l_moments = self._calc_moments_of_job_in_batch()
 
         self.is_sources_set = True
 
@@ -53,13 +63,13 @@ class BatchMM1(BaseQueue):
 
         self.is_servers_set = True
 
-    def calc_l(self):
+    def calc_mean_batch_size(self):
         """
         Mean batch size
         """
         return sum(self.ls) / len(self.ls)
 
-    def calc_l_moments(self):
+    def _calc_moments_of_job_in_batch(self):
         """
         Initial moments of the number of jobs in the batch
         """
@@ -69,10 +79,10 @@ class BatchMM1(BaseQueue):
                 moments[j] += pow(i + 1, j + 1) * prob
         return moments
 
-    def calc_L(self):
+    def _calc_big_ls(self) -> list[float]:
         """
         Returns list of probabilities
-        of arrival more than i applications in a group
+        of arrival more than i job in a group
         """
         Ls = [1]
         summ = 0
@@ -90,15 +100,15 @@ class BatchMM1(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         self.ro_tilda = self.ro_tilda or self.lam / self.mu
-        self.ro = self.ro or self.l * self.ro_tilda
+        self.ro = self.ro or self.l_moments[0] * self.ro_tilda
 
         p0 = 1.0 - self.ro
-        Ls = self.calc_L()
+        Ls = self._calc_big_ls()
         rs = [1]
 
         ps = [p0]
 
-        for i in range(1, self.p_num):
+        for i in range(1, self.calc_params.p_num):
             summ = 0
             for j in range(i):
                 num = i - j - 1
@@ -109,36 +119,60 @@ class BatchMM1(BaseQueue):
             rs.append(r_tek)
 
             ps.append(p0 * r_tek)
-            if ps[i] < self.tol:
+            if ps[i] < self.calc_params.tolerance:
                 break
 
         return ps
 
-    def get_N(self):
+    def get_mean_jobs_in_system(self):
         """
         Mean jobs in QS
         """
 
+        self._check_if_servers_and_sources_set()
+
         self.ro_tilda = self.ro_tilda or self.lam / self.mu
-        self.ro = self.ro or self.l * self.ro_tilda
+        self.ro = self.ro or self.l_moments[0] * self.ro_tilda
 
-        return (self.l2 + self.l) * self.ro_tilda / (2 * (1.0 - self.ro))
+        return (self.l_moments[0] + self.l_moments[1]) * self.ro_tilda / (2 * (1.0 - self.ro))
 
-    def get_Q(self):
+    def get_mean_jobs_on_queue(self):
         """
         Mean queue length
         """
-        N = self.get_N()
-        return N - self.ro
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
+        return self.mean_jobs_in_system - self.ro
 
     def get_w1(self):
         """
         Mean wait time
         """
-        return self.get_Q() / self.ro_tilda
+        self.mean_jobs_on_queue = self.mean_jobs_on_queue or self.get_mean_jobs_on_queue()
+        return self.mean_jobs_on_queue / self.ro_tilda
 
     def get_v1(self):
         """
         Mean sojourn time
         """
-        return self.get_N() / (self.l * self.lam)
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
+        return self.mean_jobs_in_system / (self.l_moments[0] * self.lam)
+
+    def run(self) -> BatchMM1Result:
+        """
+        Run calculation
+        """
+
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
+        self.mean_jobs_on_queue = self.mean_jobs_on_queue or self.get_mean_jobs_on_queue()
+        v1 = self.get_v1()
+        w1 = self.get_w1()
+        p = self.get_p()
+
+        return BatchMM1Result(
+            utilization=self.ro,
+            v1=v1,
+            w1=w1,
+            p=p,
+            mean_jobs_in_system=self.mean_jobs_in_system,
+            mean_jobs_on_queue=self.mean_jobs_on_queue,
+        )

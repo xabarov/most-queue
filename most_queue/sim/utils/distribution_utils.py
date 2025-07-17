@@ -51,7 +51,7 @@ def print_supported_distributions():
         name = dist.get("name", "N/A")
         kendall = dist.get("kendall_notation", "N/A")
         params = dist.get("params", "N/A")
-        print(f"{Fore.MAGENTA}{name:<38}{Fore.GREEN}{ kendall:<19}{ Fore.RED}{params}{Style.RESET_ALL}")
+        print(f"{Fore.MAGENTA}{name:<38}" f"{Fore.GREEN}{kendall:<19}" f"{Fore.RED}{params}{Style.RESET_ALL}")
     print(separator)
 
 

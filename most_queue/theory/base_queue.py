@@ -24,6 +24,14 @@ class BaseQueue(ABC):
         self.calc_params = calc_params if calc_params else CalcParams()
         self.buffer = buffer
 
+        self.ro = None
+        self.p = None
+        self.w = None
+        self.v = None
+
+        self.mean_jobs_on_queue = None
+        self.mean_jobs_in_system = None
+
         self.is_servers_set = False
         self.is_sources_set = False
 

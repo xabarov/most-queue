@@ -264,7 +264,10 @@ class MPhNPrty(MGnCalc):
 
         pass_time = PassageTimeCalculation(
             transition_matrices=TransitionMatrices(
-                A=self.big_a_for_busy, B=self.big_b_for_busy, C=self.big_c_for_busy, D=self.big_d_for_busy
+                A=self.big_a_for_busy,
+                B=self.big_b_for_busy,
+                C=self.big_c_for_busy,
+                D=self.big_d_for_busy,
             ),
             is_clx=True,
             is_verbose=self.verbose,

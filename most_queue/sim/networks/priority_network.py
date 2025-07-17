@@ -9,7 +9,10 @@ from colorama import Fore, init
 from tqdm import tqdm
 
 from most_queue.rand_distribution import ExpDistribution
-from most_queue.sim.networks.base_network_sim import BaseSimNetworkPriority, NetworkSimResultsPriority
+from most_queue.sim.networks.base_network_sim import (
+    BaseSimNetworkPriority,
+    NetworkSimResultsPriority,
+)
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.sim.utils.tasks import TaskPriority
 
@@ -78,7 +81,11 @@ class PriorityNetwork(BaseSimNetworkPriority):
         self.is_sources_set = True
 
     def set_nodes(
-        self, serv_params: list[list[dict]], n: list[int], prty: list[str], nodes_prty: list[list[int]]
+        self,
+        serv_params: list[list[dict]],
+        n: list[int],
+        prty: list[str],
+        nodes_prty: list[list[int]],
     ):  # pylint: disable=arguments-differ
         """
         Set the service time distribution parameters and number of channels for each node.

@@ -113,7 +113,7 @@ def get_ty(gamma, n):
     }
 
     if gamma not in ty_data:
-        print("Student calc error. Param 'gamma' must take one of the following values: 0.95, 0.99, 0.999!")
+        print("Student calc error. Param 'gamma' must take one of: 0.95, 0.99, 0.999!")
         return 0
 
     # Define ranges and their corresponding indices

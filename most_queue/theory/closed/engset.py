@@ -2,9 +2,29 @@
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
 
+from dataclasses import dataclass
+
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
+
+
+@dataclass
+class EngsetResult:
+    """
+    Data class to store results for the Engset model.
+    """
+
+    kg: float  # probability that a randomly chosen source can send a job
+    utilization: float  # utilization factor
+
+    v: list[float]  # initial moments of sojourn time
+    w: list[float]  # initial moments of waiting time
+
+    p: list[float]  # probabilities of states
+
+    mean_jobs_on_queue: float  # mean number of jobs in queue
+    mean_jobs_in_system: float  # mean number of jobs in system
 
 
 class Engset(BaseQueue):
@@ -24,9 +44,6 @@ class Engset(BaseQueue):
         self.mu = None
         self.m_i = None
         self.m = None
-        self.ro = None
-
-        self.p = None
         self.p0 = None
 
     def set_sources(self, l: float, number_of_sources: int):  # pylint: disable=arguments-differ
@@ -72,24 +89,28 @@ class Engset(BaseQueue):
         self.p0 = ps[0]
         return ps
 
-    def get_N(self) -> float:
+    def get_mean_jobs_in_system(self) -> float:
         """
         Get average number of jobs in the system
         """
         self.p = self.p or self.get_p()
 
-        N = 0
+        mean_jobs_in_system = 0
         for i, mm in enumerate(self.m_i):
-            N += i * mm * pow(self.ro, i)
-        N *= self.p0
+            mean_jobs_in_system += i * mm * pow(self.ro, i)
+        mean_jobs_in_system *= self.p0
 
-        return N
+        self.mean_jobs_in_system = mean_jobs_in_system
 
-    def get_Q(self):
+        return mean_jobs_in_system
+
+    def get_mean_jobs_on_queue(self):
         """
         Get average number of jobs in the queue
         """
-        return self.get_N() - (1.0 - self.p0)
+
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
+        return self.mean_jobs_in_system - (1.0 - self.p0)
 
     def get_kg(self):
         """
@@ -105,39 +126,52 @@ class Engset(BaseQueue):
         """
         Get average waiting time without diff the Laplace-Stieltjes transform
         """
-        return self.get_Q() / self._get_lam_big_d()
+
+        self.mean_jobs_on_queue = self.mean_jobs_on_queue or self.get_mean_jobs_on_queue()
+        return self.mean_jobs_on_queue / self._get_lam_big_d()
 
     def get_v1(self):
         """
         Get average sojourn time without diff the Laplace-Stieltjes transform
         """
-        return self.get_N() / self._get_lam_big_d()
+
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
+        return self.mean_jobs_in_system / self._get_lam_big_d()
 
     def get_w(self):
         """
         Get waiting time initial moments through the diff Laplace-Stieltjes transform
         """
 
+        if self.w:
+            return self.w
+
         self.p = self.p or self.get_p()
+        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
 
         h = 0.01
         ss = [x * h for x in range(5)]
 
-        N = self.get_N()
-
-        ws_dots = [self._ws(s, self.p0, N) for s in ss]
+        ws_dots = [self._ws(s, self.p0, self.mean_jobs_in_system) for s in ss]
         w_diff = diff5dots(ws_dots, h)
 
-        return [-w_diff[0], w_diff[1], -w_diff[2]]
+        self.w = [-w_diff[0], w_diff[1], -w_diff[2]]
+
+        return self.w
 
     def get_v(self):
         """
         Get sojourn time initial moments trough convolution with service
         and diff Laplace-Stieltjes transform of waiting time
         """
-        w = self.get_w()
+
+        if self.v:
+            return self.v
+
+        self.w = self.w or self.get_w()
         b = [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
-        return conv_moments(w, b)
+        self.v = conv_moments(self.w, b)
+        return self.v
 
     def _calc_m_i(self):
         m_i = []
@@ -149,7 +183,7 @@ class Engset(BaseQueue):
         self.m_i = m_i
 
     def _get_lam_big_d(self):
-        lam_big_d = self.lam * (self.m - self.get_N())
+        lam_big_d = self.lam * (self.m - self.get_mean_jobs_in_system())
         return lam_big_d
 
     def _ws(self, s, p0, N):
@@ -161,3 +195,25 @@ class Engset(BaseQueue):
             summ += pow(self.lam, i) * self.m_i[i + 1] / pow(self.mu + s, i)
 
         return summ * p0 / (self.m - N)
+
+    def run(self):
+        """
+        Run calculations for Engset model.
+        """
+
+        v = self.get_v()
+        w = self.get_w()
+        p = self.get_p()
+        kg = self.get_kg()
+        mean_jobs_in_system = self.get_mean_jobs_in_system()
+        mean_jobs_on_queue = self.get_mean_jobs_on_queue()
+
+        return EngsetResult(
+            v=v,
+            w=w,
+            p=p,
+            kg=kg,
+            mean_jobs_in_system=mean_jobs_in_system,
+            mean_jobs_on_queue=mean_jobs_on_queue,
+            utilization=self.ro,
+        )

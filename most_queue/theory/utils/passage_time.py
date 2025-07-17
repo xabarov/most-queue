@@ -36,7 +36,8 @@ class PassageTimeCalculation:
     ):
         """
         Initialize the PassageTimeCalculation class.
-        :param transition_matrices: TransitionMatrices object containing the transition matrices for each levels
+        :param transition_matrices: TransitionMatrices object containing
+        the transition matrices for each levels
         :param is_clx: if True, the chain is complex (has different levels)
         :param is_verbose: if True, print intermediate results
         :param l_tilda: index of the last level with different matrices, default is len(D) - 1
