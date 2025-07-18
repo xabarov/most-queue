@@ -54,11 +54,7 @@ def test_gi_m_1():
     gm1_calc.set_sources(a)
     gm1_calc.set_servers(mu)
 
-    v_num = gm1_calc.get_v()
-    w_num = gm1_calc.get_w()
-
-    # calculation of probabilities of states in the queueing system
-    p_num = gm1_calc.get_p()
+    calc_results = gm1_calc.run()
 
     # for verification, we use sim.
     # create an instance of the sim class and pass the number of service
@@ -87,12 +83,12 @@ def test_gi_m_1():
     # Output results
     print("\nGamma\n")
 
-    times_print(w_sim, w_num, True)
-    times_print(v_sim, v_num, False)
-    probs_print(p_sim, p_num)
+    times_print(w_sim, calc_results.w, True)
+    times_print(v_sim, calc_results.v, False)
+    probs_print(p_sim, calc_results.p, size=10)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

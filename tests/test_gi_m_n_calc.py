@@ -60,11 +60,9 @@ def test_gi_m_n():
     gi_m_n_calc.set_sources(a=a)
     gi_m_n_calc.set_servers(mu=mu)
 
-    v_num = gi_m_n_calc.get_v()
-    w_num = gi_m_n_calc.get_w()
+    calc_results = gi_m_n_calc.run()
 
-    # calculate probabilities of states in the queueing system
-    p_num = gi_m_n_calc.get_p()
+    print(f"utilization: {calc_results.utilization:0.4f}")
 
     # for verification, we use simulation.
     # create an instance of the Simulation class and pass the number of servers
@@ -94,12 +92,12 @@ def test_gi_m_n():
     # Output results
     print("\nGamma")
 
-    times_print(w_sim, w_num)
-    times_print(v_sim, v_num, is_w=False)
-    probs_print(p_sim, p_num)
+    times_print(w_sim, calc_results.w)
+    times_print(v_sim, calc_results.v, is_w=False)
+    probs_print(p_sim, calc_results.p)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(p_sim[:10], p_num[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

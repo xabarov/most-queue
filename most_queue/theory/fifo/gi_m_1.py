@@ -3,12 +3,26 @@ Calculation of the GI/M/1 queueing system
 """
 
 import math
+from dataclasses import dataclass
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
+
+
+@dataclass
+class GiM1Result:
+    """
+    Result of calculation for GI/M/1 system
+    """
+
+    v: list[float]  # sojourn time initial moments
+    w: list[float]  # waiting time initial moments
+    p: list[float]  # probabilities of states
+    pi: list[float]  # probabilities of states before arrival
+    utilization: float  # utilization factor
 
 
 class GiM1(BaseQueue):
@@ -30,8 +44,6 @@ class GiM1(BaseQueue):
         self.w_param = None
         self.mu = None
         self.a = None
-        self.v = None
-        self.w = None
         self.pi = None
 
     def set_servers(self, mu: float):  # pylint: disable=arguments-differ
@@ -51,16 +63,33 @@ class GiM1(BaseQueue):
         self.a = a
         self.is_sources_set = True
 
-    def get_pi(self):
+    def run(self):
+        """
+        Run calculation for the GI/M/1 queueing system.
+        """
+        self._check_if_servers_and_sources_set()
+
+        self.pi = self.get_pi()
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+        utilization = 1.0 / (self.a[0] * self.mu)
+
+        return GiM1Result(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+
+    def get_pi(self) -> list[float]:
         """
         Calculation of the probabilities of states before arrival of GI/M/1 queueing system.
         params:
         num - number of states to calculate
         """
 
+        if self.pi:
+            return self.pi
+
         self.w_param = self.w_param or self._get_w_param()
 
-        pi = [0.0] * self.p_num
+        self.pi = [0.0] * self.p_num
 
         gamma_params = GammaDistribution.get_params(self.a)
 
@@ -68,12 +97,12 @@ class GiM1(BaseQueue):
         summ = 0
         for i, q in enumerate(qs):
             summ += q * pow(self.w_param, i)
-        pi[0] = 1.0 - summ
+        self.pi[0] = 1.0 - summ
         for k in range(1, self.p_num):
-            pi[k] = (1.0 - self.w_param) * pow(self.w_param, k)
-        return pi
+            self.pi[k] = (1.0 - self.w_param) * pow(self.w_param, k)
+        return self.pi
 
-    def get_v(self, num=3):
+    def get_v(self, num=3) -> list[float]:
         """
         Calculation of the sojourn time initial moments
         num - number of moments
@@ -81,17 +110,25 @@ class GiM1(BaseQueue):
         approx_distr - approximation distribution for the arrival process
         """
 
+        if self.v:
+            return self.v
+
         self.w_param = self.w_param or self._get_w_param()
         v = [0.0] * num
         for k in range(num):
             v[k] = math.factorial(k + 1) / pow(self.mu * (1 - self.w_param), k + 1)
+
+        self.v = v
         return v
 
-    def get_w(self, num=3):
+    def get_w(self, num=3) -> list[float]:
         """
         Calculation of the initial moments of the waiting time
          num - number of moments
         """
+
+        if self.w:
+            return self.w
 
         self.w_param = self.w_param or self._get_w_param()
 
@@ -104,15 +141,18 @@ class GiM1(BaseQueue):
             6.0 / pow(self.mu, 3),
             24.0 / pow(self.mu, 4),
         ]
-        w = conv_moments_minus(self.v, b, num)
+        self.w = conv_moments_minus(self.v, b, num)
 
-        return w
+        return self.w
 
-    def get_p(self):
+    def get_p(self) -> list[float]:
         """
         Calculation of probabilities of QS states
         num - number of states
         """
+
+        if self.p:
+            return self.p
 
         self.w_param = self.w_param or self._get_w_param()
 
@@ -121,6 +161,8 @@ class GiM1(BaseQueue):
         p[0] = 1 - ro
         for i in range(1, self.p_num):
             p[i] = ro * (1.0 - self.w_param) * pow(self.w_param, i - 1)
+
+        self.p = p
         return p
 
     def _get_w_param(self) -> float:

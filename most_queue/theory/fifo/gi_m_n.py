@@ -3,6 +3,7 @@ Calculation of the GI/M/n queueing system
 """
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -11,6 +12,19 @@ from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
+
+
+@dataclass
+class GiMnResult:
+    """
+    Result of calculation for GI/M/1 system
+    """
+
+    v: list[float]  # sojourn time initial moments
+    w: list[float]  # waiting time initial moments
+    p: list[float]  # probabilities of states
+    pi: list[float]  # probabilities of states before arrival
+    utilization: float  # utilization factor
 
 
 class GiMn(BaseQueue):
@@ -26,15 +40,12 @@ class GiMn(BaseQueue):
 
         super().__init__(n=n, calc_params=calc_params)
 
-        self.n = n
-
         self.e = self.calc_params.tolerance
         self.approx_distr = self.calc_params.approx_distr
         self.pi_num = self.calc_params.p_num
 
         self.w_param = None
         self.pi = None
-        self.w = None
         self.mu = None
         self.a = None
 
@@ -55,15 +66,30 @@ class GiMn(BaseQueue):
         self.a = a
         self.is_sources_set = True
 
+    def run(self):
+        """
+        Run calculation for the GI/M/1 queueing system.
+        """
+        self._check_if_servers_and_sources_set()
+
+        self.pi = self.get_pi()
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+        utilization = 1.0 / (self.a[0] * self.mu * self.n)
+
+        return GiMnResult(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+
     def get_v(self) -> list[float]:
         """
         Calculate sojourn time first 3 initial moments
         """
 
+        if self.v:
+            return self.v
+
         if self.w is None:
-            w = self.get_w()
-        else:
-            w = self.w
+            self.w = self.get_w()
 
         b = [
             1 / self.mu,
@@ -71,16 +97,19 @@ class GiMn(BaseQueue):
             6 / pow(self.mu, 3),
             24 / pow(self.mu, 4),
         ]
-        v = conv_moments(w, b, len(w))
-        return v
+        self.v = conv_moments(self.w, b, len(self.w))
+        return self.v
 
     def get_w(self) -> list[float]:
         """
         Calculate wainig time first 3 initial moments
         """
 
+        if self.w:
+            return self.w
+
         self.w_param = self.w_param or self._get_w_param()
-        self.pi = self._get_pi() or self.pi
+        self.pi = self.get_pi() or self.pi
 
         pn = self.pi[self.n]
         pls = []
@@ -100,8 +129,11 @@ class GiMn(BaseQueue):
         Calculate probabilities of states
         """
 
+        if self.p:
+            return self.p
+
         self.w_param = self.w_param or self._get_w_param()
-        self.pi = self._get_pi() or self.pi
+        self.pi = self.get_pi() or self.pi
 
         p = [0.0] * self.pi_num
         for i in range(1, self.n + 1):
@@ -113,12 +145,17 @@ class GiMn(BaseQueue):
             summ += (self.n - k) * p[k]
         summ = summ + 1.0 / (self.mu * self.a[0])
         p[0] = 1.0 - summ / self.n
+        self.p = p
         return p
 
-    def _get_pi(self):
+    def get_pi(self):
         """
         Calc pi probabilities using the method of moments.
         """
+
+        if self.pi:
+            return self.pi
+
         self.w_param = self.w_param or self._get_w_param()
 
         pi = [0.0] * self.pi_num
@@ -157,6 +194,8 @@ class GiMn(BaseQueue):
             pi[i] = pi_to_n[i]
         for i in range(self.n + 1, self.pi_num):
             pi[i] = pi[self.n] * pow(self.w_param, i - self.n)
+
+        self.pi = pi
         return pi
 
     def _get_b0(self, j):
