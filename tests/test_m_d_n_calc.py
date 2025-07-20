@@ -45,7 +45,11 @@ def test_mdn():
     mdn.set_sources(l=ARRIVAL_RATE)
     mdn.set_servers(b=b)
 
-    p_num = mdn.calc_p()
+    mdn_results = mdn.run()
+
+    print(f"GI/M/n queueing system utilization: {mdn_results.utilization: 0.4f}")
+
+    assert abs(UTILIZATION_FACTOR - mdn_results.utilization) < PROBS_ATOL
 
     # for verification, we use simulation modeling
     # create an instance of the simulation class and pass the number of
@@ -67,9 +71,9 @@ def test_mdn():
     p_sim = qs.get_p()
 
     # Output results
-    probs_print(p_num, p_sim)
+    probs_print(mdn_results.p, p_sim)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], mdn_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

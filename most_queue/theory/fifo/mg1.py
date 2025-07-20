@@ -5,7 +5,8 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 import math
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
 
@@ -15,11 +16,11 @@ class MG1Calculation(BaseQueue):
     Calculation of M/G/1 queue characteristics using the method of moments.
     """
 
-    def __init__(self):
+    def __init__(self, calc_params: CalcParams | None = None):
         """
         Initialize the MG1Calculation class.
         """
-        super().__init__(n=1)
+        super().__init__(n=1, calc_params=calc_params)
 
         self.l = None
         self.b = None
@@ -39,12 +40,26 @@ class MG1Calculation(BaseQueue):
         self.b = b
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Run calculation for M/G/1 queue.
+        """
+
+        w = self.get_w()
+        v = self.get_v()
+        p = self.get_p()
+
+        return QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0])
+
     def get_w(self, num=3) -> list[float]:
         """
         Calculate the initial moments of waiting time for M/G/1 queue.
         """
 
         self._check_if_servers_and_sources_set()
+
+        if self.w:
+            return self.w
 
         num_of_mom = min(len(self.b) - 1, num)
 
@@ -55,23 +70,28 @@ class MG1Calculation(BaseQueue):
             for j in range(k):
                 summ += math.factorial(k) * self.b[k - j] * w[j] / (math.factorial(j) * math.factorial(k + 1 - j))
             w[k] = (self.l / (1 - self.l * self.b[0])) * summ
-        return w[1:]
 
-    def get_v(self, num=3):
+        self.w = w[1:]
+        return self.w
+
+    def get_v(self, num=3) -> list[float]:
         """
         Calculate the initial moments of sojournin the system for M/G/1 queue.
         """
 
         self._check_if_servers_and_sources_set()
 
+        if self.v:
+            return self.v
+
         num_of_mom = min(len(self.b) - 1, num)
 
-        w = self.get_w(num_of_mom)
-        v = conv_moments(w, self.b)
+        w = self.w or self.get_w(num_of_mom)
+        self.v = conv_moments(w, self.b, num=num_of_mom)
 
-        return v
+        return self.v
 
-    def get_p(self, num=100, dist_type="Gamma"):
+    def get_p(self) -> list[float]:
         """
         Calculate the probabilities of states for M/G/1 queue.
         num: number of state probabilities to output
@@ -80,24 +100,29 @@ class MG1Calculation(BaseQueue):
 
         self._check_if_servers_and_sources_set()
 
-        if dist_type == "Gamma":
+        if self.p:
+            return self.p
+
+        if self.calc_params.approx_distr == "gamma":
             gamma_param = GammaDistribution.get_params(self.b)
-            q = get_q_gamma(self.l, gamma_param.mu, gamma_param.alpha, num)
-        elif dist_type == "Uniform":
+            q = get_q_gamma(self.l, gamma_param.mu, gamma_param.alpha, self.calc_params.p_num)
+        elif self.calc_params.approx_distr == "uniform":
             uniform_params = UniformDistribution.get_params(self.b)
-            q = get_q_uniform(self.l, uniform_params.mean, uniform_params.half_interval, num)
-        elif dist_type == "Pa":
+            q = get_q_uniform(self.l, uniform_params.mean, uniform_params.half_interval, self.calc_params.p_num)
+        elif self.calc_params.approx_distr == "pa":
             pa_params = ParetoDistribution.get_params(self.b)
-            q = get_q_pareto(self.l, pa_params.alpha, pa_params.K, num)
+            q = get_q_pareto(self.l, pa_params.alpha, pa_params.K, self.calc_params.p_num)
         else:
             print("Error in get_p. Unknown type of distribution")
             return 0
 
-        p = [0.0] * num
+        p = [0.0] * self.calc_params.p_num
         p[0] = 1 - self.l * self.b[0]
-        for i in range(1, num):
+        for i in range(1, self.calc_params.p_num):
             summ = 0
             for j in range(1, i):
                 summ += p[j] * q[i - j]
             p[i] = (p[i - 1] - p[0] * q[i - 1] - summ) / q[0]
+
+        self.p = p
         return p

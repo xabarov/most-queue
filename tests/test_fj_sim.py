@@ -132,6 +132,8 @@ def test_fj_sim():
     v1_varma = fj_calc_markov.get_v1_fj_varma()
     v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_tantawi()
 
+    print(fj_calc_markov.run())
+
     print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=NUM_OF_CHANNELS)
 
     # Run Fork-Join (n, k) simulation and calculation of the average sojourn
@@ -144,6 +146,8 @@ def test_fj_sim():
 
     v1_varma = fj_calc_markov.get_v1_varma_nk()
     v1_nelson_tantawi = fj_calc_markov.get_v1_fj_nelson_nk()
+
+    print(fj_calc_markov.run())
 
     print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=JOBS_REQUIRED)
 
@@ -170,12 +174,13 @@ def test_sj_sim():
     sj_calc = SplitJoinCalc(n=NUM_OF_CHANNELS)
     sj_calc.set_sources(l=ARRIVAL_RATE)
     sj_calc.set_servers(b=b)
-    v_num = sj_calc.get_v()
-    ro = sj_calc.get_ro()
+    sj_calc_results = sj_calc.run()
 
-    print_results_sj(SERVICE_TIME_CV, ro, v_sim, v_num)
+    print_results_sj(SERVICE_TIME_CV, sj_calc_results.utilization, v_sim, sj_calc_results.v)
 
-    assert np.allclose(np.array(v_sim[:2]), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(
+        np.array(v_sim[:2]), np.array(sj_calc_results.v), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
+    ), ERROR_MSG
 
 
 if __name__ == "__main__":

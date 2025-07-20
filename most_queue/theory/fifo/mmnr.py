@@ -5,7 +5,7 @@ Calculate queue M/M/n/r
 import math
 
 from most_queue.rand_distribution import ExpDistribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.utils.conv import conv_moments
 
 
@@ -49,7 +49,27 @@ class MMnrCalc(BaseQueue):
 
         self.is_servers_set = True
 
-    def getPI(self) -> float:
+    def run(self) -> QueueResults:
+        """
+        Run calculation of the queue system.
+        """
+
+        p = self.get_p()
+        w = self.get_w()
+        v = self.get_v()
+
+        utilization = self.l / (self.mu * self.n)
+
+        return QueueResults(p=p, w=w, v=v, utilization=utilization)
+
+    def get_utilization(self) -> float:
+        """
+        Calculate utilization factor of the system.
+        """
+
+        return self.ro
+
+    def get_busy_probability(self) -> float:
         """
         Calculate probability that all servers are busy and there is no free place in the queue
         """
@@ -59,7 +79,7 @@ class MMnrCalc(BaseQueue):
         znam = math.factorial(self.n) * math.pow(self.n, self.r)
         return chisl / znam
 
-    def getQ(self) -> float:
+    def get_mean_queue_length(self) -> float:
         """
         Calculate mean queue length
         """

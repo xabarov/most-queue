@@ -67,23 +67,17 @@ def test_mgn():
     queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     queue_calc.set_servers(b=b)
 
-    queue_calc.run()
+    calc_results = queue_calc.run()
 
-    p_calc = queue_calc.get_p()
-    v_calc = queue_calc.get_v()
-    v_calc_served = queue_calc.get_v_served()
-    v_calc_broken = queue_calc.get_v_broken()
-    w_calc = queue_calc.get_w()
+    probs_print(p_sim, calc_results.p)
+    times_print(v_sim, calc_results.v, is_w=False, header="sojourn total")
+    times_print(v_sim_served, calc_results.v_served, is_w=False, header="sojourn served")
+    times_print(v_sim_broken, calc_results.v_broken, is_w=False, header="sojourn broken")
+    times_print(w_sim, calc_results.w)
 
-    probs_print(p_sim, p_calc)
-    times_print(v_sim, v_calc, is_w=False, header="sojourn total")
-    times_print(v_sim_served, v_calc_served, is_w=False, header="sojourn served")
-    times_print(v_sim_broken, v_calc_broken, is_w=False, header="sojourn broken")
-    times_print(w_sim, w_calc)
+    assert np.allclose(v_sim, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(v_sim, v_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-
-    assert np.allclose(p_sim[:10], p_calc[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

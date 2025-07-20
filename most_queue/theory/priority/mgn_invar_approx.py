@@ -109,7 +109,7 @@ class MGnInvarApproximation(BaseQueue):
         mg1_num.set_sources(l_sum)
         mg1_num.set_servers(b_sr)
 
-        p1 = mg1_num.get_p(N)
+        p1 = mg1_num.get_p()
         q1 = 0
         for i in range(1, N):
             q1 += (i - 1) * p1[i]

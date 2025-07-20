@@ -61,10 +61,8 @@ def test_mgn_tt():
     tt.set_sources(l=ARRIVAL_RATE)
     tt.set_servers(b=b)
 
-    tt.run()
     # get numerical calculation results
-    p_num = tt.get_p()
-    v_num = tt.get_v()
+    tt_results = tt.run()
 
     tt_time = time.process_time() - tt_start
     # also can find out how many iterations were required
@@ -90,6 +88,7 @@ def test_mgn_tt():
     # Get results
     p_sim = qs.get_p()
     v_sim = qs.v
+    w_sim = qs.w
     im_time = time.process_time() - im_start
 
     # print results
@@ -102,13 +101,15 @@ def test_mgn_tt():
     print(f"Number of iterations of the Takahasi-Takami algorithm: {num_of_iter:^4d}")
     print(f"Takahasi-Takami algorithm execution time: {tt_time:^5.3f} s")
     print(f"Simulation execution time: {im_time:^5.3f} s")
-    probs_print(p_sim, p_num, 10)
+    probs_print(p_sim, tt_results.p, 10)
 
-    times_print(v_sim, v_num, False)
+    times_print(v_sim, tt_results.v, False)
+    times_print(w_sim, tt_results.w, True)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, tt_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(w_sim, tt_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

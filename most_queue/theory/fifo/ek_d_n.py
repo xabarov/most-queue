@@ -4,23 +4,12 @@ Numerical calculation of a multi-channel system Ek/D/n
 
 import cmath
 import math
-from dataclasses import dataclass
 
 import numpy as np
 
 from most_queue.rand_distribution import ErlangParams
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
-
-
-@dataclass
-class EkDnResult:
-    """
-    Result of calculation for Ek/D/n system
-    """
-
-    utilization: float  # utilization factor
-    p: list[float]  # list of probabilities for each state
 
 
 class EkDn(BaseQueue):
@@ -70,13 +59,13 @@ class EkDn(BaseQueue):
         self.b = b
         self.is_servers_set = True
 
-    def run(self) -> EkDnResult:
+    def run(self) -> QueueResults:
         """
         Run calculation
         """
         utilization = self.l * self.b / (self.k * self.n)
         p = self.get_p()
-        return EkDnResult(p=p, utilization=utilization)
+        return QueueResults(p=p, utilization=utilization)
 
     def get_p(self):
         """

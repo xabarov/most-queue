@@ -2,24 +2,8 @@
 Calculation of M/M/1 QS with batch arrival
 """
 
-from dataclasses import dataclass
-
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
-
-
-@dataclass
-class BatchMM1Result:
-    """
-    Data class to store results for M/M/1 QS with batch arrival
-    """
-
-    utilization: float  # utilization factor
-    v1: float  # mean sojourn time
-    w1: float  # mean waiting time
-    p: list[float]  # probabilities of states
-    mean_jobs_on_queue: float  # mean number of jobs in queue
-    mean_jobs_in_system: float  # mean number of jobs in system
 
 
 class BatchMM1(BaseQueue):
@@ -157,22 +141,13 @@ class BatchMM1(BaseQueue):
         self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
         return self.mean_jobs_in_system / (self.l_moments[0] * self.lam)
 
-    def run(self) -> BatchMM1Result:
+    def run(self) -> QueueResults:
         """
         Run calculation
         """
 
-        self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
-        self.mean_jobs_on_queue = self.mean_jobs_on_queue or self.get_mean_jobs_on_queue()
-        v1 = self.get_v1()
-        w1 = self.get_w1()
+        v = [self.get_v1()]
+        w = [self.get_w1()]
         p = self.get_p()
 
-        return BatchMM1Result(
-            utilization=self.ro,
-            v1=v1,
-            w1=w1,
-            p=p,
-            mean_jobs_in_system=self.mean_jobs_in_system,
-            mean_jobs_on_queue=self.mean_jobs_on_queue,
-        )
+        return QueueResults(utilization=self.ro, v=v, w=w, p=p)

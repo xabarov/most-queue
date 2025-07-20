@@ -2,29 +2,9 @@
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
 
-from dataclasses import dataclass
-
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
-
-
-@dataclass
-class EngsetResult:
-    """
-    Data class to store results for the Engset model.
-    """
-
-    readiness: float  # probability that a randomly chosen source can send a job
-    utilization: float  # utilization factor
-
-    v: list[float]  # initial moments of sojourn time
-    w: list[float]  # initial moments of waiting time
-
-    p: list[float]  # probabilities of states
-
-    mean_jobs_on_queue: float  # mean number of jobs in queue
-    mean_jobs_in_system: float  # mean number of jobs in system
 
 
 class Engset(BaseQueue):
@@ -196,7 +176,7 @@ class Engset(BaseQueue):
 
         return summ * p0 / (self.m - N)
 
-    def run(self):
+    def run(self) -> QueueResults:
         """
         Run calculations for Engset model.
         """
@@ -204,16 +184,5 @@ class Engset(BaseQueue):
         v = self.get_v()
         w = self.get_w()
         p = self.get_p()
-        readiness = self.get_readiness()
-        mean_jobs_in_system = self.get_mean_jobs_in_system()
-        mean_jobs_on_queue = self.get_mean_jobs_on_queue()
 
-        return EngsetResult(
-            v=v,
-            w=w,
-            p=p,
-            readiness=readiness,
-            mean_jobs_in_system=mean_jobs_in_system,
-            mean_jobs_on_queue=mean_jobs_on_queue,
-            utilization=self.ro,
-        )
+        return QueueResults(v=v, w=w, p=p, utilization=self.ro)

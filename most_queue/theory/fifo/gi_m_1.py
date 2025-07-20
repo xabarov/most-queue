@@ -3,26 +3,12 @@ Calculation of the GI/M/1 queueing system
 """
 
 import math
-from dataclasses import dataclass
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
-
-
-@dataclass
-class GiM1Result:
-    """
-    Result of calculation for GI/M/1 system
-    """
-
-    v: list[float]  # sojourn time initial moments
-    w: list[float]  # waiting time initial moments
-    p: list[float]  # probabilities of states
-    pi: list[float]  # probabilities of states before arrival
-    utilization: float  # utilization factor
 
 
 class GiM1(BaseQueue):
@@ -63,19 +49,18 @@ class GiM1(BaseQueue):
         self.a = a
         self.is_sources_set = True
 
-    def run(self):
+    def run(self) -> QueueResults:
         """
         Run calculation for the GI/M/1 queueing system.
         """
         self._check_if_servers_and_sources_set()
 
-        self.pi = self.get_pi()
         self.p = self.get_p()
         self.w = self.get_w()
         self.v = self.get_v()
         utilization = 1.0 / (self.a[0] * self.mu)
 
-        return GiM1Result(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+        return QueueResults(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
 
     def get_pi(self) -> list[float]:
         """

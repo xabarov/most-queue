@@ -6,7 +6,8 @@ import math
 
 import scipy.special as sp
 
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.theory.utils.max_dist import MaxDistribution
 
 
 class ForkJoinMarkovianCalc(BaseQueue):
@@ -63,6 +64,45 @@ class ForkJoinMarkovianCalc(BaseQueue):
         self.k = k or self.n
 
         self.is_servers_set = True
+
+    def run(self, approx="varma") -> QueueResults:
+        """
+        Run calculation
+        :param approx: approximation method, must be 'varma' or 'nelson'
+        If appox is 'varma', used approximation from paper:
+            S. Varma and A. M. Makowski, “Interpolation approximations for
+            symmetric fork-join queues.” Perform. Eval., vol. 20, no. 1, pp. 245–265,
+            1994
+        If app
+        """
+        if not self.k is None:
+            # Fork-Join (n, k) system
+            if approx == "varma":
+                v1 = self.get_v1_varma_nk()
+            else:
+                v1 = self.get_v1_fj_nelson_nk()
+        else:
+            # Fork-Join (n, n) system
+            if approx == "varma":
+                v1 = self.get_v1_fj_varma()
+            else:
+                v1 = self.get_v1_fj_nelson_tantawi()
+
+        utilization = self.get_utilization()
+
+        return QueueResults(v=[v1, 0, 0], utilization=utilization)
+
+    def get_utilization(self):
+        """
+        Calc utilization for Fork-Join (n, k) system.
+        """
+
+        # TODO naive implementation
+        b = [1 / self.mu, 2 / (self.mu**2), 6 / (self.mu**3)]
+        max_distr = MaxDistribution(b=b, n=self.n)
+        b_max = max_distr.get_max_moments()
+
+        return self.l * b_max[0]
 
     def get_v1_fj2(self):
         """

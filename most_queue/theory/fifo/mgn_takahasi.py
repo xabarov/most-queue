@@ -8,8 +8,9 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -105,23 +106,14 @@ class MGnCalc(BaseQueue):
 
         self.is_servers_set = True
 
-    def fill_cols(self):
+    def get_utilization(self):
         """
-        Fill columns for B-matrix
+        Calc utilization of the queue.
         """
-        for i in range(self.N):
-            if i < self.n + 1:
-                self.cols.append(i + 1)
-            else:
-                self.cols.append(self.n + 1)
 
-    def _fill_t_b(self):
-        for i in range(self.N):
-            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
-            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+        return self.l * self.b[0] / self.n
 
-    def run(self):
+    def run(self) -> QueueResults:
         """
         Run the algorithm.
         """
@@ -190,11 +182,22 @@ class MGnCalc(BaseQueue):
         self._calculate_p()
         self._calculate_y()
 
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+
+        utilization = self.get_utilization()
+
+        return QueueResults(v=self.v, w=self.w, p=self.p, utilization=utilization)
+
     def get_p(self) -> list[float]:
         """
         Calculate the probabilities of states
         """
-        return [prob.real for prob in self.p]
+
+        self.p = [prob.real for prob in self.p]
+
+        return self.p
 
     def get_w(self, derivate=False) -> list[float]:
         """
@@ -230,16 +233,29 @@ class MGnCalc(BaseQueue):
         Get the sojourn time moments
         """
 
-        w = self.get_w()
-        b0 = self.b[0]
-        b1 = self.b[1]
-        b2 = self.b[2]
+        if self.v is not None:
+            return self.v
 
-        v0 = w[0] + b0
-        v1 = w[1] + 2 * w[0] * b0 + b1
-        v2 = w[2] + 3 * w[1] * b0 + 3 * w[0] * b1 + b2
+        self.w = self.w or self.get_w()
+        self.v = conv_moments(self.b, self.w)
 
-        return [v0, v1, v2]
+        return self.v
+
+    def fill_cols(self):
+        """
+        Fill columns for B-matrix
+        """
+        for i in range(self.N):
+            if i < self.n + 1:
+                self.cols.append(i + 1)
+            else:
+                self.cols.append(self.n + 1)
+
+    def _fill_t_b(self):
+        for i in range(self.N):
+            self.t.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b1.append(np.zeros((1, self.cols[i]), dtype=self.dt))
+            self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
     def _initial_probabilities(self):
         """

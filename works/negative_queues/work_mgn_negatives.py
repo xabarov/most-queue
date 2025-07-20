@@ -49,10 +49,9 @@ def collect_calc_results(qp: dict, n: int, b: list[float], discipline: NegativeS
             verbose=False,
             accuracy=float(qp["accuracy"]),
         )
-
-    queue_calc.run()
-
-    return queue_calc.get_results(max_p=max_p)
+    queue_results = queue_calc.run()
+    queue_results.p = queue_results.p[:max_p]
+    return queue_results
 
 
 def collect_sim_results(qp: dict, b: list[float], n: int, discipline: NegativeServiceType, max_p: int = 100):

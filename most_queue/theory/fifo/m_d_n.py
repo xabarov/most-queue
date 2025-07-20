@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -27,7 +27,7 @@ class MDn(BaseQueue):
 
         self.p_num = self.calc_params.p_num
         self.e = self.calc_params.tolerance
-        self.p = [0.0] * self.calc_params.p_num
+        self.p = None
 
         self.l = None
         self.b = None
@@ -47,12 +47,24 @@ class MDn(BaseQueue):
         self.b = b
         self.is_servers_set = True
 
-    def calc_p(self):
+    def run(self) -> QueueResults:
+        """
+        Run calculation of queueing system.
+        """
+
+        self.p = self.p or self.calc_p()
+        utilization = self.l * self.b / self.n
+
+        return QueueResults(p=self.p, utilization=utilization)
+
+    def calc_p(self) -> list[float]:
         """
         Calculate the probabilities of states.
         """
 
         self._check_if_servers_and_sources_set()
+
+        self.p = [0.0] * self.calc_params.p_num
 
         p_up_to_n = self._calc_p_up_to_n()
         qs = self._calc_q()

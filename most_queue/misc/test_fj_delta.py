@@ -55,7 +55,7 @@ def test_fj_delta():
     sj_delta.set_servers(b=b)
 
     v_num = sj_delta.get_v_delta(b_delta)
-    ro = sj_delta.get_ro()
+    utilization = sj_delta.get_utilization()
 
     qs = ForkJoinSimDelta(NUM_OF_CHANNELS, NUM_OF_CHANNELS, b_delta, True)
 
@@ -70,7 +70,7 @@ def test_fj_delta():
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV}")
     print(f"Average delay before service start: { SERVICE_TIME_DELTA_AVERAGE:.3f}")
     print(f"Coefficient of variation of delay: {SERVICE_TIME_CV:.3f}")
-    print(f"Utilization coefficient: {ro:.3f}")
+    print(f"Utilization coefficient: {utilization:.3f}")
 
     times_print(v_sim, v_num, is_w=False)
 

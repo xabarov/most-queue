@@ -83,12 +83,12 @@ def test_sim_mdn():
     mdn = MDn(n=NUM_OF_CHANNELS)
     mdn.set_sources(l=ARRIVAL_RATE)
     mdn.set_servers(b=1.0 / mu)
-    p_num = mdn.calc_p()
+    mdn_results = mdn.run()
     p_sim = qs.get_p()
 
-    probs_print(p_sim=p_sim, p_num=p_num, size=10)
+    probs_print(p_sim=p_sim, p_num=mdn_results.p, size=10)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], mdn_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

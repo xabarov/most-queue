@@ -2,14 +2,9 @@
 Numerical calculation of Fork-Join queuing systems
 """
 
-import math
-
-import numpy as np
-
-from most_queue.rand_distribution import ErlangDistribution, GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.fifo.mg1 import MG1Calculation
-from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
+from most_queue.theory.utils.max_dist import MaxDistribution
 from most_queue.theory.vacations.mg1_warm_calc import CalcParams, MG1WarmCalc
 
 
@@ -52,31 +47,6 @@ class SplitJoinCalc(BaseQueue):
         if self.approximation not in ["gamma", "h2", "erlang"]:
             raise ValueError("Approximation must be one of 'gamma', 'h2' or 'erlang'.")
 
-        self.a_big = [
-            1.37793470540e-1,
-            7.29454549503e-1,
-            1.808342901740e0,
-            3.401433697855e0,
-            5.552496140064e0,
-            8.330152746764e0,
-            1.1843785837900e1,
-            1.6279257831378e1,
-            2.1996585811981e1,
-            2.9920697012274e1,
-        ]
-        self.g = [
-            3.08441115765e-1,
-            4.01119929155e-1,
-            2.18068287612e-1,
-            6.20874560987e-2,
-            9.50151697518e-3,
-            7.53008388588e-4,
-            2.82592334960e-5,
-            4.24931398496e-7,
-            1.83956482398e-9,
-            9.91182721961e-13,
-        ]
-
     def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """
         Set sources
@@ -95,6 +65,16 @@ class SplitJoinCalc(BaseQueue):
 
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Run calculations for Split-Join queueing systems
+        """
+
+        v = self.get_v()
+        utilization = self.get_utilization()
+
+        return QueueResults(v=v, utilization=utilization)
+
     def get_v(self) -> list[float]:
         """
         Calculate sojourn time initial moments for Split-Join queueing systems
@@ -104,14 +84,20 @@ class SplitJoinCalc(BaseQueue):
 
         # Calc Split-Join max of n channels service time distribution
 
-        self.b_max = self.get_max_moments()
+        if not self.v is None:
+            return self.v
+
+        max_distr = MaxDistribution(b=self.b, n=self.n, approximation=self.approximation)
+
+        self.b_max = max_distr.get_max_moments()
 
         # Further calculation as in a regular M/G/1 queueing system with
         # initial moments of the distribution maximum of the random variable
         mg1 = MG1Calculation()
         mg1.set_sources(self.l)
         mg1.set_servers(self.b_max)
-        return mg1.get_v()
+        self.v = mg1.get_v()
+        return self.v
 
     def get_v_delta(self, b_delta: list[float] | float) -> list[float]:
         """
@@ -122,8 +108,11 @@ class SplitJoinCalc(BaseQueue):
         :return: list[float] : initial moments of sojourn time distribution
         """
 
-        self.b_max_warm = self.get_max_moments_delta(b_delta)
-        self.b_max = self.get_max_moments()
+        max_distr = MaxDistribution(b=self.b, n=self.n, approximation=self.approximation)
+        self.b_max = max_distr.get_max_moments()
+
+        self.b_max_warm = max_distr.get_max_moments_delta(b_delta)
+
         mg1_approx = "gamma" if self.approximation == "erlang" else self.approximation
         calc_params = CalcParams(approx_distr=mg1_approx)
         mg1_warm = MG1WarmCalc(calc_params=calc_params)
@@ -131,7 +120,7 @@ class SplitJoinCalc(BaseQueue):
         mg1_warm.set_servers(self.b_max, self.b_max_warm)
         return mg1_warm.get_v()
 
-    def get_ro(self):
+    def get_utilization(self):
         """
         Calculate the utilization factor for Split-Join queueing systems
         """
@@ -140,195 +129,3 @@ class SplitJoinCalc(BaseQueue):
             self.get_v()
 
         return self.l * self.b_max[0]
-
-    def get_max_moments(self):
-        """
-        Calculate the maximum value of lambda for a given number of channels and service rate.
-        The maximum utilization is set to 0.8 by default.
-        :param n: number of channels
-        :param b: service rate in a channel
-        :param num: number of output initial moments of the maximum SV,
-        by default one less than the number of initial moments of b
-        :return: maximum value of lambda for a given number of channels and service rate.
-        """
-
-        if self.approximation == "gamma":
-            return self._calc_f_gamma()
-
-        if self.approximation == "h2":
-            return self._calc_f_h2()
-
-        return self._calc_f_erlang()
-
-    def _calc_f_h2(self):
-        num = len(self.b)
-        f = [0] * num
-        params = H2Distribution.get_params(self.b)
-
-        for j in range(10):
-            p = self.g[j] * self._dfr_h2_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
-            f[0] += p
-            for i in range(1, num):
-                p = p * self.a_big[j]
-                f[i] += p
-
-        for i in range(num - 1):
-            f[i + 1] *= i + 2
-        return f
-
-    def _calc_f_gamma(self):
-        num = len(self.b)
-        f = [0] * num
-        params = GammaDistribution.get_params(self.b)
-
-        for j in range(10):
-            p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
-            f[0] += p
-            for i in range(1, num):
-                p = p * self.a_big[j]
-                f[i] += p
-
-        for i in range(num - 1):
-            f[i + 1] *= i + 2
-        return f
-
-    def _calc_f_erlang(self):
-        num = len(self.b)
-
-        f = [0] * num
-
-        params = ErlangDistribution.get_params(self.b)
-
-        for j in range(10):
-            p = self.g[j] * self._dfr_erl_mult(params, self.a_big[j]) * math.exp(self.a_big[j])
-            f[0] += p
-            for i in range(1, num):
-                p = p * self.a_big[j]
-                f[i] += p
-
-        for i in range(num - 1):
-            f[i + 1] *= i + 2
-        return f
-
-    def get_max_moments_delta(self, delta=0):
-        """
-        Calculation of the initial moments of the maximum of a random variable with delay delta.
-        :param n: number of identically distributed random variables
-        :param b: initial moments of the random variable
-        :param num: number of initial moments of the random variable
-        :return: initial moments of the maximum of the random variable.
-        """
-        b = self.b
-
-        num = len(self.b)
-
-        f = [0] * num
-
-        if delta:
-            params = GammaDistribution.get_params(b)
-
-            for j in range(10):
-                p = self.g[j] * self._dfr_gamma_mult(params, self.a_big[j], delta) * math.exp(self.a_big[j])
-                f[0] += p
-                for i in range(1, num):
-                    p = p * self.a_big[j]
-                    f[i] += p
-
-            for i in range(num - 1):
-                f[i + 1] *= i + 2
-
-        return f
-
-    def _get_lambda(self, min_value, max_value):
-        """
-        Generate a random number between min and max.
-        """
-        l = np.random.randn()
-        while l < min_value or l > max_value:
-            l = np.random.randn()
-        return l
-
-    def _get_1ambda_max(self, ro_max=0.8):
-        """
-        Calculate the maximum value of lambda for a given number of channels and service rate.
-        The maximum utilization is set to 0.8 by default.
-        :param b: service rate in a channel
-        :param n: number of channels
-        :param ro_max: maximum utilization of the system
-        :return: maximum value of lambda for a given number of channels and service rate.
-        """
-        b1_max = self.get_max_moments()[0]
-        return ro_max / b1_max
-
-    def _calc_error_percentage(self, real_val, est_val):
-        """
-        Calculate the error percentage between a real value and an estimated value.
-        :param real_val: real value
-        :param est_val: estimated value
-        :return: error percentage between a real value and an estimated value.
-        """
-        max_val = max(real_val, est_val)
-        return 100 * math.fabs(real_val - est_val) / max_val
-
-    def _dfr_h2_mult(self, params, t, delta=None):
-        """
-        Calculation of the derivative of the multivariate H2 distribution function.
-        params - parameters of the distribution (mu, alpha)
-        t - time
-        n - number of channels
-        delta - optional parameter for multivariate distributions
-        """
-        res = 1.0
-        if not delta:
-            for i in range(self.n):
-                res *= H2Distribution.get_cdf(params, t)
-        else:
-            if not isinstance(delta, list):
-                for i in range(self.n):
-                    res *= H2Distribution.get_cdf(params, t - i * delta)
-        return 1.0 - res
-
-    def _dfr_erl_mult(self, params, t, delta=None):
-        """
-        Calculation of the derivative of the multivariate Erlang distribution function.
-        params - parameters of the distribution (mu, alpha)
-        t - time
-        n - number of channels
-        delta - optional parameter for multivariate distributions
-        """
-        res = 1.0
-        if not delta:
-            for i in range(self.n):
-                res *= ErlangDistribution.get_cdf(params, t)
-        else:
-            if not isinstance(delta, list):
-                for i in range(self.n):
-                    res *= ErlangDistribution.get_cdf(params, t - i * delta)
-        return 1.0 - res
-
-    def _dfr_gamma_mult(self, params, t, delta=None):
-        """
-        Calculation of the derivative of the multivariate Gamma distribution function.
-        params - parameters of the distribution (mu, alpha)
-        t - time
-        n - number of channels
-        delta - optional parameter for multivariate distributions
-        """
-        res = 1.0
-        if not delta:
-            for i in range(self.n):
-                res *= GammaDistribution.get_cdf(params, t)
-        else:
-            if not isinstance(delta, list):
-                for i in range(self.n):
-                    res *= GammaDistribution.get_cdf(params, t - i * delta)
-            else:
-                b = GammaDistribution.calc_theory_moments(params)
-
-                for i in range(self.n):
-                    b_delta = get_self_conv_moments(delta, i)
-                    b_summ = conv_moments(b, b_delta)
-                    params_summ = GammaDistribution.get_params(b_summ)
-                    res *= GammaDistribution.get_cdf(params_summ, t)
-
-        return 1.0 - res

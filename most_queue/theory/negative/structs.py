@@ -5,9 +5,11 @@ Supporting structures for the queueing system with negative arrivals.
 import json
 from dataclasses import asdict, dataclass, is_dataclass
 
+from most_queue.theory.base_queue import QueueResults
+
 
 @dataclass
-class NegativeArrivalsResults:
+class NegativeArrivalsResults(QueueResults):
     """
     Class for storing results related to negative arrivals in a queueing system.
      Contains lists of waiting times (w), sojourn times  (v),
@@ -15,13 +17,8 @@ class NegativeArrivalsResults:
      and probabilities (p).
     """
 
-    w: list[float]
-
-    v: list[float]
-    v_served: list[float]
-    v_broken: list[float]
-
-    p: list[float]
+    v_served: list[float] | None = None
+    v_broken: list[float] | None = None
 
 
 @dataclass

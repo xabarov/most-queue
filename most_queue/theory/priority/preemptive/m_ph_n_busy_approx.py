@@ -9,7 +9,7 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
@@ -66,6 +66,7 @@ class MPhNPrty(MGnCalc):
         self.mu2_H = None
         self.p_H = None
         self.busy_num_ = None
+        self.high_results = None
         self.big_a_for_busy = []
         self.big_b_for_busy = []
         self.big_c_for_busy = []
@@ -98,11 +99,40 @@ class MPhNPrty(MGnCalc):
 
         self.is_servers_set = True
 
+    def get_w(self, _derivate=False) -> list[float]:
+        """
+        Calculate waiting time moments
+        """
+        # TODO
+        return [self.high_results.w, [0, 0, 0]]
+
+    def get_v(self) -> list[float]:
+        """
+        Calculate sojourn time moments
+        """
+        v1_low = self.get_low_class_v1()
+        return [self.high_results.v, [v1_low, 0, 0]]
+
+    def get_utilization(self):
+
+        b_sr = self.b_high[0] + 1.0 / self.mu_L
+        return (self.l_L + self.l_H) / b_sr
+
+    def _calc_high_queue(self) -> QueueResults:
+
+        mgn_high = MGnCalc(n=self.n, calc_params=self.calc_params)
+        mgn_high.set_sources(l=self.l_H)
+        mgn_high.set_servers(b=self.b_high)
+
+        return mgn_high.run()
+
     def run(self):
 
         self._check_if_servers_and_sources_set()
 
         self._calc_busy_periods()
+
+        self.high_results = self._calc_high_queue()
         return super().run()
 
     def get_low_class_v1(self) -> float:

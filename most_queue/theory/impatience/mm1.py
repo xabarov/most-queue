@@ -4,7 +4,7 @@ Calc M/M/1 queue with exponential impatience.
 
 import math
 
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -54,6 +54,20 @@ class MM1Impatience(BaseQueue):
         self.mu = mu
 
         self.is_servers_set = True
+
+    def run(self) -> QueueResults:
+        """
+        Run calculation of queueing system.
+        """
+
+        p = self.get_p()
+        w1 = self.get_w1()
+        v1 = self.get_v1()
+
+        # TODO need to self.gamma involved
+
+        utilization = self.l / self.mu
+        return QueueResults(p=p, v=[v1, 0, 0], w=[w1, 0, 0], utilization=utilization)
 
     def get_p(self) -> list[float]:
         """

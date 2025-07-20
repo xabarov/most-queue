@@ -59,22 +59,29 @@ def test_sim():
 
     # Get simulated waiting times
     w_sim = qs.w
+    v_sim = qs.v
     p_sim = qs.get_p()
 
     # Calculate theoretical waiting times using MMnr model
     mmnr = MMnrCalc(n=NUM_OF_CHANNELS, r=QUEUE_LENGTH)
     mmnr.set_sources(l=ARRIVAL_RATE)
     mmnr.set_servers(mu=service_rate)
-    w_num = mmnr.get_w()
-    p_num = mmnr.get_p()
+
+    mmnr_results = mmnr.run()
+
+    assert (
+        abs(mmnr_results.utilization - UTILIZATION_FACTOR) < PROBS_ATOL
+    ), "Utilization factor does not match theoretical value."
 
     # Print comparison of simulation and theoretical results
-    times_print(w_sim, w_num, True)
-    probs_print(p_num=p_num, p_sim=p_sim, size=10)
+    times_print(w_sim, mmnr_results.w, True)
+    times_print(v_sim, mmnr_results.v, False)
+    probs_print(p_num=mmnr_results.p, p_sim=p_sim, size=10)
 
-    assert np.allclose(w_sim, w_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(w_sim, mmnr_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, mmnr_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], mmnr_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -3,28 +3,14 @@ Calculation of the GI/M/n queueing system
 """
 
 import math
-from dataclasses import dataclass
 
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
-
-
-@dataclass
-class GiMnResult:
-    """
-    Result of calculation for GI/M/1 system
-    """
-
-    v: list[float]  # sojourn time initial moments
-    w: list[float]  # waiting time initial moments
-    p: list[float]  # probabilities of states
-    pi: list[float]  # probabilities of states before arrival
-    utilization: float  # utilization factor
 
 
 class GiMn(BaseQueue):
@@ -66,19 +52,18 @@ class GiMn(BaseQueue):
         self.a = a
         self.is_sources_set = True
 
-    def run(self):
+    def run(self) -> QueueResults:
         """
         Run calculation for the GI/M/1 queueing system.
         """
         self._check_if_servers_and_sources_set()
 
-        self.pi = self.get_pi()
         self.p = self.get_p()
         self.w = self.get_w()
         self.v = self.get_v()
         utilization = 1.0 / (self.a[0] * self.mu * self.n)
 
-        return GiMnResult(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+        return QueueResults(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
 
     def get_v(self) -> list[float]:
         """

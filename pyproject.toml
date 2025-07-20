@@ -33,6 +33,7 @@ disable = [
   "too-many-locals",
   "too-many-branches",
   "too-many-statements",
+  "fixme"
 ]
 
 [tool.pylint.format]
