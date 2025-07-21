@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import H2Distribution
 from most_queue.general.tables import times_print_with_classes
-from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
 from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
 
@@ -91,7 +91,7 @@ def test_network():
             else:
                 nodes_prty[m].append(NUM_OF_CLASSES - j - 1)
 
-            h2_params.append(H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CVS[j]))
+            h2_params.append(H2Distribution.get_params_by_mean_and_cv(b1, SERVICE_TIME_CVS[j]))
             serv_params[m].append({"type": "H", "params": h2_params[m]})
 
     for k in range(NUM_OF_CLASSES):

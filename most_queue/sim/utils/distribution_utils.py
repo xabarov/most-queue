@@ -8,7 +8,7 @@ import math
 import yaml
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (
+from most_queue.distributions import (
     CoxDistribution,
     DeterministicDistribution,
     ErlangDistribution,

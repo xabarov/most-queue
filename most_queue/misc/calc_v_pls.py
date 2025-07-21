@@ -9,7 +9,7 @@ from functools import lru_cache
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2Distribution, H2Params
+from most_queue.distributions import H2Distribution, H2Params
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp

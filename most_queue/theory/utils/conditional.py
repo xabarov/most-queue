@@ -6,8 +6,8 @@ import math
 
 import numpy as np
 
-from most_queue.general.distribution_params import H2Params
-from most_queue.rand_distribution import H2Distribution
+from most_queue.distr_utils.distribution_params import H2Params
+from most_queue.distributions import H2Distribution
 
 
 def moments_h2_less_than_exp(gamma: float, h2_params: H2Params):

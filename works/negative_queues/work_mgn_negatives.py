@@ -9,16 +9,16 @@ from dataclasses import asdict
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
-from most_queue.rand_distribution import GammaDistribution
-from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
-from most_queue.structs import (
+from most_queue.general.results_structs import (
     DependsOnChannelsResults,
     DependsOnJSONEncoder,
     DependsOnUtilizationResults,
     DependsOnVariationResults,
 )
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
@@ -83,7 +83,7 @@ def run_depends_on_channels(qp: dict, discipline: NegativeServiceType, max_p: in
 
         service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
+        b = gamma_moments_by_mean_and_cv(service_mean, qp["service"]["cv"]["base"])
 
         # collect results
         calc_results.append(collect_calc_results(qp=qp, b=b, n=n, discipline=discipline, max_p=max_p))
@@ -118,7 +118,7 @@ def run_depends_on_varience(qp: dict, discipline: NegativeServiceType, max_p: in
         print(f"Service time variation coefficient: {coef:0.2f}")
         service_mean = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_coev(service_mean, coef)
+        b = gamma_moments_by_mean_and_cv(service_mean, coef)
         # collect results
         calc_results.append(
             collect_calc_results(n=qp["channels"]["base"], qp=qp, b=b, discipline=discipline, max_p=max_p)
@@ -156,7 +156,7 @@ def run_depends_on_utilization(
         print(f"Utilization factor: {rho:0.2f}")
         service_mean = qp["channels"]["base"] * rho / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
+        b = gamma_moments_by_mean_and_cv(service_mean, qp["service"]["cv"]["base"])
 
         # collect results
         calc_results.append(

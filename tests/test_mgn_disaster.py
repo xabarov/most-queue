@@ -7,9 +7,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 
@@ -44,7 +44,7 @@ def test_mgn():
 
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
 
-    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 
     # Run simulation
     queue_sim = QsSimNegatives(NUM_OF_CHANNELS, NegativeServiceType.DISASTER)

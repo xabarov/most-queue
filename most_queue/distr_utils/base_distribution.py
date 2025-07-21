@@ -55,10 +55,10 @@ class Distribution(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float):
+    def get_params_by_mean_and_cv(f1: float, cv: float):
         """
         :param f1: mean of the distribution.
-        :param coev: coefficient of variation (std_dev / mean).
+        :param cv: coefficient of variation (std_dev / mean).
         :return: Parameters for the distribution that correspond
         to the given mean and coefficient of variation.
         """

@@ -10,8 +10,8 @@ Test the NetworkOptimizer class.
 
 import numpy as np
 
+from most_queue.distributions import ExpDistribution
 from most_queue.general.tables import print_mrx
-from most_queue.rand_distribution import ExpDistribution
 from most_queue.theory.networks.opt.transition import NetworkOptimizer, OpenNetworkCalc
 
 

@@ -9,8 +9,8 @@ import os
 
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
-from most_queue.rand_distribution import ExpDistribution, GammaDistribution
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import ExpDistribution, GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty, TakahashiTakamiParams
@@ -47,13 +47,13 @@ def test_m_ph_n_prty():
     For verification, we use simulation
     """
 
-    print(f"coev =  {SERVICE_TIME_CV:5.3f}")
+    print(f"cv =  {SERVICE_TIME_CV:5.3f}")
 
     lsum = ARRIVAL_RATE_LOW + ARRIVAL_RATE_HIGH
     bsr = NUM_OF_CHANNELS * UTILIZATION_FACTOR / lsum
     b1_high = lsum * bsr / (ARRIVAL_RATE_LOW * SERVICE_PROPORTION + ARRIVAL_RATE_HIGH)
     b1_low = SERVICE_PROPORTION * b1_high
-    b_high = gamma_moments_by_mean_and_coev(b1_high, SERVICE_TIME_CV)
+    b_high = gamma_moments_by_mean_and_cv(b1_high, SERVICE_TIME_CV)
 
     gamma_params = GammaDistribution.get_params([b_high[0], b_high[1]])
 

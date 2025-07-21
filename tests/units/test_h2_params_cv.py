@@ -5,7 +5,7 @@ Plot the parameters of the H2-distribution for a given set of initial moments.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from most_queue.rand_distribution import H2Distribution
+from most_queue.distributions import H2Distribution
 
 
 def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax_threshold=3):
@@ -28,7 +28,7 @@ def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax
     mu2_values_imag = []
     p1_values_imag = []
     for cv in cv_values:
-        h2_params = H2Distribution.get_params_by_mean_and_coev(1, cv, is_clx=True)
+        h2_params = H2Distribution.get_params_by_mean_and_cv(1, cv, is_clx=True)
         mu1_values_real.append(h2_params.mu1.real)
         mu1_values_imag.append(h2_params.mu1.imag)
         mu2_values_real.append(h2_params.mu2.real)
@@ -68,7 +68,7 @@ def plot_h2_params_greater_than_exp(start_cv=1.01, end_cv=5.0, num_points=100):
     mu2_values = []
     p1_values = []
     for cv in cv_values:
-        h2_params = H2Distribution.get_params_by_mean_and_coev(1, cv, is_clx=False)
+        h2_params = H2Distribution.get_params_by_mean_and_cv(1, cv, is_clx=False)
         mu1_values.append(h2_params.mu1)
         mu2_values.append(h2_params.mu2)
         p1_values.append(h2_params.p1)

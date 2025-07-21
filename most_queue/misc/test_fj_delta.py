@@ -7,8 +7,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.fork_join_delta import ForkJoinSimDelta
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
 
@@ -44,9 +44,9 @@ def test_fj_delta():
     Test for ForkJoin queue with delta.
     """
 
-    b_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
+    b_params = GammaDistribution.get_params_by_mean_and_cv(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
-    delta_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_DELTA_AVERAGE, SERVICE_TIME_CV)
+    delta_params = GammaDistribution.get_params_by_mean_and_cv(SERVICE_TIME_DELTA_AVERAGE, SERVICE_TIME_CV)
     b_delta = GammaDistribution.calc_theory_moments(delta_params)
     b = GammaDistribution.calc_theory_moments(b_params)
 

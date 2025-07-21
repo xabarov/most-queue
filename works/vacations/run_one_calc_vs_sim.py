@@ -6,10 +6,9 @@ with H2-warming, H2-cooling and H2-delay of cooling starts.
 import time
 
 import numpy as np
-from utils import calc_moments_by_mean_and_coev
 
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
 
@@ -127,6 +126,15 @@ def run_simulation(
     return stat
 
 
+def calc_moments_by_mean_and_cv(mean: float, cv: float) -> list[float]:
+    """
+    Calculates theoretical moments of a gamma distribution given its
+    mean and coefficient of variation (CV).
+    """
+    gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean, cv)
+    return GammaDistribution.calc_theory_moments(gamma_params)
+
+
 if __name__ == "__main__":
 
     from utils import read_parameters_from_yaml
@@ -137,10 +145,10 @@ if __name__ == "__main__":
 
     # Calculate initial moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
-    b_service = calc_moments_by_mean_and_coev(SERVICE_TIME_MEAN, qp["service"]["cv"]["base"])
-    b_warmup = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
-    b_cooling = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
-    b_delay = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
+    b_service = calc_moments_by_mean_and_cv(SERVICE_TIME_MEAN, qp["service"]["cv"]["base"])
+    b_warmup = calc_moments_by_mean_and_cv(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_cooling = calc_moments_by_mean_and_cv(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_delay = calc_moments_by_mean_and_cv(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     num_results = run_calculation(
         arrival_rate=qp["arrival_rate"],

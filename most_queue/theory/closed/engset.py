@@ -4,7 +4,7 @@ Calculation of the Engset model for M/M/1 with a finite number of sources.
 
 import time
 
-from most_queue.structs import QueueResults
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from most_queue.general.distribution_params import (
+from most_queue.distr_utils.distribution_params import (
     Cox2Params,
     ErlangParams,
     GammaParams,
@@ -102,27 +102,22 @@ def fit_h2_clx(moments: list[float], fitting_params: FittingParams | None = None
 
     if fitting_params.is_fitting:
         # проверка на близость распределения к экспоненциальному
-        coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
-        if math.fabs(coev.real - 1.0) < fitting_params.ee:
+        cv = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+        if math.fabs(cv.real - 1.0) < fitting_params.ee:
             if fitting_params.verbose:
-                print(
-                    f"H2 is close to Exp. Multiply moments to (1+je)"
-                    f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
-                )
+                print(f"H2 is close to Exp. Multiply moments to (1+je)" f"cv = {cv:5.3f}, e = {fitting_params.e:5.3f}.")
             f = []
             for i, mom in enumerate(moments):
                 f.append(mom * complex(1, (i + 1) * fitting_params.e))
 
             return fit_h2_clx(f, fitting_params=fitting_params)
 
-        coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+        cv = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
         # проверка на близость распределения к Эрланга 2-го порядка
-        if math.fabs(coev.real - 1.0 / math.sqrt(2.0)) < fitting_params.ee:
+        if math.fabs(cv.real - 1.0 / math.sqrt(2.0)) < fitting_params.ee:
             if fitting_params.verbose:
-                print(
-                    f"H2 is close to E2. Multiply moments to (1+je)" f"coev = {coev:5.3f}, e = {fitting_params.e:5.3f}."
-                )
+                print(f"H2 is close to E2. Multiply moments to (1+je)" f"cv = {cv:5.3f}, e = {fitting_params.e:5.3f}.")
             f = []
             for i, mom in enumerate(moments):
                 f.append(mom * complex(1, (i + 1) * fitting_params.e))
@@ -151,23 +146,23 @@ def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -
 
     if fitting_params.is_fitting:
         # проверка на близость распределения к экспоненциальному
-        coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+        cv = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
         if abs(moments[1] - moments[0] * moments[0]) < fitting_params.ee:
             if fitting_params.verbose:
-                print(f"Cox special 1. Multiply moments to (1+je)" f"coev = {coev:5.3f}  e = {fitting_params.e:5.3f}.")
+                print(f"Cox special 1. Multiply moments to (1+je)" f"cv = {cv:5.3f}  e = {fitting_params.e:5.3f}.")
             f = []
             for i, mom in enumerate(moments):
                 f.append(mom * complex(1, (i + 1) * fitting_params.e))
 
             return fit_cox(f, fitting_params=fitting_params)
 
-        coev = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
+        cv = cmath.sqrt(moments[1] - moments[0] ** 2) / moments[0]
 
         # проверка на близость распределения к Эрланга 2-го порядка
         if abs(moments[1] - (3.0 / 4) * moments[0] * moments[0]) < fitting_params.ee:
             if fitting_params.verbose:
                 print("Cox special 2. Multiply moments to (1+je)")
-                print(f"\tcoev = {coev:5.3f}, e = {fitting_params.e:5.3f}")
+                print(f"\tcv = {cv:5.3f}, e = {fitting_params.e:5.3f}")
             f = []
             for i, mom in enumerate(moments):
                 f.append(mom * complex(1, (i + 1) * fitting_params.e))
@@ -198,13 +193,13 @@ def fit_pareto_moments(moments: list[float]):
     return ParetoParams(alpha=a, K=k)
 
 
-def fit_pareto_by_mean_and_coev(f1: float, coev: float):
+def fit_pareto_by_mean_and_cv(f1: float, cv: float):
     """
     Get parameters of the distribution by mean and coefficient of variation.
     :param f1: float, mean value of the distribution
-    :param coev: float, coefficient of variation (mean / std)
+    :param cv: float, coefficient of variation (mean / std)
     """
-    d = pow(f1 * coev, 2)
+    d = pow(f1 * cv, 2)
     c = pow(f1, 2) / d
     disc = 4 * (1 + c)
     a = (2 + math.sqrt(disc)) / 2
@@ -319,14 +314,14 @@ def fit_weibull(moments: list[float]) -> WeibullParams:
     return WeibullParams(k=k, W=big_w)
 
 
-def gamma_moments_by_mean_and_coev(mean: float, coev: float) -> list[float]:
+def gamma_moments_by_mean_and_cv(mean: float, cv: float) -> list[float]:
     """
     Calculate the first three moments of a gamma distribution
     given the mean and coefficient of variation.
     """
     f = [0, 0, 0]
-    alpha = 1 / (coev**2)
+    alpha = 1 / (cv**2)
     f[0] = mean
-    f[1] = pow(f[0], 2) * (pow(coev, 2) + 1)
+    f[1] = pow(f[0], 2) * (pow(cv, 2) + 1)
     f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
     return f

@@ -7,9 +7,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_rcs import MG1NegativeCalcRCS
 
@@ -37,7 +37,7 @@ def test_mg1_gamma_rcs():
     """
 
     b1 = UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE
-    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 
     # Run simulation
     queue_sim = QsSimNegatives(1, NegativeServiceType.RCS)

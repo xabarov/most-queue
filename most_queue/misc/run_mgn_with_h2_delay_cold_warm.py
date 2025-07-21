@@ -8,14 +8,14 @@ import time
 
 import numpy as np
 
+from most_queue.distributions import GammaDistribution
 from most_queue.misc.vacations_paper_utils import (
-    calc_moments_by_mean_and_coev,
+    calc_moments_by_mean_and_cv,
     dump_stat,
     load_stat,
     make_plot,
     print_table,
 )
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import (
     MGnH2ServingColdWarmDelay,
@@ -144,13 +144,13 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
 
 def run_ro(
     b1_service,
-    coev_service,
+    cv_service,
     b1_warm,
-    coev_warm,
+    cv_warm,
     b1_cold,
-    coev_cold,
+    cv_cold,
     b1_cold_delay,
-    coev_cold_delay,
+    cv_cold_delay,
     n=1,
     num_of_jobs=300000,
     num_of_roes=12,
@@ -168,16 +168,16 @@ def run_ro(
     Parameters:
     ----------
     b1_service: mean service time
-    coev_service: service time coefficient of variation
+    cv_service: service time coefficient of variation
 
     b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
+    cv_warm: warm-up coefficient of variation
 
     b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
+    cv_cold: vacation  (or "cooling") coefficient of variation
 
     b1_cold_delay: average cooling start delay time
-    coev_cold_delay: coefficient of variation of cooling start delay
+    cv_cold_delay: coefficient of variation of cooling start delay
 
     n: number of channels
     num_of_jobs - number of jobs for the simulation model
@@ -214,22 +214,22 @@ def run_ro(
         stat["ro"] = ro
         stat["n"] = n
 
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(b1_cold_delay, coev_cold_delay)
+        b = calc_moments_by_mean_and_cv(b1_service, cv_service)
+        b_w = calc_moments_by_mean_and_cv(b1_warm, cv_warm)
+        b_c = calc_moments_by_mean_and_cv(b1_cold, cv_cold)
+        b_d = calc_moments_by_mean_and_cv(b1_cold_delay, cv_cold_delay)
 
         stat["b"] = b
-        stat["coev_service"] = coev_service
+        stat["cv_service"] = cv_service
 
         stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
+        stat["cv_warm"] = cv_warm
 
         stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
+        stat["cv_cold"] = cv_cold
 
         stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
+        stat["cv_cold_delay"] = cv_cold_delay
 
         get_tt_stat(
             stat,
@@ -255,13 +255,13 @@ def run_ro(
 
 def run_n(
     b1_service,
-    coev_service,
+    cv_service,
     b1_warm,
-    coev_warm,
+    cv_warm,
     b1_cold,
-    coev_cold,
+    cv_cold,
     b1_cold_delay,
-    coev_cold_delay,
+    cv_cold_delay,
     num_of_jobs=300000,
     ro=0.7,
     n_min=1,
@@ -279,16 +279,16 @@ def run_n(
     ----------
 
     b1_service: mean service time
-    coev_service: service time coefficient of variation
+    cv_service: service time coefficient of variation
 
     b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
+    cv_warm: warm-up coefficient of variation
 
     b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
+    cv_cold: vacation  (or "cooling") coefficient of variation
 
     b1_cold_delay: average cooling start delay time
-    coev_cold_delay: coefficient of variation of cooling start delay
+    cv_cold_delay: coefficient of variation of cooling start delay
 
     ro - QS utilization factor
 
@@ -325,22 +325,22 @@ def run_n(
         stat["ro"] = ro
         stat["n"] = n
 
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(b1_cold_delay, coev_cold_delay)
+        b = calc_moments_by_mean_and_cv(b1_service, cv_service)
+        b_w = calc_moments_by_mean_and_cv(b1_warm, cv_warm)
+        b_c = calc_moments_by_mean_and_cv(b1_cold, cv_cold)
+        b_d = calc_moments_by_mean_and_cv(b1_cold_delay, cv_cold_delay)
 
         stat["b"] = b
-        stat["coev_service"] = coev_service
+        stat["cv_service"] = cv_service
 
         stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
+        stat["cv_warm"] = cv_warm
 
         stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
+        stat["cv_cold"] = cv_cold
 
         stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
+        stat["cv_cold_delay"] = cv_cold_delay
 
         get_tt_stat(
             stat,
@@ -366,12 +366,12 @@ def run_n(
 
 def run_delay_mean(
     b1_service,
-    coev_service,
+    cv_service,
     b1_warm,
-    coev_warm,
+    cv_warm,
     b1_cold,
-    coev_cold,
-    coev_cold_delay,
+    cv_cold,
+    cv_cold_delay,
     n=1,
     num_of_jobs=300000,
     ro=0.7,
@@ -390,15 +390,15 @@ def run_delay_mean(
     Parameters:
 
     b1_service: mean service time
-    coev_service: service time coefficient of variation
+    cv_service: service time coefficient of variation
 
     b1_warm: setup (or "warm-up ") mean time
-    coev_warm: warm-up coefficient of variation
+    cv_warm: warm-up coefficient of variation
 
     b1_cold: vacation  (or "cooling") mean time
-    coev_cold: vacation  (or "cooling") coefficient of variation
+    cv_cold: vacation  (or "cooling") coefficient of variation
 
-    coev_cold_delay: coefficient of variation of cooling start delay
+    cv_cold_delay: coefficient of variation of cooling start delay
 
     n - number of channels
     num_of_jobs - number of jobs for the simulation model
@@ -434,22 +434,22 @@ def run_delay_mean(
         stat["ro"] = ro
         stat["n"] = n
 
-        b = calc_moments_by_mean_and_coev(b1_service, coev_service)
-        b_w = calc_moments_by_mean_and_coev(b1_warm, coev_warm)
-        b_c = calc_moments_by_mean_and_coev(b1_cold, coev_cold)
-        b_d = calc_moments_by_mean_and_coev(d, coev_cold_delay)
+        b = calc_moments_by_mean_and_cv(b1_service, cv_service)
+        b_w = calc_moments_by_mean_and_cv(b1_warm, cv_warm)
+        b_c = calc_moments_by_mean_and_cv(b1_cold, cv_cold)
+        b_d = calc_moments_by_mean_and_cv(d, cv_cold_delay)
 
         stat["b"] = b
-        stat["coev_service"] = coev_service
+        stat["cv_service"] = cv_service
 
         stat["b_w"] = b_w
-        stat["coev_warm"] = coev_warm
+        stat["cv_warm"] = cv_warm
 
         stat["b_c"] = b_c
-        stat["coev_cold"] = coev_cold
+        stat["cv_cold"] = cv_cold
 
         stat["b_d"] = b_d
-        stat["coev_cold_delay"] = coev_cold_delay
+        stat["cv_cold_delay"] = cv_cold_delay
 
         get_tt_stat(
             stat,
@@ -496,13 +496,13 @@ def test_all():
 
         ro_stat = run_ro(
             b1_service=10.0,
-            coev_service=1.2,
+            cv_service=1.2,
             b1_warm=3.1,
-            coev_warm=0.87,
+            cv_warm=0.87,
             b1_cold=4.1,
-            coev_cold=1.1,
+            cv_cold=1.1,
             b1_cold_delay=3.71,
-            coev_cold_delay=1.2,
+            cv_cold_delay=1.2,
             n=n,
             num_of_jobs=300000,
             num_of_roes=10,
@@ -530,13 +530,13 @@ def test_all():
 
         n_stat = run_n(
             b1_service=10.0,
-            coev_service=1.2,
+            cv_service=1.2,
             b1_warm=3.1,
-            coev_warm=0.87,
+            cv_warm=0.87,
             b1_cold=4.1,
-            coev_cold=1.1,
+            cv_cold=1.1,
             b1_cold_delay=3.71,
-            coev_cold_delay=1.2,
+            cv_cold_delay=1.2,
             num_of_jobs=300000,
             n_min=1,
             n_max=10,
@@ -566,13 +566,13 @@ def test_all():
 
         delay_stat = run_delay_mean(
             b1_service=10.0,
-            coev_service=1.2,
+            cv_service=1.2,
             b1_warm=3.1,
-            coev_warm=0.87,
+            cv_warm=0.87,
             b1_cold=4.1,
-            coev_cold=1.1,
+            cv_cold=1.1,
             ro=ro,
-            coev_cold_delay=1.2,
+            cv_cold_delay=1.2,
             n=n,
             num_of_jobs=1000000,
             num_of_delays=10,
@@ -599,13 +599,13 @@ if __name__ == "__main__":
     UTILIZATION = 0.7
     N_STAT = run_n(
         b1_service=10.0,
-        coev_service=1.2,
+        cv_service=1.2,
         b1_warm=3.1,
-        coev_warm=0.87,
+        cv_warm=0.87,
         b1_cold=4.1,
-        coev_cold=1.1,
+        cv_cold=1.1,
         b1_cold_delay=3.71,
-        coev_cold_delay=1.2,
+        cv_cold_delay=1.2,
         num_of_jobs=300000,
         n_min=1,
         n_max=10,

@@ -24,10 +24,10 @@ def print_table(experiments_stat):
         print(f"Utilization factor: {stat['ro']:0.2f}")
         # Service time coefficients of variation
         coeff_variants = [
-            ("Service", stat["coev_service"]),
-            ("Warm-up", stat["coev_warm"]),
-            ("Cooling", stat["coev_cold"]),
-            ("Cooling delay", stat["coev_cold_delay"]),
+            ("Service", stat["cv_service"]),
+            ("Warm-up", stat["cv_warm"]),
+            ("Cooling", stat["cv_cold"]),
+            ("Cooling delay", stat["cv_cold_delay"]),
         ]
 
         for label, value in coeff_variants:
@@ -111,7 +111,7 @@ def make_plot(experiments_stat, w_moments_num=0, param_name="ro", mode="error", 
 
     if param_name == "ro":
         ax.set_xlabel(r"$\rho$")
-    elif param_name == "coev":
+    elif param_name == "cv":
         ax.set_xlabel(r"$\nu$")
     elif param_name == "n":
         ax.set_xlabel("n")

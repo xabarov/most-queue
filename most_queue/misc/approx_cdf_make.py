@@ -4,21 +4,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-from most_queue.rand_distribution import GammaDistribution, H2Distribution
+from most_queue.distributions import GammaDistribution, H2Distribution
 
 if __name__ == "__main__":
 
     # Входные данные
 
     b1 = 3  # мат. ожидание
-    coev = 1.2  # коэффициент вариации
+    cv = 1.2  # коэффициент вариации
     a_s = 4  # ассиметрия
 
     # задаем начальные моменты распределения
 
     b = [0, 0, 0]
     b[0] = b1
-    b[1] = pow(b[0], 2) * (1 + pow(coev, 2))
+    b[1] = pow(b[0], 2) * (1 + pow(cv, 2))
 
     # дисперсия
     D = b[1] - pow(b[0], 2)

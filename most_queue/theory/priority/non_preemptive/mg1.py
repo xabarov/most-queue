@@ -4,8 +4,8 @@ Class to calculate the average waiting time in an M/G/1 queue with non-preemptiv
 
 import time
 
-from most_queue.rand_distribution import GammaDistribution
-from most_queue.structs import PriorityResults
+from most_queue.distributions import GammaDistribution
+from most_queue.general.results_structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.conv import conv_moments

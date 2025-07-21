@@ -11,8 +11,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import ErlangDistribution
 from most_queue.general.tables import probs_print
-from most_queue.rand_distribution import ErlangDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 
@@ -50,9 +50,9 @@ def test_ek_d_n():
 
     # Let us select the ErlangParams
     # based on the mean value and the coefficient of variation
-    # using the ErlangDistribution.get_params_by_mean_and_coev() method
+    # using the ErlangDistribution.get_params_by_mean_and_cv() method
 
-    erl_params = ErlangDistribution.get_params_by_mean_and_coev(ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV)
+    erl_params = ErlangDistribution.get_params_by_mean_and_cv(ARRIVAL_TIME_AVERAGE, ARRIVAL_TIME_CV)
 
     # service time will be determined based on the specified utilization factor
 

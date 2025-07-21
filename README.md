@@ -12,7 +12,7 @@ A Python package for simulating and analyzing queueing systems (QS) and networks
 New unified API for both simulation and calculation classes:
 
 ```python
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_cv
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
@@ -30,7 +30,7 @@ UTILIZATION_FACTOR = 0.7
 
 # calc service time moments using gamma distribution fitting
 b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
-b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 gamma_params = GammaDistribution.get_params([b[0], b[1]]) # gamma distribution parameters
 
 # run Takahasi-Takami calc method

@@ -7,7 +7,7 @@ import math
 
 from tqdm import tqdm
 
-from most_queue.rand_distribution import (
+from most_queue.distributions import (
     ErlangDistribution,
     GammaDistribution,
     H2Distribution,
@@ -29,7 +29,7 @@ class FlowSumSim:
         self.verbose = verbose
         self.num_of_moments = num_of_moments
         self.num_of_jobs = num_of_jobs
-        self.coevs = []
+        self.cvs = []
         self.result_flow = []
         self.flows_ = []
         self.a1_sum = []
@@ -88,7 +88,7 @@ class FlowSumSim:
                 )
 
             self.flows_.append(f1)
-            self.coevs.append(self.get_coev(f1))
+            self.cvs.append(self.get_cv(f1))
             f = []
             f.append(f1)
 
@@ -142,13 +142,13 @@ class FlowSumSim:
         return f
 
     @staticmethod
-    def get_coev(a: list[complex]):
+    def get_cv(a: list[complex]):
         """
         Calculating coefficient of variation for distribution.
         """
         D = a[1] - pow(a[0], 2)
-        coev = math.sqrt(D) / a[0]
-        return coev
+        cv = math.sqrt(D) / a[0]
+        return cv
 
     @staticmethod
     def sum_2_Pa_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):

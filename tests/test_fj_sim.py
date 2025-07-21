@@ -7,10 +7,10 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import GammaDistribution, GammaParams
+from most_queue.general.results_structs import QueueResults
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import GammaDistribution, GammaParams
 from most_queue.sim.fork_join import ForkJoinSim
-from most_queue.structs import QueueResults
 from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
 
@@ -59,11 +59,11 @@ def print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k: int):
     assert abs(v1_sim - v1_nelson_tantawi) < 0.02, ERROR_MSG
 
 
-def print_results_sj(coev: float, sim_results: QueueResults, calc_results: QueueResults):
+def print_results_sj(cv: float, sim_results: QueueResults, calc_results: QueueResults):
     """
     Print results of Split-Join Queueing System simulation.
      Args:
-         coev: Coefficient of variation of service time.
+         cv: Coefficient of variation of service time.
          ro: Utilization coefficient.
          v_sim: List of simulated sojourn times.
          v_num: List of theoretical sojourn times.
@@ -72,7 +72,7 @@ def print_results_sj(coev: float, sim_results: QueueResults, calc_results: Queue
     print("-" * 60)
     print(f'{"Split-Join Queueing System":^60s}')
     print("-" * 60)
-    print(f"Coefficient of variation of service time: {coev}")
+    print(f"Coefficient of variation of service time: {cv}")
     print(f"Utilization coefficient: {calc_results.utilization:.3f}")
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
@@ -164,7 +164,7 @@ def test_sj_sim():
 
     """
 
-    gamma_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
+    gamma_params = GammaDistribution.get_params_by_mean_and_cv(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
     b = GammaDistribution.calc_theory_moments(gamma_params)
     sim_results = run_sim_sj(gamma_params)
@@ -174,7 +174,7 @@ def test_sj_sim():
     sj_calc.set_servers(b=b)
     calc_results = sj_calc.run()
 
-    print_results_sj(coev=SERVICE_TIME_CV, calc_results=calc_results, sim_results=sim_results)
+    print_results_sj(cv=SERVICE_TIME_CV, calc_results=calc_results, sim_results=sim_results)
 
     assert np.allclose(
         np.array(sim_results.v[:2]), np.array(calc_results.v), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL

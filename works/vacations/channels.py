@@ -6,7 +6,7 @@ and plot the wait time averages for both calculation and simulation.
 import os
 
 import numpy as np
-from run_one_calc_vs_sim import calc_moments_by_mean_and_coev, run_calculation, run_simulation
+from run_one_calc_vs_sim import calc_moments_by_mean_and_cv, run_calculation, run_simulation
 from utils import calc_rel_error_percent, plot_w1, plot_w1_errors
 
 
@@ -23,15 +23,15 @@ def run_channels(qp, save_path: str = None):
     total_num_time = 0
     total_sim_time = 0
 
-    b_w = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
-    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
-    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
+    b_w = calc_moments_by_mean_and_cv(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_c = calc_moments_by_mean_and_cv(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_cv(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     for n in channels:
         print(f"Start {n} channels...")
         service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]
 
-        b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
+        b = calc_moments_by_mean_and_cv(service_mean, qp["service"]["cv"]["base"])
 
         num_results = run_calculation(arrival_rate=qp["arrival_rate"], num_channels=n, b=b, b_w=b_w, b_c=b_c, b_d=b_d)
         sim_results = run_simulation(

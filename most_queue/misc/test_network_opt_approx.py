@@ -4,7 +4,7 @@ Test the NetworkOptimizerWithApprox class.
 
 import numpy as np
 
-from most_queue.rand_distribution import ExpDistribution
+from most_queue.distributions import ExpDistribution
 from most_queue.theory.networks.open_network import OpenNetworkCalc
 from most_queue.theory.networks.opt.transition_approx import NetworkOptimizerWithApprox
 

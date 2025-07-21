@@ -8,9 +8,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mmn_with_h2_cold_and_h2_warmup import MMnHyperExpWarmAndCold
 
@@ -60,12 +60,12 @@ def test_mmn_h2cold_h2_warm():
     simulator.set_servers(service_rate, "M")
 
     # Set warm-up phase parameters
-    b_w = gamma_moments_by_mean_and_coev(mean_warmup_time, WARM_UP_CV)
+    b_w = gamma_moments_by_mean_and_cv(mean_warmup_time, WARM_UP_CV)
     warmup_params = GammaDistribution.get_params(b_w)
     simulator.set_warm(warmup_params, "Gamma")
 
     # Set cold phase parameters
-    b_c = gamma_moments_by_mean_and_coev(mean_cold_time, COOLING_CV)
+    b_c = gamma_moments_by_mean_and_cv(mean_cold_time, COOLING_CV)
     cold_params = GammaDistribution.get_params(b_c)
     simulator.set_cold(cold_params, "Gamma")
 

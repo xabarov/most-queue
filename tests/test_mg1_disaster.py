@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import times_print_with_two_numerical
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_disasters import MG1Disasters
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
@@ -47,7 +47,7 @@ def test_mg1():
 
     approximation = "gamma"
 
-    b_params = GammaDistribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b_params = GammaDistribution.get_params_by_mean_and_cv(b1, SERVICE_TIME_CV)
     b = GammaDistribution.calc_theory_moments(b_params)
 
     # Run calc

@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.gi_m_1 import GiM1
 
@@ -44,7 +44,7 @@ def test_gi_m_1():
 
     # calculation of parameters approximating Gamma-distribution for arrival
     # times
-    gamma_params = GammaDistribution.get_params_by_mean_and_coev(a1, ARRIVAL_CV)
+    gamma_params = GammaDistribution.get_params_by_mean_and_cv(a1, ARRIVAL_CV)
     print(gamma_params)
     a = GammaDistribution.calc_theory_moments(gamma_params)
 

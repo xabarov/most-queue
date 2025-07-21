@@ -4,7 +4,7 @@ QS channels or servers
 
 from colorama import Fore, Style
 
-from most_queue.rand_distribution import (
+from most_queue.distributions import (
     CoxDistribution,
     ErlangDistribution,
     ExpDistribution,
@@ -132,7 +132,7 @@ class ServerWarmUp(Server):
 
                 f_summ = conv_moments(b, self.delta)
                 # variance = f_summ[1] - math.pow(f_summ[0], 2)
-                # coev = math.sqrt(variance)/f_summ[0]
+                # cv = math.sqrt(variance)/f_summ[0]
                 params = GammaDistribution.get_params(f_summ)
                 self.time_to_end_service = ttek + GammaDistribution.generate_static(params)
 

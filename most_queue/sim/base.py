@@ -8,13 +8,13 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
+from most_queue.general.results_structs import QueueResults
 from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
 from most_queue.sim.utils.exceptions import QsWrongQueueTypeException
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import Task
-from most_queue.structs import QueueResults
 
 init()
 

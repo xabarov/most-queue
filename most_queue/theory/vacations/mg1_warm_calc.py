@@ -7,8 +7,8 @@ import time
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.structs import QueueResults
+from most_queue.distributions import GammaDistribution, H2Distribution
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2

@@ -10,8 +10,8 @@ from itertools import chain
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2Distribution
-from most_queue.structs import VacationResults
+from most_queue.distributions import H2Distribution
+from most_queue.general.results_structs import VacationResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls
@@ -523,7 +523,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         return w
 
-    def _calc_serv_coev(self):
+    def _calc_serv_cv(self):
         b = self.b
         D = b[1] - b[0] * b[0]
         return math.sqrt(D) / b[0]
@@ -538,7 +538,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         # ro = self.l * self.b[0] / self.n
         # va = 1.0  # M/
-        # vb = self._calc_serv_coev()
+        # vb = self._calc_serv_cv()
         # self.x[0] = pow(ro, 2.0 / (va * va + vb * vb))
 
         self.x[0] = 0.4

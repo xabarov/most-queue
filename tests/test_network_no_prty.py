@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import H2Distribution
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.networks.network import NetworkSimulator
 from most_queue.theory.networks.open_network import OpenNetworkCalc
 
@@ -57,7 +57,7 @@ def test_network():
     for m in range(NUM_OF_NODES):
         b1 = UTILIZATION_FACTOR * NUM_OF_CHANNELS[m] / ARRIVAL_RATE
 
-        h2_params = H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
+        h2_params = H2Distribution.get_params_by_mean_and_cv(b1, SERVICE_TIME_CV)
         serv_params.append({"type": "H", "params": h2_params})
 
         b.append(H2Distribution.calc_theory_moments(h2_params, 4))

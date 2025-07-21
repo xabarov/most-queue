@@ -9,8 +9,8 @@ import time
 
 import numpy as np
 
-from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
-from most_queue.structs import PriorityResults, QueueResults
+from most_queue.distributions import CoxDistribution, FittingParams, H2Distribution
+from most_queue.general.results_structs import PriorityResults, QueueResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
@@ -50,7 +50,7 @@ class MPhNPrty(MGnCalc):
         self.is_cox = calc_params.is_cox
 
         self.busy_periods = []  # list of busy periods initial moments
-        self.busy_periods_coevs = []  # list of busy periods coefficients of variation
+        self.busy_periods_cvs = []  # list of busy periods coefficients of variation
         self.alphas = []
         self.pp = []  # list of transition probabilities to the busy periods states
 
@@ -338,11 +338,11 @@ class MPhNPrty(MGnCalc):
         for j in range(self.busy_num_):
             under_sqrt = self.busy_periods[j][1] - self.busy_periods[j][0] ** 2
             if under_sqrt > 0:
-                coev = math.sqrt(under_sqrt.real)
-                self.alphas.append(1 / (coev**2))
-                self.busy_periods_coevs.append(coev / self.busy_periods[j][0])
+                cv = math.sqrt(under_sqrt.real)
+                self.alphas.append(1 / (cv**2))
+                self.busy_periods_cvs.append(cv / self.busy_periods[j][0])
             else:
-                self.busy_periods_coevs.append(math.inf)
+                self.busy_periods_cvs.append(math.inf)
 
         if self.verbose:
             print("\nBusy periods:\n")
@@ -352,10 +352,10 @@ class MPhNPrty(MGnCalc):
                         print(f"{self.busy_periods[j][r].real:^8.3g}", end=" ")
                     else:
                         print(f"{self.busy_periods[j][r]:^8.3g}", end=" ")
-                if math.isclose(self.busy_periods_coevs[j].imag, 0):
-                    print(f"coev = {self.busy_periods_coevs[j].real:^4.3g}")
+                if math.isclose(self.busy_periods_cvs[j].imag, 0):
+                    print(f"cv = {self.busy_periods_cvs[j].real:^4.3g}")
                 else:
-                    print(f"coev = {self.busy_periods_coevs[j]:^4.3g}")
+                    print(f"cv = {self.busy_periods_cvs[j]:^4.3g}")
 
         # pp - список из n**2 вероятностей переходов
         for j in range(self.busy_num_):

@@ -6,7 +6,7 @@ and plot the wait time averages for both calculation and simulation.
 import os
 
 import numpy as np
-from run_one_calc_vs_sim import calc_moments_by_mean_and_coev, run_calculation, run_simulation
+from run_one_calc_vs_sim import calc_moments_by_mean_and_cv, run_calculation, run_simulation
 from utils import calc_rel_error_percent, plot_w1, plot_w1_errors
 
 
@@ -23,16 +23,16 @@ def run_utilization(qp, save_path: str = None):
     total_num_time = 0
     total_sim_time = 0
 
-    b_w = calc_moments_by_mean_and_coev(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
-    b_c = calc_moments_by_mean_and_coev(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
-    b_d = calc_moments_by_mean_and_coev(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
+    b_w = calc_moments_by_mean_and_cv(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
+    b_c = calc_moments_by_mean_and_cv(qp["cooling"]["mean"]["base"], qp["cooling"]["cv"]["base"])
+    b_d = calc_moments_by_mean_and_cv(qp["delay"]["mean"]["base"], qp["delay"]["cv"]["base"])
 
     for rho_num, rho in enumerate(rhoes):
         print(f"Start {rho_num + 1}/{len(rhoes)} with utilization={rho:0.3f}... ")
 
         service_mean = qp["channels"]["base"] * rho / qp["arrival_rate"]
 
-        b = calc_moments_by_mean_and_coev(service_mean, qp["service"]["cv"]["base"])
+        b = calc_moments_by_mean_and_cv(service_mean, qp["service"]["cv"]["base"])
 
         num_results = run_calculation(
             arrival_rate=qp["arrival_rate"],

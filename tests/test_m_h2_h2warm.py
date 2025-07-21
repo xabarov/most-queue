@@ -7,9 +7,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.m_h2_h2warm import MH2nH2Warm
 
@@ -45,10 +45,10 @@ def test_m_h2_h2warm():
     Test M/H2/n system with H2-warming using the Takahashi-Takami method.
     """
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE
-    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 
     b_w1 = b[0] * WARM_AP_AVE_PERCENT
-    b_w = gamma_moments_by_mean_and_coev(b_w1, WARM_UP_CV)
+    b_w = gamma_moments_by_mean_and_cv(b_w1, WARM_UP_CV)
 
     qs = VacationQueueingSystemSimulator(NUM_OF_CHANNELS)
     qs.set_sources(ARRIVAL_RATE, "M")

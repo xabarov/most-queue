@@ -7,7 +7,7 @@ import time
 
 import scipy.special as sp
 
-from most_queue.structs import QueueResults
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.max_dist import MaxDistribution
 

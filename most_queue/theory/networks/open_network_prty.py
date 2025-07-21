@@ -6,7 +6,7 @@ import time
 
 import numpy as np
 
-from most_queue.rand_distribution import GammaDistribution
+from most_queue.distributions import GammaDistribution
 from most_queue.theory.networks.base_network_calc import (
     BaseNetworkPriority,
     NetworkResultsPriority,

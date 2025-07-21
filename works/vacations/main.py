@@ -1,3 +1,7 @@
+"""
+Run all experiments for different queueing systems and plot the results.
+"""
+
 import os
 
 from channels import run_channels

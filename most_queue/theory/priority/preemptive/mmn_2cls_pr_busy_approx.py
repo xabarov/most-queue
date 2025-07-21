@@ -9,8 +9,8 @@ import time
 
 import numpy as np
 
-from most_queue.rand_distribution import CoxDistribution
-from most_queue.structs import PriorityResults, QueueResults
+from most_queue.distributions import CoxDistribution
+from most_queue.general.results_structs import PriorityResults, QueueResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
@@ -46,7 +46,7 @@ class MMnPR2ClsBusyApprox(MGnCalc):
         self.mu_H = None
 
         self.busy_period = None
-        self.busy_coev = None
+        self.busy_cv = None
         self.param_cox = None
         self.y1_cox = None
         self.mu1_cox = None
@@ -86,7 +86,7 @@ class MMnPR2ClsBusyApprox(MGnCalc):
         start = time.process_time()
 
         self.busy_period = self._get_pnz_markov()
-        self.busy_coev = self._get_busy_coev()
+        self.busy_cv = self._get_busy_cv()
         self.param_cox = CoxDistribution.get_params(self.busy_period)
         self.y1_cox = self.param_cox.p1
         self.mu1_cox = self.param_cox.mu1
@@ -254,7 +254,7 @@ class MMnPR2ClsBusyApprox(MGnCalc):
 
         return pi
 
-    def _get_busy_coev(self):
+    def _get_busy_cv(self):
         return math.sqrt(self.busy_period[1] - self.busy_period[0] * self.busy_period[0]) / self.busy_period[0]
 
     def _calculate_p(self):

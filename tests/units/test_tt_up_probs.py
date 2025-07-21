@@ -9,7 +9,7 @@ For verification, simulation is used.
 
 """
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
 from most_queue.general.tables import print_mrx
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 
@@ -28,7 +28,7 @@ def testcalc_up_probs():
     # calculate initial moments of service time based
     # on the given average and coefficient of variation
     b1 = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE  # average service time
-    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 
     # run Takahasi-Takami method
     tt = MGnCalc(n=NUM_OF_CHANNELS)

@@ -7,8 +7,8 @@ import time
 
 import numpy as np
 
-from most_queue.rand_distribution import CoxDistribution
-from most_queue.structs import PriorityResults, QueueResults
+from most_queue.distributions import CoxDistribution
+from most_queue.general.results_structs import PriorityResults, QueueResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import MMnPR2ClsBusyApprox
@@ -47,7 +47,7 @@ class MM2BusyApprox3Classes(MGnCalc):
         self.iter_num_ = 0
 
         self.busy_periods = []  # список из шести наборов начальных моментров ПНЗ B1, B2, ..., B6
-        self.busy_periods_coevs = []  # коэффициенты вариации ПНЗ
+        self.busy_periods_cvs = []  # коэффициенты вариации ПНЗ
         self.pp = []  # список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
 
         # массив cols хранит число столбцов для каждого яруса, удобней
@@ -356,11 +356,11 @@ class MM2BusyApprox3Classes(MGnCalc):
             self.busy_periods[5][r] = pass_time.Gr[2][r][0, 0]
 
         for j in range(6):
-            coev = (
+            cv = (
                 math.sqrt(self.busy_periods[j][1].real - pow(self.busy_periods[j][0].real, 2))
                 / self.busy_periods[j][0].real
             )
-            self.busy_periods_coevs.append(coev.real)
+            self.busy_periods_cvs.append(cv.real)
 
         # pp - список из шести вероятностей p2mm, p2mh, phmm, phmh, p2hm, p2hh
         # берем моменты Gr, поскольку моменты Z - условные, с учетом pp

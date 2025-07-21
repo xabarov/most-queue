@@ -5,8 +5,8 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 import math
 import time
 
-from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
-from most_queue.structs import QueueResults
+from most_queue.distributions import GammaDistribution, ParetoDistribution, UniformDistribution
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments

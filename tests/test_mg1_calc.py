@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
+from most_queue.distributions import H2Distribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import H2Distribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.mg1 import MG1Calculation
 
@@ -44,7 +44,7 @@ def test_mg1():
 
     # selecting parameters of the approximating H2-distribution
     # for service time H2Params [p1, mu1, mu2]:
-    h2_params = H2Distribution.get_params_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(b1, SERVICE_TIME_CV)
     print(h2_params)
     b = H2Distribution.calc_theory_moments(h2_params, 4)
 

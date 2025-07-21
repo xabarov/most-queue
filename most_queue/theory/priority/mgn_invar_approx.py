@@ -8,7 +8,7 @@ The approximation is based on method of invariant moments for M/G/n queues.
 import math
 import time
 
-from most_queue.structs import PriorityResults
+from most_queue.general.results_structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.fifo.mg1 import MG1Calculation

@@ -9,9 +9,9 @@ import time
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
 
@@ -178,10 +178,10 @@ def test_mgn_h2_delay_cold_warm():
 
     # Calculate initial moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
-    b_service = gamma_moments_by_mean_and_coev(service_time_mean, SERVICE_TIME_CV)
-    b_warmup = gamma_moments_by_mean_and_coev(WARM_UP_MEAN, WARM_UP_CV)
-    b_cooling = gamma_moments_by_mean_and_coev(COOLING_MEAN, COOLING_CV)
-    b_delay = gamma_moments_by_mean_and_coev(COOLING_DELAY_MEAN, COOLING_DELAY_CV)
+    b_service = gamma_moments_by_mean_and_cv(service_time_mean, SERVICE_TIME_CV)
+    b_warmup = gamma_moments_by_mean_and_cv(WARM_UP_MEAN, WARM_UP_CV)
+    b_cooling = gamma_moments_by_mean_and_cv(COOLING_MEAN, COOLING_CV)
+    b_delay = gamma_moments_by_mean_and_cv(COOLING_DELAY_MEAN, COOLING_DELAY_CV)
 
     num_results = run_calculation(
         arrival_rate=ARRIVAL_RATE,

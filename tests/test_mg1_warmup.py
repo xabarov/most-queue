@@ -8,9 +8,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mg1_warm_calc import MG1WarmCalc
 
@@ -45,12 +45,12 @@ def test_mg1_warm():
     """
 
     b1 = UTILIZATION_FACTOR / ARRIVAL_RATE
-    b_s = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b_s = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
     service_params = GammaDistribution.get_params(b_s)
 
     # Warm phase parameters
     mean_warmup_time = b1 * MEAN_WARMUP_FACTOR
-    b_w = gamma_moments_by_mean_and_coev(mean_warmup_time, WARM_UP_CV)
+    b_w = gamma_moments_by_mean_and_cv(mean_warmup_time, WARM_UP_CV)
     warmup_params = GammaDistribution.get_params(b_w)
 
     # Initialize the Vacation Queueing System Simulator

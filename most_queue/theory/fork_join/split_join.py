@@ -4,7 +4,7 @@ Numerical calculation of Fork-Join queuing systems
 
 import time
 
-from most_queue.structs import QueueResults
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.utils.max_dist import MaxDistribution

@@ -4,7 +4,7 @@ Base class for queueing networks calculation
 
 from abc import ABC, abstractmethod
 
-from most_queue.structs import NetworkResults, NetworkResultsPriority
+from most_queue.general.results_structs import NetworkResults, NetworkResultsPriority
 
 
 class BaseNetwork(ABC):

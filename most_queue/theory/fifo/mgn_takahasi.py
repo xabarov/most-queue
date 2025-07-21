@@ -8,8 +8,8 @@ import time
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.rand_distribution import H2Distribution
-from most_queue.structs import QueueResults
+from most_queue.distributions import H2Distribution
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.conv import conv_moments

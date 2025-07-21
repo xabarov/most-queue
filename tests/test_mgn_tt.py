@@ -14,9 +14,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distributions import GammaDistribution
 from most_queue.general.tables import probs_print, times_print
-from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 
@@ -52,7 +52,7 @@ def test_mgn_tt():
     # on the given average and coefficient of variation
 
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
-    b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
 
     # run Takahasi-Takami method
     tt = MGnCalc(n=NUM_OF_CHANNELS)

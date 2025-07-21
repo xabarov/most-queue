@@ -4,7 +4,7 @@ Calculate distribution of maximum of n independent random variables with given d
 
 import math
 
-from most_queue.rand_distribution import (
+from most_queue.distributions import (
     ErlangDistribution,
     ErlangParams,
     GammaDistribution,

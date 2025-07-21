@@ -5,7 +5,7 @@ Test different variants of the busy period calculation for M/G/1 queue.
 import math
 import time
 
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
 from most_queue.general.tables import times_print
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_lst
 
@@ -18,9 +18,9 @@ def test_busy_calc_variants():
     arrival_rate = 0.7  # arrival rate of positive jobs
     ro = 0.7
     b1 = 1 * ro / arrival_rate  # average service time
-    b_coev = 0.57
+    b_cv = 0.57
 
-    b = gamma_moments_by_mean_and_coev(b1, b_coev)  # gamma distribution parameters
+    b = gamma_moments_by_mean_and_cv(b1, b_cv)  # gamma distribution parameters
 
     start = time.time()
     busy_1 = busy_calc_lst(arrival_rate, b)

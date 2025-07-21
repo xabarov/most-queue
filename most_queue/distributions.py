@@ -9,7 +9,8 @@ import numpy as np
 import scipy.special as sp
 from scipy import stats
 
-from most_queue.general.distribution_fitting import (
+from most_queue.distr_utils.base_distribution import Distribution
+from most_queue.distr_utils.distribution_fitting import (
     FittingParams,
     calc_gamma_func,
     fit_cox,
@@ -17,12 +18,12 @@ from most_queue.general.distribution_fitting import (
     fit_gamma,
     fit_h2,
     fit_h2_clx,
-    fit_pareto_by_mean_and_coev,
+    fit_pareto_by_mean_and_cv,
     fit_pareto_moments,
     fit_weibull,
-    gamma_moments_by_mean_and_coev,
+    gamma_moments_by_mean_and_cv,
 )
-from most_queue.general.distribution_params import (
+from most_queue.distr_utils.distribution_params import (
     Cox2Params,
     ErlangParams,
     GammaParams,
@@ -32,7 +33,6 @@ from most_queue.general.distribution_params import (
     UniformParams,
     WeibullParams,
 )
-from most_queue.general.interfaces import Distribution
 
 
 class Weibull(Distribution):
@@ -99,17 +99,17 @@ class Weibull(Distribution):
         return fit_weibull(moments)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> WeibullParams:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> WeibullParams:
         """
         Subselect parameters of Weibull distribution by the given mean and coefficient of variation.
          Args:
              f1 (float): The first parameter of the Weibull distribution.
-             coev (float): The coefficient of variation.
+             cv (float): The coefficient of variation.
          Returns:
              WeibullParams
         """
 
-        f = gamma_moments_by_mean_and_coev(f1, coev)
+        f = gamma_moments_by_mean_and_cv(f1, cv)
 
         return Weibull.get_params(f)
 
@@ -202,15 +202,15 @@ class NormalDistribution(Distribution):
         return GaussianParams(mean, std_dev)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float):
+    def get_params_by_mean_and_cv(f1: float, cv: float):
         """
         :param f1: mean of the distribution.
-        :param coev: coefficient of variation (std_dev / mean).
+        :param cv: coefficient of variation (std_dev / mean).
         :return: Parameters for the distribution that correspond
         to the given mean and coefficient of variation.
         """
         mean = f1
-        std_dev = coev * mean
+        std_dev = cv * mean
         return GaussianParams(mean, std_dev)
 
 
@@ -276,13 +276,13 @@ class UniformDistribution(Distribution):
         return UniformParams(mean=mean, half_interval=half_interval)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> UniformParams:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> UniformParams:
         """
         Get parameters of the uniform distribution by mean and coefficient of variation.
         Returns mean and half interval.
         """
 
-        D = pow(coev * f1, 2)
+        D = pow(cv * f1, 2)
         half_interval = math.sqrt(3 * D)
 
         return UniformParams(mean=f1, half_interval=half_interval)
@@ -414,12 +414,12 @@ class H2Distribution(Distribution):
         return fit_h2_clx(moments, fitting_params=fitting_params)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float, is_clx=False) -> H2Params:
+    def get_params_by_mean_and_cv(f1: float, cv: float, is_clx=False) -> H2Params:
         """
         Get parameters of the H2 distribution by mean and coefficient of variation.
         """
 
-        f = gamma_moments_by_mean_and_coev(f1, coev)
+        f = gamma_moments_by_mean_and_cv(f1, cv)
 
         if is_clx:
             return H2Distribution.get_params_clx(f)
@@ -535,12 +535,12 @@ class CoxDistribution(Distribution):
         return fit_cox(moments, fitting_params=fitting_params)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> Cox2Params:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> Cox2Params:
         """
         Get parameters of C2 distribution by mean and coefficient of variation
         """
 
-        f = gamma_moments_by_mean_and_coev(f1, coev)
+        f = gamma_moments_by_mean_and_cv(f1, cv)
 
         return CoxDistribution.get_params(f)
 
@@ -589,10 +589,10 @@ class DeterministicDistribution(Distribution):
         return moments[0]
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float):
+    def get_params_by_mean_and_cv(f1: float, cv: float):
         """
         :param f1: mean of the distribution.
-        :param coev: coefficient of variation (std_dev / mean).
+        :param cv: coefficient of variation (std_dev / mean).
         :return: Parameters for the distribution that correspond
         to the given mean and coefficient of variation.
         """
@@ -694,14 +694,14 @@ class ParetoDistribution(Distribution):
         return fit_pareto_moments(moments)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float):
+    def get_params_by_mean_and_cv(f1: float, cv: float):
         """
         Get parameters of the distribution by mean and coefficient of variation.
         :param f1: float, mean value of the distribution
-        :param coev: float, coefficient of variation (mean / std)
+        :param cv: float, coefficient of variation (mean / std)
         """
 
-        return fit_pareto_by_mean_and_coev(f1, coev)
+        return fit_pareto_by_mean_and_cv(f1, cv)
 
 
 class ErlangDistribution(Distribution):
@@ -787,14 +787,14 @@ class ErlangDistribution(Distribution):
         return fit_erlang(moments)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> ErlangParams:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> ErlangParams:
         """
         Method selects the parameters of the Erlang distribution
         by mean and coefficient of variation.
         """
         f = [0, 0]
         f[0] = f1
-        f[1] = (math.pow(coev, 2) + 1) * math.pow(f[0], 2)
+        f[1] = (math.pow(cv, 2) + 1) * math.pow(f[0], 2)
         return ErlangDistribution.get_params(f)
 
 
@@ -845,11 +845,11 @@ class ExpDistribution(Distribution):
         return ErlangDistribution.get_params(moments).mu
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> float:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> float:
         """
         Get parameters of the exponential distribution from mean and coefficient of variation.
         :param f1: mean value
-        :param coev: coefficient of variation (coefficient of dispersion)
+        :param cv: coefficient of variation (coefficient of dispersion)
         """
         return 1 / f1
 
@@ -877,11 +877,11 @@ class GammaDistribution(Distribution):
         return fit_gamma(moments)
 
     @staticmethod
-    def get_params_by_mean_and_coev(f1: float, coev: float) -> GammaParams:
+    def get_params_by_mean_and_cv(f1: float, cv: float) -> GammaParams:
         """
         Get parameters of gamma distribution by mean and coefficient of variation.
         """
-        d = pow(f1 * coev, 2)
+        d = pow(f1 * cv, 2)
         mu = f1 / d
         alpha = mu * f1
         return GammaParams(mu=mu, alpha=alpha)

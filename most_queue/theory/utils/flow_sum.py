@@ -7,7 +7,7 @@ import math
 
 import matplotlib
 
-from most_queue.rand_distribution import H2Distribution
+from most_queue.distributions import H2Distribution
 
 matplotlib.use("TkAgg")
 
@@ -23,7 +23,7 @@ class SummatorNumeric:
         self.num_of_moments = len(a[0])
         self.is_semi = is_semi
         self.verbose = verbose
-        self.coevs = []
+        self.cvs = []
         self.result_flow = []
         self.flows_ = []
         self.a1_sum = []
@@ -46,7 +46,7 @@ class SummatorNumeric:
                 f1 = self.sum_2_flows_semiinvariants(self.a[0], self.a[1])
 
             self.flows_.append(f1)
-            self.coevs.append(SummatorNumeric.get_coev(f1))
+            self.cvs.append(SummatorNumeric.get_cv(f1))
             f = []
             f.append(f1)
 
@@ -133,13 +133,13 @@ class SummatorNumeric:
         return a
 
     @staticmethod
-    def get_coev(a: list[complex]):
+    def get_cv(a: list[complex]):
         """
         Get coefficient of variation for a list of complex numbers
         """
         D = a[1] - pow(a[0], 2)
-        coev = math.sqrt(D.real) / a[0].real
-        return coev
+        cv = math.sqrt(D.real) / a[0].real
+        return cv
 
     @staticmethod
     def sum_2_flows_semiinvariants(a1, a2):

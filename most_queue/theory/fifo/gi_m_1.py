@@ -5,8 +5,8 @@ Calculation of the GI/M/1 queueing system
 import math
 import time
 
-from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.structs import QueueResults
+from most_queue.distributions import GammaDistribution, ParetoDistribution
+from most_queue.general.results_structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments_minus
@@ -165,8 +165,8 @@ class GiM1(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         ro = 1.0 / (self.a[0] * self.mu)
-        coev_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
-        w_old = pow(ro, 2.0 / (pow(coev_a, 2) + 1.0))
+        cv_a = math.sqrt(self.a[1] - pow(self.a[0], 2)) / self.a[0]
+        w_old = pow(ro, 2.0 / (pow(cv_a, 2) + 1.0))
 
         if self.approx_distr == "gamma":
             gamma_params = GammaDistribution.get_params(self.a)
