@@ -12,7 +12,7 @@ A Python package for simulating and analyzing queueing systems (QS) and networks
 New unified API for both simulation and calculation classes:
 
 ```python
-from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_cv
+from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
 from most_queue.general.tables import probs_print, times_print
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.base import QsSim
