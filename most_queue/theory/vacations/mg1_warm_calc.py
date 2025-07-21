@@ -6,7 +6,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
@@ -68,6 +68,36 @@ class MG1WarmCalc(BaseQueue):
 
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Run calculations
+        """
+        v = self.get_v()
+
+        utilization = self.l * self.b[0]
+
+        return QueueResults(v=v, utilization=utilization)
+
+    def get_v(self) -> list[float]:
+        """
+        Calculate sourjourn moments for M/G/1 queue with warm-up.
+        """
+
+        if not self.v is None:
+            return self.v
+
+        tv = self.b_warm[0] / (1 - self.l * self.b[0])
+        self.p0_star = 1 / (1 + self.l * tv)
+
+        self._check_if_servers_and_sources_set()
+        v = [0, 0, 0]
+
+        for i in range(3):
+            v[i] = derivative(self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+        self.v = np.array([-v[0], v[1].real, -v[2]])
+
+        return self.v
+
     def _calc_v_lst(self, s):
         factor = 1.0 - s / self.l
         bs = self.lst(self.b_param, s)
@@ -82,18 +112,3 @@ class MG1WarmCalc(BaseQueue):
         lst = numerator / denominator
 
         return lst
-
-    def get_v(self) -> list[float]:
-        """
-        Calculate sourjourn moments for M/G/1 queue with warm-up.
-        """
-
-        tv = self.b_warm[0] / (1 - self.l * self.b[0])
-        self.p0_star = 1 / (1 + self.l * tv)
-
-        self._check_if_servers_and_sources_set()
-        v = [0, 0, 0]
-
-        for i in range(3):
-            v[i] = derivative(self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        return np.array([-v[0], v[1].real, -v[2]])

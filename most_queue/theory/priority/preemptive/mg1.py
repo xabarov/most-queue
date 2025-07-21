@@ -5,6 +5,7 @@ Class to calculate M/G/1 queue with preemptive (absolute) priority.
 import math
 
 from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
 
 
@@ -15,7 +16,7 @@ class MG1PreemtiveCalculation(BaseQueue):
 
     def __init__(self):
         """
-        Initialize the MG1NonPreemtiveCalculation class.
+        Initialize the MG1PreemtiveCalculation class.
         """
         super().__init__(n=1)
         self.l = None
@@ -67,7 +68,7 @@ class MG1PreemtiveCalculation(BaseQueue):
                 w1[j] += self.b[j][0] * R[j - 1] / (1 - R[j - 1])
         return w1
 
-    def calc_all(self, num=3):
+    def run(self, num=3) -> PriorityResults:
         """
         Calculate initial moments of sojourn time, waiting
         for service without and with interruptions, active time
@@ -166,10 +167,6 @@ class MG1PreemtiveCalculation(BaseQueue):
             if num > 2:
                 v[j][2] = w[j][2] + 3 * w[j][1] * h[j][0] + 3 * w[j][0] * h[j][1] + h[j][2]
 
-        res = {}
-        res["v"] = v
-        res["w"] = w
-        res["h"] = h
         w_with_pr = []
         for j in range(num_of_cl):
             w_with_pr.append([0.0] * 3)
@@ -179,7 +176,16 @@ class MG1PreemtiveCalculation(BaseQueue):
                 w_with_pr[j][2] = (
                     v[j][2] - 3 * w_with_pr[j][1] * self.b[j][0] - 3 * w_with_pr[j][0] * self.b[j][1] - self.b[j][2]
                 )
-        res["w_with_pr"] = w_with_pr
-        res["busy"] = pi_j
 
-        return res
+        utilization = self.get_utilization()
+
+        return PriorityResults(v=v, w=w, h=h, w_with_pr=w_with_pr, busy=pi_j, utilization=utilization)
+
+    def get_utilization(self) -> float:
+        """
+        Calc utilization factor
+        """
+        b_ave = sum(b[0] for b in self.b) / len(self.b)
+        l_sum = sum(self.l)
+
+        return l_sum * b_ave

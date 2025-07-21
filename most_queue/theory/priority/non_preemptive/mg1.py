@@ -4,6 +4,7 @@ Class to calculate the average waiting time in an M/G/1 queue with non-preemptiv
 
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
@@ -23,20 +24,39 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         self.l = None
         self.b = None
 
-    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+    def set_sources(self, l: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the arrival rate.
+        Set the arrival rates for each class
         """
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+    def set_servers(self, b: list[list[float]]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution.
-        param b: initial moments of service time distribution.
+        Set the initial moments of service time distribution for each class
+        param b: initial moments of service time distribution for each class
         """
         self.b = b
         self.is_servers_set = True
+
+    def run(self) -> PriorityResults:
+        """
+        Run calculation
+        """
+        w = self.get_w()
+        v = self.get_v()
+        utilization = self.get_utilization()
+
+        return PriorityResults(v=v, w=w, utilization=utilization)
+
+    def get_utilization(self) -> float:
+        """
+        Calc utilization factor
+        """
+        b_ave = sum(b[0] for b in self.b) / len(self.b)
+        l_sum = sum(self.l)
+
+        return l_sum * b_ave
 
     def get_w1(self):
         """
@@ -71,12 +91,16 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         :return: list of initial moments of sojourn time for each class
         """
 
-        w = self.get_w()
+        if not self.v is None:
+            return self.v
+
+        self.w = self.w or self.get_w()
         k = len(self, self.l)
         v = []
 
-        v = [conv_moments(w[i], self.b[i], num) for i in range(k)]
+        v = [conv_moments(self.w[i], self.b[i], num) for i in range(k)]
 
+        self.v = v
         return v
 
     def get_w(self) -> list[list[float]]:
@@ -87,6 +111,9 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         # a - lower pr
         # j - the same
         # e - higher pr
+
+        if not self.w is None:
+            return self.w
 
         self._check_if_servers_and_sources_set()
 
@@ -178,4 +205,5 @@ class MG1NonPreemtiveCalculation(BaseQueue):
                 if len(self.b[j]) > 2:
                     w[j][2] = -w[j][2]
 
+        self.w = w
         return w

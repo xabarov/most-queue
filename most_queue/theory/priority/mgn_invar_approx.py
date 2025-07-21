@@ -89,8 +89,8 @@ class MGnInvarApproximation(BaseQueue):
             calc_pr1 = MG1PreemtiveCalculation()
             calc_pr1.set_sources(self.l)
             calc_pr1.set_servers(b1)
-            pr_prty_calc = calc_pr1.calc_all(num=num)
-            w1_prty = pr_prty_calc["w_with_pr"]
+            pr_prty_calc = calc_pr1.run(num=num)
+            w1_prty = pr_prty_calc.w_with_pr
         else:
             return 'Wrong PRTY type. Should be "PR" or "NP"'
 
