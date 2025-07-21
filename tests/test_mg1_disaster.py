@@ -54,15 +54,13 @@ def test_mg1():
     mg1_queue_calc = MG1Disasters()
     mg1_queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     mg1_queue_calc.set_servers(b=b)
-    v_calc1 = mg1_queue_calc.get_v()
+    mg1_calc_result = mg1_queue_calc.run()
 
     mgn_queue_calc = MGnNegativeDisasterCalc(n=1)
     mgn_queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     mgn_queue_calc.set_servers(b=b)
 
-    mgn_queue_calc.run()
-
-    v_calc_tt = mgn_queue_calc.get_v()
+    tt_calc_result = mgn_queue_calc.run()
 
     # Run simulation
     queue_sim = QsSimNegatives(1, NegativeServiceType.DISASTER)
@@ -79,9 +77,11 @@ def test_mg1():
 
     v_sim = queue_sim.get_v()
 
-    times_print_with_two_numerical(v_sim, v_calc1, v_calc_tt, is_w=False, num1_header="MG1", num2_header="T-T")
+    times_print_with_two_numerical(
+        v_sim, mg1_calc_result.v, tt_calc_result.v, is_w=False, num1_header="MG1", num2_header="T-T"
+    )
 
-    assert np.allclose(v_sim, v_calc_tt, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, tt_calc_result.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
     # when MG1 will work, add assert with v_calc1
 

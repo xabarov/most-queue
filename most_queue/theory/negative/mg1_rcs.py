@@ -7,7 +7,7 @@ Use following paper:
 """
 
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
@@ -22,7 +22,7 @@ class MG1NegativeCalcRCS(BaseQueue):
         calc_params: CalcParams | None = None,
     ):
         """
-        Initialize the MG1Disasters class.
+        Initialize class.
         :param calc_params: Calculation parameters. If None, default parameters are used.
         """
 
@@ -62,19 +62,16 @@ class MG1NegativeCalcRCS(BaseQueue):
             raise ValueError("Approximation must be 'h2' or 'gamma'.")
         self.is_servers_set = True
 
-    def _b_derivative(self, s: float) -> float:
+    def run(self) -> QueueResults:
         """
-        Derivative of b function.
+        Run calculation
         """
-        if self.approximation == "gamma":
-            alpha, mu = self.params.alpha, self.params.mu
-            return -alpha * (mu**alpha) / ((mu + s) ** (alpha + 1))
+        v1 = self.get_v1()
+        utilization = self.get_utilization()
 
-        # H2 distribution case
-        p1, mu1, mu2 = self.params.p1, self.params.mu1, self.params.mu2
-        return -(p1 * (mu1 / ((mu1 + s) ** 2)) + (1.0 - p1) * (mu2 / ((mu2 + s) ** 2)))
+        return QueueResults(v=[v1, 0.0, 0.0], utilization=utilization)
 
-    def calc_rho(self):
+    def get_utilization(self):
         """
         Calculate utilization factor for M/H2/1 queue
         with negative jobs and RCS discipline.
@@ -87,7 +84,7 @@ class MG1NegativeCalcRCS(BaseQueue):
         Calculate the average number of jobs in the system for M/H2/1 queue
         with negative jobs and RCS discipline.
         """
-        rho = self.calc_rho()
+        rho = self.get_utilization()
         b_h2_star = self._b_derivative(self.l_neg)
 
         numerator = self.l_pos * (self.l_pos * b_h2_star + rho)
@@ -102,3 +99,15 @@ class MG1NegativeCalcRCS(BaseQueue):
         """
         job_ave = self.calc_average_jobs_in_system()
         return job_ave / self.l_pos
+
+    def _b_derivative(self, s: float) -> float:
+        """
+        Derivative of b function.
+        """
+        if self.approximation == "gamma":
+            alpha, mu = self.params.alpha, self.params.mu
+            return -alpha * (mu**alpha) / ((mu + s) ** (alpha + 1))
+
+        # H2 distribution case
+        p1, mu1, mu2 = self.params.p1, self.params.mu1, self.params.mu2
+        return -(p1 * (mu1 / ((mu1 + s) ** 2)) + (1.0 - p1) * (mu2 / ((mu2 + s) ** 2)))

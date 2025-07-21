@@ -72,11 +72,12 @@ def test_m_ph_n_prty():
     )
     tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_high=ARRIVAL_RATE_HIGH)
     tt.set_servers(b_high=b_high, mu_low=mu_low)
-    tt.run()
+    tt_results = tt.run()
     tt_time = time.process_time() - tt_start
 
-    iter_num = tt.run_iterations_num_
-    v_low_tt = tt.get_low_class_v1()
+    iter_num = tt.num_of_iter_
+    v_low_tt = tt_results.v[1][0]
+    v_high_tt = tt_results.v[0][0]
 
     mu_low = 1.0 / b1_low
 
@@ -91,6 +92,8 @@ def test_m_ph_n_prty():
     invar_calc.set_sources([ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW])
     invar_calc.set_servers(b)
     v = invar_calc.get_v(priority="PR", num=2)
+
+    v_high_invar = v[0][0]
     v_low_invar = v[1][0]
     invar_time = time.process_time() - invar_start
 
@@ -114,6 +117,7 @@ def test_m_ph_n_prty():
     # getting the results of the simulation:
     v_sim = qs.v
     v_low_sim = v_sim[1][0]
+    v_high_sim = v_sim[0][0]
 
     sim_time = time.process_time() - im_start
 
@@ -125,20 +129,20 @@ def test_m_ph_n_prty():
     print(f"Calc iterations: {iter_num}")
 
     print("\n")
-    print("Average times spent in the queue by requests of class 2")
-    print("-" * 45)
-    headers = ["Calc type", "v1 low", "calc time, s"]
+    print("Mean sojourn times")
+    print("-" * 60)
+    headers = ["Calc type", "v1 high", "v1 low", "calc time, s"]
 
-    print("{0:^15s}|{1:^15s}|{2:^15s}".format(*headers))
-    print("-" * 45)
+    print("{0:^15s}|{1:^14s}|{2:^15s}|{3:^15s}".format(*headers))
+    print("-" * 60)
     row = "Ours"
-    print(f"{row:^15}|{v_low_tt:^14.3f} | {tt_time:^14.3f}")
+    print(f"{row:^15}|{v_high_tt:^14.3f}|{v_low_tt:^14.3f} | {tt_time:^14.3f}")
     row = "Invar"
-    print(f"{row:^15}|{v_low_invar:^14.3f} | {invar_time:^14.3f}")
-    print("-" * 45)
+    print(f"{row:^15}|{v_high_invar:^14.3f}|{v_low_invar:^14.3f} | {invar_time:^14.3f}")
+    print("-" * 60)
     row = "Sim"
-    print(f"{row:^15}|{v_low_sim:^14.3f} | {sim_time:^14.3f}")
-    print("-" * 45)
+    print(f"{row:^15}|{v_high_sim:^13.3f} |{v_low_sim:^14.3f} | {sim_time:^14.3f}")
+    print("-" * 60)
     print("\n")
 
     assert abs(v_low_tt - v_low_sim) < 0.1, ERROR_MSG

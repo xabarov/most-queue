@@ -4,15 +4,28 @@ using Takahasi-Takami method.
 """
 
 import math
+from dataclasses import dataclass
 from itertools import chain
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls
+
+
+@dataclass
+class MGnH2ServingColdWarmDelayResults(QueueResults):
+    """
+    Result of MGnH2ServingColdWarmDelay calculation
+    """
+
+    warmup_prob: float = 0
+    cold_prob: float = 0
+    cold_delay_prob: float = 0
+    servers_busy_probs: list[float] | None = None
 
 
 class MGnH2ServingColdWarmDelay(MGnCalc):
@@ -176,7 +189,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         self.is_servers_set = True
 
-    def get_probs_of_servers_busy(self):
+    def get_probs_of_servers_busy(self) -> list[float]:
         """
         Return probabilities of servers being busy.
         prob[i] - probability that i number of servers is busy.
@@ -208,7 +221,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         probs = probs.tolist()
         return [prob.real for prob in probs]
 
-    def run(self):
+    def run(self) -> MGnH2ServingColdWarmDelayResults:
         """
         Запускает расчет
         """
@@ -290,12 +303,34 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         self._calculate_p()
         self._calculate_y()
+        return self.get_results()
 
-    def get_p(self) -> list[float]:
+    def get_results(self) -> MGnH2ServingColdWarmDelayResults:
         """
-        Get probabilities of states.
+        Get all results
         """
-        return [prob.real for prob in self.p]
+
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+
+        utilization = self.get_utilization()
+
+        warmup_prob = self.get_warmup_prob()
+        cold_prob = self.get_cold_prob()
+        cold_delay_prob = self.get_cold_delay_prob()
+        servers_busy_probs = self.get_probs_of_servers_busy()
+
+        return MGnH2ServingColdWarmDelayResults(
+            v=self.v,
+            w=self.w,
+            p=self.p,
+            utilization=utilization,
+            warmup_prob=warmup_prob,
+            cold_prob=cold_prob,
+            cold_delay_prob=cold_delay_prob,
+            servers_busy_probs=servers_busy_probs,
+        )
 
     def get_cold_prob(self):
         """
@@ -353,20 +388,6 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         w = [w_moment.real if isinstance(w_moment, complex) else w_moment for w_moment in w]
         return [-w[0].real, w[1].real, -w[2].real]
-
-    def get_v(self):
-        """
-        Get first three moments of sojourn time in the queue.
-        """
-        v = [0.0] * 3
-        w = self.get_w()
-        b = self.b
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
-
-        v = [v_moment.real if isinstance(v_moment, complex) else v_moment for v_moment in v]
-        return v
 
     def _get_key_numbers(self, level):
         key_numbers = []

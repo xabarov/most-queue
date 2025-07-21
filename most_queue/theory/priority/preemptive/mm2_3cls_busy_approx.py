@@ -7,7 +7,10 @@ import math
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.theory.fifo.mmnr import MMnrCalc
+from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import MMnPR2ClsBusyApprox
+from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
@@ -74,6 +77,9 @@ class MM2BusyApprox3Classes(MGnCalc):
             self.b2.append(np.zeros((1, self.cols[i]), dtype=self.dt))
             self.x.append(np.zeros((1, self.cols[i]), dtype=self.dt))
 
+        self.high_results = None
+        self.med_results = None
+
     def set_sources(self, l_low: float, l_med: float, l_high: float):  # pylint: disable=arguments-differ
         """
         Set the arrival rates
@@ -99,6 +105,150 @@ class MM2BusyApprox3Classes(MGnCalc):
         self.mu_L = mu_low
 
         self.is_servers_set = True
+
+    def run(self) -> PriorityResults:
+        """
+        Запускает расчет. Не зависит от структуры матриц
+        """
+
+        self._calc_busy_periods()
+
+        self._build_matrices()
+        self._initial_probabilities()
+
+        self.iter_num_ = 0
+        self.b1[0][0, 0] = 0
+        self.b2[0][0, 0] = 0
+        x_max1 = 0
+        x_max2 = 0
+
+        for i in range(self.N):
+            if self.x[i] > x_max1:
+                x_max1 = self.x[i]
+        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
+            x_max2 = x_max1
+            self.iter_num_ += 1
+            for j in range(1, self.N):  # по всем ярусам, кроме первого.
+
+                G = np.linalg.inv(self.D[j] - self.C[j])
+                # b':
+                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
+
+                # b":
+                if j != (self.N - 1):
+                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
+                else:
+                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
+
+                c = self._calculate_c(j)
+
+                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+                self.x[j] = 0
+                for k in range(x_znam.shape[1]):
+                    self.x[j] += x_znam[0, k]
+
+                self.x[j] = 1 / self.x[j]
+
+                self.z[j] = np.dot(c, self.x[j])
+                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+
+            self.x[0] = 1.0 / self.z[1]
+
+            t1B1 = np.dot(self.t[1], self.B[1])
+            self.t[0] = np.dot(self.x[0], t1B1)
+            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
+
+            x_max1 = 0
+            for i in range(self.N):
+                if self.x[i] > x_max1:
+                    x_max1 = self.x[i]
+
+        self._calculate_p()
+        self._calculate_y()
+
+        self.high_results = self._calc_high_queue()
+        self.med_results = self._calc_med_queue()
+
+        return self.get_results()
+
+    def get_w(self, _derivate=False):
+        """
+        Calculate waiting time moments
+        """
+        # TODO
+        w_med = self.med_results.w[1]
+        return [self.high_results.w, w_med, [0, 0, 0]]
+
+    def get_v(self) -> list[float]:
+        """
+        Calculate sojourn time moments
+        """
+        v1_low = self.get_low_class_v1()
+        v_med = self.med_results.v[1]
+        return [self.high_results.v, v_med, [v1_low, 0, 0]]
+
+    def get_utilization(self):
+
+        b_sr = (1.0 / self.mu_H + 1.0 / self.mu_L + 1.0 / self.mu_M) / 3.0
+        return (self.l_L + self.l_H + self.l_M) * b_sr / self.n
+
+    def get_results(self) -> PriorityResults:
+        """
+        Collect all results
+        """
+
+        v = self.get_v()
+        w = self.get_w()
+        utilization = self.get_utilization()
+        p = self.get_p()
+
+        return PriorityResults(v=v, w=w, p=p, utilization=utilization)
+
+    def get_low_class_v1(self):
+        """
+        Возвращает среднее время пребывания для класса L
+        """
+        l1 = 0
+        p_real = self.get_p()
+        for i in range(self.N):
+            l1 += p_real[i] * i
+        return l1 / self.l_L
+
+    def _calculate_y(self):
+        for i in range(self.N):
+            self.Y.append(np.dot(self.p[i], self.t[i]))
+
+    def _initial_probabilities(self):
+        """
+        Задаем первоначальные значения вероятностей микросостояний
+        """
+        # t задаем равновероятными
+        for i in range(self.N):
+            for j in range(self.cols[i]):
+                self.t[i][0, j] = 1.0 / self.cols[i]
+        self.x[0] = 0.4
+
+    def _calculate_p(self):
+        """
+        После окончания итераций находим значения вероятностей p по найденным х
+        """
+        # version 1
+        p_sum = 0 + 0j
+        p0_max = 1.0
+        p0_min = 0.0
+        while math.fabs(1.0 - p_sum.real) > self.calc_params.tolerance:
+            p0_ = (p0_max + p0_min) / 2.0
+            p_sum = p0_
+            self.p[0] = p0_
+            for j in range(self.N - 1):
+                self.p[j + 1] = np.dot(self.p[j], self.x[j])
+                p_sum += self.p[j + 1]
+            if p_sum > 1.0:
+                p0_max = p0_
+            else:
+                p0_min = p0_
+
+        self._norm_probs()
 
     def _calc_busy_periods(self):
 
@@ -216,131 +366,33 @@ class MM2BusyApprox3Classes(MGnCalc):
         self.pp.append(pass_time.G[2][0, 1])
         self.pp.append(pass_time.G[2][0, 0])
 
-    def get_p(self):
-        """
-        Возвращает список с вероятностями состояний системы
-        p[k] - вероятность пребывания в системе ровно k заявок класса L
-        """
-        p_real = [p_val.real for p_val in self.p]
-        return p_real
+    def _calc_high_queue(self) -> QueueResults:
 
-    def get_low_class_v1(self):
-        """
-        Возвращает среднее время пребывания для класса L
-        """
-        l1 = 0
-        p_real = self.get_p()
-        for i in range(self.N):
-            l1 += p_real[i] * i
-        return l1 / self.l_L
+        mgn_high = MMnrCalc(n=self.n, r=300)
+        mgn_high.set_sources(l=self.l_H)
+        mgn_high.set_servers(mu=self.mu_H)
 
-    def _initial_probabilities(self):
-        """
-        Задаем первоначальные значения вероятностей микросостояний
-        """
-        # t задаем равновероятными
-        for i in range(self.N):
-            for j in range(self.cols[i]):
-                self.t[i][0, j] = 1.0 / self.cols[i]
-        self.x[0] = 0.4
+        return mgn_high.run()
 
-    def calculate_p(self):
-        """
-        После окончания итераций находим значения вероятностей p по найденным х
-        """
-        # version 1
-        p_sum = 0 + 0j
-        p0_max = 1.0
-        p0_min = 0.0
-        while math.fabs(1.0 - p_sum.real) > self.calc_params.tolerance:
-            p0_ = (p0_max + p0_min) / 2.0
-            p_sum = p0_
-            self.p[0] = p0_
-            for j in range(self.N - 1):
-                self.p[j + 1] = np.dot(self.p[j], self.x[j])
-                p_sum += self.p[j + 1]
-            if p_sum > 1.0:
-                p0_max = p0_
-            else:
-                p0_min = p0_
+    def _calc_med_queue(self) -> PriorityResults:
 
-        self._norm_probs()
+        mgn_high = MMnPR2ClsBusyApprox(n=self.n, calc_params=self.calc_params)
+        mgn_high.set_sources(l_low=self.l_M, l_high=self.l_H)
+        mgn_high.set_servers(mu_low=self.mu_L, mu_high=self.mu_H)
 
-    def _calculate_y(self):
-        for i in range(self.N):
-            self.Y.append(np.dot(self.p[i], self.t[i]))
+        return mgn_high.run()
 
     def _build_matrices(self):
         """
         Формирует матрицы переходов
         """
         for i in range(self.N):
-            self.A.append(self.buildA(i))
-            self.B.append(self.buildB(i))
-            self.C.append(self.buildC(i))
-            self.D.append(self.buildD(i))
+            self.A.append(self._build_big_a(i))
+            self.B.append(self._build_big_b(i))
+            self.C.append(self._build_big_c(i))
+            self.D.append(self._build_big_d(i))
 
-    def run(self):
-        """
-        Запускает расчет. Не зависит от структуры матриц
-        """
-
-        self._calc_busy_periods()
-
-        self._build_matrices()
-        self._initial_probabilities()
-
-        self.iter_num_ = 0
-        self.b1[0][0, 0] = 0
-        self.b2[0][0, 0] = 0
-        x_max1 = 0
-        x_max2 = 0
-
-        for i in range(self.N):
-            if self.x[i] > x_max1:
-                x_max1 = self.x[i]
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
-            self.iter_num_ += 1
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                G = np.linalg.inv(self.D[j] - self.C[j])
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], np.dot(self.A[j - 1], G))
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], np.dot(self.B[j + 1], G))
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], np.dot(self.B[j], G))
-
-                c = self.calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                self.x[j] = 0
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                self.x[j] = 1 / self.x[j]
-
-                self.z[j] = np.dot(c, self.x[j])
-                self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            self.x[0] = 1.0 / self.z[1]
-
-            t1B1 = np.dot(self.t[1], self.B[1])
-            self.t[0] = np.dot(self.x[0], t1B1)
-            self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
-
-            x_max1 = 0
-            for i in range(self.N):
-                if self.x[i] > x_max1:
-                    x_max1 = self.x[i]
-
-        self.calculate_p()
-        self._calculate_y()
-
-    def calculate_c(self, j):
+    def _calculate_c(self, j):
         """
         Вычисляет значение переменной с, участвующей в расчете
         """
@@ -362,7 +414,7 @@ class MM2BusyApprox3Classes(MGnCalc):
 
         return chisl / (znam - znam2)
 
-    def buildA(self, num):
+    def _build_big_a(self, num):
         """
         Формирует матрицу А(L) по заданному номеру яруса
         """
@@ -377,7 +429,7 @@ class MM2BusyApprox3Classes(MGnCalc):
             output[i, i] = self.l_L
         return output
 
-    def buildB(self, num):
+    def _build_big_b(self, num):
         """
         Формирует матрицу B по заданному номеру яруса
         """
@@ -398,7 +450,7 @@ class MM2BusyApprox3Classes(MGnCalc):
 
         return output
 
-    def buildC(self, num):
+    def _build_big_c(self, num):
         """
         Формирует матрицу C по заданному номеру яруса
         """
@@ -482,7 +534,7 @@ class MM2BusyApprox3Classes(MGnCalc):
 
         return output
 
-    def buildD(self, num):
+    def _build_big_d(self, num):
         """
         Формирует матрицу D по заданному номеру яруса
         """

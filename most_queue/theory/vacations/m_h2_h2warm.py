@@ -10,8 +10,9 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -169,6 +170,112 @@ class MH2nH2Warm(MGnCalc):
 
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Запускает расчет
+        """
+        self._check_if_servers_and_sources_set()
+        self._build_matrices()
+        self._initial_probabilities()
+        # Keys of the levels n, for n=3 [(3,0) (2,1) (1,2) (0,3)]
+        self.key_numbers = self._get_key_numbers(self.n)
+        self.down_probs = self._calc_down_probs(self.n + 1)
+
+        if self.dt == "c16":
+            self.b1[0][0, 0] = 0.0 + 0.0j
+            self.b2[0][0, 0] = 0.0 + 0.0j
+            x_max1 = 0.0 + 0.0j
+            x_max2 = 0.0 + 0.0j
+        else:
+            self.b1[0][0, 0] = 0.0
+            self.b2[0][0, 0] = 0.0
+            x_max1 = 0.0
+            x_max2 = 0.0
+
+        self._calc_support_matrices()
+
+        self.num_of_iter_ = 0  # кол-во итераций алгоритма
+        for i in range(self.N):
+            if self.x[i].real > x_max1.real:
+                x_max1 = self.x[i]
+
+        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
+            x_max2 = x_max1
+            self.num_of_iter_ += 1
+
+            for j in range(1, self.N):  # по всем ярусам, кроме первого.
+
+                # b':
+                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
+
+                # b":
+                if j != (self.N - 1):
+                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
+                else:
+                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
+
+                c = self._calculate_c(j)
+
+                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+                if self.dt == "c16":
+                    self.x[j] = 0.0 + 0.0j
+                else:
+                    self.x[j] = 0.0
+                for k in range(x_znam.shape[1]):
+                    self.x[j] += x_znam[0, k]
+
+                if self.dt == "c16":
+                    self.x[j] = (1.0 + 0.0j) / self.x[j]
+                else:
+                    self.x[j] = (1.0) / self.x[j]
+
+                if self.R and j == (self.N - 1):
+                    tA = np.dot(self.t[j - 1], self.A[j - 1])
+                    tag = np.dot(tA, self.G[j])
+                    tag_sum = 0
+                    for t_i in range(tag.shape[1]):
+                        tag_sum += tag[0, t_i]
+                    self.z[j] = 1.0 / tag_sum
+                    self.t[j] = self.z[j] * tag
+
+                else:
+
+                    self.z[j] = np.dot(c, self.x[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+
+            if self.dt == "c16":
+                self.x[0] = (1.0 + 0.0j) / self.z[1]
+            else:
+                self.x[0] = 1.0 / self.z[1]
+
+            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.G[0]))
+
+            x_max1 = 0.0 + 0.0j
+            for i in range(self.N):
+                if self.x[i].real > x_max1.real:
+                    x_max1 = self.x[i]
+
+            if self.verbose:
+                print(f"End iter # {self.num_of_iter_}")
+
+        self._calculate_p()
+        self._calculate_y()
+
+        return self.get_results()
+
+    def get_results(self) -> QueueResults:
+        """
+        Get all results
+        """
+
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+
+        utilization = self.get_utilization()
+
+        return QueueResults(v=self.v, w=self.w, p=self.p, utilization=utilization)
+
     def get_p(self) -> list[float]:
         """
         Get the probabilities of states of the queueing system.
@@ -208,12 +315,8 @@ class MH2nH2Warm(MGnCalc):
         """
         Get the first three initial moments of sojourn time in the queue.
         """
-        v = [0.0] * 3
         w = self.get_w()
-        b = self.b
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+        v = conv_moments(self.b, w)
 
         return v
 
@@ -328,7 +431,7 @@ class MH2nH2Warm(MGnCalc):
         p0_max = 1.0
         p0_min = 0.0
 
-        while math.fabs(1.0 - p_sum) > 1e-6:
+        while math.fabs(1.0 - p_sum.real) > 1e-6:
             p0_ = (p0_max + p0_min) / 2.0
             p_sum = p0_
             self.p[0] = p0_
@@ -379,97 +482,6 @@ class MH2nH2Warm(MGnCalc):
         self._calc_g_matrices()
         self._calc_ag_matrices()
         self._calc_bg_matrices()
-
-    def run(self):
-        """
-        Запускает расчет
-        """
-        self._check_if_servers_and_sources_set()
-        self._build_matrices()
-        self._initial_probabilities()
-        # Keys of the levels n, for n=3 [(3,0) (2,1) (1,2) (0,3)]
-        self.key_numbers = self._get_key_numbers(self.n)
-        self.down_probs = self._calc_down_probs(self.n + 1)
-
-        if self.dt == "c16":
-            self.b1[0][0, 0] = 0.0 + 0.0j
-            self.b2[0][0, 0] = 0.0 + 0.0j
-            x_max1 = 0.0 + 0.0j
-            x_max2 = 0.0 + 0.0j
-        else:
-            self.b1[0][0, 0] = 0.0
-            self.b2[0][0, 0] = 0.0
-            x_max1 = 0.0
-            x_max2 = 0.0
-
-        self._calc_support_matrices()
-
-        self.num_of_iter_ = 0  # кол-во итераций алгоритма
-        for i in range(self.N):
-            if self.x[i].real > x_max1.real:
-                x_max1 = self.x[i]
-
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
-            self.num_of_iter_ += 1
-
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
-
-                c = self._calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                if self.dt == "c16":
-                    self.x[j] = 0.0 + 0.0j
-                else:
-                    self.x[j] = 0.0
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                if self.dt == "c16":
-                    self.x[j] = (1.0 + 0.0j) / self.x[j]
-                else:
-                    self.x[j] = (1.0) / self.x[j]
-
-                if self.R and j == (self.N - 1):
-                    tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.G[j])
-                    tag_sum = 0
-                    for t_i in range(tag.shape[1]):
-                        tag_sum += tag[0, t_i]
-                    self.z[j] = 1.0 / tag_sum
-                    self.t[j] = self.z[j] * tag
-
-                else:
-
-                    self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            if self.dt == "c16":
-                self.x[0] = (1.0 + 0.0j) / self.z[1]
-            else:
-                self.x[0] = 1.0 / self.z[1]
-
-            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.G[0]))
-
-            x_max1 = 0.0 + 0.0j
-            for i in range(self.N):
-                if self.x[i].real > x_max1.real:
-                    x_max1 = self.x[i]
-
-            if self.verbose:
-                print(f"End iter # {self.num_of_iter_}")
-
-        self._calculate_p()
-        self._calculate_y()
 
     def _calculate_c(self, j):
         """

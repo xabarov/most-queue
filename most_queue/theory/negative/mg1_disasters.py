@@ -9,7 +9,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.base_queue import BaseQueue, QueueResults
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.busy_periods import calc_busy_pls
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
@@ -67,6 +67,39 @@ class MG1Disasters(BaseQueue):
             raise ValueError("Approximation must be 'h2' or 'gamma'.")
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Run calculation
+        """
+        v = self.get_v()
+        utilization = self.get_utilization()
+
+        return QueueResults(v=v, utilization=utilization)
+
+    def get_utilization(self) -> float:
+        """
+        Calculate utilization factor
+        """
+        # TODO naive impelemntation
+        return self.l_pos * self.b[0]
+
+    def get_v(self) -> list[float]:
+        """
+        Calculate first three moments of sojourn time in the system.
+        """
+        self._check_if_servers_and_sources_set()
+
+        if not self.v is None:
+            return self.v
+
+        v = [0, 0, 0]
+        for i in range(3):
+            v[i] = derivative(self._v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+        v = np.array([-v[0], v[1].real, -v[2]])
+
+        self.v = v
+        return v
+
     def _calc_nu(self):
         """
         Calculate the nu parameter.
@@ -90,15 +123,3 @@ class MG1Disasters(BaseQueue):
         big_g = self.lst_function(self.params, s)
         denominator = s - self.l_pos * (1.0 - big_g) - self.l_neg
         return numerator / denominator
-
-    def get_v(self) -> list[float]:
-        """
-        Calculate first three moments of sojourn time in the system.
-        """
-        self._check_if_servers_and_sources_set()
-        v = [0, 0, 0]
-        for i in range(3):
-            v[i] = derivative(self._v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        v = np.array([-v[0], v[1].real, -v[2]])
-
-        return v

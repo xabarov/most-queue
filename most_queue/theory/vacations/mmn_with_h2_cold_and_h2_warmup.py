@@ -6,14 +6,25 @@ with arbitrary coefficients of variation (>1, <=1).
 """
 
 import math
+from dataclasses import dataclass
 from itertools import chain
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
 from most_queue.theory.utils.transforms import lst_exp
+
+
+@dataclass
+class MMnHyperExpWarmAndColdResults(QueueResults):
+    """
+    Result of MMnHyperExpWarmAndCold calculation
+    """
+
+    warmup_prob: float = 0
+    cold_prob: float = 0
 
 
 class MMnHyperExpWarmAndCold(MGnCalc):
@@ -149,12 +160,185 @@ class MMnHyperExpWarmAndCold(MGnCalc):
 
         self.is_servers_set = True
 
+    def run(self) -> MMnHyperExpWarmAndColdResults:
+        """
+        Run calculation for queueing system.
+        """
+
+        self._check_if_servers_and_sources_set()
+
+        self._build_matrices()
+        self._initial_probabilities()
+
+        if self.dt == "c16":
+            self.b1[0][0, 0] = 0.0 + 0.0j
+            self.b2[0][0, 0] = 0.0 + 0.0j
+            x_max1 = 0.0 + 0.0j
+            x_max2 = 0.0 + 0.0j
+        else:
+            self.b1[0][0, 0] = 0.0
+            self.b2[0][0, 0] = 0.0
+            x_max1 = 0.0
+            x_max2 = 0.0
+
+        self._calc_support_matrices()
+
+        self.num_of_iter_ = 0  # кол-во итераций алгоритма
+        for i in range(self.N):
+            if self.x[i].real > x_max1.real:
+                x_max1 = self.x[i]
+
+        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
+            x_max2 = x_max1
+            self.num_of_iter_ += 1
+
+            for j in range(1, self.N):  # по всем ярусам, кроме первого.
+
+                # b':
+                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
+
+                # b":
+                if j != (self.N - 1):
+                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
+                else:
+                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
+
+                c = self._calculate_c(j)
+
+                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+                if self.dt == "c16":
+                    self.x[j] = 0.0 + 0.0j
+                else:
+                    self.x[j] = 0.0
+                for k in range(x_znam.shape[1]):
+                    self.x[j] += x_znam[0, k]
+
+                if self.dt == "c16":
+                    self.x[j] = (1.0 + 0.0j) / self.x[j]
+                else:
+                    self.x[j] = 1.0 / self.x[j]
+
+                if self.R and j == (self.N - 1):
+                    tA = np.dot(self.t[j - 1], self.A[j - 1])
+                    tag = np.dot(tA, self.G[j])
+                    tag_sum = 0
+                    for t_i in range(tag.shape[1]):
+                        tag_sum += tag[0, t_i]
+                    self.z[j] = 1.0 / tag_sum
+                    self.t[j] = self.z[j] * tag
+
+                else:
+
+                    self.z[j] = np.dot(c, self.x[j])
+                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+
+            if self.dt == "c16":
+                self.x[0] = (1.0 + 0.0j) / self.z[1]
+            else:
+                self.x[0] = 1.0 / self.z[1]
+
+            x_max1 = 0
+            for i in range(self.N):
+                if self.x[i].real > x_max1.real:
+                    x_max1 = self.x[i]
+
+            if self.verbose:
+                print(f"End iter # {self.num_of_iter_:d}, x_max: {x_max1}")
+
+        self._calculate_p()
+        self._calculate_y()
+        return self.get_results()
+
+    def get_results(self) -> MMnHyperExpWarmAndColdResults:
+        """
+        Get all results
+        """
+
+        self.p = self.get_p()
+        self.w = self.get_w()
+        self.v = self.get_v()
+
+        utilization = self.get_utilization()
+
+        warmup_prob = self.get_warmup_prob()
+        cold_prob = self.get_cold_prob()
+
+        return MMnHyperExpWarmAndColdResults(
+            v=self.v,
+            w=self.w,
+            p=self.p,
+            utilization=utilization,
+            warmup_prob=warmup_prob,
+            cold_prob=cold_prob,
+        )
+
+    def get_utilization(self):
+        """
+        Calc utilization of the queue.
+        """
+
+        return self.l / (self.n * self.mu)
+
     def get_p(self):
         """
         Returns the list of state probabilities
         p[k] - probability of being in the system with exactly k requests
         """
         return [prob.real for prob in self.p]
+
+    def get_w(self, _derivate=False):
+        """
+        Returns waiting time initial moments
+        """
+        w = [0.0] * 3
+
+        for i in range(3):
+            min_mu = min(
+                chain(
+                    np.array([mu.real for mu in self.mu_w]).astype("float"),
+                    np.array([mu.real for mu in self.mu_c]).astype("float"),
+                    [self.mu],
+                )
+            )
+            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
+        return [-w[0], w[1], -w[2]]
+
+    def get_b(self):
+        """
+        Returns service time initial moments
+        """
+        return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
+
+    def get_v(self):
+        """
+        Return initial moments of time spent in the system
+        """
+        v = [0.0] * 3
+        w = self.get_w()
+        b = self.get_b()
+        v[0] = w[0] + b[0]
+        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
+        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+
+        return v
+
+    def get_cold_prob(self):
+        """
+        Get the probability of being in a cold state.
+        """
+        p_cold = 0
+        for k in range(self.N):
+            p_cold += self.Y[k][0, -1] + self.Y[k][0, -2]
+        return p_cold.real
+
+    def get_warmup_prob(self):
+        """
+        Get the probability of being in a warmup state.
+        """
+        p_warmup = 0
+        for k in range(1, self.N):
+            p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
+        return p_warmup.real
 
     def _calc_w_pls(self, s):
         w = 0
@@ -214,60 +398,6 @@ class MMnHyperExpWarmAndCold(MGnCalc):
 
         return w
 
-    def get_w(self, _derivate=False):
-        """
-        Returns waiting time initial moments
-        """
-        w = [0.0] * 3
-
-        for i in range(3):
-            min_mu = min(
-                chain(
-                    np.array([mu.real for mu in self.mu_w]).astype("float"),
-                    np.array([mu.real for mu in self.mu_c]).astype("float"),
-                    [self.mu],
-                )
-            )
-            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
-        return [-w[0], w[1], -w[2]]
-
-    def get_b(self):
-        """
-        Returns service time initial moments
-        """
-        return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
-
-    def get_v(self):
-        """
-        Return initial moments of time spent in the system
-        """
-        v = [0.0] * 3
-        w = self.get_w()
-        b = self.get_b()
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
-
-        return v
-
-    def get_cold_prob(self):
-        """
-        Get the probability of being in a cold state.
-        """
-        p_cold = 0
-        for k in range(self.N):
-            p_cold += self.Y[k][0, -1] + self.Y[k][0, -2]
-        return p_cold.real
-
-    def get_warmup_prob(self):
-        """
-        Get the probability of being in a warmup state.
-        """
-        p_warmup = 0
-        for k in range(1, self.N):
-            p_warmup += self.Y[k][0, 0] + self.Y[k][0, 1]
-        return p_warmup.real
-
     def _initial_probabilities(self):
         """
         Задаем первоначальные значения вероятностей микросостояний
@@ -296,7 +426,7 @@ class MMnHyperExpWarmAndCold(MGnCalc):
                 summ += self.p[i]
             print(f"Summ of probs = {summ:.5f}")
 
-    def calculate_p(self):
+    def _calculate_p(self):
         """
         После окончания итераций находим значения вероятностей p по найденным х
         """
@@ -320,7 +450,7 @@ class MMnHyperExpWarmAndCold(MGnCalc):
 
         self._norm_probs()
 
-    def calculate_y(self):
+    def _calculate_y(self):
         """
         Calculate the Y matrix based on the probabilities p
         """
@@ -363,95 +493,7 @@ class MMnHyperExpWarmAndCold(MGnCalc):
         self._calc_ag_matrices()
         self._calc_bg_matrices()
 
-    def run(self):
-        """
-        Run calculation for queueing system.
-        """
-
-        self._check_if_servers_and_sources_set()
-
-        self._build_matrices()
-        self._initial_probabilities()
-
-        if self.dt == "c16":
-            self.b1[0][0, 0] = 0.0 + 0.0j
-            self.b2[0][0, 0] = 0.0 + 0.0j
-            x_max1 = 0.0 + 0.0j
-            x_max2 = 0.0 + 0.0j
-        else:
-            self.b1[0][0, 0] = 0.0
-            self.b2[0][0, 0] = 0.0
-            x_max1 = 0.0
-            x_max2 = 0.0
-
-        self._calc_support_matrices()
-
-        self.num_of_iter_ = 0  # кол-во итераций алгоритма
-        for i in range(self.N):
-            if self.x[i].real > x_max1.real:
-                x_max1 = self.x[i]
-
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
-            self.num_of_iter_ += 1
-
-            for j in range(1, self.N):  # по всем ярусам, кроме первого.
-
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.AG[j])
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.BG[j])
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.BG[j])
-
-                c = self.calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                if self.dt == "c16":
-                    self.x[j] = 0.0 + 0.0j
-                else:
-                    self.x[j] = 0.0
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                if self.dt == "c16":
-                    self.x[j] = (1.0 + 0.0j) / self.x[j]
-                else:
-                    self.x[j] = 1.0 / self.x[j]
-
-                if self.R and j == (self.N - 1):
-                    tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.G[j])
-                    tag_sum = 0
-                    for t_i in range(tag.shape[1]):
-                        tag_sum += tag[0, t_i]
-                    self.z[j] = 1.0 / tag_sum
-                    self.t[j] = self.z[j] * tag
-
-                else:
-
-                    self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            if self.dt == "c16":
-                self.x[0] = (1.0 + 0.0j) / self.z[1]
-            else:
-                self.x[0] = 1.0 / self.z[1]
-
-            x_max1 = 0
-            for i in range(self.N):
-                if self.x[i].real > x_max1.real:
-                    x_max1 = self.x[i]
-
-            if self.verbose:
-                print(f"End iter # {self.num_of_iter_:d}, x_max: {x_max1}")
-
-        self.calculate_p()
-        self.calculate_y()
-
-    def calculate_c(self, j):
+    def _calculate_c(self, j):
         """
         Вычисляет значение переменной с, участвующей в расчете
         """

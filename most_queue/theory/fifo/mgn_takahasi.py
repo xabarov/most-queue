@@ -182,6 +182,13 @@ class MGnCalc(BaseQueue):
         self._calculate_p()
         self._calculate_y()
 
+        return self.get_results()
+
+    def get_results(self) -> QueueResults:
+        """
+        Get all results
+        """
+
         self.p = self.get_p()
         self.w = self.get_w()
         self.v = self.get_v()

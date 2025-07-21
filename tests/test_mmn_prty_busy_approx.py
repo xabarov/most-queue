@@ -72,14 +72,15 @@ def test_mmn_prty():
     # Getting simulation results
     p_sim = qs.get_p()
     v_sim = qs.v
+    w_sim = qs.w
 
     # Setting up and running the theoretical approximation model
     tt = MMnPR2ClsBusyApprox(n=NUM_OF_CHANNELS)
     tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_high=ARRIVAL_RATE_HIGH)
     tt.set_servers(mu_low=mu_low, mu_high=mu_high)
-    tt.run()
-    p_num = tt.get_p()
-    v_num = tt.get_second_class_v1()
+    tt_results = tt.run()
+
+    print(f"utilization: {tt_results.utilization:0.4f}")
 
     # Printing comparison results
     print("\nComparison of theoretical calculation with Cox approximation and simulation results.")
@@ -88,18 +89,20 @@ def test_mmn_prty():
 
     print(f"Number of simulated jobs: {NUM_OF_JOBS:d}\n")
 
-    print("Probabilities of system states for low-priority class")
-
-    # Printing probability comparison table
-    probs_print(p_sim=p_sim[1], p_num=p_num, size=10)
+    print("Probs for low-priority class:")
+    probs_print(p_sim=p_sim[1], p_num=tt_results.p, size=10)
 
     # Printing time moments comparison
-    times_print(sim_moments=[v_sim[1][0]], calc_moments=[v_num], is_w=False)
+    times_print(sim_moments=v_sim[0], calc_moments=tt_results.v[0], is_w=False, header="soujorn time for 1 class")
+    times_print(sim_moments=w_sim[0], calc_moments=tt_results.w[0], is_w=True, header="waiting time for 1 class")
+    times_print(
+        sim_moments=[v_sim[1][0]], calc_moments=[tt_results.v[1][0]], is_w=False, header="mean soujorn time for 2 class"
+    )
 
     # Asserting the accuracy of the results
-    assert np.allclose(v_sim[1][0], v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim[1][0], tt_results.v[1][0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(p_sim[1][:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[1][:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

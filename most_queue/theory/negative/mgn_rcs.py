@@ -134,6 +134,13 @@ class MGnNegativeRCSCalc(MGnCalc):
         self._calculate_p()
         self._calculate_y()
 
+        return self.collect_results()
+
+    def collect_results(self) -> NegativeArrivalsResults:
+        """
+        Get all results
+        """
+
         self.p = self.get_p()
         self.w = self.get_w()
         self.v = self.get_v()

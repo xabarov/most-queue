@@ -10,6 +10,7 @@ import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
@@ -54,7 +55,6 @@ class MPhNPrty(MGnCalc):
 
         self.cols = [] * calc_params.N
 
-        self.run_iterations_num_ = 0
         self.p_iteration_num_ = 0
         self.cols_length_ = 0
 
@@ -126,13 +126,26 @@ class MPhNPrty(MGnCalc):
 
         return mgn_high.run()
 
-    def run(self):
+    def get_results(self) -> PriorityResults:
+        """
+        Collect all results
+        """
+
+        v = self.get_v()
+        w = self.get_w()
+        utilization = self.get_utilization()
+        p = self.get_p()
+
+        return PriorityResults(v=v, w=w, p=p, utilization=utilization)
+
+    def run(self) -> PriorityResults:
 
         self._check_if_servers_and_sources_set()
 
         self._calc_busy_periods()
 
         self.high_results = self._calc_high_queue()
+
         return super().run()
 
     def get_low_class_v1(self) -> float:

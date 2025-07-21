@@ -62,6 +62,7 @@ def test_m_h2_h2warm():
     qs.run(NUM_OF_JOBS)
     p_sim = qs.get_p()
     v_sim = qs.v
+    w_sim = qs.w
     im_time = time.process_time() - im_start
 
     tt_start = time.process_time()
@@ -69,10 +70,10 @@ def test_m_h2_h2warm():
     tt.set_sources(ARRIVAL_RATE)
     tt.set_servers(b=b, b_warm=b_w)
 
-    tt.run()
-    p_num = tt.get_p()
-    v_num = tt.get_v()
+    tt_results = tt.run()
     tt_time = time.process_time() - tt_start
+
+    print(f"utulization: {tt_results.utilization: 0.4f}")
 
     num_of_iter = tt.num_of_iter_
 
@@ -86,12 +87,13 @@ def test_m_h2_h2warm():
     print(f"Time taken by the Takacs-Takaichi algorithm: {tt_time:^5.3f} s")
     print(f"Simulation time: {im_time:^5.3f} s")
 
-    probs_print(p_sim, p_num, 10)
-    times_print(v_sim, v_num, False)
+    probs_print(p_sim, tt_results.p, 10)
+    times_print(v_sim, tt_results.v, False)
+    times_print(w_sim, tt_results.w, True)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim, tt_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(p_sim[:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

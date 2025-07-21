@@ -54,17 +54,19 @@ def test_mg1_gamma_rcs():
     m_gamma_1_calc = MG1NegativeCalcRCS()
     m_gamma_1_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     m_gamma_1_calc.set_servers(b=b)
-    v1_gamma_calc = m_gamma_1_calc.get_v1()
+    calc_results = m_gamma_1_calc.run()
+
+    print(f"Utilization calc: {calc_results.utilization: 0.4f}")
 
     times_print(
         v_sim[0],
-        v1_gamma_calc,
+        calc_results.v[0],
         is_w=False,
         header="Sojourn time in M/G/1 with RCS disasters",
     )
 
     # assert is all close with rtol 10%
-    assert np.allclose(v_sim[0], v1_gamma_calc, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim[0], calc_results.v[0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

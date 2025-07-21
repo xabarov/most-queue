@@ -6,7 +6,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution, H2Params
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.negative.structs import NegativeArrivalsResults
 from most_queue.theory.utils.conditional import moments_exp_less_than_h2, moments_h2_less_than_exp
 from most_queue.theory.utils.conv import conv_moments
@@ -138,6 +138,13 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         self._calculate_p()
         self._calculate_y()
+
+        return self.collect_results()
+
+    def collect_results(self) -> NegativeArrivalsResults:
+        """
+        Get all results
+        """
 
         self.p = self.get_p()
         self.w = self.get_w()

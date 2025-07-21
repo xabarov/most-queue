@@ -74,18 +74,20 @@ def run_calculation(
     solver = MGnH2ServingColdWarmDelay(n=num_channels)
     solver.set_sources(l=arrival_rate)
     solver.set_servers(b=b, b_warm=b_w, b_cold=b_c, b_cold_delay=b_d)
-    solver.run()
+    solver_results = solver.run()
 
     stat = {}
-    stat["w"] = solver.get_w()
+
     stat["process_time"] = time.process_time() - num_start
-    stat["p"] = solver.get_p()[:10]
+
+    stat["w"] = solver_results.w
+    stat["p"] = solver_results.p[:10]
     stat["num_of_iter"] = solver.num_of_iter_
 
-    stat["warmup_prob"] = solver.get_warmup_prob()
-    stat["cold_prob"] = solver.get_cold_prob()
-    stat["cold_delay_prob"] = solver.get_cold_delay_prob()
-    stat["servers_busy_probs"] = solver.get_probs_of_servers_busy()
+    stat["warmup_prob"] = solver_results.warmup_prob
+    stat["cold_prob"] = solver_results.cold_prob
+    stat["cold_delay_prob"] = solver_results.cold_delay_prob
+    stat["servers_busy_probs"] = solver_results.servers_busy_probs
 
     return stat
 

@@ -77,25 +77,30 @@ def test_mm2_3_cls_prty():
     tt = MM2BusyApprox3Classes()
     tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_med=ARRIVAL_RATE_MED, l_high=ARRIVAL_RATE_HIGH)
     tt.set_servers(mu_low=mu_low, mu_med=mu_med, mu_high=mu_high)
-    tt.run()
-    p_num = tt.get_p()
-    v_third_1_num = tt.get_low_class_v1()
+
+    tt_results = tt.run()
+
+    print(f"utilization: {tt_results.utilization:0.4f}")
 
     # Printing comparison results
     print("\nComparison of theoretical calculation with Cox approximation and simulation results.")
 
     print(f"Number of simulated jobs: {NUM_OF_JOBS:d}\n")
 
-    print("Probabilities of system states for low-priority class")
-
-    # Printing probability comparison table
-    probs_print(p_sim=p_sim[2], p_num=p_num, size=10)
+    print("Probs for low-priority class:")
+    probs_print(p_sim=p_sim[2], p_num=tt_results.p, size=10)
 
     # Printing time moments comparison
-    times_print(sim_moments=[v_sim[2][0]], calc_moments=[v_third_1_num], is_w=False)
+    times_print(sim_moments=v_sim[0], calc_moments=tt_results.v[0], is_w=False, header="sojourn moments for 1 class")
+    times_print(
+        sim_moments=[v_sim[1][0]], calc_moments=[tt_results.v[1][0]], is_w=False, header="mean sojourn time for 2 class"
+    )
+    times_print(
+        sim_moments=[v_sim[2][0]], calc_moments=[tt_results.v[2][0]], is_w=False, header="mean sojourn time for 3 class"
+    )
 
     # Asserting the accuracy of the results
-    assert np.allclose(v_sim[2][0], v_third_1_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(v_sim[2][0], tt_results.v[1][0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":
