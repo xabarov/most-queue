@@ -31,23 +31,22 @@ UTILIZATION_FACTOR = 0.7
 # calc service time moments using gamma distribution fitting
 b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
 b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+gamma_params = GammaDistribution.get_params([b[0], b[1]]) # gamma distribution parameters
 
 # run Takahasi-Takami calc method
 tt = MGnCalc(n=NUM_OF_CHANNELS)
+
 tt.set_sources(l=ARRIVAL_RATE)
 tt.set_servers(b=b)
 
-# get numerical calculation results
 calc_results = tt.run()
 
 # run simulation
 qs = QsSim(NUM_OF_CHANNELS)
 
 qs.set_sources(ARRIVAL_RATE, "M")
-gamma_params = GammaDistribution.get_params([b[0], b[1]])
 qs.set_servers(gamma_params, "Gamma")
 
-# Run simulation
 sim_results = qs.run(NUM_OF_JOBS)
 
 print(f"Simulation duration: {sim_results.duration:.5f} sec")
