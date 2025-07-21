@@ -7,6 +7,63 @@ A Python package for simulating and analyzing queueing systems (QS) and networks
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)
 
 ---
+### Most-Queue 2.0 Release Notes
+
+New unified API for both simulation and calculation classes:
+
+```python
+from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_coev
+from most_queue.general.tables import probs_print, times_print
+from most_queue.rand_distribution import GammaDistribution
+from most_queue.sim.base import QsSim
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+
+# initialize constatants
+NUM_OF_CHANNELS = 3
+
+ARRIVAL_RATE = 1.0
+SERVICE_TIME_CV = 1.2
+
+NUM_OF_JOBS = 300_000 # number of jobs to simulate
+
+UTILIZATION_FACTOR = 0.7
+
+# calc service time moments using gamma distribution fitting
+b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
+b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
+
+# run Takahasi-Takami calc method
+tt = MGnCalc(n=NUM_OF_CHANNELS)
+tt.set_sources(l=ARRIVAL_RATE)
+tt.set_servers(b=b)
+
+# get numerical calculation results
+calc_results = tt.run()
+
+# run simulation
+qs = QsSim(NUM_OF_CHANNELS)
+
+qs.set_sources(ARRIVAL_RATE, "M")
+gamma_params = GammaDistribution.get_params([b[0], b[1]])
+qs.set_servers(gamma_params, "Gamma")
+
+# Run simulation
+sim_results = qs.run(NUM_OF_JOBS)
+
+print(f"Simulation duration: {sim_results.duration:.5f} sec")
+print(f"Calculation duration: {calc_results.duration:.5f} sec")
+
+probs_print(sim_results.p, calc_results.p, 10)
+times_print(sim_results.v, calc_results.v, False)
+times_print(sim_results.w, calc_results.w, True)
+
+```
+
+See more examples in **tests** [link](https://github.com/xabarov/most-queue/blob/main/tests/) and **tutorials** [link](https://github.com/xabarov/most-queue/tree/main/tutorials/) folders.
+
+
+
+---
 
 ### 🔍 Key Features
 
