@@ -58,7 +58,7 @@ times_print(sim_results.w, calc_results.w, True)
 
 ```
 
-See more examples in **tests** [link](https://github.com/xabarov/most-queue/blob/main/tests/) and **tutorials** [link](https://github.com/xabarov/most-queue/tree/main/tutorials/) folders.
+See more examples in [tests](https://github.com/xabarov/most-queue/blob/main/tests/) and [tutorials](https://github.com/xabarov/most-queue/tree/main/tutorials/) folders.
 
 
 
