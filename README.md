@@ -175,8 +175,8 @@ Most_queue consists of two main parts:
 ---
 
 ### 📁 Examples & Tutorials
-- Look [here](https://github.com/xabarov/most-queue/tree/main/tests) for examples
-- Look [here](https://github.com/xabarov/most-queue/tree/main/tutorials) for jupyter tutorials
+- Look [tests](https://github.com/xabarov/most-queue/tree/main/tests) for examples with comparison of theoretical and simulation results.
+- Look [tutorials](https://github.com/xabarov/most-queue/tree/main/tutorials) for jupyter tutorials
 
 ---
 
