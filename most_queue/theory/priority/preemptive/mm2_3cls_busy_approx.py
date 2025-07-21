@@ -3,14 +3,15 @@ Calculation M/M/2 queue with three classes of requests and absolute priority.
 """
 
 import math
+import time
 
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.structs import PriorityResults, QueueResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.theory.priority.preemptive.mmn_2cls_pr_busy_approx import MMnPR2ClsBusyApprox
-from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
@@ -111,6 +112,8 @@ class MM2BusyApprox3Classes(MGnCalc):
         Запускает расчет. Не зависит от структуры матриц
         """
 
+        start = time.process_time()
+
         self._calc_busy_periods()
 
         self._build_matrices()
@@ -169,7 +172,9 @@ class MM2BusyApprox3Classes(MGnCalc):
         self.high_results = self._calc_high_queue()
         self.med_results = self._calc_med_queue()
 
-        return self.get_results()
+        results = self.get_results()
+        results.duration = time.process_time() - start
+        return results
 
     def get_w(self, _derivate=False):
         """

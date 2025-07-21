@@ -5,12 +5,13 @@ of the busy-time distribution by a Cox second-order distribution.
 """
 
 import math
+import time
 
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution, FittingParams, H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
-from most_queue.theory.priority.structs import PriorityResults
+from most_queue.structs import PriorityResults, QueueResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
@@ -140,13 +141,18 @@ class MPhNPrty(MGnCalc):
 
     def run(self) -> PriorityResults:
 
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
 
         self._calc_busy_periods()
 
         self.high_results = self._calc_high_queue()
 
-        return super().run()
+        results = super().run()
+        results.duration = time.process_time() - start
+
+        return results
 
     def get_low_class_v1(self) -> float:
         """

@@ -79,25 +79,20 @@ def test_gi_m_n():
     qs.set_servers(mu, "M")
 
     # start the simulation:
-    qs.run(NUM_OF_JOBS)
-
-    # get the list of initial moments of sojourn and waiting times in the
-    # queueing system
-    v_sim = qs.v
-    w_sim = qs.w
-
-    # get the distribution of probabilities of states in the queueing system
-    p_sim = qs.get_p()
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # Output results
-    print("\nGamma")
+    print("\nGamma/M/n simulation and calculation results:")
 
-    times_print(w_sim, calc_results.w)
-    times_print(v_sim, calc_results.v, is_w=False)
-    probs_print(p_sim, calc_results.p)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert np.allclose(v_sim, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(p_sim[:10], calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
+    times_print(sim_results.w, calc_results.w)
+    times_print(sim_results.v, calc_results.v, is_w=False)
+    probs_print(sim_results.p, calc_results.p)
+
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

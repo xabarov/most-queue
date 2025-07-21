@@ -4,7 +4,6 @@ for an MMn queueing system with H2 cold and warm-up phases.
 """
 
 import os
-import time
 
 import numpy as np
 import yaml
@@ -73,21 +72,19 @@ def test_mmn_h2cold_h2_warm():
     # Configure the simulator
     simulator.set_sources(ARRIVAL_RATE, "M")
 
-    # Run simulations
-    im_start_time = time.process_time()
-    simulator.run(NUM_OF_JOBS)
-    im_execution_time = time.process_time() - im_start_time
+    sim_results = simulator.run(NUM_OF_JOBS)
 
-    tt_start_time = time.process_time()
     tt = MMnHyperExpWarmAndCold(n=NUM_OF_CHANNELS)
     tt.set_sources(ARRIVAL_RATE)
     tt.set_servers(mu=service_rate, b_warm=b_w, b_cold=b_c)
-    tt_results = tt.run()
-    tt_execution_time = time.process_time() - tt_start_time
+    calc_results = tt.run()
 
     num_of_iter = tt.num_of_iter_
 
-    print(f"utilization {tt_results.utilization:0.4f}")
+    print(f"utilization {calc_results.utilization:0.4f}")
+
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     print("warms starts", simulator.warm_phase.starts_times)
     print("warms after cold starts", simulator.warm_after_cold_starts)
@@ -107,26 +104,21 @@ def test_mmn_h2cold_h2_warm():
     print(
         f"Probability of being in the warming state\n"
         f"\tSim: {simulator.get_warmup_prob():.3f}\n"
-        f"\tCalc: {tt_results.warmup_prob:.3f}"
+        f"\tCalc: {calc_results.warmup_prob:.3f}"
     )
     print(
         f"Probability of being in the cooling state\n"
         f"\tSim: {simulator.get_cold_prob():.3f}\n"
-        f"\tCalc: {tt_results.cold_prob:.3f}"
+        f"\tCalc: {calc_results.cold_prob:.3f}"
     )
-    print(f"Execution time of the Takahashi-Takami algorithm: {tt_execution_time:.3f} s")
-    print(f"Simulatiion time: {im_execution_time:.3f} s")
 
-    p_sim = simulator.get_p()
-    w_sim = simulator.get_w()
+    probs_print(p_sim=sim_results.p, p_num=calc_results.p, size=10)
 
-    probs_print(p_sim=p_sim, p_num=tt_results.p, size=10)
+    times_print(sim_moments=sim_results.w, calc_moments=calc_results.w)
 
-    times_print(sim_moments=w_sim, calc_moments=tt_results.w)
+    assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
-    assert np.allclose(w_sim, tt_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-
-    assert np.allclose(p_sim[:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

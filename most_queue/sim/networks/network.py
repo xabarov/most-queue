@@ -3,6 +3,7 @@ Simulation of a priority network with priorities and multiple channels.
 """
 
 import math
+import time
 
 import numpy as np
 from colorama import Fore, init
@@ -10,7 +11,7 @@ from tqdm import tqdm
 
 from most_queue.rand_distribution import ExpDistribution
 from most_queue.sim.base import QsSim
-from most_queue.sim.networks.base_network_sim import BaseSimNetwork, NetworkSimResults
+from most_queue.sim.networks.base_network_sim import BaseSimNetwork, NetworkResults
 from most_queue.sim.utils.tasks import Task
 
 init()
@@ -181,13 +182,15 @@ class NetworkSimulator(BaseSimNetwork):
         else:
             self.qs[next_node].arrival(self.ttek, ts)
 
-    def run(self, job_served: int) -> NetworkSimResults:
+    def run(self, job_served: int) -> NetworkResults:
         """
         Run simulation
         Parameters:
            job_served (int): Number of jobs to serve.
 
         """
+
+        start = time.process_time()
 
         self._check_sources_and_nodes_is_set()
 
@@ -208,6 +211,8 @@ class NetworkSimulator(BaseSimNetwork):
                         + Fore.LIGHTGREEN_EX
                     )
 
-        self.results = NetworkSimResults(v=self.v_network, served=self.served, arrived=self.arrived)
+        self.results = NetworkResults(
+            v=self.v_network, served=self.served, arrived=self.arrived, duration=time.process_time() - start
+        )
 
         return self.results

@@ -2,7 +2,10 @@
 Numerical calculation of Fork-Join queuing systems
 """
 
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+import time
+
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.utils.max_dist import MaxDistribution
 from most_queue.theory.vacations.mg1_warm_calc import CalcParams, MG1WarmCalc
@@ -70,10 +73,11 @@ class SplitJoinCalc(BaseQueue):
         Run calculations for Split-Join queueing systems
         """
 
+        start = time.process_time()
         v = self.get_v()
         utilization = self.get_utilization()
 
-        return QueueResults(v=v, utilization=utilization)
+        return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
 
     def get_v(self) -> list[float]:
         """

@@ -3,22 +3,8 @@ Base class for queueing systems.
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 from most_queue.theory.calc_params import CalcParams
-
-
-@dataclass
-class QueueResults:
-    """
-    Result of calculation for queueing system.
-    """
-
-    v: list[float] | None = None  # sojourn time initial moments
-    w: list[float] | None = None  # waiting time initial moments
-    p: list[float] | None = None  # probabilities of states
-    pi: list[float] | None = None  # probabilities of states before arrival
-    utilization: float | None = None  # utilization factor
 
 
 class BaseQueue(ABC):

@@ -2,12 +2,14 @@
 Calculate M/H2/n queue with negative jobs with disasters,
 """
 
+import time
+
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution, H2Params
+from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
-from most_queue.theory.negative.structs import NegativeArrivalsResults
 from most_queue.theory.utils.conditional import moments_exp_less_than_h2, moments_h2_less_than_exp
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
@@ -67,6 +69,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Run the algorithm.
         """
+
+        start = time.process_time()
 
         self.base_mgn = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
         self.base_mgn.set_sources(l=self.l_pos)
@@ -139,7 +143,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self._calculate_p()
         self._calculate_y()
 
-        return self.collect_results()
+        results = self.collect_results()
+        results.duration = time.process_time() - start
+
+        return results
 
     def collect_results(self) -> NegativeArrivalsResults:
         """

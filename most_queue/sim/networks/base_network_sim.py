@@ -3,29 +3,8 @@ Base class for queueing networks simulation
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
-
-@dataclass
-class NetworkSimResults:
-    """
-    Data class to store network results.
-    """
-
-    v: list[float]  # initial moments of sojourn time distribution
-    served: int
-    arrived: int
-
-
-@dataclass
-class NetworkSimResultsPriority:
-    """
-    Data class to store results for network with priority discipline in nodes.
-    """
-
-    v: list[list[float]]  # initial moments of sojourn time distribution for each class
-    served: list[int]
-    arrived: list[int]
+from most_queue.structs import NetworkResults, NetworkResultsPriority
 
 
 class BaseSimNetwork(ABC):
@@ -40,7 +19,7 @@ class BaseSimNetwork(ABC):
 
         self.is_nodes_set = False
         self.is_sources_set = False
-        self.results: NetworkSimResults | NetworkSimResultsPriority | None = None
+        self.results: NetworkResults | NetworkResultsPriority | None = None
 
     @abstractmethod
     def set_sources(self):  # pylint: disable=arguments-differ
@@ -82,13 +61,13 @@ class BaseSimNetwork(ABC):
             raise ValueError(error_msg)
 
     @abstractmethod
-    def run(self, job_served: int) -> NetworkSimResults:
+    def run(self, job_served: int) -> NetworkResults:
         """
         Run simulation for the queueing network. This method should be implemented by subclasses.
         Parameters:
         job_served (int): Number of jobs to serve.
 
-        :return: NetworkSimResults object containing results of simulation.
+        :return: NetworkResults object containing results of simulation.
         """
 
     def get_v(self) -> list[float]:
@@ -105,7 +84,7 @@ class BaseSimNetworkPriority(BaseSimNetwork):
     """
 
     @abstractmethod
-    def run(self, job_served: int) -> NetworkSimResultsPriority:
+    def run(self, job_served: int) -> NetworkResultsPriority:
         """
         Run simulations for the queueing network.
 
@@ -113,7 +92,7 @@ class BaseSimNetworkPriority(BaseSimNetwork):
             job_served (int): Number of jobs to serve.
 
         This method should be implemented by subclasses.
-        :return: NetworkSimResults object containing results of simulation.
+        :return: NetworkResults object containing results of simulation.
         """
 
     def get_v(self) -> list[list[float]]:

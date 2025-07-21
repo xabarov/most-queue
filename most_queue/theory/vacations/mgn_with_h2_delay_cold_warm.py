@@ -4,28 +4,17 @@ using Takahasi-Takami method.
 """
 
 import math
-from dataclasses import dataclass
+import time
 from itertools import chain
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.structs import VacationResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls
-
-
-@dataclass
-class MGnH2ServingColdWarmDelayResults(QueueResults):
-    """
-    Result of MGnH2ServingColdWarmDelay calculation
-    """
-
-    warmup_prob: float = 0
-    cold_prob: float = 0
-    cold_delay_prob: float = 0
-    servers_busy_probs: list[float] | None = None
 
 
 class MGnH2ServingColdWarmDelay(MGnCalc):
@@ -221,10 +210,13 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         probs = probs.tolist()
         return [prob.real for prob in probs]
 
-    def run(self) -> MGnH2ServingColdWarmDelayResults:
+    def run(self) -> VacationResults:
         """
         Запускает расчет
         """
+
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
         self._build_matrices()
         self._initial_probabilities()
@@ -303,9 +295,13 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         self._calculate_p()
         self._calculate_y()
-        return self.get_results()
+        results = self.get_results()
 
-    def get_results(self) -> MGnH2ServingColdWarmDelayResults:
+        results.duration = time.process_time() - start
+
+        return results
+
+    def get_results(self) -> VacationResults:
         """
         Get all results
         """
@@ -321,7 +317,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         cold_delay_prob = self.get_cold_delay_prob()
         servers_busy_probs = self.get_probs_of_servers_busy()
 
-        return MGnH2ServingColdWarmDelayResults(
+        return VacationResults(
             v=self.v,
             w=self.w,
             p=self.p,

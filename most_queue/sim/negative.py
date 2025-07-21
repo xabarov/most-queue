@@ -10,7 +10,7 @@ import numpy as np
 from most_queue.sim.base import QsSim
 from most_queue.sim.utils.distribution_utils import calc_qs_load, create_distribution
 from most_queue.sim.utils.stats_update import refresh_moments_stat
-from most_queue.theory.negative.structs import NegativeArrivalsResults
+from most_queue.structs import NegativeArrivalsResults
 
 
 class NegativeServiceType(Enum):
@@ -123,6 +123,24 @@ class QsSimNegatives(QsSim):
             self.server_kendall_notation,
             self.server_params,
             self.n,
+        )
+
+    def run(self, total_served) -> NegativeArrivalsResults:
+        """
+        Run simulation process
+        """
+        results = super().run(total_served=total_served)
+        v_served = self.v_served
+        v_broken = self.v_broken
+
+        return NegativeArrivalsResults(
+            v=results.v,
+            w=results.w,
+            p=results.p,
+            v_served=v_served,
+            v_broken=v_broken,
+            duration=results.duration,
+            utilization=results.utilization,
         )
 
     def positive_arrival(self):
@@ -307,19 +325,6 @@ class QsSimNegatives(QsSim):
         Returns initial moments of sojourn time  (only for broken by negative arrivals)
         """
         return self.v_broken
-
-    def get_results(self, max_p: int = 100) -> NegativeArrivalsResults:
-        """
-        Returns results as a NegativeArrivalsResults object
-        max_p: Maximum number of probabilities to return
-        """
-        return NegativeArrivalsResults(
-            p=self.get_p()[:max_p],
-            v=self.v,
-            w=self.w,
-            v_served=self.v_served,
-            v_broken=self.v_broken,
-        )
 
     def __str__(self, is_short=False):
 

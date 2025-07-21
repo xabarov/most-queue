@@ -132,7 +132,6 @@ def run_simulation(
     for sim_run_num in range(ave_num):
         print(f"Running simulation {sim_run_num + 1} of {ave_num}")
 
-        im_start = time.process_time()
         sim = VacationQueueingSystemSimulator(num_channels)
         sim.set_sources(arrival_rate, "M")
 
@@ -140,14 +139,14 @@ def run_simulation(
         sim.set_warm(gamma_params_warm, "Gamma")
         sim.set_cold(gamma_params_cold, "Gamma")
         sim.set_cold_delay(gamma_params_cold_delay, "Gamma")
-        sim.run(num_of_jobs)
+        sim_results = sim.run(num_of_jobs)
 
-        ws.append(sim.w)
-        process_times.append(time.process_time() - im_start)
-        cold_probs.append(sim.get_cold_prob())
-        cold_delay_probs.append(sim.get_cold_delay_prob())
-        warmup_probs.append(sim.get_warmup_prob())
-        ps.append(sim.get_p()[:10])
+        ws.append(sim_results.w)
+        process_times.append(sim_results.duration)
+        cold_probs.append(sim_results.cold_prob)
+        cold_delay_probs.append(sim_results.cold_delay_prob)
+        warmup_probs.append(sim_results.warmup_prob)
+        ps.append(sim_results.p[:10])
 
     # average over all simulations
 

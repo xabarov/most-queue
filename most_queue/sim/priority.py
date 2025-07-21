@@ -3,6 +3,7 @@ Simulation of a priority queue system (GI/G/n/r and GI/G/n systems)
 """
 
 import math
+import time
 
 import numpy as np
 from colorama import Fore, Style, init
@@ -11,6 +12,7 @@ from tqdm import tqdm
 from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.servers import ServerPriority
 from most_queue.sim.utils.tasks import TaskPriority
+from most_queue.structs import PriorityResults
 
 init()
 
@@ -181,46 +183,44 @@ class PriorityQueueSimulator:
             if self.sources_params[i]["type"] == "M":
                 l_sum += self.sources_params[i]["params"]
             elif self.sources_params[i]["type"] == "H":
-                y1 = self.sources_params[i]["params"][0]
+                y1 = self.sources_params[i]["params"].p1
                 y2 = 1.0 - y1
-                mu1 = self.sources_params[i]["type"][1]
-                mu2 = self.sources_params[i]["type"][2]
+                mu1 = self.sources_params[i]["type"].mu1
+                mu2 = self.sources_params[i]["type"].mu2
 
                 f1 = y1 / mu1 + y2 / mu2
                 l_sum += 1.0 / f1
 
             elif self.sources_params[i]["type"] == "E":
-                r = self.sources_params[i]["params"][0]
-                mu = self.sources_params[i]["params"][1]
+                r = self.sources_params[i]["params"].r
+                mu = self.sources_params[i]["params"].mu
                 l_sum += mu / r
 
             elif self.sources_params[i]["type"] == "Gamma":
-                mu = self.sources_params[i]["params"][0]
-                alpha = self.sources_params[i]["params"][1]
+                mu = self.sources_params[i]["params"].mu
+                alpha = self.sources_params[i]["params"].alpha
                 l_sum += mu / alpha
 
             elif self.sources_params[i]["type"] == "C":
-                y1 = self.sources_params[i]["params"][0]
+                y1 = self.sources_params[i]["params"].p1
                 y2 = 1.0 - y1
-                mu1 = self.sources_params[i]["params"][1]
-                mu2 = self.sources_params[i]["params"][2]
+                mu1 = self.sources_params[i]["params"].mu1
+                mu2 = self.sources_params[i]["params"].mu2
 
                 f1 = y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
                 l_sum += 1.0 / f1
             elif self.sources_params[i]["type"] == "Pa":
-                if self.sources_params[i]["params"][0] < 1:
-                    return None
 
-                a = self.sources_params[i]["params"][0]
-                k = self.sources_params[i]["params"][1]
+                a = self.sources_params[i]["params"].alpha
+                k = self.sources_params[i]["params"].K
                 f1 = a * k / (a - 1)
                 l_sum += 1.0 / f1
             elif self.sources_params[i]["type"] == "Uniform":
-                f1 = self.sources_params[i]["type"][0]
+                f1 = self.sources_params[i]["params"].mean
                 l_sum += 1.0 / f1
 
             elif self.sources_params[i]["type"] == "D":
-                f1 = self.sources_params[i]["type"]
+                f1 = self.sources_params[i]["params"]
                 l_sum += 1.0 / f1
 
             if self.servers_params[i]["type"] == "M":
@@ -228,44 +228,43 @@ class PriorityQueueSimulator:
                 b1_sr += 1.0 / mu
 
             elif self.servers_params[i]["type"] == "H":
-                y1 = self.servers_params[i]["params"][0]
+                y1 = self.servers_params[i]["params"].p1
                 y2 = 1.0 - y1
-                mu1 = self.servers_params[i]["params"][1]
-                mu2 = self.servers_params[i]["params"][2]
+                mu1 = self.servers_params[i]["params"].mu1
+                mu2 = self.servers_params[i]["params"].mu2
 
                 b1_sr += y1 / mu1 + y2 / mu2
 
             elif self.servers_params[i]["type"] == "Gamma":
-                mu = self.servers_params[i]["params"][0]
-                alpha = self.servers_params[i]["params"][1]
+                mu = self.servers_params[i]["params"].mu
+                alpha = self.servers_params[i]["params"].alpha
+
                 b1_sr += alpha / mu
 
             elif self.servers_params[i]["type"] == "E":
-                r = self.servers_params[i]["params"][0]
-                mu = self.servers_params[i]["params"][1]
+                r = self.servers_params[i]["params"].r
+                mu = self.servers_params[i]["params"].mu
                 b1_sr += r / mu
 
             elif self.servers_params[i]["type"] == "Uniform":
-                f1 = self.servers_params[i]["params"][0]
+                f1 = self.servers_params[i]["params"].mean
                 b1_sr += 1.0 / f1
 
             elif self.servers_params[i]["type"] == "D":
-                f1 = self.servers_params[i]["type"]
+                f1 = self.servers_params[i]["params"]
                 b1_sr += 1.0 / f1
 
             elif self.servers_params[i]["type"] == "C":
-                y1 = self.servers_params[i]["params"][0]
+                y1 = self.servers_params[i]["params"].p1
                 y2 = 1.0 - y1
-                mu1 = self.servers_params[i]["params"][1]
-                mu2 = self.servers_params[i]["params"][2]
+                mu1 = self.servers_params[i]["params"].mu1
+                mu2 = self.servers_params[i]["params"].mu2
 
                 b1_sr += y2 / mu1 + y1 * (1.0 / mu1 + 1.0 / mu2)
             elif self.servers_params[i]["type"] == "Pa":
-                if self.servers_params[i]["params"][0] < 1:
-                    return math.inf
 
-                a = self.servers_params[i]["params"][0]
-                k = self.servers_params[i]["params"][1]
+                a = self.servers_params[i]["params"].alpha
+                k = self.servers_params[i]["params"].K
                 b1_sr += a * k / (a - 1)
 
         return l_sum * b1_sr / (self.n * self.k)
@@ -561,6 +560,8 @@ class PriorityQueueSimulator:
         :return: None
         """
 
+        start = time.process_time()
+
         print(Fore.GREEN + "\rStart simulation")
 
         last_percent = 0
@@ -582,6 +583,12 @@ class PriorityQueueSimulator:
 
         print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
+
+        v = self.get_v()
+        w = self.get_w()
+        p = self.get_p()
+
+        return PriorityResults(v=v, w=w, p=p, duration=time.process_time() - start, utilization=self.calc_load())
 
     def refresh_busy_stat(self, k, new_a):
         """
@@ -614,7 +621,7 @@ class PriorityQueueSimulator:
         for i in range(3):
             self.w[k][i] = self.w[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
 
-    def get_p(self):
+    def get_p(self) -> list[list[float]]:
         """
         Get the probability distribution of states for each class.
         Returns a list with probabilities of states in the queueing system.
@@ -627,6 +634,20 @@ class PriorityQueueSimulator:
             for j in range(0, self.num_of_states):
                 res[kk][j] = self.p[kk][j] / self.ttek
         return res
+
+    def get_v(self) -> list[list[float]]:
+        """
+        Get the sojourn time distribution for each class.
+        Returns a list with sojourn times of requests for each class.
+        """
+        return self.v
+
+    def get_w(self) -> list[list[float]]:
+        """
+        Get the waiting time distribution for each class.
+        Returns a list with waiting times of requests for each class.
+        """
+        return self.w
 
     def __str__(self, is_short=False):
         """

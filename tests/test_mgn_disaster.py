@@ -54,13 +54,7 @@ def test_mgn():
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, "Gamma")
 
-    queue_sim.run(NUM_OF_JOBS)
-
-    p_sim = queue_sim.get_p()
-    v_sim = queue_sim.get_v()
-    v_sim_served = queue_sim.get_v_served()
-    v_sim_broken = queue_sim.get_v_broken()
-    w_sim = queue_sim.get_w()
+    sim_results = queue_sim.run(NUM_OF_JOBS)
 
     # Run calc
     queue_calc = MGnNegativeDisasterCalc(n=NUM_OF_CHANNELS)
@@ -69,15 +63,18 @@ def test_mgn():
 
     calc_results = queue_calc.run()
 
-    probs_print(p_sim, calc_results.p)
-    times_print(v_sim, calc_results.v, is_w=False, header="sojourn total")
-    times_print(v_sim_served, calc_results.v_served, is_w=False, header="sojourn served")
-    times_print(v_sim_broken, calc_results.v_broken, is_w=False, header="sojourn broken")
-    times_print(w_sim, calc_results.w)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert np.allclose(v_sim, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    probs_print(sim_results.p, calc_results.p)
+    times_print(sim_results.v, calc_results.v, is_w=False, header="sojourn total")
+    times_print(sim_results.v_served, calc_results.v_served, is_w=False, header="sojourn served")
+    times_print(sim_results.v_broken, calc_results.v_broken, is_w=False, header="sojourn broken")
+    times_print(sim_results.w, calc_results.w)
 
-    assert np.allclose(p_sim[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

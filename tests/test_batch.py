@@ -60,21 +60,22 @@ def test_batch_mm1():
     batch_calc.set_sources(l=ARRIVAL_RATE, batch_probs=BATCH_PROBABILITIES)
     batch_calc.set_servers(mu=mu)
 
-    batch_results = batch_calc.run()
-    print(f"Utilization: {batch_results.utilization: 0.4f}")
+    calc_results = batch_calc.run()
+    print(f"Utilization: {calc_results.utilization: 0.4f}")
 
     qs = QueueingSystemBatchSim(NUM_OF_CHANNELS, BATCH_PROBABILITIES)
 
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(mu, "M")
 
-    qs.run(NUM_OF_JOBS)
+    sim_results = qs.run(NUM_OF_JOBS)
 
-    v1_sim = qs.v[0]
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    times_print(v1_sim, batch_results.v[0], False)
+    times_print(sim_results.v[0], calc_results.v[0], False)
 
-    assert np.allclose(v1_sim, batch_results.v[0], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL), ERROR_MSG
+    assert np.allclose(sim_results.v[0], calc_results.v[0], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

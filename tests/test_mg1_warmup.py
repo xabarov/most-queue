@@ -64,20 +64,22 @@ def test_mg1_warm():
     simulator.set_sources(ARRIVAL_RATE, "M")
 
     # Run simulations
-    simulator.run(NUM_OF_JOBS)
-    v_sim = simulator.get_v()
+    sim_results = simulator.run(NUM_OF_JOBS)
 
     mg1_calc = MG1WarmCalc()
     mg1_calc.set_sources(ARRIVAL_RATE)
     mg1_calc.set_servers(b=b_s, b_warm=b_w)
-    num_results = mg1_calc.run()
+    calc_results = mg1_calc.run()
 
-    print(f"utilization: {num_results.utilization: 0.4f}")
+    print(f"utilization: {calc_results.utilization: 0.4f}")
 
-    times_print(v_sim, num_results.v, is_w=False)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+
+    times_print(simulator.v, calc_results.v, is_w=False)
 
     # assert all close with relative percent 20%
-    assert np.allclose(v_sim, num_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(simulator.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

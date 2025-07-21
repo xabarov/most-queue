@@ -5,13 +5,14 @@ on the approximation of busy periods by Cox's second-order distribution.
 """
 
 import math
+import time
 
 import numpy as np
 
 from most_queue.rand_distribution import CoxDistribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.structs import PriorityResults, QueueResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.fifo.mmnr import MMnrCalc
-from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 
 
@@ -81,6 +82,8 @@ class MMnPR2ClsBusyApprox(MGnCalc):
         """
         Запускает расчет
         """
+
+        start = time.process_time()
 
         self.busy_period = self._get_pnz_markov()
         self.busy_coev = self._get_busy_coev()
@@ -175,7 +178,10 @@ class MMnPR2ClsBusyApprox(MGnCalc):
 
         self.high_results = self._calc_high_queue()
 
-        return self.get_results()
+        results = self.get_results()
+
+        results.duration = time.process_time() - start
+        return results
 
     def get_w(self, _derivate=False):
         """

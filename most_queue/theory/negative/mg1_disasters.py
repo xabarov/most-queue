@@ -5,11 +5,14 @@ Use results from the paper:
     Journal of Applied Probability 33.4 (1996): 1191-1200.
 """
 
+import time
+
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.busy_periods import calc_busy_pls
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
@@ -71,10 +74,11 @@ class MG1Disasters(BaseQueue):
         """
         Run calculation
         """
+        start = time.process_time()
         v = self.get_v()
         utilization = self.get_utilization()
 
-        return QueueResults(v=v, utilization=utilization)
+        return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
 
     def get_utilization(self) -> float:
         """

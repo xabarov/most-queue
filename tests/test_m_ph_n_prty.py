@@ -6,7 +6,6 @@ For verification, we use simulation
 """
 
 import os
-import time
 
 import yaml
 
@@ -65,19 +64,15 @@ def test_m_ph_n_prty():
     calc_params.is_cox = IS_COX
     calc_params.max_iter = MAX_ITER
 
-    tt_start = time.process_time()
     tt = MPhNPrty(
         n=NUM_OF_CHANNELS,
         calc_params=calc_params,
     )
     tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_high=ARRIVAL_RATE_HIGH)
     tt.set_servers(b_high=b_high, mu_low=mu_low)
-    tt_results = tt.run()
-    tt_time = time.process_time() - tt_start
+    calc_results = tt.run()
 
     iter_num = tt.num_of_iter_
-    v_low_tt = tt_results.v[1][0]
-    v_high_tt = tt_results.v[0][0]
 
     mu_low = 1.0 / b1_low
 
@@ -87,17 +82,10 @@ def test_m_ph_n_prty():
     b.append(b_high)
     b.append(b_low)
 
-    invar_start = time.process_time()
-    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS)
+    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS, priority="PR")
     invar_calc.set_sources([ARRIVAL_RATE_HIGH, ARRIVAL_RATE_LOW])
     invar_calc.set_servers(b)
-    v = invar_calc.get_v(priority="PR", num=2)
-
-    v_high_invar = v[0][0]
-    v_low_invar = v[1][0]
-    invar_time = time.process_time() - invar_start
-
-    im_start = time.process_time()
+    invar_results = invar_calc.run()
 
     qs = PriorityQueueSimulator(NUM_OF_CHANNELS, NUM_OF_CLASSES, "PR")
     sources = []
@@ -112,14 +100,7 @@ def test_m_ph_n_prty():
     qs.set_servers(servers_params)
 
     # running the simulation:
-    qs.run(NUM_OF_JOBS)
-
-    # getting the results of the simulation:
-    v_sim = qs.v
-    v_low_sim = v_sim[1][0]
-    v_high_sim = v_sim[0][0]
-
-    sim_time = time.process_time() - im_start
+    sim_results = qs.run(NUM_OF_JOBS)
 
     print("\nComparison of the results calculated using the numerical method with approximation")
     print(" of busy periods by Cox's second-order distribution and simulation.")
@@ -127,6 +108,9 @@ def test_m_ph_n_prty():
     print(f"n : {NUM_OF_CHANNELS}")
     print(f"Number of served jobs for simulation: {NUM_OF_JOBS}")
     print(f"Calc iterations: {iter_num}")
+
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     print("\n")
     print("Mean sojourn times")
@@ -136,16 +120,16 @@ def test_m_ph_n_prty():
     print("{0:^15s}|{1:^14s}|{2:^15s}|{3:^15s}".format(*headers))
     print("-" * 60)
     row = "Ours"
-    print(f"{row:^15}|{v_high_tt:^14.3f}|{v_low_tt:^14.3f} | {tt_time:^14.3f}")
+    print(f"{row:^15}|{calc_results.v[0][0]:^14.3f}|{calc_results.v[1][0]:^14.3f} | {calc_results.duration:^14.3f}")
     row = "Invar"
-    print(f"{row:^15}|{v_high_invar:^14.3f}|{v_low_invar:^14.3f} | {invar_time:^14.3f}")
+    print(f"{row:^15}|{invar_results.v[0][0]:^14.3f}|{invar_results.v[1][0]:^14.3f} | {invar_results.duration:^14.3f}")
     print("-" * 60)
     row = "Sim"
-    print(f"{row:^15}|{v_high_sim:^13.3f} |{v_low_sim:^14.3f} | {sim_time:^14.3f}")
+    print(f"{row:^15}|{sim_results.v[0][0]:^13.3f} |{sim_results.v[1][0]:^14.3f} | {sim_results.duration:^14.3f}")
     print("-" * 60)
     print("\n")
 
-    assert abs(v_low_tt - v_low_sim) < 0.1, ERROR_MSG
+    assert abs(calc_results.v[1][0] - sim_results.v[1][0]) < 0.1, ERROR_MSG
 
 
 if __name__ == "__main__":

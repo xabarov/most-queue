@@ -2,12 +2,14 @@
 Calculates queueing network.
 """
 
+import time
+
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.networks.base_network_calc import (
     BaseNetworkPriority,
-    NetworkCalcResultsPriority,
+    NetworkResultsPriority,
 )
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.utils.diff5dots import diff5dots
@@ -137,10 +139,12 @@ class OpenNetworkCalcPriorities(BaseNetworkPriority):
 
         return b_order, l_order
 
-    def run(self) -> NetworkCalcResultsPriority:
+    def run(self) -> NetworkResultsPriority:
         """
         Run the simulation and calculate the results.
         """
+
+        start = time.process_time()
 
         self._check_sources_and_nodes_is_set()
 
@@ -157,10 +161,10 @@ class OpenNetworkCalcPriorities(BaseNetworkPriority):
             b_sr = np.mean(b_order[i], axis=0)
 
             loads[i] = l_sum * b_sr[0] / self.n[i]
-            invar_calc = MGnInvarApproximation(n=self.n[i])
+            invar_calc = MGnInvarApproximation(n=self.n[i], priority=self.prty[i])
             invar_calc.set_sources(l_order[i])
             invar_calc.set_servers(b_order[i])
-            v_node.append(invar_calc.get_v(priority=self.prty[i]))
+            v_node.append(invar_calc.get_v())
             for k in range(k_num):
                 v_node[i][self.nodes_prty[i][k]] = v_node[i][k]
 
@@ -191,6 +195,8 @@ class OpenNetworkCalcPriorities(BaseNetworkPriority):
             v[k][0] = -v[k][0]
             v[k][2] = -v[k][2]
 
-        self.results = NetworkCalcResultsPriority(v=v, intensities=self.intensities, loads=loads)
+        self.results = NetworkResultsPriority(
+            v=v, intensities=self.intensities, loads=loads, duration=time.process_time() - start
+        )
 
         return self.results

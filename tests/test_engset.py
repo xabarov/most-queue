@@ -44,12 +44,9 @@ def test_engset():
     engset.set_sources(l=ARRIVAL_RATE, number_of_sources=SOURCE_NUM)
     engset.set_servers(mu=service_rate)
 
-    # Get probabilities of states of the system
-    p_num = engset.get_p()
+    calc_results = engset.run()
 
-    engset_results = engset.run()
-
-    print(f"v1 = {engset_results.v[0]:3.3f}, w1 = {engset_results.w[0]:3.3f}")
+    print(f"v1 = {calc_results.v[0]:3.3f}, w1 = {calc_results.w[0]:3.3f}")
 
     # Simulation of the system with a finite number of sources
 
@@ -58,23 +55,22 @@ def test_engset():
     finite_source_sim.set_sources(ARRIVAL_RATE, "M")
     finite_source_sim.set_servers(service_rate, "M")
 
-    finite_source_sim.run(NUM_OF_JOBS)
+    sim_results = finite_source_sim.run(NUM_OF_JOBS)
 
-    p_sim = finite_source_sim.get_p()
-    v_sim = finite_source_sim.v
-    w_sim = finite_source_sim.w
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     # Comparison of the results from the simulation and the analytical model
 
-    probs_print(p_sim, p_num)
+    probs_print(sim_results.p, calc_results.p)
 
-    assert np.allclose(p_sim[:10], p_num[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
-    times_print(w_sim, engset_results.w, is_w=True)
-    times_print(v_sim, engset_results.v, is_w=False)
+    times_print(sim_results.w, calc_results.w, is_w=True)
+    times_print(sim_results.v, calc_results.v, is_w=False)
 
-    assert np.allclose(w_sim, engset_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(v_sim, engset_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

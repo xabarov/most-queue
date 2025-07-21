@@ -45,11 +45,11 @@ def test_mdn():
     mdn.set_sources(l=ARRIVAL_RATE)
     mdn.set_servers(b=b)
 
-    mdn_results = mdn.run()
+    calc_results = mdn.run()
 
-    print(f"GI/M/n queueing system utilization: {mdn_results.utilization: 0.4f}")
+    print(f"GI/M/n queueing system utilization: {calc_results.utilization: 0.4f}")
 
-    assert abs(UTILIZATION_FACTOR - mdn_results.utilization) < PROBS_ATOL
+    assert abs(UTILIZATION_FACTOR - calc_results.utilization) < PROBS_ATOL
 
     # for verification, we use simulation modeling
     # create an instance of the simulation class and pass the number of
@@ -65,15 +65,16 @@ def test_mdn():
     qs.set_servers(b, "D")
 
     # start the simulation. The method takes the number of jobs to simulate.
-    qs.run(NUM_OF_JOBS)
-
-    # get the distribution of queueing system states probabilities
-    p_sim = qs.get_p()
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # Output results
-    probs_print(mdn_results.p, p_sim)
 
-    assert np.allclose(p_sim[:10], mdn_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+
+    probs_print(calc_results.p, sim_results.p)
+
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

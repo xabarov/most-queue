@@ -13,14 +13,15 @@ from most_queue.general.distribution_fitting import gamma_moments_by_mean_and_co
 from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
-from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
-from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
-from most_queue.theory.negative.structs import (
+from most_queue.structs import (
     DependsOnChannelsResults,
     DependsOnJSONEncoder,
     DependsOnUtilizationResults,
     DependsOnVariationResults,
 )
+from most_queue.theory.calc_params import TakahashiTakamiParams
+from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
+from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
 
 
 def collect_calc_results(qp: dict, n: int, b: list[float], discipline: NegativeServiceType, max_p: int = 100):
@@ -30,25 +31,16 @@ def collect_calc_results(qp: dict, n: int, b: list[float], discipline: NegativeS
     """
 
     if discipline == NegativeServiceType.RCS:
-        queue_calc = MGnNegativeRCSCalc(
-            n,
-            float(qp["arrival_rate"]["positive"]),
-            float(qp["arrival_rate"]["negative"]),
-            b,
-            verbose=False,
-            accuracy=float(qp["accuracy"]),
-        )
+        queue_calc = MGnNegativeRCSCalc(n=n, calc_params=TakahashiTakamiParams(tolerance=float(qp["accuracy"])))
+        queue_calc.set_sources(l_pos=float(qp["arrival_rate"]["positive"]), l_neg=float(qp["arrival_rate"]["negative"]))
+        queue_calc.set_servers(b=b)
 
     else:
         # disasters
-        queue_calc = MGnNegativeDisasterCalc(
-            n,
-            float(qp["arrival_rate"]["positive"]),
-            float(qp["arrival_rate"]["negative"]),
-            b,
-            verbose=False,
-            accuracy=float(qp["accuracy"]),
-        )
+        queue_calc = MGnNegativeDisasterCalc(n=n, calc_params=TakahashiTakamiParams(tolerance=float(qp["accuracy"])))
+        queue_calc.set_sources(l_pos=float(qp["arrival_rate"]["positive"]), l_neg=float(qp["arrival_rate"]["negative"]))
+        queue_calc.set_servers(b=b)
+
     queue_results = queue_calc.run()
     queue_results.p = queue_results.p[:max_p]
     return queue_results
@@ -67,9 +59,11 @@ def collect_sim_results(qp: dict, b: list[float], n: int, discipline: NegativeSe
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, "Gamma")
 
-    queue_sim.run(int(qp["num_of_jobs"]))
+    sim_results = queue_sim.run(int(qp["num_of_jobs"]))
 
-    return queue_sim.get_results(max_p=max_p)
+    sim_results.p = sim_results.p[:max_p]
+
+    return sim_results
 
 
 def run_depends_on_channels(qp: dict, discipline: NegativeServiceType, max_p: int = 100) -> DependsOnChannelsResults:

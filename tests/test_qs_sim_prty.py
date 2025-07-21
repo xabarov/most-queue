@@ -66,7 +66,7 @@ def test_sim():
     )
     print(f"Number of servers: {NUM_OF_CHANNELS}")
     print(f"Number of classes: {NUM_OF_CLASSES}")
-    print(f"Coefficient of load: {ro:<1.2f}")
+    print(f"Utilization factor: {ro:<1.2f}")
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV:<1.2f}")
     print("PR (Preamptive) priority")
 
@@ -100,10 +100,10 @@ def test_sim():
 
     # calculate them as well using the method of invariant relations (for
     # comparison)
-    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS)
+    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS, priority="PR")
     invar_calc.set_sources(ARRIVAL_RATES)
     invar_calc.set_servers(b)
-    v_num = invar_calc.get_v("PR")
+    v_num = invar_calc.get_v()
 
     assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG
     assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG
@@ -128,7 +128,10 @@ def test_sim():
 
     v_sim = qs.v
 
-    v_num = invar_calc.get_v("NP")
+    invar_calc = MGnInvarApproximation(n=NUM_OF_CHANNELS, priority="NP")
+    invar_calc.set_sources(ARRIVAL_RATES)
+    invar_calc.set_servers(b)
+    v_num = invar_calc.get_v()
 
     times_print_with_classes(v_sim, v_num, False)
 

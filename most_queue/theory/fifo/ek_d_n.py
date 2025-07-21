@@ -4,11 +4,13 @@ Numerical calculation of a multi-channel system Ek/D/n
 
 import cmath
 import math
+import time
 
 import numpy as np
 
 from most_queue.rand_distribution import ErlangParams
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -63,9 +65,12 @@ class EkDn(BaseQueue):
         """
         Run calculation
         """
+
+        start = time.process_time()
+
         utilization = self.l * self.b / (self.k * self.n)
         p = self.get_p()
-        return QueueResults(p=p, utilization=utilization)
+        return QueueResults(p=p, utilization=utilization, duration=time.process_time() - start)
 
     def get_p(self):
         """

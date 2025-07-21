@@ -51,19 +51,20 @@ def test_sim_mmnr():
     qs.set_servers(mu, "M")
 
     # Run the simulation
-    qs.run(NUM_OF_JOBS)
-    # Get initial moments of waiting time. Also can get .v for sojourn times,
-    # probabilities of states .get_p(), periods of continuous occupancy .pppz
-    w_sim = qs.w
+    sim_results = qs.run(NUM_OF_JOBS)
 
     mmnr = MMnrCalc(n=NUM_OF_CHANNELS, r=BUFFER)
     mmnr.set_sources(l=ARRIVAL_RATE)
     mmnr.set_servers(mu=mu)
-    w = mmnr.get_w()
-    times_print(w_sim, w)
+    calc_results = mmnr.run()
+
+    times_print(sim_results.w, calc_results.w)
+
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     # Verify simulation results against theoretical calculations
-    assert np.allclose(w_sim, w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 def test_sim_mdn():

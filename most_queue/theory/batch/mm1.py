@@ -2,7 +2,10 @@
 Calculation of M/M/1 QS with batch arrival
 """
 
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+import time
+
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 
 
@@ -47,34 +50,24 @@ class BatchMM1(BaseQueue):
 
         self.is_servers_set = True
 
+    def run(self) -> QueueResults:
+        """
+        Run calculation
+        """
+
+        start = time.process_time()
+
+        v = [self.get_v1()]
+        w = [self.get_w1()]
+        p = self.get_p()
+
+        return QueueResults(utilization=self.ro, v=v, w=w, p=p, duration=time.process_time() - start)
+
     def calc_mean_batch_size(self):
         """
         Mean batch size
         """
         return sum(self.ls) / len(self.ls)
-
-    def _calc_moments_of_job_in_batch(self):
-        """
-        Initial moments of the number of jobs in the batch
-        """
-        moments = [0.0] * len(self.ls)
-        for i, prob in enumerate(self.ls):
-            for j, _ in enumerate(moments):
-                moments[j] += pow(i + 1, j + 1) * prob
-        return moments
-
-    def _calc_big_ls(self) -> list[float]:
-        """
-        Returns list of probabilities
-        of arrival more than i job in a group
-        """
-        Ls = [1]
-        summ = 0
-        for prob in self.ls:
-            summ += prob
-            Ls.append(1.0 - summ)
-
-        return Ls
 
     def get_p(self):
         """
@@ -141,13 +134,25 @@ class BatchMM1(BaseQueue):
         self.mean_jobs_in_system = self.mean_jobs_in_system or self.get_mean_jobs_in_system()
         return self.mean_jobs_in_system / (self.l_moments[0] * self.lam)
 
-    def run(self) -> QueueResults:
+    def _calc_moments_of_job_in_batch(self):
         """
-        Run calculation
+        Initial moments of the number of jobs in the batch
         """
+        moments = [0.0] * len(self.ls)
+        for i, prob in enumerate(self.ls):
+            for j, _ in enumerate(moments):
+                moments[j] += pow(i + 1, j + 1) * prob
+        return moments
 
-        v = [self.get_v1()]
-        w = [self.get_w1()]
-        p = self.get_p()
+    def _calc_big_ls(self) -> list[float]:
+        """
+        Returns list of probabilities
+        of arrival more than i job in a group
+        """
+        Ls = [1]
+        summ = 0
+        for prob in self.ls:
+            summ += prob
+            Ls.append(1.0 - summ)
 
-        return QueueResults(utilization=self.ro, v=v, w=w, p=p)
+        return Ls

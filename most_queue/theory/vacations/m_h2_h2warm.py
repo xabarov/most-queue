@@ -5,12 +5,14 @@ distribution with arbitrary coefficients of variation (>1, <=1).
 """
 
 import math
+import time
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.structs import QueueResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
@@ -174,6 +176,9 @@ class MH2nH2Warm(MGnCalc):
         """
         Запускает расчет
         """
+
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
         self._build_matrices()
         self._initial_probabilities()
@@ -261,7 +266,10 @@ class MH2nH2Warm(MGnCalc):
         self._calculate_p()
         self._calculate_y()
 
-        return self.get_results()
+        results = self.get_results()
+        results.duration = time.process_time() - start
+
+        return results
 
     def get_results(self) -> QueueResults:
         """

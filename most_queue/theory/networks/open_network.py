@@ -2,12 +2,14 @@
 Calculates queueing network.
 """
 
+import time
+
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.fifo.mmnr import MMnrCalc
-from most_queue.theory.networks.base_network_calc import BaseNetwork, NetworkCalcResults
+from most_queue.theory.networks.base_network_calc import BaseNetwork, NetworkResults
 from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
@@ -93,10 +95,12 @@ class OpenNetworkCalc(BaseNetwork):
 
         return l_out
 
-    def run(self) -> NetworkCalcResults:
+    def run(self) -> NetworkResults:
         """
         Run the simulation and calculate the results.
         """
+
+        start = time.process_time()
 
         self._check_sources_and_nodes_is_set()
 
@@ -156,6 +160,6 @@ class OpenNetworkCalc(BaseNetwork):
         v = [float(v) for v in v]
         loads = [float(l) for l in loads]
 
-        self.results = NetworkCalcResults(v=v, loads=loads, intensities=intensities)
+        self.results = NetworkResults(v=v, loads=loads, intensities=intensities, duration=time.process_time() - start)
 
         return self.results

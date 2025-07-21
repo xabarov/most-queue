@@ -9,6 +9,7 @@ from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.exceptions import QsSourseSettingException
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.servers import Server
+from most_queue.structs import VacationResults
 
 
 class VacationQueueingSystemSimulator(QsSim):
@@ -284,6 +285,22 @@ class VacationQueueingSystemSimulator(QsSim):
         else:
             # Delay cold ends
             self.on_end_cold_delay()
+
+    def run(self, total_served) -> VacationResults:
+        """
+        Run simulation process
+        """
+        results = super().run(total_served=total_served)
+
+        return VacationResults(
+            v=results.v,
+            w=results.w,
+            p=results.p,
+            utilization=results.utilization,
+            duration=results.duration,
+            warmup_prob=self.get_warmup_prob(),
+            cold_prob=self.get_cold_prob(),
+        )
 
     def get_warmup_prob(self):
         """

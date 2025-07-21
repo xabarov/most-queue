@@ -3,9 +3,11 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 """
 
 import math
+import time
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution, UniformDistribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
@@ -45,11 +47,13 @@ class MG1Calculation(BaseQueue):
         Run calculation for M/G/1 queue.
         """
 
+        start = time.process_time()
+
         w = self.get_w()
         v = self.get_v()
         p = self.get_p()
 
-        return QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0])
+        return QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0], duration=time.process_time() - start)
 
     def get_w(self, num=3) -> list[float]:
         """

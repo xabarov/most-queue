@@ -3,9 +3,10 @@ Class to calculate M/G/1 queue with preemptive (absolute) priority.
 """
 
 import math
+import time
 
+from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
-from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
 
 
@@ -87,6 +88,9 @@ class MG1PreemtiveCalculation(BaseQueue):
         res['busy'][k][j] - initial moments of busy period
         res['w_with_pr'][k][j] - initial moments of waiting for service with interruptions
         """
+
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
         num_of_cl = len(self.l)
         L = []
@@ -179,7 +183,9 @@ class MG1PreemtiveCalculation(BaseQueue):
 
         utilization = self.get_utilization()
 
-        return PriorityResults(v=v, w=w, h=h, w_with_pr=w_with_pr, busy=pi_j, utilization=utilization)
+        return PriorityResults(
+            v=v, w=w, h=h, w_with_pr=w_with_pr, busy=pi_j, utilization=utilization, duration=time.process_time() - start
+        )
 
     def get_utilization(self) -> float:
         """

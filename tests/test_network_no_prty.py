@@ -65,13 +65,12 @@ def test_network():
     net_calc = OpenNetworkCalc()
     net_calc.set_sources(R=TRANSITION_MATRIX, arrival_rate=ARRIVAL_RATE)
     net_calc.set_nodes(b=b, n=NUM_OF_CHANNELS)
-    net_results = net_calc.run()
-    v_num = net_results.v
+    num_results = net_calc.run()
 
-    print(f"Intensities: {net_results.intensities}")
+    print(f"Intensities: {num_results.intensities}")
 
     # Get utilization factor of each node
-    loads = net_results.loads
+    loads = num_results.loads
 
     # Create simulation
     qn = NetworkSimulator()
@@ -80,10 +79,7 @@ def test_network():
     qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS)
 
     #  Run simulation
-    qn.run(NUM_OF_JOBS)
-
-    # Get initial moments of sojourn time from simulation:
-    v_sim = qn.get_v()
+    sim_results = qn.run(NUM_OF_JOBS)
 
     print("-" * 60)
     print(f"Channels at nodes: {NUM_OF_CHANNELS}")
@@ -91,9 +87,9 @@ def test_network():
 
     print("-" * 60)
     print("Results")
-    times_print(v_sim, v_num, False)
+    times_print(sim_results.v, num_results.v, False)
 
-    assert np.allclose(v_sim, v_num, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.v, num_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

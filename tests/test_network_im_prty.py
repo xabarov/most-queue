@@ -108,56 +108,49 @@ def test_network():
     qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS, prty=prty, nodes_prty=nodes_prty)
 
     #  Run simulation of priority network:
-    qn.run(NUM_OF_JOBS)
-
-    # Get initial moments of soujorney time from simulation:
-    v_sim = qn.get_v()
+    sim_results = qn.run(NUM_OF_JOBS)
 
     #  Get initial moments of soujorney time from calculation:
     net_calc = OpenNetworkCalcPriorities()
     net_calc.set_sources(R=big_r, L=ARRIVAL_RATES)
     net_calc.set_nodes(n=NUM_OF_CHANNELS, b=b, prty=prty, nodes_prty=nodes_prty)
-    net_calc = net_calc.run()
-    v_num = net_calc.v
+    calc_results = net_calc.run()
 
     # Get utilization factor of each node
-    loads = net_calc.loads
+    loads = calc_results.loads
 
     #  Print results
-
     print("-" * 60)
     print(f"Channels at nodes: {NUM_OF_CHANNELS}")
     print(f"Node utilization coefficients: {[float(round(load, 3)) for load in loads]}")
 
     print("-" * 60)
     print("Relative Priority ('NP')")
-    times_print_with_classes(v_sim, v_num, False)
+    times_print_with_classes(sim_results.v, calc_results.v, False)
 
-    assert abs(v_sim[0][0] - v_num[0][0] < 2.0), ERROR_MSG
-    assert abs(v_sim[1][0] - v_num[1][0] < 2.0), ERROR_MSG
-    assert abs(v_sim[2][0] - v_num[2][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[2][0] - calc_results.v[2][0] < 2.0), ERROR_MSG
 
     prty = ["PR"] * NUM_OF_NODES  # Absolute priority at each node
     qn = PriorityNetwork(NUM_OF_CLASSES)
 
     qn.set_sources(L=ARRIVAL_RATES, R=big_r)
     qn.set_nodes(serv_params=serv_params, n=NUM_OF_CHANNELS, prty=prty, nodes_prty=nodes_prty)
-    qn.run(NUM_OF_JOBS)
-    v_sim = qn.get_v()
+    sim_results = qn.run(NUM_OF_JOBS)
 
     net_calc = OpenNetworkCalcPriorities()
     net_calc.set_sources(R=big_r, L=ARRIVAL_RATES)
     net_calc.set_nodes(n=NUM_OF_CHANNELS, b=b, prty=prty, nodes_prty=nodes_prty)
-    net_calc = net_calc.run()
-    v_num = net_calc.v
+    calc_results = net_calc.run()
 
     print("-" * 60)
     print("Absolute Priority ('PR')")
-    times_print_with_classes(v_sim, v_num, False)
+    times_print_with_classes(sim_results.v, calc_results.v, False)
 
-    assert abs(v_sim[0][0] - v_num[0][0] < 2.0), ERROR_MSG
-    assert abs(v_sim[1][0] - v_num[1][0] < 2.0), ERROR_MSG
-    assert abs(v_sim[2][0] - v_num[2][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG
+    assert abs(sim_results.v[2][0] - calc_results.v[2][0] < 2.0), ERROR_MSG
 
 
 if __name__ == "__main__":

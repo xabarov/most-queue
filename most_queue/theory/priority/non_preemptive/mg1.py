@@ -2,9 +2,11 @@
 Class to calculate the average waiting time in an M/G/1 queue with non-preemptive priority.
 """
 
+import time
+
 from most_queue.rand_distribution import GammaDistribution
+from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
-from most_queue.theory.priority.structs import PriorityResults
 from most_queue.theory.utils.busy_periods import busy_calc
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
@@ -43,11 +45,14 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         """
         Run calculation
         """
+
+        start = time.process_time()
+
         w = self.get_w()
         v = self.get_v()
         utilization = self.get_utilization()
 
-        return PriorityResults(v=v, w=w, utilization=utilization)
+        return PriorityResults(v=v, w=w, utilization=utilization, duration=time.process_time() - start)
 
     def get_utilization(self) -> float:
         """

@@ -3,29 +3,8 @@ Base class for queueing networks calculation
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
-
-@dataclass
-class NetworkCalcResults:
-    """
-    Data class to store network results.
-    """
-
-    v: list[float]  # initial moments of sojourn time distribution
-    intensities: list[float]  # intensities of arrivals into nodes
-    loads: list[float]  # nodes utilizations
-
-
-@dataclass
-class NetworkCalcResultsPriority:
-    """
-    Data class to store results for network with priority discipline in nodes.
-    """
-
-    v: list[list[float]]  # initial moments of sojourn time distribution for each class
-    intensities: list[list[float]]  # intensities of arrivals into nodes  for each class
-    loads: list[float]  # nodes utilizations
+from most_queue.structs import NetworkResults, NetworkResultsPriority
 
 
 class BaseNetwork(ABC):
@@ -40,7 +19,7 @@ class BaseNetwork(ABC):
 
         self.is_nodes_set = False
         self.is_sources_set = False
-        self.results: NetworkCalcResults | NetworkCalcResultsPriority | None = None
+        self.results: NetworkResults | NetworkResultsPriority | None = None
 
     @abstractmethod
     def set_sources(self):  # pylint: disable=arguments-differ
@@ -82,10 +61,10 @@ class BaseNetwork(ABC):
             raise ValueError(error_msg)
 
     @abstractmethod
-    def run(self) -> NetworkCalcResults:
+    def run(self) -> NetworkResults:
         """
         Run calculations for the queueing network. This method should be implemented by subclasses.
-        :return: NetworkCalcResults object containing results of calculations.
+        :return: NetworkResults object containing results of calculations.
         """
 
     def get_v(self) -> list[float]:
@@ -116,10 +95,10 @@ class BaseNetworkPriority(BaseNetwork):
     """
 
     @abstractmethod
-    def run(self) -> NetworkCalcResultsPriority:
+    def run(self) -> NetworkResultsPriority:
         """
         Run calculations for the queueing network. This method should be implemented by subclasses.
-        :return: NetworkCalcResults object containing results of calculations.
+        :return: NetworkResults object containing results of calculations.
         """
 
     def get_v(self) -> list[list[float]]:

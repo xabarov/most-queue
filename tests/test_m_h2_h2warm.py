@@ -3,7 +3,6 @@ Test M/H2/n system with H2-warming using the Takahashi-Takami method.
 """
 
 import os
-import time
 
 import numpy as np
 import yaml
@@ -51,7 +50,6 @@ def test_m_h2_h2warm():
     b_w1 = b[0] * WARM_AP_AVE_PERCENT
     b_w = gamma_moments_by_mean_and_coev(b_w1, WARM_UP_CV)
 
-    im_start = time.process_time()
     qs = VacationQueueingSystemSimulator(NUM_OF_CHANNELS)
     qs.set_sources(ARRIVAL_RATE, "M")
 
@@ -59,21 +57,15 @@ def test_m_h2_h2warm():
     gamma_params_warm = GammaDistribution.get_params(b_w)
     qs.set_servers(gamma_params, "Gamma")
     qs.set_warm(gamma_params_warm, "Gamma")
-    qs.run(NUM_OF_JOBS)
-    p_sim = qs.get_p()
-    v_sim = qs.v
-    w_sim = qs.w
-    im_time = time.process_time() - im_start
+    sim_results = qs.run(NUM_OF_JOBS)
 
-    tt_start = time.process_time()
     tt = MH2nH2Warm(n=NUM_OF_CHANNELS)
     tt.set_sources(ARRIVAL_RATE)
     tt.set_servers(b=b, b_warm=b_w)
 
-    tt_results = tt.run()
-    tt_time = time.process_time() - tt_start
+    calc_results = tt.run()
 
-    print(f"utulization: {tt_results.utilization: 0.4f}")
+    print(f"utulization: {calc_results.utilization: 0.4f}")
 
     num_of_iter = tt.num_of_iter_
 
@@ -84,16 +76,17 @@ def test_m_h2_h2warm():
     print(f"Coefficient of variation of service time {SERVICE_TIME_CV:0.3f}")
     print(f"Coefficient of variation of warming time {WARM_UP_CV:0.3f}")
     print(f"Number of iterations of the Takacs-Takaichi algorithm: {num_of_iter:^4d}")
-    print(f"Time taken by the Takacs-Takaichi algorithm: {tt_time:^5.3f} s")
-    print(f"Simulation time: {im_time:^5.3f} s")
 
-    probs_print(p_sim, tt_results.p, 10)
-    times_print(v_sim, tt_results.v, False)
-    times_print(w_sim, tt_results.w, True)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert np.allclose(v_sim, tt_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    probs_print(sim_results.p, calc_results.p, 10)
+    times_print(sim_results.v, calc_results.v, False)
+    times_print(sim_results.w, calc_results.w, True)
 
-    assert np.allclose(p_sim[:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

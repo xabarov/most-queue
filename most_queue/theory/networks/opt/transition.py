@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 from colorama import Fore, Style, init
 
-from most_queue.theory.networks.open_network import NetworkCalcResults, OpenNetworkCalc
+from most_queue.theory.networks.open_network import NetworkResults, OpenNetworkCalc
 
 init()
 
@@ -125,7 +125,7 @@ class NetworkOptimizer:
                     for k in range(i, self.rows):
                         self.R[i, k] = self.R[i, k] / (1.0 - backward_rate)
 
-    def _get_network_calc(self) -> NetworkCalcResults:
+    def _get_network_calc(self) -> NetworkResults:
         """
         Calculate the network using OpenNetworkCalc
         """

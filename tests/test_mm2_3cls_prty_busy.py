@@ -67,40 +67,45 @@ def test_mm2_3_cls_prty():
     qs.set_servers(servers_params)
 
     # Running the simulation
-    qs.run(NUM_OF_JOBS)
-
-    # Getting simulation results
-    p_sim = qs.get_p()
-    v_sim = qs.v
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # Setting up and running the theoretical approximation model
     tt = MM2BusyApprox3Classes()
     tt.set_sources(l_low=ARRIVAL_RATE_LOW, l_med=ARRIVAL_RATE_MED, l_high=ARRIVAL_RATE_HIGH)
     tt.set_servers(mu_low=mu_low, mu_med=mu_med, mu_high=mu_high)
 
-    tt_results = tt.run()
-
-    print(f"utilization: {tt_results.utilization:0.4f}")
+    calc_results = tt.run()
 
     # Printing comparison results
     print("\nComparison of theoretical calculation with Cox approximation and simulation results.")
 
     print(f"Number of simulated jobs: {NUM_OF_JOBS:d}\n")
+    print(f"utilization: {calc_results.utilization:0.4f}")
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     print("Probs for low-priority class:")
-    probs_print(p_sim=p_sim[2], p_num=tt_results.p, size=10)
+    probs_print(p_sim=sim_results.p[2], p_num=calc_results.p, size=10)
 
     # Printing time moments comparison
-    times_print(sim_moments=v_sim[0], calc_moments=tt_results.v[0], is_w=False, header="sojourn moments for 1 class")
     times_print(
-        sim_moments=[v_sim[1][0]], calc_moments=[tt_results.v[1][0]], is_w=False, header="mean sojourn time for 2 class"
+        sim_moments=sim_results.v[0], calc_moments=calc_results.v[0], is_w=False, header="sojourn moments for 1 class"
     )
     times_print(
-        sim_moments=[v_sim[2][0]], calc_moments=[tt_results.v[2][0]], is_w=False, header="mean sojourn time for 3 class"
+        sim_moments=[sim_results.v[1][0]],
+        calc_moments=[calc_results.v[1][0]],
+        is_w=False,
+        header="mean sojourn time for 2 class",
+    )
+    times_print(
+        sim_moments=[sim_results.v[2][0]],
+        calc_moments=[calc_results.v[2][0]],
+        is_w=False,
+        header="mean sojourn time for 3 class",
     )
 
     # Asserting the accuracy of the results
-    assert np.allclose(v_sim[2][0], tt_results.v[1][0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.v[2][0], calc_results.v[1][0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

@@ -47,9 +47,7 @@ def test_mg1_gamma_rcs():
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, "Gamma")
 
-    queue_sim.run(NUM_OF_JOBS)
-
-    v_sim = queue_sim.get_v()
+    sim_results = queue_sim.run(NUM_OF_JOBS)
 
     m_gamma_1_calc = MG1NegativeCalcRCS()
     m_gamma_1_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
@@ -58,15 +56,18 @@ def test_mg1_gamma_rcs():
 
     print(f"Utilization calc: {calc_results.utilization: 0.4f}")
 
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+
     times_print(
-        v_sim[0],
+        sim_results.v[0],
         calc_results.v[0],
         is_w=False,
         header="Sojourn time in M/G/1 with RCS disasters",
     )
 
     # assert is all close with rtol 10%
-    assert np.allclose(v_sim[0], calc_results.v[0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.v[0], calc_results.v[0], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

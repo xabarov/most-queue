@@ -3,11 +3,13 @@ Calculation of the GI/M/n queueing system
 """
 
 import math
+import time
 
 import numpy as np
 
 from most_queue.rand_distribution import GammaDistribution, ParetoDistribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.diff5dots import diff5dots
@@ -56,6 +58,9 @@ class GiMn(BaseQueue):
         """
         Run calculation for the GI/M/1 queueing system.
         """
+
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
 
         self.p = self.get_p()
@@ -63,7 +68,9 @@ class GiMn(BaseQueue):
         self.v = self.get_v()
         utilization = 1.0 / (self.a[0] * self.mu * self.n)
 
-        return QueueResults(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+        return QueueResults(
+            v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization, duration=time.process_time() - start
+        )
 
     def get_v(self) -> list[float]:
         """

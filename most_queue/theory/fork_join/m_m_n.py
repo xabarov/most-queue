@@ -3,10 +3,12 @@ Numerical calculation of Fork-Join queuing systems
 """
 
 import math
+import time
 
 import scipy.special as sp
 
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.max_dist import MaxDistribution
 
 
@@ -75,6 +77,9 @@ class ForkJoinMarkovianCalc(BaseQueue):
             1994
         If app
         """
+
+        start = time.process_time()
+
         if not self.k is None:
             # Fork-Join (n, k) system
             if approx == "varma":
@@ -90,7 +95,7 @@ class ForkJoinMarkovianCalc(BaseQueue):
 
         utilization = self.get_utilization()
 
-        return QueueResults(v=[v1, 0, 0], utilization=utilization)
+        return QueueResults(v=[v1, 0, 0], utilization=utilization, duration=time.process_time() - start)
 
     def get_utilization(self):
         """

@@ -10,6 +10,7 @@ import yaml
 from most_queue.general.tables import times_print
 from most_queue.rand_distribution import GammaDistribution, GammaParams
 from most_queue.sim.fork_join import ForkJoinSim
+from most_queue.structs import QueueResults
 from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
 
@@ -58,7 +59,7 @@ def print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k: int):
     assert abs(v1_sim - v1_nelson_tantawi) < 0.02, ERROR_MSG
 
 
-def print_results_sj(coev: float, ro: float, v_sim: list, v_num: list):
+def print_results_sj(coev: float, sim_results: QueueResults, calc_results: QueueResults):
     """
     Print results of Split-Join Queueing System simulation.
      Args:
@@ -72,8 +73,10 @@ def print_results_sj(coev: float, ro: float, v_sim: list, v_num: list):
     print(f'{"Split-Join Queueing System":^60s}')
     print("-" * 60)
     print(f"Coefficient of variation of service time: {coev}")
-    print(f"Utilization coefficient: {ro:.3f}")
-    times_print(v_sim, v_num, False)
+    print(f"Utilization coefficient: {calc_results.utilization:.3f}")
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+    times_print(sim_results.v, calc_results.v, False)
 
 
 def run_sim_fj(k: int, mu: float):
@@ -90,9 +93,7 @@ def run_sim_fj(k: int, mu: float):
     qs.set_servers(mu, "M")
 
     # Start the simulation
-    qs.run(NUM_OF_JOBS)
-
-    return qs.v
+    return qs.run(NUM_OF_JOBS)
 
 
 def run_sim_sj(service_params: GammaParams):
@@ -110,10 +111,7 @@ def run_sim_sj(service_params: GammaParams):
     qs.set_servers(service_params, "Gamma")
 
     # Start the simulation
-    qs.run(NUM_OF_JOBS)
-
-    # Get a list of initial moments of sojourn time
-    return qs.v
+    return qs.run(NUM_OF_JOBS)
 
 
 def test_fj_sim():
@@ -123,7 +121,7 @@ def test_fj_sim():
 
     mu = 1.0 / SERVICE_TIME_AVERAGE  # service rate
 
-    v1_sim = run_sim_fj(NUM_OF_CHANNELS, mu)[0]
+    sim_results = run_sim_fj(NUM_OF_CHANNELS, mu)
 
     fj_calc_markov = ForkJoinMarkovianCalc(n=NUM_OF_CHANNELS)
     fj_calc_markov.set_sources(l=ARRIVAL_RATE)
@@ -134,11 +132,11 @@ def test_fj_sim():
 
     print(fj_calc_markov.run())
 
-    print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=NUM_OF_CHANNELS)
+    print_results_fj(sim_results.v[0], v1_varma, v1_nelson_tantawi, k=NUM_OF_CHANNELS)
 
     # Run Fork-Join (n, k) simulation and calculation of the average sojourn
     # time
-    v1_sim = run_sim_fj(JOBS_REQUIRED, mu)[0]
+    sim_results = run_sim_fj(JOBS_REQUIRED, mu)
 
     fj_calc_markov = ForkJoinMarkovianCalc(n=NUM_OF_CHANNELS)
     fj_calc_markov.set_sources(l=ARRIVAL_RATE)
@@ -149,7 +147,7 @@ def test_fj_sim():
 
     print(fj_calc_markov.run())
 
-    print_results_fj(v1_sim, v1_varma, v1_nelson_tantawi, k=JOBS_REQUIRED)
+    print_results_fj(sim_results.v[0], v1_varma, v1_nelson_tantawi, k=JOBS_REQUIRED)
 
 
 def test_sj_sim():
@@ -169,17 +167,17 @@ def test_sj_sim():
     gamma_params = GammaDistribution.get_params_by_mean_and_coev(SERVICE_TIME_AVERAGE, SERVICE_TIME_CV)
 
     b = GammaDistribution.calc_theory_moments(gamma_params)
-    v_sim = run_sim_sj(gamma_params)
+    sim_results = run_sim_sj(gamma_params)
 
     sj_calc = SplitJoinCalc(n=NUM_OF_CHANNELS)
     sj_calc.set_sources(l=ARRIVAL_RATE)
     sj_calc.set_servers(b=b)
-    sj_calc_results = sj_calc.run()
+    calc_results = sj_calc.run()
 
-    print_results_sj(SERVICE_TIME_CV, sj_calc_results.utilization, v_sim, sj_calc_results.v)
+    print_results_sj(coev=SERVICE_TIME_CV, calc_results=calc_results, sim_results=sim_results)
 
     assert np.allclose(
-        np.array(v_sim[:2]), np.array(sj_calc_results.v), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
+        np.array(sim_results.v[:2]), np.array(calc_results.v), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL
     ), ERROR_MSG
 
 

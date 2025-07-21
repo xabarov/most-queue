@@ -3,12 +3,14 @@ Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method
 """
 
 import math
+import time
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
@@ -118,6 +120,8 @@ class MGnCalc(BaseQueue):
         Run the algorithm.
         """
 
+        start = time.process_time()
+
         self._check_if_servers_and_sources_set()
         self.fill_cols()
         self._fill_t_b()
@@ -182,7 +186,11 @@ class MGnCalc(BaseQueue):
         self._calculate_p()
         self._calculate_y()
 
-        return self.get_results()
+        results = self.get_results()
+
+        results.duration = time.process_time() - start
+
+        return results
 
     def get_results(self) -> QueueResults:
         """

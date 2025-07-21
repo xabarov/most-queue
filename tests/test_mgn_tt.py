@@ -10,7 +10,6 @@ For verification, simulation is used.
 """
 
 import os
-import time
 
 import numpy as np
 import yaml
@@ -55,21 +54,16 @@ def test_mgn_tt():
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
     b = gamma_moments_by_mean_and_coev(b1, SERVICE_TIME_CV)
 
-    tt_start = time.process_time()
     # run Takahasi-Takami method
     tt = MGnCalc(n=NUM_OF_CHANNELS)
     tt.set_sources(l=ARRIVAL_RATE)
     tt.set_servers(b=b)
 
     # get numerical calculation results
-    tt_results = tt.run()
+    calc_results = tt.run()
 
-    tt_time = time.process_time() - tt_start
     # also can find out how many iterations were required
     num_of_iter = tt.num_of_iter_
-
-    # run simulation for verification of the results
-    im_start = time.process_time()
 
     qs = QsSim(NUM_OF_CHANNELS)
 
@@ -83,13 +77,7 @@ def test_mgn_tt():
     qs.set_servers(gamma_params, "Gamma")
 
     # Run simulation
-    qs.run(NUM_OF_JOBS)
-
-    # Get results
-    p_sim = qs.get_p()
-    v_sim = qs.v
-    w_sim = qs.w
-    im_time = time.process_time() - im_start
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # print results
 
@@ -99,17 +87,19 @@ def test_mgn_tt():
     print(f"Utilization factor: {UTILIZATION_FACTOR:^1.2f}")
     print(f"Coefficient of variation of service time: {SERVICE_TIME_CV:^1.2f}")
     print(f"Number of iterations of the Takahasi-Takami algorithm: {num_of_iter:^4d}")
-    print(f"Takahasi-Takami algorithm execution time: {tt_time:^5.3f} s")
-    print(f"Simulation execution time: {im_time:^5.3f} s")
-    probs_print(p_sim, tt_results.p, 10)
 
-    times_print(v_sim, tt_results.v, False)
-    times_print(w_sim, tt_results.w, True)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert np.allclose(v_sim, tt_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-    assert np.allclose(w_sim, tt_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    probs_print(sim_results.p, calc_results.p, 10)
 
-    assert np.allclose(p_sim[:10], tt_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
+    times_print(sim_results.v, calc_results.v, False)
+    times_print(sim_results.w, calc_results.w, True)
+
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
 
 if __name__ == "__main__":

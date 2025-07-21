@@ -2,11 +2,14 @@
 Class for calculating M/G/1 queue with warm-up.
 """
 
+import time
+
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
@@ -72,11 +75,14 @@ class MG1WarmCalc(BaseQueue):
         """
         Run calculations
         """
+
+        start = time.process_time()
+
         v = self.get_v()
 
         utilization = self.l * self.b[0]
 
-        return QueueResults(v=v, utilization=utilization)
+        return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
 
     def get_v(self) -> list[float]:
         """

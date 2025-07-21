@@ -60,7 +60,7 @@ def test_mg1():
     mgn_queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     mgn_queue_calc.set_servers(b=b)
 
-    tt_calc_result = mgn_queue_calc.run()
+    calc_results = mgn_queue_calc.run()
 
     # Run simulation
     queue_sim = QsSimNegatives(1, NegativeServiceType.DISASTER)
@@ -73,15 +73,16 @@ def test_mg1():
     else:
         queue_sim.set_servers(b_params, "Gamma")
 
-    queue_sim.run(NUM_OF_JOBS)
+    sim_results = queue_sim.run(NUM_OF_JOBS)
 
-    v_sim = queue_sim.get_v()
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     times_print_with_two_numerical(
-        v_sim, mg1_calc_result.v, tt_calc_result.v, is_w=False, num1_header="MG1", num2_header="T-T"
+        sim_results.v, mg1_calc_result.v, calc_results.v, is_w=False, num1_header="MG1", num2_header="T-T"
     )
 
-    assert np.allclose(v_sim, tt_calc_result.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
     # when MG1 will work, add assert with v_calc1
 

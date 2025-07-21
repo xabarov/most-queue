@@ -41,7 +41,7 @@ def test_impatience():
     imp_calc = MM1Impatience(gamma=IMPATIENCE_RATE)
     imp_calc.set_sources(ARRIVAL_RATE)
     imp_calc.set_servers(mu)
-    imp_calc_results = imp_calc.run()
+    calc_results = imp_calc.run()
 
     # Simulate the queue
     qs = ImpatientQueueSim(NUM_OF_CHANNELS)
@@ -50,19 +50,19 @@ def test_impatience():
     qs.set_servers(mu, "M")
     qs.set_impatience(IMPATIENCE_RATE, "M")
 
-    qs.run(NUM_OF_JOBS)
-
-    v1_sim = qs.v[0]
-    p_sim = qs.get_p()
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # Print results
 
-    times_print(v1_sim, imp_calc_results.v[0], is_w=False)
-    probs_print(p_sim, imp_calc_results.p)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert abs(imp_calc_results.v[0] - v1_sim) < 0.02
+    times_print(sim_results.v[0], calc_results.v[0], is_w=False)
+    probs_print(sim_results.p, calc_results.p)
 
-    assert np.allclose(p_sim[:10], imp_calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
+    assert abs(calc_results.v[0] - sim_results.v[0]) < 0.02
+
+    assert np.allclose(sim_results.p[:10], calc_results.p[:10], rtol=PROBS_RTOL, atol=PROBS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

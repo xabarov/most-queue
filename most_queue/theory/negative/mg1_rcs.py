@@ -6,8 +6,11 @@ Use following paper:
     Advances in Applied Probability 28.2 (1996): 540-566.
 """
 
+import time
+
 from most_queue.rand_distribution import GammaDistribution, H2Distribution
-from most_queue.theory.base_queue import BaseQueue, QueueResults
+from most_queue.structs import QueueResults
+from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
@@ -66,10 +69,11 @@ class MG1NegativeCalcRCS(BaseQueue):
         """
         Run calculation
         """
+        start = time.process_time()
         v1 = self.get_v1()
         utilization = self.get_utilization()
 
-        return QueueResults(v=[v1, 0.0, 0.0], utilization=utilization)
+        return QueueResults(v=[v1, 0.0, 0.0], utilization=utilization, duration=time.process_time() - start)
 
     def get_utilization(self):
         """

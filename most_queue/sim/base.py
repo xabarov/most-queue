@@ -14,6 +14,7 @@ from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import Task
+from most_queue.structs import QueueResults
 
 init()
 
@@ -284,7 +285,7 @@ class QsSim:
             # Arrival
             self.arrival()
 
-    def run(self, total_served):
+    def run(self, total_served) -> QueueResults:
         """
         Run simulation process
         """
@@ -312,7 +313,13 @@ class QsSim:
         print(Fore.GREEN + "\rSimulation is finished")
         print(Style.RESET_ALL)
 
+        v = self.get_v()
+        w = self.get_w()
+        p = self.get_p()
+
         self.time_spent = time.process_time() - start
+
+        return QueueResults(v=v, w=w, p=p, duration=self.time_spent, utilization=self.calc_load())
 
     def refresh_busy_stat(self, new_a):
         """

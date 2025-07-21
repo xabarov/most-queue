@@ -6,25 +6,16 @@ with arbitrary coefficients of variation (>1, <=1).
 """
 
 import math
-from dataclasses import dataclass
+import time
 from itertools import chain
 
 import numpy as np
 from scipy.misc import derivative
 
 from most_queue.rand_distribution import H2Distribution
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc, QueueResults, TakahashiTakamiParams
+from most_queue.structs import VacationResults
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.transforms import lst_exp
-
-
-@dataclass
-class MMnHyperExpWarmAndColdResults(QueueResults):
-    """
-    Result of MMnHyperExpWarmAndCold calculation
-    """
-
-    warmup_prob: float = 0
-    cold_prob: float = 0
 
 
 class MMnHyperExpWarmAndCold(MGnCalc):
@@ -160,10 +151,12 @@ class MMnHyperExpWarmAndCold(MGnCalc):
 
         self.is_servers_set = True
 
-    def run(self) -> MMnHyperExpWarmAndColdResults:
+    def run(self) -> VacationResults:
         """
         Run calculation for queueing system.
         """
+
+        start = time.process_time()
 
         self._check_if_servers_and_sources_set()
 
@@ -247,9 +240,13 @@ class MMnHyperExpWarmAndCold(MGnCalc):
 
         self._calculate_p()
         self._calculate_y()
-        return self.get_results()
+        results = self.get_results()
 
-    def get_results(self) -> MMnHyperExpWarmAndColdResults:
+        results.duration = time.process_time() - start
+
+        return results
+
+    def get_results(self) -> VacationResults:
         """
         Get all results
         """
@@ -263,7 +260,7 @@ class MMnHyperExpWarmAndCold(MGnCalc):
         warmup_prob = self.get_warmup_prob()
         cold_prob = self.get_cold_prob()
 
-        return MMnHyperExpWarmAndColdResults(
+        return VacationResults(
             v=self.v,
             w=self.w,
             p=self.p,

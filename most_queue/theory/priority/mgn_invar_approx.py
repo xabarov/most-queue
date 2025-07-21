@@ -6,9 +6,11 @@ The approximation is based on method of invariant moments for M/G/n queues.
 """
 
 import math
+import time
 
+from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
-from most_queue.theory.calc_params import CalcParams
+from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.fifo.mg1 import MG1Calculation
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemtiveCalculation
@@ -23,16 +25,20 @@ class MGnInvarApproximation(BaseQueue):
       The approximation is based on method of invariant moments for M/G/n queues.
     """
 
-    def __init__(self, n: int, calc_params: CalcParams | None = None):
+    def __init__(self, n: int, priority="NP", calc_params: TakahashiTakamiParams | None = None):
         """
         Initialize the MGnInvarApproximation class.
         :param n: number of channels.
+        :param priority: type of priority system. Default is "NP" (non-preemptive).
+                         can be "NP" or "PR" (preemptive).
         :param calc_params: calculation parameters.
         """
 
         super().__init__(n=n, calc_params=calc_params)
         self.l = None
+        self.calc_params = calc_params or TakahashiTakamiParams()
         self.b = None
+        self.priority = priority
 
     def set_sources(self, l: list[float]):  # pylint: disable=arguments-differ
         """
@@ -50,19 +56,37 @@ class MGnInvarApproximation(BaseQueue):
         self.b = b
         self.is_servers_set = True
 
-    def get_w(self, priority="NP", N: int = 150, num=3) -> list[list[float]]:
+    def run(self) -> PriorityResults:
+        """
+        Run the calculation.
+        """
+
+        start = time.process_time()
+
+        w = self.get_w()
+        v = self.get_v()
+        utilization = self.get_utilization()
+
+        return PriorityResults(v=v, w=w, utilization=utilization, duration=time.process_time() - start)
+
+    def get_utilization(self) -> float:
+        """
+        Calc utilization factor
+        """
+        b_ave = sum(b[0] for b in self.b) / len(self.b)
+        l_sum = sum(self.l)
+
+        return l_sum * b_ave / self.n
+
+    def get_w(self) -> list[list[float]]:
         """
         Approximation of the initial moments of waiting time
         for a multi-channel queue with priorities
         based on the invariant relation M*|G*|n = M*|G*|1 * (M|G|n / M|G|1)
-
-        :param priority:  type of priority - "PR" or "NP",
-        default is "NP" (preemptive, non-preemptive)
-        :param N: number of levels for the Takahashi-Takagi method, also the number of probabilities
-        calculated for M/G/1
-        :return: w[k][j] - initial moments of waiting time for all classes
         """
         self._check_if_servers_and_sources_set()
+
+        num = len(self.b[0]) - 1
 
         w = []
         k_num = len(self.l)
@@ -80,12 +104,12 @@ class MGnInvarApproximation(BaseQueue):
             for j in range(j_num):
                 b1[k][j] = self.b[k][j] / math.pow(self.n, j + 1)
 
-        if priority == "NP":
+        if self.priority == "NP":
             calc_np1 = MG1NonPreemtiveCalculation()
             calc_np1.set_sources(self.l)
             calc_np1.set_servers(b1)
             w1_prty = calc_np1.get_w()
-        elif priority == "PR":
+        elif self.priority == "PR":
             calc_pr1 = MG1PreemtiveCalculation()
             calc_pr1.set_sources(self.l)
             calc_pr1.set_servers(b1)
@@ -111,7 +135,7 @@ class MGnInvarApproximation(BaseQueue):
 
         p1 = mg1_num.get_p()
         q1 = 0
-        for i in range(1, N):
+        for i in range(1, self.calc_params.N):
             q1 += (i - 1) * p1[i]
 
         # M/G/n calculation:
@@ -125,13 +149,13 @@ class MGnInvarApproximation(BaseQueue):
         for k in range(k_num):
             l_sum += self.l[k]
 
-        tt_n = MGnCalc(self.n)
+        tt_n = MGnCalc(self.n, calc_params=self.calc_params)
         tt_n.set_sources(l_sum)
         tt_n.set_servers(b_sr)
         tt_n.run()
         p_n = tt_n.get_p()
         qn = 0
-        for i in range(self.n + 1, N):
+        for i in range(self.n + 1, self.calc_params.N):
             qn += (i - self.n) * p_n[i]
 
         for k in range(k_num):
@@ -140,21 +164,17 @@ class MGnInvarApproximation(BaseQueue):
 
         return w
 
-    def get_v(self, priority="NP", num=3) -> list[list[float]]:
+    def get_v(self) -> list[list[float]]:
         """
         Approximation of the initial moments of sojourn time
         for a multi-channel queue with priorities
         based on the invariant relation M*|G*|n = M*|G*|1 * (M|G|n / M|G|1)
-
-        :param priority:  type of priority - "PR" or "NP",
-          default is "NP" (preemptive, non-preemptive)
-        :param N: number of levels for the Takahashi-Takagi method, also the number of probabilities
-        calculated for M/G/1
-        :return: v[k][j] - initial moments of sojourn time for all classes
         """
-        w = self.get_w(priority, num=num)
+        w = self.get_w()
         v = []
         k = len(self.l)
-        v = [conv_moments(w[i], self.b[i], num=num) for i in range(k)]
+        for i in range(k):
+            num = min(len(w[i]), len(self.b[i]))
+            v.append(conv_moments(w[i], self.b[i], num=num))
 
         return v

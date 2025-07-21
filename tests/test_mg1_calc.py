@@ -53,31 +53,31 @@ def test_mg1():
     mg1_num.set_sources(ARRIVAL_RATE)
     mg1_num.set_servers(b)
 
-    mg1_num_results = mg1_num.run()
+    calc_results = mg1_num.run()
 
-    assert abs(UTILIZATION_FACTOR - mg1_num_results.utilization) < PROBS_ATOL
+    assert abs(UTILIZATION_FACTOR - calc_results.utilization) < PROBS_ATOL
 
     # running IM for verification of results
     qs = QsSim(1)
     qs.set_servers(h2_params, "H")
     qs.set_sources(ARRIVAL_RATE, "M")
-    qs.run(NUM_OF_JOBS)
-    w_sim = qs.w
-    p_sim = qs.get_p()
-    v_sim = qs.v
+    sim_results = qs.run(NUM_OF_JOBS)
 
     # outputting the results
     print("M/H2/1")
 
-    times_print(w_sim, mg1_num_results.w, True)
-    times_print(v_sim, mg1_num_results.v, False)
-    probs_print(p_sim, mg1_num_results.p, 10)
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    assert np.allclose(w_sim, mg1_num_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
-    assert np.allclose(v_sim, mg1_num_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    times_print(sim_results.w, calc_results.w, True)
+    times_print(sim_results.v, calc_results.v, False)
+    probs_print(sim_results.p, calc_results.p, 10)
+
+    assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
+    assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)
 
     assert np.allclose(
-        np.array(p_sim[:10]), np.array(mg1_num_results.p[:10]), atol=PROBS_ATOL, rtol=PROBS_RTOL
+        np.array(sim_results.p[:10]), np.array(calc_results.p[:10]), atol=PROBS_ATOL, rtol=PROBS_RTOL
     ), ERROR_MSG
 
 
