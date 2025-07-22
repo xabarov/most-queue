@@ -6,7 +6,7 @@ import math
 
 from scipy.misc import derivative
 
-from most_queue.distributions import GammaDistribution, H2Distribution
+from most_queue.random.distributions import GammaDistribution, H2Distribution
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 

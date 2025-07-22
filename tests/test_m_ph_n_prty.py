@@ -9,8 +9,8 @@ import os
 
 import yaml
 
-from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
-from most_queue.distributions import ExpDistribution, GammaDistribution
+from most_queue.random.distributions import ExpDistribution, GammaDistribution
+from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 from most_queue.theory.priority.preemptive.m_ph_n_busy_approx import MPhNPrty, TakahashiTakamiParams

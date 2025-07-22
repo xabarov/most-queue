@@ -7,10 +7,10 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distributions import GammaDistribution, GammaParams
-from most_queue.general.results_structs import QueueResults
-from most_queue.general.tables import times_print
+from most_queue.io.tables import times_print
+from most_queue.random.distributions import GammaDistribution, GammaParams
 from most_queue.sim.fork_join import ForkJoinSim
+from most_queue.structs import QueueResults
 from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
 

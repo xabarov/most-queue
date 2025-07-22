@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.tables import probs_print, times_print
+from most_queue.io.tables import probs_print, times_print
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.preemptive.mm2_3cls_busy_approx import MM2BusyApprox3Classes
 

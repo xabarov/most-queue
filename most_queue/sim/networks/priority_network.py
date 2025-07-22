@@ -9,7 +9,7 @@ import numpy as np
 from colorama import Fore, init
 from tqdm import tqdm
 
-from most_queue.distributions import ExpDistribution
+from most_queue.random.distributions import ExpDistribution
 from most_queue.sim.networks.base_network_sim import (
     BaseSimNetworkPriority,
     NetworkResultsPriority,

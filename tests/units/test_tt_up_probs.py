@@ -9,8 +9,8 @@ For verification, simulation is used.
 
 """
 
-from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
-from most_queue.general.tables import print_mrx
+from most_queue.io.tables import print_mrx
+from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 
 ARRIVAL_RATE = 1.0

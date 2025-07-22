@@ -10,8 +10,8 @@ from itertools import chain
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.distributions import H2Distribution
-from most_queue.general.results_structs import VacationResults
+from most_queue.random.distributions import H2Distribution
+from most_queue.structs import VacationResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.transforms import lst_exp as pls

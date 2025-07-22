@@ -5,7 +5,7 @@ during the interval between arrivals of adjacent requests
 
 import math
 
-from most_queue.distributions import GammaDistribution
+from most_queue.random.distributions import GammaDistribution
 
 
 def get_q_gamma(l, mu, alpha, num=100):

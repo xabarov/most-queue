@@ -9,10 +9,10 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
-from most_queue.general.results_structs import PriorityResults
-from most_queue.sim.utils.distribution_utils import create_distribution
+from most_queue.random.utils.create import create_distribution
 from most_queue.sim.utils.servers import ServerPriority
 from most_queue.sim.utils.tasks import TaskPriority
+from most_queue.structs import PriorityResults
 
 init()
 

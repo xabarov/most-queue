@@ -6,8 +6,8 @@ import os
 
 import yaml
 
-from most_queue.distributions import GammaDistribution
-from most_queue.general.tables import times_print_with_classes
+from most_queue.io.tables import times_print_with_classes
+from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 

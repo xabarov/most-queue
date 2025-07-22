@@ -9,8 +9,8 @@ import time
 
 import numpy as np
 
-from most_queue.distributions import CoxDistribution, FittingParams, H2Distribution
-from most_queue.general.results_structs import PriorityResults, QueueResults
+from most_queue.random.distributions import CoxDistribution, FittingParams, H2Distribution
+from most_queue.structs import PriorityResults, QueueResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.passage_time import PassageTimeCalculation, TransitionMatrices
 

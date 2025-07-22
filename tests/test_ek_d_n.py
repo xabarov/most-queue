@@ -11,8 +11,8 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distributions import ErlangDistribution
-from most_queue.general.tables import probs_print
+from most_queue.io.tables import probs_print
+from most_queue.random.distributions import ErlangDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.ek_d_n import EkDn
 

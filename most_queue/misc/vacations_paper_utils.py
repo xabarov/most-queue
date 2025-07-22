@@ -7,7 +7,7 @@ import math
 
 import matplotlib.pyplot as plt
 
-from most_queue.general.tables import probs_print, times_print
+from most_queue.io.tables import probs_print, times_print
 
 
 def print_table(experiments_stat):

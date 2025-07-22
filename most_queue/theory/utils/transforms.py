@@ -4,7 +4,7 @@ Laplace-Stieltjes transforms
 
 import math
 
-from most_queue.distributions import GammaParams, H2Params
+from most_queue.random.distributions import GammaParams, H2Params
 
 
 def lst_exp(mu, s):

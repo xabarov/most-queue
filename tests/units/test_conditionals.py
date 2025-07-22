@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 import yaml
 
-from most_queue.distributions import ExpDistribution, H2Distribution, H2Params
-from most_queue.general.tables import times_print
+from most_queue.io.tables import times_print
+from most_queue.random.distributions import ExpDistribution, H2Distribution, H2Params
 from most_queue.theory.utils.conditional import (
     calc_b_min_h2_and_exp,
     moments_exp_less_than_h2,

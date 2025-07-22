@@ -5,7 +5,7 @@ Class to calculate M/G/1 queue with preemptive (absolute) priority.
 import math
 import time
 
-from most_queue.general.results_structs import PriorityResults
+from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
 

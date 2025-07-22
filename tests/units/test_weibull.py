@@ -5,7 +5,7 @@ Test Weibull distribution
 import matplotlib.pyplot as plt
 import numpy as np
 
-from most_queue.distributions import Weibull
+from most_queue.random.distributions import Weibull
 
 if __name__ == "__main__":
 

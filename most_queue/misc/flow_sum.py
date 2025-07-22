@@ -5,7 +5,7 @@ Test summation of flows.
 
 import matplotlib.pyplot as plt
 
-from most_queue.distributions import GammaDistribution
+from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.flow_sum import FlowSumSim
 from most_queue.theory.utils.flow_sum import SummatorNumeric
 

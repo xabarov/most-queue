@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.tables import probs_print, times_print
+from most_queue.io.tables import probs_print, times_print
 from most_queue.sim.finite_source import QueueingFiniteSourceSim
 from most_queue.theory.closed.engset import Engset
 

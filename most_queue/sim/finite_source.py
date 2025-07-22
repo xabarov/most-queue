@@ -5,8 +5,8 @@ Simulating a queueing system with finite number of sources.
 import numpy as np
 from colorama import Fore, Style, init
 
+from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base import QsSim, Task
-from most_queue.sim.utils.distribution_utils import create_distribution
 
 init()
 

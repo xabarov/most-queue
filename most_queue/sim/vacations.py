@@ -4,12 +4,11 @@ Simulation model of QS GI/G/n/r and GI/G/n
 
 import numpy as np
 
-from most_queue.general.results_structs import VacationResults
+from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base import QsSim
-from most_queue.sim.utils.distribution_utils import create_distribution
-from most_queue.sim.utils.exceptions import QsSourseSettingException
 from most_queue.sim.utils.phase import QsPhase
 from most_queue.sim.utils.servers import Server
+from most_queue.structs import VacationResults
 
 
 class VacationQueueingSystemSimulator(QsSim):
@@ -88,7 +87,7 @@ class VacationQueueingSystemSimulator(QsSim):
         """
 
         if not self.cold_phase.is_set:
-            raise QsSourseSettingException("You must first set the cooling time. Use the set_cold() method.")
+            raise ValueError("You must first set the cooling time. Use the set_cold() method.")
 
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)

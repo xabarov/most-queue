@@ -7,7 +7,7 @@ import math
 
 import matplotlib
 
-from most_queue.distributions import H2Distribution
+from most_queue.random.distributions import H2Distribution
 
 matplotlib.use("TkAgg")
 

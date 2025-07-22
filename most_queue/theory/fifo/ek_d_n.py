@@ -8,8 +8,8 @@ import time
 
 import numpy as np
 
-from most_queue.distributions import ErlangParams
-from most_queue.general.results_structs import QueueResults
+from most_queue.random.distributions import ErlangParams
+from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 

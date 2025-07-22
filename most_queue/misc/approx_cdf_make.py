@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-from most_queue.distributions import GammaDistribution, H2Distribution
+from most_queue.random.distributions import GammaDistribution, H2Distribution
 
 if __name__ == "__main__":
 

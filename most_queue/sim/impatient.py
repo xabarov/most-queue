@@ -4,8 +4,8 @@ Simulation model for queueing systems with impatient tasks
 
 from colorama import Fore, Style, init
 
+from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base import QsSim
-from most_queue.sim.utils.distribution_utils import create_distribution
 from most_queue.sim.utils.tasks import ImpatientTask
 
 init()

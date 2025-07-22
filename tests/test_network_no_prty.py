@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distributions import H2Distribution
-from most_queue.general.tables import times_print
+from most_queue.io.tables import times_print
+from most_queue.random.distributions import H2Distribution
 from most_queue.sim.networks.network import NetworkSimulator
 from most_queue.theory.networks.open_network import OpenNetworkCalc
 

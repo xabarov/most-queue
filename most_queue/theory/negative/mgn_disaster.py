@@ -7,8 +7,8 @@ import time
 import numpy as np
 from scipy.misc import derivative
 
-from most_queue.distributions import H2Distribution, H2Params
-from most_queue.general.results_structs import NegativeArrivalsResults
+from most_queue.random.distributions import H2Distribution, H2Params
+from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.conditional import moments_exp_less_than_h2, moments_h2_less_than_exp
 from most_queue.theory.utils.conv import conv_moments

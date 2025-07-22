@@ -10,7 +10,7 @@ import numpy as np
 from run_one_calc_vs_sim import calc_moments_by_mean_and_cv, run_calculation, run_simulation
 from utils import calc_rel_error_percent, plot_probs, plot_w1, plot_w1_errors
 
-from most_queue.distributions import GammaDistribution
+from most_queue.random.distributions import GammaDistribution
 
 
 def run_cool_delay_average(qp, save_path: str = None):

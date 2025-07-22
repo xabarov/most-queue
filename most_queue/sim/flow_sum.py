@@ -7,7 +7,7 @@ import math
 
 from tqdm import tqdm
 
-from most_queue.distributions import (
+from most_queue.random.distributions import (
     ErlangDistribution,
     GammaDistribution,
     H2Distribution,

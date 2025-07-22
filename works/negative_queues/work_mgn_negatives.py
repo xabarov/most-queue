@@ -9,16 +9,16 @@ from dataclasses import asdict
 import numpy as np
 import yaml
 
-from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
-from most_queue.distributions import GammaDistribution
-from most_queue.general.plots import DependsType, plot_sim_vs_calc_moments
-from most_queue.general.results_structs import (
+from most_queue.io.plots import DependsType, plot_sim_vs_calc_moments
+from most_queue.random.distributions import GammaDistribution
+from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
+from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
+from most_queue.structs import (
     DependsOnChannelsResults,
     DependsOnJSONEncoder,
     DependsOnUtilizationResults,
     DependsOnVariationResults,
 )
-from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.calc_params import TakahashiTakamiParams
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc
 from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc

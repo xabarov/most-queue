@@ -5,7 +5,7 @@ Plot the parameters of the H2-distribution for a given set of initial moments.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from most_queue.distributions import H2Distribution
+from most_queue.random.distributions import H2Distribution
 
 
 def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax_threshold=3):

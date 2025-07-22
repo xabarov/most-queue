@@ -11,7 +11,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.general.tables import times_print
+from most_queue.io.tables import times_print
 from most_queue.sim.batch import QueueingSystemBatchSim
 from most_queue.theory.batch.mm1 import BatchMM1
 

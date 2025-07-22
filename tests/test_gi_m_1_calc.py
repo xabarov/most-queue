@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distributions import GammaDistribution
-from most_queue.general.tables import probs_print, times_print
+from most_queue.io.tables import probs_print, times_print
+from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.gi_m_1 import GiM1
 

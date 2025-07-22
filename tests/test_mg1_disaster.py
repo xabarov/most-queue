@@ -8,8 +8,8 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distributions import GammaDistribution
-from most_queue.general.tables import times_print_with_two_numerical
+from most_queue.io.tables import times_print_with_two_numerical
+from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_disasters import MG1Disasters
 from most_queue.theory.negative.mgn_disaster import MGnNegativeDisasterCalc

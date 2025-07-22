@@ -8,9 +8,9 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.distr_utils.distribution_fitting import gamma_moments_by_mean_and_cv
-from most_queue.distributions import GammaDistribution
-from most_queue.general.tables import probs_print, times_print
+from most_queue.io.tables import probs_print, times_print
+from most_queue.random.distributions import GammaDistribution
+from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mmn_with_h2_cold_and_h2_warmup import MMnHyperExpWarmAndCold
 
