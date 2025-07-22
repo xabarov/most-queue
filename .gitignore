@@ -163,3 +163,10 @@ cython_debug/
 .vscode
 
 works/negative_queues/results/*
+
+# ignore all png files in tests/units folder
+tests/units/*.png
+
+# ignore all files in works/vacations/results
+works/vacations/results/*
+
