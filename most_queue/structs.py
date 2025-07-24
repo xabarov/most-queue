@@ -22,22 +22,29 @@ class QueueResults:
 
 
 @dataclass
-class PriorityResults:
+class MulticlassResults:
     """
-    Results of priority queue calculation
+    Results of queue with multiple classes.
     """
 
     v: list[list[float]] | None = None  # sojourn time moments for each class
     w: list[list[float]] | None = None  # waiting time moments for each class
     p: list[float] | None = None  # probabilities of states (low priority jobs)
 
-    h: list[list[float]] | None = None  # initial moments of active time
-    busy: list[list[float]] | None = None  # initial moments of busy period
-    w_with_pr: list[list[float]] | None = None  # initial moments of waiting for service with interruptions
-
     utilization: float | None = None  # utilization factor
 
     duration: float = 0.0  # calculation or simulation duration in seconds
+
+
+@dataclass
+class PriorityResults(MulticlassResults):
+    """
+    Results of priority queue calculation
+    """
+
+    h: list[list[float]] | None = None  # initial moments of active time
+    busy: list[list[float]] | None = None  # initial moments of busy period
+    w_with_pr: list[list[float]] | None = None  # initial moments of waiting for service with interruptions
 
 
 @dataclass

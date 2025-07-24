@@ -553,7 +553,7 @@ class PriorityQueueSimulator:
         else:
             self.serving(num_of_server_earlier)
 
-    def run(self, total_served):
+    def run(self, total_served) -> PriorityResults:
         """
         Run simulation for total_served jobs.
         :param total_served: int, number of jobs to serve
