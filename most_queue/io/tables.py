@@ -9,10 +9,9 @@ from colorama import Fore, Style, init
 init()
 
 
-def times_print(
-    sim_moments,
-    calc_moments,
-    is_w=True,
+def print_moments(
+    sim_moments: list[float] | list[complex] | float | complex,
+    calc_moments: list[float] | list[complex] | float | complex,
     header=None,
     sim_header="Sim",
     calc_header="Num",
@@ -20,22 +19,17 @@ def times_print(
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:
-         sim_moments (list): List of simulated moments.
-         calc_moments (list): List of calculated moments.
-         is_w (bool, optional): If True, prints waiting time moments.
-         Otherwise, prints sojourn time moments. Defaults to True.
-
+        sim_moments (list): List of simulated moments.
+        calc_moments (list): List of calculated moments.
+        header (str): Header for the table.
+        sim_header (str): Header for simulated moments.
+        calc_header (str): Header for calculated moments.
     """
 
-    if header is None:
-        if is_w:
-            spec = "waiting"
-        else:
-            spec = "soujorn"
-        header = f"Initial moments of {spec} time in the system"
+    if not header is None:
+        print(Fore.CYAN + f"\n{header:^45}")
+        print("-" * 45)
 
-    print(Fore.CYAN + f"\n{header:^45}")
-    print("-" * 45)
     num_col = "#"
     print(f"{num_col:^15s}|{calc_header:^15s}|{sim_header:^15s}")
     print("-" * 45)
@@ -69,33 +63,63 @@ def times_print(
     print(Style.RESET_ALL)
 
 
-def times_print_with_two_numerical(
-    sim_moments,
-    calc_moments1,
-    calc_moments2,
-    is_w=True,
-    num1_header="Num1",
-    num2_header="Num2",
+def print_waiting_times(
+    sim_moments: list[float] | list[complex] | float | complex,
+    calc_moments: list[float] | list[complex] | float | complex,
+    sim_header="Sim",
+    calc_header="Num",
 ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
     """
     Prints the initial moments of waiting or sojourn time in the system.
      Args:
-         sim_moments (list): List of simulated moments.
-         calc_moments1 (list): List of calculated moments for the first approximation.
-         calc_moments2 (list): List of calculated moments for the second approximation.
-         is_w (bool, optional): If True, prints waiting time moments.
-         Otherwise, prints sojourn time moments. Defaults to True.
-
+        sim_moments (list): List of simulated moments.
+        calc_moments (list): List of calculated moments.
+        sim_header (str): Header for simulated moments.
+        calc_header (str): Header for calculated moments
     """
 
-    if is_w:
-        spec = "waiting"
-    else:
-        spec = "soujorn"
-    header = f"Initial moments of {spec} time in the system"
+    header = "Initial moments of waiting time in the system"
 
-    print(Fore.CYAN + f"\n{header:^45}")
-    print("-" * 60)
+    print_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
+
+
+def print_sojourn_times(
+    sim_moments: list[float] | list[complex] | float | complex,
+    calc_moments: list[float] | list[complex] | float | complex,
+    sim_header="Sim",
+    calc_header="Num",
+):  # pylint: disable=too-many-positional-arguments, too-many-arguments
+    """
+    Prints the initial moments of waiting or sojourn time in the system.
+     Args:
+        sim_moments (list): List of simulated moments.
+        calc_moments (list): List of calculated moments.
+        sim_header (str): Header for simulated moments.
+        calc_header (str): Header for calculated moments
+    """
+
+    header = "Initial moments of sojourn time in the system"
+
+    print_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
+
+
+def print_with_two_numerical(
+    sim_moments: list[float] | list[complex] | float | complex,
+    calc_moments1: list[float] | list[complex] | float | complex,
+    calc_moments2: list[float] | list[complex] | float | complex,
+    num1_header="Num1",
+    num2_header="Num2",
+):
+    """
+    Prints the initial moments.
+     Args:
+        sim_moments (list): List of simulated moments.
+        calc_moments1 (list): List of calculated moments for the first approximation.
+        calc_moments2 (list): List of calculated moments for the second approximation.
+        num1_header (str, optional): Header for the first numerical approximation.
+        num2_header (str, optional): Header for the second numerical approximation.
+    """
+
     num_col = "#"
     print(f"{num_col:^15s}|{num1_header:^15s}|{num2_header:^15s}|{'Sim':^15s}")
     print("-" * 60)
@@ -140,75 +164,136 @@ def times_print_with_two_numerical(
     print(Style.RESET_ALL)
 
 
-def times_print_no_compare(wait_times=None, sojourn_times=None):
+def print_waiting_times_with_two_numerical(
+    sim_moments,
+    calc_moments1,
+    calc_moments2,
+    num1_header="Num1",
+    num2_header="Num2",
+):
     """
-    Prints the wait and sojourn times.
-    :param wait_times: Wait times
-    :param sojourn_times: Sojourn times
-    :return: None
+    Prints the initial moments of waiting in the system.
+     Args:
+        sim_moments (list): List of simulated moments.
+        calc_moments1 (list): List of calculated moments for the first approximation.
+        calc_moments2 (list): List of calculated moments for the second approximation.
+        num1_header (str, optional): Header for the first numerical approximation.
+        num2_header (str, optional): Header for the second numerical approximation.
+
     """
 
-    if sojourn_times is None and wait_times is None:
-        raise ValueError("Either wait_times or sojourn_times must be provided.")
+    header = "Initial moments of waiting time in the system"
 
-    if sojourn_times is not None and wait_times is not None:
+    print(Fore.CYAN + f"\n{header:^45}")
+    print("-" * 60)
+    print_with_two_numerical(
+        sim_moments=sim_moments,
+        calc_moments1=calc_moments1,
+        calc_moments2=calc_moments2,
+        num1_header=num1_header,
+        num2_header=num2_header,
+    )
 
-        print(Fore.CYAN + "Initial moments of sojourn and wait times in the system")
 
-        num_col, w_col, v_col = "#", "w", "v"
-        print(f"{num_col:^15s}|{w_col:^15s}|{v_col:^15s}")
-        print("-" * 45)
-        if isinstance(wait_times, list):
-            for j in range(min(len(wait_times), len(sojourn_times))):
-                w_mom = wait_times[j].real if isinstance(wait_times[j], complex) else wait_times[j]
-                v_mom = sojourn_times[j].real if isinstance(sojourn_times[j], complex) else sojourn_times[j]
-                print(
-                    Fore.CYAN
-                    + f"{j + 1:^15d}|"
-                    + Fore.YELLOW
-                    + f"{w_mom:^15.5g}"
-                    + Fore.CYAN
-                    + "|"
-                    + Fore.YELLOW
-                    + f"{v_mom:^15.5g}"
-                )
-        else:
-            w_mom = wait_times.real if isinstance(wait_times, complex) else wait_times
-            v_mom = sojourn_times.real if isinstance(sojourn_times, complex) else sojourn_times
-            print(
-                Fore.CYAN
-                + f"{1:^15d}|"
-                + Fore.YELLOW
-                + f"{w_mom:^15.5g}"
-                + Fore.CYAN
-                + "|"
-                + Fore.YELLOW
-                + f"{v_mom:^15.5g}"
-            )
+def print_sojourn_times_with_two_numerical(
+    sim_moments,
+    calc_moments1,
+    calc_moments2,
+    num1_header="Num1",
+    num2_header="Num2",
+):
+    """
+    Prints the initial moments of sojourn time in the system.
+     Args:
+         sim_moments (list): List of simulated moments.
+         calc_moments1 (list): List of calculated moments for the first approximation.
+         calc_moments2 (list): List of calculated moments for the second approximation.
+         is_w (bool, optional): If True, prints waiting time moments.
+         Otherwise, prints sojourn time moments. Defaults to True.
 
-        print(Style.RESET_ALL)
+    """
 
-    else:
-        times = wait_times if wait_times is not None else sojourn_times
-        spec = "wait" if wait_times is not None else "sojourn"
-        times_header = "w" if wait_times is not None else "v"
-        header = f"Initial moments of {spec} time in the system"
+    header = "Initial moments of sojourn time in the system"
 
-        print(header)
+    print(Fore.CYAN + f"\n{header:^45}")
+    print("-" * 60)
+    print_with_two_numerical(
+        sim_moments=sim_moments,
+        calc_moments1=calc_moments1,
+        calc_moments2=calc_moments2,
+        num1_header=num1_header,
+        num2_header=num2_header,
+    )
 
-        num_col = "#"
-        print(f"{num_col:^15s}|{times_header:^15s}")
-        print("-" * 30)
-        if isinstance(times, list):
-            for j, mom in enumerate(times):
-                mom = mom.real if isinstance(mom, complex) else mom
-                print(Fore.CYAN + f"{j + 1:^15d}|" + Fore.YELLOW + f"{mom:^15.5g}" + Fore.CYAN)
-        else:
-            mom = times.real if isinstance(times, complex) else times
 
-            print(Fore.CYAN + f"{1:^15d}|" + Fore.YELLOW + f"{mom:^15.5g}" + Fore.CYAN)
+def print_moments_with_classes(sim_moments, calc_moments):
+    """
+    Print moments with classes
+     :param sim_moments: Simulated moments
+     :param calc_moments: Calculated moments
+    """
+    k_num = len(sim_moments)
+    size = len(sim_moments[0])
 
-        print(Style.RESET_ALL)
+    blank_col, header_col, cls_col = "", "Number of moment", "Cls"
+    num_col, sim_col = "Num", "Sim"
+
+    print("-" * 60)
+    print(f"{blank_col:^11}|{header_col:^47}|")
+    print(f"{cls_col:^11}| ", end="")
+    print("-" * 45 + " |")
+
+    print(" " * 11 + "|", end="")
+    for j in range(size):
+        s = str(j + 1)
+        print(f"{s:^15}|", end="")
+    print("")
+    print("-" * 60)
+
+    for i in range(k_num):
+        print(Fore.CYAN + " " * 5 + "|", end="")
+        print(Fore.CYAN + f"{sim_col:^5}|", end="")
+        for j in range(size):
+            print(Fore.YELLOW + f"{sim_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end="")
+        print("")
+        print(Fore.CYAN + f"{str(i + 1):^5}" + "|" + "-" * 54)
+
+        print(Fore.CYAN + " " * 5 + "|", end="")
+        print(Fore.CYAN + f"{num_col:^5}|", end="")
+        for j in range(size):
+            print(Fore.YELLOW + f"{calc_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end="")
+        print("")
+        print(Fore.CYAN + "-" * 60)
+
+    print("\n")
+
+    print(Style.RESET_ALL)
+
+
+def print_waiting_with_classes(sim_moments, calc_moments):
+    """
+    Print waiting moments with classes
+     :param sim_moments: Simulated moments
+     :param calc_moments: Calculated moments
+    """
+    header = "Initial moments of waiting time in the system"
+
+    print(Fore.CYAN + f"{header:^60s}")
+
+    print_moments_with_classes(sim_moments, calc_moments)
+
+
+def print_sojourn_with_classes(sim_moments, calc_moments):
+    """
+    Print sojourn moments with classes
+     :param sim_moments: Simulated moments
+     :param calc_moments: Calculated moments
+    """
+    header = "Initial moments of sojourn time in the system"
+
+    print(Fore.CYAN + f"{header:^60s}")
+
+    print_moments_with_classes(sim_moments, calc_moments)
 
 
 def probs_print(p_sim, p_num, size=10):
@@ -261,62 +346,6 @@ def probs_print_no_compare(probs, size=10, header="Probabilities of states"):
     for i in range(size):
         print(Fore.CYAN + f"{i:^4d}|" + Fore.YELLOW + f"{probs[i]:^15.5g}" + Fore.CYAN)
     print(Fore.CYAN + "-" * 36)
-
-    print(Style.RESET_ALL)
-
-
-def times_print_with_classes(sim_moments, calc_moments, is_w=True):
-    """
-    Print moments with classes
-     :param sim_moments: Simulated moments
-     :param calc_moments: Calculated moments
-     :param is_w: If True, print waiting time, else print sojourn time
-      :return: None
-
-    """
-    if is_w:
-        spec = "waiting"
-    else:
-        spec = "soujorn"
-
-    header = f"Initial moments of {spec} time in the system"
-
-    k_num = len(sim_moments)
-    size = len(sim_moments[0])
-
-    print(Fore.CYAN + f"{header:^60s}")
-
-    blank_col, header_col, cls_col = "", "Number of moment", "Cls"
-    num_col, sim_col = "Num", "Sim"
-
-    print("-" * 60)
-    print(f"{blank_col:^11}|{header_col:^47}|")
-    print(f"{cls_col:^11}| ", end="")
-    print("-" * 45 + " |")
-
-    print(" " * 11 + "|", end="")
-    for j in range(size):
-        s = str(j + 1)
-        print(f"{s:^15}|", end="")
-    print("")
-    print("-" * 60)
-
-    for i in range(k_num):
-        print(Fore.CYAN + " " * 5 + "|", end="")
-        print(Fore.CYAN + f"{sim_col:^5}|", end="")
-        for j in range(size):
-            print(Fore.YELLOW + f"{sim_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end="")
-        print("")
-        print(Fore.CYAN + f"{str(i + 1):^5}" + "|" + "-" * 54)
-
-        print(Fore.CYAN + " " * 5 + "|", end="")
-        print(Fore.CYAN + f"{num_col:^5}|", end="")
-        for j in range(size):
-            print(Fore.YELLOW + f"{calc_moments[i][j]:^15.3g}" + Fore.CYAN + "|", end="")
-        print("")
-        print(Fore.CYAN + "-" * 60)
-
-    print("\n")
 
     print(Style.RESET_ALL)
 

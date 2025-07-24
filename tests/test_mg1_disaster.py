@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import times_print_with_two_numerical
+from most_queue.io.tables import print_sojourn_times_with_two_numerical
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_disasters import MG1Disasters
@@ -78,8 +78,8 @@ def test_mg1():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    times_print_with_two_numerical(
-        sim_results.v, mg1_calc_result.v, calc_results.v, is_w=False, num1_header="MG1", num2_header="T-T"
+    print_sojourn_times_with_two_numerical(
+        sim_results.v, mg1_calc_result.v, calc_results.v, num1_header="MG1", num2_header="T-T"
     )
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

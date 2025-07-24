@@ -9,7 +9,7 @@ import time
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_waiting_times, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -203,7 +203,7 @@ def test_mgn_h2_delay_cold_warm():
     )
 
     probs_print(p_sim=sim_results["p"], p_num=num_results["p"], size=10)
-    times_print(sim_moments=sim_results["w"], calc_moments=num_results["w"])
+    print_waiting_times(sim_moments=sim_results["w"], calc_moments=num_results["w"])
 
     # Print the results for the number of busy servers
     print("Probability distribution of number of busy servers:")

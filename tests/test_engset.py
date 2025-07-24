@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_sojourn_times, print_waiting_times, probs_print
 from most_queue.sim.finite_source import QueueingFiniteSourceSim
 from most_queue.theory.closed.engset import Engset
 
@@ -66,8 +66,8 @@ def test_engset():
 
     assert np.allclose(sim_results.p[:10], calc_results.p[:10], atol=PROBS_ATOL, rtol=PROBS_RTOL), ERROR_MSG
 
-    times_print(sim_results.w, calc_results.w, is_w=True)
-    times_print(sim_results.v, calc_results.v, is_w=False)
+    print_waiting_times(sim_results.w, calc_results.w)
+    print_sojourn_times(sim_results.v, calc_results.v)
 
     assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

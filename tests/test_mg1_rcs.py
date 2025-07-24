@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import times_print
+from most_queue.io.tables import print_moments
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -59,10 +59,9 @@ def test_mg1_gamma_rcs():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    times_print(
+    print_moments(
         sim_results.v[0],
         calc_results.v[0],
-        is_w=False,
         header="Sojourn time in M/G/1 with RCS disasters",
     )
 

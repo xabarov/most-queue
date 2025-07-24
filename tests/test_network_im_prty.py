@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import times_print_with_classes
+from most_queue.io.tables import print_sojourn_with_classes
 from most_queue.random.distributions import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
 from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
@@ -126,7 +126,7 @@ def test_network():
 
     print("-" * 60)
     print("Relative Priority ('NP')")
-    times_print_with_classes(sim_results.v, calc_results.v, False)
+    print_sojourn_with_classes(sim_results.v, calc_results.v)
 
     assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
     assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG
@@ -146,7 +146,7 @@ def test_network():
 
     print("-" * 60)
     print("Absolute Priority ('PR')")
-    times_print_with_classes(sim_results.v, calc_results.v, False)
+    print_sojourn_with_classes(sim_results.v, calc_results.v)
 
     assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
     assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG

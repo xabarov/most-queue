@@ -7,7 +7,7 @@ import math
 
 import matplotlib.pyplot as plt
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_waiting_times, probs_print
 
 
 def print_table(experiments_stat):
@@ -47,7 +47,7 @@ def print_table(experiments_stat):
         print(f"Simulation time: {stat['sim_time']:0.3f} c")
 
         probs_print(p_sim=stat["p_sim"], p_num=stat["p_tt"], size=10)
-        times_print(sim_moments=stat["w_sim"], calc_moments=stat["w_tt"])
+        print_waiting_times(sim_moments=stat["w_sim"], calc_moments=stat["w_tt"])
 
 
 def dump_stat(experiments_stat, save_name="run_stat.json"):

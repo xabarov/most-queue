@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_sojourn_times, print_waiting_times, probs_print
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
@@ -74,8 +74,8 @@ def test_sim():
     ), "Utilization factor does not match theoretical value."
 
     # Print comparison of simulation and theoretical results
-    times_print(w_sim, mmnr_results.w, True)
-    times_print(v_sim, mmnr_results.v, False)
+    print_waiting_times(w_sim, mmnr_results.w)
+    print_sojourn_times(v_sim, mmnr_results.v)
     probs_print(p_num=mmnr_results.p, p_sim=p_sim, size=10)
 
     assert np.allclose(w_sim, mmnr_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

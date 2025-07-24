@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_waiting_times, probs_print
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mmnr import MMnrCalc
@@ -58,7 +58,7 @@ def test_sim_mmnr():
     mmnr.set_servers(mu=mu)
     calc_results = mmnr.run()
 
-    times_print(sim_results.w, calc_results.w)
+    print_waiting_times(sim_results.w, calc_results.w)
 
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")

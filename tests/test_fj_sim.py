@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import times_print
+from most_queue.io.tables import print_sojourn_times
 from most_queue.random.distributions import GammaDistribution, GammaParams
 from most_queue.sim.fork_join import ForkJoinSim
 from most_queue.structs import QueueResults
@@ -76,7 +76,7 @@ def print_results_sj(cv: float, sim_results: QueueResults, calc_results: QueueRe
     print(f"Utilization coefficient: {calc_results.utilization:.3f}")
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
-    times_print(sim_results.v, calc_results.v, False)
+    print_sojourn_times(sim_results.v, calc_results.v)
 
 
 def run_sim_fj(k: int, mu: float):

@@ -6,7 +6,7 @@ import os
 
 import yaml
 
-from most_queue.io.tables import times_print_with_classes
+from most_queue.io.tables import print_sojourn_with_classes
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
@@ -109,7 +109,7 @@ def test_sim():
     assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG
     assert abs(v_sim[2][0] - v_num[2][0] < 1.0), ERROR_MSG
 
-    times_print_with_classes(v_sim, v_num, False)
+    print_sojourn_with_classes(v_sim, v_num)
 
     print("NP (Non-preamptive) priority")
 
@@ -133,7 +133,7 @@ def test_sim():
     invar_calc.set_servers(b)
     v_num = invar_calc.get_v()
 
-    times_print_with_classes(v_sim, v_num, False)
+    print_sojourn_with_classes(v_sim, v_num)
 
     assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG
     assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG

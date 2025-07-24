@@ -14,7 +14,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_sojourn_times, print_waiting_times, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.base import QsSim
@@ -93,8 +93,8 @@ def test_mgn_tt():
 
     probs_print(sim_results.p, calc_results.p, 10)
 
-    times_print(sim_results.v, calc_results.v, False)
-    times_print(sim_results.w, calc_results.w, True)
+    print_sojourn_times(sim_results.v, calc_results.v)
+    print_waiting_times(sim_results.w, calc_results.w)
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
     assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

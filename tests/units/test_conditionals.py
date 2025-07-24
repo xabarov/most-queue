@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 import yaml
 
-from most_queue.io.tables import times_print
+from most_queue.io.tables import print_moments
 from most_queue.random.distributions import ExpDistribution, H2Distribution, H2Params
 from most_queue.theory.utils.conditional import (
     calc_b_min_h2_and_exp,
@@ -84,7 +84,7 @@ def test_moments_exp_less_than_h2(setup_params):
 
     calc_moments = moments_exp_less_than_h2(gamma=params["gamma"], h2_params=params["h2_params"])
 
-    times_print(sim_moments, calc_moments, is_w=False, header="Results for exp < h2")
+    print_moments(sim_moments, calc_moments, header="Results for exp < h2")
 
     # Add assertions
     np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)
@@ -112,7 +112,7 @@ def test_moments_h2_less_than_exp(setup_params):
 
     calc_moments = moments_h2_less_than_exp(gamma=params["gamma"], h2_params=params["h2_params"])
 
-    times_print(sim_moments, calc_moments, is_w=False, header="Results for h2 < exp")
+    print_moments(sim_moments, calc_moments, header="Results for h2 < exp")
 
     # Add assertions
     np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)
@@ -140,7 +140,7 @@ def test_min_h2_and_exp(setup_params):
 
     calc_moments = calc_b_min_h2_and_exp(h2_params=params["h2_params"], mu=params["gamma"])
 
-    times_print(sim_moments, calc_moments, is_w=False, header="Results for min(H2, Exp)")
+    print_moments(sim_moments, calc_moments, header="Results for min(H2, Exp)")
 
     # Add assertions
     np.testing.assert_allclose(sim_moments, calc_moments[:3], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL)

@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import probs_print, times_print
+from most_queue.io.tables import print_moments, probs_print
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.preemptive.mm2_3cls_busy_approx import MM2BusyApprox3Classes
 
@@ -88,19 +88,15 @@ def test_mm2_3_cls_prty():
     probs_print(p_sim=sim_results.p[2], p_num=calc_results.p, size=10)
 
     # Printing time moments comparison
-    times_print(
-        sim_moments=sim_results.v[0], calc_moments=calc_results.v[0], is_w=False, header="sojourn moments for 1 class"
-    )
-    times_print(
+    print_moments(sim_moments=sim_results.v[0], calc_moments=calc_results.v[0], header="sojourn moments for 1 class")
+    print_moments(
         sim_moments=[sim_results.v[1][0]],
         calc_moments=[calc_results.v[1][0]],
-        is_w=False,
         header="mean sojourn time for 2 class",
     )
-    times_print(
+    print_moments(
         sim_moments=[sim_results.v[2][0]],
         calc_moments=[calc_results.v[2][0]],
-        is_w=False,
         header="mean sojourn time for 3 class",
     )
 

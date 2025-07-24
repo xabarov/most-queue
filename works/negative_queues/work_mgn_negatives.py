@@ -9,7 +9,7 @@ from dataclasses import asdict
 import numpy as np
 import yaml
 
-from most_queue.io.plots import DependsType, plot_sim_vs_calc_moments
+from most_queue.io.plots import DependsType, Plotter
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -320,12 +320,14 @@ if __name__ == "__main__":
         ]
 
         for params in plot_params:
-            plot_sim_vs_calc_moments(
-                xs=xs,
-                sim_results=params["sim_results"],
-                calc_results=params["calc_results"],
-                depends_on=depends_on,
-                save_path=params["save_path"],
-                is_errors=params["is_errors"],
-                is_waiting_time=params["is_waiting_time"],
+
+            plotter = Plotter(
+                xs=xs, sim_results=params["sim_results"], calc_results=params["calc_results"], depends_on=depends_on
             )
+            if params["is_errors"]:
+                plotter.plot_errors(save_path=params["save_path"])
+            else:
+                if params["is_waiting_time"]:
+                    plotter.plot_waiting(save_path=params["save_path"])
+                else:
+                    plotter.plot_sojourn(save_path=params["save_path"])
