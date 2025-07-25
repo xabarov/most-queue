@@ -13,7 +13,7 @@ def refresh_moments_stat(moments, new_a, count):
     count: how many events of calcs
     """
 
-    for i in range(3):
+    for i in range(len(moments)):
         moments[i] = moments[i] * (1.0 - (1.0 / count)) + math.pow(new_a, i + 1) / count
 
     return moments

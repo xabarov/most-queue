@@ -50,8 +50,8 @@ class MG1NegativeCalcRCS(BaseQueue):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
-        :param b: initial moments of service time distribution
+        Set the raw moments of service time distribution
+        :param b: raw moments of service time distribution
         """
         self.b = b
 
@@ -73,7 +73,7 @@ class MG1NegativeCalcRCS(BaseQueue):
         v1 = self.get_v1()
         utilization = self.get_utilization()
 
-        return QueueResults(v=[v1, 0.0, 0.0], utilization=utilization, duration=time.process_time() - start)
+        return QueueResults(v=[v1, 0.0, 0.0, 0.0], utilization=utilization, duration=time.process_time() - start)
 
     def get_utilization(self):
         """

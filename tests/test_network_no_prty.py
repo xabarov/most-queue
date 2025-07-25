@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times
+from most_queue.io.tables import print_sojourn_moments
 from most_queue.random.distributions import H2Distribution
 from most_queue.sim.networks.network import NetworkSimulator
 from most_queue.theory.networks.open_network import OpenNetworkCalc
@@ -87,7 +87,7 @@ def test_network():
 
     print("-" * 60)
     print("Results")
-    print_sojourn_times(sim_results.v, num_results.v)
+    print_sojourn_moments(sim_results.v, num_results.v)
 
     assert np.allclose(sim_results.v, num_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 

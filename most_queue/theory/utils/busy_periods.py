@@ -12,12 +12,12 @@ from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 def busy_calc(l: float, b: list[float], num: int = 5):
     """
-    Calculation of initial moments of continuous busy period for M/G/1 queue
+    Calculation of raw moments of continuous busy period for M/G/1 queue
     By default, the first five are calculated.
     :param l: - intensity of input stream
-    :param b: [j], j=1..num, initial moments of service time
-    :param num: number of initial moments to calculate
-    :return: list of initial moments of continuous busy period for M/G/1 queue
+    :param b: [j], j=1..num, raw moments of service time
+    :param num: number of raw moments to calculate
+    :return: list of raw moments of continuous busy period for M/G/1 queue
     """
     num = min(num, len(b))
     busy_moments = []
@@ -77,7 +77,7 @@ def busy_calc_lst(l: float, b: list[float], lst_function="gamma"):
     l : float
         Arrival rate.
     b : list[float]
-        service time initial moments.
+        service time raw moments.
     lst_function : str
         The function to use for the Laplace-Stieltjes transform.
     Returns
@@ -110,13 +110,13 @@ def busy_calc_lst(l: float, b: list[float], lst_function="gamma"):
 
 def busy_calc_warm_up(l: float, f: list[float], b_busy: list[float], num: int = 5):
     """
-    Calculate the initial moments of continuous busy period for M/G/1 queue with warm-up
+    Calculate the raw moments of continuous busy period for M/G/1 queue with warm-up
     By default, the first three are calculated.
     :param l: - input flow intensity
-    :param f: - initial service time moments
-    :param b_busy: - initial moments of busy period
+    :param f: - raw service time moments
+    :param b_busy: - raw moments of busy period
     :param num: - number of moments to calculate
-    :return: - initial moments of continuous busy period
+    :return: - raw moments of continuous busy period
     """
     num = min(num, len(f))
 

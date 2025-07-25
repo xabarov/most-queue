@@ -51,15 +51,15 @@ class MMnrCalc(BaseQueue):
 
         self.is_servers_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation of the queue system.
         """
         start = time.process_time()
 
         p = self.get_p()
-        w = self.get_w()
-        v = self.get_v()
+        w = self.get_w(num_of_moments)
+        v = self.get_v(num_of_moments)
 
         utilization = self.l / (self.mu * self.n)
 
@@ -93,9 +93,9 @@ class MMnrCalc(BaseQueue):
             summ += i * math.pow(self.ro / self.n, i)
         return self.p[self.n] * summ
 
-    def get_w(self, num=3) -> list[float]:
+    def get_w(self, num: int = 3) -> list[float]:
         """
-        Calculate initial moments of waiting time in the queue
+        Calculate raw moments of waiting time in the queue
         """
         self.p = self.p or self._calc_p()
         qs = self._get_qs(q_num=num)
@@ -106,14 +106,14 @@ class MMnrCalc(BaseQueue):
         self.w = w
         return w
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num: int = 3) -> list[float]:
         """
-        Calculate  initial moments of sojourn time in the queue
+        Calculate  raw moments of sojourn time in the queue
         """
         if self.w is None:
-            self.w = self.get_w()
-        b = ExpDistribution.calc_theory_moments(self.mu)
-        v = conv_moments(self.w, b)
+            self.w = self.get_w(num)
+        b = ExpDistribution.calc_theory_moments(self.mu, num)
+        v = conv_moments(self.w, b, num=num)
         return v
 
     def get_p(self) -> list[float]:

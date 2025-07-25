@@ -5,7 +5,7 @@ Test different variants of the busy period calculation for M/G/1 queue.
 import math
 import time
 
-from most_queue.io.tables import print_moments
+from most_queue.io.tables import print_raw_moments
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_lst
 
@@ -32,7 +32,7 @@ def test_busy_calc_variants():
     busy2_duration = time.time() - start
     print(f"busy_calc duration: {busy2_duration:.4g}")
 
-    print_moments(
+    print_raw_moments(
         sim_moments=busy_1,
         calc_moments=busy_2,
         header="Busy periods",

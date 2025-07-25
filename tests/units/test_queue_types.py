@@ -30,7 +30,7 @@ def compare_calc_times():
     execution_times = {"list": 0, "deque": 0}
 
     for buffer_type in buffer_types:
-        # Calculate initial moments of service time based on mean and variation
+        # Calculate raw moments of service time based on mean and variation
         # coefficient
         moments = gamma_moments_by_mean_and_cv(mean_service_time, variation_coeff)
 

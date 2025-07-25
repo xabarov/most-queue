@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times
+from most_queue.io.tables import print_sojourn_moments
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -76,7 +76,7 @@ def test_mg1_warm():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    print_sojourn_times(simulator.v, calc_results.v)
+    print_sojourn_moments(simulator.v, calc_results.v)
 
     # assert all close with relative percent 20%
     assert np.allclose(simulator.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

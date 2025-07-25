@@ -85,7 +85,7 @@ def test_ek_d_n():
     # run simulation
     sim_results = qs.run(NUM_OF_JOBS)
 
-    # obtain parameters - initial moments (3) of sojourn time
+    # obtain parameters - raw moments (3) of sojourn time
     # and probability distribution of the system state
 
     print(f"Simulation duration: {sim_results.duration:.5f} sec")

@@ -13,13 +13,17 @@ def conv_moments(a: list[float], b: list[float], num: int = 3) -> list[float]:
     :param num: Number of moments to calculate.
     :return: List of moments.
     """
-    num = min(num, 3)
+    num = min(num, 4)
     res = [0] * num
     res[0] = a[0] + b[0]
     if num > 1:
         res[1] = a[1] + b[1] + 2 * a[0] * b[0]
     if num > 2:
         res[2] = a[2] + b[2] + 3 * a[1] * b[0] + 3 * a[0] * b[1]
+
+    if num > 3:
+        res[3] = a[3] + b[3] + 4 * a[2] * b[0] + 6 * a[1] * b[1] + 4 * a[0] * b[2]
+
     return np.array(res)
 
 

@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_moments, print_waiting_times, probs_print
+from most_queue.io.tables import print_raw_moments, print_sojourn_moments, print_waiting_moments, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
@@ -70,10 +70,10 @@ def test_mgn():
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     probs_print(sim_results.p, calc_results.p)
-    print_moments(sim_results.v, calc_results.v, header="sojourn total")
-    print_moments(sim_results.v_served, calc_results.v_served, header="sojourn served")
-    print_moments(sim_results.v_broken, calc_results.v_broken, header="sojourn broken")
-    print_waiting_times(sim_results.w, calc_results.w)
+    print_sojourn_moments(sim_results.v, calc_results.v)
+    print_raw_moments(sim_results.v_served, calc_results.v_served, header="sojourn served")
+    print_raw_moments(sim_results.v_broken, calc_results.v_broken, header="sojourn broken")
+    print_waiting_moments(sim_results.w, calc_results.w)
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 

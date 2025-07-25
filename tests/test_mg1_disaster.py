@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times_with_two_numerical
+from most_queue.io.tables import print_sojourn_moments_with_two_numerical
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives
 from most_queue.theory.negative.mg1_disasters import MG1Disasters
@@ -48,7 +48,7 @@ def test_mg1():
     approximation = "gamma"
 
     b_params = GammaDistribution.get_params_by_mean_and_cv(b1, SERVICE_TIME_CV)
-    b = GammaDistribution.calc_theory_moments(b_params)
+    b = GammaDistribution.calc_theory_moments(b_params, num=4)
 
     # Run calc
     mg1_queue_calc = MG1Disasters()
@@ -78,7 +78,7 @@ def test_mg1():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    print_sojourn_times_with_two_numerical(
+    print_sojourn_moments_with_two_numerical(
         sim_results.v, mg1_calc_result.v, calc_results.v, num1_header="MG1", num2_header="T-T"
     )
 

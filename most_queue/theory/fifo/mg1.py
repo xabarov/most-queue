@@ -36,28 +36,28 @@ class MG1Calculation(BaseQueue):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution.
-        param b: initial moments of service time distribution.
+        Set the raw moments of service time distribution.
+        param b: raw moments of service time distribution.
         """
         self.b = b
         self.is_servers_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation for M/G/1 queue.
         """
 
         start = time.process_time()
 
-        w = self.get_w()
-        v = self.get_v()
+        w = self.get_w(num_of_moments)
+        v = self.get_v(num_of_moments)
         p = self.get_p()
 
         return QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0], duration=time.process_time() - start)
 
-    def get_w(self, num=3) -> list[float]:
+    def get_w(self, num: int = 3) -> list[float]:
         """
-        Calculate the initial moments of waiting time for M/G/1 queue.
+        Calculate the raw moments of waiting time for M/G/1 queue.
         """
 
         self._check_if_servers_and_sources_set()
@@ -78,9 +78,9 @@ class MG1Calculation(BaseQueue):
         self.w = w[1:]
         return self.w
 
-    def get_v(self, num=3) -> list[float]:
+    def get_v(self, num: int = 3) -> list[float]:
         """
-        Calculate the initial moments of sojournin the system for M/G/1 queue.
+        Calculate the raw moments of sojournin the system for M/G/1 queue.
         """
 
         self._check_if_servers_and_sources_set()

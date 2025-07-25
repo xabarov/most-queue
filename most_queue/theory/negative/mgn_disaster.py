@@ -54,8 +54,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
-        :param b: initial moments of service time distribution
+        Set the raw moments of service time distribution
+        :param b: raw moments of service time distribution
         """
         self.b = b
         h2_params = H2Distribution.get_params_clx(b)
@@ -148,14 +148,14 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         return results
 
-    def collect_results(self) -> NegativeArrivalsResults:
+    def collect_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
         """
         Get all results
         """
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(num_of_moments)
+        self.v = self.get_v(num_of_moments)
         v_served = self.get_v_served()
         v_broken = self.get_v_broken()
 
@@ -182,7 +182,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         return [prob.real for prob in self.p]
 
-    def get_w(self) -> list[float]:
+    def get_w(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the waiting time moments
         """
@@ -190,20 +190,22 @@ class MGnNegativeDisasterCalc(MGnCalc):
         if not self.w is None:
             return self.w
 
-        w = [0.0] * 3
+        w = [0.0] * num_of_moments
 
-        for i in range(3):
+        for i in range(num_of_moments):
             w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        w = [-w[0], w[1].real, -w[2]]
+            if i % 2 == 0:
+                w[i] = -w[i]
+
         self.w = w
 
         return w
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the sojourn time moments
         """
-        w = np.array(self.get_w())
+        w = np.array(self.get_w(num_of_moments))
 
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg,
         # mu2=mu2+l_neg)
@@ -212,20 +214,22 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         l_neg = self.l_neg
 
-        b = H2Distribution.calc_theory_moments(H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2))
+        b = H2Distribution.calc_theory_moments(
+            H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2), num=num_of_moments
+        )
 
-        return [m.real for m in conv_moments(w, b)]
+        return [m.real for m in conv_moments(w, b, num=num_of_moments)]
 
     def get_v_served(self) -> list[float]:
         """
         Get the sojourn time moments
         """
-        w = self.get_w()
+        w = self.get_w(num_of_moments=4)
 
         # serving = P(H2 | H2 < exp(l_neg))
 
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0])
+        b_cum = np.array([0.0, 0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n + 1):
             l_neg = self.l_neg
@@ -233,7 +237,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
             b = moments_h2_less_than_exp(l_neg, h2_params)
             b_cum += service_probs[i - 1].real * b
 
-        return [m.real for m in conv_moments(w, b_cum)]
+        return [m.real for m in conv_moments(w, b_cum, 4)]
 
     def get_v_broken(self) -> list[float]:
         """
@@ -244,14 +248,14 @@ class MGnNegativeDisasterCalc(MGnCalc):
         # serving = P(exp(l_neg) | exp(l_neg) < H2)
 
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0])
+        b_cum = np.array([0.0, 0.0, 0.0, 0.0])
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n + 1):
             l_neg = self.l_neg
             b = moments_exp_less_than_h2(l_neg, h2_params)
             b_cum += service_probs[i - 1].real * b
 
-        return [m.real for m in conv_moments(w, b_cum)]
+        return [m.real for m in conv_moments(w, b_cum, 4)]
 
     def fill_cols(self):
         """

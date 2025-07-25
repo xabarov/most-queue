@@ -6,7 +6,7 @@ import os
 
 import yaml
 
-from most_queue.io.tables import print_sojourn_with_classes
+from most_queue.io.tables import print_sojourn_multiclass
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
@@ -39,7 +39,7 @@ def test_sim():
     """
     lsum = sum(ARRIVAL_RATES)
 
-    # second initial moments
+    # second raw moments
     b2 = [0] * NUM_OF_CLASSES
     for i in range(NUM_OF_CLASSES):
         b2[i] = (SERVICE_TIMES_AVE[i] ** 2) * (1 + SERVICE_TIME_CV**2)
@@ -49,7 +49,7 @@ def test_sim():
     # get the coefficient of load
     ro = lsum * b_sr / NUM_OF_CHANNELS
 
-    # now, given the two initial moments, select parameters for the approximating Gamma distribution
+    # now, given the two raw moments, select parameters for the approximating Gamma distribution
     # and add them to the list of parameters params
     gamma_params = []
     for i in range(NUM_OF_CLASSES):
@@ -94,7 +94,7 @@ def test_sim():
     # start the simulation
     qs.run(NUM_OF_JOBS)
 
-    # get the initial moments of time spent
+    # get the raw moments of time spent
 
     v_sim = qs.v
 
@@ -109,7 +109,7 @@ def test_sim():
     assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG
     assert abs(v_sim[2][0] - v_num[2][0] < 1.0), ERROR_MSG
 
-    print_sojourn_with_classes(v_sim, v_num)
+    print_sojourn_multiclass(v_sim, v_num)
 
     print("NP (Non-preamptive) priority")
 
@@ -133,7 +133,7 @@ def test_sim():
     invar_calc.set_servers(b)
     v_num = invar_calc.get_v()
 
-    print_sojourn_with_classes(v_sim, v_num)
+    print_sojourn_multiclass(v_sim, v_num)
 
     assert abs(v_sim[0][0] - v_num[0][0] < 1.0), ERROR_MSG
     assert abs(v_sim[1][0] - v_num[1][0] < 1.0), ERROR_MSG

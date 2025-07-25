@@ -125,10 +125,10 @@ class Weibull(Distribution):
     def get_params(moments: list[float]) -> WeibullParams:
         """
          Parameter selection for the distribution based
-         on initial moments of the distribution
+         on raw moments of the distribution
 
          params:
-             moments: initial moments of the random variable
+             moments: raw moments of the random variable
 
         return:
              WeibullParams
@@ -218,7 +218,7 @@ class NormalDistribution(Distribution):
     @staticmethod
     def calc_theory_moments(params: GaussianParams, num=3) -> list[float]:
         """
-        Method calculates theoretical initial moments for the uniform distribution.
+        Method calculates theoretical raw moments for the uniform distribution.
         :param params: list of parameters [mean, half_interval]
         :param num: number of moments to calculate
         :return: list of theoretical moments
@@ -434,7 +434,7 @@ class H2Distribution(Distribution):
     @staticmethod
     def get_params(moments: list[float]) -> H2Params:
         """
-        Aliev's method for calculating the parameters of H2 distribution by given initial moments.
+        Aliev's method for calculating the parameters of H2 distribution by given raw moments.
         Only real parameters are selected.
         Returns a list with parameters [y1, mu1, mu2].
         """
@@ -444,7 +444,7 @@ class H2Distribution(Distribution):
     @staticmethod
     def get_params_clx(moments: list[float], fitting_params: FittingParams | None = None) -> H2Params:
         """
-        Method of fitting H2 distribution parameters to given initial moments.
+        Method of fitting H2 distribution parameters to given raw moments.
         Uses the method of moments and optimization to fit the parameters.
         Returns H2Params object with fitted parameters.
         """
@@ -544,7 +544,7 @@ class CoxDistribution(Distribution):
     @staticmethod
     def calc_theory_moments(params: Cox2Params, num: int = 3) -> list[float]:
         """
-        Calculates the theoretical initial moments of the Coxian distribution.
+        Calculates the theoretical raw moments of the Coxian distribution.
         """
         y1, m1, m2 = params.p1, params.mu1, params.mu2
 
@@ -568,7 +568,7 @@ class CoxDistribution(Distribution):
     @staticmethod
     def get_params(moments: list[float], fitting_params: FittingParams | None = None) -> Cox2Params:
         """
-        Calculates Cox-2 distribution parameters by three given initial moments [moments].
+        Calculates Cox-2 distribution parameters by three given raw moments [moments].
         """
         return fit_cox(moments, fitting_params=fitting_params)
 
@@ -726,7 +726,7 @@ class ParetoDistribution(Distribution):
     def get_params(moments: list[float]):
         """
         Calc parameters of the distribution.
-        :param moments: list of initial moments
+        :param moments: list of raw moments
         """
 
         return fit_pareto_moments(moments)
@@ -805,7 +805,7 @@ class ErlangDistribution(Distribution):
     @staticmethod
     def calc_theory_moments(params: ErlangParams, num: int = 3) -> list[float]:
         """
-        Calculates theoretical initial moments of the distribution. By default - first three.
+        Calculates theoretical raw moments of the distribution. By default - first three.
         """
         r, mu = params.r, params.mu
 
@@ -820,7 +820,7 @@ class ErlangDistribution(Distribution):
     @staticmethod
     def get_params(moments: list[float]) -> ErlangParams:
         """
-        Calculates parameters of the Erlang distribution by initial moments.
+        Calculates parameters of the Erlang distribution by raw moments.
         """
         return fit_erlang(moments)
 

@@ -12,8 +12,8 @@ class QueueResults:
     Result of calculation for queueing system.
     """
 
-    v: list[float] | None = None  # sojourn time initial moments
-    w: list[float] | None = None  # waiting time initial moments
+    v: list[float] | None = None  # sojourn time rawmoments
+    w: list[float] | None = None  # waiting time rawmoments
     p: list[float] | None = None  # probabilities of states
     pi: list[float] | None = None  # probabilities of states before arrival
     utilization: float | None = None  # utilization factor
@@ -42,9 +42,9 @@ class PriorityResults(MulticlassResults):
     Results of priority queue calculation
     """
 
-    h: list[list[float]] | None = None  # initial moments of active time
-    busy: list[list[float]] | None = None  # initial moments of busy period
-    w_with_pr: list[list[float]] | None = None  # initial moments of waiting for service with interruptions
+    h: list[list[float]] | None = None  # raw moments of active time
+    busy: list[list[float]] | None = None  # raw moments of busy period
+    w_with_pr: list[list[float]] | None = None  # raw moments of waiting for service with interruptions
 
 
 @dataclass
@@ -65,7 +65,7 @@ class NetworkResults:
     Data class to store network results.
     """
 
-    v: list[float] | None = None  # initial moments of sojourn time distribution
+    v: list[float] | None = None  # raw moments of sojourn time distribution
     intensities: list[float] | None = None  # intensities of arrivals into nodes
     loads: list[float] | None = None  # nodes utilizations
 
@@ -81,7 +81,7 @@ class NetworkResultsPriority:
     Data class to store results for network with priority discipline in nodes.
     """
 
-    v: list[list[float]] | None = None  # initial moments of sojourn time distribution for each class
+    v: list[list[float]] | None = None  # raw moments of sojourn time distribution for each class
     intensities: list[list[float]] | None = None  # intensities of arrivals into nodes  for each class
     loads: list[float] | None = None  # nodes utilizations
 

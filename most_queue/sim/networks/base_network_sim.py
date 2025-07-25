@@ -72,7 +72,7 @@ class BaseSimNetwork(ABC):
 
     def get_v(self) -> list[float]:
         """
-        Returns the initial moments of sojourn time distribution
+        Returns the raw moments of sojourn time distribution
         """
         self._check_if_results_calculated()
         return self.results.v
@@ -97,7 +97,7 @@ class BaseSimNetworkPriority(BaseSimNetwork):
 
     def get_v(self) -> list[list[float]]:
         """
-        Returns the sojourn time initial moments
+        Returns the sojourn time raw moments
         """
         self._check_if_results_calculated()
         return self.results.v

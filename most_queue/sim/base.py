@@ -50,8 +50,8 @@ class QsSim:
         self.ttek = 0  # current simulation time
         self.total = 0
 
-        self.w = [0, 0, 0]  # initial moments of waiting time in the QS
-        self.v = [0, 0, 0]  # initial moments of sojourn time in the QS
+        self.w = [0, 0, 0, 0]  # raw moments of waiting time in the QS
+        self.v = [0, 0, 0, 0]  # raw moments of sojourn time in the QS
 
         # probabilities of the QS states:
         self.p = [0.0] * self.num_of_states
@@ -61,6 +61,7 @@ class QsSim:
         self.in_sys = 0  # number of job in the system
         self.arrived = 0  # number of job received
         self.dropped = 0  # number of job denied service
+
         self.arrival_time = 0  # time of arrival of the next job
 
         # queue of jobs: class - Task

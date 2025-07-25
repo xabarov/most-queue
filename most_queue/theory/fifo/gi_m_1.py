@@ -46,12 +46,12 @@ class GiM1(BaseQueue):
     def set_sources(self, a: list[float]):  # pylint: disable=arguments-differ
         """
         Setting the sources of GI/M/1 queueing system.
-        params: a - list of initial moments of arrival distribution.
+        params: a - list of raw moments of arrival distribution.
         """
         self.a = a
         self.is_sources_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation for the GI/M/1 queueing system.
         """
@@ -61,8 +61,8 @@ class GiM1(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(num_of_moments)
+        self.v = self.get_v(num_of_moments)
         utilization = 1.0 / (self.a[0] * self.mu)
 
         return QueueResults(
@@ -94,9 +94,9 @@ class GiM1(BaseQueue):
             self.pi[k] = (1.0 - self.w_param) * pow(self.w_param, k)
         return self.pi
 
-    def get_v(self, num=3) -> list[float]:
+    def get_v(self, num: int = 3) -> list[float]:
         """
-        Calculation of the sojourn time initial moments
+        Calculation of the sojourn time raw moments
         num - number of moments
         e - accuracy
         approx_distr - approximation distribution for the arrival process
@@ -113,9 +113,9 @@ class GiM1(BaseQueue):
         self.v = v
         return v
 
-    def get_w(self, num=3) -> list[float]:
+    def get_w(self, num: int = 3) -> list[float]:
         """
-        Calculation of the initial moments of the waiting time
+        Calculation of the raw moments of the waiting time
          num - number of moments
         """
 

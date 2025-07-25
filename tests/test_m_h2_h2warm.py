@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times, print_waiting_times, probs_print
+from most_queue.io.tables import print_sojourn_moments, print_waiting_moments, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
@@ -81,8 +81,8 @@ def test_m_h2_h2warm():
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
     probs_print(sim_results.p, calc_results.p, 10)
-    print_sojourn_times(sim_results.v, calc_results.v)
-    print_waiting_times(sim_results.w, calc_results.w)
+    print_sojourn_moments(sim_results.v, calc_results.v)
+    print_waiting_moments(sim_results.w, calc_results.w)
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 

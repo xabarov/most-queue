@@ -32,8 +32,8 @@ class MG1PreemtiveCalculation(BaseQueue):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution.
-        param b: initial moments of service time distribution.
+        Set the raw moments of service time distribution.
+        param b: raw moments of service time distribution.
         """
         self.b = b
         self.is_servers_set = True
@@ -71,22 +71,22 @@ class MG1PreemtiveCalculation(BaseQueue):
 
     def run(self, num=3) -> PriorityResults:
         """
-        Calculate initial moments of sojourn time, waiting
+        Calculate raw moments of sojourn time, waiting
         for service without and with interruptions, active time
           and busy period in M/G/1 with absolute priority.
         :param num: number of moments to calculate
         :return:
-         - sojourn initial moments of continuous busy period
-         - waiting initial moments of continuous busy period
-         - active time initial moments of continuous busy period
-         - busy period initial moments of continuous busy period
+         - sojourn raw moments of continuous busy period
+         - waiting raw moments of continuous busy period
+         - active time raw moments of continuous busy period
+         - busy period raw moments of continuous busy period
 
         return res:
-        res['v'][k][j] -initial moments of sojourn time
-        res['w'][k][j] - initial moments of waiting for service without interruptions
-        res['h'][k][j] - initial moments of active time
-        res['busy'][k][j] - initial moments of busy period
-        res['w_with_pr'][k][j] - initial moments of waiting for service with interruptions
+        res['v'][k][j] -raw moments of sojourn time
+        res['w'][k][j] - raw moments of waiting for service without interruptions
+        res['h'][k][j] - raw moments of active time
+        res['busy'][k][j] - raw moments of busy period
+        res['w_with_pr'][k][j] - raw moments of waiting for service with interruptions
         """
 
         start = time.process_time()

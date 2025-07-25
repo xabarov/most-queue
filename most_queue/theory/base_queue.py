@@ -66,10 +66,10 @@ class BaseQueue(ABC):
 
     def get_w(self) -> list[float]:
         """
-        Returns the waiting time initial moments
+        Returns the waiting time raw moments
         """
 
     def get_v(self) -> list[float]:
         """
-        Returns the sojourn time initial moments
+        Returns the sojourn time raw moments
         """

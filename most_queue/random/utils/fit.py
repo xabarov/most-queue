@@ -1,5 +1,5 @@
 """
-Methods for fitting distributions to given initial moments.
+Methods for fitting distributions to given raw moments.
 """
 
 import cmath
@@ -33,7 +33,7 @@ class FittingParams:
 
 def fit_h2(moments: list[float]) -> H2Params:
     """
-    Aliev's method for calculating the parameters of H2 distribution by given initial moments.
+    Aliev's method for calculating the parameters of H2 distribution by given raw moments.
     Only real parameters are selected.
     Returns a list with parameters [y1, mu1, mu2].
     """
@@ -83,7 +83,7 @@ def fit_h2(moments: list[float]) -> H2Params:
 
 def fit_h2_clx(moments: list[float], fitting_params: FittingParams | None = None) -> H2Params:
     """
-    Method of fitting H2 distribution parameters to given initial moments.
+    Method of fitting H2 distribution parameters to given raw moments.
     Uses the method of moments and optimization to fit the parameters.
     Returns H2Params object with fitted parameters.
     """
@@ -136,7 +136,7 @@ def fit_h2_clx(moments: list[float], fitting_params: FittingParams | None = None
 
 def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -> Cox2Params:
     """
-    Calculates Cox-2 distribution parameters by three given initial moments [moments].
+    Calculates Cox-2 distribution parameters by three given raw moments [moments].
     """
 
     if not fitting_params:
@@ -183,7 +183,7 @@ def fit_cox(moments: list[float], fitting_params: FittingParams | None = None) -
 def fit_pareto_moments(moments: list[float]):
     """
     Calc parameters of the distribution.
-    :param moments: list of initial moments
+    :param moments: list of raw moments
     """
     d = moments[1] - moments[0] * moments[0]
     c = moments[0] * moments[0] / d
@@ -209,7 +209,7 @@ def fit_pareto_by_mean_and_cv(f1: float, cv: float):
 
 def fit_erlang(moments: list[float]) -> ErlangParams:
     """
-    Calculates parameters of the Erlang distribution by initial moments.
+    Calculates parameters of the Erlang distribution by raw moments.
     """
     r = int(math.floor(moments[0] * moments[0] / (moments[1] - moments[0] * moments[0]) + 0.5))
     mu = r / moments[0]
@@ -290,10 +290,10 @@ def fit_gamma(moments: list[float]) -> GammaParams:
 def fit_weibull(moments: list[float]) -> WeibullParams:
     """
     Parameter selection for the distribution based
-    on initial moments of the distribution
+    on raw moments of the distribution
 
     params:
-        moments: initial moments of the random variable
+        moments: raw moments of the random variable
 
     return:
             WeibullParams
@@ -319,9 +319,10 @@ def gamma_moments_by_mean_and_cv(mean: float, cv: float) -> list[float]:
     Calculate the first three moments of a gamma distribution
     given the mean and coefficient of variation.
     """
-    f = [0, 0, 0]
+    f = [0, 0, 0, 0]
     alpha = 1 / (cv**2)
     f[0] = mean
     f[1] = pow(f[0], 2) * (pow(cv, 2) + 1)
     f[2] = f[1] * f[0] * (1.0 + 2 / alpha)
+    f[3] = f[2] * f[0] * (1.0 + 3 / alpha)
     return f

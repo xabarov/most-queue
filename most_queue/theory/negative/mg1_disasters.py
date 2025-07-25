@@ -55,8 +55,8 @@ class MG1Disasters(BaseQueue):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
-        :param b: initial moments of service time distribution
+        Set the raw moments of service time distribution
+        :param b: raw moments of service time distribution
         """
         self.b = b
 
@@ -70,12 +70,12 @@ class MG1Disasters(BaseQueue):
             raise ValueError("Approximation must be 'h2' or 'gamma'.")
         self.is_servers_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation
         """
         start = time.process_time()
-        v = self.get_v()
+        v = self.get_v(num_of_moments)
         utilization = self.get_utilization()
 
         return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
@@ -87,7 +87,7 @@ class MG1Disasters(BaseQueue):
         # TODO naive impelemntation
         return self.l_pos * self.b[0]
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
         Calculate first three moments of sojourn time in the system.
         """
@@ -96,10 +96,12 @@ class MG1Disasters(BaseQueue):
         if not self.v is None:
             return self.v
 
-        v = [0, 0, 0]
-        for i in range(3):
+        v = [0] * num_of_moments
+        for i in range(num_of_moments):
             v[i] = derivative(self._v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        v = np.array([-v[0], v[1].real, -v[2]])
+            if i % 2 == 0:
+                v[i] = -v[i]
+        v = np.array(v)
 
         self.v = v
         return v

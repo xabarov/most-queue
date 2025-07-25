@@ -136,7 +136,7 @@ class Engset(BaseQueue):
 
     def get_w(self):
         """
-        Get waiting time initial moments through the diff Laplace-Stieltjes transform
+        Get waiting time raw moments through the diff Laplace-Stieltjes transform
         """
 
         if self.w:
@@ -157,7 +157,7 @@ class Engset(BaseQueue):
 
     def get_v(self):
         """
-        Get sojourn time initial moments trough convolution with service
+        Get sojourn time raw moments trough convolution with service
         and diff Laplace-Stieltjes transform of waiting time
         """
 

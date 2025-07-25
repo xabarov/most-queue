@@ -14,7 +14,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times, print_waiting_times, probs_print
+from most_queue.io.tables import print_sojourn_moments, print_waiting_moments, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.base import QsSim
@@ -48,7 +48,7 @@ def test_mgn_tt():
     Testing the Takahasi-Takami method for calculating an M/H2/n queue
     """
 
-    # calculate initial moments of service time based
+    # calculate raw moments of service time based
     # on the given average and coefficient of variation
 
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE  # average service time
@@ -93,8 +93,8 @@ def test_mgn_tt():
 
     probs_print(sim_results.p, calc_results.p, 10)
 
-    print_sojourn_times(sim_results.v, calc_results.v)
-    print_waiting_times(sim_results.w, calc_results.w)
+    print_sojourn_moments(sim_results.v, calc_results.v)
+    print_waiting_moments(sim_results.w, calc_results.w)
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
     assert np.allclose(sim_results.w, calc_results.w, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

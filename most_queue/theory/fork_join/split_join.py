@@ -34,7 +34,7 @@ class SplitJoinCalc(BaseQueue):
         :param n: number of servers
         :param calc_params: calculation parameters
         Notice:
-            calc_params.approx_distr for the initial moments of service time
+            calc_params.approx_distr for the raw moments of service time
             can be 'gamma', 'h2' or 'erlang', default is 'gamma'
         """
 
@@ -62,7 +62,7 @@ class SplitJoinCalc(BaseQueue):
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
         Set servers
-        :param b: list of initial moments of service time
+        :param b: list of raw moments of service time
         """
         self.b = b
 
@@ -81,9 +81,9 @@ class SplitJoinCalc(BaseQueue):
 
     def get_v(self) -> list[float]:
         """
-        Calculate sojourn time initial moments for Split-Join queueing systems
+        Calculate sojourn time raw moments for Split-Join queueing systems
 
-        :return: list[float] : initial moments of sojourn time distribution
+        :return: list[float] : raw moments of sojourn time distribution
         """
 
         # Calc Split-Join max of n channels service time distribution
@@ -96,7 +96,7 @@ class SplitJoinCalc(BaseQueue):
         self.b_max = max_distr.get_max_moments()
 
         # Further calculation as in a regular M/G/1 queueing system with
-        # initial moments of the distribution maximum of the random variable
+        # raw moments of the distribution maximum of the random variable
         mg1 = MG1Calculation()
         mg1.set_sources(self.l)
         mg1.set_servers(self.b_max)
@@ -105,11 +105,11 @@ class SplitJoinCalc(BaseQueue):
 
     def get_v_delta(self, b_delta: list[float] | float) -> list[float]:
         """
-        Calculate sojourn time initial moments for Split-Join queueing systems with delta
+        Calculate sojourn time raw moments for Split-Join queueing systems with delta
         :param b_delta:  If delta is a list, it should contain the moments of
         time delay caused by reception and restoration operations for each part.
         If delta is a float, delay is determistic and equal to delta.
-        :return: list[float] : initial moments of sojourn time distribution
+        :return: list[float] : raw moments of sojourn time distribution
         """
 
         max_distr = MaxDistribution(b=self.b, n=self.n, approximation=self.approximation)

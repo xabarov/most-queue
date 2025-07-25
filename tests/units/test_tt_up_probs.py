@@ -25,7 +25,7 @@ def testcalc_up_probs():
     Testing the Takahasi-Takami method calculation of up-probabilities
     """
 
-    # calculate initial moments of service time based
+    # calculate raw moments of service time based
     # on the given average and coefficient of variation
     b1 = NUM_OF_CHANNELS * UTILIZATION / ARRIVAL_RATE  # average service time
     b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)

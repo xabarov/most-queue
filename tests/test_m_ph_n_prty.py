@@ -76,7 +76,7 @@ def test_m_ph_n_prty():
 
     mu_low = 1.0 / b1_low
 
-    b_low = ExpDistribution.calc_theory_moments(mu_low, 3)
+    b_low = ExpDistribution.calc_theory_moments(mu_low, len(b_high))
 
     b = []
     b.append(b_high)

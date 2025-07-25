@@ -7,7 +7,7 @@ import time
 
 import numpy as np
 
-from most_queue.io.tables import print_waiting_times, probs_print
+from most_queue.io.tables import print_waiting_moments, probs_print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.vacations import VacationQueueingSystemSimulator
 from most_queue.theory.vacations.mgn_with_h2_delay_cold_warm import MGnH2ServingColdWarmDelay
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     SERVICE_TIME_MEAN = qp["channels"]["base"] * qp["utilization"]["base"] / qp["arrival_rate"]
 
-    # Calculate initial moments for service time, warm-up time,
+    # Calculate raw moments for service time, warm-up time,
     # cool-down time, and delay before cooling starts.
     b_service = calc_moments_by_mean_and_cv(SERVICE_TIME_MEAN, qp["service"]["cv"]["base"])
     b_warmup = calc_moments_by_mean_and_cv(qp["warmup"]["mean"]["base"], qp["warmup"]["cv"]["base"])
@@ -170,4 +170,4 @@ if __name__ == "__main__":
     )
 
     probs_print(p_sim=sim_results["p"], p_num=num_results["p"], size=10)
-    print_waiting_times(sim_moments=sim_results["w"], calc_moments=num_results["w"])
+    print_waiting_moments(sim_moments=sim_results["w"], calc_moments=num_results["w"])

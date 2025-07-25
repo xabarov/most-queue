@@ -67,9 +67,9 @@ class PriorityQueueSimulator:
             self.queue.append([])
 
         for _ in range(self.k):
-            self.busy.append([0, 0, 0])
-            self.w.append([0, 0, 0])
-            self.v.append([0, 0, 0])
+            self.busy.append([0, 0, 0, 0])
+            self.w.append([0, 0, 0, 0])
+            self.v.append([0, 0, 0, 0])
             self.p.append([0.0] * self.num_of_states)
 
         self.ttek = 0  # current time of simulation
@@ -597,7 +597,7 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
         :return: None
         """
-        for i in range(3):
+        for i in range(4):
             self.busy[k][i] = (
                 self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k])) + math.pow(new_a, i + 1) / self.busy_moments[k]
             )
@@ -608,7 +608,7 @@ class PriorityQueueSimulator:
         :param k: class number
         :param new_a: new arrival rate
         """
-        for i in range(3):
+        for i in range(4):
             self.v[k][i] = self.v[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
 
     def refresh_w_stat(self, k, new_a):
@@ -618,7 +618,7 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
 
         """
-        for i in range(3):
+        for i in range(4):
             self.w[k][i] = self.w[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
 
     def get_p(self) -> list[list[float]]:

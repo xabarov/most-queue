@@ -37,8 +37,8 @@ class MH2nH2Warm(MGnCalc):
         Use complex parameters, which allow to approximate the service time
         distribution with arbitrary coefficients of variation (>1, <=1).
         :param l: arrival intensity
-        :param b: initial moments of service time distribution
-        :param b_warm: initial moments of warming time distribution
+        :param b: raw moments of service time distribution
+        :param b_warm: raw moments of warming time distribution
         :param n: number of servers
         :param buffer: size of the buffer (optional)
         :param calc_params: parameters for the Takahashi-Takami method
@@ -140,10 +140,10 @@ class MH2nH2Warm(MGnCalc):
 
     def set_servers(self, b: list[float], b_warm: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution and warming time distribution
+        Set the raw moments of service time distribution and warming time distribution
 
-        :param b: initial moments of service time distribution
-        :param b_warm: initial moments of warming time distribution
+        :param b: raw moments of service time distribution
+        :param b_warm: raw moments of warming time distribution
         """
         self.b = b
         self.b_warm = b_warm
@@ -271,14 +271,14 @@ class MH2nH2Warm(MGnCalc):
 
         return results
 
-    def get_results(self) -> QueueResults:
+    def get_results(self, num_of_moments: int = 4) -> QueueResults:
         """
         Get all results
         """
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(num_of_moments)
+        self.v = self.get_v(num_of_moments)
 
         utilization = self.get_utilization()
 
@@ -293,12 +293,12 @@ class MH2nH2Warm(MGnCalc):
 
         return self.p
 
-    def get_w(self, _derivate=False):
+    def get_w(self, _derivate=False, num_of_moments: int = 4):
         """
         Get the first three moments of the waiting time distribution.
         """
 
-        w = [0.0] * 3
+        w = [0.0] * 4
 
         if self.is_only_first:
 
@@ -308,23 +308,28 @@ class MH2nH2Warm(MGnCalc):
                 w[1] += j * (j - 1) * self.p[self.n + j]
             for j in range(3, len(self.p) - self.n):
                 w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
+            for j in range(4, len(self.p) - self.n):
+                w[3] += j * (j - 1) * (j - 2) * (j - 3) * self.p[self.n + j]
 
-            for j in range(3):
+            for j in range(4):
                 w[j] /= math.pow(self.l, j + 1)
                 w[j] = w[j].real
 
             return w
 
-        for i in range(3):
+        for i in range(4):
             w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        return [-w[0], w[1].real, -w[2]]
+            if i % 2 == 0:
+                w[i] = -w[i]
+        return w[:num_of_moments]
 
-    def get_v(self):
+    def get_v(self, num_of_moments: int = 4):
         """
-        Get the first three initial moments of sojourn time in the queue.
+        Get the first three raw moments of sojourn time in the queue.
         """
         w = self.get_w()
-        v = conv_moments(self.b, w)
+        num_of_moments = min(num_of_moments, len(self.b))
+        v = conv_moments(self.b, w, num_of_moments)
 
         return v
 

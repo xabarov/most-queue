@@ -1,5 +1,5 @@
 """
-Approximation of the initial moments of waiting and sojourn times
+Approximation of the raw moments of waiting and sojourn times
 for a multi-channel queue with priorities
 and general service times.
 The approximation is based on method of invariant moments for M/G/n queues.
@@ -20,7 +20,7 @@ from most_queue.theory.utils.conv import conv_moments
 
 class MGnInvarApproximation(BaseQueue):
     """
-    Approximation of the initial moments of waiting and sojourn times
+    Approximation of the raw moments of waiting and sojourn times
     for a multi-channel queue with priorities and general service times.
       The approximation is based on method of invariant moments for M/G/n queues.
     """
@@ -50,8 +50,8 @@ class MGnInvarApproximation(BaseQueue):
 
     def set_servers(self, b: list[list[float]]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution for each class.
-        :param b: list of lists where each sublist contains initial moments of service time.
+        Set the raw moments of service time distribution for each class.
+        :param b: list of lists where each sublist contains raw moments of service time.
         """
         self.b = b
         self.is_servers_set = True
@@ -80,7 +80,7 @@ class MGnInvarApproximation(BaseQueue):
 
     def get_w(self) -> list[list[float]]:
         """
-        Approximation of the initial moments of waiting time
+        Approximation of the raw moments of waiting time
         for a multi-channel queue with priorities
         based on the invariant relation M*|G*|n = M*|G*|1 * (M|G|n / M|G|1)
         """
@@ -166,7 +166,7 @@ class MGnInvarApproximation(BaseQueue):
 
     def get_v(self) -> list[list[float]]:
         """
-        Approximation of the initial moments of sojourn time
+        Approximation of the raw moments of sojourn time
         for a multi-channel queue with priorities
         based on the invariant relation M*|G*|n = M*|G*|1 * (M|G|n / M|G|1)
         """

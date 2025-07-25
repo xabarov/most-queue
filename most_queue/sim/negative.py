@@ -50,10 +50,10 @@ class QsSimNegatives(QsSim):
 
         self.type_of_negatives = type_of_negatives
 
-        # initial moments of sojourn time of successfully served
-        self.v_served = [0, 0, 0]
-        # initial moments of sojourn time of broken by negative jobs
-        self.v_broken = [0, 0, 0]
+        # raw moments of sojourn time of successfully served
+        self.v_served = [0, 0, 0, 0]
+        # raw moments of sojourn time of broken by negative jobs
+        self.v_broken = [0, 0, 0, 0]
 
         self.served = 0  # number of job serviced by the system without negative job breaks
         self.broken = 0  # number of job broken by negatives
@@ -317,13 +317,13 @@ class QsSimNegatives(QsSim):
 
     def get_v_served(self):
         """
-        Returns initial moments of sojourn time (only for successfully served jobs)
+        Returns raw moments of sojourn time (only for successfully served jobs)
         """
         return self.v_served
 
     def get_v_broken(self):
         """
-        Returns initial moments of sojourn time  (only for broken by negative arrivals)
+        Returns raw moments of sojourn time  (only for broken by negative arrivals)
         """
         return self.v_broken
 

@@ -53,8 +53,8 @@ class MGnNegativeRCSCalc(MGnCalc):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
-        :param b: initial moments of service time distribution
+        Set the raw moments of service time distribution
+        :param b: raw moments of service time distribution
         """
         self.b = b
 
@@ -143,16 +143,16 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         return results
 
-    def collect_results(self) -> NegativeArrivalsResults:
+    def collect_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
         """
         Get all results
         """
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
-        v_served = self.get_v_served()
-        v_broken = self.get_v_broken()
+        self.w = self.get_w(num_of_moments)
+        self.v = self.get_v(num_of_moments)
+        v_served = self.get_v_served(num_of_moments)
+        v_broken = self.get_v_broken(num_of_moments)
 
         utilization = self.get_utilization()
 
@@ -173,11 +173,11 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         return 1.0 - (self.l_neg / self.l) * (1.0 - self.p[0].real)
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the sojourn time moments
         """
-        w = self.get_w()
+        w = self.get_w(num_of_moments)
 
         # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg,
         # mu2=mu2+l_neg)
@@ -185,53 +185,53 @@ class MGnNegativeRCSCalc(MGnCalc):
         params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
 
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0])
+        b_cum = np.array([0.0] * num_of_moments)
         for i in range(1, self.n + 1):
             l_neg = self.l_neg / i
 
             b = H2Distribution.calc_theory_moments(
-                H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2)
+                H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2), num=num_of_moments
             )
             b_cum += service_probs[i - 1].real * np.array([mom.real for mom in b])
 
-        return [mom.real for mom in conv_moments(w, b_cum)]
+        return [mom.real for mom in conv_moments(w, b_cum, num=num_of_moments)]
 
-    def get_v_served(self) -> list[float]:
+    def get_v_served(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the sojourn time moments
         """
-        w = self.get_w()
+        w = self.get_w(num_of_moments)
 
         # serving = P(H2 | H2 < exp(l_neg))
 
         service_probs = self._calc_service_probs()
-        b_served = np.array([0.0, 0.0, 0.0])
+        b_served = np.array([0.0] * num_of_moments)
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n + 1):
             l_neg = self.l_neg / i
 
-            b = moments_h2_less_than_exp(l_neg, h2_params)
+            b = moments_h2_less_than_exp(l_neg, h2_params)[:num_of_moments]
             b_served += service_probs[i - 1].real * b
 
-        return [mom.real for mom in conv_moments(w, b_served)]
+        return [mom.real for mom in conv_moments(w, b_served, num=num_of_moments)]
 
-    def get_v_broken(self) -> list[float]:
+    def get_v_broken(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the sojourn time moments
         """
-        w = self.get_w()
+        w = self.get_w(num_of_moments)
 
         # serving = P(exp(l_neg) | exp(l_neg) < H2)
 
         service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0])
+        b_cum = np.array([0.0] * num_of_moments)
         h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
         for i in range(1, self.n + 1):
             l_neg = self.l_neg / i
-            b = moments_exp_less_than_h2(l_neg, h2_params)
+            b = moments_exp_less_than_h2(l_neg, h2_params)[:num_of_moments]
             b_cum += service_probs[i - 1].real * b
 
-        return [mom.real for mom in conv_moments(w, b_cum)]
+        return [mom.real for mom in conv_moments(w, b_cum, num_of_moments)]
 
     def _calc_service_probs(self) -> list[float]:
         """

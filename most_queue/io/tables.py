@@ -6,18 +6,20 @@ import math
 
 from colorama import Fore, Style, init
 
+from most_queue.theory.utils.moments import convert_raw_to_central
+
 init()
 
 
-def print_moments(
-    sim_moments: list[float] | list[complex] | float | complex,
-    calc_moments: list[float] | list[complex] | float | complex,
+def print_raw_moments(
+    sim_moments: list[float] | float,
+    calc_moments: list[float] | float,
     header=None,
     sim_header="Sim",
     calc_header="Num",
-):  # pylint: disable=too-many-positional-arguments, too-many-arguments
+):
     """
-    Prints the initial moments of waiting or sojourn time in the system.
+    Prints the moments of waiting or sojourn time in the system.
      Args:
         sim_moments (list): List of simulated moments.
         calc_moments (list): List of calculated moments.
@@ -63,14 +65,73 @@ def print_moments(
     print(Style.RESET_ALL)
 
 
-def print_waiting_times(
-    sim_moments: list[float] | list[complex] | float | complex,
-    calc_moments: list[float] | list[complex] | float | complex,
+def print_central_moments(
+    sim_moments: list[float] | float,
+    calc_moments: list[float] | float,
+    header=None,
     sim_header="Sim",
     calc_header="Num",
-):  # pylint: disable=too-many-positional-arguments, too-many-arguments
+):
     """
-    Prints the initial moments of waiting or sojourn time in the system.
+    Prints the moments of waiting or sojourn time in the system.
+     Args:
+        sim_moments (list): List of simulated moments.
+        calc_moments (list): List of calculated moments.
+        header (str): Header for the table.
+        sim_header (str): Header for simulated moments.
+        calc_header (str): Header for calculated moments.
+    """
+
+    if not header is None:
+        print(Fore.CYAN + f"\n{header:^45}")
+        print("-" * 45)
+
+    num_col = "Moment"
+    central_moments_names = ["Mean", "Variance", "Skewness", "Kurtosis"]
+
+    print(f"{num_col:^15s}|{calc_header:^15s}|{sim_header:^15s}")
+    print("-" * 45)
+    if isinstance(sim_moments, list):
+        for j in range(min(len(sim_moments), len(calc_moments))):
+            calc_mom = calc_moments[j].real if isinstance(calc_moments[j], complex) else calc_moments[j]
+            sim_mom = sim_moments[j].real if isinstance(sim_moments[j], complex) else sim_moments[j]
+            name = central_moments_names[j]
+            print(
+                Fore.CYAN
+                + f"{name:^15s}|"
+                + Fore.YELLOW
+                + f"{calc_mom:^15.5g}"
+                + Fore.CYAN
+                + "|"
+                + Fore.YELLOW
+                + f"{sim_mom:^15.5g}"
+            )
+    else:
+        calc_mom = calc_moments.real if isinstance(calc_moments, complex) else calc_moments
+        sim_mom = sim_moments.real if isinstance(sim_moments, complex) else sim_moments
+        name = central_moments_names[0]
+        print(
+            Fore.CYAN
+            + f"{name:^15s}|"
+            + Fore.YELLOW
+            + f"{calc_mom:^15.5g}"
+            + Fore.CYAN
+            + "|"
+            + Fore.YELLOW
+            + f"{sim_mom:^15.5g}"
+        )
+    print(Style.RESET_ALL)
+
+
+def print_waiting_moments(
+    sim_moments: list[float] | float,
+    calc_moments: list[float] | float,
+    sim_header="Sim",
+    calc_header="Num",
+    convert_to_central=True,
+):
+    """
+    Prints the moments of waiting or sojourn time in the system.
      Args:
         sim_moments (list): List of simulated moments.
         calc_moments (list): List of calculated moments.
@@ -78,19 +139,28 @@ def print_waiting_times(
         calc_header (str): Header for calculated moments
     """
 
-    header = "Initial moments of waiting time in the system"
+    header = "Moments of waiting time in the system"
 
-    print_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
+    if convert_to_central:
+        calc_moments_central = convert_raw_to_central(calc_moments)
+        sim_moments_central = convert_raw_to_central(sim_moments)
+
+        print_central_moments(
+            sim_moments_central, calc_moments_central, sim_header=sim_header, calc_header=calc_header, header=header
+        )
+    else:
+        print_raw_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
 
 
-def print_sojourn_times(
-    sim_moments: list[float] | list[complex] | float | complex,
-    calc_moments: list[float] | list[complex] | float | complex,
+def print_sojourn_moments(
+    sim_moments: list[float] | float,
+    calc_moments: list[float] | float,
     sim_header="Sim",
     calc_header="Num",
-):  # pylint: disable=too-many-positional-arguments, too-many-arguments
+    convert_to_central=True,
+):
     """
-    Prints the initial moments of waiting or sojourn time in the system.
+    Prints the moments of waiting or sojourn time in the system.
      Args:
         sim_moments (list): List of simulated moments.
         calc_moments (list): List of calculated moments.
@@ -98,20 +168,28 @@ def print_sojourn_times(
         calc_header (str): Header for calculated moments
     """
 
-    header = "Initial moments of sojourn time in the system"
+    header = "Moments of sojourn time in the system"
 
-    print_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
+    if convert_to_central:
+        calc_moments_central = convert_raw_to_central(calc_moments)
+        sim_moments_central = convert_raw_to_central(sim_moments)
+
+        print_central_moments(
+            sim_moments_central, calc_moments_central, sim_header=sim_header, calc_header=calc_header, header=header
+        )
+    else:
+        print_raw_moments(sim_moments, calc_moments, sim_header=sim_header, calc_header=calc_header, header=header)
 
 
 def print_with_two_numerical(
-    sim_moments: list[float] | list[complex] | float | complex,
-    calc_moments1: list[float] | list[complex] | float | complex,
-    calc_moments2: list[float] | list[complex] | float | complex,
+    sim_moments: list[float] | float,
+    calc_moments1: list[float] | float,
+    calc_moments2: list[float] | float,
     num1_header="Num1",
     num2_header="Num2",
 ):
     """
-    Prints the initial moments.
+    Prints the moments.
      Args:
         sim_moments (list): List of simulated moments.
         calc_moments1 (list): List of calculated moments for the first approximation.
@@ -164,7 +242,7 @@ def print_with_two_numerical(
     print(Style.RESET_ALL)
 
 
-def print_waiting_times_with_two_numerical(
+def print_waiting_moments_with_two_numerical(
     sim_moments,
     calc_moments1,
     calc_moments2,
@@ -172,7 +250,7 @@ def print_waiting_times_with_two_numerical(
     num2_header="Num2",
 ):
     """
-    Prints the initial moments of waiting in the system.
+    Prints the moments of waiting in the system.
      Args:
         sim_moments (list): List of simulated moments.
         calc_moments1 (list): List of calculated moments for the first approximation.
@@ -182,7 +260,7 @@ def print_waiting_times_with_two_numerical(
 
     """
 
-    header = "Initial moments of waiting time in the system"
+    header = "Moments of waiting time in the system"
 
     print(Fore.CYAN + f"\n{header:^45}")
     print("-" * 60)
@@ -195,7 +273,7 @@ def print_waiting_times_with_two_numerical(
     )
 
 
-def print_sojourn_times_with_two_numerical(
+def print_sojourn_moments_with_two_numerical(
     sim_moments,
     calc_moments1,
     calc_moments2,
@@ -203,7 +281,7 @@ def print_sojourn_times_with_two_numerical(
     num2_header="Num2",
 ):
     """
-    Prints the initial moments of sojourn time in the system.
+    Prints the  nts of sojourn time in the system.
      Args:
          sim_moments (list): List of simulated moments.
          calc_moments1 (list): List of calculated moments for the first approximation.
@@ -213,7 +291,7 @@ def print_sojourn_times_with_two_numerical(
 
     """
 
-    header = "Initial moments of sojourn time in the system"
+    header = "Moments of sojourn time in the system"
 
     print(Fore.CYAN + f"\n{header:^45}")
     print("-" * 60)
@@ -226,16 +304,25 @@ def print_sojourn_times_with_two_numerical(
     )
 
 
-def print_moments_with_classes(sim_moments, calc_moments):
+def print_raw_moments_multiclass(sim_moments, calc_moments, convert_to_central=True):
     """
     Print moments with classes
      :param sim_moments: Simulated moments
      :param calc_moments: Calculated moments
     """
-    k_num = len(sim_moments)
-    size = len(sim_moments[0])
 
-    blank_col, header_col, cls_col = "", "Number of moment", "Cls"
+    if convert_to_central:
+        sim_moments = [convert_raw_to_central(mom) for mom in sim_moments]
+        calc_moments = [convert_raw_to_central(mom) for mom in calc_moments]
+        blank_col, header_col, cls_col = "", "Moment", "Cls"
+    else:
+        blank_col, header_col, cls_col = "", "Number of moment", "Cls"
+
+    central_moments_names = ["Mean", "Variance", "Skewness", "Kurtosis"]
+
+    k_num = len(sim_moments)
+    size = min(len(sim_moments[0]), len(calc_moments[0]))
+
     num_col, sim_col = "Num", "Sim"
 
     print("-" * 60)
@@ -245,7 +332,10 @@ def print_moments_with_classes(sim_moments, calc_moments):
 
     print(" " * 11 + "|", end="")
     for j in range(size):
-        s = str(j + 1)
+        if convert_to_central:
+            s = central_moments_names[j]
+        else:
+            s = str(j + 1)
         print(f"{s:^15}|", end="")
     print("")
     print("-" * 60)
@@ -270,30 +360,30 @@ def print_moments_with_classes(sim_moments, calc_moments):
     print(Style.RESET_ALL)
 
 
-def print_waiting_with_classes(sim_moments, calc_moments):
+def print_waiting_multiclass(sim_moments, calc_moments, convert_to_central=True):
     """
     Print waiting moments with classes
      :param sim_moments: Simulated moments
      :param calc_moments: Calculated moments
     """
-    header = "Initial moments of waiting time in the system"
+    header = "Moments of waiting time in the system"
 
     print(Fore.CYAN + f"{header:^60s}")
 
-    print_moments_with_classes(sim_moments, calc_moments)
+    print_raw_moments_multiclass(sim_moments, calc_moments, convert_to_central)
 
 
-def print_sojourn_with_classes(sim_moments, calc_moments):
+def print_sojourn_multiclass(sim_moments, calc_moments, convert_to_central=True):
     """
     Print sojourn moments with classes
      :param sim_moments: Simulated moments
      :param calc_moments: Calculated moments
     """
-    header = "Initial moments of sojourn time in the system"
+    header = "Moments of sojourn time in the system"
 
     print(Fore.CYAN + f"{header:^60s}")
 
-    print_moments_with_classes(sim_moments, calc_moments)
+    print_raw_moments_multiclass(sim_moments, calc_moments, convert_to_central)
 
 
 def probs_print(p_sim, p_num, size=10):

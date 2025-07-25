@@ -136,7 +136,7 @@ class BatchMM1(BaseQueue):
 
     def _calc_moments_of_job_in_batch(self):
         """
-        Initial moments of the number of jobs in the batch
+        raw moments of the number of jobs in the batch
         """
         moments = [0.0] * len(self.ls)
         for i, prob in enumerate(self.ls):

@@ -22,10 +22,10 @@ class MG1WarmCalc(BaseQueue):
     def __init__(self, calc_params: CalcParams | None = None):
         """
         Initialize the MG1WarmCalc class with arrival rate l,
-        service time initial moments b, and warm-up service time moments b_warm.
+        service time raw moments b, and warm-up service time moments b_warm.
         Parameters:
         l (float): Arrival rate.
-        b (list[float]): Initial moments of service time distribution.
+        b (list[float]): raw moments of service time distribution.
         b_warm (list[float]): Warm-up moments of service time distribution.
         """
 
@@ -50,10 +50,10 @@ class MG1WarmCalc(BaseQueue):
 
     def set_servers(self, b: list[float], b_warm: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution and warming time distribution
+        Set the raw moments of service time distribution and warming time distribution
 
-        :param b: initial moments of service time distribution
-        :param b_warm: initial moments of warming time distribution
+        :param b: raw moments of service time distribution
+        :param b_warm: raw moments of warming time distribution
         """
         self.b = b
         self.b_warm = b_warm
@@ -71,20 +71,20 @@ class MG1WarmCalc(BaseQueue):
 
         self.is_servers_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculations
         """
 
         start = time.process_time()
 
-        v = self.get_v()
+        v = self.get_v(num_of_moments)
 
         utilization = self.l * self.b[0]
 
         return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
         Calculate sourjourn moments for M/G/1 queue with warm-up.
         """
@@ -96,11 +96,13 @@ class MG1WarmCalc(BaseQueue):
         self.p0_star = 1 / (1 + self.l * tv)
 
         self._check_if_servers_and_sources_set()
-        v = [0, 0, 0]
+        v = [0] * num_of_moments
 
-        for i in range(3):
+        for i in range(num_of_moments):
             v[i] = derivative(self._calc_v_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-        self.v = np.array([-v[0], v[1].real, -v[2]])
+            if i % 2 == 0:
+                v[i] = -v[i]
+        self.v = np.array(v)
 
         return self.v
 

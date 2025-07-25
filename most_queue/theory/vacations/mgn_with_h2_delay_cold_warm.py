@@ -127,13 +127,13 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         b_cold_delay: list[float],
     ):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time
+        Set the raw moments of service time
         warming time, cooling and cooling-delay distributions
 
-        :param b: initial moments of service time distribution
-        :param b_warm: initial moments of warming time distribution
-        :param b_cold: initial moments of cooling time distribution
-        :param b_cold_delay: initial moments of cooling-delay distribution
+        :param b: raw moments of service time distribution
+        :param b_warm: raw moments of warming time distribution
+        :param b_cold: raw moments of cooling time distribution
+        :param b_cold_delay: raw moments of cooling-delay distribution
         """
         self.b = b
         self.b_warm = b_warm
@@ -301,14 +301,14 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
 
         return results
 
-    def get_results(self) -> VacationResults:
+    def get_results(self, num_of_moments: int = 4) -> VacationResults:
         """
         Get all results
         """
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(num_of_moments=num_of_moments)
+        self.v = self.get_v(num_of_moments)
 
         utilization = self.get_utilization()
 
@@ -359,13 +359,13 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         """
         return self.Y[0][0, 0]
 
-    def get_w(self, _derivate=False):
+    def get_w(self, _derivate=False, num_of_moments: int = 4):
         """
         Get first three moments of waiting time in the queue.
         """
-        w = [0.0] * 3
+        w = [0.0] * num_of_moments
 
-        for i in range(3):
+        for i in range(num_of_moments):
             if self.stable_w_pls:
                 max_mu = np.max(
                     list(
@@ -381,9 +381,11 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
             else:
                 dx = self.w_pls_dt
             w[i] = derivative(self._calc_w_pls, 0, dx=dx, n=i + 1, order=9)
+            if i % 2 == 0:
+                w[i] = -w[i]
 
         w = [w_moment.real if isinstance(w_moment, complex) else w_moment for w_moment in w]
-        return [-w[0].real, w[1].real, -w[2].real]
+        return w
 
     def _get_key_numbers(self, level):
         key_numbers = []
@@ -532,7 +534,7 @@ class MGnH2ServingColdWarmDelay(MGnCalc):
         """
         Initialize probabilities of microstates
         """
-        # set initial probabilities of microstates to be uniform
+        # set raw probabilities of microstates to be uniform
         for i in range(self.N):
             self.t[i][0] = [1.0 / self.cols[i]] * self.cols[i]
 

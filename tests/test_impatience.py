@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times, probs_print
+from most_queue.io.tables import print_sojourn_moments, probs_print
 from most_queue.sim.impatient import ImpatientQueueSim
 from most_queue.theory.impatience.mm1 import MM1Impatience
 
@@ -57,7 +57,7 @@ def test_impatience():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    print_sojourn_times(sim_results.v[0], calc_results.v[0])
+    print_sojourn_moments(sim_results.v[0], calc_results.v[0])
     probs_print(sim_results.p, calc_results.p)
 
     assert abs(calc_results.v[0] - sim_results.v[0]) < 0.02

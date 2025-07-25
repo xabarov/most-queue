@@ -23,7 +23,7 @@ class MaxDistribution:
     def __init__(self, b: list[float], n: int, approximation: str = "gamma"):
         """
         Initialize the MaxDistribution class.
-        :param b: List of initial moments of the distributions.
+        :param b: List of raw moments of the distributions.
         :param n: Number of distributions.
         :param approximation: approximation of the distribution. Must be 'gamma', 'erlang' or 'h2'
         """
@@ -61,8 +61,8 @@ class MaxDistribution:
         The maximum utilization is set to 0.8 by default.
         :param n: number of channels
         :param b: service rate in a channel
-        :param num: number of output initial moments of the maximum SV,
-        by default one less than the number of initial moments of b
+        :param num: number of output raw moments of the maximum SV,
+        by default one less than the number of raw moments of b
         :return: maximum value of lambda for a given number of channels and service rate.
         """
 
@@ -76,11 +76,11 @@ class MaxDistribution:
 
     def get_max_moments_delta(self, delta=0):
         """
-        Calculation of the initial moments of the maximum of a random variable with delay delta.
+        Calculation of the raw moments of the maximum of a random variable with delay delta.
         :param n: number of identically distributed random variables
-        :param b: initial moments of the random variable
-        :param num: number of initial moments of the random variable
-        :return: initial moments of the maximum of the random variable.
+        :param b: raw moments of the random variable
+        :param num: number of raw moments of the random variable
+        :return: raw moments of the maximum of the random variable.
         """
         b = self.b
 

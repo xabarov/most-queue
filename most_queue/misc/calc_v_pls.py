@@ -29,7 +29,7 @@ class MGnNegativeRCSCalc(MGnCalc):
     ):
         """
         n: number of servers
-        b: initial moments of service time distribution
+        b: raw moments of service time distribution
         buffer: size of the buffer (optional)
         N: number of levels in the system (default is 150)
         accuracy: accuracy parameter for stopping the iteration
@@ -55,8 +55,8 @@ class MGnNegativeRCSCalc(MGnCalc):
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
-        :param b: initial moments of service time distribution
+        Set the raw moments of service time distribution
+        :param b: raw moments of service time distribution
         """
         self.b = b
         self.is_servers_set = True

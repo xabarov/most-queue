@@ -8,7 +8,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_with_classes
+from most_queue.io.tables import print_sojourn_multiclass
 from most_queue.random.distributions import H2Distribution
 from most_queue.sim.networks.priority_network import PriorityNetwork
 from most_queue.theory.networks.open_network_prty import OpenNetworkCalcPriorities
@@ -110,7 +110,7 @@ def test_network():
     #  Run simulation of priority network:
     sim_results = qn.run(NUM_OF_JOBS)
 
-    #  Get initial moments of soujorney time from calculation:
+    #  Get raw moments of soujorney time from calculation:
     net_calc = OpenNetworkCalcPriorities()
     net_calc.set_sources(R=big_r, L=ARRIVAL_RATES)
     net_calc.set_nodes(n=NUM_OF_CHANNELS, b=b, prty=prty, nodes_prty=nodes_prty)
@@ -126,7 +126,7 @@ def test_network():
 
     print("-" * 60)
     print("Relative Priority ('NP')")
-    print_sojourn_with_classes(sim_results.v, calc_results.v)
+    print_sojourn_multiclass(sim_results.v, calc_results.v)
 
     assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
     assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG
@@ -146,7 +146,7 @@ def test_network():
 
     print("-" * 60)
     print("Absolute Priority ('PR')")
-    print_sojourn_with_classes(sim_results.v, calc_results.v)
+    print_sojourn_multiclass(sim_results.v, calc_results.v)
 
     assert abs(sim_results.v[0][0] - calc_results.v[0][0] < 2.0), ERROR_MSG
     assert abs(sim_results.v[1][0] - calc_results.v[1][0] < 2.0), ERROR_MSG

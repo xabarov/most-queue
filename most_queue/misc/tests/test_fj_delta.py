@@ -7,7 +7,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times
+from most_queue.io.tables import print_sojourn_moments
 from most_queue.random.distributions import GammaDistribution
 from most_queue.sim.fork_join_delta import ForkJoinSimDelta
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
@@ -72,7 +72,7 @@ def test_fj_delta():
     print(f"Coefficient of variation of delay: {SERVICE_TIME_CV:.3f}")
     print(f"Utilization coefficient: {utilization:.3f}")
 
-    print_sojourn_times(v_sim, v_num)
+    print_sojourn_moments(v_sim, v_num)
 
     assert len(v_sim) == len(v_num)
     assert np.allclose(np.array(v_sim), np.array(v_num), rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG

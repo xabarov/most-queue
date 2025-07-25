@@ -11,7 +11,7 @@ import os
 import numpy as np
 import yaml
 
-from most_queue.io.tables import print_sojourn_times
+from most_queue.io.tables import print_sojourn_moments
 from most_queue.sim.batch import QueueingSystemBatchSim
 from most_queue.theory.batch.mm1 import BatchMM1
 
@@ -73,7 +73,7 @@ def test_batch_mm1():
     print(f"Simulation duration: {sim_results.duration:.5f} sec")
     print(f"Calculation duration: {calc_results.duration:.5f} sec")
 
-    print_sojourn_times(sim_results.v[0], calc_results.v[0])
+    print_sojourn_moments(sim_results.v[0], calc_results.v[0])
 
     assert np.allclose(sim_results.v[0], calc_results.v[0], atol=MOMENTS_ATOL, rtol=MOMENTS_RTOL), ERROR_MSG
 

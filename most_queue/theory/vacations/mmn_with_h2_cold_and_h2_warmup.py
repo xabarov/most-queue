@@ -15,6 +15,7 @@ from scipy.misc import derivative
 from most_queue.random.distributions import H2Distribution
 from most_queue.structs import VacationResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -121,12 +122,12 @@ class MMnHyperExpWarmAndCold(MGnCalc):
         b_cold: list[float],
     ):  # pylint: disable=arguments-differ
         """
-        Set the service rate and initial moments of distributions for vacation states:
+        Set the service rate and raw moments of distributions for vacation states:
         warming time, cooling
 
         :param mu: service rate of Exp distribution
-        :param b_warm: initial moments of warming time distribution
-        :param b_cold: initial moments of cooling time distribution
+        :param b_warm: raw moments of warming time distribution
+        :param b_cold: raw moments of cooling time distribution
         """
         self.mu = mu
         self.b_warm = b_warm
@@ -283,13 +284,13 @@ class MMnHyperExpWarmAndCold(MGnCalc):
         """
         return [prob.real for prob in self.p]
 
-    def get_w(self, _derivate=False):
+    def get_w(self, _derivate=False, num_of_moments: int = 4):
         """
-        Returns waiting time initial moments
+        Returns waiting time raw moments
         """
-        w = [0.0] * 3
+        w = [0.0] * num_of_moments
 
-        for i in range(3):
+        for i in range(num_of_moments):
             min_mu = min(
                 chain(
                     np.array([mu.real for mu in self.mu_w]).astype("float"),
@@ -298,24 +299,24 @@ class MMnHyperExpWarmAndCold(MGnCalc):
                 )
             )
             w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / min_mu, n=i + 1, order=9)
-        return [-w[0], w[1], -w[2]]
+            if i % 2 == 0:
+                w[i] = -w[i]
+        return w
 
     def get_b(self):
         """
-        Returns service time initial moments
+        Returns service time raw moments
         """
-        return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3)]
+        return [1.0 / self.mu, 2.0 / pow(self.mu, 2), 6.0 / pow(self.mu, 3), 24.0 / pow(self.mu, 4)]
 
-    def get_v(self):
+    def get_v(self, num_of_moments: int = 4):
         """
-        Return initial moments of time spent in the system
+        Return raw moments of time spent in the system
         """
-        v = [0.0] * 3
-        w = self.get_w()
-        b = self.get_b()
-        v[0] = w[0] + b[0]
-        v[1] = w[1] + 2 * w[0] * b[0] + b[1]
-        v[2] = w[2] + 3 * w[1] * b[0] + 3 * w[0] * b[1] + b[2]
+        w = self.get_w(num_of_moments)
+        b = self.get_b()[:num_of_moments]  # return 4 moments
+
+        v = conv_moments(w, b, num=num_of_moments)
 
         return v
 

@@ -69,7 +69,7 @@ class MMnPR2ClsBusyApprox(MGnCalc):
 
     def set_servers(self, mu_low: float, mu_high: float):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
+        Set the raw moments of service time distribution
         :param mu_low: intensity of service for low-priority requests,
         :param mu_high: intensity of service for high priority requests,
         """
@@ -188,14 +188,14 @@ class MMnPR2ClsBusyApprox(MGnCalc):
         Calculate waiting time moments
         """
         # TODO
-        return [self.high_results.w, [0, 0, 0], [0, 0, 0]]
+        return [self.high_results.w, [0, 0, 0, 0], [0, 0, 0, 0]]
 
     def get_v(self) -> list[float]:
         """
         Calculate sojourn time moments
         """
         v1_low = self.get_low_class_v1()
-        return [self.high_results.v, [v1_low, 0, 0]]
+        return [self.high_results.v, [v1_low, 0, 0, 0]]
 
     def get_utilization(self):
 

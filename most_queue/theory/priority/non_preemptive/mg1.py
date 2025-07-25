@@ -35,8 +35,8 @@ class MG1NonPreemtiveCalculation(BaseQueue):
 
     def set_servers(self, b: list[list[float]]):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution for each class
-        param b: initial moments of service time distribution for each class
+        Set the raw moments of service time distribution for each class
+        param b: raw moments of service time distribution for each class
         """
         self.b = b
         self.is_servers_set = True
@@ -91,9 +91,9 @@ class MG1NonPreemtiveCalculation(BaseQueue):
 
     def get_v(self, num=3) -> list[list[float]]:
         """
-        Calculation of initial moments of sojourn time in M/G/1 with non-preemptive priority.
+        Calculation of raw moments of sojourn time in M/G/1 with non-preemptive priority.
         :param num: number of moments to calculate
-        :return: list of initial moments of sojourn time for each class
+        :return: list of raw moments of sojourn time for each class
         """
 
         if not self.v is None:
@@ -110,8 +110,8 @@ class MG1NonPreemtiveCalculation(BaseQueue):
 
     def get_w(self) -> list[list[float]]:
         """
-        Calculation of initial moments of waiting time in M/G/1 with non-preemptive priority.
-        :return: list of initial moments of waiting time for each class
+        Calculation of raw moments of waiting time in M/G/1 with non-preemptive priority.
+        :return: list of raw moments of waiting time for each class
         """
         # a - lower pr
         # j - the same

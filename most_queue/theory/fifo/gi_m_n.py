@@ -6,6 +6,7 @@ import math
 import time
 
 import numpy as np
+from scipy.misc import derivative
 
 from most_queue.random.distributions import GammaDistribution, ParetoDistribution
 from most_queue.structs import QueueResults
@@ -49,12 +50,12 @@ class GiMn(BaseQueue):
     def set_sources(self, a: list[float]):  # pylint: disable=arguments-differ
         """
         Setting the sources of GI/M/1 queueing system.
-        params: a - list of initial moments of arrival distribution.
+        params: a - list of raw moments of arrival distribution.
         """
         self.a = a
         self.is_sources_set = True
 
-    def run(self) -> QueueResults:
+    def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation for the GI/M/1 queueing system.
         """
@@ -64,24 +65,24 @@ class GiMn(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(num_of_moments)
+        self.v = self.get_v(num_of_moments)
         utilization = 1.0 / (self.a[0] * self.mu * self.n)
 
         return QueueResults(
             v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization, duration=time.process_time() - start
         )
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num: int = 4) -> list[float]:
         """
-        Calculate sojourn time first 3 initial moments
+        Calculate sojourn time first 3 raw moments
         """
 
         if self.v:
             return self.v
 
         if self.w is None:
-            self.w = self.get_w()
+            self.w = self.get_w(num)
 
         b = [
             1 / self.mu,
@@ -89,12 +90,12 @@ class GiMn(BaseQueue):
             6 / pow(self.mu, 3),
             24 / pow(self.mu, 4),
         ]
-        self.v = conv_moments(self.w, b, len(self.w))
+        self.v = conv_moments(self.w, b, num)
         return self.v
 
-    def get_w(self) -> list[float]:
+    def get_w(self, num: int = 4) -> list[float]:
         """
-        Calculate wainig time first 3 initial moments
+        Calculate wainig time first 3 raw moments
         """
 
         if self.w:
@@ -103,16 +104,12 @@ class GiMn(BaseQueue):
         self.w_param = self.w_param or self._get_w_param()
         self.pi = self.get_pi() or self.pi
 
-        pn = self.pi[self.n]
-        pls = []
-        h = 0.001
-        s = 0
-        for _ in range(5):
-            pls.append(self._get_w_pls(pn, self.w_param, s))
-            s += h
-        w = diff5dots(pls, h)
-        w[0] = -w[0]
-        w[2] = -w[2]
+        w = [0.0] * num
+
+        for i in range(num):
+            w[i] = derivative(self._get_w_pls, 0, dx=1e-4, n=i + 1, order=9)
+            if i % 2 == 0:
+                w[i] = -w[i]
         self.w = w
         return w
 
@@ -216,11 +213,12 @@ class GiMn(BaseQueue):
 
         return 0
 
-    def _get_w_pls(self, pn, w, s) -> float:
+    def _get_w_pls(self, s) -> float:
         """
         Calculate Laplace-Stieltjes transform of waiting time
         """
-        return self.n * self.mu * pn / (self.n * self.mu * (1.0 - w) + s)
+        pn = self.pi[self.n]
+        return self.n * self.mu * pn / (self.n * self.mu * (1.0 - self.w_param) + s)
 
     def _get_w_param(self):
 

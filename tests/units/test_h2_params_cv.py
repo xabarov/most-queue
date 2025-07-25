@@ -1,5 +1,5 @@
 """
-Plot the parameters of the H2-distribution for a given set of initial moments.
+Plot the parameters of the H2-distribution for a given set of raw moments.
 """
 
 import matplotlib.pyplot as plt
@@ -10,10 +10,10 @@ from most_queue.random.distributions import H2Distribution
 
 def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax_threshold=3):
     """
-    Plot the parameters of the H2-distribution for a given set of initial moments,
+    Plot the parameters of the H2-distribution for a given set of raw moments,
       that are less than the exponential distribution.
-    :param start_cv: The starting coefficient of variation for the initial moments.
-    :param end_cv: The ending coefficient of variation for the initial moments.
+    :param start_cv: The starting coefficient of variation for the raw moments.
+    :param end_cv: The ending coefficient of variation for the raw moments.
     :param num_points: The number of points to plot.
     :param y_ax_threshold: The threshold for the y-axis.
     If the value is greater than this, it will not be plotted.
@@ -60,7 +60,7 @@ def plot_h2_params_less_than_exp(start_cv=0.5, end_cv=0.95, num_points=100, y_ax
 
 def plot_h2_params_greater_than_exp(start_cv=1.01, end_cv=5.0, num_points=100):
     """
-    Plot the parameters of the H2-distribution for a given set of initial moments,
+    Plot the parameters of the H2-distribution for a given set of raw moments,
     that are greater than exponential.
     """
     cv_values = np.linspace(start_cv, end_cv, num_points)

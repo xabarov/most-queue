@@ -97,7 +97,7 @@ class MGnCalc(BaseQueue):
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
         """
         Set servers
-        param b: initial moments of service time distribution.
+        param b: raw moments of service time distribution.
         """
         self.b = b
 
@@ -192,14 +192,14 @@ class MGnCalc(BaseQueue):
 
         return results
 
-    def get_results(self) -> QueueResults:
+    def get_results(self, num_of_moments: int = 4, derivate=False) -> QueueResults:
         """
         Get all results
         """
 
         self.p = self.get_p()
-        self.w = self.get_w()
-        self.v = self.get_v()
+        self.w = self.get_w(derivate=derivate, num_of_moments=num_of_moments)
+        self.v = self.get_v(num_of_moments)
 
         utilization = self.get_utilization()
 
@@ -214,7 +214,7 @@ class MGnCalc(BaseQueue):
 
         return self.p
 
-    def get_w(self, derivate=False) -> list[float]:
+    def get_w(self, derivate=False, num_of_moments: int = 4) -> list[float]:
         """
         Get the waiting time moments
         """
@@ -222,12 +222,14 @@ class MGnCalc(BaseQueue):
         if not self.w is None:
             return self.w
 
-        w = [0.0] * 3
+        w = [0.0] * 4
 
         if derivate:
-            for i in range(3):
+            for i in range(4):
                 w[i] = derivative(self._calc_w_lst, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
-            return np.array([-w[0], w[1].real, -w[2]])
+                if i % 2 == 0:
+                    w[i] = -w[i]
+            return np.array(w[:num_of_moments])
 
         for j in range(1, len(self.p) - self.n):
             w[0] += j * self.p[self.n + j]
@@ -236,14 +238,17 @@ class MGnCalc(BaseQueue):
         for j in range(3, len(self.p) - self.n):
             w[2] += j * (j - 1) * (j - 2) * self.p[self.n + j]
 
-        for j in range(3):
+        for j in range(4, len(self.p) - self.n):
+            w[3] += j * (j - 1) * (j - 2) * (j - 3) * self.p[self.n + j]
+
+        for j in range(4):
             w[j] /= math.pow(self.l, j + 1)
             w[j] = w[j].real
 
         self.w = w
-        return w
+        return w[:num_of_moments]
 
-    def get_v(self) -> list[float]:
+    def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
         Get the sojourn time moments
         """
@@ -251,8 +256,9 @@ class MGnCalc(BaseQueue):
         if self.v is not None:
             return self.v
 
-        self.w = self.w or self.get_w()
-        self.v = conv_moments(self.b, self.w)
+        self.w = self.w or self.get_w(derivate=False, num_of_moments=num_of_moments)
+        num_of_moments = min(len(self.b), len(self.w))
+        self.v = conv_moments(self.b, self.w, num=num_of_moments)
 
         return self.v
 
@@ -274,7 +280,7 @@ class MGnCalc(BaseQueue):
 
     def _initial_probabilities(self):
         """
-        Set initial probabilities of microstates
+        Set raw probabilities of microstates
         """
         # Initialize all states to equal probability for each i
         probs = [1.0 / self.cols[i] for i in range(self.N)]
@@ -305,7 +311,7 @@ class MGnCalc(BaseQueue):
             - Improved variable names for readability.
         """
 
-        # Compute initial terms for f1 and znam
+        # Compute raw terms for f1 and znam
         term_f1 = self.y[0] / self.mu[0] + self.y[1] / self.mu[1]
 
         # Calculate the denominator (znam) more efficiently using list

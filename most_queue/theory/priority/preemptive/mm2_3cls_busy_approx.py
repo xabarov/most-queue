@@ -95,7 +95,7 @@ class MM2BusyApprox3Classes(MGnCalc):
 
     def set_servers(self, mu_low: float, mu_med: float, mu_high: float):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
+        Set the raw moments of service time distribution
         :param mu_low: intensity of service for low-priority requests,
         :param mu_med: intensity of service for med-priority requests,
         :param mu_high: intensity of service for high priority requests,
@@ -182,7 +182,7 @@ class MM2BusyApprox3Classes(MGnCalc):
         """
         # TODO
         w_med = self.med_results.w[1]
-        return [self.high_results.w, w_med, [0, 0, 0]]
+        return [self.high_results.w, w_med, [0, 0, 0, 0]]
 
     def get_v(self) -> list[float]:
         """
@@ -190,7 +190,7 @@ class MM2BusyApprox3Classes(MGnCalc):
         """
         v1_low = self.get_low_class_v1()
         v_med = self.med_results.v[1]
-        return [self.high_results.v, v_med, [v1_low, 0, 0]]
+        return [self.high_results.v, v_med, [v1_low, 0, 0, 0]]
 
     def get_utilization(self):
 

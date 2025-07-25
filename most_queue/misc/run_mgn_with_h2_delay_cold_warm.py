@@ -32,10 +32,10 @@ def get_sim_stat(stat, n, l, buff, b, b_c, b_w, b_d, num_of_jobs, p_limit, sim_a
     :param n: number of servers
     :param l: arrival rate
     :param buff: buffer size
-    :param b: initial moments of service time
-    :param b_c: initial moments of cooling time
-    :param b_w: initial moments of warming time
-    :param b_d: initial moments of delay of the start of cooling time
+    :param b: raw moments of service time
+    :param b_c: raw moments of cooling time
+    :param b_w: raw moments of warming time
+    :param b_d: raw moments of delay of the start of cooling time
     :param num_of_jobs: number of jobs to simulate
     :param p_limit: limit for the probability of state
     :param sim_ave: number of simulations to average the results
@@ -107,10 +107,10 @@ def get_tt_stat(stat, n, l, buff, b, b_c, b_w, b_d, p_limit, w_pls_dt, stable_w_
     :param n: number of servers
     :param l: arrival rate
     :param buff: buffer size (None if infinite)
-    :param b: initial moments of service time
-    :param b_c: initial moments of cooling time
-    :param b_w: initial moments of warming time
-    :param b_d: initial moments of delay time before cooling starts
+    :param b: raw moments of service time
+    :param b_c: raw moments of cooling time
+    :param b_w: raw moments of warming time
+    :param b_d: raw moments of delay time before cooling starts
     :param p_limit: limit for the sum of probabilities in the Takahasi-Takami method
     :param w_pls_dt: step for the Laplace-Stieltjes transform calculation
     :param stable_w_pls: flag for using a stable version
@@ -189,7 +189,7 @@ def run_ro(
     p_limit - max number of probabilities
 
     w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
+                for the waiting time raw moments calculation
 
     stable_w_pls -  if True the algorithm try to fit w_pls_dt value
                     taking into account the values of transition intensities
@@ -300,7 +300,7 @@ def run_n(
     p_limit - max number of probabilities
 
     w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
+                for the waiting time raw moments calculation
 
     stable_w_pls -  if True the algorithm try to fit w_pls_dt value
                     taking into account the values of transition intensities
@@ -411,7 +411,7 @@ def run_delay_mean(
     p_limit - max number of probabilities
 
     w_pls_dt -  some variable to stabilize derivative of the Laplace-Stieltjes transform
-                for the waiting time initial moments calculation
+                for the waiting time raw moments calculation
 
     stable_w_pls -  if True the algorithm try to fit w_pls_dt value
                     taking into account the values of transition intensities

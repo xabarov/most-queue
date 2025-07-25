@@ -14,7 +14,7 @@ def lst_residual(lst_original: callable, b1: float, s: float) -> float:
 
 def get_b_residual(b_original: list[float]) -> list[float]:
     """
-    Calculate the initial moments E[X^k] for k=0,1,...,n-1 of a residual distribution.
+    Calculate the raw moments E[X^k] for k=0,1,...,n-1 of a residual distribution.
     b_res1 = E[X^2]/(2*E[X])
     """
     b_res = np.zeros(len(b_original) - 1)

@@ -49,7 +49,7 @@ class MPhNPrty(MGnCalc):
         self.max_iter = calc_params.max_iter
         self.is_cox = calc_params.is_cox
 
-        self.busy_periods = []  # list of busy periods initial moments
+        self.busy_periods = []  # list of busy periods raw moments
         self.busy_periods_cvs = []  # list of busy periods coefficients of variation
         self.alphas = []
         self.pp = []  # list of transition probabilities to the busy periods states
@@ -85,7 +85,7 @@ class MPhNPrty(MGnCalc):
 
     def set_servers(self, b_high: list[float], mu_low: float):  # pylint: disable=arguments-differ
         """
-        Set the initial moments of service time distribution
+        Set the raw moments of service time distribution
         :param mu_low: intensity of service for low-priority requests,
         :param b_high: list of E[X^k], k =1,2,3 for service time for high priority jobs
         """
@@ -374,7 +374,7 @@ class MPhNPrty(MGnCalc):
 
     def _initial_probabilities(self):
         """
-        Set initial values of microstate probabilities.
+        Set raw values of microstate probabilities.
         """
         # t задаем равновероятными
         for i in range(self.N):
