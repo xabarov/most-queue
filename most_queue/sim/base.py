@@ -8,6 +8,7 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
+from most_queue.constants import DEFAULT_NUM_STATES
 from most_queue.random.utils.create import create_distribution
 from most_queue.random.utils.load import calc_qs_load
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
@@ -39,7 +40,7 @@ class QsSim:
         self.generator = np.random.default_rng()
 
         self.free_channels = self.n
-        self.num_of_states = 100000
+        self.num_of_states = DEFAULT_NUM_STATES
         self.load = 0  # utilization factor
 
         # to track the length of the continuous channel occupancy period:
@@ -131,11 +132,13 @@ class QsSim:
             for _i in range(self.n)
         ]
 
-    def calc_load(self):
+    def calc_load(self) -> float:
         """
-        Calculates the load factor of the QS
-        """
+        Calculates the load factor (utilization) of the queueing system.
 
+        Returns:
+            float: The utilization factor (load) of the system, between 0 and 1.
+        """
         return calc_qs_load(
             self.source_kendall_notation,
             self.source_params,
@@ -144,9 +147,13 @@ class QsSim:
             self.n,
         )
 
-    def send_task_to_channel(self, is_warm_start=False, tsk=None):
+    def send_task_to_channel(self, is_warm_start: bool = False, tsk=None) -> None:
         """
-        Sends a job to the service channel
+        Sends a job to an available service channel.
+
+        Args:
+            is_warm_start: Whether this is a warm start scenario.
+            tsk: Task to send. If None, a new task is created.
         """
 
         if tsk is None:
@@ -169,9 +176,13 @@ class QsSim:
 
                 break
 
-    def send_task_to_queue(self, new_tsk=None):
+    def send_task_to_queue(self, new_tsk=None) -> None:
         """
-        Send Task to Queue
+        Send a task to the queue.
+
+        Args:
+            new_tsk: Task to add to queue. If None, a new task is created.
+                    If buffer is full, the task will be dropped.
         """
 
         if new_tsk is None:
@@ -188,9 +199,13 @@ class QsSim:
                 self.dropped += 1
                 self.in_sys -= 1
 
-    def arrival(self, moment=None, ts=None):
+    def arrival(self, moment: float | None = None, ts=None) -> None:
         """
-        Actions upon arrival of the job by the QS.
+        Handle job arrival event in the queueing system.
+
+        Args:
+            moment: Optional specific arrival moment. If None, uses current arrival_time.
+            ts: Optional task object. If None, a new task is created.
         """
 
         self.arrived += 1
@@ -215,9 +230,16 @@ class QsSim:
         else:  # there are free channels:
             self.send_task_to_channel(tsk=ts)
 
-    def serving(self, c, is_network=False):
+    def serving(self, c: int, is_network: bool = False):
         """
-        Actions upon receipt of a service job with - channel number
+        Handle service completion event for a channel.
+
+        Args:
+            c: Channel number that completed service.
+            is_network: Whether this is part of a network simulation.
+
+        Returns:
+            Task: The task that completed service.
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
@@ -244,9 +266,13 @@ class QsSim:
 
         return end_ts
 
-    def send_head_of_queue_to_channel(self, channel_num, is_network=False):
+    def send_head_of_queue_to_channel(self, channel_num: int, is_network: bool = False) -> None:
         """
-        Send first Task (head of queue) to Channel
+        Send the first task from the queue (head) to an available channel.
+
+        Args:
+            channel_num: Channel number to send the task to.
+            is_network: Whether this is part of a network simulation.
         """
         que_ts = self.queue.pop()
 
@@ -262,9 +288,9 @@ class QsSim:
         self.servers[channel_num].start_service(que_ts, self.ttek)
         self.free_channels -= 1
 
-    def run_one_step(self):
+    def run_one_step(self) -> None:
         """
-        Run Open step of simulation
+        Execute one step of the simulation (either an arrival or service completion event).
         """
 
         num_of_server_earlier = -1
@@ -286,9 +312,15 @@ class QsSim:
             # Arrival
             self.arrival()
 
-    def run(self, total_served) -> QueueResults:
+    def run(self, total_served: int) -> QueueResults:
         """
-        Run simulation process
+        Run the complete simulation process.
+
+        Args:
+            total_served: Number of jobs to serve before stopping the simulation.
+
+        Returns:
+            QueueResults: Results object containing statistics from the simulation.
         """
         start = time.process_time()
 
@@ -322,29 +354,40 @@ class QsSim:
 
         return QueueResults(v=v, w=w, p=p, duration=self.time_spent, utilization=self.calc_load())
 
-    def refresh_busy_stat(self, new_a):
+    def refresh_busy_stat(self, new_a: float) -> None:
         """
-        Updating statistics of the busy period
+        Update statistics of the busy period.
+
+        Args:
+            new_a: New busy period duration to include in statistics.
         """
         self.busy = refresh_moments_stat(self.busy, new_a, self.busy_moments)
 
-    def refresh_v_stat(self, new_a):
+    def refresh_v_stat(self, new_a: float) -> None:
         """
-        Updating statistics of sojourn times
+        Update statistics of sojourn times.
+
+        Args:
+            new_a: New sojourn time value to include in statistics.
         """
         self.v = refresh_moments_stat(self.v, new_a, self.served)
 
-    def refresh_w_stat(self, new_a):
+    def refresh_w_stat(self, new_a: float) -> None:
         """
-        Updating statistics of wait times
+        Update statistics of wait times.
+
+        Args:
+            new_a: New waiting time value to include in statistics.
         """
         self.w = refresh_moments_stat(self.w, new_a, self.taked)
 
-    def get_p(self):
+    def get_p(self) -> list[float]:
         """
-        Returns a list with probabilities of QS states
-        p[j] - the probability that there will be exactly j jobs
-        in the QS at a random moment in time
+        Returns a list with probabilities of queueing system states.
+
+        Returns:
+            list[float]: List where p[j] is the probability that there will be exactly j jobs
+                        in the system at a random moment in time.
         """
         res = [0.0] * len(self.p)
         for j in range(0, self.num_of_states):

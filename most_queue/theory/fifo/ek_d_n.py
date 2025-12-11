@@ -8,6 +8,7 @@ import time
 
 import numpy as np
 
+from most_queue.constants import DEFAULT_TOLERANCE, LSTSQ_RCOND
 from most_queue.random.distributions import ErlangParams
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
@@ -85,7 +86,7 @@ class EkDn(BaseQueue):
             summ = 0
             for m in range(j * self.k, (j + 1) * self.k):
                 summ += w[m]
-            if math.fabs(summ) < 1e-12 or summ > 1:
+            if math.fabs(summ) < DEFAULT_TOLERANCE or summ > 1:
                 is_zero = True
             else:
                 self.p[j] = summ
@@ -163,7 +164,7 @@ class EkDn(BaseQueue):
                 A[self.n * self.k - 1, i] = coef
 
         B[self.n * self.k - 1] = self.n - self.l * self.b / self.k
-        w = np.linalg.lstsq(A, B, rcond=1e-8)
+        w = np.linalg.lstsq(A, B, rcond=LSTSQ_RCOND)
         w_real = []
         for i in range(len(w[0])):
             w_real.append(w[0][i].real)

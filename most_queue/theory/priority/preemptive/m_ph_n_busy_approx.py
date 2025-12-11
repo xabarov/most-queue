@@ -102,9 +102,12 @@ class MPhNPrty(MGnCalc):
 
     def get_w(self, _derivate=False) -> list[float]:
         """
-        Calculate waiting time moments
+        Calculate waiting time moments.
+
+        Note: Currently returns waiting time moments only for high priority class.
+        Low priority class returns zero moments as placeholder.
+        Full implementation for all priority classes is pending.
         """
-        # TODO
         return [self.high_results.w, [0, 0, 0]]
 
     def get_v(self) -> list[float]:

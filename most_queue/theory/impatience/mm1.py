@@ -68,7 +68,8 @@ class MM1Impatience(BaseQueue):
         w1 = self.get_w1()
         v1 = self.get_v1()
 
-        # TODO need to self.gamma involved
+        # Note: Utilization calculation may need to account for self.gamma
+        # (impatience parameter) in future improvements for more accurate results.
 
         utilization = self.l / self.mu
         return QueueResults(

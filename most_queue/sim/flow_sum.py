@@ -7,6 +7,7 @@ import math
 
 from tqdm import tqdm
 
+from most_queue.constants import DEFAULT_NUM_JOBS
 from most_queue.random.distributions import (
     ErlangDistribution,
     GammaDistribution,
@@ -21,7 +22,7 @@ class FlowSumSim:
     """
 
     def __init__(
-        self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=1000000
+        self, a, distr="Gamma", verbose=True, num_of_moments=4, num_of_jobs=DEFAULT_NUM_JOBS
     ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         self.n = len(a)
         self.a = a
@@ -102,7 +103,7 @@ class FlowSumSim:
         self.result_flow = self.a[0]
 
     @staticmethod
-    def sum_2_H2_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_H2_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
         """
         суммирование двух потоков c коэффициентами вариации > 1
         Аппроксимация H2-распределением
@@ -151,7 +152,7 @@ class FlowSumSim:
         return cv
 
     @staticmethod
-    def sum_2_Pa_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Pa_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
         """
         суммирование двух потоков
         Аппроксимация Pa-распределением
@@ -191,7 +192,7 @@ class FlowSumSim:
         return f
 
     @staticmethod
-    def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
         """
         Summing two Erlang flows with parameters a1 and a2.
         num_of_moments: number of moments to calculate.
@@ -230,7 +231,7 @@ class FlowSumSim:
         return f
 
     @staticmethod
-    def sum_2_Gamma_flows(a1, a2, num_of_moments=4, num_of_sim=1000000):
+    def sum_2_Gamma_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
         """
         суммирование двух потоков c коэффициентами вариации > 1
         Аппроксимация H2-распределением

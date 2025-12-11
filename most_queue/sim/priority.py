@@ -9,6 +9,7 @@ import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
+from most_queue.constants import DEFAULT_NUM_STATES
 from most_queue.random.utils.create import create_distribution
 from most_queue.sim.utils.servers import ServerPriority
 from most_queue.sim.utils.tasks import TaskPriority
@@ -48,7 +49,7 @@ class PriorityQueueSimulator:
         self.buffer = buffer
         self.prty_type = prty_type
         self.free_channels = self.n
-        self.num_of_states = 100000
+        self.num_of_states = DEFAULT_NUM_STATES
         self.load = 0  # load factor of the system
 
         # for tracking the duration of continuous busy periods of channels:

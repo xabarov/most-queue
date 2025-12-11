@@ -178,9 +178,12 @@ class MM2BusyApprox3Classes(MGnCalc):
 
     def get_w(self, _derivate=False):
         """
-        Calculate waiting time moments
+        Calculate waiting time moments.
+
+        Note: Currently returns waiting time moments for high and medium priority classes.
+        Low priority class returns zero moments as placeholder.
+        Full implementation for all priority classes is pending.
         """
-        # TODO
         w_med = self.med_results.w[1]
         return [self.high_results.w, w_med, [0, 0, 0, 0]]
 

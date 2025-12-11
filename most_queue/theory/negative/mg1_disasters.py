@@ -82,9 +82,12 @@ class MG1Disasters(BaseQueue):
 
     def get_utilization(self) -> float:
         """
-        Calculate utilization factor
+        Calculate utilization factor.
+
+        Note: This is a simplified implementation. A more sophisticated
+        calculation would better account for the impact of disaster events
+        on system utilization.
         """
-        # TODO naive impelemntation
         return self.l_pos * self.b[0]
 
     def get_v(self, num_of_moments: int = 4) -> list[float]:

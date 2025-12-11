@@ -167,9 +167,12 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
     def get_utilization(self):
         """
-        Calc utilization of the queue.
+        Calculate utilization of the queue.
+
+        Note: This is a simplified version that does not fully account for
+        the effect of disasters on utilization. A more accurate calculation
+        would consider the impact of disaster events on system utilization.
         """
-        # TODO Simplified version, not considering disasters effect
         return self.l_pos * self.b[0] / self.n
 
     def get_p(self) -> list[float]:

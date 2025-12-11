@@ -99,10 +99,11 @@ class ForkJoinMarkovianCalc(BaseQueue):
 
     def get_utilization(self):
         """
-        Calc utilization for Fork-Join (n, k) system.
-        """
+        Calculate utilization for Fork-Join (n, k) system.
 
-        # TODO naive implementation
+        Note: This is a simplified implementation. A more accurate calculation
+        would better model the complex interactions in fork-join systems.
+        """
         b = [1 / self.mu, 2 / (self.mu**2), 6 / (self.mu**3)]
         max_distr = MaxDistribution(b=b, n=self.n)
         b_max = max_distr.get_max_moments()

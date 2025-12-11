@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from most_queue.constants import MAX_FIT_ITERATIONS
 from most_queue.random.utils.params import (
     Cox2Params,
     ErlangParams,
@@ -60,7 +61,7 @@ def fit_h2(moments: list[float]) -> H2Params:
         res = H2Params(p1=q_max, mu1=mu1, mu2=1e6)
         return res
 
-    max_iteration = 10000
+    max_iteration = MAX_FIT_ITERATIONS
     tec = 0
     t1 = 0
     t2 = 0

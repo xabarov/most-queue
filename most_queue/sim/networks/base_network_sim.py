@@ -3,6 +3,7 @@ Base class for queueing networks simulation
 """
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 from most_queue.structs import NetworkResults, NetworkResultsPriority
 
@@ -22,24 +23,26 @@ class BaseSimNetwork(ABC):
         self.results: NetworkResults | NetworkResultsPriority | None = None
 
     @abstractmethod
-    def set_sources(self):  # pylint: disable=arguments-differ
+    def set_sources(self, *args: Any, **kwargs: Any) -> None:  # pylint: disable=arguments-differ
         """
         Set sources for the queueing network. This method should be implemented by subclasses.
         :param args: arguments for setting sources
+        :param kwargs: keyword arguments for setting sources
 
         After setting the sources, self.is_sources_set should be True.
         """
 
     @abstractmethod
-    def set_nodes(self):  # pylint: disable=arguments-differ
+    def set_nodes(self, *args: Any, **kwargs: Any) -> None:  # pylint: disable=arguments-differ
         """
-        Set servers for the queueing network. This method should be implemented by subclasses.
-        :param args: arguments for setting servers
+        Set nodes for the queueing network. This method should be implemented by subclasses.
+        :param args: arguments for setting nodes
+        :param kwargs: keyword arguments for setting nodes
 
-        After setting the servers, self.is_servers_set should be True.
+        After setting the nodes, self.is_nodes_set should be True.
         """
 
-    def _check_sources_and_nodes_is_set(self):
+    def _check_sources_and_nodes_is_set(self) -> None:
         """
         Check if sources and nodes are set.
         Raises:
@@ -54,7 +57,12 @@ class BaseSimNetwork(ABC):
             error_msg += "\nPlease use set_nodes() method."
             raise ValueError(error_msg)
 
-    def _check_if_results_calculated(self):
+    def _check_if_results_calculated(self) -> None:
+        """
+        Check if results have been calculated.
+        Raises:
+            ValueError: If results have not been calculated yet.
+        """
         if self.results is None:
             error_msg = "Results have not been calculated yet."
             error_msg += "For calculating results, use run() method."

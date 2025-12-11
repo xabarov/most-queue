@@ -4,6 +4,8 @@ Parameters for queueing system calculation
 
 from dataclasses import dataclass
 
+from most_queue.constants import DEFAULT_P_NUM
+
 
 @dataclass
 class CalcParams:
@@ -13,7 +15,7 @@ class CalcParams:
 
     tolerance: float = 1e-10  # tolerance for convergence
     approx_distr: str = "gamma"  # distribution approximation method
-    p_num: int = 1000  # number of probabilities to calculate
+    p_num: int = DEFAULT_P_NUM  # number of probabilities to calculate
 
 
 @dataclass
