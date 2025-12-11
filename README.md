@@ -1,163 +1,206 @@
-# Queueing Systems: Simulation & Numerical Methods 🔄
+# Системы массового обслуживания: Симуляция и численные методы 🔄
 
 ![Queue](assets/3.gif)
 
-A Python package for simulating and analyzing queueing systems (QS) and networks.
+Python-библиотека для симуляции и анализа систем массового обслуживания (СМО) и сетей очередей.
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)
 
 ---
-### Most-Queue 2.0 Release Notes
 
-1. New similar API for both simulation and calculation classes:
+## 📚 Документация
+
+**Подробная документация доступна:**
+
+- **[📖 Полная документация (Русский)](docs/README.md)** — Полное руководство на русском языке с подробными туториалами, примерами и теорией
+- **[🚀 Быстрый старт](docs/getting_started.md)** — Начните работу за несколько минут
+- **[📘 Основные концепции](docs/concepts.md)** — Основы теории массового обслуживания
+- **[🎮 Руководство по симуляции](docs/simulation.md)** — Имитационное моделирование
+- **[🧮 Руководство по расчетам](docs/calculation.md)** — Численные методы
+- **[📊 Каталог моделей](docs/models.md)** — Поддерживаемые модели СМО
+- **[🌐 Сети очередей](docs/networks.md)** — Сети СМО
+- **[⭐ Приоритетные системы](docs/priorities.md)** — Системы с приоритетами
+- **[💡 Примеры использования](docs/examples.md)** — Практические примеры
+
+---
+
+## 🔍 Основные возможности
+
+- **Симуляция**: Моделирование различных типов систем массового обслуживания и сетей
+- **Численные методы**: Решение стационарных задач теории массового обслуживания
+- **Метрики производительности**: Анализ времени ожидания, времени пребывания, коэффициентов загрузки и многое другое
+- **Широкая поддержка моделей**: FIFO, приоритеты, отпуска, отрицательные заявки, fork-join, сети и многое другое
+
+---
+
+## 📦 Установка
+
+```bash
+pip install most-queue
+```
+
+Или установка из репозитория:
+
+```bash
+git clone https://github.com/xabarov/most-queue.git
+cd most-queue
+pip install -e .
+```
+
+**Требования:** Python >= 3.9
+
+---
+
+## 🚀 Быстрый старт
+
+### Базовый пример: M/M/1 система
 
 ```python
-# ... initialize NUM_OF_CHANNELS and other parameters ...
+from most_queue.sim.base import QsSim
 
-# run calculation
-tt = MGnCalc(n=NUM_OF_CHANNELS)
+# Создание симулятора
+qs = QsSim(num_of_channels=1)
 
-tt.set_sources(l=ARRIVAL_RATE)
-tt.set_servers(b=b)
+# Настройка потока поступления (пуассоновский с интенсивностью λ = 0.5)
+qs.set_sources(0.5, "M")
 
-calc_results = tt.run()
+# Настройка обслуживания (экспоненциальное с интенсивностью μ = 1.0)
+qs.set_servers(1.0, "M")
 
-# run simulation
+# Запуск симуляции
+results = qs.run(10000)
+
+# Получение результатов
+print(f"Среднее время ожидания: {results.w[0]:.4f}")
+print(f"Среднее время пребывания: {results.v[0]:.4f}")
+print(f"Коэффициент загрузки: {results.utilization:.4f}")
+```
+
+### Численный расчет
+
+```python
+from most_queue.theory.fifo.mmnr import MMnrCalc
+
+# Создание калькулятора
+calc = MMnrCalc(n=1)
+calc.set_sources(l=0.5)
+calc.set_servers(mu=1.0)
+
+# Выполнение расчета
+results = calc.run()
+print(f"Среднее время ожидания: {results.w[0]:.4f}")
+```
+
+**См. [Руководство по быстрому старту](docs/getting_started.md) для дополнительных примеров.**
+
+---
+
+## 📚 Структура проекта
+
+Most-Queue состоит из двух основных модулей:
+
+- **`most_queue.sim`** — Программы симуляции систем массового обслуживания
+- **`most_queue.theory`** — Численные методы для расчета моделей теории массового обслуживания
+
+---
+
+## 🧪 Поддерживаемые модели
+
+### FIFO системы
+- **M/M/c**, **M/M/c/r** — Многоканальные системы с пуассоновским потоком
+- **M/G/1**, **M/G/c** — Системы с произвольным распределением времени обслуживания
+- **GI/M/1**, **GI/M/c** — Системы с общим потоком поступления
+- **M/D/c**, **E_k/D/c** — Системы с детерминированным обслуживанием
+- **M/H₂/c** — Метод Такахаси-Таками с гиперэкспоненциальным обслуживанием
+
+### Системы с приоритетами
+- **M/G/1/PR**, **M/G/1/NP** — Одноканальные с прерываемым/непрерываемым приоритетом
+- **M/G/c/PR**, **M/G/c/NP** — Многоканальные с приоритетами
+- **M/Ph/c/PR** — Фазовое распределение обслуживания с приоритетами
+
+### Специализированные системы
+- **Отпуска** — Системы с отпусками серверов и прогревом
+- **Отрицательные заявки** — Модели RCS и disaster
+- **Fork-Join** — Системы параллельной обработки
+- **Пакетное поступление** — Системы M^x/M/1
+- **Нетерпеливые заявки** — Системы с уходом клиентов
+- **Engset** — Закрытые системы с конечным числом источников
+- **Сети** — Открытые и закрытые сети очередей
+
+**См. [Каталог моделей](docs/models.md) для полного списка и деталей.**
+
+---
+
+## 📌 Области применения
+
+- **Облачные вычисления**: Моделирование масштабируемости и производительности инфраструктуры
+- **Call-центры**: Оптимизация штата и времени ожидания клиентов
+- **Транспорт**: Улучшение транспортных потоков и логистики
+- **Сетевой трафик**: Анализ и прогнозирование потоков данных
+- **Производство**: Оптимизация производственных линий
+- **Здравоохранение**: Планирование ресурсов больниц
+
+**См. [Примеры использования](docs/examples.md) для практических кейсов.**
+
+---
+
+## 📖 Most-Queue 2.0 API
+
+Единый API для симуляции и расчета:
+
+```python
+# Численный расчет
+calc = MGnCalc(n=NUM_OF_CHANNELS)
+calc.set_sources(l=ARRIVAL_RATE)
+calc.set_servers(b=b)
+calc_results = calc.run()
+
+# Симуляция
 qs = QsSim(NUM_OF_CHANNELS)
-
 qs.set_sources(ARRIVAL_RATE, "M")
 qs.set_servers(gamma_params, "Gamma")
-
 sim_results = qs.run(NUM_OF_JOBS)
-
-```
-
-See more examples in [tests](https://github.com/xabarov/most-queue/blob/main/tests/) and [tutorials](https://github.com/xabarov/most-queue/tree/main/tutorials/) folders.
-
-2. Refactored code for better readability and maintainability.
-
----
-
-### 🔍 Key Features
-
-- **Simulation**: Model various types of queueing systems and networks.
-- **Numerical Methods**: Solve steady-state problems in queueing theory.
-- **Performance Metrics**: Analyze waiting times, sojourn times, load factors, and more.
-
----
-
-### 📌 Use Cases
-
-- **Cloud Computing**: Model infrastructure scalability and performance.
-- **Call Centers**: Optimize staffing and customer wait times.
-- **Transportation**: Improve traffic flow and logistics.
-- **Network Traffic**: Analyze and predict data flow patterns.
-
----
-
-### 📦 Installation
-```bash
-  pip install most-queue
-```
-Or install from the repository:
-
-```bash
-  pip install -e .
 ```
 
 ---
 
-## 📚 Project Overview
+## 📁 Ресурсы
 
-Most_queue consists of two main parts:
- - **most_queue.theory** contains programs that implement methods for calculating queueing theory models.
- - **most_queue.sim** contains simulation programs.
-
-## 🧪 Example Use Cases
-
-### FIFO Queueing Systems
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1. | Ek/D/c           |  Numerical calculation of a multi-channel system Ek/D/n   | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_ek_d_n.py) | |
-| 2.  | GI/M/1          |  Solving for QS GI/M/1     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_gi_m_1_calc.py) | |
-| 3.  | GI/M/c          |  Solving for QS GI/M/c      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_gi_m_n_calc.py) | |
-| 4.  | M/D/c           |  Solving for QS M/D/c        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_d_n_calc.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/queue_sim.ipynb)  |
-| 5.  | M/G/1           |  Solving for QS M/G/1        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mg1_calc.py) | |
-| 6.  | M/H<SUB>2</SUB>/c         |  Numerical calculation of QS M/H<SUB>2</SUB>/c by the Takahashi-Takami method with complex parameters when approximating the serving time by the H<SUB>2</SUB>-distribution    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_tt.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/mgn_takahasi_takami.ipynb) |
-| 7.  | M/M/c/r         |  Solving for QS M/M/c/r        | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_test.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/queue_sim.ipynb) |
-
-
-### Queueing Systems with Priorities
-
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1.  | M/Ph/c/PR     |  Numerical calculation of QS M/Ph/c with 2 classes and PR - priority. Based on the approximation of busy periods            | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_ph_n_prty.py) | |
-| 2.  | M/M/c/PR           |  Numerical calculation of QS M/M/c with 2 classes, PR - priority by the Takahashi-Takami numerical method based on the approximation of the busy period by the Cox distribution      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_prty_busy_approx.py) | |
-| 3.  | M/G/1/PR           |  Calculating QS with preemtive priorities (single-channel).     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
-| 4.  | M/G/1/NP           |  Calculating QS with non-preemtive priorities (single-channel).     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
-| 5.  | M/G/c/Priority           | Calculating QS with NP and PR (multi-channel) by method of relation      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_qs_sim_prty.py) |[link](https://github.com/xabarov/most-queue/blob/main/tutorials/priority_queue.ipynb)  |
-
-### Queueing Systems with Vacations
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1.  | M/H<SUB>2</SUB>/c          |  Numerical calculation of the M/H<SUB>2</SUB>/c system with H<SUB>2</SUB>-warming using the Takahashi-Takami method.      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_m_h2_h2warm.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/m_h2_h2warm.ipynb)| |
-| 2.  | M/G/1           | Solving for QS M/G/1 with warm-up       |  | |
-| 3.  | M/Ph/c         |  Multichannel queuing system with H<SUB>2</SUB>-serving time, H<SUB>2</SUB>-warm-up, H<SUB>2</SUB>-cold delay and H<SUB>2</SUB>-cold (vacations). The system uses complex parameters, which allows you to calculate systems with arbitrary serving, warm-up, cold-delay and cold variation coefficients | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_with_h2_delay_cold_warm.py) | |
-| 4.  | M/M/c          |  Multichannel queuing system with exp serving time, H<SUB>2</SUB>-warm-up and H<SUB>2</SUB>-cold (vacations). The system uses complex parameters, which allows to calculate systems with arbitrary warm-up and cold variation coefficients    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mmn_h2cold_h2warm.py) | |
-
-### Queueing Systems with Negative arrivals
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1.  | M/G/1 RCS         |  Exact calculation of sojourn time for M/G/1 with RCS (remove customer from service) negative arrivals. Service time approximates by H<SUB>2</SUB> or Gamma distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mg1_rcs.py) | |
-| 2.  | M/G/c RCS         |  Numerical calculation of M/G/c with RCS negative arrivals. Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_rcs.py) | |
-| 3.  | M/G/c disaster         |  Numerical calculation of M/G/c with disaster (remove all customer from service and queue by negative arrival). Service time approximates by H<SUB>2</SUB> distribution     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_mgn_disaster.py) | |
-
-
-### Fork-Join Queueing Systems
-
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1. | M/M/c/Fork-Join       |  Solving for Fork-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_sim.py) |  |
-| 2. | M/G/c/Split-Join       |  Solving for Split-Join queueing system      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_fj_sim.py) |  |
-
-
-### Others
-| #   | Kendall Notations |  Description      | Example | Tutorial |
-|-----|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1.  | M<sup>x</sup>/M/1          |  Solving for the of M<sup>x</sup>/M/1 QS with batch arrival    | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_batch.py) | |
-| 2.  | M/M/1/D         |  Solving for M/M/1 with exponential impatience     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_impatience.py) | |
-| 3. | M/M/1/N          |  Solving for the Engset model for M/M/1 with a finite number of sources.     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_engset.py) | |
-| 4.  | Queuing Network |  Numerical calculation of queuing network     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_no_prty.py) |  |
-| 5.  | Queuing Network with Priorities  |  Numerical calculation of queuing network with priorities in nodes      | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_sim_prty.py) | [link](https://github.com/xabarov/most-queue/blob/main/tutorials/network_with_priorities.ipynb) |
-| 6.  | Queuing Network Optimization  | Optimization of queuing network transition matrix     | [link](https://github.com/xabarov/most-queue/blob/main/tests/test_network_opt.py) |  |
-
+- **[Тесты](tests/)** — Примеры с сравнением теоретических и симуляционных результатов
+- **[Туториалы](tutorials/)** — Jupyter-ноутбуки с пошаговыми руководствами
+- **[Документация](docs/)** — Подробная документация на русском языке
 
 ---
 
-### 🔍 Search & Indexing Keywords
-- Queueing theory
-- Simulation
-- Numerical methods
-- Queueing networks
-- Performance analysis
-- Cloud computing
-- Call center optimization
-- Transportation systems
-- Network traffic
-- Python package
+## 🔍 Ключевые слова для поиска
+
+- Теория массового обслуживания
+- Симуляция
+- Численные методы
+- Сети очередей
+- Анализ производительности
+- Облачные вычисления
+- Оптимизация call-центров
+- Транспортные системы
+- Сетевой трафик
+- Python-пакет
 
 ---
 
-### 📁 Examples & Tutorials
-- Look [tests](https://github.com/xabarov/most-queue/tree/main/tests) for examples with comparison of theoretical and simulation results.
-- Look [tutorials](https://github.com/xabarov/most-queue/tree/main/tutorials) for jupyter tutorials
+## 👥 Участие в разработке
+
+Мы приветствуем ваш вклад!
+
+- Откройте [issue](https://github.com/xabarov/most-queue/issues) для сообщений об ошибках или предложений
+- Отправьте pull request для улучшений функциональности
+- Контакты: xabarov1985@gmail.com
 
 ---
 
-### 👥 Contributing
+## 📄 Лицензия
 
-Contributions are welcome!
+См. файл [LICENSE](LICENSE) для деталей.
 
-- Open an [issue](https://github.com/xabarov/most-queue/issues) for bugs or suggestions.
-- Submit a pull request for feature enhancements.
-- Contact me at xabarov1985@gmail.com for questions.
+---
+
+**Для подробной документации, примеров и туториалов см. [docs/README.md](docs/README.md)**
