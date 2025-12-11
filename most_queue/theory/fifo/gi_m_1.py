@@ -3,7 +3,6 @@ Calculation of the GI/M/1 queueing system
 """
 
 import math
-import time
 
 from most_queue.random.distributions import GammaDistribution, ParetoDistribution
 from most_queue.structs import QueueResults
@@ -13,14 +12,17 @@ from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
 
 
-class GiM1(BaseQueue):
+class GIM1Calc(BaseQueue):
     """
-    Calculation of the GI/M/1 queueing system
+    Calculation of the GI/M/1 queueing system.
     """
 
-    def __init__(self, calc_params: CalcParams | None = None):
+    def __init__(self, calc_params: CalcParams | None = None) -> None:
         """
-        calc_params: calculation parameters
+        Initialize the GIM1Calc class.
+
+        Args:
+            calc_params: Calculation parameters. If None, default CalcParams will be used.
         """
 
         super().__init__(n=1, calc_params=calc_params)
@@ -34,19 +36,22 @@ class GiM1(BaseQueue):
         self.a = None
         self.pi = None
 
-    def set_servers(self, mu: float):  # pylint: disable=arguments-differ
+    def set_servers(self, mu: float) -> None:  # pylint: disable=arguments-differ
         """
-        Setting the service intensity of GI/M/1 queueing system.
-        params:
-        mu - service intensity
+        Set the service intensity of GI/M/1 queueing system.
+
+        Args:
+            mu: Service intensity (service rate).
         """
         self.mu = mu
         self.is_servers_set = True
 
-    def set_sources(self, a: list[float]):  # pylint: disable=arguments-differ
+    def set_sources(self, a: list[float]) -> None:  # pylint: disable=arguments-differ
         """
-        Setting the sources of GI/M/1 queueing system.
-        params: a - list of raw moments of arrival distribution.
+        Set the sources of GI/M/1 queueing system.
+
+        Args:
+            a: List of raw moments of arrival distribution. a[0] is the mean, a[1] is the second moment, etc.
         """
         self.a = a
         self.is_sources_set = True
@@ -54,9 +59,14 @@ class GiM1(BaseQueue):
     def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation for the GI/M/1 queueing system.
-        """
 
-        start = time.process_time()
+        Args:
+            num_of_moments: Number of moments to calculate.
+
+        Returns:
+            QueueResults with calculated values.
+        """
+        start = self._measure_time()
 
         self._check_if_servers_and_sources_set()
 
@@ -65,9 +75,9 @@ class GiM1(BaseQueue):
         self.v = self.get_v(num_of_moments)
         utilization = 1.0 / (self.a[0] * self.mu)
 
-        return QueueResults(
-            v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization, duration=time.process_time() - start
-        )
+        result = QueueResults(v=self.v, w=self.w, p=self.p, pi=self.pi, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_pi(self) -> list[float]:
         """
@@ -199,6 +209,4 @@ class GiM1(BaseQueue):
                 w_old = w_new
             return w_new
 
-        print("w_param calc. Unknown type of distr_type")
-
-        return 0
+        raise ValueError(f"Unknown type of distribution: {self.approx_distr}")

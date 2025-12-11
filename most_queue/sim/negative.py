@@ -150,6 +150,10 @@ class QsSimNegatives(QsSim):
         """
 
         self.positive_arrived += 1
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.positive_arrival_time - self.ttek
 
         self.in_sys += 1
@@ -167,6 +171,10 @@ class QsSimNegatives(QsSim):
         """
 
         self.negative_arrived += 1
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.negative_arrival_time - self.ttek
         self.ttek = self.negative_arrival_time
         self.negative_arrival_time = self.ttek + self.negative_source.generate()
@@ -180,6 +188,7 @@ class QsSimNegatives(QsSim):
             not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
             for c in not_free_servers:
                 end_ts = self.servers[c].end_service()
+                self._free_servers.add(c)  # Server is now free
                 self.broken += 1
                 self.total += 1
                 sojourn_time = self.ttek - end_ts.arr_time
@@ -188,8 +197,10 @@ class QsSimNegatives(QsSim):
 
             self.in_sys = 0
             self.free_channels = self.n
+            self._free_servers = set(range(self.n))  # All servers are free
+            self._servers_time_changed = True
 
-            while self.queue:
+            while self.queue.size() > 0:
                 ts = self.queue.pop()
                 ts.wait_time += self.ttek - ts.start_waiting_time
                 self.taked += 1
@@ -235,6 +246,8 @@ class QsSimNegatives(QsSim):
             not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
             c = random.choice(not_free_servers)
             end_ts = self.servers[c].end_service()
+            self._free_servers.add(c)  # Server is now free
+            self._servers_time_changed = True
             self.total += 1
             self.broken += 1
             self.free_channels += 1
@@ -253,7 +266,13 @@ class QsSimNegatives(QsSim):
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
+        self._free_servers.add(c)  # Server is now free
+        self._servers_time_changed = True
 
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
@@ -275,13 +294,8 @@ class QsSimNegatives(QsSim):
         Run Open step of simulation
         """
 
-        num_of_server_earlier = -1
-        serv_earl = 1e16
-
-        for c in range(self.n):
-            if self.servers[c].time_to_end_service < serv_earl:
-                serv_earl = self.servers[c].time_to_end_service
-                num_of_server_earlier = c
+        # Use optimized method from base class
+        num_of_server_earlier, serv_earl = self._get_min_server_time()
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end

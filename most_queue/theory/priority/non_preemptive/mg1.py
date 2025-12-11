@@ -2,8 +2,6 @@
 Class to calculate the average waiting time in an M/G/1 queue with non-preemptive priority.
 """
 
-import time
-
 from most_queue.random.distributions import GammaDistribution
 from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
@@ -13,46 +11,55 @@ from most_queue.theory.utils.diff5dots import diff5dots
 from most_queue.theory.utils.transforms import lst_gamma
 
 
-class MG1NonPreemtiveCalculation(BaseQueue):
+class MG1NonPreemptiveCalc(BaseQueue):
     """
     Class to calculate the average waiting time in an M/G/1 queue with non-preemptive priority.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Initialize the MG1NonPreemtiveCalculation class.
+        Initialize the MG1NonPreemptiveCalc class.
         """
         super().__init__(n=1)
         self.l = None
         self.b = None
 
-    def set_sources(self, l: list[float]):  # pylint: disable=arguments-differ
+    def set_sources(self, l: list[float]) -> None:  # pylint: disable=arguments-differ
         """
-        Set the arrival rates for each class
+        Set the arrival rates for each priority class.
+
+        Args:
+            l: List of arrival rates for each priority class.
         """
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[list[float]]):  # pylint: disable=arguments-differ
+    def set_servers(self, b: list[list[float]]) -> None:  # pylint: disable=arguments-differ
         """
-        Set the raw moments of service time distribution for each class
-        param b: raw moments of service time distribution for each class
+        Set the raw moments of service time distribution for each priority class.
+
+        Args:
+            b: List of raw moments of service time distribution for each priority class.
         """
         self.b = b
         self.is_servers_set = True
 
     def run(self) -> PriorityResults:
         """
-        Run calculation
-        """
+        Run calculation for M/G/1 queue with non-preemptive priority.
 
-        start = time.process_time()
+        Returns:
+            PriorityResults with calculated values.
+        """
+        start = self._measure_time()
 
         w = self.get_w()
         v = self.get_v()
         utilization = self.get_utilization()
 
-        return PriorityResults(v=v, w=w, utilization=utilization, duration=time.process_time() - start)
+        result = PriorityResults(v=v, w=w, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_utilization(self) -> float:
         """
@@ -96,11 +103,11 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         :return: list of raw moments of sojourn time for each class
         """
 
-        if not self.v is None:
+        if self.v is not None:
             return self.v
 
         self.w = self.w or self.get_w()
-        k = len(self, self.l)
+        k = len(self.l)
         v = []
 
         v = [conv_moments(self.w[i], self.b[i], num) for i in range(k)]
@@ -117,7 +124,7 @@ class MG1NonPreemtiveCalculation(BaseQueue):
         # j - the same
         # e - higher pr
 
-        if not self.w is None:
+        if self.w is not None:
             return self.w
 
         self._check_if_servers_and_sources_set()

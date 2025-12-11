@@ -11,7 +11,7 @@ import yaml
 from most_queue.io.tables import print_sojourn_moments, print_waiting_moments, probs_print
 from most_queue.random.distributions import H2Distribution
 from most_queue.sim.base import QsSim
-from most_queue.theory.fifo.mg1 import MG1Calculation
+from most_queue.theory.fifo.mg1 import MG1Calc
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -49,7 +49,7 @@ def test_mg1():
     b = H2Distribution.calc_theory_moments(h2_params, 5)
 
     # calculation using numerical methods
-    mg1_num = MG1Calculation()
+    mg1_num = MG1Calc()
     mg1_num.set_sources(ARRIVAL_RATE)
     mg1_num.set_servers(b)
 

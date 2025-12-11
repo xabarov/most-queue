@@ -68,6 +68,8 @@ class VacationQueueingSystemSimulator(QsSim):
                 )
                 server.set_warm(params, kendall_notation, self.generator)
                 self.servers.append(server)
+            self._servers_time_changed = True
+            self._free_servers = set(range(self.n))
 
     def set_cold(self, params, kendall_notation):
         """
@@ -98,6 +100,10 @@ class VacationQueueingSystemSimulator(QsSim):
         """
 
         self.arrived += 1
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.arrival_time - self.ttek
 
         self.in_sys += 1
@@ -162,7 +168,13 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
+        self._free_servers.add(c)  # Server is now free
+        self._servers_time_changed = True
 
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
@@ -199,6 +211,10 @@ class VacationQueueingSystemSimulator(QsSim):
         Job that has to be done after WarmUp Period Ends
         """
 
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.warm_phase.end_time - self.ttek
 
         self.ttek = self.warm_phase.end_time
@@ -214,6 +230,10 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Period Ends
         """
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.cold_phase.end_time - self.ttek
 
         self.ttek = self.cold_phase.end_time
@@ -237,6 +257,10 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Delay Period Ends
         """
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.cold_delay_phase.end_time - self.ttek
 
         self.ttek = self.cold_delay_phase.end_time
@@ -251,13 +275,8 @@ class VacationQueueingSystemSimulator(QsSim):
         Run Open step of simulation
         """
 
-        num_of_server_earlier = -1
-        serv_earl = 1e16
-
-        for c in range(self.n):
-            if self.servers[c].time_to_end_service < serv_earl:
-                serv_earl = self.servers[c].time_to_end_service
-                num_of_server_earlier = c
+        # Use optimized method from base class
+        num_of_server_earlier, serv_earl = self._get_min_server_time()
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end

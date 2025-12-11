@@ -2,6 +2,8 @@
 Simulation of a ForkJoin Queueing System (Fork-Join, Split-Join)
 """
 
+from collections import deque
+
 from colorama import Fore, Style, init
 
 from most_queue.sim.base import QsSim
@@ -70,7 +72,7 @@ class ForkJoinSim(QsSim):
 
         self.queues = []
         for _ in range(num_of_channels):
-            self.queues.append([])
+            self.queues.append(deque())
 
     def calc_load(self):
         """
@@ -83,6 +85,10 @@ class ForkJoinSim(QsSim):
         """
 
         self.arrived += 1
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += self.arrival_time - self.ttek
         self.ttek = self.arrival_time
         self.arrival_time = self.ttek + self.source.generate()
@@ -112,9 +118,11 @@ class ForkJoinSim(QsSim):
                     if self.free_channels == 0:
                         self.queues[i].append(t.subtasks[i])
                     else:  # there are free channels:
-                        if self.servers[i].is_free:
+                        if i in self._free_servers:
                             self.servers[i].start_service(t.subtasks[i], self.ttek)
+                            self._free_servers.discard(i)
                             self.free_channels -= 1
+                            self._servers_time_changed = True
                         else:
                             self.queues[i].append(t.subtasks[i])
 
@@ -126,7 +134,9 @@ class ForkJoinSim(QsSim):
                 else:
                     for i in range(self.n):
                         self.servers[i].start_service(t.subtasks[i], self.ttek)
+                        self._free_servers.discard(i)
                         self.free_channels -= 1
+                        self._servers_time_changed = True
 
     def _handle_task_completion(self, end_ts):
         """
@@ -154,9 +164,11 @@ class ForkJoinSim(QsSim):
         Processes the queue for a specific channel in FIFO manner.
         """
         if len(self.queues[c]) != 0:
-            que_ts = self.queues[c].pop(0)
+            que_ts = self.queues[c].popleft()
             self.servers[c].start_service(que_ts, self.ttek)
+            self._free_servers.discard(c)
             self.free_channels -= 1
+            self._servers_time_changed = True
 
     def _process_queue_sj(self):
         """
@@ -167,7 +179,9 @@ class ForkJoinSim(QsSim):
                 if not len(self.queue) == 0:  # Added check to prevent popping from empty queue
                     que_ts = self.queue.pop()
                     self.servers[i].start_service(que_ts, self.ttek)
+                    self._free_servers.discard(i)
                     self.free_channels -= 1
+                    self._servers_time_changed = True
 
     def serving(self, c, is_network=False):
         """
@@ -175,8 +189,14 @@ class ForkJoinSim(QsSim):
         :param c: int : number of channel where service is completed.
         """
         time_to_end = self.servers[c].time_to_end_service
+        # Ensure p array is large enough
+        while self.in_sys >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
         self.p[self.in_sys] += time_to_end - self.ttek
         end_ts = self.servers[c].end_service()
+        self._free_servers.add(c)  # Server is now free
+        self._servers_time_changed = True
         self.ttek = time_to_end
         self.served_subtask_in_task[end_ts.task_id] += 1
         self.total += 1

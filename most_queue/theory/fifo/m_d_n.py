@@ -4,7 +4,6 @@ Numerical calculation of an M/D/n system.
 
 import cmath
 import math
-import time
 
 import numpy as np
 
@@ -52,12 +51,17 @@ class MDn(BaseQueue):
     def run(self) -> QueueResults:
         """
         Run calculation of queueing system.
+
+        Returns:
+            QueueResults with calculated values.
         """
-        start = time.process_time()
+        start = self._measure_time()
         self.p = self.p or self.calc_p()
         utilization = self.l * self.b / self.n
 
-        return QueueResults(p=self.p, utilization=utilization, duration=time.process_time() - start)
+        result = QueueResults(p=self.p, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def calc_p(self) -> list[float]:
         """

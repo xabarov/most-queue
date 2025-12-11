@@ -3,7 +3,6 @@ Calculation of M/G/1 queue characteristics using the method of moments.
 """
 
 import math
-import time
 
 from most_queue.random.distributions import GammaDistribution, ParetoDistribution, UniformDistribution
 from most_queue.structs import QueueResults
@@ -13,31 +12,39 @@ from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma, get_q_pareto, get_q_uniform
 
 
-class MG1Calculation(BaseQueue):
+class MG1Calc(BaseQueue):
     """
     Calculation of M/G/1 queue characteristics using the method of moments.
     """
 
-    def __init__(self, calc_params: CalcParams | None = None):
+    def __init__(self, calc_params: CalcParams | None = None) -> None:
         """
-        Initialize the MG1Calculation class.
+        Initialize the MG1Calc class.
+
+        Args:
+            calc_params: Calculation parameters. If None, default CalcParams will be used.
         """
         super().__init__(n=1, calc_params=calc_params)
 
         self.l = None
         self.b = None
 
-    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+    def set_sources(self, l: float) -> None:  # pylint: disable=arguments-differ
         """
         Set the arrival rate.
+
+        Args:
+            l: Arrival rate (lambda).
         """
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+    def set_servers(self, b: list[float]) -> None:  # pylint: disable=arguments-differ
         """
         Set the raw moments of service time distribution.
-        param b: raw moments of service time distribution.
+
+        Args:
+            b: Raw moments of service time distribution. b[0] is the mean, b[1] is the second moment, etc.
         """
         self.b = b
         self.is_servers_set = True
@@ -45,15 +52,22 @@ class MG1Calculation(BaseQueue):
     def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation for M/G/1 queue.
-        """
 
-        start = time.process_time()
+        Args:
+            num_of_moments: Number of moments to calculate.
+
+        Returns:
+            QueueResults with calculated values.
+        """
+        start = self._measure_time()
 
         w = self.get_w(num_of_moments)
         v = self.get_v(num_of_moments)
         p = self.get_p()
 
-        return QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0], duration=time.process_time() - start)
+        result = QueueResults(v=v, w=w, p=p, utilization=self.l * self.b[0])
+        self._set_duration(result, start)
+        return result
 
     def get_w(self, num: int = 3) -> list[float]:
         """
@@ -117,8 +131,7 @@ class MG1Calculation(BaseQueue):
             pa_params = ParetoDistribution.get_params(self.b)
             q = get_q_pareto(self.l, pa_params.alpha, pa_params.K, self.calc_params.p_num)
         else:
-            print("Error in get_p. Unknown type of distribution")
-            return 0
+            raise ValueError(f"Unknown type of distribution: {self.calc_params.approx_distr}")
 
         p = [0.0] * self.calc_params.p_num
         p[0] = 1 - self.l * self.b[0]

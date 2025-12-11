@@ -89,6 +89,14 @@ class QsSim:
 
         self.zero_wait_arrivals_num = 0
 
+        # Cache for server with minimum time
+        self._min_server_time = 1e16
+        self._min_server_idx = -1
+        self._servers_time_changed = True
+
+        # Set of free server indices for O(1) access
+        self._free_servers = set(range(self.n))
+
     def set_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of source time distribution.
@@ -131,6 +139,8 @@ class QsSim:
             )
             for _i in range(self.n)
         ]
+        self._servers_time_changed = True
+        self._free_servers = set(range(self.n))
 
     def calc_load(self) -> float:
         """
@@ -160,21 +170,22 @@ class QsSim:
             tsk = Task(self.ttek)
             tsk.wait_time = 0
 
-        for s in self.servers:
-            if s.is_free:
-                self.taked += 1
-                self.refresh_w_stat(tsk.wait_time)
-                self.zero_wait_arrivals_num += 1
+        # Use free servers set for O(1) access
+        if self._free_servers:
+            server_idx = next(iter(self._free_servers))
+            self.taked += 1
+            self.refresh_w_stat(tsk.wait_time)
+            self.zero_wait_arrivals_num += 1
 
-                s.start_service(tsk, self.ttek, is_warm_start)
-                self.free_channels -= 1
+            self.servers[server_idx].start_service(tsk, self.ttek, is_warm_start)
+            self._free_servers.remove(server_idx)
+            self.free_channels -= 1
+            self._servers_time_changed = True
 
-                # Проверям, не наступил ли ПНЗ:
-                if self.free_channels == 0:
-                    if self.in_sys == self.n:
-                        self.start_busy = self.ttek
-
-                break
+            # Проверям, не наступил ли ПНЗ:
+            if self.free_channels == 0:
+                if self.in_sys == self.n:
+                    self.start_busy = self.ttek
 
     def send_task_to_queue(self, new_tsk=None) -> None:
         """
@@ -209,6 +220,10 @@ class QsSim:
         """
 
         self.arrived += 1
+        # Ensure p array is large enough
+        if self.in_sys >= len(self.p):
+            # Extend p array if needed
+            self.p.extend([0.0] * (self.in_sys - len(self.p) + 1))
         self.p[self.in_sys] += self.arrival_time - self.ttek
 
         if moment:
@@ -243,7 +258,13 @@ class QsSim:
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
+        self._servers_time_changed = True
+        self._free_servers.add(c)  # Server is now free
 
+        # Ensure p array is large enough
+        if self.in_sys >= len(self.p):
+            # Extend p array if needed
+            self.p.extend([0.0] * (self.in_sys - len(self.p) + 1))
         self.p[self.in_sys] += time_to_end - self.ttek
 
         self.ttek = time_to_end
@@ -286,20 +307,31 @@ class QsSim:
         self.refresh_w_stat(que_ts.wait_time)
 
         self.servers[channel_num].start_service(que_ts, self.ttek)
+        self._free_servers.remove(channel_num)  # Server is now busy
         self.free_channels -= 1
+        self._servers_time_changed = True
+
+    def _get_min_server_time(self):
+        """
+        Get server with minimum time to end service.
+        Uses caching to avoid O(n) search on every call.
+        """
+        if self._servers_time_changed:
+            self._min_server_time = 1e16
+            self._min_server_idx = -1
+            for c in range(self.n):
+                if self.servers[c].time_to_end_service < self._min_server_time:
+                    self._min_server_time = self.servers[c].time_to_end_service
+                    self._min_server_idx = c
+            self._servers_time_changed = False
+        return self._min_server_idx, self._min_server_time
 
     def run_one_step(self) -> None:
         """
         Execute one step of the simulation (either an arrival or service completion event).
         """
 
-        num_of_server_earlier = -1
-        serv_earl = 1e16
-
-        for c in range(self.n):
-            if self.servers[c].time_to_end_service < serv_earl:
-                serv_earl = self.servers[c].time_to_end_service
-                num_of_server_earlier = c
+        num_of_server_earlier, serv_earl = self._get_min_server_time()
 
         # Global warm-up is set. Need to track
         # including the moment of warm-up end
@@ -409,42 +441,33 @@ class QsSim:
         return self.w
 
     def __str__(self, is_short=False):
-
-        res = "Queueing system " + self.source_kendall_notation + "/" + self.server_kendall_notation + "/" + str(self.n)
-        if self.buffer is not None:
-            res += "/" + str(self.buffer)
-        res += f"\nLoad: {self.calc_load():4.3f}\n"
+        buffer_str = f"/{self.buffer}" if self.buffer is not None else ""
+        res = f"Queueing system {self.source_kendall_notation}/{self.server_kendall_notation}/{self.n}{buffer_str}\n"
+        res += f"Load: {self.calc_load():4.3f}\n"
         res += f"Current Time {self.ttek:8.3f}\n"
         res += f"Arrival Time: {self.arrival_time:8.3f}\n"
 
-        res += "Sojourn moments:\n"
-        for i in range(3):
-            res += f"\t{self.v[i]:8.4f}"
-        res += "\n"
+        sojourn_moments = "\t".join(f"{self.v[i]:8.4f}" for i in range(3))
+        res += f"Sojourn moments:\n\t{sojourn_moments}\n"
 
-        res += "Wait moments:\n"
-        for i in range(3):
-            res += f"\t{self.w[i]:8.4f}"
-        res += "\n"
+        wait_moments = "\t".join(f"{self.w[i]:8.4f}" for i in range(3))
+        res += f"Wait moments:\n\t{wait_moments}\n"
 
         if not is_short:
-            res += "Stationary prob:\n"
-            res += "\t"
-            for i in range(10):
-                res += f"{self.p[i] / self.ttek:6.5f}\t"
-            res += "\n"
+            stationary_probs = "\t".join(f"{self.p[i] / self.ttek:6.5f}" for i in range(10))
+            res += f"Stationary prob:\n\t{stationary_probs}\n"
+
             res += f"Arrived: {self.arrived}\n"
             if self.buffer is not None:
                 res += f"Dropped: {self.dropped}\n"
             res += f"Taken: {self.taked}\n"
             res += f"Served: {self.served}\n"
             res += f"In System: {self.in_sys}\n"
-            res += "Busy moments:\n"
-            for j in range(3):
-                res += f"\t{self.busy[j]:8.4f}"
-            res += "\n"
-            for c in range(self.n):
-                res += str(self.servers[c])
-            res += f"\nQueue Count {self.queue.size()}\n"
+
+            busy_moments = "\t".join(f"{self.busy[j]:8.4f}" for j in range(3))
+            res += f"Busy moments:\n\t{busy_moments}\n"
+
+            server_strs = "".join(str(self.servers[c]) for c in range(self.n))
+            res += f"{server_strs}\nQueue Count {self.queue.size()}\n"
 
         return res

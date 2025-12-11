@@ -31,11 +31,12 @@ class QSQueue(ABCMeta):
 class QsQueueList:
     """
     QS Queue (Buffer) List implementation
+    Uses deque internally for O(1) pop operations
     """
 
     def __init__(self):
 
-        self.queue = []
+        self.queue = deque()
 
     def append(self, task):
         """
@@ -48,7 +49,7 @@ class QsQueueList:
         """
         Get first task (from head of queue)
         """
-        return self.queue.pop(0)
+        return self.queue.popleft()
 
     def tail(self):
         """

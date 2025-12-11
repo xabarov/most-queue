@@ -11,10 +11,10 @@ import time
 from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
-from most_queue.theory.fifo.mg1 import MG1Calculation
+from most_queue.theory.fifo.mg1 import MG1Calc
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
-from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemtiveCalculation
-from most_queue.theory.priority.preemptive.mg1 import MG1PreemtiveCalculation
+from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptiveCalc
+from most_queue.theory.priority.preemptive.mg1 import MG1PreemptiveCalc
 from most_queue.theory.utils.conv import conv_moments
 
 
@@ -105,12 +105,12 @@ class MGnInvarApproximation(BaseQueue):
                 b1[k][j] = self.b[k][j] / math.pow(self.n, j + 1)
 
         if self.priority == "NP":
-            calc_np1 = MG1NonPreemtiveCalculation()
+            calc_np1 = MG1NonPreemptiveCalc()
             calc_np1.set_sources(self.l)
             calc_np1.set_servers(b1)
             w1_prty = calc_np1.get_w()
         elif self.priority == "PR":
-            calc_pr1 = MG1PreemtiveCalculation()
+            calc_pr1 = MG1PreemptiveCalc()
             calc_pr1.set_sources(self.l)
             calc_pr1.set_servers(b1)
             pr_prty_calc = calc_pr1.run(num=num)
@@ -129,7 +129,7 @@ class MGnInvarApproximation(BaseQueue):
         for k in range(k_num):
             l_sum += self.l[k]
 
-        mg1_num = MG1Calculation()
+        mg1_num = MG1Calc()
         mg1_num.set_sources(l_sum)
         mg1_num.set_servers(b_sr)
 

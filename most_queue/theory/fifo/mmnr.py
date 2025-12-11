@@ -3,7 +3,6 @@ Calculate queue M/M/n/r
 """
 
 import math
-import time
 
 from most_queue.random.distributions import ExpDistribution
 from most_queue.structs import QueueResults
@@ -54,8 +53,14 @@ class MMnrCalc(BaseQueue):
     def run(self, num_of_moments: int = 4) -> QueueResults:
         """
         Run calculation of the queue system.
+
+        Args:
+            num_of_moments: Number of moments to calculate.
+
+        Returns:
+            QueueResults with calculated values.
         """
-        start = time.process_time()
+        start = self._measure_time()
 
         p = self.get_p()
         w = self.get_w(num_of_moments)
@@ -63,7 +68,9 @@ class MMnrCalc(BaseQueue):
 
         utilization = self.l / (self.mu * self.n)
 
-        return QueueResults(p=p, w=w, v=v, utilization=utilization, duration=time.process_time() - start)
+        result = QueueResults(p=p, w=w, v=v, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_utilization(self) -> float:
         """

@@ -209,9 +209,7 @@ class GiMn(BaseQueue):
             b0 = left * GammaDistribution.get_gamma_incomplete(-alpha, K * self.mu * j)
             return b0
 
-        print("b0 calc. Unknown type of distr_type")
-
-        return 0
+        raise ValueError(f"Unknown type of distribution: {self.approx_distr}")
 
     def _get_w_pls(self, s) -> float:
         """
@@ -257,6 +255,4 @@ class GiMn(BaseQueue):
                 w_old = w_new
             return w_new
 
-        print("w_param calc. Unknown type of distr_type")
-
-        return 0
+        raise ValueError(f"Unknown type of distribution: {self.approx_distr}")

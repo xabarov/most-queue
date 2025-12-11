@@ -3,7 +3,6 @@ Numerical calculation of Fork-Join queuing systems
 """
 
 import math
-import time
 
 import scipy.special as sp
 
@@ -78,9 +77,9 @@ class ForkJoinMarkovianCalc(BaseQueue):
         If app
         """
 
-        start = time.process_time()
+        start = self._measure_time()
 
-        if not self.k is None:
+        if self.k is not None:
             # Fork-Join (n, k) system
             if approx == "varma":
                 v1 = self.get_v1_varma_nk()
@@ -95,7 +94,9 @@ class ForkJoinMarkovianCalc(BaseQueue):
 
         utilization = self.get_utilization()
 
-        return QueueResults(v=[v1, 0, 0], utilization=utilization, duration=time.process_time() - start)
+        result = QueueResults(v=[v1, 0, 0], utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_utilization(self):
         """

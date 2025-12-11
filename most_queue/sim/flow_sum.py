@@ -103,18 +103,23 @@ class FlowSumSim:
         self.result_flow = self.a[0]
 
     @staticmethod
-    def sum_2_H2_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
+    def _sum_2_flows_generic(
+        distribution_class, get_params_method, a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS
+    ):
         """
-        суммирование двух потоков c коэффициентами вариации > 1
-        Аппроксимация H2-распределением
-        a1 - список из начальных моментов интервалов между соседникми заявками первого потока
-        a2 - список из начальных моментов интервалов между соседникми заявками второго потока
+        Generic method for summing two flows with any distribution.
+        :param distribution_class: Distribution class (e.g., H2Distribution, GammaDistribution)
+        :param get_params_method: Method to get parameters from moments (e.g., H2Distribution.get_params)
+        :param a1: List of initial moments for first flow
+        :param a2: List of initial moments for second flow
+        :param num_of_moments: Number of moments to calculate
+        :param num_of_sim: Number of simulations
+        :return: List of moments for the summed flow
         """
-
-        y1_mus = H2Distribution.get_params(a1)
-        arr1 = H2Distribution(y1_mus)
-        y2_mus = H2Distribution.get_params(a2)
-        arr2 = H2Distribution(y2_mus)
+        params1 = get_params_method(a1)
+        arr1 = distribution_class(params1)
+        params2 = get_params_method(a2)
+        arr2 = distribution_class(params2)
         arrivals = []
         time1 = arr1.generate()
         time2 = arr2.generate()
@@ -130,9 +135,7 @@ class FlowSumSim:
                 ttek = time2
                 time2 = ttek + arr2.generate()
 
-        f = []
-        for i in range(num_of_moments):
-            f.append(0)
+        f = [0] * num_of_moments
 
         for k in range(num_of_moments):
             summ = 0
@@ -141,6 +144,18 @@ class FlowSumSim:
             f[k] = summ / num_of_sim
 
         return f
+
+    @staticmethod
+    def sum_2_H2_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
+        """
+        суммирование двух потоков c коэффициентами вариации > 1
+        Аппроксимация H2-распределением
+        a1 - список из начальных моментов интервалов между соседникми заявками первого потока
+        a2 - список из начальных моментов интервалов между соседникми заявками второго потока
+        """
+        return FlowSumSim._sum_2_flows_generic(
+            H2Distribution, H2Distribution.get_params, a1, a2, num_of_moments, num_of_sim
+        )
 
     @staticmethod
     def get_cv(a: list[complex]):
@@ -159,37 +174,9 @@ class FlowSumSim:
         a1 - список из начальных моментов интервалов между соседникми заявками первого потока
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
-
-        a_K = ParetoDistribution.get_params(a1)
-        arr1 = ParetoDistribution(a_K)
-        b_M = ParetoDistribution.get_params(a2)
-        arr2 = ParetoDistribution(b_M)
-        arrivals = []
-        time1 = arr1.generate()
-        time2 = arr2.generate()
-        ttek = 0
-
-        for i in tqdm(range(num_of_sim)):
-            if time1 < time2:
-                arrivals.append(time1 - ttek)
-                ttek = time1
-                time1 = ttek + arr1.generate()
-            else:
-                arrivals.append(time2 - ttek)
-                ttek = time2
-                time2 = ttek + arr2.generate()
-
-        f = []
-        for i in range(num_of_moments):
-            f.append(0)
-
-        for k in range(num_of_moments):
-            summ = 0
-            for i in range(num_of_sim):
-                summ += pow(arrivals[i], k + 1)
-            f[k] = summ / num_of_sim
-
-        return f
+        return FlowSumSim._sum_2_flows_generic(
+            ParetoDistribution, ParetoDistribution.get_params, a1, a2, num_of_moments, num_of_sim
+        )
 
     @staticmethod
     def sum_2_Erlang_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
@@ -198,37 +185,9 @@ class FlowSumSim:
         num_of_moments: number of moments to calculate.
         num_of_sim: number of simulations.
         """
-
-        params1 = ErlangDistribution.get_params(a1)
-        arr1 = ErlangDistribution(params1)
-        params2 = ErlangDistribution.get_params(a2)
-        arr2 = ErlangDistribution(params2)
-        arrivals = []
-        time1 = arr1.generate()
-        time2 = arr2.generate()
-        ttek = 0
-
-        for i in tqdm(range(num_of_sim)):
-            if time1 < time2:
-                arrivals.append(time1 - ttek)
-                ttek = time1
-                time1 = ttek + arr1.generate()
-            else:
-                arrivals.append(time2 - ttek)
-                ttek = time2
-                time2 = ttek + arr2.generate()
-
-        f = []
-        for i in range(num_of_moments):
-            f.append(0)
-
-        for k in range(num_of_moments):
-            summ = 0
-            for i in range(num_of_sim):
-                summ += pow(arrivals[i], k + 1)
-            f[k] = summ / num_of_sim
-
-        return f
+        return FlowSumSim._sum_2_flows_generic(
+            ErlangDistribution, ErlangDistribution.get_params, a1, a2, num_of_moments, num_of_sim
+        )
 
     @staticmethod
     def sum_2_Gamma_flows(a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS):
@@ -238,37 +197,9 @@ class FlowSumSim:
         a1 - список из начальных моментов интервалов между соседникми заявками первого потока
         a2 - список из начальных моментов интервалов между соседникми заявками второго потока
         """
-
-        params1 = GammaDistribution.get_params(a1)
-        arr1 = GammaDistribution(params1)
-        params2 = GammaDistribution.get_params(a2)
-        arr2 = GammaDistribution(params2)
-        arrivals = []
-        time1 = arr1.generate()
-        time2 = arr2.generate()
-        ttek = 0
-
-        for i in tqdm(range(num_of_sim)):
-            if time1 < time2:
-                arrivals.append(time1 - ttek)
-                ttek = time1
-                time1 = ttek + arr1.generate()
-            else:
-                arrivals.append(time2 - ttek)
-                ttek = time2
-                time2 = ttek + arr2.generate()
-
-        f = []
-        for i in range(num_of_moments):
-            f.append(0)
-
-        for k in range(num_of_moments):
-            summ = 0
-            for i in range(num_of_sim):
-                summ += pow(arrivals[i], k + 1)
-            f[k] = summ / num_of_sim
-
-        return f
+        return FlowSumSim._sum_2_flows_generic(
+            GammaDistribution, GammaDistribution.get_params, a1, a2, num_of_moments, num_of_sim
+        )
 
     @staticmethod
     def sum_n_flows(a, disr="Gamma", verbose=True):

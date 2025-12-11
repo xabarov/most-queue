@@ -2,8 +2,6 @@
 Calculation of the Engset model for M/M/1 with a finite number of sources.
 """
 
-import time
-
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.conv import conv_moments
@@ -52,15 +50,19 @@ class Engset(BaseQueue):
     def run(self) -> QueueResults:
         """
         Run calculations for Engset model.
-        """
 
-        start = time.process_time()
+        Returns:
+            QueueResults with calculated values.
+        """
+        start = self._measure_time()
 
         v = self.get_v()
         w = self.get_w()
         p = self.get_p()
 
-        return QueueResults(v=v, w=w, p=p, utilization=self.ro, duration=time.process_time() - start)
+        result = QueueResults(v=v, w=w, p=p, utilization=self.ro)
+        self._set_duration(result, start)
+        return result
 
     def get_p(self) -> list[float]:
         """

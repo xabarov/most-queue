@@ -2,8 +2,6 @@
 Calculation of M/M/1 QS with batch arrival
 """
 
-import time
-
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
@@ -52,16 +50,20 @@ class BatchMM1(BaseQueue):
 
     def run(self) -> QueueResults:
         """
-        Run calculation
-        """
+        Run calculation.
 
-        start = time.process_time()
+        Returns:
+            QueueResults with calculated values.
+        """
+        start = self._measure_time()
 
         v = [self.get_v1()]
         w = [self.get_w1()]
         p = self.get_p()
 
-        return QueueResults(utilization=self.ro, v=v, w=w, p=p, duration=time.process_time() - start)
+        result = QueueResults(utilization=self.ro, v=v, w=w, p=p)
+        self._set_duration(result, start)
+        return result
 
     def calc_mean_batch_size(self):
         """

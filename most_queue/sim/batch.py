@@ -54,17 +54,19 @@ class QueueingSystemBatchSim(QsSim):
 
     def _handle_service_start(self, ttek):
         """Helper to manage task service start when channels are free."""
-        for s in self.servers:
-            if s.is_free:
-                self.taked += 1
-                s.start_service(Task(ttek), ttek, False)
-                self.free_channels -= 1
+        # Use free servers set for O(1) access (optimized in base class)
+        if self._free_servers:
+            server_idx = next(iter(self._free_servers))
+            self.taked += 1
+            self.servers[server_idx].start_service(Task(ttek), ttek, False)
+            self._free_servers.remove(server_idx)
+            self.free_channels -= 1
+            self._servers_time_changed = True
 
-                # Check if busy period has started:
-                if self.free_channels == 0:
-                    if self.in_sys == self.n:
-                        self.start_busy = ttek
-                break
+            # Check if busy period has started:
+            if self.free_channels == 0:
+                if self.in_sys == self.n:
+                    self.start_busy = ttek
 
     def arrival(self, moment=None, ts=None):
         """
@@ -83,6 +85,11 @@ class QueueingSystemBatchSim(QsSim):
 
         for _tsk in range(batch_size):
             self.arrived += 1
+            # Ensure p array is large enough before accessing
+            # We need space for current in_sys and potentially more
+            while self.in_sys >= len(self.p):
+                # Extend p array in chunks to avoid frequent reallocations
+                self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
             self.p[self.in_sys] += self.arrival_time - self.ttek
             self.in_sys += 1
 

@@ -5,8 +5,6 @@ Use results from the paper:
     Journal of Applied Probability 33.4 (1996): 1191-1200.
 """
 
-import time
-
 import numpy as np
 from scipy.misc import derivative
 
@@ -74,11 +72,13 @@ class MG1Disasters(BaseQueue):
         """
         Run calculation
         """
-        start = time.process_time()
+        start = self._measure_time()
         v = self.get_v(num_of_moments)
         utilization = self.get_utilization()
 
-        return QueueResults(v=v, utilization=utilization, duration=time.process_time() - start)
+        result = QueueResults(v=v, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_utilization(self) -> float:
         """

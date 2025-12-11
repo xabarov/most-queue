@@ -2,8 +2,8 @@
 Simulation of a priority queue system (GI/G/n/r and GI/G/n systems)
 """
 
-import math
 import time
+from collections import deque
 
 import numpy as np
 from colorama import Fore, Style, init
@@ -65,7 +65,7 @@ class PriorityQueueSimulator:
         self.p = []
 
         for _ in range(self.k):
-            self.queue.append([])
+            self.queue.append(deque())
 
         for _ in range(self.k):
             self.busy.append([0, 0, 0, 0])
@@ -100,6 +100,14 @@ class PriorityQueueSimulator:
         self.is_warm_up_set = False
 
         self.generator = np.random.default_rng()
+
+        # Cache for server with minimum time
+        self._min_server_time = 1e10
+        self._min_server_idx = -1
+        self._servers_time_changed = True
+
+        # Set of free server indices for O(1) access
+        self._free_servers = set(range(self.n))
 
     def set_sources(self, sources: list[dict]):
         """
@@ -144,6 +152,8 @@ class PriorityQueueSimulator:
 
         for _ in range(self.n):
             self.servers.append(ServerPriority(self.servers_params, self.prty_type, self.generator))
+        self._servers_time_changed = True
+        self._free_servers = set(range(self.n))
 
     def set_warm_up(self, warm_up_params):
         """
@@ -186,8 +196,8 @@ class PriorityQueueSimulator:
             elif self.sources_params[i]["type"] == "H":
                 y1 = self.sources_params[i]["params"].p1
                 y2 = 1.0 - y1
-                mu1 = self.sources_params[i]["type"].mu1
-                mu2 = self.sources_params[i]["type"].mu2
+                mu1 = self.sources_params[i]["params"].mu1
+                mu2 = self.sources_params[i]["params"].mu2
 
                 f1 = y1 / mu1 + y2 / mu2
                 l_sum += 1.0 / f1
@@ -337,17 +347,21 @@ class PriorityQueueSimulator:
                 self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k], is_network=True)
             else:
                 self.servers[0].start_service(new_tsk, self.ttek, self.warm_up[k])
+            self._free_servers.discard(0)  # Server 0 is now busy
             self.free_channels -= 1
+            self._servers_time_changed = True
         else:
-            for s in self.servers:
-                if s.is_free:
-                    self.taked[k] += 1
-                    if moment:
-                        s.start_service(new_tsk, self.ttek, is_network=True)
-                    else:
-                        s.start_service(new_tsk, self.ttek)
-                    self.free_channels -= 1
-                    break
+            # Use free servers set for O(1) access
+            if self._free_servers:
+                server_idx = next(iter(self._free_servers))
+                self.taked[k] += 1
+                if moment:
+                    self.servers[server_idx].start_service(new_tsk, self.ttek, is_network=True)
+                else:
+                    self.servers[server_idx].start_service(new_tsk, self.ttek)
+                self._free_servers.remove(server_idx)
+                self.free_channels -= 1
+                self._servers_time_changed = True
 
         #  check for busy periods
         if self.free_channels == 0:
@@ -420,6 +434,8 @@ class PriorityQueueSimulator:
                 else:
                     self.queue[dropped_tsk.k].append(dropped_tsk)
                     c.start_service(new_tsk, self.ttek)
+                # Server c was already busy (we preempted it), so no need to update _free_servers
+                self._servers_time_changed = True
 
                 break
         if not is_found_weekier:
@@ -447,6 +463,8 @@ class PriorityQueueSimulator:
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
+        self._servers_time_changed = True
+        self._free_servers.add(c)  # Server is now free
         if is_network:
             k = end_ts.in_node_class_num
         else:
@@ -479,7 +497,7 @@ class PriorityQueueSimulator:
             for kk in range(start_number, self.k):
                 if len(self.queue[kk]) != 0:
 
-                    que_ts = self.queue[kk].pop(0)
+                    que_ts = self.queue[kk].popleft()
 
                     if self.free_channels == 1 and kk != end_ts.k:
                         self.start_busy = self.ttek
@@ -492,6 +510,8 @@ class PriorityQueueSimulator:
                         self.servers[c].start_service(que_ts, self.ttek, is_network=True)
                     else:
                         self.servers[c].start_service(que_ts, self.ttek)
+                    self._free_servers.discard(c)  # Server c is now busy
+                    self._servers_time_changed = True
 
                     self.free_channels -= 1
                     break
@@ -504,7 +524,7 @@ class PriorityQueueSimulator:
             # one queue
             if len(self.queue[0]) != 0:
 
-                que_ts = self.queue[0].pop(0)
+                que_ts = self.queue[0].popleft()
 
                 if self.free_channels == 1 and k != end_ts.k:
                     self.start_busy[k] = self.ttek
@@ -513,7 +533,9 @@ class PriorityQueueSimulator:
                 self.taked[k] += 1
                 que_ts.wait_time += self.ttek - que_ts.start_waiting_time
                 self.servers[c].start_service(que_ts, self.ttek)
+                self._free_servers.discard(c)  # Server c is now busy
                 self.free_channels -= 1
+                self._servers_time_changed = True
 
         return end_ts
 
@@ -525,13 +547,27 @@ class PriorityQueueSimulator:
         self.queue[last_class] = self.queue[new_class]
         self.queue[new_class] = buf
 
+    def _get_min_server_time(self):
+        """
+        Get server with minimum time to end service.
+        Uses caching to avoid O(n) search on every call.
+        """
+        if self._servers_time_changed:
+            self._min_server_time = 1e10
+            self._min_server_idx = -1
+            for c in range(self.n):
+                if self.servers[c].time_to_end_service < self._min_server_time:
+                    self._min_server_time = self.servers[c].time_to_end_service
+                    self._min_server_idx = c
+            self._servers_time_changed = False
+        return self._min_server_idx, self._min_server_time
+
     def run_one_step(self):
         """
         Run one step of the simulation.
         """
 
-        num_of_server_earlier = -1
-        serv_earl = 1e10
+        num_of_server_earlier, serv_earl = self._get_min_server_time()
 
         k_earlier = -1
         arrival_earlier = 1e10
@@ -540,11 +576,6 @@ class PriorityQueueSimulator:
             if self.arrival_time[kk] < arrival_earlier:
                 arrival_earlier = self.arrival_time[kk]
                 k_earlier = kk
-
-        for c in range(self.n):
-            if self.servers[c].time_to_end_service < serv_earl:
-                serv_earl = self.servers[c].time_to_end_service
-                num_of_server_earlier = c
 
         # Key moment:
 
@@ -598,10 +629,14 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
         :return: None
         """
+        # Optimize: use power accumulation instead of math.pow for each iteration
+        power = new_a  # new_a^1
+        inv_count = 1.0 / self.busy_moments[k]
+        one_minus_inv_count = 1.0 - inv_count
+
         for i in range(4):
-            self.busy[k][i] = (
-                self.busy[k][i] * (1.0 - (1.0 / self.busy_moments[k])) + math.pow(new_a, i + 1) / self.busy_moments[k]
-            )
+            self.busy[k][i] = self.busy[k][i] * one_minus_inv_count + power * inv_count
+            power *= new_a  # Accumulate: new_a^(i+2) for next iteration
 
     def refresh_v_stat(self, k, new_a):
         """
@@ -609,8 +644,14 @@ class PriorityQueueSimulator:
         :param k: class number
         :param new_a: new arrival rate
         """
+        # Optimize: use power accumulation instead of math.pow for each iteration
+        power = new_a  # new_a^1
+        inv_count = 1.0 / self.served[k]
+        one_minus_inv_count = 1.0 - inv_count
+
         for i in range(4):
-            self.v[k][i] = self.v[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
+            self.v[k][i] = self.v[k][i] * one_minus_inv_count + power * inv_count
+            power *= new_a  # Accumulate: new_a^(i+2) for next iteration
 
     def refresh_w_stat(self, k, new_a):
         """
@@ -619,8 +660,14 @@ class PriorityQueueSimulator:
         :param new_a: new arrival rate
 
         """
+        # Optimize: use power accumulation instead of math.pow for each iteration
+        power = new_a  # new_a^1
+        inv_count = 1.0 / self.served[k]
+        one_minus_inv_count = 1.0 - inv_count
+
         for i in range(4):
-            self.w[k][i] = self.w[k][i] * (1.0 - (1.0 / self.served[k])) + math.pow(new_a, i + 1) / self.served[k]
+            self.w[k][i] = self.w[k][i] * one_minus_inv_count + power * inv_count
+            power *= new_a  # Accumulate: new_a^(i+2) for next iteration
 
     def get_p(self) -> list[list[float]]:
         """
@@ -666,9 +713,10 @@ class PriorityQueueSimulator:
         if is_the_same_source:
             res += f"{Fore.GREEN}{first_source_type}*/{Style.RESET_ALL}"
         else:
-            for kk in range(self.k - 1):
-                res += f"{ Fore.GREEN}{self.sources_params[kk]['type']},{ Style.RESET_ALL}"
-            res += f"{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
+            source_types = ",".join(
+                f"{Fore.GREEN}{self.sources_params[kk]['type']}{Style.RESET_ALL}" for kk in range(self.k - 1)
+            )
+            res += f"{source_types},{Fore.GREEN}{self.sources_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         is_the_same_serving_type = True
         first_serv_type = self.servers_params[0]["type"]
@@ -678,9 +726,10 @@ class PriorityQueueSimulator:
         if is_the_same_serving_type:
             res += f"{Fore.GREEN}{first_serv_type}/{Style.RESET_ALL}"
         else:
-            for kk in range(self.k - 1):
-                res += f"{Fore.GREEN}{self.servers_params[kk]['type']},{ Style.RESET_ALL}"
-            res += f"{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
+            serv_types = ",".join(
+                f"{Fore.GREEN}{self.servers_params[kk]['type']}{Style.RESET_ALL}" for kk in range(self.k - 1)
+            )
+            res += f"{serv_types},{Fore.GREEN}{self.servers_params[self.k - 1]['type']}/{Style.RESET_ALL}"
 
         res += f"{Fore.BLUE}{str(self.n)}{Style.RESET_ALL}"
 
@@ -697,29 +746,24 @@ class PriorityQueueSimulator:
             if not is_short:
                 res += f"{Fore.LIGHTBLUE_EX}\tArrival time:"
                 res += f"\t{self.arrival_time[kk]:.3f}{Style.RESET_ALL}\n"
-            res += "\tSojourn moments:\n"
-            for i in range(3):
-                res += f"\t{Fore.GREEN}{self.v[kk][i]:8.4g}\t"
+            sojourn_moments = "\t".join(f"{Fore.GREEN}{self.v[kk][i]:8.4g}{Style.RESET_ALL}" for i in range(3))
+            res += f"\tSojourn moments:\n\t{sojourn_moments}\n"
 
-            res += "\n\tWait moments:\n"
-            for i in range(3):
-                res += f"\t{Fore.YELLOW}{self.w[kk][i]:8.4g}\t"
-            res += "\n"
+            wait_moments = "\t".join(f"{Fore.YELLOW}{self.w[kk][i]:8.4g}{Style.RESET_ALL}" for i in range(3))
+            res += f"\tWait moments:\n\t{wait_moments}\n"
             if not is_short:
-                res += "\tStationary prob:\n\t"
-                for i in range(10):
-                    res += f"{Fore.CYAN}{self.p[kk][i] / self.ttek:8.4g}   "
-                res += "\n"
+                stationary_probs = "   ".join(
+                    f"{Fore.CYAN}{self.p[kk][i] / self.ttek:8.4g}{Style.RESET_ALL}" for i in range(10)
+                )
+                res += f"\tStationary prob:\n\t{stationary_probs}\n"
                 res += f"\tArrived: {self.arrived[kk]}{Style.RESET_ALL}\n"
                 if self.buffer is not None:
                     res += f"\tDropped: {self.dropped[kk]}{Style.RESET_ALL}\n"
                 res += f"\tTaken: {self.taked[kk]}{Style.RESET_ALL}\n"
                 res += f"\tServed: {self.served[kk]}{Style.RESET_ALL}\n"
                 res += f"\tIn System: {self.in_sys[kk]}{Style.RESET_ALL}\n"
-                res += "\tBusy moments:\n\t"
-                for j in range(3):
-                    res += f"{Fore.MAGENTA}{self.busy[kk][j]:8.4g}    "
-                res += "\n"
+                busy_moments = "    ".join(f"{Fore.MAGENTA}{self.busy[kk][j]:8.4g}{Style.RESET_ALL}" for j in range(3))
+                res += f"\tBusy moments:\n\t{busy_moments}\n"
         for c in range(self.n):
             if self.servers[c].is_free:
                 res += f"Server {c + 1}: Free\n"

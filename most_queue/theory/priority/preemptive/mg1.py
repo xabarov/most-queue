@@ -3,37 +3,41 @@ Class to calculate M/G/1 queue with preemptive (absolute) priority.
 """
 
 import math
-import time
 
 from most_queue.structs import PriorityResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.utils.busy_periods import busy_calc, busy_calc_warm_up
 
 
-class MG1PreemtiveCalculation(BaseQueue):
+class MG1PreemptiveCalc(BaseQueue):
     """
     Class to calculate M/G/1 queue with preemptive (absolute) priority.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Initialize the MG1PreemtiveCalculation class.
+        Initialize the MG1PreemptiveCalc class.
         """
         super().__init__(n=1)
         self.l = None
         self.b = None
 
-    def set_sources(self, l: float):  # pylint: disable=arguments-differ
+    def set_sources(self, l: list[float]) -> None:  # pylint: disable=arguments-differ
         """
-        Set the arrival rate.
+        Set the arrival rates for each priority class.
+
+        Args:
+            l: List of arrival rates for each priority class.
         """
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+    def set_servers(self, b: list[list[float]]) -> None:  # pylint: disable=arguments-differ
         """
-        Set the raw moments of service time distribution.
-        param b: raw moments of service time distribution.
+        Set the raw moments of service time distribution for each priority class.
+
+        Args:
+            b: List of raw moments of service time distribution for each priority class.
         """
         self.b = b
         self.is_servers_set = True
@@ -69,27 +73,23 @@ class MG1PreemtiveCalculation(BaseQueue):
                 w1[j] += self.b[j][0] * R[j - 1] / (1 - R[j - 1])
         return w1
 
-    def run(self, num=3) -> PriorityResults:
+    def run(self, num: int = 3) -> PriorityResults:
         """
-        Calculate raw moments of sojourn time, waiting
-        for service without and with interruptions, active time
-          and busy period in M/G/1 with absolute priority.
-        :param num: number of moments to calculate
-        :return:
-         - sojourn raw moments of continuous busy period
-         - waiting raw moments of continuous busy period
-         - active time raw moments of continuous busy period
-         - busy period raw moments of continuous busy period
+        Calculate raw moments of sojourn time, waiting for service without and with
+        interruptions, active time and busy period in M/G/1 with absolute priority.
 
-        return res:
-        res['v'][k][j] -raw moments of sojourn time
-        res['w'][k][j] - raw moments of waiting for service without interruptions
-        res['h'][k][j] - raw moments of active time
-        res['busy'][k][j] - raw moments of busy period
-        res['w_with_pr'][k][j] - raw moments of waiting for service with interruptions
+        Args:
+            num: Number of moments to calculate.
+
+        Returns:
+            PriorityResults containing:
+            - v: Raw moments of sojourn time for each class
+            - w: Raw moments of waiting for service without interruptions for each class
+            - h: Raw moments of active time for each class
+            - busy: Raw moments of busy period for each class
+            - w_with_pr: Raw moments of waiting for service with interruptions for each class
         """
-
-        start = time.process_time()
+        start = self._measure_time()
 
         self._check_if_servers_and_sources_set()
         num_of_cl = len(self.l)
@@ -183,9 +183,9 @@ class MG1PreemtiveCalculation(BaseQueue):
 
         utilization = self.get_utilization()
 
-        return PriorityResults(
-            v=v, w=w, h=h, w_with_pr=w_with_pr, busy=pi_j, utilization=utilization, duration=time.process_time() - start
-        )
+        result = PriorityResults(v=v, w=w, h=h, w_with_pr=w_with_pr, busy=pi_j, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_utilization(self) -> float:
         """

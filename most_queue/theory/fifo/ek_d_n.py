@@ -4,7 +4,6 @@ Numerical calculation of a multi-channel system Ek/D/n
 
 import cmath
 import math
-import time
 
 import numpy as np
 
@@ -64,14 +63,18 @@ class EkDn(BaseQueue):
 
     def run(self) -> QueueResults:
         """
-        Run calculation
-        """
+        Run calculation.
 
-        start = time.process_time()
+        Returns:
+            QueueResults with calculated values.
+        """
+        start = self._measure_time()
 
         utilization = self.l * self.b / (self.k * self.n)
         p = self.get_p()
-        return QueueResults(p=p, utilization=utilization, duration=time.process_time() - start)
+        result = QueueResults(p=p, utilization=utilization)
+        self._set_duration(result, start)
+        return result
 
     def get_p(self):
         """
