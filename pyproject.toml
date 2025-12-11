@@ -42,7 +42,7 @@ max-line-length = 120
 
 [project]
 name = "most_queue"
-version = "2.05"
+version = "2.06"
 authors = [{ name = "Xabarov Roman", email = "xabarov1985@gmail.com" }]
 description = "Software package for calculation and simulation of queuing systems"
 readme = "README.md"
