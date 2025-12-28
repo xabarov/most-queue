@@ -1,8 +1,6 @@
 """
-Simulation model of QS GI/G/n/r and GI/G/n
+Simulation model of QS GI/G/n/r and GI/G/n with vacations
 """
-
-import numpy as np
 
 from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base import QsSim
@@ -94,17 +92,40 @@ class VacationQueueingSystemSimulator(QsSim):
         dist = create_distribution(params, kendall_notation, self.generator)
         self.cold_delay_phase.set_dist(dist)
 
+    def _get_custom_events(self):
+        """
+        Get custom events (warm-up end, cold end, cold delay end).
+        """
+        events = {}
+        if self.warm_phase.is_set and self.warm_phase.is_start:
+            events["warm_up_end"] = self.warm_phase.end_time
+        if self.cold_phase.is_set and self.cold_phase.is_start:
+            events["cold_end"] = self.cold_phase.end_time
+        if self.cold_delay_phase.is_set and self.cold_delay_phase.is_start:
+            events["cold_delay_end"] = self.cold_delay_phase.end_time
+        return events
+
+    def _handle_custom_event(self, event_type: str):
+        """
+        Handle custom events for vacations (warm-up, cold, cold delay).
+        """
+        if event_type == "warm_up_end":
+            self.on_end_warming()
+        elif event_type == "cold_end":
+            self.on_end_cold()
+        elif event_type == "cold_delay_end":
+            self.on_end_cold_delay()
+        else:
+            super()._handle_custom_event(event_type)
+
     def arrival(self, moment=None, ts=None):
         """
         Actions upon arrival of the job by the QS.
         """
 
         self.arrived += 1
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.arrival_time, self.in_sys)
 
         self.in_sys += 1
         self.ttek = self.arrival_time
@@ -169,13 +190,10 @@ class VacationQueueingSystemSimulator(QsSim):
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
         self._free_servers.add(c)  # Server is now free
-        self._servers_time_changed = True
+        self._mark_servers_time_changed()
 
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += time_to_end - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, time_to_end, self.in_sys)
 
         self.ttek = time_to_end
         self.served += 1
@@ -210,12 +228,8 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after WarmUp Period Ends
         """
-
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.warm_phase.end_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.warm_phase.end_time, self.in_sys)
 
         self.ttek = self.warm_phase.end_time
 
@@ -230,11 +244,8 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Period Ends
         """
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.cold_phase.end_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.cold_phase.end_time, self.in_sys)
 
         self.ttek = self.cold_phase.end_time
 
@@ -257,11 +268,8 @@ class VacationQueueingSystemSimulator(QsSim):
         """
         Job that has to be done after Cold Delay Period Ends
         """
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.cold_delay_phase.end_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.cold_delay_phase.end_time, self.in_sys)
 
         self.ttek = self.cold_delay_phase.end_time
 
@@ -270,39 +278,8 @@ class VacationQueueingSystemSimulator(QsSim):
         # Start the cooling process
         self.cold_phase.start(self.ttek)
 
-    def run_one_step(self):
-        """
-        Run Open step of simulation
-        """
-
-        # Use optimized method from base class
-        num_of_server_earlier, serv_earl = self._get_min_server_time()
-
-        # Global warm-up is set. Need to track
-        # including the moment of warm-up end
-        times = [
-            serv_earl,
-            self.arrival_time,
-            self.warm_phase.end_time,
-            self.cold_phase.end_time,
-            self.cold_delay_phase.end_time,
-        ]
-        min_time_num = np.argmin(times)
-        if min_time_num == 0:
-            # Serving
-            self.serving(num_of_server_earlier)
-        elif min_time_num == 1:
-            # Arrival
-            self.arrival()
-        elif min_time_num == 2:
-            # Warm-up ends
-            self.on_end_warming()
-        elif min_time_num == 3:
-            # Cold ends
-            self.on_end_cold()
-        else:
-            # Delay cold ends
-            self.on_end_cold_delay()
+    # run_one_step is now inherited from base class and uses event-based approach
+    # Custom events are handled via _get_custom_events() and _handle_custom_event()
 
     def run(self, total_served) -> VacationResults:
         """

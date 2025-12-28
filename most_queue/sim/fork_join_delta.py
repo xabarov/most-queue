@@ -17,6 +17,13 @@ class ForkJoinSimDelta(ForkJoinSim):
     Simulation of ForkJoin queue with delta.
     """
 
+    def _handle_custom_event(self, event_type):
+        """
+        Handle custom events (none needed for this simulator).
+        """
+        # This simulator doesn't use custom events
+        raise NotImplementedError(f"Custom event '{event_type}' not supported by ForkJoinSimDelta")
+
     def __init__(
         self,
         num_of_channels,

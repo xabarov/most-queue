@@ -52,17 +52,46 @@ class ImpatientQueueSim(QsSim):
 
         self.impatience = create_distribution(params, kendall_notation, self.generator)
 
+    def _get_custom_events(self):
+        """
+        Get custom events (impatient task drops).
+        """
+        events = {}
+        if self.queue.size() > 0:
+            min_leave_time = float("inf")
+            for tsk in self.queue.queue:
+                if tsk.moment_to_leave < min_leave_time:
+                    min_leave_time = tsk.moment_to_leave
+            if min_leave_time < float("inf"):
+                events["task_drop"] = min_leave_time
+        return events
+
+    def _handle_custom_event(self, event_type: str):
+        """
+        Handle custom events (impatient task drops).
+        """
+        if event_type == "task_drop":
+            # Find the task with minimum leave time
+            num_of_task_earlier = -1
+            moment_to_leave_earlier = float("inf")
+            for i, tsk in enumerate(self.queue.queue):
+                if tsk.moment_to_leave < moment_to_leave_earlier:
+                    moment_to_leave_earlier = tsk.moment_to_leave
+                    num_of_task_earlier = i
+
+            if num_of_task_earlier >= 0:
+                self.drop_task(num_of_task_earlier, moment_to_leave_earlier)
+        else:
+            super()._handle_custom_event(event_type)
+
     def arrival(self, moment=None, ts=None):
         """
         Actions on arrival of a task.
         """
 
         self.arrived += 1
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.arrival_time, self.in_sys)
 
         self.in_sys += 1
         self.ttek = self.arrival_time
@@ -92,7 +121,7 @@ class ImpatientQueueSim(QsSim):
                 self.servers[server_idx].start_service(ImpatientTask(self.ttek, moment_to_leave), self.ttek, False)
                 self._free_servers.remove(server_idx)
                 self.free_channels -= 1
-                self._servers_time_changed = True
+                self._mark_servers_time_changed()
 
                 # Проверям, не наступил ли ПНЗ:
                 if self.free_channels == 0:
@@ -103,11 +132,8 @@ class ImpatientQueueSim(QsSim):
         """
         Drop a task from the queue and update statistics.
         """
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += moment_to_leave_earlier - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, moment_to_leave_earlier, self.in_sys)
         self.ttek = moment_to_leave_earlier
 
         # Remove task from queue - need to handle deque properly
@@ -132,37 +158,8 @@ class ImpatientQueueSim(QsSim):
             end_ts.wait_time = self.ttek - end_ts.arr_time
             self.refresh_w_stat(end_ts.wait_time)
 
-    def run_one_step(self):
-        """
-        Run one step of the simulation.
-        """
-        # Use optimized method from base class
-        num_of_server_earlier, serv_earl = self._get_min_server_time()
-
-        num_of_task_earlier = -1
-        moment_to_leave_earlier = 1e10
-        if self.queue.size() > 0:
-            for i, tsk in enumerate(self.queue.queue):
-                if tsk.moment_to_leave < moment_to_leave_earlier:
-                    moment_to_leave_earlier = tsk.moment_to_leave
-                    num_of_task_earlier = i
-
-        # Key moment:
-
-        if self.arrival_time < serv_earl:
-            if self.arrival_time < moment_to_leave_earlier:
-                self.arrival()
-            elif num_of_task_earlier >= 0:
-                self.drop_task(num_of_task_earlier, moment_to_leave_earlier)
-            else:
-                self.arrival()
-        else:
-            if serv_earl < moment_to_leave_earlier and num_of_task_earlier >= 0:
-                self.serving(num_of_server_earlier)
-            elif num_of_task_earlier >= 0:
-                self.drop_task(num_of_task_earlier, moment_to_leave_earlier)
-            else:
-                self.serving(num_of_server_earlier)
+    # run_one_step is now inherited from base class and uses event-based approach
+    # Custom events (task drops) are handled via _get_custom_events() and _handle_custom_event()
 
     def __str__(self, is_short=False):
         """

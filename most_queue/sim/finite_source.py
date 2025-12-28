@@ -73,7 +73,8 @@ class QueueingFiniteSourceSim(QsSim):
         """
 
         self.arrived += 1
-        self.p[self.in_sys] += self.arrival_times[self.arrived_num] - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.arrival_times[self.arrived_num], self.in_sys)
         self.sources_left -= 1
         self.in_sys += 1
         self.ttek = self.arrival_times[self.arrived_num]

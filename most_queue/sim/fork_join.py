@@ -85,11 +85,8 @@ class ForkJoinSim(QsSim):
         """
 
         self.arrived += 1
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.arrival_time, self.in_sys)
         self.ttek = self.arrival_time
         self.arrival_time = self.ttek + self.source.generate()
 
@@ -122,7 +119,7 @@ class ForkJoinSim(QsSim):
                             self.servers[i].start_service(t.subtasks[i], self.ttek)
                             self._free_servers.discard(i)
                             self.free_channels -= 1
-                            self._servers_time_changed = True
+                            self._mark_servers_time_changed()
                         else:
                             self.queues[i].append(t.subtasks[i])
 
@@ -189,14 +186,11 @@ class ForkJoinSim(QsSim):
         :param c: int : number of channel where service is completed.
         """
         time_to_end = self.servers[c].time_to_end_service
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += time_to_end - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, time_to_end, self.in_sys)
         end_ts = self.servers[c].end_service()
         self._free_servers.add(c)  # Server is now free
-        self._servers_time_changed = True
+        self._mark_servers_time_changed()
         self.ttek = time_to_end
         self.served_subtask_in_task[end_ts.task_id] += 1
         self.total += 1

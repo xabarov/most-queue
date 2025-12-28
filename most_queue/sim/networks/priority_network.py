@@ -172,62 +172,58 @@ class PriorityNetwork(BaseSimNetworkPriority):
         for i in range(3):
             self.w_network[k][i] = self.w_network[k][i] * factor + a_pow[i] / self.served[k]
 
-    def run_one_step(self):
+    # run_one_step is now inherited from base class and uses event-based approach
+    # Custom events are handled via _get_custom_network_events() and _handle_custom_network_event()
+
+    def _execute_event(self, event_type: str):
         """
-        Run one step of the simulation.
+        Execute network event. Override to handle priority network-specific events.
         """
-        num_of_serv_ch_earlier = -1  # номер канала узла, мин время до окончания обслуживания
-        num_of_k_earlier = -1  # номер класса, прибывающего через мин время
-        num_of_node_earlier = -1  # номер узла, в котором раньше всех закончится обслуживание
-        arrival_earlier = 1e10  # момент прибытия ближайшего
-        serving_earlier = 1e10  # момент ближайшего обслуживания
-
-        for k in range(self.k_num):
-            if self.arrival_time[k] < arrival_earlier:
-                num_of_k_earlier = k
-                arrival_earlier = self.arrival_time[k]
-
-        for node in range(self.n_num):
-            for c in range(self.nodes[node]):
-                if self.qs[node].servers[c].time_to_end_service < serving_earlier:
-                    serving_earlier = self.qs[node].servers[c].time_to_end_service
-                    num_of_serv_ch_earlier = c
-                    num_of_node_earlier = node
-
-        if arrival_earlier < serving_earlier:
-            self.on_arrival(arrival_earlier, num_of_k_earlier)
+        if event_type.startswith("network_arrival_class_"):
+            k = int(event_type.split("_")[-1])
+            self._before_network_arrival(k)
+            self.on_arrival(self.arrival_time[k], k)
+            self._after_network_arrival(k)
+        elif event_type.startswith("node_serving_"):
+            parts = event_type.split("_")
+            node = int(parts[2])
+            channel = int(parts[3])
+            self._before_node_serving(node, channel)
+            result = self.on_serving(node, channel)
+            self._after_node_serving(node, channel, result)
         else:
-            self.on_serving(serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier)
+            super()._execute_event(event_type)
 
-    def on_arrival(self, arrival_earlier, num_of_k_earlier):
+    def on_arrival(self, arrival_time, k):
         """
         Handle arrival event
         """
-        self.ttek = arrival_earlier
-        self.arrived[num_of_k_earlier] += 1
-        self.in_sys[num_of_k_earlier] += 1
+        self.ttek = arrival_time
+        self.arrived[k] += 1
+        self.in_sys[k] += 1
 
-        self.arrival_time[num_of_k_earlier] = self.ttek + self.sources[num_of_k_earlier].generate()
+        self.arrival_time[k] = self.ttek + self.sources[k].generate()
 
-        next_node = self.choose_next_node(num_of_k_earlier, -1)
+        next_node = self.choose_next_node(k, -1)
 
-        ts = TaskPriority(num_of_k_earlier, self.ttek, True)
+        ts = TaskPriority(k, self.ttek, True)
 
-        next_node_class = self.nodes_prty[next_node][num_of_k_earlier]
+        next_node_class = self.nodes_prty[next_node][k]
 
         ts.in_node_class_num = next_node_class
 
         self.qs[next_node].arrival(next_node_class, self.ttek, ts)
 
-    def on_serving(self, serving_earlier, num_of_serv_ch_earlier, num_of_node_earlier):
+    def on_serving(self, node, channel):
         """
         Handle serving event
         """
-        self.ttek = serving_earlier
-        ts = self.qs[num_of_node_earlier].serving(num_of_serv_ch_earlier, True)
+        serving_time = self.qs[node].servers[channel].time_to_end_service
+        self.ttek = serving_time
+        ts = self.qs[node].serving(channel, True)
 
         real_class = ts.k
-        next_node = self.choose_next_node(real_class, num_of_node_earlier)
+        next_node = self.choose_next_node(real_class, node)
 
         if next_node == self.n_num:
             self.served[real_class] += 1
@@ -240,6 +236,8 @@ class PriorityNetwork(BaseSimNetworkPriority):
             next_node_class = self.nodes_prty[next_node][real_class]
 
             self.qs[next_node].arrival(next_node_class, self.ttek, ts)
+
+        return ts
 
     def run(self, job_served: int) -> NetworkResultsPriority:
         """

@@ -5,8 +5,6 @@ Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
 import random
 from enum import Enum
 
-import numpy as np
-
 from most_queue.random.utils.create import create_distribution
 from most_queue.random.utils.load import calc_qs_load
 from most_queue.sim.base import QsSim
@@ -150,11 +148,8 @@ class QsSimNegatives(QsSim):
         """
 
         self.positive_arrived += 1
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.positive_arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.positive_arrival_time, self.in_sys)
 
         self.in_sys += 1
         self.ttek = self.positive_arrival_time
@@ -171,11 +166,8 @@ class QsSimNegatives(QsSim):
         """
 
         self.negative_arrived += 1
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += self.negative_arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.negative_arrival_time, self.in_sys)
         self.ttek = self.negative_arrival_time
         self.negative_arrival_time = self.ttek + self.negative_source.generate()
 
@@ -198,7 +190,7 @@ class QsSimNegatives(QsSim):
             self.in_sys = 0
             self.free_channels = self.n
             self._free_servers = set(range(self.n))  # All servers are free
-            self._servers_time_changed = True
+            self._mark_servers_time_changed()
 
             while self.queue.size() > 0:
                 ts = self.queue.pop()
@@ -247,7 +239,7 @@ class QsSimNegatives(QsSim):
             c = random.choice(not_free_servers)
             end_ts = self.servers[c].end_service()
             self._free_servers.add(c)  # Server is now free
-            self._servers_time_changed = True
+            self._mark_servers_time_changed()
             self.total += 1
             self.broken += 1
             self.free_channels += 1
@@ -260,6 +252,52 @@ class QsSimNegatives(QsSim):
             if self.queue.size() != 0:
                 self.send_head_of_queue_to_channel(c)
 
+    def _get_available_events(self):
+        """
+        Collect all available events (positive arrival, negative arrival, serving, custom).
+        Override to include negative arrivals.
+        """
+        events = {}
+
+        # Positive arrival event
+        if hasattr(self, "positive_arrival_time") and self.positive_arrival_time < float("inf"):
+            events["positive_arrival"] = self.positive_arrival_time
+
+        # Negative arrival event
+        if hasattr(self, "negative_arrival_time") and self.negative_arrival_time < float("inf"):
+            events["negative_arrival"] = self.negative_arrival_time
+
+        # Standard serving event (next service completion)
+        server_idx, serv_time = self._get_min_server_time()
+        if server_idx >= 0 and serv_time < float("inf"):
+            events["serving"] = serv_time
+
+        # Custom events from subclass
+        custom_events = self._get_custom_events()
+        events.update(custom_events)
+
+        return events
+
+    def _execute_event(self, event_type: str):
+        """
+        Execute the specified event.
+        Override to handle positive/negative arrivals.
+        """
+        if event_type == "positive_arrival":
+            self._before_arrival()
+            self.positive_arrival()
+            self._after_arrival()
+        elif event_type == "negative_arrival":
+            self.negative_arrival()
+        elif event_type == "serving":
+            server_idx, _ = self._get_min_server_time()
+            self._before_serving(server_idx)
+            task = self.serving(server_idx)
+            self._after_serving(server_idx, task)
+        else:
+            # Custom event
+            self._handle_custom_event(event_type)
+
     def serving(self, c, is_network=False):
         """
         Actions upon receipt of a service job with - channel number
@@ -267,13 +305,10 @@ class QsSimNegatives(QsSim):
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
         self._free_servers.add(c)  # Server is now free
-        self._servers_time_changed = True
+        self._mark_servers_time_changed()
 
-        # Ensure p array is large enough
-        while self.in_sys >= len(self.p):
-            # Extend p array in chunks to avoid frequent reallocations
-            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-        self.p[self.in_sys] += time_to_end - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, time_to_end, self.in_sys)
 
         self.ttek = time_to_end
         self.free_channels += 1
@@ -287,29 +322,12 @@ class QsSimNegatives(QsSim):
         self.in_sys -= 1
 
         if self.queue.size() != 0:
-            self.send_head_of_queue_to_channel(c)
+            self.send_head_of_queue_to_channel(c, is_network=is_network)
 
-    def run_one_step(self):
-        """
-        Run Open step of simulation
-        """
+        return end_ts
 
-        # Use optimized method from base class
-        num_of_server_earlier, serv_earl = self._get_min_server_time()
-
-        # Global warm-up is set. Need to track
-        # including the moment of warm-up end
-        times = [serv_earl, self.positive_arrival_time, self.negative_arrival_time]
-        min_time_num = np.argmin(times)
-        if min_time_num == 0:
-            # Serving
-            self.serving(num_of_server_earlier)
-        elif min_time_num == 1:
-            # Arrival positive
-            self.positive_arrival()
-        else:
-            # Arrival negative
-            self.negative_arrival()
+    # run_one_step is now inherited from base class and uses event-based approach
+    # Positive and negative arrivals are handled via overridden _get_available_events() and _execute_event()
 
     def refresh_v_stat(self, new_a):
         """

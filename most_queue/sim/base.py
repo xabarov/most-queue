@@ -4,13 +4,14 @@ Simulation model of QS GI/G/n/r and GI/G/n
 
 import time
 
-import numpy as np
 from colorama import Fore, Style, init
 from tqdm import tqdm
 
 from most_queue.constants import DEFAULT_NUM_STATES
 from most_queue.random.utils.create import create_distribution
 from most_queue.random.utils.load import calc_qs_load
+from most_queue.sim.base_core import BaseSimulationCore
+from most_queue.sim.utils.events import EventScheduler
 from most_queue.sim.utils.qs_queue import QsQueueDeque, QsQueueList
 from most_queue.sim.utils.servers import Server
 from most_queue.sim.utils.stats_update import refresh_moments_stat
@@ -20,7 +21,7 @@ from most_queue.structs import QueueResults
 init()
 
 
-class QsSim:
+class QsSim(BaseSimulationCore):
     """
     Base class for Queueing System Simulator
     """
@@ -33,11 +34,11 @@ class QsSim:
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
         """
+        super().__init__()
+
         self.n = num_of_channels
         self.buffer = buffer
         self.verbose = verbose
-
-        self.generator = np.random.default_rng()
 
         self.free_channels = self.n
         self.num_of_states = DEFAULT_NUM_STATES
@@ -45,10 +46,7 @@ class QsSim:
 
         # to track the length of the continuous channel occupancy period:
         self.start_busy = 0
-        self.busy = [0, 0, 0]
-        self.busy_moments = 0
 
-        self.ttek = 0  # current simulation time
         self.total = 0
 
         self.w = [0, 0, 0, 0]  # raw moments of waiting time in the QS
@@ -85,17 +83,13 @@ class QsSim:
         self.is_set_source_params = False
         self.is_set_server_params = False
 
-        self.time_spent = 0
-
         self.zero_wait_arrivals_num = 0
-
-        # Cache for server with minimum time
-        self._min_server_time = 1e16
-        self._min_server_idx = -1
-        self._servers_time_changed = True
 
         # Set of free server indices for O(1) access
         self._free_servers = set(range(self.n))
+
+        # Event scheduler for managing simulation events
+        self.event_scheduler = EventScheduler()
 
     def set_sources(self, params, kendall_notation: str = "M"):
         """
@@ -139,7 +133,7 @@ class QsSim:
             )
             for _i in range(self.n)
         ]
-        self._servers_time_changed = True
+        self._mark_servers_time_changed()
         self._free_servers = set(range(self.n))
 
     def calc_load(self) -> float:
@@ -180,7 +174,7 @@ class QsSim:
             self.servers[server_idx].start_service(tsk, self.ttek, is_warm_start)
             self._free_servers.remove(server_idx)
             self.free_channels -= 1
-            self._servers_time_changed = True
+            self._mark_servers_time_changed()
 
             # Проверям, не наступил ли ПНЗ:
             if self.free_channels == 0:
@@ -199,6 +193,10 @@ class QsSim:
         if new_tsk is None:
             new_tsk = Task(self.ttek)
             new_tsk.start_waiting_time = self.ttek
+        else:
+            # If task already exists but start_waiting_time is not set, set it now
+            if new_tsk.start_waiting_time < 0:
+                new_tsk.start_waiting_time = self.ttek
 
         if self.buffer is None:  # queue length is not specified, i.e. infinite queue
 
@@ -220,11 +218,8 @@ class QsSim:
         """
 
         self.arrived += 1
-        # Ensure p array is large enough
-        if self.in_sys >= len(self.p):
-            # Extend p array if needed
-            self.p.extend([0.0] * (self.in_sys - len(self.p) + 1))
-        self.p[self.in_sys] += self.arrival_time - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, self.arrival_time, self.in_sys)
 
         if moment:
             self.ttek = moment
@@ -258,14 +253,11 @@ class QsSim:
         """
         time_to_end = self.servers[c].time_to_end_service
         end_ts = self.servers[c].end_service()
-        self._servers_time_changed = True
+        self._mark_servers_time_changed()
         self._free_servers.add(c)  # Server is now free
 
-        # Ensure p array is large enough
-        if self.in_sys >= len(self.p):
-            # Extend p array if needed
-            self.p.extend([0.0] * (self.in_sys - len(self.p) + 1))
-        self.p[self.in_sys] += time_to_end - self.ttek
+        # Update state probabilities
+        self._update_state_probs(self.ttek, time_to_end, self.in_sys)
 
         self.ttek = time_to_end
         self.served += 1
@@ -326,23 +318,154 @@ class QsSim:
             self._servers_time_changed = False
         return self._min_server_idx, self._min_server_time
 
+    def _update_state_probs(self, old_time: float, new_time: float, state: int):
+        """
+        Update state probabilities array.
+
+        Args:
+            old_time: Previous time
+            new_time: New time
+            state: Current system state
+        """
+        # Ensure p array is large enough
+        while state >= len(self.p):
+            # Extend p array in chunks to avoid frequent reallocations
+            self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
+        self.p[state] += new_time - old_time
+
+    # Hook methods for customization
+    def _before_arrival(self, moment: float = None, ts=None):
+        """
+        Hook called before arrival event is processed.
+        Override this to add custom logic before arrival.
+
+        Args:
+            moment: Optional specific arrival moment
+            ts: Optional task object
+        """
+        # Override in subclasses if needed
+
+    def _after_arrival(self, moment: float = None, ts=None):
+        """
+        Hook called after arrival event is processed.
+        Override this to add custom logic after arrival.
+
+        Args:
+            moment: Optional specific arrival moment
+            ts: Optional task object
+        """
+        # Override in subclasses if needed
+
+    def _before_serving(self, channel: int, is_network: bool = False):
+        """
+        Hook called before serving event is processed.
+        Override this to add custom logic before serving.
+
+        Args:
+            channel: Channel number that completed service
+            is_network: Whether this is part of a network simulation
+        """
+        # Override in subclasses if needed
+
+    def _after_serving(self, channel: int, task=None, is_network: bool = False):
+        """
+        Hook called after serving event is processed.
+        Override this to add custom logic after serving.
+
+        Args:
+            channel: Channel number that completed service
+            task: Task that completed service
+            is_network: Whether this is part of a network simulation
+        """
+        # Override in subclasses if needed
+
+    def _get_custom_events(self):
+        """
+        Get custom events for this simulator.
+        Override this method to register custom event types.
+
+        Returns:
+            dict: Dictionary mapping event_type -> event_time
+        """
+        return {}
+
+    def _handle_custom_event(self, event_type: str):
+        """
+        Handle a custom event.
+        Override this method to process custom events.
+
+        Args:
+            event_type: Type of the custom event
+        """
+        raise NotImplementedError(f"Custom event '{event_type}' not handled")
+
+    def _get_available_events(self):
+        """
+        Collect all available events (arrival, serving, custom).
+        Returns dictionary of event_type -> event_time.
+        """
+        events = {}
+
+        # Standard arrival event
+        if hasattr(self, "arrival_time") and self.arrival_time < float("inf"):
+            events["arrival"] = self.arrival_time
+
+        # Standard serving event (next service completion)
+        server_idx, serv_time = self._get_min_server_time()
+        if server_idx >= 0 and serv_time < float("inf"):
+            events["serving"] = serv_time
+
+        # Custom events from subclass
+        custom_events = self._get_custom_events()
+        events.update(custom_events)
+
+        return events
+
+    def _select_next_event(self):
+        """
+        Select the next event to process based on minimum time.
+
+        Returns:
+            tuple: (event_type, event_time) or (None, None) if no events
+        """
+        events = self._get_available_events()
+        if not events:
+            return None, None
+
+        event_type = min(events.keys(), key=lambda k: events[k])
+        return event_type, events[event_type]
+
+    def _execute_event(self, event_type: str):
+        """
+        Execute the specified event.
+
+        Args:
+            event_type: Type of event to execute
+        """
+        if event_type == "arrival":
+            self._before_arrival()
+            self.arrival()
+            self._after_arrival()
+        elif event_type == "serving":
+            server_idx, _ = self._get_min_server_time()
+            self._before_serving(server_idx)
+            task = self.serving(server_idx)
+            self._after_serving(server_idx, task)
+        else:
+            # Custom event
+            self._handle_custom_event(event_type)
+
     def run_one_step(self) -> None:
         """
-        Execute one step of the simulation (either an arrival or service completion event).
+        Execute one step of the simulation using event-based approach.
+        Automatically handles arrival, serving, and custom events.
         """
+        event_type, _event_time = self._select_next_event()
 
-        num_of_server_earlier, serv_earl = self._get_min_server_time()
+        if event_type is None:
+            raise RuntimeError("No events available to process")
 
-        # Global warm-up is set. Need to track
-        # including the moment of warm-up end
-        times = [serv_earl, self.arrival_time]
-        min_time_num = np.argmin(times)
-        if min_time_num == 0:
-            # Serving
-            self.serving(num_of_server_earlier)
-        else:
-            # Arrival
-            self.arrival()
+        self._execute_event(event_type)
 
     def run(self, total_served: int) -> QueueResults:
         """
@@ -386,32 +509,41 @@ class QsSim:
 
         return QueueResults(v=v, w=w, p=p, duration=self.time_spent, utilization=self.calc_load())
 
-    def refresh_busy_stat(self, new_a: float) -> None:
+    def refresh_busy_stat(self, new_a: float, count: int = None) -> None:
         """
         Update statistics of the busy period.
 
         Args:
             new_a: New busy period duration to include in statistics.
+            count: Number of busy periods (if None, uses self.busy_moments)
         """
-        self.busy = refresh_moments_stat(self.busy, new_a, self.busy_moments)
+        if count is None:
+            count = self.busy_moments
+        super().refresh_busy_stat(new_a, count)
 
-    def refresh_v_stat(self, new_a: float) -> None:
+    def refresh_v_stat(self, new_a: float, count: int = None) -> None:
         """
         Update statistics of sojourn times.
 
         Args:
             new_a: New sojourn time value to include in statistics.
+            count: Number of served tasks (if None, uses self.served)
         """
-        self.v = refresh_moments_stat(self.v, new_a, self.served)
+        if count is None:
+            count = self.served
+        self.v = refresh_moments_stat(self.v, new_a, count)
 
-    def refresh_w_stat(self, new_a: float) -> None:
+    def refresh_w_stat(self, new_a: float, count: int = None) -> None:
         """
         Update statistics of wait times.
 
         Args:
             new_a: New waiting time value to include in statistics.
+            count: Number of taken tasks (if None, uses self.taked)
         """
-        self.w = refresh_moments_stat(self.w, new_a, self.taked)
+        if count is None:
+            count = self.taked
+        self.w = refresh_moments_stat(self.w, new_a, count)
 
     def get_p(self) -> list[float]:
         """

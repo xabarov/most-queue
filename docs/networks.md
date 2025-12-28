@@ -254,6 +254,205 @@ calc.set_nodes(b=b, n=num_channels, priority="PR")
 results = calc.run()
 ```
 
+## Сети с отрицательными заявками
+
+### Класс NegativeNetwork
+
+Для симуляции сетей с отрицательными заявками (negative jobs) в каждом узле используется класс `NegativeNetwork`. Отрицательные заявки могут прерывать обслуживание обычных (положительных) заявок в зависимости от типа отрицательного обслуживания.
+
+### Типы отрицательных заявок
+
+Отрицательные заявки могут иметь следующие типы воздействия на систему:
+
+- **DISASTER** — удаляет все заявки из узла (в обслуживании и в очереди)
+- **RCS** (Remove Customer in Service) — удаляет одну заявку из обслуживания
+- **RCH** (Remove Customer at Head) — удаляет заявку из начала очереди
+- **RCE** (Remove Customer at End) — удаляет заявку из конца очереди
+
+### Типы поступления отрицательных заявок
+
+`NegativeNetwork` поддерживает два режима поступления отрицательных заявок:
+
+1. **"global"** — отрицательные заявки поступают глобально и влияют на все узлы одновременно
+2. **"per_node"** — каждый узел имеет свой собственный поток отрицательных заявок
+
+### Создание сети с отрицательными заявками
+
+```python
+from most_queue.sim.networks.negative_network import NegativeNetwork
+from most_queue.sim.negative import NegativeServiceType
+import numpy as np
+
+# Создание сети с глобальными отрицательными заявками
+network = NegativeNetwork(negative_arrival_type="global")
+
+# Или с индивидуальными отрицательными заявками для каждого узла
+network = NegativeNetwork(negative_arrival_type="per_node")
+```
+
+### Настройка источников
+
+#### Глобальные отрицательные заявки
+
+```python
+# Матрица переходов
+R = np.matrix([
+    [1, 0, 0, 0],      # вход -> узел 1
+    [0, 0.5, 0.5, 0], # узел 1 -> узел 2 (50%) или узел 3 (50%)
+    [0, 0, 0, 1],     # узел 2 -> выход
+    [0, 0, 0, 1],     # узел 3 -> выход
+])
+
+# Настройка источников с глобальными отрицательными заявками
+network.set_sources(
+    positive_arrival_rate=2.0,      # интенсивность положительных заявок
+    R=R,
+    negative_arrival_rate=0.1       # интенсивность глобальных отрицательных заявок
+)
+```
+
+#### Индивидуальные отрицательные заявки для каждого узла
+
+```python
+# ВАЖНО: set_nodes() должен быть вызван ПЕРЕД set_sources() для per_node типа
+network.set_nodes(...)  # см. ниже
+
+# Настройка источников с индивидуальными отрицательными заявками
+network.set_sources(
+    positive_arrival_rate=2.0,
+    R=R,
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # интенсивности для каждого узла
+)
+```
+
+### Настройка узлов
+
+```python
+from most_queue.random.distributions import H2Distribution
+
+# Параметры обслуживания для каждого узла
+serv_params = []
+num_channels = [2, 3, 2]
+
+for i in range(3):
+    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    serv_params.append({"type": "H", "params": h2_params})
+
+# Типы отрицательных заявок для каждого узла
+negative_types = [
+    NegativeServiceType.DISASTER,  # узел 1: удаляет все заявки
+    NegativeServiceType.RCS,       # узел 2: удаляет заявку из обслуживания
+    NegativeServiceType.RCH,        # узел 3: удаляет заявку из начала очереди
+]
+
+# Настройка узлов
+network.set_nodes(
+    serv_params=serv_params,
+    n=num_channels,
+    negative_types=negative_types,  # типы отрицательных заявок
+    buffers=[None, 50, None]        # размеры буферов (опционально)
+)
+```
+
+### Полный пример
+
+```python
+import numpy as np
+from most_queue.sim.networks.negative_network import NegativeNetwork
+from most_queue.sim.negative import NegativeServiceType
+from most_queue.random.distributions import H2Distribution
+
+# Создание сети с глобальными отрицательными заявками
+network = NegativeNetwork(negative_arrival_type="global")
+
+# Матрица переходов
+R = np.matrix([
+    [1, 0, 0, 0],
+    [0, 0.5, 0.5, 0],
+    [0, 0, 0, 1],
+    [0, 0, 0, 1],
+])
+
+# Настройка источников
+network.set_sources(
+    positive_arrival_rate=2.0,
+    R=R,
+    negative_arrival_rate=0.1  # глобальная интенсивность отрицательных заявок
+)
+
+# Настройка узлов
+serv_params = []
+num_channels = [2, 3, 2]
+
+for i in range(3):
+    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    serv_params.append({"type": "H", "params": h2_params})
+
+# Все узлы используют DISASTER по умолчанию
+network.set_nodes(serv_params=serv_params, n=num_channels)
+
+# Симуляция
+results = network.run(50000)
+
+print(f"Время пребывания: {results.v[0]:.4f}")
+print(f"Обслужено заявок: {results.served}")
+print(f"Поступило заявок: {results.arrived}")
+```
+
+### Пример с индивидуальными отрицательными заявками
+
+```python
+# Создание сети с индивидуальными отрицательными заявками
+network = NegativeNetwork(negative_arrival_type="per_node")
+
+# Сначала настраиваем узлы (обязательно перед set_sources для per_node)
+serv_params = []
+num_channels = [2, 3, 2]
+
+for i in range(3):
+    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    serv_params.append({"type": "H", "params": h2_params})
+
+negative_types = [
+    NegativeServiceType.DISASTER,
+    NegativeServiceType.RCS,
+    NegativeServiceType.RCH,
+]
+
+network.set_nodes(
+    serv_params=serv_params,
+    n=num_channels,
+    negative_types=negative_types
+)
+
+# Затем настраиваем источники
+R = np.matrix([
+    [1, 0, 0, 0],
+    [0, 0.5, 0.5, 0],
+    [0, 0, 0, 1],
+    [0, 0, 0, 1],
+])
+
+network.set_sources(
+    positive_arrival_rate=2.0,
+    R=R,
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # индивидуальные интенсивности
+)
+
+# Симуляция
+results = network.run(50000)
+```
+
+### Важные замечания
+
+1. **Порядок вызовов для per_node типа**: При использовании `negative_arrival_type="per_node"` необходимо сначала вызвать `set_nodes()`, а затем `set_sources()`, так как для настройки источников нужно знать количество узлов.
+
+2. **Отключение отрицательных заявок**: Чтобы отключить отрицательные заявки, передайте `negative_arrival_rate=None` (для global) или `negative_arrival_rates=None` (для per_node).
+
+3. **Типы отрицательных заявок по умолчанию**: Если не указать `negative_types` в `set_nodes()`, все узлы будут использовать `NegativeServiceType.DISASTER` по умолчанию.
+
+4. **Результаты**: `NegativeNetwork` возвращает стандартный объект `NetworkResults` с информацией о времени пребывания, количестве обслуженных и поступивших заявок.
+
 ## Оптимизация сетей
 
 Библиотека также предоставляет методы оптимизации матрицы переходов сети для минимизации времени пребывания заявок.
@@ -363,6 +562,7 @@ R = np.matrix([
 - `test_network_no_prty.py` — сеть без приоритетов
 - `test_network_im_prty.py` — сеть с приоритетами
 - `test_network_opt.py` — оптимизация сети
+- `test_negative_network.py` — сеть с отрицательными заявками
 
 ---
 

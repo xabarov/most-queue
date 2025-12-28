@@ -61,7 +61,7 @@ class QueueingSystemBatchSim(QsSim):
             self.servers[server_idx].start_service(Task(ttek), ttek, False)
             self._free_servers.remove(server_idx)
             self.free_channels -= 1
-            self._servers_time_changed = True
+            self._mark_servers_time_changed()
 
             # Check if busy period has started:
             if self.free_channels == 0:
@@ -85,12 +85,8 @@ class QueueingSystemBatchSim(QsSim):
 
         for _tsk in range(batch_size):
             self.arrived += 1
-            # Ensure p array is large enough before accessing
-            # We need space for current in_sys and potentially more
-            while self.in_sys >= len(self.p):
-                # Extend p array in chunks to avoid frequent reallocations
-                self.p.extend([0.0] * min(1000, max(1, len(self.p) // 10)))
-            self.p[self.in_sys] += self.arrival_time - self.ttek
+            # Update state probabilities
+            self._update_state_probs(self.ttek, self.arrival_time, self.in_sys)
             self.in_sys += 1
 
             if self.free_channels == 0:
