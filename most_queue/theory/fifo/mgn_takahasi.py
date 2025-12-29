@@ -21,6 +21,48 @@ class MGnCalc(BaseQueue):
     Calculate M/H2/n queue with complex parameters using the Takahashi-Takami method.
     Complex parameters allow approximating the service time distribution
     with arbitrary coefficients of variation (>1, <=1).
+
+    Extension Points for Custom Queueing Systems:
+    ----------------------------------------------
+
+    This class is designed to be extended for custom queueing system calculations.
+    The following methods can be overridden to customize the algorithm behavior:
+
+    Matrix Building Methods (Required if changing matrix structure):
+    - fill_cols() - Define column structure for each level
+    - _build_big_a_matrix(num) - Build upward transition matrix (arrivals)
+    - _build_big_b_matrix(num) - Build downward transition matrix (departures)
+    - _build_big_c_matrix(num) - Build horizontal transition matrix (rarely overridden)
+    - _build_big_d_matrix(num) - Build diagonal matrix elements
+
+    Iteration Hooks (Optional, for custom iteration logic):
+    - _pre_run_setup() - Setup before main iteration loop
+    - _iteration_setup() - Initialize iteration variables
+    - _update_level_j(j) - Update x[j], z[j], t[j] for level j
+    - _update_level_0() - Update level 0 (often overridden)
+    - _check_convergence(x_max1, x_max2) - Custom convergence check
+
+    Result Calculation Methods (Optional):
+    - _calculate_p() - Calculate state probabilities
+    - _calculate_c(j) - Calculate auxiliary variable c for iterations
+    - _initial_probabilities() - Set initial probability values
+    - get_p(), get_w(), get_v(), get_results() - Result retrieval methods
+
+    Support Matrix Methods (Optional):
+    - _calc_support_matrices() - Calculate G, AG, BG matrices
+    - _calc_g_matrices() - Calculate G matrices
+    - _calc_ag_matrices() - Calculate AG matrices
+    - _calc_bg_matrices() - Calculate BG matrices
+
+    Example:
+        class CustomQueueCalc(MGnCalc):
+            def fill_cols(self):
+                # Custom column structure
+                pass
+
+            def _build_big_b_matrix(self, num):
+                # Custom B matrix
+                return custom_matrix
     """
 
     def __init__(
@@ -117,80 +159,142 @@ class MGnCalc(BaseQueue):
 
     def run(self) -> QueueResults:
         """
-        Run the algorithm.
+        Run the Takahashi-Takami algorithm.
+
+        This method uses the Template Method pattern, delegating to hook methods
+        that can be overridden by subclasses for customization.
         """
 
         start = time.process_time()
 
         self._check_if_servers_and_sources_set()
-        self.fill_cols()
-        self._fill_t_b()
-        self.build_matrices()
-        self._initial_probabilities()
+        self._pre_run_setup()
+        x_max1, x_max2 = self._iteration_setup()
 
-        self.b1[0][0, 0] = 0.0 + 0.0j
-        self.b2[0][0, 0] = 0.0 + 0.0j
-        x_max1 = np.max(self.x)
-        x_max2 = 0.0 + 0.0j
+        self.num_of_iter_ = 0
 
-        self._calc_support_matrices()
-
-        self.num_of_iter_ = 0  # number of iterations
-
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
+        while not self._check_convergence(x_max1, x_max2):
             x_max2 = x_max1
             self.num_of_iter_ += 1
 
-            for j in range(1, self.N):  # for all levels except the first.
+            for j in range(1, self.N):
+                self._update_level_j(j)
 
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.big_ag[j])
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.big_bg[j])
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.big_bg[j])
-
-                c = self._calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                self.x[j] = 0.0 + 0.0j
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                self.x[j] = (1.0 + 0.0j) / self.x[j]
-
-                if self.R and j == (self.N - 1):
-                    tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.big_g[j])
-                    tag_sum = 0
-                    for t_i in range(tag.shape[1]):
-                        tag_sum += tag[0, t_i]
-                    self.z[j] = 1.0 / tag_sum
-                    self.t[j] = self.z[j] * tag
-
-                else:
-                    self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            self.x[0] = (1.0 + 0.0j) / self.z[1]
-
-            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
+            self._update_level_0()
 
             x_max1 = np.max(self.x)
 
             if self.verbose:
                 print(f"End iter # {self.num_of_iter_}")
 
-        self._calculate_p()
-        self._calculate_y()
+        self._post_run_calculations()
 
         results = self.get_results()
-
         results.duration = time.process_time() - start
 
         return results
+
+    def _pre_run_setup(self):
+        """
+        Setup phase before the main iteration loop.
+
+        Override this method to add custom setup logic before iterations begin.
+        Default implementation performs standard initialization.
+        """
+        self.fill_cols()
+        self._fill_t_b()
+        self.build_matrices()
+        self._initial_probabilities()
+        self._calc_support_matrices()
+
+    def _iteration_setup(self):
+        """
+        Initialize iteration variables.
+
+        Override this method to customize initial values for iteration variables.
+
+        Returns:
+            tuple: (x_max1, x_max2) initial values for convergence checking
+        """
+        self.b1[0][0, 0] = 0.0 + 0.0j
+        self.b2[0][0, 0] = 0.0 + 0.0j
+        x_max1 = np.max(self.x)
+        x_max2 = 0.0 + 0.0j
+        return x_max1, x_max2
+
+    def _update_level_j(self, j):
+        """
+        Update variables for level j during iteration.
+
+        Override this method to customize the update logic for level j.
+
+        Args:
+            j: Level index (1 to N-1)
+        """
+        # b':
+        self.b1[j] = np.dot(self.t[j - 1], self.big_ag[j])
+
+        # b":
+        if j != (self.N - 1):
+            self.b2[j] = np.dot(self.t[j + 1], self.big_bg[j])
+        else:
+            self.b2[j] = np.dot(self.t[j - 1], self.big_bg[j])
+
+        c = self._calculate_c(j)
+
+        x_znam = np.dot(c, self.b1[j]) + self.b2[j]
+        self.x[j] = 0.0 + 0.0j
+        for k in range(x_znam.shape[1]):
+            self.x[j] += x_znam[0, k]
+
+        self.x[j] = (1.0 + 0.0j) / self.x[j]
+
+        if self.R and j == (self.N - 1):
+            tA = np.dot(self.t[j - 1], self.A[j - 1])
+            tag = np.dot(tA, self.big_g[j])
+            tag_sum = 0
+            for t_i in range(tag.shape[1]):
+                tag_sum += tag[0, t_i]
+            self.z[j] = 1.0 / tag_sum
+            self.t[j] = self.z[j] * tag
+        else:
+            self.z[j] = np.dot(c, self.x[j])
+            self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
+
+    def _update_level_0(self):
+        """
+        Update variables for level 0 during iteration.
+
+        Override this method to customize the update logic for level 0.
+        This is commonly overridden in subclasses (e.g., MGnNegativeRCSCalc).
+        """
+        self.x[0] = (1.0 + 0.0j) / self.z[1]
+        self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
+
+    def _check_convergence(self, x_max1, x_max2):
+        """
+        Check if the algorithm has converged.
+
+        Override this method to customize convergence criteria.
+
+        Args:
+            x_max1: Current maximum x value
+            x_max2: Previous maximum x value
+
+        Returns:
+            bool: True if converged, False otherwise
+        """
+        return math.fabs(x_max2.real - x_max1.real) < self.e1
+
+    def _post_run_calculations(self):
+        """
+        Perform calculations after iterations complete.
+
+        Override this method to add custom post-iteration calculations.
+        Default implementation calculates probabilities and Y matrices.
+        """
+        self._calculate_p()
+        self._calculate_y()
 
     def get_results(self, num_of_moments: int = 4, derivate=False) -> QueueResults:
         """
@@ -264,7 +368,14 @@ class MGnCalc(BaseQueue):
 
     def fill_cols(self):
         """
-        Fill columns for B-matrix
+        Fill columns for B-matrix.
+
+        EXTENSION POINT: Override this method to define custom column structure
+        for each level. The cols list determines the number of columns/rows
+        in transition matrices for each level.
+
+        This method should populate self.cols with N elements, where cols[i]
+        is the number of columns for level i.
         """
         for i in range(self.N):
             if i < self.n + 1:
@@ -280,7 +391,10 @@ class MGnCalc(BaseQueue):
 
     def _initial_probabilities(self):
         """
-        Set raw probabilities of microstates
+        Set raw probabilities of microstates.
+
+        EXTENSION POINT: Override this method to customize initial probability
+        values for the algorithm. Default implementation uses uniform distribution.
         """
         # Initialize all states to equal probability for each i
         probs = [1.0 / self.cols[i] for i in range(self.N)]
@@ -304,6 +418,10 @@ class MGnCalc(BaseQueue):
     def _calculate_p(self):
         """
         Calculate probabilities p based on current values of x.
+
+        EXTENSION POINT: Override this method to customize probability calculation
+        logic. This is commonly overridden when the state space structure differs
+        from the base implementation.
 
         Optimizations:
             - Vectorized operations for better performance.
@@ -351,16 +469,31 @@ class MGnCalc(BaseQueue):
             self.D.append(self._build_big_d_matrix(i))
 
     def _calc_g_matrices(self):
+        """
+        Calculate G matrices: G[j] = inv(D[j] - C[j]).
+
+        EXTENSION POINT: Override this method to customize G matrix calculation.
+        """
         self.big_g = []
         for j in range(0, self.N):
             self.big_g.append(np.linalg.inv(self.D[j] - self.C[j]))
 
     def _calc_ag_matrices(self):
+        """
+        Calculate AG matrices: AG[j] = A[j-1] * G[j].
+
+        EXTENSION POINT: Override this method to customize AG matrix calculation.
+        """
         self.big_ag = [0]
         for j in range(1, self.N):
             self.big_ag.append(np.dot(self.A[j - 1], self.big_g[j]))
 
     def _calc_bg_matrices(self):
+        """
+        Calculate BG matrices: BG[j] = B[j+1] * G[j] (or B[j] * G[j] for last level).
+
+        EXTENSION POINT: Override this method to customize BG matrix calculation.
+        """
         self.big_bg = [0]
         for j in range(1, self.N):
             if j != (self.N - 1):
@@ -369,6 +502,12 @@ class MGnCalc(BaseQueue):
                 self.big_bg.append(np.dot(self.B[j], self.big_g[j]))
 
     def _calc_support_matrices(self):
+        """
+        Calculate all support matrices (G, AG, BG).
+
+        EXTENSION POINT: Override this method to customize the calculation of
+        support matrices used in iterations.
+        """
         self._calc_g_matrices()
         self._calc_ag_matrices()
         self._calc_bg_matrices()
@@ -376,6 +515,15 @@ class MGnCalc(BaseQueue):
     def _calculate_c(self, j):
         """
         Calculate value of variable c participating in the calculation.
+
+        EXTENSION POINT: Override this method to customize the calculation of
+        auxiliary variable c used in the iteration step for level j.
+
+        Args:
+            j: Level index
+
+        Returns:
+            Calculated value of c
         """
         m = np.dot(self.b2[j], self.B[j])
         chisl = np.sum(m[0])
@@ -390,7 +538,16 @@ class MGnCalc(BaseQueue):
 
     def _build_big_a_matrix(self, num):
         """
-        Create matrix A by the given level number.
+        Create matrix A (upward transitions/arrivals) by the given level number.
+
+        EXTENSION POINT: Override this method to define custom upward transition
+        matrix. Matrix A represents transitions from level num-1 to level num.
+
+        Args:
+            num: Level number (0 to N-1)
+
+        Returns:
+            numpy array: Transition matrix A for level num
         """
         if num < self.n:
             col = self.cols[num + 1]
@@ -416,7 +573,17 @@ class MGnCalc(BaseQueue):
 
     def _build_big_b_matrix(self, num):
         """
-        Create matrix B by the given level number.
+        Create matrix B (downward transitions/departures) by the given level number.
+
+        EXTENSION POINT: Override this method to define custom downward transition
+        matrix. Matrix B represents transitions from level num+1 to level num.
+        This is one of the most commonly overridden methods.
+
+        Args:
+            num: Level number (0 to N-1)
+
+        Returns:
+            numpy array: Transition matrix B for level num
         """
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
@@ -447,7 +614,16 @@ class MGnCalc(BaseQueue):
 
     def _build_big_c_matrix(self, num):
         """
-        Create matrix C by the given level number.
+        Create matrix C (horizontal transitions) by the given level number.
+
+        EXTENSION POINT: Override this method to define custom horizontal transition
+        matrix. Matrix C is rarely overridden as it's typically zero for most QS.
+
+        Args:
+            num: Level number (0 to N-1)
+
+        Returns:
+            numpy array: Transition matrix C for level num
         """
         if num < self.n:
             col = self.cols[num]
@@ -465,7 +641,16 @@ class MGnCalc(BaseQueue):
 
     def _build_big_d_matrix(self, num):
         """
-        Create matrix D by the given level number.
+        Create matrix D (diagonal elements) by the given level number.
+
+        EXTENSION POINT: Override this method to define custom diagonal matrix.
+        Matrix D contains the diagonal elements representing state transition rates.
+
+        Args:
+            num: Level number (0 to N-1)
+
+        Returns:
+            numpy array: Diagonal matrix D for level num
         """
         if num < self.n:
             col = self.cols[num]

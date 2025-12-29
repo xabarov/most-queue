@@ -295,6 +295,93 @@ print_sojourn_moments(sim_results.v, calc_results.v)
 - **`EkDnCalc`** — E_k/D/c система
 - **`MGnCalc`** — M/G/c система (метод Такахаси-Таками)
 
+## Расширение метода Такахаси-Таками
+
+Класс `MGnCalc` реализует численный метод Такахаси-Таками для расчета многоканальных систем M/G/c. Этот класс спроектирован для легкого расширения, что позволяет создавать кастомные методы расчета для различных типов систем массового обслуживания.
+
+### Архитектура расширяемости
+
+`MGnCalc` использует паттерн Template Method, разделяя алгоритм на переопределяемые хуки:
+
+- **Методы построения матриц** — определяют структуру переходных матриц
+- **Хуки итераций** — позволяют кастомизировать логику алгоритма
+- **Методы расчета результатов** — настраивают вычисление характеристик системы
+
+### Базовое использование MGnCalc
+
+```python
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+from most_queue.random.distributions import H2Distribution
+
+calc = MGnCalc(n=5)  # 5 каналов
+calc.set_sources(l=2.0)
+
+h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2)
+b = H2Distribution.calc_theory_moments(h2_params, 4)
+calc.set_servers(b)
+
+results = calc.run()
+```
+
+### Создание кастомного расширения
+
+Для создания собственного калькулятора на основе метода Такахаси-Таками:
+
+1. Наследуйтесь от `MGnCalc`
+2. Переопределите методы построения матриц (при необходимости)
+3. Переопределите хуки итераций (при необходимости)
+4. Переопределите методы расчета результатов (при необходимости)
+
+**Пример:** Добавление отрицательных заявок
+
+```python
+from most_queue.theory.fifo.mgn_takahasi import MGnCalc
+import numpy as np
+
+class CustomNegativeQueueCalc(MGnCalc):
+    def __init__(self, n, buffer=None, calc_params=None):
+        super().__init__(n, buffer, calc_params)
+        self.l_neg = None  # интенсивность отрицательных заявок
+    
+    def set_sources(self, l_pos, l_neg):
+        self.l_pos = l_pos
+        self.l_neg = l_neg
+        self.l = l_pos  # базовая интенсивность
+        self.is_sources_set = True
+    
+    def _build_big_d_matrix(self, num):
+        # Переопределяем D-матрицу для учета отрицательных заявок
+        base_matrix = super()._build_big_d_matrix(num)
+        # Добавляем отрицательные заявки к диагональным элементам
+        for i in range(base_matrix.shape[0]):
+            base_matrix[i, i] += self.l_neg
+        return base_matrix
+```
+
+### Точки расширения
+
+**Обязательные для переопределения (если меняется структура матриц):**
+- `fill_cols()` — определение структуры колонок для каждого уровня
+- `_build_big_a_matrix(num)` — матрица переходов вверх (поступления)
+- `_build_big_b_matrix(num)` — матрица переходов вниз (обслуживание)
+- `_build_big_d_matrix(num)` — диагональные элементы матрицы
+
+**Опциональные для переопределения:**
+- `_pre_run_setup()` — подготовка перед основным циклом
+- `_update_level_j(j)` — обновление переменных для уровня j
+- `_update_level_0()` — обновление уровня 0
+- `_calculate_p()` — расчет вероятностей состояний
+- `get_results()` — формирование результатов
+
+### Примеры существующих расширений
+
+- **`MGnNegativeRCSCalc`** — система с отрицательными заявками и дисциплиной RCS
+- **`MGnNegativeDisasterCalc`** — система с отрицательными заявками (катастрофы)
+- **`MH2nH2Warm`** — система с периодами разогрева
+- **`MPhNPrty`** — система с приоритетами
+
+Подробную документацию и примеры см. в `most_queue/theory/fifo/takahasi_base.py`.
+
 ### Системы с приоритетами
 
 - **`MG1Preemptive`** — M/G/1 с прерываемым приоритетом

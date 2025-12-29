@@ -2,8 +2,6 @@
 Calculate M/H2/n queue with negative jobs with disasters,
 """
 
-import time
-
 import numpy as np
 from scipy.misc import derivative
 
@@ -65,88 +63,25 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
         self.is_servers_set = True
 
-    def run(self) -> NegativeArrivalsResults:
+    def _pre_run_setup(self):
         """
-        Run the algorithm.
+        Setup before main iteration loop - initialize base_mgn for matrix references.
         """
-
-        start = time.process_time()
-
+        # Initialize base MGnCalc for matrix reference
         self.base_mgn = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
         self.base_mgn.set_sources(l=self.l_pos)
         self.base_mgn.set_servers(b=self.b)
-
         self.base_mgn.fill_cols()
         self.base_mgn.build_matrices()
 
-        self.fill_cols()
-        self._fill_t_b()
-        self.build_matrices()
-        self._initial_probabilities()
+        # Now do standard setup
+        super()._pre_run_setup()
 
-        self.b1[0][0, 0] = 0.0 + 0.0j
-        self.b2[0][0, 0] = 0.0 + 0.0j
-        x_max1 = np.max(self.x)
-        x_max2 = 0.0 + 0.0j
-
-        self._calc_support_matrices()
-
-        self.num_of_iter_ = 0  # number of iterations
-
-        while np.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
-            self.num_of_iter_ += 1
-
-            for j in range(1, self.N):  # for all levels except the first.
-
-                # b':
-                self.b1[j] = np.dot(self.t[j - 1], self.big_ag[j])
-
-                # b":
-                if j != (self.N - 1):
-                    self.b2[j] = np.dot(self.t[j + 1], self.big_bg[j])
-                else:
-                    self.b2[j] = np.dot(self.t[j - 1], self.big_bg[j])
-
-                c = self._calculate_c(j)
-
-                x_znam = np.dot(c, self.b1[j]) + self.b2[j]
-                self.x[j] = 0.0 + 0.0j
-                for k in range(x_znam.shape[1]):
-                    self.x[j] += x_znam[0, k]
-
-                self.x[j] = (1.0 + 0.0j) / self.x[j]
-
-                if self.R and j == (self.N - 1):
-                    tA = np.dot(self.t[j - 1], self.A[j - 1])
-                    tag = np.dot(tA, self.big_g[j])
-                    tag_sum = 0
-                    for t_i in range(tag.shape[1]):
-                        tag_sum += tag[0, t_i]
-                    self.z[j] = 1.0 / tag_sum
-                    self.t[j] = self.z[j] * tag
-
-                else:
-                    self.z[j] = np.dot(c, self.x[j])
-                    self.t[j] = np.dot(self.z[j], self.b1[j]) + np.dot(self.x[j], self.b2[j])
-
-            self.x[0] = (1.0 + 0.0j) / self.z[1]
-
-            # Why ????
-            self.t[0] = self.x[0] * (np.dot(self.t[1], self.B[1]).dot(self.big_g[0]))
-
-            x_max1 = np.max(self.x)
-
-            if self.verbose:
-                print(f"End iter # {self.num_of_iter_}")
-
-        self._calculate_p()
-        self._calculate_y()
-
-        results = self.collect_results()
-        results.duration = time.process_time() - start
-
-        return results
+    def get_results(self, num_of_moments: int = 4, derivate=False) -> NegativeArrivalsResults:
+        """
+        Get all results - override to return NegativeArrivalsResults instead of QueueResults.
+        """
+        return self.collect_results(num_of_moments)
 
     def collect_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
         """
