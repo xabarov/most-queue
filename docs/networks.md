@@ -256,6 +256,80 @@ results = calc.run()
 
 ## Сети с отрицательными заявками
 
+### Расчет сетей с отрицательными заявками
+
+Для аналитического расчета сетей с отрицательными заявками используется класс `NegativeNetworkCalc`, реализующий метод потоковой декомпозиции. Подробное описание математического метода расчета с формулами приведено в документе [Расчет сетей с отрицательными заявками](negative_networks_calculation.md).
+
+### Класс NegativeNetworkCalc
+
+Класс `NegativeNetworkCalc` используется для аналитического расчета открытых сетей очередей с отрицательными заявками методом декомпозиции.
+
+### Пример расчета
+
+```python
+import numpy as np
+from most_queue.theory.networks.negative_network import NegativeNetworkCalc
+from most_queue.sim.negative import NegativeServiceType
+from most_queue.random.distributions import H2Distribution
+
+# Создание калькулятора с глобальными отрицательными заявками
+net_calc = NegativeNetworkCalc(negative_arrival_type="global")
+
+# Матрица переходов
+R = np.matrix([
+    [1, 0, 0, 0],
+    [0, 0.5, 0.5, 0],
+    [0, 0, 0, 1],
+    [0, 0, 0, 1],
+])
+
+# Настройка источников
+net_calc.set_sources(
+    arrival_rate=2.0,
+    R=R,
+    negative_arrival_rate=0.1  # глобальная интенсивность отрицательных заявок
+)
+
+# Вычисление моментов обслуживания для каждого узла
+b = []
+num_channels = [2, 3, 2]
+negative_types = [
+    NegativeServiceType.DISASTER,  # узел 1: тип DISASTER
+    NegativeServiceType.RCS,       # узел 2: тип RCS
+    NegativeServiceType.DISASTER,  # узел 3: тип DISASTER
+]
+
+for i in range(3):
+    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    b.append(H2Distribution.calc_theory_moments(h2_params, 4))
+
+# Настройка узлов
+net_calc.set_nodes(b=b, n=num_channels, negative_types=negative_types)
+
+# Расчет
+results = net_calc.run()
+
+print(f"Интенсивности в узлах: {results.intensities}")
+print(f"Загрузки узлов: {results.loads}")
+print(f"Среднее время пребывания: {results.v[0]:.4f}")
+```
+
+### Пример с поузловыми отрицательными заявками
+
+```python
+# Создание калькулятора с поузловыми отрицательными заявками
+net_calc = NegativeNetworkCalc(negative_arrival_type="per_node")
+
+# Настройка источников с индивидуальными интенсивностями
+net_calc.set_sources(
+    arrival_rate=2.0,
+    R=R,
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # индивидуальные интенсивности для каждого узла
+)
+
+# Остальная настройка аналогична предыдущему примеру
+```
+
 ### Класс NegativeNetwork
 
 Для симуляции сетей с отрицательными заявками (negative jobs) в каждом узле используется класс `NegativeNetwork`. Отрицательные заявки могут прерывать обслуживание обычных (положительных) заявок в зависимости от типа отрицательного обслуживания.
