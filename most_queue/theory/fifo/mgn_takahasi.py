@@ -9,6 +9,7 @@ import numpy as np
 from scipy.misc import derivative
 
 from most_queue.random.distributions import H2Distribution
+from most_queue.random.utils.params import H2Params
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
@@ -136,17 +137,20 @@ class MGnCalc(BaseQueue):
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
+    def set_servers(self, b: list[float] | H2Params):  # pylint: disable=arguments-differ
         """
-        Set servers
-        param b: raw moments of service time distribution.
+        Set servers.
+        param b: raw moments of service time distribution, or H2Params (no refit; same as sim).
         """
-        self.b = b
-
-        h2_params = H2Distribution.get_params_clx(b)
-        # params of H2-distribution:
-        self.y = [h2_params.p1, 1.0 - h2_params.p1]
-        self.mu = [h2_params.mu1, h2_params.mu2]
+        if isinstance(b, H2Params):
+            self.b = [float(x) for x in H2Distribution.calc_theory_moments(b, 4)]
+            self.y = [float(b.p1), 1.0 - float(b.p1)]
+            self.mu = [float(b.mu1), float(b.mu2)]
+        else:
+            self.b = b
+            h2_params = H2Distribution.get_params_clx(b)
+            self.y = [h2_params.p1, 1.0 - h2_params.p1]
+            self.mu = [h2_params.mu1, h2_params.mu2]
 
         self.is_servers_set = True
 

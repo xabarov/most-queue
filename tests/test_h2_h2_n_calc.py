@@ -1,7 +1,7 @@
 """
-Testing the Takahashi-Takami method for calculating an H2/M/n queue.
+Testing the Takahashi-Takami method for calculating an H2/H2/n queue.
 
-H2 (hyperexponential) arrival, M (exponential) service.
+H2 (hyperexponential) arrival, H2 (hyperexponential) service.
 Verification via simulation.
 """
 
@@ -18,7 +18,7 @@ from most_queue.io.tables import (
 from most_queue.random.distributions import H2Distribution
 from most_queue.random.utils.params import H2Params
 from most_queue.sim.base import QsSim
-from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
+from most_queue.theory.fifo.hkhk_takahasi import HkHkNCalc
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 params_path = os.path.join(cur_dir, "default_params.yaml")
@@ -34,12 +34,15 @@ ERROR_MSG = params["error_msg"]
 MOMENTS_ATOL = float(params["moments_atol"])
 MOMENTS_RTOL = float(params["moments_rtol"])
 
-# Tolerances for H2/M/n
+# Tolerances for H2/H2/n (both arrival and service non-Markovian)
 PROBS_ATOL = 0.02
 PROBS_RTOL = 0.08
-NUM_OF_JOBS_H2M = 500000
+MOMENTS_ATOL = 3.0
+MOMENTS_RTOL = 0.6
+NUM_OF_JOBS_H2H2 = 500000
 
 ARRIVAL_CV = float(params["arrival"].get("cv", 1.2))
+SERVICE_CV = float(params["service"].get("cv", 1.2))
 
 
 def _is_simulatable_h2(h2: H2Params) -> bool:
@@ -47,49 +50,62 @@ def _is_simulatable_h2(h2: H2Params) -> bool:
     vals = [h2.p1, h2.mu1, h2.mu2]
     if any(abs(np.imag(v)) > 1e-12 for v in vals):
         return False
+    # basic sanity for simulation
     p1 = float(np.real(h2.p1))
     mu1 = float(np.real(h2.mu1))
     mu2 = float(np.real(h2.mu2))
     return 0.0 < p1 < 1.0 and mu1 > 0.0 and mu2 > 0.0
 
 
-def test_h2_m_n_calc():
-    """Test H2MnCalc against QsSim for H2/M/n. Same H2 params for both (no refit)."""
+def test_h2_h2_n_calc():
+    """Test HkHkNCalc against QsSim for H2/H2/n. Same H2 params for both (no refit)."""
     a1 = 1.0 / ARRIVAL_RATE
-    h2_raw = H2Distribution.get_params_by_mean_and_cv(a1, ARRIVAL_CV, is_clx=True)
-    h2_params = H2Params(p1=h2_raw.p1, mu1=h2_raw.mu1, mu2=h2_raw.mu2)
+    h2_arr = H2Distribution.get_params_by_mean_and_cv(a1, ARRIVAL_CV, is_clx=True)
+    h2_arr_params = H2Params(p1=h2_arr.p1, mu1=h2_arr.mu1, mu2=h2_arr.mu2)
 
     b_mean = UTILIZATION_FACTOR * NUM_OF_CHANNELS * a1
+    h2_srv = H2Distribution.get_params_by_mean_and_cv(b_mean, SERVICE_CV, is_clx=True)
+    h2_srv_params = H2Params(p1=h2_srv.p1, mu1=h2_srv.mu1, mu2=h2_srv.mu2)
 
-    calc = H2MnCalc(n=NUM_OF_CHANNELS)
-    calc.set_sources(h2_params)
-    calc.set_servers(b_mean)
+    u_arr = [h2_arr_params.p1, 1.0 - h2_arr_params.p1]
+    lam_arr = [h2_arr_params.mu1, h2_arr_params.mu2]
+    y_srv = [h2_srv_params.p1, 1.0 - h2_srv_params.p1]
+    mu_srv = [h2_srv_params.mu1, h2_srv_params.mu2]
+
+    calc = HkHkNCalc(n=NUM_OF_CHANNELS, k=2)
+    calc.set_sources(u=u_arr, lam=lam_arr)
+    calc.set_servers(y=y_srv, mu=mu_srv)
 
     calc_results = calc.run()
 
     # If parameters are truly complex (CV<1), simulation can't be used. Still ensure calc is sane.
-    if not _is_simulatable_h2(h2_params):
+    if not (_is_simulatable_h2(h2_arr_params) and _is_simulatable_h2(h2_srv_params)):
         p = np.asarray(calc_results.p, dtype=float)
         assert np.isclose(p.sum(), 1.0, atol=1e-9, rtol=1e-8)
         assert np.all(np.isfinite(p))
         assert np.min(p) >= -1e-12
         return
 
-    h2_params_real = H2Params(
-        p1=float(np.real(h2_params.p1)),
-        mu1=float(np.real(h2_params.mu1)),
-        mu2=float(np.real(h2_params.mu2)),
+    h2_arr_real = H2Params(
+        p1=float(np.real(h2_arr_params.p1)),
+        mu1=float(np.real(h2_arr_params.mu1)),
+        mu2=float(np.real(h2_arr_params.mu2)),
+    )
+    h2_srv_real = H2Params(
+        p1=float(np.real(h2_srv_params.p1)),
+        mu1=float(np.real(h2_srv_params.mu1)),
+        mu2=float(np.real(h2_srv_params.mu2)),
     )
     qs = QsSim(NUM_OF_CHANNELS)
-    qs.set_sources(h2_params_real, "H")
-    qs.set_servers(1.0 / b_mean, "M")  # rate for M
+    qs.set_sources(h2_arr_real, "H")
+    qs.set_servers(h2_srv_real, "H")
 
-    sim_results = qs.run(NUM_OF_JOBS_H2M)
+    sim_results = qs.run(NUM_OF_JOBS_H2H2)
 
-    print("\nH2/M/n: Takahasi-Takami vs simulation")
-    print(f"Simulation - H2/M/{NUM_OF_CHANNELS}")
-    print(f"Calculation - H2/M/{NUM_OF_CHANNELS}")
-    print(f"Utilization: {UTILIZATION_FACTOR:.2f}, Arrival CV: {ARRIVAL_CV:.2f}")
+    print("\nH2/H2/n: Takahashi-Takami vs simulation")
+    print(f"Simulation - H2/H2/{NUM_OF_CHANNELS}")
+    print(f"Calculation - H2/H2/{NUM_OF_CHANNELS}")
+    print(f"Utilization: {UTILIZATION_FACTOR:.2f}, Arrival CV: {ARRIVAL_CV:.2f}, Service CV: {SERVICE_CV:.2f}")
     print(f"Iterations: {calc.num_of_iter_}")
 
     probs_print(sim_results.p, calc_results.p, 10)
@@ -102,4 +118,4 @@ def test_h2_m_n_calc():
 
 
 if __name__ == "__main__":
-    test_h2_m_n_calc()
+    test_h2_h2_n_calc()

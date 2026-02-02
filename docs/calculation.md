@@ -125,15 +125,22 @@ from most_queue.random.distributions import H2Distribution
 
 calc = H2MnCalc(n=3)
 
-h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2)  # mean, cv (cv >= 1)
-a = H2Distribution.calc_theory_moments(h2_params, 4)
-calc.set_sources(a)
+h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2, is_clx=True)  # mean, cv
+#
+# Для CV<1 используйте complex-fit: is_clx=True.
+# Важно: симулятор `QsSim` не умеет генерировать H2 с комплексными параметрами,
+# поэтому сравнение с симуляцией возможно только для вещественных параметров.
+calc.set_sources(h2_params)
 
 calc.set_servers(b=2.0)  # среднее время обслуживания
 results = calc.run()
 
 print(f"H2/M/3: p0={results.p[0]:.4f}, время ожидания={results.w[0]:.4f}")
 ```
+
+**CV<1 и валидация:** при \(CV<1\) для H₂ используется complex-fit (комплексные параметры аппроксимации).
+`QsSim` не поддерживает генерацию H₂ с комплексными параметрами, поэтому сравнение “теория vs симуляция”
+в таких случаях разумно делать через `Gamma`-симуляцию с тем же mean и CV (пример — `tests/test_tt_vs_sim_gamma_cvl1.py`).
 
 ### M/M/c/r система с ограниченной очередью
 
@@ -173,8 +180,8 @@ from most_queue.random.distributions import (
     ErlangDistribution
 )
 
-# H2-распределение
-h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8)  # mean, cv
+# H2-распределение (для CV<1 нужен complex-fit)
+h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8, is_clx=True)  # mean, cv
 b_h2 = H2Distribution.calc_theory_moments(h2_params, num=5)
 
 # Гамма-распределение
@@ -330,9 +337,8 @@ from most_queue.random.distributions import H2Distribution
 calc = MGnCalc(n=5)  # 5 каналов
 calc.set_sources(l=2.0)
 
-h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 1.2)  # mean, cv (cv >= 1 для H2)
-b = H2Distribution.calc_theory_moments(h2_params, 4)
-calc.set_servers(b)
+h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 1.2, is_clx=True)
+calc.set_servers(h2_params)
 
 results = calc.run()
 ```

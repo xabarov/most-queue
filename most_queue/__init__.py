@@ -5,7 +5,7 @@ This package provides both simulation and numerical calculation methods
 for various types of queueing systems and networks.
 """
 
-__version__ = "2.05"
+__version__ = "2.7"
 
 # Import main simulation and theory classes for easy access
 from most_queue.sim.base import QsSim

@@ -16,6 +16,7 @@ import time
 import numpy as np
 
 from most_queue.random.distributions import H2Distribution
+from most_queue.random.utils.params import H2Params
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import TakahashiTakamiParams
@@ -66,26 +67,34 @@ class H2MnCalc(BaseQueue):
         self.b: float = 0.0  # mean service time
 
         # State: t[j,i] = conditional prob of phase i at level j (i=0,1 for k=2)
+        # For CV<1, H2 parameters can be complex ("complex-fit"), so use complex dtype.
         self.t: list[np.ndarray] = []
-        self.x = np.zeros(self.N)
-        self.z = np.zeros(self.N)
-        self.p = np.zeros(self.N)
+        self.x = np.zeros(self.N, dtype=complex)
+        self.z = np.zeros(self.N, dtype=complex)
+        self.p = np.zeros(self.N, dtype=complex)
 
         self.num_of_iter_ = 0
         self.w: list[float] | None = None
         self.v: list[float] | None = None
 
-    def set_sources(self, a: list[float]):  # pylint: disable=arguments-differ
+    def set_sources(self, a: list[float] | H2Params):  # pylint: disable=arguments-differ
         """
-        Set interarrival distribution via raw moments.
+        Set interarrival distribution.
 
         Args:
-            a: raw moments of interarrival time (a[0]=mean, a[1]=2nd moment, ...)
+            a: raw moments of interarrival time, or H2Params (no refit; same as sim).
         """
-        self.a = a
-        h2_params = H2Distribution.get_params(a)
-        self.u = [float(h2_params.p1), 1.0 - float(h2_params.p1)]
-        self.lam = [float(h2_params.mu1), float(h2_params.mu2)]
+        if isinstance(a, H2Params):
+            # Keep params possibly complex (CV<1). Theoretical moments are expected to be real;
+            # store as floats where possible to keep downstream formulas stable.
+            self.a = [float(np.real(x)) for x in H2Distribution.calc_theory_moments(a, 4)]
+            self.u = [complex(a.p1), 1.0 - complex(a.p1)]
+            self.lam = [complex(a.mu1), complex(a.mu2)]
+        else:
+            self.a = a
+            h2_params = H2Distribution.get_params(a)
+            self.u = [complex(h2_params.p1), 1.0 - complex(h2_params.p1)]
+            self.lam = [complex(h2_params.mu1), complex(h2_params.mu2)]
         self.is_sources_set = True
 
     def set_servers(self, b: float | list[float]):  # pylint: disable=arguments-differ
@@ -104,7 +113,7 @@ class H2MnCalc(BaseQueue):
 
     def get_utilization(self) -> float:
         """Utilization = (1/a1) * b / n."""
-        return (1.0 / self.a[0]) * self.b / self.n
+        return float(np.real((1.0 / self.a[0]) * self.b / self.n))
 
     def _mu_j(self, j: int) -> float:
         """Service intensity when j customers in system."""
@@ -146,26 +155,26 @@ class H2MnCalc(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         x_inf = self._x_inf()
-        self.t = [np.zeros(2) for _ in range(self.N)]
-        self.x = np.zeros(self.N)
-        self.z = np.zeros(self.N)
+        self.t = [np.zeros(2, dtype=complex) for _ in range(self.N)]
+        self.x = np.zeros(self.N, dtype=complex)
+        self.z = np.zeros(self.N, dtype=complex)
+        self.p = np.zeros(self.N, dtype=complex)
 
         # Textbook §7.6.1: for j < n use u (phase distr); for j >= n use t_inf
         t_lim = self._t_inf(x_inf)
-        u_arr = np.array(self.u)
+        u_arr = np.array(self.u, dtype=complex)
         for j in range(self.N):
             if j < self.n:
                 self.t[j] = u_arr.copy()
             else:
                 self.t[j] = t_lim.copy()
-        for j in range(self.N - 1):
-            self.x[j] = x_inf
-        self.x[self.N - 1] = x_inf
+        for j in range(self.N):
+            self.x[j] = complex(x_inf)
 
         # Boundary for limited queue
         if self.R is not None:
             for j in range(self.N):
-                self.t[j] = np.array(self.u)
+                self.t[j] = np.array(self.u, dtype=complex)
 
         self.num_of_iter_ = 0
         # Textbook §7.5: iterate until max |x_j refinement| < eps (change between iters)
@@ -206,13 +215,13 @@ class H2MnCalc(BaseQueue):
         s = lam[0] * self.t[j - 1][0] + lam[1] * self.t[j - 1][1]
 
         # z_j = μ_j / s per cut-balance (7.6.1)
-        if s > 1e-20:
-            self.z[j] = mu_j / s
+        if abs(s) > 1e-20:
+            self.z[j] = complex(mu_j) / s
         else:
             self.z[j] = 1.0 / self.x[j]  # fallback if s≈0
 
         # x_j = (1 - mu_j * sum_i u_i/(lam_i+mu_j)) / (mu_{j+1} * sum_i t_{j+1,i}/(lam_i+mu_j))
-        sum_denom = 0.0
+        sum_denom = 0.0 + 0.0j
         for i in range(2):
             sum_denom += u[i] / (lam[i] + mu_j)
         num = 1.0 - mu_j * sum_denom
@@ -233,7 +242,7 @@ class H2MnCalc(BaseQueue):
             self.t[j][i] = mu_j * u[i] / (lam[i] + mu_j) + self.x[j] * mu_jp1 * t_next[i] / (lam[i] + mu_j)
         # Normalize
         s_t = self.t[j].sum()
-        if s_t > 0:
+        if abs(s_t) > 0:
             self.t[j] /= s_t
 
     def _update_level_0(self) -> None:
@@ -242,15 +251,15 @@ class H2MnCalc(BaseQueue):
         lam = self.lam
         mu_1 = self._mu_j(1)
         sum_t1_over_lam = sum(self.t[1][i] / lam[i] for i in range(2))
-        if sum_t1_over_lam > 1e-20:
+        if abs(sum_t1_over_lam) > 1e-20:
             self.x[0] = 1.0 / (mu_1 * sum_t1_over_lam)
         # t[0,i] ∝ t[1,i]/λ_i, normalize
         raw = np.array([self.t[1][i] / lam[i] for i in range(2)])
         s = raw.sum()
-        if s > 0:
+        if abs(s) > 0:
             self.t[0] = raw / s
         else:
-            self.t[0] = np.array(self.u)
+            self.t[0] = np.array(self.u, dtype=complex)
         self.z[0] = 1.0 / self.x[0]
         if self.verbose:
             for i in range(2):
@@ -263,10 +272,10 @@ class H2MnCalc(BaseQueue):
         a1 = self.a[0]
         lam_eff = 1.0 / a1
 
-        znam = self.n + sum((self.n - j) * np.prod(self.x[:j]) for j in range(1, self.n))
+        znam = self.n + sum((self.n - j) * float(np.real(np.prod(self.x[:j]))) for j in range(1, self.n))
 
         if self.R is not None:
-            prod_r = np.prod(self.x[: self.N])
+            prod_r = float(np.real(np.prod(self.x[: self.N])))
             znam -= lam_eff * self.b * prod_r
 
         self.p[0] = (self.n - lam_eff * self.b) / znam
@@ -274,9 +283,10 @@ class H2MnCalc(BaseQueue):
             self.p[j + 1] = self.p[j] * self.x[j]
 
         total = self.p.sum()
-        if total > 0:
+        if abs(total) > 0:
             self.p /= total
-        assert np.isclose(self.p.sum(), 1.0, atol=1e-10, rtol=1e-9), f"sum(p) = {self.p.sum():.12f}, expected 1.0"
+        p_sum = float(np.real(self.p.sum()))
+        assert np.isclose(p_sum, 1.0, atol=1e-10, rtol=1e-9), f"sum(p) = {p_sum:.12f}, expected 1.0"
 
     def get_results(self, num_of_moments: int = 4) -> QueueResults:
         """Return QueueResults with p, w, v, utilization."""
@@ -292,7 +302,7 @@ class H2MnCalc(BaseQueue):
 
     def get_p(self) -> np.ndarray:
         """Return state probabilities (real)."""
-        return np.asarray(self.p, dtype=float)
+        return np.asarray(np.real(self.p), dtype=float)
 
     def get_w(self, num_of_moments: int = 4) -> list[float]:
         """Waiting time moments via queue-length distribution and Little."""
