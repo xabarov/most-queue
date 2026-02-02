@@ -13,7 +13,6 @@ from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
-from most_queue.theory.utils.diff5dots import diff5dots
 
 
 class GiMn(BaseQueue):

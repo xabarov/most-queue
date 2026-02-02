@@ -28,6 +28,10 @@ class BaseSimulationCore:
         self._min_server_idx = -1
         self._servers_time_changed = True
 
+        # Placeholder for subclasses - v (sojourn) and w (wait) moments
+        self.v: list[float] = [0, 0, 0, 0]
+        self.w: list[float] = [0, 0, 0, 0]
+
     def refresh_busy_stat(self, new_a: float, count: int = None) -> None:
         """
         Update statistics of the busy period.
@@ -49,9 +53,6 @@ class BaseSimulationCore:
             count: Number of served tasks (if None, should be overridden by subclass)
         """
         # This is a placeholder - subclasses should override with proper count
-        # Initialize v if not exists
-        if not hasattr(self, "v"):
-            self.v = [0, 0, 0, 0]
         if count is not None:
             self.v = refresh_moments_stat(self.v, new_a, count)
 
@@ -64,9 +65,6 @@ class BaseSimulationCore:
             count: Number of taken tasks (if None, should be overridden by subclass)
         """
         # This is a placeholder - subclasses should override with proper count
-        # Initialize w if not exists
-        if not hasattr(self, "w"):
-            self.w = [0, 0, 0, 0]
         if count is not None:
             self.w = refresh_moments_stat(self.w, new_a, count)
 

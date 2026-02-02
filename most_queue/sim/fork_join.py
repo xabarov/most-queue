@@ -14,7 +14,7 @@ init()
 
 class ForkJoinSim(QsSim):
     """
-    Simulation of a ForkJoin (n, k) Queueing System (Fork-Join, Split-Join)
+    Simulation of a ForkJoin (n, k) Queueing System (Fork-Join, Split-Join).
     In a fork-join queueing system, a job is forked into n sub-tasks
     when it arrives at a control node, and each sub-task is sent to a
     single node to be conquered.
@@ -73,6 +73,10 @@ class ForkJoinSim(QsSim):
         self.queues = []
         for _ in range(num_of_channels):
             self.queues.append(deque())
+
+    def _handle_custom_event(self, event_type: str) -> None:
+        """No custom events in ForkJoin simulator."""
+        pass  # pylint: disable=unnecessary-pass
 
     def calc_load(self):
         """

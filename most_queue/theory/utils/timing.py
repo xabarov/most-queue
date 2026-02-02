@@ -53,12 +53,12 @@ def measure_time() -> Any:
     """
     start = time.process_time()
 
-    class Timer:
+    class Timer:  # pylint: disable=missing-class-docstring
         def __init__(self, start_time: float) -> None:
             self.start_time = start_time
             self.elapsed: float = 0.0
 
-        def finish(self) -> None:
+        def finish(self) -> None:  # pylint: disable=missing-function-docstring
             self.elapsed = time.process_time() - self.start_time
 
     timer = Timer(start)

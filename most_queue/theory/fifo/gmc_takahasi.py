@@ -129,7 +129,6 @@ class H2MnCalc(BaseQueue):
     def _t_inf(self, x: float) -> np.ndarray:
         """Limit vector t_inf from the linear system for k=2."""
         n, mu = self.n, self.mu
-        u1, u2 = self.u[0], self.u[1]
         l1, l2 = self.lam[0], self.lam[1]
 
         # (u_i/x)*S + [n*mu*(x-1) - lambda_i]*t_i = 0, t_1 + t_2 = 1

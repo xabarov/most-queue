@@ -102,7 +102,7 @@ class HkHkNCalc(BaseQueue):
         self.w: list[float] | None = None
         self.v: list[float] | None = None
 
-    def set_sources(
+    def set_sources(  # pylint: disable=arguments-differ
         self,
         a: list[float] | None = None,
         u: list[float] | None = None,
@@ -135,7 +135,7 @@ class HkHkNCalc(BaseQueue):
             raise ValueError("Provide either a (moments) or (u, lam)")
         self.is_sources_set = True
 
-    def set_servers(
+    def set_servers(  # pylint: disable=arguments-differ
         self,
         b: list[float] | None = None,
         y: list[float] | None = None,
@@ -170,12 +170,12 @@ class HkHkNCalc(BaseQueue):
         """First 4 raw moments of phase-type distribution (mixture of exponentials)."""
         moments = [0.0] * 4
         for p, r in zip(probs, rates):
-            mean = 1.0 / r
             for kk in range(4):
                 moments[kk] += p * math.factorial(kk + 1) / (r ** (kk + 1))
         return moments
 
     def get_utilization(self) -> float:
+        """Return system utilization (rho)."""
         lam_eff = 1.0 / self.a[0] if self.a else sum(self.u[i] * self.lam[i] for i in range(self.k))
         util = lam_eff * self.b[0] / self.n
         return float(np.real(util))
@@ -269,6 +269,7 @@ class HkHkNCalc(BaseQueue):
         return diag
 
     def run(self) -> QueueResults:
+        """Run Takahashi-Takami iteration and return queue results."""
         start = time.process_time()
         self._check_if_servers_and_sources_set()
 
@@ -308,7 +309,7 @@ class HkHkNCalc(BaseQueue):
         for j in range(self.N):
             self.t.append([])
             c = self.cols[j]
-            for i in range(self.k):
+            for _ in range(self.k):
                 self.t[j].append(np.ones(c, dtype=complex) / (c * self.k))
         for j in range(self.N):
             self.x[j] = 0.5 + 0.0j
@@ -361,6 +362,7 @@ class HkHkNCalc(BaseQueue):
                 self.t[j][i] /= s
 
     def _update_level_0(self) -> None:
+        """Update level 0 probabilities in the Takahashi-Takami iteration."""
         lam = self.lam
         # Level 1 microstates correspond to compositions of busy=1; each microstate has
         # its own service outflow rate Σ m_l * μ_l. Do NOT assume microstate order equals phase order.
@@ -431,6 +433,7 @@ class HkHkNCalc(BaseQueue):
                 print(f"    j={j}: x_j={float(np.real(self.x[j])):.6f}, p[j+1]/p[j]={ratio:.6f}")
 
     def get_results(self, num_of_moments: int = 4) -> QueueResults:
+        """Compute and return queue performance results."""
         self.p = self.get_p()
         self.w = self.get_w(num_of_moments)
         self.v = self.get_v(num_of_moments)

@@ -58,12 +58,8 @@ class ImpatientQueueSim(QsSim):
         """
         events = {}
         if self.queue.size() > 0:
-            min_leave_time = float("inf")
-            for tsk in self.queue.queue:
-                if tsk.moment_to_leave < min_leave_time:
-                    min_leave_time = tsk.moment_to_leave
-            if min_leave_time < float("inf"):
-                events["task_drop"] = min_leave_time
+            min_leave_time = min(tsk.moment_to_leave for tsk in self.queue.queue)
+            events["task_drop"] = min_leave_time
         return events
 
     def _handle_custom_event(self, event_type: str):

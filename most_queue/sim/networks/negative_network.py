@@ -212,7 +212,7 @@ class NegativeNetwork(BaseSimNetwork):
             self.negative_arrival_rates = [0.0] * self.n_num
             self.negative_sources = [None] * self.n_num
 
-    def set_node_sources(
+    def set_node_sources(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         node_index: int,
         positive_params,
@@ -568,9 +568,8 @@ class NegativeNetwork(BaseSimNetwork):
                     self.qs[next_node].arrival(moment=self.ttek, ts=ts)
 
             return ts
-        else:
-            # Server was freed by negative job, nothing to route
-            return None
+        # Server was freed by negative job, nothing to route
+        return None
 
     def on_arrival(self, *args, **kwargs):
         """

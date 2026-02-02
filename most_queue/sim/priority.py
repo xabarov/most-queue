@@ -13,6 +13,7 @@ from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base_core import BaseSimulationCore
 from most_queue.sim.utils.events import EventScheduler
 from most_queue.sim.utils.servers import ServerPriority
+from most_queue.sim.utils.stats_update import refresh_moments_stat
 from most_queue.sim.utils.tasks import TaskPriority
 from most_queue.structs import PriorityResults
 
@@ -655,36 +656,30 @@ class PriorityQueueSimulator(BaseSimulationCore):
 
         return PriorityResults(v=v, w=w, p=p, duration=time.process_time() - start, utilization=self.calc_load())
 
-    def refresh_busy_stat(self, k, new_a):
+    def refresh_busy_stat(self, k, new_a):  # pylint: disable=arguments-renamed
         """
         Refresh statistics of busy time for class k and new arrival rate new_a.
         :param k: class number
         :param new_a: new arrival rate
         :return: None
         """
-        from most_queue.sim.utils.stats_update import refresh_moments_stat
-
         self.busy[k] = refresh_moments_stat(self.busy[k], new_a, self.busy_moments[k])
 
-    def refresh_v_stat(self, k, new_a):
+    def refresh_v_stat(self, k, new_a):  # pylint: disable=arguments-renamed
         """
         Refresh statistics of soujorn time for class k and new arrival rate new_a.
         :param k: class number
         :param new_a: new arrival rate
         """
-        from most_queue.sim.utils.stats_update import refresh_moments_stat
-
         self.v[k] = refresh_moments_stat(self.v[k], new_a, self.served[k])
 
-    def refresh_w_stat(self, k, new_a):
+    def refresh_w_stat(self, k, new_a):  # pylint: disable=arguments-renamed
         """
         Refresh statistics of waiting time for class k and new arrival rate new_a.
         :param k: class number
         :param new_a: new arrival rate
 
         """
-        from most_queue.sim.utils.stats_update import refresh_moments_stat
-
         self.w[k] = refresh_moments_stat(self.w[k], new_a, self.served[k])
 
     def get_p(self) -> list[list[float]]:

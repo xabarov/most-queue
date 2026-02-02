@@ -27,6 +27,10 @@ class QueueingSystemBatchSim(QsSim):
         self.batch_prob = batch_prob
         self.calc_cdf_prob()
 
+    def _handle_custom_event(self, event_type: str) -> None:
+        """No custom events in batch simulator."""
+        pass  # pylint: disable=unnecessary-pass
+
     def calc_cdf_prob(self):
         """
         Calcs CDF of batch probs distribution

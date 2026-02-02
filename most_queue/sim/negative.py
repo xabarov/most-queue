@@ -111,6 +111,10 @@ class QsSimNegatives(QsSim):
 
         self.negative_arrival_time = self.negative_source.generate()
 
+    def _handle_custom_event(self, event_type: str) -> None:
+        """No additional custom events in negative jobs simulator."""
+        pass  # pylint: disable=unnecessary-pass
+
     def calc_positive_load(self):
         """
         Calculates the load factor of the QS if has no disatsers

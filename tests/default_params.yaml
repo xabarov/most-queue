@@ -16,9 +16,16 @@ moments_rtol: 0.5
 arrival:
   rate: 1.0
   cv: 0.56 # coefficient of variation (CV) for arrival time if it not markovian
+  # For Takahashi–Takami validation tests:
+  # - cv_ge1: real H2 exists and can be simulated by QsSim ("H")
+  # - cv_lt1: complex-fit H2 may be used in calculations; simulation uses Gamma as proxy
+  cv_ge1: 1.2
+  cv_lt1: 0.56
 
 service:
   cv: 1.2
+  cv_ge1: 1.2
+  cv_lt1: 0.8
 
 warm-up:
   cv: 1.2

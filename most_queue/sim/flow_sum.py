@@ -103,7 +103,7 @@ class FlowSumSim:
         self.result_flow = self.a[0]
 
     @staticmethod
-    def _sum_2_flows_generic(
+    def _sum_2_flows_generic(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         distribution_class, get_params_method, a1, a2, num_of_moments=4, num_of_sim=DEFAULT_NUM_JOBS
     ):
         """

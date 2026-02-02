@@ -47,6 +47,10 @@ class QueueingFiniteSourceSim(QsSim):
         self.arrived_num = -1
         self.p = [0.0] * (number_of_sources + 1)
 
+    def _handle_custom_event(self, event_type: str) -> None:
+        """No custom events in finite source simulator."""
+        pass  # pylint: disable=unnecessary-pass
+
     def set_sources(self, params, kendall_notation: str = "M"):
         """
         Specifies the type and parameters of source time distribution.
