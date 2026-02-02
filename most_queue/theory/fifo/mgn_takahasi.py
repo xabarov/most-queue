@@ -410,10 +410,10 @@ class MGnCalc(BaseQueue):
         # Normalize each probability in a single list comprehension
         self.p = [value / total for value in self.p]
 
+        p_sum = sum(self.p)
+        assert abs(p_sum - 1.0) < 1e-10, f"sum(p) = {p_sum:.12f}, expected 1.0"
         if self.verbose:
-            # Check if the sum is approximately 1 (using a generator
-            # expression)
-            print(f"Summ of probs = {sum(self.p):.5f}")
+            print(f"Summ of probs = {p_sum:.5f}")
 
     def _calculate_p(self):
         """

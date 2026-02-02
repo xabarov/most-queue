@@ -170,3 +170,7 @@ tests/units/*.png
 # ignore all files in works/vacations/results
 works/vacations/results/*
 
+# ignore article about negative queues
+docs/negative_queues_takahasi_takami.md
+docs/negative_queues_figures/
+docs/books/

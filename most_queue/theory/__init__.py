@@ -16,6 +16,7 @@ from most_queue.theory.closed.engset import Engset
 from most_queue.theory.fifo.ek_d_n import EkDn
 from most_queue.theory.fifo.gi_m_1 import GIM1Calc
 from most_queue.theory.fifo.gi_m_n import GiMn
+from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
 from most_queue.theory.fifo.m_d_n import MDn
 from most_queue.theory.fifo.mg1 import MG1Calc
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
@@ -37,6 +38,7 @@ __all__ = [
     "EkDn",
     "GIM1Calc",
     "GiMn",
+    "H2MnCalc",
     "MDn",
     "MG1Calc",
     "MGnCalc",

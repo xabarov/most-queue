@@ -104,6 +104,29 @@ calc.set_servers(mu=0.6)
 results = calc.run()
 ```
 
+### H₂/M/c (метод Такахаси-Таками)
+
+**Описание:** Многоканальная система с гиперэкспоненциальным потоком поступления (H₂) и экспоненциальным обслуживанием (M). Использует упрощённый алгоритм §7.6.1 (формулы для z_j, x_j, t_{j,i}, уровень 0).
+
+**Класс расчета:** `H2MnCalc`
+
+**Пример:**
+
+```python
+from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
+from most_queue.random.distributions import H2Distribution
+
+calc = H2MnCalc(n=3)
+
+h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2)  # mean, cv (cv >= 1)
+a = H2Distribution.calc_theory_moments(h2_params, 4)
+calc.set_sources(a)
+
+calc.set_servers(b=2.0)  # среднее время обслуживания
+
+results = calc.run()
+```
+
 ### M/D/c
 
 **Описание:** Многоканальная система с пуассоновским потоком и детерминированным временем обслуживания.

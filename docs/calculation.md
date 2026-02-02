@@ -42,10 +42,7 @@ mg1.set_sources(l=0.5)  # λ = 0.5
 
 # Настройка обслуживания через моменты распределения
 # Сначала создаем параметры H2-распределения
-h2_params = H2Distribution.get_params_by_mean_and_cv(
-    mean=2.0,      # среднее время обслуживания
-    cv=0.8         # коэффициент вариации
-)
+h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8)  # mean, cv
 
 # Вычисляем моменты распределения
 b = H2Distribution.calc_theory_moments(h2_params, 5)
@@ -76,10 +73,7 @@ gim1 = GIM1Calc()
 
 # Настройка потока поступления через моменты
 # Создаем параметры гамма-распределения
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(
-    mean=2.0,      # среднее межприходное время
-    cv=0.6
-)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(2.0, 0.6)  # mean, cv
 
 # Вычисляем моменты межприходных времен
 a = GammaDistribution.calc_theory_moments(gamma_params)
@@ -121,6 +115,26 @@ print(f"  Среднее время ожидания: {results.w[0]:.4f}")
 print(f"  Коэффициент загрузки: {results.utilization:.4f}")
 ```
 
+### H₂/M/c система
+
+Класс `H2MnCalc` для системы с гиперэкспоненциальным потоком поступления и экспоненциальным обслуживанием (алгоритм §7.6.1):
+
+```python
+from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
+from most_queue.random.distributions import H2Distribution
+
+calc = H2MnCalc(n=3)
+
+h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2)  # mean, cv (cv >= 1)
+a = H2Distribution.calc_theory_moments(h2_params, 4)
+calc.set_sources(a)
+
+calc.set_servers(b=2.0)  # среднее время обслуживания
+results = calc.run()
+
+print(f"H2/M/3: p0={results.p[0]:.4f}, время ожидания={results.w[0]:.4f}")
+```
+
 ### M/M/c/r система с ограниченной очередью
 
 Тот же класс `MMnrCalc` с параметром `r`:
@@ -160,7 +174,7 @@ from most_queue.random.distributions import (
 )
 
 # H2-распределение
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=0.8)
+h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8)  # mean, cv
 b_h2 = H2Distribution.calc_theory_moments(h2_params, num=5)
 
 # Гамма-распределение
@@ -316,7 +330,7 @@ from most_queue.random.distributions import H2Distribution
 calc = MGnCalc(n=5)  # 5 каналов
 calc.set_sources(l=2.0)
 
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2)
+h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 1.2)  # mean, cv (cv >= 1 для H2)
 b = H2Distribution.calc_theory_moments(h2_params, 4)
 calc.set_servers(b)
 
