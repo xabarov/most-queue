@@ -6,6 +6,7 @@ repos:
     hooks:
       - id: check-yaml
       - id: check-added-large-files
+        args: ['--maxkb', '2048']  # allow assets (banner images up to ~2MB)
       - id: check-json
       - id: check-toml
 
