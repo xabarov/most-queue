@@ -83,8 +83,7 @@ def test_mg1():
     )
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
-
-    # when MG1 will work, add assert with v_calc1
+    assert np.allclose(sim_results.v, mg1_calc_result.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
 
 if __name__ == "__main__":

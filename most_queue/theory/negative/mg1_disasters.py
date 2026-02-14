@@ -7,12 +7,12 @@ Use results from the paper:
 
 import numpy as np
 from scipy.misc import derivative
+from scipy.optimize import brentq
 
 from most_queue.random.distributions import GammaDistribution, H2Distribution
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
-from most_queue.theory.utils.busy_periods import calc_busy_pls
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 
@@ -39,7 +39,10 @@ class MG1Disasters(BaseQueue):
         self.lst_function = None
         self.params = None
 
-        self.nu = None
+        # Cache for workload/waiting-time LST parameters
+        self._workload_root: float | None = None
+        self._workload_phi_r: float | None = None
+        self._workload_beta_r: float | None = None
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -49,6 +52,9 @@ class MG1Disasters(BaseQueue):
         """
         self.l_pos = l_pos
         self.l_neg = l_neg
+        self._workload_root = None
+        self._workload_phi_r = None
+        self._workload_beta_r = None
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -67,6 +73,9 @@ class MG1Disasters(BaseQueue):
         else:
             raise ValueError("Approximation must be 'h2' or 'gamma'.")
         self.is_servers_set = True
+        self._workload_root = None
+        self._workload_phi_r = None
+        self._workload_beta_r = None
 
     def run(self, num_of_moments: int = 4) -> QueueResults:
         """
@@ -109,26 +118,111 @@ class MG1Disasters(BaseQueue):
         self.v = v
         return v
 
-    def _calc_nu(self):
+    def _beta(self, s: float) -> float:
         """
-        Calculate the nu parameter.
-        Notice: l_neg*E[min{B, Y}] = 1-b_lst(l_neg)),
-        so nu = E[min{B, Y}]/(1/l_neg + E[min{B, Y}]) =
-        (1-b_lst(l_neg))/(self.l_neg/self.l_pos + 1 - b_lst(l_neg))
+        Service-time Laplace-Stieltjes transform β(s) = E[e^{-sB}].
         """
+        return float(self.lst_function(self.params, s))
 
-        busy_s = calc_busy_pls(self.lst_function, self.params, self.l_pos, self.l_neg)
-        x = self.l_pos * (1 - busy_s)
-        nu = x / (self.l_neg + x)
-        return nu
+    def _get_workload_root(self) -> float:
+        """
+        Find the unique positive root s0 of:
+            f(s) = s - (λ + δ) + λ β(s) = 0
+        where λ = l_pos, δ = l_neg.
+
+        This root is used to cancel the pole in the workload LST.
+        """
+        if self._workload_root is not None:
+            return self._workload_root
+
+        if self.l_neg <= 0:
+            self._workload_root = 0.0
+            return self._workload_root
+
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
+        r = lam + delta
+
+        def f(x: float) -> float:
+            return x - r + lam * self._beta(x)
+
+        # f(0) = -delta < 0; f(x) -> +inf as x -> +inf, so a bracket exists.
+        lo = 0.0
+        hi = max(1.0 / self.b[0], r, 1.0)
+        while f(hi) <= 0.0:
+            hi *= 2.0
+            if hi > 1e6 / self.b[0]:
+                raise RuntimeError("Failed to bracket the positive root for workload LST.")
+
+        self._workload_root = float(brentq(f, lo, hi, xtol=1e-12, rtol=1e-12, maxiter=500))
+        return self._workload_root
+
+    def _ensure_workload_constants(self) -> None:
+        """
+        Precompute constants needed for the workload/waiting-time LST.
+        """
+        if self.l_neg <= 0:
+            return
+        if self._workload_phi_r is not None and self._workload_beta_r is not None:
+            return
+
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
+        r = lam + delta
+        s0 = self._get_workload_root()
+
+        beta_r = self._beta(r)
+        if beta_r <= 0:
+            raise RuntimeError("Service-time LST β(r) must be positive.")
+
+        # Cancellation condition at the pole s = s0:
+        #   delta (s0 - r) + lam * s0 * phi(r) * beta(r) = 0
+        # => phi(r) = delta (r - s0) / (lam * s0 * beta(r))
+        phi_r = delta * (r - s0) / (lam * s0 * beta_r)
+
+        self._workload_beta_r = float(beta_r)
+        self._workload_phi_r = float(phi_r)
+
+    def _w_lst(self, s: float) -> float:
+        """
+        Workload / waiting-time LST at arrival epochs (PASTA):
+            φ(s) = E[e^{-s W}]
+        for an M/G/1 queue with Poisson disasters (rate δ) that clear the system.
+        """
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
+
+        if delta <= 0:
+            # Classic M/G/1 waiting-time LST (stable case only).
+            ro = lam * self.b[0]
+            if ro >= 1:
+                raise ValueError("M/G/1 without disasters requires utilization < 1.")
+            beta_s = self._beta(s)
+            return (1.0 - ro) * s / (s - lam + lam * beta_s)
+
+        r = lam + delta
+        self._ensure_workload_constants()
+        beta_s = self._beta(s)
+        denom = r * (s - r + lam * beta_s)
+        numer = delta * (s - r) + lam * s * self._workload_phi_r * self._workload_beta_r
+        return float(numer / denom)
 
     def _v_lst(self, s):
         """
-        Calculate  Laplace-Stieljets transform for waiting time in the system.
+        Laplace-Stieltjes transform of the sojourn time V in the system:
+            V = min(W + B, Y),  Y ~ Exp(δ) (next disaster after arrival),
+        where W is the stationary workload seen by a positive arrival.
         """
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
 
-        self.nu = self.nu or self._calc_nu()
-        numerator = s * (1 - self.nu) - self.l_neg
-        big_g = self.lst_function(self.params, s)
-        denominator = s - self.l_pos * (1.0 - big_g) - self.l_neg
-        return numerator / denominator
+        if delta <= 0:
+            # Classic M/G/1 sojourn-time LST (stable case only).
+            ro = lam * self.b[0]
+            if ro >= 1:
+                raise ValueError("M/G/1 without disasters requires utilization < 1.")
+            beta_s = self._beta(s)
+            return (1.0 - ro) * s * beta_s / (s - lam + lam * beta_s)
+
+        sp = s + delta
+        return float(delta / (s + delta) + (s / (s + delta)) * self._w_lst(sp) * self._beta(sp))
