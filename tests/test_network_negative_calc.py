@@ -21,7 +21,8 @@ with open(params_path, "r", encoding="utf-8") as file:
     params = yaml.safe_load(file)
 
 # Import constants from params file
-NUM_OF_JOBS = int(params["num_of_jobs"])
+# Network simulations converge slower; use a larger sample here.
+NUM_OF_JOBS = int(params["num_of_jobs"]) * 3
 SERVICE_TIME_CV = float(params["service"]["cv"])
 ARRIVAL_RATE = float(params["arrival"]["rate"])
 UTILIZATION_FACTOR = float(params["utilization_factor"])

@@ -52,7 +52,7 @@ def collect_sim_results(qp: dict, b: list[float], n: int, discipline: NegativeSe
     :param qp: Dictionary containing the parameters for the simulation.
     """
     # Run simulation
-    queue_sim = QsSimNegatives(n, discipline)
+    queue_sim = QsSimNegatives(n, discipline, verbose=False)
 
     queue_sim.set_negative_sources(float(qp["arrival_rate"]["negative"]), "M")
     queue_sim.set_positive_sources(float(qp["arrival_rate"]["positive"]), "M")
@@ -204,7 +204,10 @@ if __name__ == "__main__":
         ]
     )
 
-    IS_RCS = True  # or False for queue with disasters
+    # Select discipline via environment variable for reproducible runs:
+    #   NEGATIVE_DISCIPLINE=RCS|DISASTER
+    # Default: RCS
+    IS_RCS = os.environ.get("NEGATIVE_DISCIPLINE", "RCS").strip().upper() == "RCS"
 
     CUR_DIR = os.path.dirname(__file__)
 
@@ -215,7 +218,13 @@ if __name__ == "__main__":
         queue_discipline = NegativeServiceType.DISASTER
         EXP_DIR_NAME = f"results/disaster/{APPENDIX}"
 
-    EXP_DIR_NAME = os.path.join(CUR_DIR, EXP_DIR_NAME)
+    # Allow overriding output directory (e.g. to refresh docs figures):
+    #   OUTPUT_DIR=docs/negative_queues_figures
+    output_dir = os.environ.get("OUTPUT_DIR")
+    if output_dir:
+        EXP_DIR_NAME = output_dir
+    else:
+        EXP_DIR_NAME = os.path.join(CUR_DIR, EXP_DIR_NAME)
 
     if not os.path.exists(EXP_DIR_NAME):
         os.makedirs(EXP_DIR_NAME)
