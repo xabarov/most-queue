@@ -8,8 +8,6 @@ from scipy.misc import derivative
 from most_queue.random.distributions import H2Distribution, H2Params
 from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
-from most_queue.theory.utils.conditional import moments_exp_less_than_h2, moments_h2_less_than_exp
-from most_queue.theory.utils.conv import conv_moments
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -38,6 +36,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.gamma = None
         self.base_mgn = None
         self.w = None
+        self._w0_pls_cache: dict[float, complex] = {}
+        self._z0_pls_cache: dict[float, complex] = {}
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -48,6 +48,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.l_pos = l_pos
         self.l = l_pos
         self.l_neg = l_neg
+        self._w0_pls_cache = {}
+        self._z0_pls_cache = {}
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -62,6 +64,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.mu = [h2_params.mu1, h2_params.mu2]
         self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
         self.is_servers_set = True
+        self._w0_pls_cache = {}
+        self._z0_pls_cache = {}
 
     def _pre_run_setup(self):
         """
@@ -122,7 +126,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
     def get_w(self, num_of_moments: int = 4) -> list[float]:
         """
-        Get the waiting time moments
+        Get the waiting time moments.
+
+        Here "waiting time" matches the simulator semantics: time spent in queue
+        until either service begins OR a disaster clears the system.
         """
 
         if not self.w is None:
@@ -131,69 +138,89 @@ class MGnNegativeDisasterCalc(MGnCalc):
         w = [0.0] * num_of_moments
 
         for i in range(num_of_moments):
-            w[i] = derivative(self._calc_w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+            w[i] = derivative(self._w_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
             if i % 2 == 0:
                 w[i] = -w[i]
 
-        self.w = w
+        self.w = [w_m.real if isinstance(w_m, complex) else float(w_m) for w_m in w]
 
         return w
 
     def get_v(self, num_of_moments: int = 4) -> list[float]:
         """
-        Get the sojourn time moments
+        Get the sojourn time moments.
+
+        A positive customer leaves either by completing service OR by the first
+        disaster after its arrival (which clears the system). If we define Z0 as
+        the completion time that would occur *if no disasters happened after
+        the customer's arrival* (given the system state at arrival), then:
+
+            V = min(Z0, Y),  Y ~ Exp(l_neg), independent of Z0.
+
+        This gives an LST-based computation that matches the simulator semantics.
         """
-        w = np.array(self.get_w(num_of_moments))
+        if not self.v is None:
+            return self.v
 
-        # serving = min(H2_b, exp(l_neg)) = H2(y1=y1, mu1 = mu1+l_neg,
-        # mu2=mu2+l_neg)
+        v = [0.0] * num_of_moments
+        for i in range(num_of_moments):
+            v[i] = derivative(self._v_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+            if i % 2 == 0:
+                v[i] = -v[i]
 
-        params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-
-        l_neg = self.l_neg
-
-        b = H2Distribution.calc_theory_moments(
-            H2Params(p1=params.p1, mu1=l_neg + params.mu1, mu2=l_neg + params.mu2), num=num_of_moments
-        )
-
-        return [m.real for m in conv_moments(w, b, num=num_of_moments)]
+        self.v = [v_m.real if isinstance(v_m, complex) else float(v_m) for v_m in v]
+        return self.v
 
     def get_v_served(self) -> list[float]:
         """
-        Get the sojourn time moments
+        Sojourn time moments conditional on being served (service completion
+        occurs before the first disaster after arrival).
         """
-        w = self.get_w(num_of_moments=4)
+        delta = float(self.l_neg)
+        if delta <= 0:
+            raise ValueError("get_v_served() requires l_neg > 0 for disaster model.")
 
-        # serving = P(H2 | H2 < exp(l_neg))
+        p_served = float(self._z0_pls(delta).real)
+        if p_served <= 0:
+            return [0.0, 0.0, 0.0, 0.0]
 
-        service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0, 0.0])
-        h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n + 1):
-            l_neg = self.l_neg
+        def v_served_pls(s: float) -> complex:
+            return self._z0_pls(s + delta) / p_served
 
-            b = moments_h2_less_than_exp(l_neg, h2_params)
-            b_cum += service_probs[i - 1].real * b
+        moments = [0.0] * 4
+        for i in range(4):
+            moments[i] = derivative(v_served_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+            if i % 2 == 0:
+                moments[i] = -moments[i]
 
-        return [m.real for m in conv_moments(w, b_cum, 4)]
+        return [m.real if isinstance(m, complex) else float(m) for m in moments]
 
     def get_v_broken(self) -> list[float]:
         """
-        Get the sojourn time moments
+        Sojourn time moments conditional on being broken by a disaster
+        (first disaster after arrival occurs before service completion).
         """
-        w = self.get_w()
+        delta = float(self.l_neg)
+        if delta <= 0:
+            raise ValueError("get_v_broken() requires l_neg > 0 for disaster model.")
 
-        # serving = P(exp(l_neg) | exp(l_neg) < H2)
+        p_served = float(self._z0_pls(delta).real)
+        p_broken = 1.0 - p_served
+        if p_broken <= 0:
+            return [0.0, 0.0, 0.0, 0.0]
 
-        service_probs = self._calc_service_probs()
-        b_cum = np.array([0.0, 0.0, 0.0, 0.0])
-        h2_params = H2Params(p1=self.y[0], mu1=self.mu[0], mu2=self.mu[1])
-        for i in range(1, self.n + 1):
-            l_neg = self.l_neg
-            b = moments_exp_less_than_h2(l_neg, h2_params)
-            b_cum += service_probs[i - 1].real * b
+        def v_broken_pls(s: float) -> complex:
+            # E[e^{-sY}; Y<Z0] = delta/(s+delta) * (1 - Z0*(s+delta))
+            num = delta / (s + delta) * (1.0 - self._z0_pls(s + delta))
+            return num / p_broken
 
-        return [m.real for m in conv_moments(w, b_cum, 4)]
+        moments = [0.0] * 4
+        for i in range(4):
+            moments[i] = derivative(v_broken_pls, 0, dx=1e-3 / self.b[0], n=i + 1, order=9)
+            if i % 2 == 0:
+                moments[i] = -moments[i]
+
+        return [m.real if isinstance(m, complex) else float(m) for m in moments]
 
     def fill_cols(self):
         """
@@ -347,6 +374,104 @@ class MGnNegativeDisasterCalc(MGnCalc):
         for _i in range(k):
             res = np.dot(res, matrix)
         return res
+
+    def _beta_pls(self, s: float) -> complex:
+        """
+        LST of tagged customer's service time B ~ H2(y, mu).
+        """
+        return self.y[0] * lst_exp(self.mu[0], s) + self.y[1] * lst_exp(self.mu[1], s)
+
+    def _calc_w0_def_pls(self, s: float) -> complex:
+        """
+        Defective LST of W0: waiting time to start service in a *no-disaster*
+        evolution after arrival, given the stationary (disaster) state at arrival.
+
+        This only covers the part where the customer finds the system with
+        at least n jobs (so W0>0); the mass at W0=0 is added in `_w0_pls`.
+        """
+        w_def = 0.0 + 0.0j
+
+        # Use no-disaster embedded chain (base MGn, without the added disaster-state).
+        key_numbers = self._get_key_numbers(self.n)
+
+        # a[0] corresponds to the artificial disaster-state; it should not contribute here.
+        a = [1.0 + 0.0j]
+        for j in range(self.n + 1):
+            rate = key_numbers[j][0] * self.mu[0] + key_numbers[j][1] * self.mu[1]
+            a.append(lst_exp(rate, s))
+        a = np.array(a, dtype=self.dt)  # (n+2,)
+
+        # Build extended (n+2)x(n+2) transition matrix using base (n+1)x(n+1) probabilities.
+        p_base = self.base_mgn.calc_up_probs(self.n + 1)  # (n+1)x(n+1)
+        p_ext = np.zeros((self.n + 2, self.n + 2), dtype=self.dt)
+        p_ext[0, 0] = 1.0
+        p_ext[1:, 1:] = p_base
+
+        t = (p_ext * a).T  # iterate powers of (p_ext * a) transposed
+        pa = np.eye(self.n + 2, dtype=self.dt)
+
+        for k in range(self.n, self.N):
+            ys = np.array([self.Y[k][0, i] for i in range(self.n + 2)], dtype=self.dt)
+            ys[0] = 0.0  # artificial disaster-state is counted into p[0] already
+            a_pa = a.dot(pa)
+            w_def += ys.dot(a_pa)
+            pa = pa.dot(t)
+
+        return w_def
+
+    def _w0_pls(self, s: float) -> complex:
+        """
+        Full LST of W0 (waiting time to *start service* if disasters are disabled
+        after the customer's arrival), under the stationary distribution at arrival.
+        """
+        s_key = float(s)
+        cached = self._w0_pls_cache.get(s_key)
+        if cached is not None:
+            return cached
+
+        # Immediate service if actual number in system < n (includes artificial disaster-mass mapped into p[0]).
+        p_immediate = sum(float(self.p[k]) for k in range(min(self.n, len(self.p))))
+        w0 = p_immediate + self._calc_w0_def_pls(s)
+        self._w0_pls_cache[s_key] = w0
+        return w0
+
+    def _z0_pls(self, s: float) -> complex:
+        """
+        LST of Z0 = W0 + B (completion time with disasters disabled after arrival).
+        Independence holds because the tagged service time is independent from its waiting time.
+        """
+        s_key = float(s)
+        cached = self._z0_pls_cache.get(s_key)
+        if cached is not None:
+            return cached
+        z0 = self._w0_pls(s) * self._beta_pls(s)
+        self._z0_pls_cache[s_key] = z0
+        return z0
+
+    def _w_pls(self, s: float) -> complex:
+        """
+        LST of waiting time in the *disaster* system, matching simulator:
+            W = min(W0, Y),  Y ~ Exp(l_neg)
+        """
+        delta = float(self.l_neg)
+        if delta <= 0:
+            # Fallback to the no-disaster waiting time (start-service).
+            return self._w0_pls(s)
+
+        sp = s + delta
+        return delta / (s + delta) + (s / (s + delta)) * self._w0_pls(sp)
+
+    def _v_pls(self, s: float) -> complex:
+        """
+        LST of sojourn time in the disaster system:
+            V = min(Z0, Y),  Y ~ Exp(l_neg)
+        """
+        delta = float(self.l_neg)
+        if delta <= 0:
+            return self._z0_pls(s)
+
+        sp = s + delta
+        return delta / (s + delta) + (s / (s + delta)) * self._z0_pls(sp)
 
     def _calc_w_pls(self, s) -> float:
         """
