@@ -162,8 +162,23 @@ cython_debug/
 
 .vscode
 
-# ignore whole works/negative_queues (article, figures, results)
-works/negative_queues/
+# works/negative_queues (article sources, figures, scripts)
+# keep sources in git, ignore generated artifacts and bulky results
+works/negative_queues/build/
+works/negative_queues/results/
+works/negative_queues/__pycache__/
+works/negative_queues/*.aux
+works/negative_queues/*.bbl
+works/negative_queues/*.bcf
+works/negative_queues/*.blg
+works/negative_queues/*.fdb_latexmk
+works/negative_queues/*.fls
+works/negative_queues/*.log
+works/negative_queues/*.out
+works/negative_queues/*.run.xml
+works/negative_queues/*.synctex.gz
+works/negative_queues/*.toc
+works/negative_queues/**/*.bkp
 
 # ignore all png files in tests/units folder
 tests/units/*.png
