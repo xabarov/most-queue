@@ -162,7 +162,8 @@ cython_debug/
 
 .vscode
 
-works/negative_queues/results/*
+# ignore whole works/negative_queues (article, figures, results)
+works/negative_queues/
 
 # ignore all png files in tests/units folder
 tests/units/*.png

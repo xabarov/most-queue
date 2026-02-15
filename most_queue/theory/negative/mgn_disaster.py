@@ -2,6 +2,8 @@
 Calculate M/H2/n queue with negative jobs with disasters,
 """
 
+import math
+
 import numpy as np
 from scipy.misc import derivative
 
@@ -13,8 +15,16 @@ from most_queue.theory.utils.transforms import lst_exp
 
 class MGnNegativeDisasterCalc(MGnCalc):
     """
-    Calculate M/H2/n queue with negative jobs with disasters,
-    (remove all customer from system)
+    Calculate M/H2/n queue with negative jobs (DISASTER-type).
+
+    Two scenarios are supported (selected by `requeue_on_disaster`):
+
+    - `False` (default): negative arrival clears the system (removes all positive jobs),
+      matching the original "DISASTER" semantics.
+    - `True`: negative arrival interrupts service and returns the positive jobs in service
+      back to the head of the queue (service restarts). In this mode the calculation
+      is approximated via an equivalent M/G/n with an effective service time that
+      accounts for restart.
     """
 
     def __init__(
@@ -22,11 +32,14 @@ class MGnNegativeDisasterCalc(MGnCalc):
         n: int,
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
+        requeue_on_disaster: bool = False,
+        matrix_requeue: bool = False,
     ):
         """
         n: number of servers
         buffer: size of the buffer (optional)
         calc_params: TakahashiTakamiParams object with parameters for calculation
+        requeue_on_disaster: if True, use "restart to queue" scenario instead of clearing
         """
 
         super().__init__(n=n, buffer=buffer, calc_params=calc_params)
@@ -38,6 +51,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.w = None
         self._w0_pls_cache: dict[float, complex] = {}
         self._z0_pls_cache: dict[float, complex] = {}
+        self.requeue_on_disaster = bool(requeue_on_disaster)
+        # If True, use exact TT with modified matrices (C, D) for REQUEUE_ALL.
+        # If False (default), use the effective-service approximation (closer to Gamma sim).
+        self.matrix_requeue = bool(matrix_requeue)
+        self._requeue_results: NegativeArrivalsResults | None = None
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -50,6 +68,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.l_neg = l_neg
         self._w0_pls_cache = {}
         self._z0_pls_cache = {}
+        self._requeue_results = None
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -66,20 +85,138 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self.is_servers_set = True
         self._w0_pls_cache = {}
         self._z0_pls_cache = {}
+        self._requeue_results = None
+
+    def run(self) -> NegativeArrivalsResults:  # pylint: disable=arguments-differ
+        """
+        Run calculation.
+
+        In REQUEUE mode there are two options:
+
+        - default (`matrix_requeue=False`): approximate via an equivalent M/G/n with
+          effective service moments B_eff (stable and matches Gamma-based simulator well);
+        - optional (`matrix_requeue=True`): keep the standard TT loop but modify the
+          within-level transitions (C, D) to model mass service restarts in the H2 world.
+        """
+        if self.requeue_on_disaster and not self.matrix_requeue:
+            return self._ensure_requeue_results(num_of_moments=4)
+        return super().run()  # type: ignore[return-value]
 
     def _pre_run_setup(self):
         """
         Setup before main iteration loop - initialize base_mgn for matrix references.
         """
-        # Initialize base MGnCalc for matrix reference
-        self.base_mgn = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
-        self.base_mgn.set_sources(l=self.l_pos)
-        self.base_mgn.set_servers(b=self.b)
-        self.base_mgn.fill_cols()
-        self.base_mgn.build_matrices()
+        if not self.requeue_on_disaster:
+            # Initialize base MGnCalc for matrix reference (needed for CLEAR_SYSTEM mode).
+            self.base_mgn = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+            self.base_mgn.set_sources(l=self.l_pos)
+            self.base_mgn.set_servers(b=self.b)
+            self.base_mgn.fill_cols()
+            self.base_mgn.build_matrices()
 
         # Now do standard setup
         super()._pre_run_setup()
+
+    def _ensure_requeue_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
+        """
+        REQUEUE scenario (service restarts on each disaster):
+
+        We approximate the system by a standard M/G/n (no negative departures),
+        but with an *effective* service time B_eff that accounts for restart.
+
+        For a renewal service time B with LST β(s) and Poisson restarts with rate δ,
+        the completion time LST is:
+
+            B_eff^*(s) = β(s+δ) * (s+δ) / (s + δ * β(s+δ)).
+
+        Here β(s) is taken from a Gamma approximation based on the first two moments
+        (consistent with simulation defaults).
+        """
+        if self._requeue_results is not None and len(self._requeue_results.v) >= num_of_moments:
+            return self._requeue_results
+
+        self._check_if_servers_and_sources_set()
+
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
+
+        mean_b = float(self.b[0])
+        var_b = float(self.b[1] - self.b[0] ** 2)
+
+        # Gamma approximation for β(s) by mean/variance
+        if var_b > 0 and mean_b > 0:
+            k = mean_b * mean_b / var_b
+            theta = var_b / mean_b
+
+            def beta(s: float) -> float:
+                return float((1.0 + theta * s) ** (-k))
+
+        else:
+
+            def beta(s: float) -> float:
+                # Degenerate fallback: no variability information
+                return float(np.exp(-mean_b * s))
+
+        if delta <= 0:
+            b_eff = [float(x) for x in self.b[:num_of_moments]]
+        else:
+
+            def b_eff_pls(s: float) -> float:
+                sp = s + delta
+                beta_sp = beta(sp)
+                return float(beta_sp * (s + delta) / (s + delta * beta_sp))
+
+            b_eff = [0.0] * num_of_moments
+            dx = 1e-3 / max(mean_b, 1e-9)
+            for i in range(num_of_moments):
+                val = derivative(b_eff_pls, 0, dx=dx, n=i + 1, order=9)
+                if i % 2 == 0:
+                    val = -val
+                b_eff[i] = float(val)
+
+        # Run a standard MGnCalc with effective service moments
+        eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+        eff.set_sources(l=lam)
+        eff.set_servers(b=b_eff)
+        eff_res = eff.run()
+
+        v = [float(x) for x in eff_res.v[:num_of_moments]]
+        w = [float(x) for x in eff_res.w[:num_of_moments]]
+        p = [float(x) for x in eff_res.p]
+        v_broken = [0.0] * num_of_moments
+
+        self._requeue_results = NegativeArrivalsResults(
+            v=v,
+            w=w,
+            p=p,
+            utilization=float(eff_res.utilization),
+            v_broken=v_broken,
+            v_served=v,
+            duration=0.0,
+        )
+        return self._requeue_results
+
+    def _calculate_p(self):
+        """
+        Calculate level probabilities.
+
+        Base MGnCalc uses a closed-form expression for p[0] that assumes the
+        standard M/H2/n structure without additional horizontal transitions.
+        In REQUEUE mode we add disaster-driven horizontal transitions, so we
+        recover probabilities from the computed x-ratios and normalize.
+        """
+        # For the DISASTER model (both CLEAR_SYSTEM and matrix REQUEUE_ALL),
+        # the state-space differs from the base MGnCalc assumptions, so we
+        # compute level probabilities by normalizing the x-ratios.
+        if (not self.requeue_on_disaster) or (self.requeue_on_disaster and self.matrix_requeue):
+            self.p[0] = 1.0 + 0.0j
+            for j in range(self.N - 1):
+                self.p[j + 1] = self.p[j] * self.x[j]
+            total = sum(self.p)
+            self.p = np.array([val / total for val in self.p], dtype=self.dt)
+            return
+
+        return super()._calculate_p()
 
     def get_results(self, num_of_moments: int = 4, derivate=False) -> NegativeArrivalsResults:
         """
@@ -91,6 +228,34 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Get all results
         """
+        if self.requeue_on_disaster and self.matrix_requeue:
+            # No removals: system is stable QBD with within-level restart transitions.
+            # Use Little's law for first moments from stationary level probabilities.
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                w1 = 0.0
+                v1 = 0.0
+            else:
+                en = sum(k * pk for k, pk in enumerate(p))
+                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
+                v1 = en / lam
+                w1 = eq / lam
+
+            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
+            utilization = float(ebusy) / float(self.n) if self.n > 0 else 0.0
+
+            v = [float(v1)] + [0.0] * max(0, num_of_moments - 1)
+            w = [float(w1)] + [0.0] * max(0, num_of_moments - 1)
+            return NegativeArrivalsResults(
+                v=v,
+                w=w,
+                p=p,
+                utilization=utilization,
+                v_broken=[0.0] * num_of_moments,
+                v_served=v,
+                duration=0.0,
+            )
 
         self.p = self.get_p()
         self.w = self.get_w(num_of_moments)
@@ -112,9 +277,17 @@ class MGnNegativeDisasterCalc(MGnCalc):
         the effect of disasters on utilization. A more accurate calculation
         would consider the impact of disaster events on system utilization.
         """
+        if self.requeue_on_disaster and self.matrix_requeue:
+            p = self.get_p()
+            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
+            return float(ebusy) / float(self.n) if self.n > 0 else 0.0
         return self.l_pos * self.b[0] / self.n
 
     def get_p(self) -> list[float]:
+        if self.requeue_on_disaster:
+            if self.matrix_requeue:
+                return [float(val.real) for val in list(self.p)]
+            return self._ensure_requeue_results(num_of_moments=4).p
 
         first_col_sum = 0
         for i in range(1, self.N):
@@ -131,6 +304,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Here "waiting time" matches the simulator semantics: time spent in queue
         until either service begins OR a disaster clears the system.
         """
+
+        if self.requeue_on_disaster:
+            if not self.matrix_requeue:
+                return self._ensure_requeue_results(num_of_moments=num_of_moments).w
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                w1 = 0.0
+            else:
+                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
+                w1 = eq / lam
+            return [float(w1)] + [0.0] * max(0, num_of_moments - 1)
 
         if not self.w is None:
             return self.w
@@ -159,6 +344,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         This gives an LST-based computation that matches the simulator semantics.
         """
+        if self.requeue_on_disaster:
+            if not self.matrix_requeue:
+                return self._ensure_requeue_results(num_of_moments=num_of_moments).v
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                v1 = 0.0
+            else:
+                en = sum(k * pk for k, pk in enumerate(p))
+                v1 = en / lam
+            return [float(v1)] + [0.0] * max(0, num_of_moments - 1)
+
         if not self.v is None:
             return self.v
 
@@ -176,6 +373,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Sojourn time moments conditional on being served (service completion
         occurs before the first disaster after arrival).
         """
+        if self.requeue_on_disaster:
+            if not self.matrix_requeue:
+                return self._ensure_requeue_results(num_of_moments=4).v
+            return self.get_v(num_of_moments=4)
+
         delta = float(self.l_neg)
         if delta <= 0:
             raise ValueError("get_v_served() requires l_neg > 0 for disaster model.")
@@ -200,6 +402,11 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Sojourn time moments conditional on being broken by a disaster
         (first disaster after arrival occurs before service completion).
         """
+        if self.requeue_on_disaster:
+            if not self.matrix_requeue:
+                return self._ensure_requeue_results(num_of_moments=4).v_broken
+            return [0.0, 0.0, 0.0, 0.0]
+
         delta = float(self.l_neg)
         if delta <= 0:
             raise ValueError("get_v_broken() requires l_neg > 0 for disaster model.")
@@ -235,6 +442,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         we need these artificial states on each layer with high intensity
         of transition up to state 00
         """
+        if self.requeue_on_disaster:
+            return super().fill_cols()
         for i in range(self.N):
             if i < self.n + 1:
                 if i == 0:
@@ -249,6 +458,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Create matrix A by the given level number.
         """
+        if self.requeue_on_disaster:
+            return super()._build_big_a_matrix(num)
         if num < self.n:
             col = self.cols[num + 1]
             row = self.cols[num]
@@ -280,6 +491,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Create matrix B by the given level number.
         """
+        if self.requeue_on_disaster:
+            return super()._build_big_b_matrix(num)
 
         base_matrix = self.base_mgn.B[num]
         if num == 0:
@@ -316,10 +529,59 @@ class MGnNegativeDisasterCalc(MGnCalc):
         output[1:, 1:] = base_matrix
         return output
 
+    def _build_big_c_matrix(self, num):
+        """
+        Create matrix C (horizontal transitions) by the given level number.
+
+        In REQUEUE mode, a disaster does not change the level (number in system),
+        but it resets all ongoing services and immediately starts service anew.
+        This is modeled as horizontal transitions between microstates at rate l_neg.
+        """
+        if not (self.requeue_on_disaster and self.matrix_requeue):
+            return super()._build_big_c_matrix(num)
+
+        output = super()._build_big_c_matrix(num)
+        delta = float(self.l_neg)
+        if num <= 0 or delta <= 0:
+            return output
+
+        m = min(num, self.n)
+        # microstate index = number of phase-2 servers among m busy servers
+        # after disaster, the phase-2 count is Bin(m, y2)
+        # Note: y can be complex (for H2 complex-fit); keep dt-consistent algebra.
+        y1 = self.y[0]
+        y2 = self.y[1]
+        probs = np.array([math.comb(m, j) * (y2**j) * (y1 ** (m - j)) for j in range(m + 1)], dtype=self.dt)
+        # add transitions from any current microstate to the new microstate distribution,
+        # excluding diagonal (stay-in-state) part; the corresponding leaving rate is
+        # added to D.
+        for j_from in range(m + 1):
+            for j_to in range(m + 1):
+                if j_to == j_from:
+                    continue
+                output[j_from, j_to] += delta * probs[j_to]
+        return output
+
     def _build_big_d_matrix(self, num):
         """
         Create matrix D by the given level number.
         """
+        if self.requeue_on_disaster and self.matrix_requeue:
+            output = super()._build_big_d_matrix(num)
+            delta = float(self.l_neg)
+            if num > 0 and delta > 0:
+                m = min(num, self.n)
+                y1 = self.y[0]
+                y2 = self.y[1]
+                probs = np.array(
+                    [math.comb(m, j) * (y2**j) * (y1 ** (m - j)) for j in range(m + 1)],
+                    dtype=self.dt,
+                )
+                for i in range(output.shape[0]):
+                    # leaving rate due to requeue transitions that change microstate
+                    output[i, i] += delta * (1.0 - probs[i])
+            return output
+
         if num < self.n:
             col = self.cols[num]
             row = col

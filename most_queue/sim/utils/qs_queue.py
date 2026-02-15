@@ -45,6 +45,12 @@ class QsQueueList:
 
         self.queue.append(task)
 
+    def append_left(self, task):
+        """
+        Prepend task to queue (to the head).
+        """
+        self.queue.appendleft(task)
+
     def pop(self):
         """
         Get first task (from head of queue)
@@ -88,6 +94,12 @@ class QsQueueDeque:
         """
 
         self.queue.append(task)
+
+    def append_left(self, task):
+        """
+        Prepend task to queue (to the head).
+        """
+        self.queue.appendleft(task)
 
     def pop(self):
         """

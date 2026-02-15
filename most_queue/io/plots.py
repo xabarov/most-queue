@@ -49,6 +49,18 @@ class Plotter:
             ax.set_xlabel("n")
             plt.xticks(range(1, len(self.xs) + 1))
 
+    @staticmethod
+    def _series_style():
+        """
+        Centralized plot style for series used in figures.
+        Keeps line styles (solid/dashed) but uses distinct colors for readability in print/PDF.
+        """
+        return {
+            "sim": {"color": "tab:orange", "linestyle": "--", "linewidth": 2.0},
+            "calc": {"color": "tab:blue", "linestyle": "-", "linewidth": 2.0},
+            "err": {"color": "tab:red", "linestyle": "-", "linewidth": 2.0},
+        }
+
     def plot_errors(self, save_path: str = None):
         """
         Plots the simulation and calculated moments for a given list of x values.
@@ -56,7 +68,8 @@ class Plotter:
         _fig, ax = plt.subplots()
         errors = [100 * (w_sim - w_tt) / w_tt for w_sim, w_tt in zip(self.sim_results, self.calc_results)]
 
-        ax.plot(self.xs, errors, color="black")
+        style = self._series_style()
+        ax.plot(self.xs, errors, **style["err"])
         self._configure_plot(ax, r"$\varepsilon$, %")
 
         if save_path is not None:
@@ -71,8 +84,9 @@ class Plotter:
         Plots the simulation and calculated queue waiting times.
         """
         _fig, ax = plt.subplots()
-        ax.plot(self.xs, self.sim_results, label="Sim", color="black", linestyle="--")
-        ax.plot(self.xs, self.calc_results, label="Calc", color="black")
+        style = self._series_style()
+        ax.plot(self.xs, self.sim_results, label="ИМ", **style["sim"])
+        ax.plot(self.xs, self.calc_results, label="Числ", **style["calc"])
         ax.legend()
         self._configure_plot(ax, r"$\omega_{1}$")
 
@@ -88,8 +102,9 @@ class Plotter:
         Plots the simulation and calculated sojourn times.
         """
         _fig, ax = plt.subplots()
-        ax.plot(self.xs, self.sim_results, label="Sim", color="black", linestyle="--")
-        ax.plot(self.xs, self.calc_results, label="Calc", color="black")
+        style = self._series_style()
+        ax.plot(self.xs, self.sim_results, label="ИМ", **style["sim"])
+        ax.plot(self.xs, self.calc_results, label="Числ", **style["calc"])
         ax.legend()
         self._configure_plot(ax, r"$\upsilon_{1}$")
 

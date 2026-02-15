@@ -23,6 +23,32 @@ class NegativeServiceType(Enum):
     RCE = 4  # remove customer at the End
 
 
+class DisasterScenario(Enum):
+    """
+    Scenario for DISASTER negative arrivals.
+
+    - CLEAR_SYSTEM: negative arrival removes all positive jobs (current behavior)
+    - REQUEUE_ALL: negative arrival interrupts service and requeues all jobs
+      that were in service back to the queue (service restarts).
+    """
+
+    CLEAR_SYSTEM = 1
+    REQUEUE_ALL = 2
+
+
+class RcsScenario(Enum):
+    """
+    Scenario for RCS (Remove Customer in Service) negative arrivals.
+
+    - REMOVE: negative arrival removes one random customer in service (current behavior)
+    - REQUEUE: negative arrival interrupts one random customer in service and requeues it
+      to the head of the queue (service restarts; no customer leaves the system).
+    """
+
+    REMOVE = 1
+    REQUEUE = 2
+
+
 class QsSimNegatives(QsSim):
     """
     Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
@@ -35,6 +61,8 @@ class QsSimNegatives(QsSim):
         buffer: int | None = None,
         verbose: bool = True,
         buffer_type: str = "list",
+        disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
+        rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
@@ -42,11 +70,19 @@ class QsSimNegatives(QsSim):
         :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
+        :param disaster_scenario: DisasterScenario : behavior for DISASTER negatives:
+            - CLEAR_SYSTEM (default): remove all jobs from system
+            - REQUEUE_ALL: interrupt service and requeue jobs in service to the head
+        :param rcs_scenario: RcsScenario : behavior for RCS negatives:
+            - REMOVE (default): remove one random job from service (broken)
+            - REQUEUE: interrupt one random job in service and requeue it to the head
         """
 
         super().__init__(num_of_channels, buffer, verbose, buffer_type)
 
         self.type_of_negatives = type_of_negatives
+        self.disaster_scenario = disaster_scenario
+        self.rcs_scenario = rcs_scenario
 
         # raw moments of sojourn time of successfully served
         self.v_served = [0, 0, 0, 0]
@@ -181,32 +217,60 @@ class QsSimNegatives(QsSim):
 
         if self.type_of_negatives == NegativeServiceType.DISASTER:
 
-            not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
-            for c in not_free_servers:
-                end_ts = self.servers[c].end_service()
-                self._free_servers.add(c)  # Server is now free
-                self.broken += 1
-                self.total += 1
-                sojourn_time = self.ttek - end_ts.arr_time
-                self.refresh_v_stat(sojourn_time)
-                self.refresh_v_stat_broken(sojourn_time)
+            if self.disaster_scenario == DisasterScenario.REQUEUE_ALL:
+                # Interrupt all services and requeue the tasks back to the head of the queue.
+                # Semantics: service restarts (preemptive-repeat with resampling).
+                tasks_to_requeue = []
+                not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
+                for c in not_free_servers:
+                    ts = self.servers[c].end_service()
+                    self._free_servers.add(c)
+                    ts.start_waiting_time = self.ttek
+                    tasks_to_requeue.append(ts)
 
-            self.in_sys = 0
-            self.free_channels = self.n
-            self._free_servers = set(range(self.n))  # All servers are free
-            self._mark_servers_time_changed()
+                # Put interrupted tasks in FCFS order (by original arrival moment) to the head of the queue.
+                tasks_to_requeue.sort(key=lambda t: t.arr_time)
+                for ts in reversed(tasks_to_requeue):
+                    self.queue.append_left(ts)
 
-            while self.queue.size() > 0:
-                ts = self.queue.pop()
-                ts.wait_time += self.ttek - ts.start_waiting_time
-                self.taked += 1
-                self.total += 1
-                self.broken += 1
-                self.refresh_w_stat(ts.wait_time)
+                # All servers become free at this instant, then immediately take tasks from the queue.
+                self.free_channels = self.n
+                self._free_servers = set(range(self.n))
+                self._mark_servers_time_changed()
 
-                sojourn_time = self.ttek - ts.arr_time
-                self.refresh_v_stat(sojourn_time)
-                self.refresh_v_stat_broken(sojourn_time)
+                while self.free_channels > 0 and self.queue.size() > 0:
+                    c = next(iter(self._free_servers))
+                    self.send_head_of_queue_to_channel(c)
+
+                # Note: in_sys does not change; no job leaves the system.
+            else:
+                # CLEAR_SYSTEM (current behavior): remove all jobs from service and from queue.
+                not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
+                for c in not_free_servers:
+                    end_ts = self.servers[c].end_service()
+                    self._free_servers.add(c)  # Server is now free
+                    self.broken += 1
+                    self.total += 1
+                    sojourn_time = self.ttek - end_ts.arr_time
+                    self.refresh_v_stat(sojourn_time)
+                    self.refresh_v_stat_broken(sojourn_time)
+
+                self.in_sys = 0
+                self.free_channels = self.n
+                self._free_servers = set(range(self.n))  # All servers are free
+                self._mark_servers_time_changed()
+
+                while self.queue.size() > 0:
+                    ts = self.queue.pop()
+                    ts.wait_time += self.ttek - ts.start_waiting_time
+                    self.taked += 1
+                    self.total += 1
+                    self.broken += 1
+                    self.refresh_w_stat(ts.wait_time)
+
+                    sojourn_time = self.ttek - ts.arr_time
+                    self.refresh_v_stat(sojourn_time)
+                    self.refresh_v_stat_broken(sojourn_time)
 
         elif self.type_of_negatives == NegativeServiceType.RCE:
             self.in_sys -= 1
@@ -240,21 +304,36 @@ class QsSimNegatives(QsSim):
         elif self.type_of_negatives == NegativeServiceType.RCS:
 
             not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
+            if not not_free_servers:
+                # No one is in service: RCS has no effect in this instant.
+                return
             c = random.choice(not_free_servers)
             end_ts = self.servers[c].end_service()
             self._free_servers.add(c)  # Server is now free
             self._mark_servers_time_changed()
-            self.total += 1
-            self.broken += 1
             self.free_channels += 1
-            sojourn_time = self.ttek - end_ts.arr_time
-            self.refresh_v_stat(sojourn_time)
-            self.refresh_v_stat_broken(sojourn_time)
 
-            self.in_sys -= 1
+            if self.rcs_scenario == RcsScenario.REQUEUE:
+                # Interrupt service and requeue the task to the head.
+                # Semantics: service restarts (preemptive-repeat with resampling).
+                end_ts.start_waiting_time = self.ttek
+                self.queue.append_left(end_ts)
 
-            if self.queue.size() != 0:
-                self.send_head_of_queue_to_channel(c)
+                # No one leaves the system; restart service immediately if possible.
+                if self.queue.size() != 0:
+                    self.send_head_of_queue_to_channel(c)
+            else:
+                # REMOVE (current behavior): remove the job from system as broken.
+                self.total += 1
+                self.broken += 1
+                sojourn_time = self.ttek - end_ts.arr_time
+                self.refresh_v_stat(sojourn_time)
+                self.refresh_v_stat_broken(sojourn_time)
+
+                self.in_sys -= 1
+
+                if self.queue.size() != 0:
+                    self.send_head_of_queue_to_channel(c)
 
     def _get_available_events(self):
         """

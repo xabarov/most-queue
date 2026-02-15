@@ -23,6 +23,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         n: int,
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
+        requeue_on_disaster: bool = False,
     ):
         """
         n: number of servers
@@ -37,6 +38,8 @@ class MGnNegativeRCSCalc(MGnCalc):
         self.base_mgn = None
         self.w = None
         self._w_def_pls_cache: dict[float, complex] = {}
+        self.requeue_on_disaster = bool(requeue_on_disaster)
+        self._requeue_results: NegativeArrivalsResults | None = None
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -48,6 +51,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         self.l = l_pos
         self.l_neg = l_neg
         self._w_def_pls_cache = {}
+        self._requeue_results = None
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -64,6 +68,267 @@ class MGnNegativeRCSCalc(MGnCalc):
 
         self.is_servers_set = True
         self._w_def_pls_cache = {}
+        self._requeue_results = None
+
+    def run(self):  # pylint: disable=arguments-differ
+        """
+        Run calculation.
+
+        If requeue_on_disaster=True, treat negative arrivals as service restarts
+        (no removals): every job is eventually served.
+        """
+        return super().run()  # type: ignore[return-value]
+
+    def _ensure_requeue_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
+        """
+        REQUEUE scenario for RCS: negative arrivals interrupt service and force restart,
+        but the customer remains in the system (no "broken" jobs).
+
+        Approximation: model it as a standard M/G/n (no negative departures) with an
+        effective service time B_eff that accounts for Poisson restarts.
+
+        For service time B with LST β(s) and restart rate r (during service):
+
+            B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r)).
+
+        Here the restart intensity depends on the number of busy servers m:
+        r(m)=l_neg/m (uniform selection among busy servers). To better match
+        finite-load regimes (where m can be noticeably smaller than n), we use a
+        simple self-consistent closure:
+
+          m ≈ n * utilization,
+          r = l_neg / max(1, m),
+
+        where utilization is taken from the auxiliary M/G/n run with B_eff, and
+        the fixed point is refined by a few iterations.
+        """
+        if self._requeue_results is not None and len(self._requeue_results.v) >= num_of_moments:
+            return self._requeue_results
+
+        self._check_if_servers_and_sources_set()
+
+        lam = float(self.l_pos)
+        delta = float(self.l_neg)
+        r = 0.0 if self.n <= 0 else delta / float(self.n)
+
+        mean_b = float(self.b[0])
+        var_b = float(self.b[1] - self.b[0] ** 2)
+
+        # Gamma approximation for β(s) by mean/variance
+        if var_b > 0 and mean_b > 0:
+            k = mean_b * mean_b / var_b
+            theta = var_b / mean_b
+
+            def beta(s: float) -> float:
+                return float((1.0 + theta * s) ** (-k))
+
+        else:
+
+            def beta(s: float) -> float:
+                return float(np.exp(-mean_b * s))
+
+        def get_b_eff(service_restart_rate: float) -> list[float]:
+            """
+            Compute raw moments of the effective service time under Poisson restarts.
+
+            Instead of numerically differentiating B_eff^*(s) at s=0, compute the Taylor
+            series of
+
+              B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r))
+
+            using β-derivatives at s=r. For Gamma/Exp β(s) used here, these derivatives
+            are analytic and this approach is much more stable for large CV.
+            """
+            if service_restart_rate <= 0:
+                return [float(x) for x in self.b[:num_of_moments]]
+
+            r_loc = float(service_restart_rate)
+            order = int(num_of_moments)
+
+            # β^(n)(s0) for n=0..order at s0=r_loc
+            s0 = r_loc
+            beta_derivs: list[float] = [0.0] * (order + 1)
+
+            if var_b > 0 and mean_b > 0:
+                # β(s)=(1+θ s)^(-k)
+                base = 1.0 + theta * s0
+                inv_base = 1.0 / base
+
+                # rising factorial (k)_n = k (k+1) ... (k+n-1)
+                rf = 1.0
+                for n in range(order + 1):
+                    if n == 0:
+                        rf = 1.0
+                    elif n == 1:
+                        rf = float(k)
+                    else:
+                        rf *= float(k + (n - 1))
+                    beta_derivs[n] = float(((-1.0) ** n) * (theta**n) * rf * (base ** (-(k + n))))
+            else:
+                # β(s)=exp(-mean_b * s)
+                e0 = float(np.exp(-mean_b * s0))
+                for n in range(order + 1):
+                    beta_derivs[n] = float(((-mean_b) ** n) * e0)
+
+            # Convert to ordinary power-series coefficients for f(s)=β(s+r_loc):
+            # f(s)=Σ c_f[n] s^n, where c_f[n]=β^(n)(r_loc)/n!
+            import math
+
+            c_f = [beta_derivs[n] / float(math.factorial(n)) for n in range(order + 1)]
+
+            # Numerator N(s)=(r+s)f(s) = r f(s) + s f(s)
+            c_N = [0.0] * (order + 1)
+            for n in range(order + 1):
+                c_N[n] += r_loc * c_f[n]
+                if n > 0:
+                    c_N[n] += c_f[n - 1]
+
+            # Denominator D(s)=s + r f(s)
+            c_D = [0.0] * (order + 1)
+            for n in range(order + 1):
+                c_D[n] += r_loc * c_f[n]
+            if order >= 1:
+                c_D[1] += 1.0
+
+            # Series division T(s)=N(s)/D(s) up to s^order
+            c_T = [0.0] * (order + 1)
+            d0 = float(c_D[0])
+            if not np.isfinite(d0) or abs(d0) <= 1e-300:
+                # Extremely small/invalid denominator -> treat as no restarts.
+                return [float(x) for x in self.b[:num_of_moments]]
+
+            c_T[0] = float(c_N[0]) / d0
+            for n in range(1, order + 1):
+                acc = float(c_N[n])
+                for k2 in range(1, n + 1):
+                    acc -= float(c_D[k2]) * float(c_T[n - k2])
+                c_T[n] = acc / d0
+
+            # Moments from Laplace series: T(s)=Σ (-1)^n E[T^n] s^n / n!
+            moments: list[float] = []
+            for n in range(1, order + 1):
+                mom = ((-1.0) ** n) * float(math.factorial(n)) * float(c_T[n])
+                moments.append(float(mom))
+            return moments
+
+        # Self-consistent refinement of r using the auxiliary M/G/n run.
+        #
+        # Important: for some parameter combinations, a too aggressive r-update may lead
+        # to an unstable effective model (ρ_eff >= 1) and numerical overflow inside MGnCalc.
+        # We therefore use a damped fixed-point iteration and fall back to the last
+        # successful auxiliary run.
+        eff_res = None
+        last_good_eff_res = None
+        # Debug trace for requeue effective-model iteration (helps diagnose convergence).
+        # Not part of public API; may be inspected in tests/experiments.
+        self._requeue_debug_trace: list[dict] = []
+        max_iter = 8
+        tol = 1e-6
+        damping = 0.5
+        for _ in range(max_iter):
+            b_eff = get_b_eff(r)
+            # Basic sanity checks to avoid passing unstable/invalid moments to MGnCalc.
+            if (not np.all(np.isfinite(b_eff))) or b_eff[0] <= 0:
+                r *= 0.5
+                continue
+            # If the auxiliary M/G/n would be unstable (ρ_eff >= 1), back off on r.
+            if lam * float(b_eff[0]) >= 0.999 * float(self.n):
+                r *= 0.5
+                continue
+
+            eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+            eff.set_sources(l=lam)
+            eff.set_servers(b=b_eff)
+            try:
+                eff_res = eff.run()
+            except Exception:
+                # Back off: keep the last good result, and reduce r to regain stability.
+                if last_good_eff_res is not None:
+                    eff_res = last_good_eff_res
+                    break
+                r *= 0.5
+                continue
+
+            last_good_eff_res = eff_res
+
+            # Approximate restart intensity for a job in service.
+            #
+            # A naive closure uses r ≈ δ / E[M | M>0] (M = number of busy servers).
+            # However, for high-variance service times, restart phenomena can reduce the
+            # *effective* completion time (stochastic restart effect), and empirical
+            # agreement improves if we bias the estimate towards larger M values.
+            #
+            # Heuristic: r ≈ δ * E[M] / E[M^2], where moments are taken under the auxiliary
+            # M/G/n stationary distribution (with M = min(n, level)).
+            p = [float(x) for x in getattr(eff_res, "p", [])]
+            if p:
+                m1 = 0.0
+                m2 = 0.0
+                for k, pk in enumerate(p):
+                    m = min(float(self.n), float(k))
+                    w = max(0.0, pk)
+                    m1 += m * w
+                    m2 += (m * m) * w
+                if m2 <= 1e-12:
+                    target_r = delta / float(self.n)
+                else:
+                    target_r = delta * (m1 / m2)
+            else:
+                target_r = delta / float(self.n)
+            self._requeue_debug_trace.append(
+                {
+                    "r": float(r),
+                    "target_r": float(target_r),
+                    "v1": float(getattr(eff_res, "v", [float("nan")])[0]),
+                    "w1": float(getattr(eff_res, "w", [float("nan")])[0]),
+                    "utilization": float(getattr(eff_res, "utilization", float("nan"))),
+                }
+            )
+            if abs(target_r - r) <= tol * max(1.0, abs(r)):
+                r = target_r
+                break
+
+            r = (1.0 - damping) * r + damping * target_r
+            r = max(0.0, min(delta, r))
+
+        assert last_good_eff_res is not None
+        eff_res = last_good_eff_res
+
+        v = [float(x) for x in eff_res.v[:num_of_moments]]
+        w = [float(x) for x in eff_res.w[:num_of_moments]]
+        p = [float(x) for x in eff_res.p]
+
+        self._requeue_results = NegativeArrivalsResults(
+            v=v,
+            w=w,
+            p=p,
+            utilization=float(eff_res.utilization),
+            v_broken=[0.0] * num_of_moments,
+            v_served=v,
+            duration=0.0,
+        )
+        return self._requeue_results
+
+    def _calculate_p(self):
+        """
+        Calculate level probabilities.
+
+        Base MGnCalc uses a closed-form p[0] formula that assumes the standard
+        M/H2/n structure without additional horizontal transitions.
+
+        In REQUEUE mode we add horizontal (within-level) transitions due to
+        restarts, so we recover probabilities from the computed x-ratios and
+        normalize (same approach as in MGnNegativeDisasterCalc).
+        """
+        if self.requeue_on_disaster:
+            self.p[0] = 1.0 + 0.0j
+            for j in range(self.N - 1):
+                self.p[j + 1] = self.p[j] * self.x[j]
+            total = sum(self.p)
+            self.p = np.array([val / total for val in self.p], dtype=self.dt)
+            return
+
+        return super()._calculate_p()
 
     def _update_level_0(self):
         """
@@ -83,6 +348,35 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Get all results
         """
+        if self.requeue_on_disaster:
+            # In REQUEUE mode there are no removals; use Little's law for first moments
+            # from the computed level probabilities.
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                w1 = 0.0
+                v1 = 0.0
+            else:
+                en = sum(k * pk for k, pk in enumerate(p))
+                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
+                v1 = en / lam
+                w1 = eq / lam
+
+            # Mean busy servers / n as utilization proxy.
+            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
+            utilization = float(ebusy) / float(self.n) if self.n > 0 else 0.0
+
+            v = [float(v1)] + [0.0] * max(0, num_of_moments - 1)
+            w = [float(w1)] + [0.0] * max(0, num_of_moments - 1)
+            return NegativeArrivalsResults(
+                v=v,
+                w=w,
+                p=p,
+                utilization=utilization,
+                v_broken=[0.0] * num_of_moments,
+                v_served=v,
+                duration=0.0,
+            )
 
         self.p = self.get_p()
         self.w = self.get_w(num_of_moments)
@@ -104,12 +398,26 @@ class MGnNegativeRCSCalc(MGnCalc):
         the effect of disasters on utilization. A more accurate calculation
         would consider the impact of disaster events on system utilization.
         """
+        if self.requeue_on_disaster:
+            p = self.get_p()
+            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
+            return float(ebusy) / float(self.n) if self.n > 0 else 0.0
         return self.l_pos * self.b[0] / self.n
+
+    def get_p(self) -> list[float]:
+        """
+        Level probabilities p[k].
+        """
+        if self.requeue_on_disaster:
+            return [float(val.real) for val in list(self.p)]
+        return super().get_p()
 
     def get_q(self) -> float:
         """
         Calculation of the conditional probability of successful service completion at a node
         """
+        if self.requeue_on_disaster:
+            return 1.0
         return 1.0 - (self.l_neg / self.l) * (1.0 - self.p[0].real)
 
     def _beta_pls(self, s: float) -> complex:
@@ -180,6 +488,16 @@ class MGnNegativeRCSCalc(MGnCalc):
         Waiting time moments for RCS model (time in queue until service begins).
         Computed via derivatives of W*(s) at s=0.
         """
+        if self.requeue_on_disaster:
+            # First moment via Little's law; higher moments are not implemented here.
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                w1 = 0.0
+            else:
+                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
+                w1 = eq / lam
+            return [float(w1)] + [0.0] * max(0, num_of_moments - 1)
         if self.w is not None:
             return self.w[:num_of_moments]
 
@@ -221,6 +539,16 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Get the sojourn time moments
         """
+        if self.requeue_on_disaster:
+            # First moment via Little's law; higher moments are not implemented here.
+            p = self.get_p()
+            lam = float(self.l_pos)
+            if lam <= 0:
+                v1 = 0.0
+            else:
+                en = sum(k * pk for k, pk in enumerate(p))
+                v1 = en / lam
+            return [float(v1)] + [0.0] * max(0, num_of_moments - 1)
         if self.v is not None:
             return self.v[:num_of_moments]
 
@@ -238,6 +566,8 @@ class MGnNegativeRCSCalc(MGnCalc):
         Sojourn time moments conditional on being served (service completion
         occurs before negative removal).
         """
+        if self.requeue_on_disaster:
+            return self.get_v(num_of_moments=num_of_moments)
         delta = float(self.l_neg)
 
         def served_num_pls(s: float) -> complex:
@@ -270,6 +600,8 @@ class MGnNegativeRCSCalc(MGnCalc):
         Sojourn time moments conditional on being broken by negative removal
         while in service.
         """
+        if self.requeue_on_disaster:
+            return [0.0] * num_of_moments
         delta = float(self.l_neg)
 
         def served_prob() -> float:
@@ -322,6 +654,9 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Create matrix B by the given level number.
         """
+        if self.requeue_on_disaster:
+            # In REQUEUE mode there are no negative removals (no downward jumps).
+            return super()._build_big_b_matrix(num)
         if num == 0:
             return np.zeros((1, 1), dtype=self.dt)
 
@@ -371,10 +706,80 @@ class MGnNegativeRCSCalc(MGnCalc):
                     output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[0]
         return output
 
+    def _build_big_c_matrix(self, num):
+        """
+        Horizontal transitions.
+
+        In REQUEUE mode, negative arrivals do NOT change the level (system size),
+        but they interrupt one random busy server and restart its service with a
+        fresh H2 phase sampled from y.
+
+        State index i corresponds to the number of servers in phase-2 (rate mu[1])
+        among the busy servers (m = min(num, n)).
+        """
+        if not self.requeue_on_disaster:
+            return super()._build_big_c_matrix(num)
+
+        if num == 0:
+            return np.zeros((1, 1), dtype=self.dt)
+
+        if num < self.n:
+            size = self.cols[num]
+            m = float(num)
+        else:
+            size = self.cols[self.n]
+            m = float(self.n)
+
+        output = np.zeros((size, size), dtype=self.dt)
+        if m <= 0:
+            return output
+
+        delta = self.l_neg
+        y0 = self.y[0]  # start in phase-1 (may be complex in clx fit)
+        y1 = self.y[1]  # start in phase-2 (may be complex in clx fit)
+
+        for i in range(size):
+            # i = number of phase-2 busy servers
+            if i < size - 1:
+                # interrupt phase-1 server -> restart in phase-2: i -> i+1
+                output[i, i + 1] += delta * ((m - float(i)) / m) * y1
+            if i > 0:
+                # interrupt phase-2 server -> restart in phase-1: i -> i-1
+                output[i, i - 1] += delta * (float(i) / m) * y0
+        return output
+
     def _build_big_d_matrix(self, num):
         """
         Create matrix D by the given level number.
         """
+        if self.requeue_on_disaster:
+            if num < self.n:
+                col = self.cols[num]
+                row = col
+                m = float(num)
+            else:
+                col = self.cols[self.n]
+                row = col
+                m = float(self.n)
+
+            output = np.zeros((row, col), dtype=self.dt)
+            if num > self.n:
+                output = self.D[self.n]
+                return output
+
+            delta = self.l_neg
+            y0 = self.y[0]
+            y1 = self.y[1]
+            for i in range(row):
+                # base leaving rate: arrivals + service completions
+                rate = self.l + (num - i) * self.mu[0] + i * self.mu[1]
+                # add only *effective* restart transitions that change i (memoryless phases)
+                if m > 0:
+                    rate += delta * ((m - float(i)) / m) * y1
+                    rate += delta * (float(i) / m) * y0
+                output[i, i] = rate
+            return output
+
         if num < self.n:
             col = self.cols[num]
             row = col

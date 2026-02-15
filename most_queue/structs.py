@@ -167,4 +167,14 @@ class DependsOnJSONEncoder(json.JSONEncoder):
                 "sim": [asdict(r) for r in o.sim],
             }
             return json_res
+        # Numpy/complex scalars (e.g. from disaster theory with complex H2 params)
+        try:
+            import numpy as np
+
+            if isinstance(o, (np.floating, np.integer)):
+                return float(o) if isinstance(o, np.floating) else int(o)
+            if isinstance(o, (np.complexfloating, complex)):
+                return [float(np.real(o)), float(np.imag(o))]
+        except (ImportError, TypeError):
+            pass
         return super().default(o)
