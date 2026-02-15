@@ -172,6 +172,7 @@ class QsSimNegatives(QsSim):
         v_served = self.v_served
         v_broken = self.v_broken
 
+        q = float(self.served) / float(self.total) if self.total > 0 else 0.0
         return NegativeArrivalsResults(
             v=results.v,
             w=results.w,
@@ -180,6 +181,7 @@ class QsSimNegatives(QsSim):
             v_broken=v_broken,
             duration=results.duration,
             utilization=results.utilization,
+            q=q,
         )
 
     def positive_arrival(self):

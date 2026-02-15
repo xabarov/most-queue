@@ -8,6 +8,7 @@ negative_rate:
     num_points: 15
     # For delta-sweeps use fewer jobs (otherwise very slow)
     num_of_jobs: 200000
+    cv_values: [0.8, 1.2]
 num_of_jobs: 1000000
 service:
     cv:
@@ -19,6 +20,9 @@ channels:
     base: 3
     min: 1
     max: 10
+    # For n-sweeps use fewer jobs (otherwise very slow)
+    num_of_jobs: 200000
+    cv_values: [0.8, 1.2]
 utilization:
     base: 0.7
     min: 0.1

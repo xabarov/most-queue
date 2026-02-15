@@ -17,6 +17,7 @@ class DependsType(Enum):
     UTILIZATION_FACTOR = 1
     CHANNELS_NUMBER = 2
     COEFFICIENT_OF_VARIATION = 3
+    NEGATIVE_RATE = 4
 
 
 class Plotter:
@@ -43,6 +44,8 @@ class Plotter:
         ax.set_ylabel(ylabel)
         if self.depends_on == DependsType.UTILIZATION_FACTOR:
             ax.set_xlabel(r"$\rho$")
+        elif self.depends_on == DependsType.NEGATIVE_RATE:
+            ax.set_xlabel(r"$\delta$")
         elif self.depends_on == DependsType.COEFFICIENT_OF_VARIATION:
             ax.set_xlabel(r"$\nu$")
         else:
@@ -107,6 +110,24 @@ class Plotter:
         ax.plot(self.xs, self.calc_results, label="Числ", **style["calc"])
         ax.legend()
         self._configure_plot(ax, r"$\upsilon_{1}$")
+
+        if save_path is not None:
+            plt.savefig(save_path, dpi=300)
+        else:
+            plt.show()
+
+        plt.close(_fig)
+
+    def plot_series(self, ylabel: str, save_path: str = None):
+        """
+        Generic plot: two series (sim vs calc) with a custom y-label.
+        """
+        _fig, ax = plt.subplots()
+        style = self._series_style()
+        ax.plot(self.xs, self.sim_results, label="ИМ", **style["sim"])
+        ax.plot(self.xs, self.calc_results, label="Числ", **style["calc"])
+        ax.legend()
+        self._configure_plot(ax, ylabel)
 
         if save_path is not None:
             plt.savefig(save_path, dpi=300)

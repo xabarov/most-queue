@@ -102,6 +102,7 @@ class NegativeArrivalsResults(QueueResults):
 
     v_served: list[float] | None = None
     v_broken: list[float] | None = None
+    q: float | None = None
 
 
 @dataclass
@@ -152,6 +153,20 @@ class DependsOnVariationResults:
     utilization_factor: float
 
 
+@dataclass
+class DependsOnNegativeRateResults:
+    """
+    Class for storing results that depend on the negative arrivals rate delta.
+    """
+
+    calc: list[NegativeArrivalsResults]
+    sim: list[NegativeArrivalsResults]
+    negative_rate: list[float]
+    channels: int
+    utilization_factor: float
+    service_time_variation_coef: float
+
+
 class DependsOnJSONEncoder(json.JSONEncoder):
     """
     Encoder for dataclasses to JSON.
@@ -160,12 +175,18 @@ class DependsOnJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if is_dataclass(o):
             json_res = {
-                "service_time_variation_coef": o.service_time_variation_coef,
                 "channels": o.channels,
                 "utilization_factor": o.utilization_factor,
+                "service_time_variation_coef": getattr(o, "service_time_variation_coef", None),
                 "calc": [asdict(r) for r in o.calc],
                 "sim": [asdict(r) for r in o.sim],
             }
+            if hasattr(o, "service_time_variation_coef") and isinstance(
+                getattr(o, "service_time_variation_coef"), list
+            ):
+                json_res["service_time_variation_coef"] = o.service_time_variation_coef
+            if hasattr(o, "negative_rate"):
+                json_res["negative_rate"] = o.negative_rate
             return json_res
         # Numpy/complex scalars (e.g. from disaster theory with complex H2 params)
         try:

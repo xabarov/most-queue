@@ -2,9 +2,9 @@
 Collect results for the QS M/G/n queue with negative jobs and RCS discipline.
 """
 
+import argparse
 import json
 import os
-import argparse
 from dataclasses import asdict
 
 import numpy as np
@@ -109,6 +109,7 @@ def run_depends_on_channels(
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
+    service_cv: float | None = None,
 ) -> DependsOnChannelsResults:
     """
     Collect results for M/G/n queue with negative jobs
@@ -121,12 +122,16 @@ def run_depends_on_channels(
     calc_results = []
     sim_results = []
 
+    ch_cfg = qp.get("channels", {}) or {}
+    num_jobs = int(ch_cfg.get("num_of_jobs") or qp["num_of_jobs"])
+    cv_val = float(service_cv if service_cv is not None else qp["service"]["cv"]["base"])
+
     for n in channels:
         print(f"Channels: {n}")
 
         service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
 
-        b = gamma_moments_by_mean_and_cv(service_mean, qp["service"]["cv"]["base"])
+        b = gamma_moments_by_mean_and_cv(service_mean, cv_val)
 
         calc_results.append(
             collect_calc_results(
@@ -135,7 +140,7 @@ def run_depends_on_channels(
         )
         sim_results.append(
             collect_sim_results(
-                qp=qp,
+                qp={**qp, "num_of_jobs": num_jobs},
                 b=b,
                 n=n,
                 discipline=discipline,
@@ -150,7 +155,7 @@ def run_depends_on_channels(
         sim=sim_results,
         channels=channels,
         utilization_factor=qp["utilization"]["base"],
-        service_time_variation_coef=qp["service"]["cv"]["base"],
+        service_time_variation_coef=cv_val,
     )
 
 
@@ -273,6 +278,7 @@ def run_depends_on_negative_rate(
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
+    service_cv: float | None = None,
 ) -> DependsOnNegativeRateResults:
     """
     Collects simulation and calculation results for a given range of negative arrival rates (delta).
@@ -292,7 +298,8 @@ def run_depends_on_negative_rate(
     sim_results = []
 
     service_mean = base_qp["channels"]["base"] * base_qp["utilization"]["base"] / base_qp["arrival_rate"]["positive"]
-    b = gamma_moments_by_mean_and_cv(service_mean, base_qp["service"]["cv"]["base"])
+    cv_val = float(service_cv if service_cv is not None else base_qp["service"]["cv"]["base"])
+    b = gamma_moments_by_mean_and_cv(service_mean, cv_val)
 
     for delta in deltas:
         print(f"Negative arrival rate: {delta:0.3f}")
@@ -330,7 +337,7 @@ def run_depends_on_negative_rate(
         sim=sim_results,
         channels=qp["channels"]["base"],
         utilization_factor=qp["utilization"]["base"],
-        service_time_variation_coef=qp["service"]["cv"]["base"],
+        service_time_variation_coef=cv_val,
     )
 
 
@@ -387,17 +394,22 @@ if __name__ == "__main__":
         save_paths = []
 
         if "channels" in selected:
-            results_channels = run_depends_on_channels(
-                base_qp,
-                discipline,
-                requeue_on_negative=requeue,
-                rcs_scenario=rcs_scenario,
-                disaster_scenario=disaster_scenario,
-            )
-            all_results.append(results_channels)
-            all_xs.append(results_channels.channels)
-            all_depends.append(DependsType.CHANNELS_NUMBER)
-            save_paths.append(os.path.join(exp_dir, "channels"))
+            ch_cfg = base_qp.get("channels", {}) or {}
+            cvs = ch_cfg.get("cv_values") or [base_qp["service"]["cv"]["base"]]
+            for cv_val in cvs:
+                results_channels = run_depends_on_channels(
+                    base_qp,
+                    discipline,
+                    requeue_on_negative=requeue,
+                    rcs_scenario=rcs_scenario,
+                    disaster_scenario=disaster_scenario,
+                    service_cv=float(cv_val),
+                )
+                all_results.append(results_channels)
+                all_xs.append(results_channels.channels)
+                all_depends.append(DependsType.CHANNELS_NUMBER)
+                cv_tag = str(cv_val).replace(".", "_")
+                save_paths.append(os.path.join(exp_dir, f"channels_cv{cv_tag}"))
 
         if "coefs" in selected:
             results_coefs = run_depends_on_varience(
@@ -426,17 +438,22 @@ if __name__ == "__main__":
             save_paths.append(os.path.join(exp_dir, "utilization"))
 
         if "negative_rate" in selected:
-            results_negative_rate = run_depends_on_negative_rate(
-                base_qp,
-                discipline,
-                requeue_on_negative=requeue,
-                rcs_scenario=rcs_scenario,
-                disaster_scenario=disaster_scenario,
-            )
-            all_results.append(results_negative_rate)
-            all_xs.append(results_negative_rate.negative_rate)
-            all_depends.append(DependsType.NEGATIVE_RATE)
-            save_paths.append(os.path.join(exp_dir, "negative_rate"))
+            neg_cfg = base_qp.get("negative_rate", {}) or {}
+            cvs = neg_cfg.get("cv_values") or [base_qp["service"]["cv"]["base"]]
+            for cv_val in cvs:
+                results_negative_rate = run_depends_on_negative_rate(
+                    base_qp,
+                    discipline,
+                    requeue_on_negative=requeue,
+                    rcs_scenario=rcs_scenario,
+                    disaster_scenario=disaster_scenario,
+                    service_cv=float(cv_val),
+                )
+                all_results.append(results_negative_rate)
+                all_xs.append(results_negative_rate.negative_rate)
+                all_depends.append(DependsType.NEGATIVE_RATE)
+                cv_tag = str(cv_val).replace(".", "_")
+                save_paths.append(os.path.join(exp_dir, f"negative_rate_cv{cv_tag}"))
 
         def _std_from_moments(m: list[float]) -> float:
             if not m or len(m) < 2:

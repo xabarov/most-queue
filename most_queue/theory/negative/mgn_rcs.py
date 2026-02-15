@@ -3,6 +3,8 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
 (remove customer from service)
 """
 
+import time
+
 import numpy as np
 from scipy.misc import derivative
 
@@ -77,6 +79,11 @@ class MGnNegativeRCSCalc(MGnCalc):
         If requeue_on_disaster=True, treat negative arrivals as service restarts
         (no removals): every job is eventually served.
         """
+        if self.requeue_on_disaster:
+            start = time.process_time()
+            res = self._ensure_requeue_results(num_of_moments=4)
+            res.duration = time.process_time() - start
+            return res
         return super().run()  # type: ignore[return-value]
 
     def _ensure_requeue_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
@@ -305,6 +312,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             utilization=float(eff_res.utilization),
             v_broken=[0.0] * num_of_moments,
             v_served=v,
+            q=1.0,
             duration=0.0,
         )
         return self._requeue_results
@@ -349,34 +357,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         Get all results
         """
         if self.requeue_on_disaster:
-            # In REQUEUE mode there are no removals; use Little's law for first moments
-            # from the computed level probabilities.
-            p = self.get_p()
-            lam = float(self.l_pos)
-            if lam <= 0:
-                w1 = 0.0
-                v1 = 0.0
-            else:
-                en = sum(k * pk for k, pk in enumerate(p))
-                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
-                v1 = en / lam
-                w1 = eq / lam
-
-            # Mean busy servers / n as utilization proxy.
-            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
-            utilization = float(ebusy) / float(self.n) if self.n > 0 else 0.0
-
-            v = [float(v1)] + [0.0] * max(0, num_of_moments - 1)
-            w = [float(w1)] + [0.0] * max(0, num_of_moments - 1)
-            return NegativeArrivalsResults(
-                v=v,
-                w=w,
-                p=p,
-                utilization=utilization,
-                v_broken=[0.0] * num_of_moments,
-                v_served=v,
-                duration=0.0,
-            )
+            return self._ensure_requeue_results(num_of_moments=num_of_moments)
 
         self.p = self.get_p()
         self.w = self.get_w(num_of_moments)
@@ -387,7 +368,13 @@ class MGnNegativeRCSCalc(MGnCalc):
         utilization = self.get_utilization()
 
         return NegativeArrivalsResults(
-            v=self.v, w=self.w, p=self.p, utilization=utilization, v_broken=v_broken, v_served=v_served
+            v=self.v,
+            w=self.w,
+            p=self.p,
+            utilization=utilization,
+            v_broken=v_broken,
+            v_served=v_served,
+            q=float(self.get_q()),
         )
 
     def get_utilization(self):
@@ -399,9 +386,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         would consider the impact of disaster events on system utilization.
         """
         if self.requeue_on_disaster:
-            p = self.get_p()
-            ebusy = sum(min(self.n, k) * pk for k, pk in enumerate(p))
-            return float(ebusy) / float(self.n) if self.n > 0 else 0.0
+            return float(self._ensure_requeue_results(num_of_moments=1).utilization)
         return self.l_pos * self.b[0] / self.n
 
     def get_p(self) -> list[float]:
@@ -409,7 +394,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         Level probabilities p[k].
         """
         if self.requeue_on_disaster:
-            return [float(val.real) for val in list(self.p)]
+            return list(self._ensure_requeue_results(num_of_moments=1).p)
         return super().get_p()
 
     def get_q(self) -> float:
@@ -489,15 +474,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         Computed via derivatives of W*(s) at s=0.
         """
         if self.requeue_on_disaster:
-            # First moment via Little's law; higher moments are not implemented here.
-            p = self.get_p()
-            lam = float(self.l_pos)
-            if lam <= 0:
-                w1 = 0.0
-            else:
-                eq = sum(max(0, k - self.n) * pk for k, pk in enumerate(p))
-                w1 = eq / lam
-            return [float(w1)] + [0.0] * max(0, num_of_moments - 1)
+            return list(self._ensure_requeue_results(num_of_moments=num_of_moments).w[:num_of_moments])
         if self.w is not None:
             return self.w[:num_of_moments]
 
@@ -540,15 +517,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         Get the sojourn time moments
         """
         if self.requeue_on_disaster:
-            # First moment via Little's law; higher moments are not implemented here.
-            p = self.get_p()
-            lam = float(self.l_pos)
-            if lam <= 0:
-                v1 = 0.0
-            else:
-                en = sum(k * pk for k, pk in enumerate(p))
-                v1 = en / lam
-            return [float(v1)] + [0.0] * max(0, num_of_moments - 1)
+            return list(self._ensure_requeue_results(num_of_moments=num_of_moments).v[:num_of_moments])
         if self.v is not None:
             return self.v[:num_of_moments]
 

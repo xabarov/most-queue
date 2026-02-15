@@ -192,6 +192,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
             utilization=float(eff_res.utilization),
             v_broken=v_broken,
             v_served=v,
+            q=1.0,
             duration=0.0,
         )
         return self._requeue_results
@@ -254,6 +255,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
                 utilization=utilization,
                 v_broken=[0.0] * num_of_moments,
                 v_served=v,
+                q=1.0,
                 duration=0.0,
             )
 
@@ -265,8 +267,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         utilization = self.get_utilization()
 
+        q = 1.0
+        if not self.requeue_on_disaster:
+            # Probability of being served before the first disaster after arrival.
+            q = float(self._z0_pls(float(self.l_neg)).real)
         return NegativeArrivalsResults(
-            v=self.v, w=self.w, p=self.p, utilization=utilization, v_broken=v_broken, v_served=v_served
+            v=self.v,
+            w=self.w,
+            p=self.p,
+            utilization=utilization,
+            v_broken=v_broken,
+            v_served=v_served,
+            q=float(q),
         )
 
     def get_utilization(self):

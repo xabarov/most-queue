@@ -11,6 +11,7 @@ from most_queue.io.tables import print_raw_moments, print_sojourn_moments, print
 from most_queue.random.distributions import GammaDistribution
 from most_queue.random.utils.fit import gamma_moments_by_mean_and_cv
 from most_queue.sim.negative import NegativeServiceType, QsSimNegatives, RcsScenario
+from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.negative.mgn_rcs import MGnNegativeRCSCalc
 
 cur_dir = os.getcwd()
@@ -54,7 +55,7 @@ def test_mgn():
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, "Gamma")
 
-    sim_results = queue_sim.run(NUM_OF_JOBS)
+    sim_results: NegativeArrivalsResults = queue_sim.run(NUM_OF_JOBS)
 
     # Run calc
     queue_calc = MGnNegativeRCSCalc(n=NUM_OF_CHANNELS)
@@ -62,7 +63,7 @@ def test_mgn():
     queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     queue_calc.set_servers(b=b)
 
-    calc_results = queue_calc.run()
+    calc_results: NegativeArrivalsResults = queue_calc.run()
 
     print(f"q = {queue_calc.get_q():0.3f}")
 
@@ -73,8 +74,8 @@ def test_mgn():
     print_sojourn_moments(sim_results.v, calc_results.v)
     print_waiting_moments(sim_results.w, calc_results.w)
 
-    print_raw_moments(sim_results.v_served, calc_results.v_served, header="sojourn served")
-    print_raw_moments(sim_results.v_broken, calc_results.v_broken, header="sojourn broken")
+    print_raw_moments(sim_results.v_served, calc_results.v_served, header="sojourn served")  # pylint: disable=no-member
+    print_raw_moments(sim_results.v_broken, calc_results.v_broken, header="sojourn broken")  # pylint: disable=no-member
 
     assert np.allclose(sim_results.v, calc_results.v, rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL), ERROR_MSG
 
@@ -103,13 +104,13 @@ def test_mgn_rcs_requeue_smoke():
     queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, "M")
     gamma_params = GammaDistribution.get_params([b[0], b[1]])
     queue_sim.set_servers(gamma_params, "Gamma")
-    sim_results = queue_sim.run(NUM_OF_JOBS)
+    sim_results: NegativeArrivalsResults = queue_sim.run(NUM_OF_JOBS)
 
     # Run calc (REQUEUE approximation via effective service time)
     queue_calc = MGnNegativeRCSCalc(n=NUM_OF_CHANNELS, requeue_on_disaster=True)
     queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
     queue_calc.set_servers(b=b)
-    calc_results = queue_calc.run()
+    calc_results: NegativeArrivalsResults = queue_calc.run()
 
     # Print tables in the same format as test_mgn().
     sim_q = float(queue_sim.served) / float(queue_sim.total) if queue_sim.total > 0 else 0.0
@@ -121,10 +122,10 @@ def test_mgn_rcs_requeue_smoke():
     print_waiting_moments(sim_results.w, calc_results.w)
 
     # In REQUEUE mode, no one is removed by negatives; all jobs are eventually served.
-    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
-    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
-    assert np.allclose(sim_results.v_served, sim_results.v), ERROR_MSG
-    assert np.allclose(calc_results.v_served, calc_results.v), ERROR_MSG
+    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(sim_results.v_served, sim_results.v), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(calc_results.v_served, calc_results.v), ERROR_MSG  # pylint: disable=no-member
     assert np.allclose(queue_calc.get_q(), 1.0), ERROR_MSG
 
     # Compare first moments (higher moments are more noise-sensitive)
@@ -134,6 +135,11 @@ def test_mgn_rcs_requeue_smoke():
         rtol=MOMENTS_RTOL,
         atol=MOMENTS_ATOL,
     ), ERROR_MSG
+
+    # Numerical method should produce non-trivial second moments in REQUEUE mode
+    # (used for SKO / standard deviation tables in the paper).
+    assert calc_results.w[1] > 0.0, ERROR_MSG
+    assert calc_results.v[1] > 0.0, ERROR_MSG
 
 
 if __name__ == "__main__":
