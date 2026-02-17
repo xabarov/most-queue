@@ -12,6 +12,7 @@ from scipy.misc import derivative
 from most_queue.random.distributions import H2Distribution
 from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.utils.restarts import beff_moments_repeat_without_resampling_from_h2
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -27,7 +28,9 @@ class MGnNegativeRCSCalc(MGnCalc):
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
         requeue_on_disaster: bool = False,
-    ):
+        resume_on_negative: bool = False,
+        repeat_without_resampling: bool = False,
+    ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
         """
         n: number of servers
         buffer: size of the buffer (optional)
@@ -42,7 +45,10 @@ class MGnNegativeRCSCalc(MGnCalc):
         self.w = None
         self._w_def_pls_cache: dict[float, complex] = {}
         self.requeue_on_disaster = bool(requeue_on_disaster)
+        self.resume_on_negative = bool(resume_on_negative)
+        self.repeat_without_resampling = bool(repeat_without_resampling)
         self._requeue_results: NegativeArrivalsResults | None = None
+        self._resume_results: NegativeArrivalsResults | None = None
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -55,6 +61,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         self.l_neg = l_neg
         self._w_def_pls_cache = {}
         self._requeue_results = None
+        self._resume_results = None
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -72,6 +79,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         self.is_servers_set = True
         self._w_def_pls_cache = {}
         self._requeue_results = None
+        self._resume_results = None
 
     def run(self):  # pylint: disable=arguments-differ
         """
@@ -80,12 +88,62 @@ class MGnNegativeRCSCalc(MGnCalc):
         If requeue_on_disaster=True, treat negative arrivals as service restarts
         (no removals): every job is eventually served.
         """
+        if self.resume_on_negative:
+            start = time.process_time()
+            res = self._ensure_resume_results(num_of_moments=4)
+            res.duration = time.process_time() - start
+            return res
         if self.requeue_on_disaster:
             start = time.process_time()
             res = self._ensure_requeue_results(num_of_moments=4)
             res.duration = time.process_time() - start
             return res
         return super().run()  # type: ignore[return-value]
+
+    def _ensure_resume_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
+        """
+        RESUME scenario for RCS: negative arrivals interrupt service and requeue the task,
+        but service continues with the remaining work (preemptive-resume; sample once).
+
+        Important: in the current simulator implementation, an RCS "RESUME" negative arrival
+        preempts a job and immediately starts service again (same instant), preserving the
+        remaining service requirement. There is no additional setup / repair / delay time.
+
+        Under these semantics, negative arrivals do not change the total required service
+        per job and do not introduce downtime, so (to a very good approximation) the system
+        behaves like the base M/G/n without negative jobs.
+
+        Therefore we compute RESUME results by running a standard MGnCalc with the original
+        service-time moments and positive arrival rate, and then wrap them into
+        NegativeArrivalsResults with q=1 and v_broken=0.
+        """
+        if self._resume_results is not None and len(self._resume_results.v) >= num_of_moments:
+            return self._resume_results
+
+        self._check_if_servers_and_sources_set()
+
+        lam = float(self.l_pos)
+
+        eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+        eff.set_sources(l=lam)
+        eff.set_servers(b=[float(x) for x in self.b[:num_of_moments]])
+        eff_res = eff.run()
+
+        v = [float(x) for x in eff_res.v[:num_of_moments]]
+        w = [float(x) for x in eff_res.w[:num_of_moments]]
+        p = [float(x) for x in eff_res.p]
+
+        self._resume_results = NegativeArrivalsResults(
+            v=v,
+            w=w,
+            p=p,
+            utilization=float(eff_res.utilization),
+            v_broken=[0.0] * num_of_moments,
+            v_served=v,
+            q=1.0,
+            duration=0.0,
+        )
+        return self._resume_results
 
     def _ensure_requeue_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
         """
@@ -98,6 +156,10 @@ class MGnNegativeRCSCalc(MGnCalc):
         For service time B with LST β(s) and restart rate r (during service):
 
             B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r)).
+
+        If repeat_without_resampling=True, we use *repeat without resampling* semantics:
+        B is sampled once per job and reused on every restart, so the above LST does not
+        apply; instead we approximate moments of B_eff using a Gamma fit (see restarts.py).
 
         Here the restart intensity depends on the number of busy servers m:
         r(m)=l_neg/m (uniform selection among busy servers). To better match
@@ -144,6 +206,14 @@ class MGnNegativeRCSCalc(MGnCalc):
 
             r_loc = float(service_restart_rate)
             order = int(num_of_moments)
+
+            if self.repeat_without_resampling:
+                return beff_moments_repeat_without_resampling_from_h2(
+                    [complex(self.y[0]), complex(self.y[1])],
+                    [complex(self.mu[0]), complex(self.mu[1])],
+                    r_loc,
+                    num_of_moments=order,
+                )
 
             # β^(n)(s0) for n=0..order at s0=r_loc
             s0 = r_loc
@@ -338,6 +408,8 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Get all results
         """
+        if self.resume_on_negative:
+            return self._ensure_resume_results(num_of_moments=num_of_moments)
         if self.requeue_on_disaster:
             return self._ensure_requeue_results(num_of_moments=num_of_moments)
 

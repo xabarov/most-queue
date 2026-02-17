@@ -83,13 +83,16 @@ def _plot_compare(out_path: str, cv_to_series: dict[float, Series], *, ylabel: s
 
 
 def main() -> None:
-    base_dir = os.path.join(os.path.dirname(__file__), "negative_queues_figures")
+    # Keep consistent with `work_mgn_negatives.py` which supports OUTPUT_DIR override.
+    base_dir = os.environ.get("OUTPUT_DIR") or os.path.join(os.path.dirname(__file__), "negative_queues_figures")
 
     scenarios = [
         ("rcs/remove", "RCS (удаление)"),
         ("rcs/requeue", "RCS (повторное обслуж.)"),
+        ("rcs/requeue_fixed", "RCS (повтор без пересемпл.)"),
         ("disaster/clear", "Катастрофы (очищение)"),
         ("disaster/requeue", "Катастрофы (повторное обслуж.)"),
+        ("disaster/requeue_fixed", "Катастрофы (повтор без пересемпл.)"),
     ]
 
     cv_dirs = {

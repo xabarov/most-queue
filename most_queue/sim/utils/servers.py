@@ -41,6 +41,7 @@ class Server:
         self.params_warm = None
         self.types_warm = None
         self.warm_phase = QsPhase("WarmUp", None)
+        self._last_start_time: float = 0.0
 
     def set_warm(self, params, kendall_notation, generator=None):
         """
@@ -58,10 +59,53 @@ class Server:
 
         self.tsk_on_service = ts
         self.is_free = False
+        self._last_start_time = float(ttek)
         if not is_warm:
-            self.time_to_end_service = ttek + self.dist.generate()
+            # Default/legacy behavior: sample new service time.
+            #
+            # Two special semantics for negative-arrival models are supported via task fields:
+            # - preemptive-resume: task.service_remaining is set to the remaining service time and
+            #   must be continued on the next start (no resampling).
+            # - preemptive-repeat without resampling: if task.fixed_service is True, the service
+            #   requirement is sampled ONCE into task.service_total, and restarts must reuse it.
+            fixed = bool(getattr(ts, "fixed_service", False))
+            remaining = getattr(ts, "service_remaining", None)
+            if fixed:
+                # Sample once if needed.
+                total = getattr(ts, "service_total", None)
+                if total is None:
+                    total = float(self.dist.generate())
+                    ts.service_total = float(total)
+                # If no explicit remaining is provided, start from scratch (full total).
+                if remaining is None:
+                    remaining = float(total)
+                    ts.service_remaining = float(remaining)
+                self.time_to_end_service = ttek + float(remaining)
+            else:
+                if remaining is not None:
+                    self.time_to_end_service = ttek + float(remaining)
+                else:
+                    self.time_to_end_service = ttek + self.dist.generate()
         else:
             self.time_to_end_service = ttek + self.warm_phase.dist.generate()
+
+    def preempt_service(self, ttek: float, *, preserve_remaining: bool = False) -> Task:
+        """
+        Interrupt service (preemption).
+
+        If preserve_remaining=True (preemptive-resume semantics), store the remaining
+        service time into `task.service_remaining`. Otherwise (legacy resampling semantics),
+        do not store anything.
+        """
+        if self.is_free or self.tsk_on_service is None:
+            raise RuntimeError("preempt_service() called on a free server.")
+
+        ts = self.tsk_on_service
+        if preserve_remaining and hasattr(ts, "service_remaining"):
+            rem = float(self.time_to_end_service) - float(ttek)
+            ts.service_remaining = max(0.0, rem)
+
+        return self.end_service()
 
     def end_service(self):
         """

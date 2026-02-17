@@ -8,7 +8,12 @@ from scipy.misc import derivative
 from most_queue.random.distributions import H2Distribution
 from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
-from most_queue.theory.utils.restarts import beff_pls_from_beta, beta_pls_from_moments, raw_moments_from_pls
+from most_queue.theory.utils.restarts import (
+    beff_moments_repeat_without_resampling_from_h2,
+    beff_pls_from_beta,
+    beta_pls_from_moments,
+    raw_moments_from_pls,
+)
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -16,14 +21,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
     """
     Calculate M/H2/n queue with negative jobs (DISASTER-type).
 
-    Two scenarios are supported (selected by `requeue_on_disaster`):
+    Three scenarios are supported:
 
     - `False` (default): negative arrival clears the system (removes all positive jobs),
       matching the original "DISASTER" semantics.
-    - `True`: negative arrival interrupts service and returns the positive jobs in service
-      back to the head of the queue (service restarts). In this mode the calculation
-      is approximated via an equivalent M/G/n with an effective service time that
-      accounts for restart.
+    - `requeue_on_disaster=True`: negative arrival interrupts service and returns the
+      positive jobs in service back to the head of the queue (service restarts with resampling).
+      In this mode the calculation is approximated via an equivalent M/G/n with an effective
+      service time that accounts for *restart with resampling*.
+    - `resume_on_disaster=True`: negative arrival interrupts service and returns the positive
+      jobs in service back to the head of the queue, but service continues with the remaining
+      work (preemptive-resume; service time is sampled once). In this mode we use an
+      approximation via an equivalent M/G/n with an effective completion-time distribution.
     """
 
     def __init__(
@@ -32,7 +41,9 @@ class MGnNegativeDisasterCalc(MGnCalc):
         buffer: int | None = None,
         calc_params: TakahashiTakamiParams | None = None,
         requeue_on_disaster: bool = False,
-    ):
+        resume_on_disaster: bool = False,
+        repeat_without_resampling: bool = False,
+    ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
         """
         n: number of servers
         buffer: size of the buffer (optional)
@@ -50,7 +61,10 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self._w0_pls_cache: dict[float, complex] = {}
         self._z0_pls_cache: dict[float, complex] = {}
         self.requeue_on_disaster = bool(requeue_on_disaster)
+        self.resume_on_disaster = bool(resume_on_disaster)
+        self.repeat_without_resampling = bool(repeat_without_resampling)
         self._requeue_results: NegativeArrivalsResults | None = None
+        self._resume_results: NegativeArrivalsResults | None = None
 
     def set_sources(self, l_pos: float, l_neg: float):  # pylint: disable=arguments-differ
         """
@@ -64,6 +78,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self._w0_pls_cache = {}
         self._z0_pls_cache = {}
         self._requeue_results = None
+        self._resume_results = None
         self.is_sources_set = True
 
     def set_servers(self, b: list[float]):  # pylint: disable=arguments-differ
@@ -81,6 +96,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         self._w0_pls_cache = {}
         self._z0_pls_cache = {}
         self._requeue_results = None
+        self._resume_results = None
 
     def run(self) -> NegativeArrivalsResults:  # pylint: disable=arguments-differ
         """
@@ -89,6 +105,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         In REQUEUE mode the calculation uses an equivalent M/G/n approximation with
         effective service moments B_eff (matches the simulator semantics well).
         """
+        if self.resume_on_disaster:
+            return self._ensure_resume_results(num_of_moments=4)
         if self.requeue_on_disaster:
             return self._ensure_requeue_results(num_of_moments=4)
         return super().run()  # type: ignore[return-value]
@@ -134,17 +152,26 @@ class MGnNegativeDisasterCalc(MGnCalc):
         mean_b = float(self.b[0])
         var_b = float(self.b[1] - self.b[0] ** 2)
 
-        beta = beta_pls_from_moments(mean_b, var_b)
-
         if delta <= 0:
             b_eff = [float(x) for x in self.b[:num_of_moments]]
         else:
+            if self.repeat_without_resampling:
+                # Repeat WITHOUT resampling (fixed service requirement per job).
+                b_eff = beff_moments_repeat_without_resampling_from_h2(
+                    [complex(self.y[0]), complex(self.y[1])],
+                    [complex(self.mu[0]), complex(self.mu[1])],
+                    delta,
+                    num_of_moments=num_of_moments,
+                )
+            else:
+                # Repeat WITH resampling (classic Poisson restart).
+                beta = beta_pls_from_moments(mean_b, var_b)
 
-            def b_eff_pls(s: float) -> float:
-                return float(beff_pls_from_beta(beta, s, delta))
+                def b_eff_pls(s: float) -> float:
+                    return float(beff_pls_from_beta(beta, s, delta))
 
-            dx = 1e-3 / max(mean_b, 1e-9)
-            b_eff = raw_moments_from_pls(b_eff_pls, num_of_moments, dx=dx, order=9)
+                dx = 1e-3 / max(mean_b, 1e-9)
+                b_eff = raw_moments_from_pls(b_eff_pls, num_of_moments, dx=dx, order=9)
 
         # Run a standard MGnCalc with effective service moments
         eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
@@ -168,6 +195,53 @@ class MGnNegativeDisasterCalc(MGnCalc):
             duration=0.0,
         )
         return self._requeue_results
+
+    def _ensure_resume_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
+        """
+        RESUME scenario (service continues after interruptions with the remaining work):
+
+        A disaster interrupts service of all jobs-in-service; jobs return to the head of the queue.
+        Service time is sampled once and then continued (preemptive-resume).
+
+        Important: in the current simulator implementation, a DISASTER "RESUME_ALL" event
+        preempts jobs and immediately starts service again (same instant), preserving the
+        remaining service requirements. There is no additional setup / repair / delay time.
+
+        Under these semantics, negative arrivals do not change the total required service
+        per job and do not introduce downtime, so (to a very good approximation) the system
+        behaves like the base M/G/n without negative jobs.
+
+        Therefore we compute RESUME results by running a standard MGnCalc with the original
+        service-time moments and positive arrival rate, and then wrap them into
+        NegativeArrivalsResults with q=1 and v_broken=0.
+        """
+        if self._resume_results is not None and len(self._resume_results.v) >= num_of_moments:
+            return self._resume_results
+
+        self._check_if_servers_and_sources_set()
+
+        lam = float(self.l_pos)
+
+        eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+        eff.set_sources(l=lam)
+        eff.set_servers(b=[float(x) for x in self.b[:num_of_moments]])
+        eff_res = eff.run()
+
+        v = [float(x) for x in eff_res.v[:num_of_moments]]
+        w = [float(x) for x in eff_res.w[:num_of_moments]]
+        p = [float(x) for x in eff_res.p]
+
+        self._resume_results = NegativeArrivalsResults(
+            v=v,
+            w=w,
+            p=p,
+            utilization=float(eff_res.utilization),
+            v_broken=[0.0] * num_of_moments,
+            v_served=v,
+            q=1.0,
+            duration=0.0,
+        )
+        return self._resume_results
 
     def _calculate_p(self):
         """
@@ -204,6 +278,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         """
         Get all results
         """
+        if self.resume_on_disaster:
+            return self._ensure_resume_results(num_of_moments=num_of_moments)
         if self.requeue_on_disaster:
             return self._ensure_requeue_results(num_of_moments=num_of_moments)
 

@@ -142,5 +142,114 @@ def test_mgn_rcs_requeue_smoke():
     assert calc_results.v[1] > 0.0, ERROR_MSG
 
 
+def test_mgn_rcs_resume_smoke():
+    """
+    Smoke test for resume semantics:
+    - RCS RESUME: interrupt one in-service job and requeue it, continuing remaining service.
+    - No broken jobs (v_broken == 0), q == 1.
+    - Theoretical calculation uses MGnNegativeRCSCalc(resume_on_negative=True) (approximation).
+    """
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
+
+    # Run simulation (RCS RESUME)
+    queue_sim = QsSimNegatives(
+        NUM_OF_CHANNELS,
+        NegativeServiceType.RCS,
+        verbose=False,
+        rcs_scenario=RcsScenario.RESUME,
+    )
+    queue_sim.set_negative_sources(ARRIVAL_RATE_NEGATIVE, "M")
+    queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, "M")
+    gamma_params = GammaDistribution.get_params([b[0], b[1]])
+    queue_sim.set_servers(gamma_params, "Gamma")
+    sim_results: NegativeArrivalsResults = queue_sim.run(NUM_OF_JOBS)
+
+    # Run calc (RESUME approximation via effective completion time)
+    queue_calc = MGnNegativeRCSCalc(n=NUM_OF_CHANNELS, resume_on_negative=True)
+    queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    queue_calc.set_servers(b=b)
+    calc_results: NegativeArrivalsResults = queue_calc.run()
+
+    sim_q = float(queue_sim.served) / float(queue_sim.total) if queue_sim.total > 0 else 0.0
+    print(f"q(sim) = {sim_q:0.3f}, q(calc) = {calc_results.q:0.3f}")
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+    probs_print(sim_results.p, calc_results.p)
+    print_sojourn_moments(sim_results.v, calc_results.v)
+    print_waiting_moments(sim_results.w, calc_results.w)
+
+    # Resume: no broken jobs, all served
+    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(sim_results.v_served, sim_results.v), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(calc_results.v_served, calc_results.v), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(sim_q, 1.0), ERROR_MSG
+    assert np.allclose(calc_results.q, 1.0), ERROR_MSG
+
+    # Compare first moments loosely (approximation)
+    assert np.allclose(
+        [sim_results.w[0], sim_results.v[0]],
+        [calc_results.w[0], calc_results.v[0]],
+        rtol=max(5 * MOMENTS_RTOL, 0.20),
+        atol=max(5 * MOMENTS_ATOL, 0.20),
+    ), ERROR_MSG
+
+
+def test_mgn_rcs_requeue_no_resampling_smoke():
+    """
+    Smoke test for *repeat without resampling* semantics:
+    - RCS REQUEUE_NO_RESAMPLING: interrupt one in-service job and requeue it,
+      losing progress but keeping the initially sampled service duration (fixed B per job).
+    - No broken jobs, q == 1.
+    - Theoretical calculation uses MGnNegativeRCSCalc(requeue_on_disaster=True, repeat_without_resampling=True)
+      (approximation via effective service moments).
+    """
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
+
+    # For fixed-service restarts the tail becomes very heavy; use a milder negative rate
+    # so that the first moments are stable and comparable.
+    l_neg = 0.05 * ARRIVAL_RATE_POSITIVE
+
+    queue_sim = QsSimNegatives(
+        NUM_OF_CHANNELS,
+        NegativeServiceType.RCS,
+        verbose=False,
+        rcs_scenario=RcsScenario.REQUEUE_NO_RESAMPLING,
+    )
+    queue_sim.set_negative_sources(l_neg, "M")
+    queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, "M")
+    gamma_params = GammaDistribution.get_params([b[0], b[1]])
+    queue_sim.set_servers(gamma_params, "Gamma")
+    sim_results: NegativeArrivalsResults = queue_sim.run(NUM_OF_JOBS)
+
+    queue_calc = MGnNegativeRCSCalc(n=NUM_OF_CHANNELS, requeue_on_disaster=True, repeat_without_resampling=True)
+    queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=l_neg)
+    queue_calc.set_servers(b=b)
+    calc_results: NegativeArrivalsResults = queue_calc.run()
+
+    sim_q = float(queue_sim.served) / float(queue_sim.total) if queue_sim.total > 0 else 0.0
+    print(f"q(sim) = {sim_q:0.3f}, q(calc) = {calc_results.q:0.3f}")
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+    probs_print(sim_results.p, calc_results.p)
+    print_sojourn_moments(sim_results.v, calc_results.v)
+    print_waiting_moments(sim_results.w, calc_results.w)
+
+    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG  # pylint: disable=no-member
+    assert np.allclose(sim_q, 1.0), ERROR_MSG
+    assert np.allclose(calc_results.q, 1.0), ERROR_MSG
+
+    # Compare first moments loosely (approximation, plus stronger restart effect).
+    assert np.allclose(
+        [sim_results.w[0], sim_results.v[0]],
+        [calc_results.w[0], calc_results.v[0]],
+        rtol=max(8 * MOMENTS_RTOL, 0.30),
+        atol=max(8 * MOMENTS_ATOL, 0.30),
+    ), ERROR_MSG
+
+
 if __name__ == "__main__":
-    test_mgn_rcs_requeue_smoke()
+    test_mgn_rcs_requeue_no_resampling_smoke()

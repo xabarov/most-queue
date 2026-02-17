@@ -134,6 +134,112 @@ def test_mgn_requeue_all():
     ), ERROR_MSG
 
 
+def test_mgn_resume_all_smoke():
+    """
+    Smoke test for DISASTER resume semantics (RESUME_ALL):
+    a negative arrival interrupts service and returns all jobs-in-service back to the queue,
+    continuing remaining service (preemptive-resume; sample once).
+
+    Theoretical calculation uses MGnNegativeDisasterCalc(resume_on_disaster=True) (approximation).
+    """
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
+
+    # Run simulation (RESUME_ALL)
+    queue_sim = QsSimNegatives(
+        NUM_OF_CHANNELS,
+        NegativeServiceType.DISASTER,
+        verbose=False,
+        disaster_scenario=DisasterScenario.RESUME_ALL,
+    )
+    queue_sim.set_negative_sources(ARRIVAL_RATE_NEGATIVE, "M")
+    queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, "M")
+    gamma_params = GammaDistribution.get_params([b[0], b[1]])
+    queue_sim.set_servers(gamma_params, "Gamma")
+    sim_results = queue_sim.run(NUM_OF_JOBS)
+
+    # Run calc (RESUME approximation)
+    queue_calc = MGnNegativeDisasterCalc(n=NUM_OF_CHANNELS, resume_on_disaster=True)
+    queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=ARRIVAL_RATE_NEGATIVE)
+    queue_calc.set_servers(b=b)
+    calc_results = queue_calc.run()
+
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+
+    probs_print(sim_results.p, calc_results.p)
+    print_raw_moments(sim_results.v, calc_results.v, header="sojourn total")
+    print_waiting_moments(sim_results.w, calc_results.w)
+
+    # In RESUME scenario, there should be no broken jobs and q==1
+    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
+    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
+    assert np.allclose(sim_results.v_served, sim_results.v), ERROR_MSG
+    assert np.allclose(calc_results.v_served, calc_results.v), ERROR_MSG
+    sim_q = float(queue_sim.served) / float(queue_sim.total) if queue_sim.total > 0 else 0.0
+    assert np.allclose(sim_q, 1.0), ERROR_MSG
+    assert np.allclose(calc_results.q, 1.0), ERROR_MSG
+
+    # Compare first moments loosely (approximation)
+    assert np.allclose(
+        [sim_results.w[0], sim_results.v[0]],
+        [calc_results.w[0], calc_results.v[0]],
+        rtol=max(5 * MOMENTS_RTOL, 0.20),
+        atol=max(5 * MOMENTS_ATOL, 0.20),
+    ), ERROR_MSG
+
+
+def test_mgn_requeue_all_no_resampling_smoke():
+    """
+    Smoke test for DISASTER repeat-without-resampling semantics (REQUEUE_ALL_NO_RESAMPLING):
+    a negative arrival interrupts service and returns all jobs-in-service back to the queue,
+    losing progress but keeping the initially sampled service durations (fixed B per job).
+
+    Theoretical calculation uses MGnNegativeDisasterCalc(requeue_on_disaster=True, repeat_without_resampling=True)
+    (approximation via effective service moments).
+    """
+    b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE_POSITIVE  # average service time
+    b = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
+
+    # Use a milder negative rate: for fixed-service restarts the mean can explode quickly
+    # and the steady-state may become numerically hard to resolve for the truncated TT method.
+    l_neg = 0.05 * ARRIVAL_RATE_POSITIVE
+
+    # Run simulation (REQUEUE_ALL_NO_RESAMPLING)
+    queue_sim = QsSimNegatives(
+        NUM_OF_CHANNELS,
+        NegativeServiceType.DISASTER,
+        verbose=False,
+        disaster_scenario=DisasterScenario.REQUEUE_ALL_NO_RESAMPLING,
+    )
+    queue_sim.set_negative_sources(l_neg, "M")
+    queue_sim.set_positive_sources(ARRIVAL_RATE_POSITIVE, "M")
+    gamma_params = GammaDistribution.get_params([b[0], b[1]])
+    queue_sim.set_servers(gamma_params, "Gamma")
+    sim_results = queue_sim.run(NUM_OF_JOBS)
+
+    # Run calc (approximation via effective service moments)
+    queue_calc = MGnNegativeDisasterCalc(n=NUM_OF_CHANNELS, requeue_on_disaster=True, repeat_without_resampling=True)
+    queue_calc.set_sources(l_pos=ARRIVAL_RATE_POSITIVE, l_neg=l_neg)
+    queue_calc.set_servers(b=b)
+    calc_results = queue_calc.run()
+
+    print(f"Simulation duration: {sim_results.duration:.5f} sec")
+    print(f"Calculation duration: {calc_results.duration:.5f} sec")
+    probs_print(sim_results.p, calc_results.p)
+    print_raw_moments(sim_results.v, calc_results.v, header="sojourn total")
+    print_waiting_moments(sim_results.w, calc_results.w)
+
+    # No broken jobs; all served
+    assert np.allclose(sim_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
+    assert np.allclose(calc_results.v_broken, [0.0, 0.0, 0.0, 0.0]), ERROR_MSG
+    assert np.allclose(sim_results.v_served, sim_results.v), ERROR_MSG
+    assert np.allclose(calc_results.v_served, calc_results.v), ERROR_MSG
+    sim_q = float(queue_sim.served) / float(queue_sim.total) if queue_sim.total > 0 else 0.0
+    assert np.allclose(sim_q, 1.0), ERROR_MSG
+    assert np.allclose(calc_results.q, 1.0), ERROR_MSG
+
+
 def plot_w_and_v_vs_l_neg(
     l_neg_min=0.05,
     l_neg_max=1.2,
@@ -200,4 +306,4 @@ def plot_w_and_v_vs_l_neg(
 
 
 if __name__ == "__main__":
-    test_mgn_requeue_all()
+    test_mgn_requeue_all_no_resampling_smoke()

@@ -3,10 +3,13 @@ Collect results for the QS M/G/n queue with negative jobs and RCS discipline.
 """
 
 import argparse
+import copy
 import json
 import os
+import runpy
 from dataclasses import asdict
 
+import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
@@ -32,18 +35,24 @@ def collect_calc_results(
     b: list[float],
     discipline: NegativeServiceType,
     requeue_on_negative: bool = False,
+    resume_on_negative: bool = False,
+    repeat_without_resampling: bool = False,
     max_p: int = 100,
 ):
     """
     Collects calculation results for a given number of channels.
     :param qp: Dictionary containing the parameters for the simulation.
     :param requeue_on_negative: if True, use "repeat service" scenario (requeue); else "remove" / "clear".
+    :param resume_on_negative: if True, use "resume service" (sample once; preemptive-resume) scenario.
+    :param repeat_without_resampling: if True, use "repeat without resampling" (sample once; progress lost) scenario.
     """
     if discipline == NegativeServiceType.RCS:
         queue_calc = MGnNegativeRCSCalc(
             n=n,
             calc_params=TakahashiTakamiParams(tolerance=float(qp["accuracy"])),
             requeue_on_disaster=requeue_on_negative,
+            resume_on_negative=resume_on_negative,
+            repeat_without_resampling=repeat_without_resampling,
         )
         queue_calc.set_sources(l_pos=float(qp["arrival_rate"]["positive"]), l_neg=float(qp["arrival_rate"]["negative"]))
         queue_calc.set_servers(b=b)
@@ -52,6 +61,8 @@ def collect_calc_results(
             n=n,
             calc_params=TakahashiTakamiParams(tolerance=float(qp["accuracy"])),
             requeue_on_disaster=requeue_on_negative,
+            resume_on_disaster=resume_on_negative,
+            repeat_without_resampling=repeat_without_resampling,
         )
         queue_calc.set_sources(l_pos=float(qp["arrival_rate"]["positive"]), l_neg=float(qp["arrival_rate"]["negative"]))
         queue_calc.set_servers(b=b)
@@ -106,6 +117,8 @@ def run_depends_on_channels(
     qp: dict,
     discipline: NegativeServiceType,
     requeue_on_negative: bool = False,
+    resume_on_negative: bool = False,
+    repeat_without_resampling: bool = False,
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
@@ -117,30 +130,47 @@ def run_depends_on_channels(
     :param qp: Dictionary with queue parameters.
     :return: DependsOnChannelsResults object with calculated and simulated moments.
     """
-    channels = list(range(1, qp["channels"]["max"] + 1))
+    # NOTE: for restart disciplines the effective mean service time can grow very fast with n
+    # (we keep rho and lambda_pos fixed, so E[B]=n*rho/lambda_pos increases linearly with n).
+    # With a large negative rate this may push the system close to (or beyond) instability for
+    # larger n and make sample means explode. For the n-sweep we use a milder fixed negative
+    # intensity to keep all scenarios in a stable, interpretable regime.
+    qp_run = copy.deepcopy(qp)
+    l_pos = float(qp_run["arrival_rate"]["positive"])
+    l_neg_base = float(qp_run["arrival_rate"]["negative"])
+    qp_run["arrival_rate"]["negative"] = min(l_neg_base, 0.02 * l_pos)
+
+    channels = list(range(1, qp_run["channels"]["max"] + 1))
 
     calc_results = []
     sim_results = []
 
-    ch_cfg = qp.get("channels", {}) or {}
-    num_jobs = int(ch_cfg.get("num_of_jobs") or qp["num_of_jobs"])
-    cv_val = float(service_cv if service_cv is not None else qp["service"]["cv"]["base"])
+    ch_cfg = qp_run.get("channels", {}) or {}
+    num_jobs = int(ch_cfg.get("num_of_jobs") or qp_run["num_of_jobs"])
+    cv_val = float(service_cv if service_cv is not None else qp_run["service"]["cv"]["base"])
 
     for n in channels:
         print(f"Channels: {n}")
 
-        service_mean = n * qp["utilization"]["base"] / qp["arrival_rate"]["positive"]
+        service_mean = n * qp_run["utilization"]["base"] / qp_run["arrival_rate"]["positive"]
 
         b = gamma_moments_by_mean_and_cv(service_mean, cv_val)
 
         calc_results.append(
             collect_calc_results(
-                qp=qp, b=b, n=n, discipline=discipline, requeue_on_negative=requeue_on_negative, max_p=max_p
+                qp=qp_run,
+                b=b,
+                n=n,
+                discipline=discipline,
+                requeue_on_negative=requeue_on_negative,
+                resume_on_negative=resume_on_negative,
+                repeat_without_resampling=repeat_without_resampling,
+                max_p=max_p,
             )
         )
         sim_results.append(
             collect_sim_results(
-                qp={**qp, "num_of_jobs": num_jobs},
+                qp={**qp_run, "num_of_jobs": num_jobs},
                 b=b,
                 n=n,
                 discipline=discipline,
@@ -154,7 +184,7 @@ def run_depends_on_channels(
         calc=calc_results,
         sim=sim_results,
         channels=channels,
-        utilization_factor=qp["utilization"]["base"],
+        utilization_factor=qp_run["utilization"]["base"],
         service_time_variation_coef=cv_val,
     )
 
@@ -163,6 +193,8 @@ def run_depends_on_varience(
     qp: dict,
     discipline: NegativeServiceType,
     requeue_on_negative: bool = False,
+    resume_on_negative: bool = False,
+    repeat_without_resampling: bool = False,
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
@@ -192,6 +224,8 @@ def run_depends_on_varience(
                 b=b,
                 discipline=discipline,
                 requeue_on_negative=requeue_on_negative,
+                resume_on_negative=resume_on_negative,
+                repeat_without_resampling=repeat_without_resampling,
                 max_p=max_p,
             )
         )
@@ -220,6 +254,8 @@ def run_depends_on_utilization(
     qp: dict,
     discipline: NegativeServiceType,
     requeue_on_negative: bool = False,
+    resume_on_negative: bool = False,
+    repeat_without_resampling: bool = False,
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
@@ -247,6 +283,8 @@ def run_depends_on_utilization(
                 b=b,
                 discipline=discipline,
                 requeue_on_negative=requeue_on_negative,
+                resume_on_negative=resume_on_negative,
+                repeat_without_resampling=repeat_without_resampling,
                 max_p=max_p,
             )
         )
@@ -275,6 +313,8 @@ def run_depends_on_negative_rate(
     qp: dict,
     discipline: NegativeServiceType,
     requeue_on_negative: bool = False,
+    resume_on_negative: bool = False,
+    repeat_without_resampling: bool = False,
     rcs_scenario: RcsScenario = RcsScenario.REMOVE,
     disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
     max_p: int = 100,
@@ -284,11 +324,9 @@ def run_depends_on_negative_rate(
     Collects simulation and calculation results for a given range of negative arrival rates (delta).
     """
     neg_cfg = qp.get("negative_rate", {}) or {}
-    deltas = np.linspace(
-        float(neg_cfg.get("min", 0.05)),
-        float(neg_cfg.get("max", float(qp["arrival_rate"]["negative"]))),
-        int(neg_cfg.get("num_points", 15)),
-    )
+    delta_min = float(neg_cfg.get("min", 0.05))
+    delta_max = float(neg_cfg.get("max", float(qp["arrival_rate"]["negative"])))
+    num_points = int(neg_cfg.get("num_points", 15))
     num_jobs = int(neg_cfg.get("num_of_jobs", qp["num_of_jobs"]))
 
     base_qp = dict(qp)
@@ -300,6 +338,71 @@ def run_depends_on_negative_rate(
     service_mean = base_qp["channels"]["base"] * base_qp["utilization"]["base"] / base_qp["arrival_rate"]["positive"]
     cv_val = float(service_cv if service_cv is not None else base_qp["service"]["cv"]["base"])
     b = gamma_moments_by_mean_and_cv(service_mean, cv_val)
+
+    if repeat_without_resampling:
+        # For "repeat without resampling" (fixed service requirement per job),
+        # moments (and sometimes even the mean) can explode if the MGF of B at r (or 2r)
+        # does not exist. A practical safeguard for the delta-sweep is to cap delta so that:
+        #   (i) E[e^{2 r B}] exists in the H2 approximation of B (second moment existence),
+        #  (ii) the implied effective utilization stays away from 1.
+        #
+        # For H2 (mixture of exponentials) condition (i) requires 2r < min(Re(mu_i)).
+        # We use a small safety margin to avoid near-singular regimes.
+        try:
+            h2p = H2Distribution.get_params_clx(b)
+            p1 = float(np.real(complex(h2p.p1)))
+            mu1 = float(np.real(complex(h2p.mu1)))
+            mu2 = float(np.real(complex(h2p.mu2)))
+            p1 = float(np.clip(p1, 0.0, 1.0))
+
+            min_mu = min(mu1, mu2)
+            if np.isfinite(min_mu) and min_mu > 0.0:
+                # (i) moments existence cap
+                delta_cap_m2 = 0.95 * (min_mu / 2.0)
+
+                # (ii) stability/interpretability cap via rho_eff < rho_eff_max
+                # Mean completion time for "repeat without resampling":
+                #   E[T] = (E[e^{rB}] - 1)/r, where r=delta.
+                l_pos = float(base_qp["arrival_rate"]["positive"])
+                n_base = int(base_qp["channels"]["base"])
+                rho_eff_max = float(neg_cfg.get("rho_eff_max", 0.95))
+
+                mean_limit = (rho_eff_max * n_base / l_pos) if l_pos > 0.0 else float("inf")
+
+                def mean_completion_fixed(r: float) -> float:
+                    if r <= 1e-14:
+                        return float(b[0])
+                    # M_B(r) for H2: p1*mu1/(mu1-r) + (1-p1)*mu2/(mu2-r)
+                    # Valid for r < min(mu1, mu2).
+                    if r >= min_mu:
+                        return float("inf")
+                    m = p1 * (mu1 / (mu1 - r)) + (1.0 - p1) * (mu2 / (mu2 - r))
+                    return (m - 1.0) / r
+
+                # Find the largest r in [0, delta_cap_m2] such that mean_completion_fixed(r) <= mean_limit.
+                hi = float(delta_cap_m2)
+                if mean_completion_fixed(hi) <= mean_limit:
+                    delta_cap_rho = hi
+                else:
+                    lo = 0.0
+                    for _ in range(70):
+                        mid = 0.5 * (lo + hi)
+                        if mean_completion_fixed(mid) <= mean_limit:
+                            lo = mid
+                        else:
+                            hi = mid
+                    delta_cap_rho = float(lo)
+
+                delta_max = min(delta_max, delta_cap_m2, delta_cap_rho)
+        except Exception:
+            # Fallback: keep user-provided max; the internal beff code will still guard divergence.
+            pass
+
+    if delta_max < delta_min:
+        # Degenerate case: fall back to a single-point sweep.
+        deltas = np.array([delta_min], dtype=float)
+    else:
+        deltas = np.linspace(delta_min, delta_max, num_points)
 
     for delta in deltas:
         print(f"Negative arrival rate: {delta:0.3f}")
@@ -313,6 +416,8 @@ def run_depends_on_negative_rate(
                 b=b,
                 discipline=discipline,
                 requeue_on_negative=requeue_on_negative,
+                resume_on_negative=resume_on_negative,
+                repeat_without_resampling=repeat_without_resampling,
                 max_p=max_p,
             )
         )
@@ -349,12 +454,47 @@ def read_parameters_from_yaml(file_path: str) -> dict:
         return yaml.safe_load(f_yaml)
 
 
-# Four scenarios: (discipline, subdir, requeue_on_negative, rcs_scenario, disaster_scenario)
+# Scenarios:
+# (discipline, subdir, requeue_on_negative, resume_on_negative, repeat_without_resampling, rcs_scenario, disaster_scenario)
 SCENARIOS = [
-    (NegativeServiceType.RCS, "rcs/remove", False, RcsScenario.REMOVE, DisasterScenario.CLEAR_SYSTEM),
-    (NegativeServiceType.RCS, "rcs/requeue", True, RcsScenario.REQUEUE, DisasterScenario.CLEAR_SYSTEM),
-    (NegativeServiceType.DISASTER, "disaster/clear", False, RcsScenario.REMOVE, DisasterScenario.CLEAR_SYSTEM),
-    (NegativeServiceType.DISASTER, "disaster/requeue", True, RcsScenario.REMOVE, DisasterScenario.REQUEUE_ALL),
+    (NegativeServiceType.RCS, "rcs/remove", False, False, False, RcsScenario.REMOVE, DisasterScenario.CLEAR_SYSTEM),
+    (NegativeServiceType.RCS, "rcs/requeue", True, False, False, RcsScenario.REQUEUE, DisasterScenario.CLEAR_SYSTEM),
+    (
+        NegativeServiceType.RCS,
+        "rcs/requeue_fixed",
+        True,
+        False,
+        True,
+        RcsScenario.REQUEUE_NO_RESAMPLING,
+        DisasterScenario.CLEAR_SYSTEM,
+    ),
+    (
+        NegativeServiceType.DISASTER,
+        "disaster/clear",
+        False,
+        False,
+        False,
+        RcsScenario.REMOVE,
+        DisasterScenario.CLEAR_SYSTEM,
+    ),
+    (
+        NegativeServiceType.DISASTER,
+        "disaster/requeue",
+        True,
+        False,
+        False,
+        RcsScenario.REMOVE,
+        DisasterScenario.REQUEUE_ALL,
+    ),
+    (
+        NegativeServiceType.DISASTER,
+        "disaster/requeue_fixed",
+        True,
+        False,
+        True,
+        RcsScenario.REMOVE,
+        DisasterScenario.REQUEUE_ALL_NO_RESAMPLING,
+    ),
 ]
 
 
@@ -368,10 +508,19 @@ if __name__ == "__main__":
         choices=["all", "channels", "coefs", "utilization", "negative_rate"],
         help="Which dependency sweeps to run (default: all).",
     )
+    parser.add_argument(
+        "--scenarios",
+        nargs="*",
+        default=["all"],
+        help=("Which scenarios to run by subdir, e.g. 'rcs/remove' 'disaster/requeue_fixed'. " "Default: all."),
+    )
     args = parser.parse_args()
     selected = set(args.depends)
     if "all" in selected:
         selected = {"channels", "coefs", "utilization", "negative_rate"}
+
+    scen_sel = set(args.scenarios or ["all"])
+    run_all_scenarios = "all" in scen_sel
 
     base_qp = read_parameters_from_yaml("works/negative_queues/base_parameters.yaml")
     CUR_DIR = os.path.dirname(__file__)
@@ -381,7 +530,9 @@ if __name__ == "__main__":
     if not output_base:
         output_base = os.path.join(CUR_DIR, "negative_queues_figures")
 
-    for discipline, subdir, requeue, rcs_scenario, disaster_scenario in SCENARIOS:
+    for discipline, subdir, requeue, resume, repeat_wo_resampling, rcs_scenario, disaster_scenario in SCENARIOS:
+        if (not run_all_scenarios) and (subdir not in scen_sel):
+            continue
         exp_dir = os.path.join(output_base, subdir)
         if not os.path.exists(exp_dir):
             os.makedirs(exp_dir)
@@ -396,15 +547,19 @@ if __name__ == "__main__":
         if "channels" in selected:
             ch_cfg = base_qp.get("channels", {}) or {}
             cvs = ch_cfg.get("cv_values") or [base_qp["service"]["cv"]["base"]]
+            channels_results_by_cv: list[tuple[float, DependsOnChannelsResults]] = []
             for cv_val in cvs:
                 results_channels = run_depends_on_channels(
                     base_qp,
                     discipline,
                     requeue_on_negative=requeue,
+                    resume_on_negative=resume,
+                    repeat_without_resampling=repeat_wo_resampling,
                     rcs_scenario=rcs_scenario,
                     disaster_scenario=disaster_scenario,
                     service_cv=float(cv_val),
                 )
+                channels_results_by_cv.append((float(cv_val), results_channels))
                 all_results.append(results_channels)
                 all_xs.append(results_channels.channels)
                 all_depends.append(DependsType.CHANNELS_NUMBER)
@@ -416,6 +571,8 @@ if __name__ == "__main__":
                 base_qp,
                 discipline,
                 requeue_on_negative=requeue,
+                resume_on_negative=resume,
+                repeat_without_resampling=repeat_wo_resampling,
                 rcs_scenario=rcs_scenario,
                 disaster_scenario=disaster_scenario,
             )
@@ -429,6 +586,8 @@ if __name__ == "__main__":
                 base_qp,
                 discipline,
                 requeue_on_negative=requeue,
+                resume_on_negative=resume,
+                repeat_without_resampling=repeat_wo_resampling,
                 rcs_scenario=rcs_scenario,
                 disaster_scenario=disaster_scenario,
             )
@@ -440,15 +599,29 @@ if __name__ == "__main__":
         if "negative_rate" in selected:
             neg_cfg = base_qp.get("negative_rate", {}) or {}
             cvs = neg_cfg.get("cv_values") or [base_qp["service"]["cv"]["base"]]
+            neg_results_by_cv: list[tuple[float, DependsOnNegativeRateResults]] = []
             for cv_val in cvs:
+                # For fixed-service restarts the mean can explode quickly; cap the sweep range.
+                qp_for_neg = base_qp
+                if repeat_wo_resampling:
+                    qp_for_neg = copy.deepcopy(base_qp)
+                    nc = qp_for_neg.get("negative_rate", {}) or {}
+                    max_old = float(nc.get("max", qp_for_neg["arrival_rate"]["negative"]))
+                    # Coarse cap; an additional distribution-dependent cap is applied inside
+                    # run_depends_on_negative_rate().
+                    qp_for_neg["negative_rate"]["max"] = min(max_old, 0.15)
+                    qp_for_neg["negative_rate"]["num_points"] = min(int(nc.get("num_points", 20)), 12)
                 results_negative_rate = run_depends_on_negative_rate(
-                    base_qp,
+                    qp_for_neg,
                     discipline,
                     requeue_on_negative=requeue,
+                    resume_on_negative=resume,
+                    repeat_without_resampling=repeat_wo_resampling,
                     rcs_scenario=rcs_scenario,
                     disaster_scenario=disaster_scenario,
                     service_cv=float(cv_val),
                 )
+                neg_results_by_cv.append((float(cv_val), results_negative_rate))
                 all_results.append(results_negative_rate)
                 all_xs.append(results_negative_rate.negative_rate)
                 all_depends.append(DependsType.NEGATIVE_RATE)
@@ -503,3 +676,13 @@ if __name__ == "__main__":
                 plotter = Plotter(xs=xs, sim_results=v_sim_ave, calc_results=v_calc_ave, depends_on=depends_on)
                 plotter.plot_sojourn(save_path=os.path.join(save_path, "v_ave.png"))
                 plotter.plot_errors(save_path=os.path.join(save_path, "v_ave_err.png"))
+
+    # Restore the previous "overlay" figure style used in the paper:
+    # build CV-comparison plots from the stored results.json.
+    try:
+        if "channels" in selected:
+            runpy.run_path(os.path.join(CUR_DIR, "plot_channels_cv_compare.py"), run_name="__main__")
+        if "negative_rate" in selected:
+            runpy.run_path(os.path.join(CUR_DIR, "plot_negative_rate_cv_compare.py"), run_name="__main__")
+    except Exception as e:
+        print(f"WARNING: failed to build overlay CV-compare figures: {e}")

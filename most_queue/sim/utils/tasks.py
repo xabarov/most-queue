@@ -27,6 +27,18 @@ class Task:
 
         self.wait_time = 0
 
+        # For "repeat without resampling" semantics (preemptive-repeat, fixed service):
+        # - fixed_service: if True, the service requirement is sampled ONCE and stored in service_total.
+        #   On each interruption, the progress is lost and the job restarts with the same service_total.
+        # - service_total: the initially sampled service duration (only meaningful when fixed_service=True).
+        self.fixed_service: bool = False
+        self.service_total: float | None = None
+
+        # For preemptive-resume semantics:
+        # - None: service time will be re-sampled on (re)start (legacy behavior).
+        # - float > 0: remaining service time to be continued on next start of service.
+        self.service_remaining: float | None = None
+
         Task.id += 1
         self.id = Task.id
 

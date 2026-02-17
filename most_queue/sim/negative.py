@@ -9,6 +9,7 @@ from most_queue.random.utils.create import create_distribution
 from most_queue.random.utils.load import calc_qs_load
 from most_queue.sim.base import QsSim
 from most_queue.sim.utils.stats_update import refresh_moments_stat
+from most_queue.sim.utils.tasks import Task
 from most_queue.structs import NegativeArrivalsResults
 
 
@@ -34,6 +35,8 @@ class DisasterScenario(Enum):
 
     CLEAR_SYSTEM = 1
     REQUEUE_ALL = 2
+    RESUME_ALL = 3
+    REQUEUE_ALL_NO_RESAMPLING = 4
 
 
 class RcsScenario(Enum):
@@ -47,6 +50,8 @@ class RcsScenario(Enum):
 
     REMOVE = 1
     REQUEUE = 2
+    RESUME = 3
+    REQUEUE_NO_RESAMPLING = 4
 
 
 class QsSimNegatives(QsSim):
@@ -184,6 +189,38 @@ class QsSimNegatives(QsSim):
             q=q,
         )
 
+    def send_task_to_channel(self, is_warm_start: bool = False, tsk=None) -> None:  # type: ignore[override]
+        """
+        Override base task creation to mark tasks for fixed-service semantics when needed.
+        """
+        if tsk is None:
+            tsk = Task(self.ttek)
+            tsk.wait_time = 0
+        # Mark tasks for "repeat without resampling" scenarios.
+        if (
+            self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING
+            or self.disaster_scenario == DisasterScenario.REQUEUE_ALL_NO_RESAMPLING
+        ):
+            if hasattr(tsk, "fixed_service"):
+                tsk.fixed_service = True
+        return super().send_task_to_channel(is_warm_start=is_warm_start, tsk=tsk)
+
+    def send_task_to_queue(self, new_tsk=None) -> None:  # type: ignore[override]
+        """
+        Override base task creation to mark tasks for fixed-service semantics when needed.
+        """
+        if new_tsk is None:
+            new_tsk = Task(self.ttek)
+            new_tsk.start_waiting_time = self.ttek
+        # Mark tasks for "repeat without resampling" scenarios.
+        if (
+            self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING
+            or self.disaster_scenario == DisasterScenario.REQUEUE_ALL_NO_RESAMPLING
+        ):
+            if hasattr(new_tsk, "fixed_service"):
+                new_tsk.fixed_service = True
+        return super().send_task_to_queue(new_tsk=new_tsk)
+
     def positive_arrival(self):
         """
         Actions upon arrival of positive job by the QS.
@@ -219,13 +256,31 @@ class QsSimNegatives(QsSim):
 
         if self.type_of_negatives == NegativeServiceType.DISASTER:
 
-            if self.disaster_scenario == DisasterScenario.REQUEUE_ALL:
+            if self.disaster_scenario in (
+                DisasterScenario.REQUEUE_ALL,
+                DisasterScenario.RESUME_ALL,
+                DisasterScenario.REQUEUE_ALL_NO_RESAMPLING,
+            ):
                 # Interrupt all services and requeue the tasks back to the head of the queue.
-                # Semantics: service restarts (preemptive-repeat with resampling).
+                # Semantics:
+                # - REQUEUE_ALL: service restarts (preemptive-repeat with resampling).
+                # - RESUME_ALL: preemptive-resume (sample once, then continue remaining service).
+                # - REQUEUE_ALL_NO_RESAMPLING: preemptive-repeat WITHOUT resampling (sample once; progress lost).
                 tasks_to_requeue = []
                 not_free_servers = [c for c in range(self.n) if not self.servers[c].is_free]
                 for c in not_free_servers:
-                    ts = self.servers[c].end_service()
+                    if self.disaster_scenario == DisasterScenario.RESUME_ALL:
+                        ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=True)
+                    elif self.disaster_scenario == DisasterScenario.REQUEUE_ALL_NO_RESAMPLING:
+                        ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=False)
+                        # Lose progress, but keep the originally sampled service duration.
+                        if hasattr(ts, "service_total") and ts.service_total is not None:
+                            ts.service_remaining = float(ts.service_total)
+                    else:
+                        ts = self.servers[c].end_service()
+                        # Ensure legacy semantics: resample on restart.
+                        if hasattr(ts, "service_remaining"):
+                            ts.service_remaining = None
                     self._free_servers.add(c)
                     ts.start_waiting_time = self.ttek
                     tasks_to_requeue.append(ts)
@@ -310,14 +365,27 @@ class QsSimNegatives(QsSim):
                 # No one is in service: RCS has no effect in this instant.
                 return
             c = random.choice(not_free_servers)
-            end_ts = self.servers[c].end_service()
+            if self.rcs_scenario == RcsScenario.RESUME:
+                end_ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=True)
+            elif self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING:
+                end_ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=False)
+                # Lose progress, but keep the originally sampled service duration.
+                if hasattr(end_ts, "service_total") and end_ts.service_total is not None:
+                    end_ts.service_remaining = float(end_ts.service_total)
+            else:
+                end_ts = self.servers[c].end_service()
             self._free_servers.add(c)  # Server is now free
             self._mark_servers_time_changed()
             self.free_channels += 1
 
-            if self.rcs_scenario == RcsScenario.REQUEUE:
+            if self.rcs_scenario in (RcsScenario.REQUEUE, RcsScenario.RESUME, RcsScenario.REQUEUE_NO_RESAMPLING):
                 # Interrupt service and requeue the task to the head.
-                # Semantics: service restarts (preemptive-repeat with resampling).
+                # Semantics:
+                # - REQUEUE: service restarts (preemptive-repeat with resampling).
+                # - RESUME: preemptive-resume (sample once, then continue remaining service).
+                # - REQUEUE_NO_RESAMPLING: preemptive-repeat WITHOUT resampling (sample once; progress lost).
+                if self.rcs_scenario == RcsScenario.REQUEUE and hasattr(end_ts, "service_remaining"):
+                    end_ts.service_remaining = None
                 end_ts.start_waiting_time = self.ttek
                 self.queue.append_left(end_ts)
 
