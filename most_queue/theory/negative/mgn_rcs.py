@@ -3,6 +3,7 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
 (remove customer from service)
 """
 
+import math
 import time
 
 import numpy as np
@@ -121,18 +122,10 @@ class MGnNegativeRCSCalc(MGnCalc):
         mean_b = float(self.b[0])
         var_b = float(self.b[1] - self.b[0] ** 2)
 
-        # Gamma approximation for β(s) by mean/variance
+        # Gamma approximation parameters for β(s) by mean/variance
         if var_b > 0 and mean_b > 0:
             k = mean_b * mean_b / var_b
             theta = var_b / mean_b
-
-            def beta(s: float) -> float:
-                return float((1.0 + theta * s) ** (-k))
-
-        else:
-
-            def beta(s: float) -> float:
-                return float(np.exp(-mean_b * s))
 
         def get_b_eff(service_restart_rate: float) -> list[float]:
             """
@@ -159,7 +152,6 @@ class MGnNegativeRCSCalc(MGnCalc):
             if var_b > 0 and mean_b > 0:
                 # β(s)=(1+θ s)^(-k)
                 base = 1.0 + theta * s0
-                inv_base = 1.0 / base
 
                 # rising factorial (k)_n = k (k+1) ... (k+n-1)
                 rf = 1.0
@@ -179,8 +171,6 @@ class MGnNegativeRCSCalc(MGnCalc):
 
             # Convert to ordinary power-series coefficients for f(s)=β(s+r_loc):
             # f(s)=Σ c_f[n] s^n, where c_f[n]=β^(n)(r_loc)/n!
-            import math
-
             c_f = [beta_derivs[n] / float(math.factorial(n)) for n in range(order + 1)]
 
             # Numerator N(s)=(r+s)f(s) = r f(s) + s f(s)
@@ -226,9 +216,6 @@ class MGnNegativeRCSCalc(MGnCalc):
         # successful auxiliary run.
         eff_res = None
         last_good_eff_res = None
-        # Debug trace for requeue effective-model iteration (helps diagnose convergence).
-        # Not part of public API; may be inspected in tests/experiments.
-        self._requeue_debug_trace: list[dict] = []
         max_iter = 8
         tol = 1e-6
         damping = 0.5
@@ -248,7 +235,7 @@ class MGnNegativeRCSCalc(MGnCalc):
             eff.set_servers(b=b_eff)
             try:
                 eff_res = eff.run()
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 # Back off: keep the last good result, and reduce r to regain stability.
                 if last_good_eff_res is not None:
                     eff_res = last_good_eff_res
@@ -282,15 +269,6 @@ class MGnNegativeRCSCalc(MGnCalc):
                     target_r = delta * (m1 / m2)
             else:
                 target_r = delta / float(self.n)
-            self._requeue_debug_trace.append(
-                {
-                    "r": float(r),
-                    "target_r": float(target_r),
-                    "v1": float(getattr(eff_res, "v", [float("nan")])[0]),
-                    "w1": float(getattr(eff_res, "w", [float("nan")])[0]),
-                    "utilization": float(getattr(eff_res, "utilization", float("nan"))),
-                }
-            )
             if abs(target_r - r) <= tol * max(1.0, abs(r)):
                 r = target_r
                 break
@@ -324,9 +302,11 @@ class MGnNegativeRCSCalc(MGnCalc):
         Base MGnCalc uses a closed-form p[0] formula that assumes the standard
         M/H2/n structure without additional horizontal transitions.
 
-        In REQUEUE mode we add horizontal (within-level) transitions due to
-        restarts, so we recover probabilities from the computed x-ratios and
-        normalize (same approach as in MGnNegativeDisasterCalc).
+        Note:
+        In the REQUEUE scenario (`requeue_on_disaster=True`) this calculator returns
+        results via the B_eff approximation and does not run the TT iterations.
+        The normalization-by-x branch below is kept as a fallback if someone runs
+        the matrix iteration path manually.
         """
         if self.requeue_on_disaster:
             self.p[0] = 1.0 + 0.0j
@@ -334,9 +314,10 @@ class MGnNegativeRCSCalc(MGnCalc):
                 self.p[j + 1] = self.p[j] * self.x[j]
             total = sum(self.p)
             self.p = np.array([val / total for val in self.p], dtype=self.dt)
-            return
+            return None
 
-        return super()._calculate_p()
+        super()._calculate_p()
+        return None
 
     def _update_level_0(self):
         """
@@ -350,6 +331,7 @@ class MGnNegativeRCSCalc(MGnCalc):
         """
         Get all results - override to return NegativeArrivalsResults instead of QueueResults.
         """
+        _ = derivate
         return self.collect_results(num_of_moments)
 
     def collect_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
@@ -675,79 +657,12 @@ class MGnNegativeRCSCalc(MGnCalc):
                     output[i + 1, i] = ((i + 1) * self.mu[1] + left_from_next) * self.y[0]
         return output
 
-    def _build_big_c_matrix(self, num):
-        """
-        Horizontal transitions.
-
-        In REQUEUE mode, negative arrivals do NOT change the level (system size),
-        but they interrupt one random busy server and restart its service with a
-        fresh H2 phase sampled from y.
-
-        State index i corresponds to the number of servers in phase-2 (rate mu[1])
-        among the busy servers (m = min(num, n)).
-        """
-        if not self.requeue_on_disaster:
-            return super()._build_big_c_matrix(num)
-
-        if num == 0:
-            return np.zeros((1, 1), dtype=self.dt)
-
-        if num < self.n:
-            size = self.cols[num]
-            m = float(num)
-        else:
-            size = self.cols[self.n]
-            m = float(self.n)
-
-        output = np.zeros((size, size), dtype=self.dt)
-        if m <= 0:
-            return output
-
-        delta = self.l_neg
-        y0 = self.y[0]  # start in phase-1 (may be complex in clx fit)
-        y1 = self.y[1]  # start in phase-2 (may be complex in clx fit)
-
-        for i in range(size):
-            # i = number of phase-2 busy servers
-            if i < size - 1:
-                # interrupt phase-1 server -> restart in phase-2: i -> i+1
-                output[i, i + 1] += delta * ((m - float(i)) / m) * y1
-            if i > 0:
-                # interrupt phase-2 server -> restart in phase-1: i -> i-1
-                output[i, i - 1] += delta * (float(i) / m) * y0
-        return output
-
     def _build_big_d_matrix(self, num):
         """
         Create matrix D by the given level number.
         """
         if self.requeue_on_disaster:
-            if num < self.n:
-                col = self.cols[num]
-                row = col
-                m = float(num)
-            else:
-                col = self.cols[self.n]
-                row = col
-                m = float(self.n)
-
-            output = np.zeros((row, col), dtype=self.dt)
-            if num > self.n:
-                output = self.D[self.n]
-                return output
-
-            delta = self.l_neg
-            y0 = self.y[0]
-            y1 = self.y[1]
-            for i in range(row):
-                # base leaving rate: arrivals + service completions
-                rate = self.l + (num - i) * self.mu[0] + i * self.mu[1]
-                # add only *effective* restart transitions that change i (memoryless phases)
-                if m > 0:
-                    rate += delta * ((m - float(i)) / m) * y1
-                    rate += delta * (float(i) / m) * y0
-                output[i, i] = rate
-            return output
+            return super()._build_big_d_matrix(num)
 
         if num < self.n:
             col = self.cols[num]

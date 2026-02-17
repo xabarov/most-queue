@@ -164,6 +164,7 @@ cython_debug/
 
 # works/negative_queues (article sources, figures, scripts)
 # keep sources in git, ignore generated artifacts and bulky results
+works/negative_queues/*.zip
 works/negative_queues/build/
 works/negative_queues/results/
 works/negative_queues/__pycache__/

@@ -232,6 +232,8 @@ def _arrow(
     fontsize: int = 10,
     start_radius: float = NODE_RADIUS,
     end_radius: float = NODE_RADIUS,
+    label_pad: float = 0.12,
+    mutation_scale: float = 12,
 ) -> None:
     # Shorten endpoints so arcs don't hit node circles.
     (sx, sy), (tx, ty) = _shorten_segment(x0, y0, x1, y1, start_radius, end_radius)
@@ -239,7 +241,7 @@ def _arrow(
         (sx, sy),
         (tx, ty),
         arrowstyle="->",
-        mutation_scale=12,
+        mutation_scale=mutation_scale,
         linewidth=lw,
         linestyle=ls,
         color=color,
@@ -258,9 +260,8 @@ def _arrow(
             color=color,
             ha="center",
             va="center",
-            # Put labels above nodes to avoid being covered by circles.
             zorder=6,
-            bbox=dict(boxstyle="round,pad=0.12", facecolor="white", edgecolor="none", alpha=0.85),
+            bbox=dict(boxstyle=f"round,pad={label_pad}", facecolor="white", edgecolor="none", alpha=0.85),
         )
 
 
@@ -571,6 +572,11 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
     """
     fig, ax = _setup_axes_pretty(max_level)
 
+    # Larger δ/y for readability; level 4->3 uses same or slightly smaller for long formulas.
+    rcs_label_fontsize = 15
+    rcs_4to3_fontsize = 14
+    rcs_4to3_combo_fontsize = 12
+
     # Nodes: levels 0..2 use busy=level, levels 3..4 use busy=n=3 with b=0..3 ordering 30,21,12,03.
     nodes: dict[tuple[int, str], tuple[float, float]] = {}
 
@@ -613,7 +619,7 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
                     lw=1.8,
                     rad=0.10,
                     label_offset=(0.0, 0.22),
-                    fontsize=13,
+                    fontsize=rcs_label_fontsize,
                     start_radius=BOX_R,
                     end_radius=BOX_R,
                 )
@@ -632,14 +638,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
                     lw=1.8,
                     rad=-0.10,
                     label_offset=(0.0, -0.02),
-                    fontsize=13,
+                    fontsize=rcs_label_fontsize,
                     start_radius=BOX_R,
                     end_radius=BOX_R,
                 )
 
-    # Edges for level 4 -> 3 with y1/y2.
-    # Crossing arrows: spread labels noticeably left/right to avoid overlap (one left, one right).
-    # 30 -> 30 (δ y1), 30 -> 21 (δ y2) — 30→21 crosses with 21→30
+    # Edges for level 4 -> 3 with y1/y2. Label offsets spread to avoid overlap (many arrows).
+    # 30 -> 30 (δ y1): place label left-high so it doesn't clash with 21->30
     x0, y0 = nodes[(4, "30")]
     x1, y1 = nodes[(3, "30")]
     _arrow(
@@ -650,12 +655,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y1,
         _m(r"\delta y_1"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.0,
-        label_offset=(-0.5, 0.22),
-        fontsize=12,
+        label_offset=(-0.75, 0.42),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x2, y2 = nodes[(3, "21")]
     _arrow(
@@ -666,15 +672,16 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y2,
         _m(r"\delta y_2"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.14,
-        label_offset=(1.0, 0.18),
-        fontsize=12,
+        label_offset=(1.15, 0.28),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
 
-    # 03 -> 12 (δ y1), 03 -> 03 (δ y2) — 03→12 crosses with 12→03
+    # 03 -> 12 (δ y1), 03 -> 03 (δ y2)
     x0, y0 = nodes[(4, "03")]
     x1, y1 = nodes[(3, "12")]
     _arrow(
@@ -685,12 +692,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y1,
         _m(r"\delta y_1"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=-0.14,
-        label_offset=(-1.0, 0.18),
-        fontsize=12,
+        label_offset=(-1.25, 0.35),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x2, y2 = nodes[(3, "03")]
     _arrow(
@@ -701,16 +709,16 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y2,
         _m(r"\delta y_2"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.0,
-        label_offset=(0.5, 0.22),
-        fontsize=12,
+        label_offset=(0.7, 0.38),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
 
-    # 21 -> 30 (δ*1/3*y1), 21 -> 21 (δ*(2/3*y1+1/3*y2)), 21 -> 12 (δ*2/3*y2)
-    # 21→30 crosses 30→21: label left. 21→12 crosses 12→21: label right.
+    # 21 -> 30 (δ·1/3·y1): label left-low to separate from 30->30
     x0, y0 = nodes[(4, "21")]
     x1, y1 = nodes[(3, "30")]
     _arrow(
@@ -721,12 +729,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y1,
         _delta_y(1, 3, r"y_1"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=-0.18,
-        label_offset=(-1.0, 0.28),
-        fontsize=11,
+        label_offset=(-0.95, -0.18),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x2, y2 = nodes[(3, "21")]
     _arrow(
@@ -737,12 +746,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y2,
         _delta_combo(2, 3, 1, 3),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.0,
-        label_offset=(0.0, 0.25),
-        fontsize=10,
+        label_offset=(0.0, -0.38),
+        fontsize=rcs_4to3_combo_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x3, y3 = nodes[(3, "12")]
     _arrow(
@@ -753,16 +763,16 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y3,
         _delta_y(2, 3, r"y_2"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.18,
-        label_offset=(1.0, 0.10),
-        fontsize=11,
+        label_offset=(1.05, -0.12),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
 
-    # 12 -> 21 (δ*2/3*y1), 12 -> 12 (δ*(1/3*y1+2/3*y2)), 12 -> 03 (δ*1/3*y2)
-    # 12→21 crosses 21→12: label left. 12→03 crosses 03→12: label right.
+    # 12 -> 21 (δ·2/3·y1), 12 -> 12 (combo), 12 -> 03 (δ·1/3·y2)
     x0, y0 = nodes[(4, "12")]
     x1, y1 = nodes[(3, "21")]
     _arrow(
@@ -773,12 +783,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y1,
         _delta_y(2, 3, r"y_1"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=-0.18,
-        label_offset=(-1.0, 0.10),
-        fontsize=11,
+        label_offset=(-1.05, 0.18),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x2, y2 = nodes[(3, "12")]
     _arrow(
@@ -789,12 +800,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y2,
         _m(r"\delta\left(\frac{1}{3}y_1+\frac{2}{3}y_2\right)"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.0,
-        label_offset=(0.0, 0.25),
-        fontsize=10,
+        label_offset=(0.0, 0.42),
+        fontsize=rcs_4to3_combo_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
     x3, y3 = nodes[(3, "03")]
     _arrow(
@@ -805,12 +817,13 @@ def _plot_rcs_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> plt.Fi
         y3,
         _delta_y(1, 3, r"y_2"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.18,
-        label_offset=(1.0, 0.28),
-        fontsize=11,
+        label_offset=(1.15, -0.22),
+        fontsize=rcs_4to3_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.16,
     )
 
     fig.tight_layout()
@@ -861,6 +874,7 @@ def _plot_disaster_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> p
         _draw_box_node(ax, d_x, y, "D", level=level, width=1.15, height=0.62, dashed=True, fontsize=16)
 
     # δ arrows: micro -> D (same row), rightwards, slightly different curvature to avoid overlap.
+    delta_gamma_fontsize = 18  # larger δ and γ for readability
     for level in range(1, max_level + 1):
         labs = rows[level]
         mid = (len(labs) - 1) / 2.0
@@ -878,12 +892,14 @@ def _plot_disaster_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> p
                 y1,
                 _m(r"\delta"),
                 color="#333333",
-                lw=1.8,
+                lw=2.0,
                 rad=rad,
                 label_offset=label_offset,
-                fontsize=12,
+                fontsize=delta_gamma_fontsize,
                 start_radius=BOX_R,
                 end_radius=BOX_R,
+                label_pad=0.18,
+                mutation_scale=16,
             )
 
     # γ chain: D4->D3->D2->D1->00
@@ -898,12 +914,14 @@ def _plot_disaster_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> p
             y1,
             _m(r"\gamma"),
             color="#333333",
-            lw=1.8,
+            lw=2.0,
             rad=0.0,
             label_offset=(0.25, 0.05),
-            fontsize=12,
+            fontsize=delta_gamma_fontsize,
             start_radius=BOX_R,
             end_radius=BOX_R,
+            label_pad=0.18,
+            mutation_scale=16,
         )
     x0, y0 = d_pos[1]
     _arrow(
@@ -914,12 +932,14 @@ def _plot_disaster_negative_arrivals_pretty(n: int = 3, max_level: int = 4) -> p
         y00,
         _m(r"\gamma"),
         color="#333333",
-        lw=1.8,
+        lw=2.0,
         rad=0.0,
         label_offset=(0.25, 0.05),
-        fontsize=12,
+        fontsize=delta_gamma_fontsize,
         start_radius=BOX_R,
         end_radius=BOX_R,
+        label_pad=0.18,
+        mutation_scale=16,
     )
 
     fig.tight_layout()
