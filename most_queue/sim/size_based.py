@@ -24,13 +24,15 @@ class SizePredictor(Protocol):
     """Predictor for SPJF / PSPJF / SPRPT: ``predict(true_size, rng) -> y``."""
 
     def predict(self, size: float, rng) -> float:  # noqa: ANN001
-        ...
+        """Return predicted job size ``y`` given true size ``size`` and simulator RNG."""
+        ...  # pylint: disable=unnecessary-ellipsis
 
 
 class PerfectSimPredictor:
     """Ideal predictions for simulation: ``Y = X`` (same as true job size)."""
 
-    def predict(self, size: float, rng) -> float:  # noqa: ARG002
+    def predict(self, size: float, _rng) -> float:
+        """Return ``y = size`` (perfect prediction)."""
         return float(size)
 
 
@@ -43,6 +45,7 @@ class _PriorityHeapBuffer:
         self._pq = pq
 
     def append(self, task: Task) -> None:
+        """Push *task* onto the priority heap."""
         self._pq.push(task)
 
     def append_left(self, task: Task) -> None:
@@ -50,9 +53,11 @@ class _PriorityHeapBuffer:
         self._pq.push(task)
 
     def pop(self) -> Task:
+        """Pop the highest-priority task."""
         return self._pq.pop()
 
     def size(self) -> int:
+        """Return the number of tasks in the queue."""
         return len(self._pq)
 
 
@@ -65,7 +70,7 @@ class SizeBasedQsSim(QsSim):
     :param track_slowdown: If True, append ``sojourn / original_size`` on each completion (see ``get_slowdown``).
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         num_of_channels: int = 1,
         discipline: SizeDiscipline = "SRPT",
@@ -90,6 +95,10 @@ class SizeBasedQsSim(QsSim):
 
         self._pq = PrioritySizeQueue(self._rank_value)
         self.queue = _PriorityHeapBuffer(self._pq)
+
+    def _handle_custom_event(self, event_type: str) -> None:
+        """No custom events are registered for this simulator."""
+        raise NotImplementedError(f"SizeBasedQsSim has no custom events ({event_type!r})")
 
     def set_predictor(self, predictor: SizePredictor | None) -> None:
         """Set predictor for SPJF / PSPJF / SPRPT. ``None`` restores perfect predictions."""

@@ -85,6 +85,7 @@ def _theory_et(discipline: str, rho: float) -> float | None:
 
 def _sim_et(discipline: str, rho: float, n_jobs: int, verbose: bool) -> float:
     lam = rho
+    # Default quiet runs; set SRPT_TABLE_VERBOSE=1 to see tqdm progress.
     sim = SizeBasedQsSim(1, discipline=discipline, verbose=verbose)  # type: ignore[arg-type]
     sim.generator = np.random.default_rng(_sim_seed(rho, discipline))
     sim.set_servers(EXP_SERVICE_RATE, "M")
@@ -103,6 +104,7 @@ def _color_for_rel_err(rel: float) -> str:
 
 
 def main() -> int:
+    """Print Table 3.3 comparison and write ``srpt_table.png`` next to this script."""
     quick = os.environ.get("SRPT_TABLE_QUICK", "").lower() in ("1", "true", "yes")
     verbose = os.environ.get("SRPT_TABLE_VERBOSE", "").lower() in ("1", "true", "yes")
     here = os.path.dirname(os.path.abspath(__file__))

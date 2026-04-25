@@ -31,6 +31,7 @@ _Most-Queue is a Python library for simulation and numerical analysis of queuein
 - **[📘 Основные концепции](docs/concepts.md)** — Основы теории массового обслуживания
 - **[🎮 Руководство по симуляции](docs/simulation.md)** — Имитационное моделирование
 - **[🧮 Руководство по расчетам](docs/calculation.md)** — Численные методы
+- **[⏱ SRPT / SPJF: методы и верификация](docs/srpt_spjf_methods.md)** — формулы, численная схема, сравнение с симуляцией
 - **[📊 Каталог моделей](docs/models.md)** — Поддерживаемые модели СМО
 - **[🌐 Сети очередей](docs/networks.md)** — Сети СМО
 - **[⭐ Приоритетные системы](docs/priorities.md)** — Системы с приоритетами
@@ -79,7 +80,7 @@ sudo apt-get install -y graphviz
 
 ## 📰 Новости
 
-- **Апрель 2026** — **Size-based scheduling** для M/G/1: аналитика SRPT / SJF / PSJF / SPJF (`most_queue.theory.srpt`) и симулятор `SizeBasedQsSim` с предикторами; воспроизведение таблицы Mitzenmacher–Shahout (2025) в тестах. См. [документацию](docs/calculation.md), [симуляцию](docs/simulation.md), пример [`examples/srpt_table.py`](examples/srpt_table.py), туториал [`tutorials/srpt_basics.ipynb`](tutorials/srpt_basics.ipynb).
+- **Апрель 2026** — **Size-based scheduling** для M/G/1: аналитика SRPT / SJF / PSJF / SPJF (`most_queue.theory.srpt`) и симулятор `SizeBasedQsSim` с предикторами; воспроизведение таблицы Mitzenmacher–Shahout (2025) в тестах. См. [методы SRPT/SPJF](docs/srpt_spjf_methods.md), [расчёты](docs/calculation.md), [симуляцию](docs/simulation.md), пример [`examples/srpt_table.py`](examples/srpt_table.py), туториал [`tutorials/srpt_basics.ipynb`](tutorials/srpt_basics.ipynb).
 - **Препринт (2026)** — Расчёт многоканальных СМО с отрицательными заявками (метод Такахаси–Таками): [препринт (PDF)](works/negative_queues/negative_queues_takahasi_takami.pdf), [код расчётов и воспроизведения](works/negative_queues/).
 - **Февраль 2026** — Добавлены расчеты по методу **Такахаси–Таками** для FIFO-моделей **H₂/M/c** и **H₂/H₂/c**:
   - `most_queue/theory/fifo/gmc_takahasi.py` — **H₂/M/c**
