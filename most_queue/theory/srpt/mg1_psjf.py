@@ -1,0 +1,59 @@
+"""
+M/G/1 PSJF calculator (preemptive shortest job first).
+"""
+
+from __future__ import annotations
+
+from scipy.integrate import quad
+
+from most_queue.structs import QueueResults
+from most_queue.theory.srpt._base import _SizeBasedCalcBase
+
+
+class MG1PsjfCalc(_SizeBasedCalcBase):
+    """
+    Numeric calculator for M/G/1 PSJF.
+
+    Formula::
+
+        E[T^PSJF(x)] = ? ??? t?f(t)dt / [2(1 ? ?_x)?]  +  x / (1 ? ?_x)
+        E[T^PSJF]    = ??^? f(x) Â· E[T^PSJF(x)] dx
+        E[W^PSJF]    = E[T^PSJF] ? b[0]
+
+    Unlike SRPT, the priority rank is the *original* job size (not remaining
+    work), so there is no ??? dt/(1??_t) term.
+    """
+
+    def conditional_mean_response(self, x: float) -> float:
+        """Conditional mean sojourn time E[T^PSJF(x)] for a job of size x."""
+        if x <= 0:
+            return 0.0
+        rho_x = self._rho_interp(x)
+        denom = 1.0 - rho_x
+        if denom <= 1e-10:
+            raise ValueError(f"load ? 1 at x={x}: integral diverges")
+
+        int_t2f = self._t2f_interp(x)
+        first_term = (self.l * int_t2f) / (2.0 * denom * denom)
+        second_term = x / denom
+        return first_term + second_term
+
+    def run(self) -> QueueResults:
+        start = self._measure_time()
+        self._check_if_servers_and_sources_set()
+        utilization = self._check_stability()
+        self._build_grids()
+
+        et, _ = quad(
+            lambda x: self.pdf_fn(x) * self.conditional_mean_response(float(x)),
+            0.0,
+            self.x_max,
+            limit=300,
+        )
+        ew = et - self.b[0]
+
+        self.v = [et]
+        self.w = [ew]
+        result = QueueResults(v=self.v, w=self.w, p=None, utilization=utilization)
+        self._set_duration(result, start)
+        return result

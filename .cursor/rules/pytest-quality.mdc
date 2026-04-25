@@ -1,0 +1,45 @@
+---
+description: Pytest quality standards – run after major edits, zero-tolerance failures, no silencing tricks
+globs: **/*.py
+alwaysApply: false
+---
+
+# Pytest Quality Standards
+
+## Run pytest after every significant code change
+
+After editing simulation core, theory calculators, or utils, run:
+
+```bash
+.venv/bin/pytest tests/ -q --tb=short
+```
+
+For quick feedback on a single changed file:
+
+```bash
+.venv/bin/pytest tests/units/test_<module>.py -q --tb=short
+```
+
+## Passing threshold
+
+All tests must pass. A session with any failures or errors is not acceptable.
+
+## Forbidden workarounds
+
+Never silence test failures with:
+
+- `# noqa`
+- `# type: ignore` (unless suppressing a genuine 3rd-party stub gap, not your code)
+- `@pytest.mark.skip` / `@pytest.mark.xfail` without an explanation comment and a linked issue
+- `filterwarnings = error` exceptions added silently
+- Lowering tolerances (`rtol`, `atol`) below what the theory supports just to make a test pass
+
+Fix the root cause instead.
+
+## Tolerance conventions (`default_params.yaml`)
+
+Simulation results are stochastic. Use the project tolerances from `tests/default_params.yaml`:
+- `MOMENTS_RTOL` — relative tolerance for moment comparisons
+- `MOMENTS_ATOL` — absolute tolerance fallback
+
+Do **not** tighten tolerances below these values without justifying with sample-size analysis.

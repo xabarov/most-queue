@@ -163,6 +163,7 @@ class QsSim(BaseSimulationCore):
         if tsk is None:
             tsk = Task(self.ttek)
             tsk.wait_time = 0
+            self._sample_size(tsk)
 
         # Use free servers set for O(1) access
         if self._free_servers:
@@ -193,6 +194,7 @@ class QsSim(BaseSimulationCore):
         if new_tsk is None:
             new_tsk = Task(self.ttek)
             new_tsk.start_waiting_time = self.ttek
+            self._sample_size(new_tsk)
         else:
             # If task already exists but start_waiting_time is not set, set it now
             if new_tsk.start_waiting_time < 0:
@@ -233,6 +235,9 @@ class QsSim(BaseSimulationCore):
             self.arrival_time = self.ttek + self.source.generate()
 
         self.in_sys += 1
+
+        if ts is not None:
+            self._sample_size(ts)
 
         if self.free_channels == 0:
             self.send_task_to_queue(new_tsk=ts)
@@ -344,6 +349,18 @@ class QsSim(BaseSimulationCore):
             ts: Optional task object
         """
         # Override in subclasses if needed
+
+    def _sample_size(self, ts: Task) -> None:
+        """
+        Hook called when a task is created at arrival (size-at-arrival).
+
+        Override in subclasses to set ``ts.size`` and ``ts.predicted_size``,
+        and optionally initialise ``ts.service_remaining`` to match the sampled
+        size (required for SRPT / PSJF preemptive-resume semantics).
+
+        Default is a no-op so existing simulators stay backward-compatible.
+        """
+        pass
 
     def _after_arrival(self, moment: float = None, ts=None):
         """

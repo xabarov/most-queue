@@ -39,6 +39,15 @@ class Task:
         # - float > 0: remaining service time to be continued on next start of service.
         self.service_remaining: float | None = None
 
+        # For size-based scheduling (SRPT, SJF, SPJF, …):
+        # - size: true job size, sampled at arrival; immutable throughout the job lifecycle.
+        #   Used as the scheduling rank for SJF / PSJF / SPJF and as the baseline for
+        #   slowdown statistics (T / size) in SRPT.  Remaining work is tracked separately
+        #   via service_remaining (which decreases on preemption).
+        # - predicted_size: predictor output (for SPJF / SPRPT).
+        self.size: float | None = None
+        self.predicted_size: float | None = None
+
         Task.id += 1
         self.id = Task.id
 

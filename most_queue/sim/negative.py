@@ -196,6 +196,7 @@ class QsSimNegatives(QsSim):
         if tsk is None:
             tsk = Task(self.ttek)
             tsk.wait_time = 0
+            self._sample_size(tsk)
         # Mark tasks for "repeat without resampling" scenarios.
         if (
             self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING
@@ -212,6 +213,7 @@ class QsSimNegatives(QsSim):
         if new_tsk is None:
             new_tsk = Task(self.ttek)
             new_tsk.start_waiting_time = self.ttek
+            self._sample_size(new_tsk)
         # Mark tasks for "repeat without resampling" scenarios.
         if (
             self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING

@@ -192,3 +192,7 @@ works/vacations/results/*
 docs/negative_queues_takahasi_takami.md
 docs/negative_queues_figures/
 docs/books/
+docs/статьи/
+works/queueing_systems_review/SRPT/pdf/
+works/experiments/rabbitmq_prefetch/
+works/reviews/
