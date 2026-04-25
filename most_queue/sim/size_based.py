@@ -16,7 +16,7 @@ from most_queue.sim.utils.tasks import Task
 
 SizeDiscipline = Literal["FCFS", "SJF", "PSJF", "SRPT", "SPJF", "PSPJF", "SPRPT"]
 
-__all__ = ["SizeDiscipline", "SizePredictor", "PerfectPredictor", "SizeBasedQsSim"]
+__all__ = ["SizeDiscipline", "SizePredictor", "PerfectSimPredictor", "SizeBasedQsSim"]
 
 
 @runtime_checkable
@@ -27,8 +27,8 @@ class SizePredictor(Protocol):
         ...
 
 
-class PerfectPredictor:
-    """Ideal predictions: ``Y = X``."""
+class PerfectSimPredictor:
+    """Ideal predictions for simulation: ``Y = X`` (same as true job size)."""
 
     def predict(self, size: float, rng) -> float:  # noqa: ARG002
         return float(size)
@@ -62,6 +62,7 @@ class SizeBasedQsSim(QsSim):
 
     :param discipline: Scheduling policy (see roadmap).
     :param buffer: ``None`` for infinite buffer (recommended).
+    :param track_slowdown: If True, append ``sojourn / original_size`` on each completion (see ``get_slowdown``).
     """
 
     def __init__(
@@ -71,6 +72,7 @@ class SizeBasedQsSim(QsSim):
         buffer: int | None = None,
         verbose: bool = True,
         buffer_type: str = "list",
+        track_slowdown: bool = False,
     ) -> None:
         if num_of_channels != 1:
             raise ValueError("SizeBasedQsSim currently supports only num_of_channels=1.")
@@ -82,14 +84,31 @@ class SizeBasedQsSim(QsSim):
 
         self._discipline: SizeDiscipline = discipline
         self._size_dist = None
-        self._predictor: SizePredictor = PerfectPredictor()
+        self._predictor: SizePredictor = PerfectSimPredictor()
+        self._track_slowdown = bool(track_slowdown)
+        self._slowdown_samples: list[float] = []
 
         self._pq = PrioritySizeQueue(self._rank_value)
         self.queue = _PriorityHeapBuffer(self._pq)
 
     def set_predictor(self, predictor: SizePredictor | None) -> None:
         """Set predictor for SPJF / PSPJF / SPRPT. ``None`` restores perfect predictions."""
-        self._predictor = PerfectPredictor() if predictor is None else predictor
+        self._predictor = PerfectSimPredictor() if predictor is None else predictor
+
+    def get_slowdown(self) -> list[float]:
+        """Return a copy of slowdown samples ``T / original_size`` if ``track_slowdown`` was True."""
+        return list(self._slowdown_samples)
+
+    def _after_serving(self, channel: int, task=None, is_network: bool = False) -> None:
+        """Record slowdown T/X on job completion when ``track_slowdown`` is enabled."""
+        super()._after_serving(channel, task, is_network=is_network)
+        if not self._track_slowdown or task is None:
+            return
+        x = getattr(task, "original_size", None)
+        if x is None or float(x) <= 0.0:
+            return
+        sojourn = float(self.ttek) - float(task.arr_time)
+        self._slowdown_samples.append(sojourn / float(x))
 
     def set_servers(self, params, kendall_notation: str = "M") -> None:
         """Create service channels and a separate size sampler (same distribution)."""
@@ -104,16 +123,16 @@ class SizeBasedQsSim(QsSim):
         if d == "FCFS":
             return (float(ts.arr_time),)
         if d in ("SJF", "PSJF"):
-            return (float(ts.size or 0.0),)
+            return (float(ts.original_size or 0.0),)
         if d == "SRPT":
             rem = ts.service_remaining
             if rem is None:
-                rem = float(ts.size or 0.0)
+                rem = float(ts.original_size or 0.0)
             return (float(rem),)
         if d in ("SPJF", "PSPJF"):
             return (float(ts.predicted_size or 0.0),)
         if d == "SPRPT":
-            sz = float(ts.size or 0.0)
+            sz = float(ts.original_size or 0.0)
             rem = ts.service_remaining
             if rem is None:
                 rem = sz
@@ -135,7 +154,7 @@ class SizeBasedQsSim(QsSim):
         if self._size_dist is None:
             return
         sz = float(self._size_dist.generate())
-        ts.size = sz
+        ts.original_size = sz
         ts.service_remaining = sz
         ts.predicted_size = float(self._predictor.predict(sz, self.generator))
 

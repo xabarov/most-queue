@@ -36,7 +36,7 @@ class PrioritySizeQueue:
             Smaller key ? higher priority.  Examples::
 
                 SRPT: lambda t: (t.service_remaining, t.arr_time, t.id)
-                SJF:  lambda t: (t.size, t.arr_time, t.id)
+                SJF:  lambda t: (t.original_size, t.arr_time, t.id)
                 SPJF: lambda t: (t.predicted_size, t.arr_time, t.id)
 
             A scalar rank is equivalent to ``(float(rank),)``.

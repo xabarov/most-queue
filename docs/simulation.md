@@ -362,6 +362,51 @@ print(f"Вероятность, что в системе 2+ заявки: {sum(p
 - **`ForkJoinSim`** — Fork-Join системы
 - **`QueueingSystemBatchSim`** — системы с пакетным поступлением
 - **`NetworkSimulator`** — сети очередей (см. [Сети очередей](networks.md))
+- **`SizeBasedQsSim`** — одноканальная M/G/1 с дисциплинами по размеру или предсказанию (см. ниже)
+
+## SizeBasedQsSim (размер-зависимые дисциплины)
+
+Класс `most_queue.sim.size_based.SizeBasedQsSim` наследует `QsSim`, но:
+
+1. **Размер при приходе** — для всех дисциплин кроме `FCFS` при создании заявки вызывается `_sample_size`: из того же распределения, что и `set_servers`, сэмплируется `Task.original_size`, в `Task.service_remaining` записывается полный объём работы, опционально `Task.predicted_size` через предиктор.
+2. **Очередь** — min-heap по ключу ранга (`PrioritySizeQueue`): для SRPT/SPRPT перед вытеснением обновляется `service_remaining` по фактическому остатку на канале.
+3. **Предиктор** — `set_predictor(obj)` для `SPJF`, `PSPJF`, `SPRPT`; объект с методом `predict(true_size, rng) -> float`. Встроенный **`PerfectSimPredictor`**: \(Y=X\). Для шума в симуляции: `most_queue.sim.utils.predictor.ExpNoiseSimPredictor`, `LognormalNoiseSimPredictor`.
+4. **Slowdown** — при `track_slowdown=True` после каждого завершения обслуживания добавляется отношение \(T/X\) в список; чтение копии: `get_slowdown()`.
+
+Поддерживаемые значения `discipline`: `"FCFS"`, `"SJF"`, `"PSJF"`, `"SRPT"`, `"SPJF"`, `"PSPJF"`, `"SPRPT"`. Сейчас только **`num_of_channels=1`**.
+
+**Пример SRPT (H₂-обслуживание, пуассоновский вход):**
+
+```python
+import numpy as np
+from most_queue.random.distributions import H2Distribution
+from most_queue.sim.size_based import SizeBasedQsSim
+
+sim = SizeBasedQsSim(1, discipline="SRPT", verbose=False)
+sim.generator = np.random.default_rng(42)
+h2 = H2Distribution.get_params_by_mean_and_cv(0.7, 1.2)
+sim.set_servers(h2, "H")
+sim.set_sources(1.0, "M")
+res = sim.run(100_000)
+print(res.v[0], res.w[0])
+```
+
+**Пример SPJF с экспоненциальным шумом предсказания:**
+
+```python
+import numpy as np
+from most_queue.sim.size_based import SizeBasedQsSim
+from most_queue.sim.utils.predictor import ExpNoiseSimPredictor
+
+sim = SizeBasedQsSim(1, discipline="SPJF", verbose=False)
+sim.set_predictor(ExpNoiseSimPredictor())
+sim.generator = np.random.default_rng(7)
+sim.set_servers(1.0, "M")
+sim.set_sources(0.5, "M")
+res = sim.run(50_000)
+```
+
+Сравнение с `QsSim` в режиме `FCFS`: см. тест `tests/test_size_based_fcfs_regression.py`.
 
 ## Советы по использованию
 

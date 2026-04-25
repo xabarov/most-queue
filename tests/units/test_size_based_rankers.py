@@ -18,10 +18,10 @@ def test_srpt_preempt_order_smaller_remaining_first():
     """SRPT orders by remaining work: smaller remaining => higher priority."""
     _sim, pq = _pq_for("SRPT")
     a = Task(1.0)
-    a.size = 10.0
+    a.original_size = 10.0
     a.service_remaining = 5.0
     b = Task(2.0)
-    b.size = 10.0
+    b.original_size = 10.0
     b.service_remaining = 8.0
     assert pq.comparison_key(a) < pq.comparison_key(b)
 
@@ -30,10 +30,10 @@ def test_psjf_uses_original_size_not_remaining():
     """PSJF rank is the original job size, not remaining work."""
     _sim, pq = _pq_for("PSJF")
     a = Task(1.0)
-    a.size = 3.0
+    a.original_size = 3.0
     a.service_remaining = 0.1
     b = Task(2.0)
-    b.size = 5.0
+    b.original_size = 5.0
     b.service_remaining = 4.9
     assert pq.comparison_key(a) < pq.comparison_key(b)
 
@@ -42,11 +42,11 @@ def test_sprpt_predicted_remaining_rank():
     """SPRPT rank is max(0, predicted_size - served), where served = size - remaining."""
     _sim, pq = _pq_for("SPRPT")
     t = Task(0.0)
-    t.size = 10.0
+    t.original_size = 10.0
     t.predicted_size = 8.0
     t.service_remaining = 4.0
     served = 6.0
-    assert abs((t.size or 0) - (t.service_remaining or 0) - served) < 1e-9
+    assert abs((t.original_size or 0) - (t.service_remaining or 0) - served) < 1e-9
     key = pq.comparison_key(t)
     assert key[0] == max(0.0, 8.0 - 6.0)
 
@@ -62,7 +62,7 @@ def test_srpt_preempt_uses_true_remaining_not_stale():
 
     # Task in service with large original size but near completion.
     cur = Task(0.0)
-    cur.size = 10.0
+    cur.original_size = 10.0
     cur.service_remaining = 10.0  # stale: value from service start, not current remaining
     sim.servers[0].tsk_on_service = cur
     sim.servers[0].is_free = False
@@ -74,7 +74,7 @@ def test_srpt_preempt_uses_true_remaining_not_stale():
     # New arrival has size=5; stale comparison 5 < 10 would trigger preempt (wrong).
     # Correct: 5 > 1.0 => no preempt.
     new_ts = Task(sim.ttek)
-    new_ts.size = 5.0
+    new_ts.original_size = 5.0
     new_ts.service_remaining = 5.0
     new_ts.predicted_size = 5.0
     new_ts.wait_time = 0

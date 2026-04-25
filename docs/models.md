@@ -60,6 +60,60 @@ calc.set_servers(b)
 results = calc.run()
 ```
 
+### M/G/1 SRPT
+
+**Описание:** Одноканальная M/G/1 с дисциплиной **Shortest Remaining Processing Time** (прерывание по остатку работы). Численно: формула Schrage–Miller (1966).
+
+**Класс расчета:** `MG1SrptCalc`  
+**Симуляция:** `SizeBasedQsSim(discipline="SRPT")` — размер заявки сэмплируется при приходе.
+
+**Пример:**
+
+```python
+from most_queue.theory.srpt import MG1SrptCalc
+from most_queue.random.distributions import H2Distribution
+
+calc = MG1SrptCalc()
+calc.set_sources(1.0)
+h2 = H2Distribution.get_params_by_mean_and_cv(0.7, 1.2)
+calc.set_servers(h2, "H")
+results = calc.run()
+```
+
+### M/G/1 SJF (SPT)
+
+**Описание:** Непрерываемое обслуживание по **наименьшему истинному размеру** (Shortest Job First / Shortest Processing Time).
+
+**Класс расчета:** `MG1SjfCalc`  
+**Симуляция:** `SizeBasedQsSim(discipline="SJF")`
+
+### M/G/1 PSJF
+
+**Описание:** Прерываемое обслуживание по **исходному** размеру заявки (отличается от SRPT).
+
+**Класс расчета:** `MG1PsjfCalc`  
+**Симуляция:** `SizeBasedQsSim(discipline="PSJF")`
+
+### M/G/1 SPJF (с предсказаниями)
+
+**Описание:** Непрерываемое обслуживание по **предсказанному** размеру \(Y\) (Mitzenmacher, 2020). Совместное распределение \((X,Y)\) задаётся объектом предиктора (`PerfectPredictor`, `ExpNoisePredictor`, …).
+
+**Класс расчета:** `MG1SpjfCalc`  
+**Симуляция:** `SizeBasedQsSim(discipline="SPJF")` + `set_predictor(...)`.
+
+**Пример:**
+
+```python
+from most_queue.theory.srpt import MG1SpjfCalc
+from most_queue.theory.srpt.utils.predictor import ExpNoisePredictor
+
+calc = MG1SpjfCalc()
+calc.set_sources(0.5)
+calc.set_servers(1.0, "M")
+calc.set_predictor(ExpNoisePredictor())
+results = calc.run()
+```
+
 ### GI/M/1
 
 **Описание:** Одноканальная система с общим потоком поступления и экспоненциальным обслуживанием.
@@ -431,6 +485,10 @@ results = calc.run()
 |--------|--------------|-----------|------------|-------------|
 | M/M/c | MMnrCalc | QsSim | - | Базовая модель |
 | M/G/1 | MG1Calc | QsSim | - | Произвольное обслуживание |
+| M/G/1 SRPT | MG1SrptCalc | SizeBasedQsSim | - | Size-based, Schrage–Miller |
+| M/G/1 SJF | MG1SjfCalc | SizeBasedQsSim | - | Non-preemptive по размеру |
+| M/G/1 PSJF | MG1PsjfCalc | SizeBasedQsSim | - | Preemptive по исходному размеру |
+| M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | По предсказанию Y |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Да | Прерываемый приоритет |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Да | Непрерываемый приоритет |

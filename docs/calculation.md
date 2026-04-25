@@ -315,6 +315,72 @@ print_sojourn_moments(sim_results.v, calc_results.v)
 - **`MDnCalc`** — M/D/c система
 - **`EkDnCalc`** — E_k/D/c система
 - **`MGnCalc`** — M/G/c система (метод Такахаси-Таками)
+- **`MG1SrptCalc`**, **`MG1SjfCalc`**, **`MG1PsjfCalc`**, **`MG1SpjfCalc`** — M/G/1 с size-based дисциплинами (см. ниже)
+
+## Size-based M/G/1 калькуляторы
+
+Одноканальная **M/G/1** с пуассоновским потоком поступления (интенсивность \(\lambda\)) и произвольным распределением размера заявки \(X\) с плотностью \(f(x)\), CDF \(F(x)\), моментами обслуживания \(E[S]=b_0\), \(E[S^2]=b_1\). Частичная нагрузка от заявок размера не больше \(x\): \(\rho_x = \lambda \int_0^x t f(t)\,dt\).
+
+### SRPT (`MG1SrptCalc`)
+
+Условное среднее время пребывания заявки размера \(x\) (Schrage–Miller, 1966):
+
+$$
+\mathbb{E}[T^{\mathrm{SRPT}}(x)]
+= \frac{\lambda \int_0^x t^2 f(t)\,dt + \lambda x^2 (1-F(x))}{2(1-\rho_x)^2}
++ \int_0^x \frac{dt}{1-\rho_t}.
+$$
+
+Безусловное: \(\mathbb{E}[T^{\mathrm{SRPT}}] = \int_0^\infty f(x)\,\mathbb{E}[T^{\mathrm{SRPT}}(x)]\,dx\), \(\mathbb{E}[W] = \mathbb{E}[T] - E[S]\). Реализация: численная сетка + `simpson` по \(x\) (устойчиво при высокой загрузке).
+
+```python
+from most_queue.theory.srpt import MG1SrptCalc
+
+srpt = MG1SrptCalc()
+srpt.set_sources(0.5)
+srpt.set_servers(1.0, "M")  # Exp(rate): mean service 1
+r = srpt.run()
+print(r.v[0], r.w[0])
+```
+
+### SJF (`MG1SjfCalc`)
+
+Непрерываемый приоритет по размеру (Conway–Maxwell–Miller):
+
+$$
+\mathbb{E}[W^{\mathrm{SJF}}(x)] = \frac{\lambda\, \mathbb{E}[S^2]}{2(1-\rho_x)^2}, \qquad
+\mathbb{E}[T^{\mathrm{SJF}}] = \mathbb{E}[W^{\mathrm{SJF}}] + E[S].
+$$
+
+### PSJF (`MG1PsjfCalc`)
+
+$$
+\mathbb{E}[T^{\mathrm{PSJF}}(x)] = \frac{\lambda \int_0^x t^2 f(t)\,dt}{2(1-\rho_x)^2} + \frac{x}{1-\rho_x}.
+$$
+
+### SPJF с предсказаниями (`MG1SpjfCalc`)
+
+Совместная плотность \((X,Y)\) задаётся **предиктором** (протокол в `most_queue.theory.srpt.utils.predictor`). Эффективная нагрузка от заявок с предсказанием \(\le y\): \(\rho'_y\). Тогда
+
+$$
+\mathbb{E}[W^{\mathrm{SPJF}}(y)] = \frac{\lambda\, \mathbb{E}[S^2]}{2(1-\rho'_y)^2}, \qquad
+\mathbb{E}[W^{\mathrm{SPJF}}] = \int g_Y(y)\,\mathbb{E}[W^{\mathrm{SPJF}}(y)]\,dy.
+$$
+
+Реализации предиктора: **`PerfectPredictor`** (\(Y=X\), совпадает с SJF), **`ExpNoisePredictor`** (\(Y\mid X=x \sim \mathrm{Exp}(1/x)\)), **`LognormalNoisePredictor`**.
+
+```python
+from most_queue.theory.srpt import MG1SpjfCalc
+from most_queue.theory.srpt.utils.predictor import ExpNoisePredictor
+
+calc = MG1SpjfCalc()
+calc.set_sources(0.5)
+calc.set_servers(1.0, "M")
+calc.set_predictor(ExpNoisePredictor())
+r = calc.run()
+```
+
+Импорт с верхнего уровня пакета: `from most_queue.theory.srpt import MG1SrptCalc, ExpNoisePredictor, ...`.
 
 ## Расширение метода Такахаси-Таками
 

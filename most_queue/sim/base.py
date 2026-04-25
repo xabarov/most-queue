@@ -354,7 +354,7 @@ class QsSim(BaseSimulationCore):
         """
         Hook called when a task is created at arrival (size-at-arrival).
 
-        Override in subclasses to set ``ts.size`` and ``ts.predicted_size``,
+        Override in subclasses to set ``ts.original_size`` and ``ts.predicted_size``,
         and optionally initialise ``ts.service_remaining`` to match the sampled
         size (required for SRPT / PSJF preemptive-resume semantics).
 

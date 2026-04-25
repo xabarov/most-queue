@@ -79,6 +79,7 @@ sudo apt-get install -y graphviz
 
 ## 📰 Новости
 
+- **Апрель 2026** — **Size-based scheduling** для M/G/1: аналитика SRPT / SJF / PSJF / SPJF (`most_queue.theory.srpt`) и симулятор `SizeBasedQsSim` с предикторами; воспроизведение таблицы Mitzenmacher–Shahout (2025) в тестах. См. [документацию](docs/calculation.md), [симуляцию](docs/simulation.md), пример [`examples/srpt_table.py`](examples/srpt_table.py), туториал [`tutorials/srpt_basics.ipynb`](tutorials/srpt_basics.ipynb).
 - **Препринт (2026)** — Расчёт многоканальных СМО с отрицательными заявками (метод Такахаси–Таками): [препринт (PDF)](works/negative_queues/negative_queues_takahasi_takami.pdf), [код расчётов и воспроизведения](works/negative_queues/).
 - **Февраль 2026** — Добавлены расчеты по методу **Такахаси–Таками** для FIFO-моделей **H₂/M/c** и **H₂/H₂/c**:
   - `most_queue/theory/fifo/gmc_takahasi.py` — **H₂/M/c**
@@ -93,6 +94,7 @@ sudo apt-get install -y graphviz
 
 **Основные изменения:**
 
+- **M/G/1 SRPT, SJF, PSJF, SPJF**: численные калькуляторы `MG1SrptCalc`, `MG1SjfCalc`, `MG1PsjfCalc`, `MG1SpjfCalc` и симулятор `SizeBasedQsSim` (предсказания, таблица Mitzenmacher–Shahout 2025 в тестах)
 - **Метод Такахаси–Таками для FIFO H₂-моделей**: расчёты для **H₂/M/c** (`H2MnCalc`) и **H₂/H₂/c** (`HkHkNCalc`)
 - **Поддержка complex-fit для H₂ (CV<1) в расчётах**: численные методы корректно работают с комплексными параметрами H₂-аппроксимации
 - **Улучшено API для H₂-параметров**: `H2MnCalc.set_sources()` и `MGnCalc.set_servers()` принимают `H2Params` напрямую (без повторного фиттинга)
@@ -160,6 +162,7 @@ Most-Queue состоит из двух основных модулей:
 ### FIFO системы
 - **M/M/c**, **M/M/c/r** — Многоканальные системы с пуассоновским потоком
 - **M/G/1**, **M/G/c** — Системы с произвольным распределением времени обслуживания
+- **M/G/1 SRPT / SJF / PSJF / SPJF** — Size-based дисциплины и политики с предсказаниями размера (Schrage 1968, Mitzenmacher 2020); симуляция `SizeBasedQsSim`, расчёты в `most_queue.theory.srpt`
 - **GI/M/1**, **GI/M/c** — Системы с общим потоком поступления
 - **H₂/M/c** — Гиперэкспоненциальный поток поступления, метод Такахаси-Таками (§7.6.1)
 - **M/D/c**, **E_k/D/c** — Системы с детерминированным обслуживанием

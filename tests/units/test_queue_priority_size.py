@@ -6,25 +6,25 @@ from most_queue.sim.utils.queue_priority_size import PrioritySizeQueue
 from most_queue.sim.utils.tasks import Task
 
 
-def _task(arr_time: float, size: float) -> Task:
+def _task(arr_time: float, job_size: float) -> Task:
     t = Task(arr_time)
-    t.size = size
+    t.original_size = job_size
     return t
 
 
 def test_pop_order_by_rank_not_fifo():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     q.push(_task(0.0, 3.0))
     q.push(_task(0.0, 1.0))
     q.push(_task(0.0, 2.0))
-    assert q.pop().size == 1.0
-    assert q.pop().size == 2.0
-    assert q.pop().size == 3.0
+    assert q.pop().original_size == 1.0
+    assert q.pop().original_size == 2.0
+    assert q.pop().original_size == 3.0
     assert q.is_empty()
 
 
 def test_remove_lazy_deletion():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     a = _task(0.0, 1.0)
     b = _task(0.0, 2.0)
     c = _task(0.0, 3.0)
@@ -40,7 +40,7 @@ def test_remove_lazy_deletion():
 
 
 def test_tie_break_arrival_time_then_task_id():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     t_late = _task(10.0, 1.0)
     t_early = _task(5.0, 1.0)
     q.push(t_late)
@@ -51,7 +51,7 @@ def test_tie_break_arrival_time_then_task_id():
 
 
 def test_tie_break_task_id_same_rank_and_arrival():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     first = _task(1.0, 1.0)
     second = _task(1.0, 1.0)
     q.push(second)
@@ -62,10 +62,10 @@ def test_tie_break_task_id_same_rank_and_arrival():
 
 
 def test_peek_returns_min_without_removing():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     q.push(_task(0.0, 2.0))
     q.push(_task(0.0, 1.0))
-    assert q.peek() is not None and q.peek().size == 1.0
+    assert q.peek() is not None and q.peek().original_size == 1.0
     assert len(q) == 2
     q.pop()
     q.pop()
@@ -79,7 +79,7 @@ def test_pop_empty_raises_index_error():
 
 
 def test_len_and_is_empty():
-    q = PrioritySizeQueue(rank_fn=lambda t: float(t.size or 0.0))
+    q = PrioritySizeQueue(rank_fn=lambda t: float(t.original_size or 0.0))
     assert len(q) == 0
     assert q.is_empty()
     q.push(_task(0.0, 1.0))

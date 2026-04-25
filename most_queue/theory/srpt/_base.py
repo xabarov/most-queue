@@ -11,13 +11,15 @@ evaluation point.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
-from scipy.integrate import cumulative_trapezoid
+from scipy.integrate import cumulative_trapezoid, simpson
 
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.srpt.utils.load_below import build_pdf_cdf, get_theory_moments, upper_bound
 
-_N_GRID: int = 2000
+_N_GRID: int = 4000
 
 
 class _SizeBasedCalcBase(BaseQueue):
@@ -114,6 +116,18 @@ class _SizeBasedCalcBase(BaseQueue):
 
     def _second_int_interp(self, x: float) -> float:
         return float(np.interp(x, self._grid_xs, self._grid_second_int))
+
+    def _integrate_pdf_times_conditional(self, conditional_fn: Callable[[float], float]) -> float:
+        """Unconditional integral int f(x) * conditional_fn(x) dx via Simpson on the built grid.
+
+        Avoids adaptive ``quad`` on integrands with (1 - rho_x)^(-2) tails near x_max.
+        """
+        xs = self._grid_xs
+        if xs is None:
+            raise RuntimeError("call _build_grids() before _integrate_pdf_times_conditional")
+        cm = np.array([conditional_fn(float(x)) for x in xs], dtype=np.float64)
+        pdf = np.vectorize(self.pdf_fn, otypes=[np.float64])(xs)
+        return float(simpson(pdf * cm, x=xs))
 
     def _check_stability(self) -> float:
         utilization = self.l * self.b[0]

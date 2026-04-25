@@ -6,7 +6,7 @@ import numpy as np
 import yaml
 
 from most_queue.random.distributions import H2Distribution
-from most_queue.sim.size_based import PerfectPredictor, SizeBasedQsSim
+from most_queue.sim.size_based import PerfectSimPredictor, SizeBasedQsSim
 
 cur_dir = os.getcwd()
 params_path = os.path.join(cur_dir, "tests", "default_params.yaml")
@@ -69,7 +69,7 @@ def test_spjf_perfect_close_to_sjf():
     spjf.generator = np.random.default_rng(seed)
     spjf.set_servers(h2_params, "H")
     spjf.set_sources(ARRIVAL_RATE, "M")
-    spjf.set_predictor(PerfectPredictor())
+    spjf.set_predictor(PerfectSimPredictor())
     r_spjf = spjf.run(NUM_OF_JOBS)
 
     assert np.allclose(r_spjf.w[:2], r_sjf.w[:2], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)

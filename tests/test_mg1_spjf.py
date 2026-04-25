@@ -10,8 +10,7 @@ import numpy as np
 import yaml
 
 from most_queue.random.distributions import H2Distribution
-from most_queue.sim.size_based import PerfectPredictor as SimPerfectPredictor
-from most_queue.sim.size_based import SizeBasedQsSim
+from most_queue.sim.size_based import PerfectSimPredictor, SizeBasedQsSim
 from most_queue.sim.utils.predictor import ExpNoiseSimPredictor
 from most_queue.theory.srpt import MG1SjfCalc, MG1SpjfCalc
 from most_queue.theory.srpt.utils.predictor import ExpNoisePredictor, PerfectPredictor as TheoryPerfectPredictor
@@ -72,7 +71,7 @@ def test_mg1_spjf_perfect_sim_matches_sjf_sim():
     spjf.generator = np.random.default_rng(seed)
     spjf.set_servers(h2_params, "H")
     spjf.set_sources(ARRIVAL_RATE, "M")
-    spjf.set_predictor(SimPerfectPredictor())
+    spjf.set_predictor(PerfectSimPredictor())
     r_spjf = spjf.run(NUM_OF_JOBS)
 
     assert np.allclose(r_spjf.w[:1], r_sjf.w[:1], rtol=MOMENTS_RTOL, atol=MOMENTS_ATOL)

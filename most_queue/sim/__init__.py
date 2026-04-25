@@ -6,6 +6,6 @@ various types of queueing systems and networks.
 """
 
 from most_queue.sim.base import QsSim
-from most_queue.sim.size_based import PerfectPredictor, SizeBasedQsSim, SizePredictor
+from most_queue.sim.size_based import PerfectSimPredictor, SizeBasedQsSim, SizePredictor
 
-__all__ = ["QsSim", "SizeBasedQsSim", "SizePredictor", "PerfectPredictor"]
+__all__ = ["QsSim", "SizeBasedQsSim", "SizePredictor", "PerfectSimPredictor"]

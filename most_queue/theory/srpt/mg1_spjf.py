@@ -83,7 +83,9 @@ class MG1SpjfCalc(BaseQueue):
             lambda y: (self.predictor.marginal_y_pdf(float(y), self.pdf_fn) * self.conditional_mean_wait(float(y))),
             0.0,
             math.inf,
-            limit=400,
+            limit=600,
+            epsabs=1e-9,
+            epsrel=1e-7,
         )
         et = ew + self.b[0]
 

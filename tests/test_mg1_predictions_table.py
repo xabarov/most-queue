@@ -149,3 +149,32 @@ def test_predictions_table_theory_ordering_exp1(rho: float):
     et_spjf = spjf_calc.run().v[0]
     assert et_srpt <= et_spjf + 1e-8
     assert et_spjf <= et_fcfs + 1e-8
+
+
+@pytest.mark.parametrize("rho", [0.95, 0.99])
+def test_predictions_table_theory_high_rho_exp1(rho: float):
+    """Analytic calculators vs Table 3.3 paper E[T] for SJF/PSJF/SRPT/SPJF at high rho."""
+    lam = rho
+    paper = PAPER_ET[rho]
+    rtol = 0.01
+
+    sjf = MG1SjfCalc()
+    sjf.set_sources(lam)
+    sjf.set_servers(EXP_SERVICE_RATE, "M")
+    assert np.isclose(sjf.run().v[0], paper["SJF"], rtol=rtol), f"SJF rho={rho}"
+
+    psjf = MG1PsjfCalc()
+    psjf.set_sources(lam)
+    psjf.set_servers(EXP_SERVICE_RATE, "M")
+    assert np.isclose(psjf.run().v[0], paper["PSJF"], rtol=rtol), f"PSJF rho={rho}"
+
+    srpt = MG1SrptCalc()
+    srpt.set_sources(lam)
+    srpt.set_servers(EXP_SERVICE_RATE, "M")
+    assert np.isclose(srpt.run().v[0], paper["SRPT"], rtol=rtol), f"SRPT rho={rho}"
+
+    spjf = MG1SpjfCalc()
+    spjf.set_sources(lam)
+    spjf.set_servers(EXP_SERVICE_RATE, "M")
+    spjf.set_predictor(ExpNoisePredictor())
+    assert np.isclose(spjf.run().v[0], paper["SPJF"], rtol=rtol), f"SPJF rho={rho}"

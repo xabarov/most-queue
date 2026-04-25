@@ -4,8 +4,6 @@ M/G/1 SJF calculator (non-preemptive shortest job first).
 
 from __future__ import annotations
 
-from scipy.integrate import quad
-
 from most_queue.structs import QueueResults
 from most_queue.theory.srpt._base import _SizeBasedCalcBase
 
@@ -38,12 +36,7 @@ class MG1SjfCalc(_SizeBasedCalcBase):
         utilization = self._check_stability()
         self._build_grids()
 
-        ew, _ = quad(
-            lambda x: self.pdf_fn(x) * self.conditional_mean_wait(float(x)),
-            0.0,
-            self.x_max,
-            limit=300,
-        )
+        ew = self._integrate_pdf_times_conditional(self.conditional_mean_wait)
         et = ew + self.b[0]
 
         self.w = [ew]

@@ -4,8 +4,6 @@ M/G/1 SRPT calculator (Schrage-Miller 1966).
 
 from __future__ import annotations
 
-from scipy.integrate import quad
-
 from most_queue.structs import QueueResults
 from most_queue.theory.srpt._base import _SizeBasedCalcBase
 
@@ -53,12 +51,7 @@ class MG1SrptCalc(_SizeBasedCalcBase):
         utilization = self._check_stability()
         self._build_grids()
 
-        et, _ = quad(
-            lambda x: self.pdf_fn(x) * self.conditional_mean_response(float(x)),
-            0.0,
-            self.x_max,
-            limit=300,
-        )
+        et = self._integrate_pdf_times_conditional(self.conditional_mean_response)
         ew = et - self.b[0]
 
         self.v = [et]
