@@ -47,9 +47,10 @@ def test_sprpt_predicted_remaining_rank():
 
 def test_srpt_preempt_uses_true_remaining_not_stale():
     """After time passes, preemption comparison must use actual remaining, not stale field."""
+    import numpy as np
+
     from most_queue.random.distributions import ExpDistribution
     from most_queue.sim.size_based import SizeBasedQsSim
-    import numpy as np
 
     rng = np.random.default_rng(99)
     sim = SizeBasedQsSim(1, discipline="SRPT")

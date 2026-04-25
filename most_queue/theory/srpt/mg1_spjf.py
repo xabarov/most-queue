@@ -20,11 +20,11 @@ class MG1SpjfCalc(BaseQueue):
 
     Formula (Mitzenmacher 2020)::
 
-        E[W^SPJF(y)] = ? · E[S?] / [2(1 ? ?'_y)?]
-        E[W^SPJF]    = ??^? g_Y(y) · E[W^SPJF(y)] dy
+        E[W^SPJF(y)] = lam * E[S^2] / [2(1 - rho'_y)^2]
+        E[W^SPJF]    = int_0^inf g_Y(y) * E[W^SPJF(y)] dy
         E[T^SPJF]    = E[W^SPJF] + b[0]
 
-    where ?'_y and g_Y(y) are supplied by the predictor object.
+    where rho'_y and g_Y(y) are supplied by the predictor object.
 
     With ``PerfectPredictor`` (Y = X) the result equals ``MG1SjfCalc``.
 
@@ -67,10 +67,11 @@ class MG1SpjfCalc(BaseQueue):
         rho_y = self.predictor.load_below_y(self.l, self.pdf_fn, y)
         denom = 1.0 - rho_y
         if denom <= 1e-10:
-            raise ValueError(f"load ? 1 at y={y}: integral diverges")
+            raise ValueError(f"load >= 1 at y={y}: integral diverges")
         return (self.l * self.b[1]) / (2.0 * denom * denom)
 
     def run(self) -> QueueResults:
+        """Compute E[W^SPJF] and E[T^SPJF] using the configured predictor model."""
         start = self._measure_time()
         self._check_if_servers_and_sources_set()
 

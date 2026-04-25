@@ -2,10 +2,10 @@
 Shared base class for size-based M/G/1 analytical calculators.
 
 Grid precomputation is the key performance optimisation: all inner
-integrals (ρ_x, ∫t²f dt, ∫dt/(1-ρ_t), CDF) are evaluated once on a
-uniform mesh over [0, x_max] using cumulative trapezoidal sums, and
-then looked up via np.interp.  This eliminates the O(n²) nested-quad
-pattern that arises when ρ_x is re-integrated for every outer-quad
+integrals (rho_x, int t^2 f dt, int dt/(1-rho_t), CDF) are evaluated once on a
+fine mesh over [0, x_max] using cumulative trapezoidal sums, and
+then looked up via np.interp.  This eliminates the O(n^3) nested-quad
+pattern that arises when rho_x is re-integrated for every outer-quad
 evaluation point.
 """
 
@@ -26,10 +26,10 @@ class _SizeBasedCalcBase(BaseQueue):
 
     Provides:
     - ``set_sources(l)`` / ``set_servers(params, kendall_notation)`` boilerplate.
-    - ``_build_grids()`` — precomputes ρ_x, ∫t²f, ∫dt/(1−ρ), CDF on a fine grid.
+    - ``_build_grids()`` -- precomputes rho_x, int t^2 f, int dt/(1-rho_t), CDF on a fine grid.
     - ``_rho_interp``, ``_t2f_interp``, ``_cdf_interp``, ``_second_int_interp``
-      — cheap O(log n) interpolation replacements for inner quad calls.
-    - ``_check_stability()`` — validates ρ < 1.
+      -- cheap O(log n) interpolation replacements for inner quad calls.
+    - ``_check_stability()`` -- validates rho < 1.
     """
 
     def __init__(self) -> None:
@@ -60,23 +60,37 @@ class _SizeBasedCalcBase(BaseQueue):
         self._grid_xs = None  # invalidate stale grids on re-configuration
 
     def _build_grids(self) -> None:
-        """Precompute integration grids over [0, x_max] (called at run time)."""
+        """Precompute integration grids over [0, x_max] (called at run time).
+
+        A hybrid grid is used: a fine log-spaced section near 0 is prepended
+        to a coarser linear section. This gives good resolution near 0 where
+        Gamma / Pareto PDFs can be singular, without exploding the grid size.
+        """
         if self._grid_xs is not None:
             return  # already built for current configuration
 
-        xs = np.linspace(0.0, self.x_max, _N_GRID + 1)
-        pdf_vals = np.vectorize(self.pdf_fn)(xs)
-        cdf_vals = np.vectorize(self.cdf_fn)(xs)
+        x_max = self.x_max
+        eps = x_max * 1e-8
+        # ~40% of points in the log-section [eps, 0.1*x_max], 60% in linear
+        n_log = int(_N_GRID * 0.4)
+        n_lin = _N_GRID - n_log
 
-        # ρ_x = λ ∫₀^x t f(t) dt
+        xs_log = np.geomspace(eps, x_max * 0.1, n_log, endpoint=False)
+        xs_lin = np.linspace(x_max * 0.1, x_max, n_lin + 1)
+        xs = np.concatenate([[0.0], xs_log, xs_lin])
+
+        pdf_vals = np.vectorize(self.pdf_fn, otypes=[np.float64])(xs)
+        cdf_vals = np.vectorize(self.cdf_fn, otypes=[np.float64])(xs)
+
+        # rho_x = l * integral_0^x t f(t) dt
         rho_vals = self.l * np.concatenate([[0.0], cumulative_trapezoid(xs * pdf_vals, xs)])
         # clip to [0, 1) to avoid accidental overshoot from numerical errors
         rho_vals = np.clip(rho_vals, 0.0, 1.0 - 1e-12)
 
-        # ∫₀^x t² f(t) dt
+        # integral_0^x t^2 f(t) dt
         t2f_vals = np.concatenate([[0.0], cumulative_trapezoid(xs * xs * pdf_vals, xs)])
 
-        # ∫₀^x dt / (1 − ρ_t)  — SRPT second term
+        # integral_0^x dt / (1 - rho_t)  -- used by SRPT second term
         second_int_vals = np.concatenate([[0.0], cumulative_trapezoid(1.0 / (1.0 - rho_vals), xs)])
 
         self._grid_xs = xs

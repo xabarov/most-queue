@@ -16,12 +16,12 @@ class MG1PsjfCalc(_SizeBasedCalcBase):
 
     Formula::
 
-        E[T^PSJF(x)] = ? ??? t?f(t)dt / [2(1 ? ?_x)?]  +  x / (1 ? ?_x)
-        E[T^PSJF]    = ??^? f(x) Â· E[T^PSJF(x)] dx
-        E[W^PSJF]    = E[T^PSJF] ? b[0]
+        E[T^PSJF(x)] = lam * int_0^x t^2 f(t) dt / [2(1 - rho_x)^2]  +  x / (1 - rho_x)
+        E[T^PSJF]    = int_0^inf f(x) * E[T^PSJF(x)] dx
+        E[W^PSJF]    = E[T^PSJF] - b[0]
 
     Unlike SRPT, the priority rank is the *original* job size (not remaining
-    work), so there is no ??? dt/(1??_t) term.
+    work), so there is no int_0^x dt/(1-rho_t) term.
     """
 
     def conditional_mean_response(self, x: float) -> float:
@@ -31,7 +31,7 @@ class MG1PsjfCalc(_SizeBasedCalcBase):
         rho_x = self._rho_interp(x)
         denom = 1.0 - rho_x
         if denom <= 1e-10:
-            raise ValueError(f"load ? 1 at x={x}: integral diverges")
+            raise ValueError(f"load >= 1 at x={x}: integral diverges")
 
         int_t2f = self._t2f_interp(x)
         first_term = (self.l * int_t2f) / (2.0 * denom * denom)
@@ -39,6 +39,7 @@ class MG1PsjfCalc(_SizeBasedCalcBase):
         return first_term + second_term
 
     def run(self) -> QueueResults:
+        """Compute E[T^PSJF] and E[W^PSJF] averaged over the job-size distribution."""
         start = self._measure_time()
         self._check_if_servers_and_sources_set()
         utilization = self._check_stability()

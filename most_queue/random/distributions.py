@@ -251,6 +251,24 @@ class NormalDistribution(Distribution):
         std_dev = cv * mean
         return GaussianParams(mean, std_dev)
 
+    @staticmethod
+    def get_pdf(params: GaussianParams, t: float) -> float:
+        """
+        PDF of the Gaussian distribution. Returns 0 for t < 0 (truncated at zero).
+        """
+        if t < 0:
+            return 0.0
+        return float(stats.norm.pdf(t, loc=params.mean, scale=params.std_dev))
+
+    @staticmethod
+    def get_cdf(params: GaussianParams, t: float) -> float:
+        """
+        CDF of the Gaussian distribution. Returns 0 for t < 0 (truncated at zero).
+        """
+        if t < 0:
+            return 0.0
+        return float(stats.norm.cdf(t, loc=params.mean, scale=params.std_dev))
+
 
 class UniformDistribution(Distribution):
     """
@@ -637,6 +655,26 @@ class DeterministicDistribution(Distribution):
         b = f1
         return b
 
+    @staticmethod
+    def get_pdf(_params, _t: float) -> float:
+        """
+        Deterministic distribution has no density function.
+
+        Raises ``ValueError`` unconditionally — size-based SRPT/SJF/PSJF
+        formulas require a continuous service distribution.
+        """
+        raise ValueError(
+            "Deterministic distribution ('D') has no density function; "
+            "SRPT/SJF/PSJF formulas require a continuous service distribution."
+        )
+
+    @staticmethod
+    def get_cdf(params, t: float) -> float:
+        """
+        CDF of D(b): Heaviside step at b.  *params* is the deterministic value b (float).
+        """
+        return 0.0 if t < float(params) else 1.0
+
 
 class ParetoDistribution(Distribution):
     """
@@ -803,6 +841,16 @@ class ErlangDistribution(Distribution):
         return 1.0 - ErlangDistribution.get_cdf(params, t)
 
     @staticmethod
+    def get_pdf(params: ErlangParams, t: float) -> float:
+        """
+        PDF of the Erlang(r, mu) distribution: f(t) = mu^r * t^(r-1) * exp(-mu*t) / (r-1)!
+        """
+        if t < 0:
+            return 0.0
+        r, mu = params.r, params.mu
+        return (mu**r) * (t ** (r - 1)) * math.exp(-mu * t) / math.factorial(r - 1)
+
+    @staticmethod
     def calc_theory_moments(params: ErlangParams, num: int = 3) -> list[float]:
         """
         Calculates theoretical raw moments of the distribution. By default - first three.
@@ -890,6 +938,20 @@ class ExpDistribution(Distribution):
         :param cv: coefficient of variation (coefficient of dispersion)
         """
         return 1 / f1
+
+    @staticmethod
+    def get_pdf(params: float, t: float) -> float:
+        """
+        PDF of the exponential distribution with rate *params* (= mu = 1/mean).
+        """
+        return ErlangDistribution.get_pdf(ErlangParams(r=1, mu=params), t)
+
+    @staticmethod
+    def get_cdf(params: float, t: float) -> float:
+        """
+        CDF of the exponential distribution with rate *params* (= mu = 1/mean).
+        """
+        return ErlangDistribution.get_cdf(ErlangParams(r=1, mu=params), t)
 
 
 class GammaDistribution(Distribution):

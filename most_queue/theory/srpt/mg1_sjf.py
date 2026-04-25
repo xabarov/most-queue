@@ -16,8 +16,8 @@ class MG1SjfCalc(_SizeBasedCalcBase):
 
     Formula (Conway-Maxwell-Miller continuous-priority variant)::
 
-        E[W^SJF(x)] = ? · E[S?] / [2 · (1 ? ?_x)?]
-        E[W^SJF]    = ??^? f(x) · E[W^SJF(x)] dx
+        E[W^SJF(x)] = lam * E[S^2] / [2 * (1 - rho_x)^2]
+        E[W^SJF]    = int_0^inf f(x) * E[W^SJF(x)] dx
         E[T^SJF]    = E[W^SJF] + b[0]
     """
 
@@ -28,10 +28,11 @@ class MG1SjfCalc(_SizeBasedCalcBase):
         rho_x = self._rho_interp(x)
         denom = 1.0 - rho_x
         if denom <= 1e-10:
-            raise ValueError(f"load ? 1 at x={x}: integral diverges")
+            raise ValueError(f"load >= 1 at x={x}: integral diverges")
         return (self.l * self.b[1]) / (2.0 * denom * denom)
 
     def run(self) -> QueueResults:
+        """Compute E[W^SJF] and E[T^SJF] averaged over the job-size distribution."""
         start = self._measure_time()
         self._check_if_servers_and_sources_set()
         utilization = self._check_stability()
