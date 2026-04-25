@@ -14,18 +14,20 @@ class MG1SrptCalc(_SizeBasedCalcBase):
     """
     Numeric calculator for M/G/1 SRPT.
 
-    Formula (Schrage-Miller 1966)::
+    Conditional mean **sojourn** (Schrage-Miller; see e.g. Bansal, OR Letters 2004)::
 
-        E[T^SRPT(x)] = [lam * int_0^x t^2 f(t) dt + x^2 (1-F(x))] / [2(1-rho_x)^2]
-                     + int_0^x dt / (1 - rho_t)
+        E[T^SRPT(x)]
+            = [lam * int_0^x t^2 f(t) dt + lam * x^2 (1-F(x))] / [2(1-rho_x)^2]
+              + int_0^x dt / (1 - rho_t)
+
+    (equivalently ``lam * int_0^x t * (1-F(t)) dt / (1-rho_x)^2 + int_0^x ...``).
+
+    Unconditional::
 
         E[T^SRPT] = int_0^inf f(x) * E[T^SRPT(x)] dx
         E[W^SRPT] = E[T^SRPT] - b[0]
 
-    All inner integrals are resolved via precomputed grids (see
-    ``_SizeBasedCalcBase._build_grids``), so the overall computation
-    is a single outer ``scipy.integrate.quad`` call with O(1) interpolated
-    lookups -- no nested quadrature.
+    Inner pieces use precomputed grids on ``_SizeBasedCalcBase``.
     """
 
     def conditional_mean_response(self, x: float) -> float:
@@ -39,7 +41,8 @@ class MG1SrptCalc(_SizeBasedCalcBase):
 
         int_t2f = self._t2f_interp(x)
         tail = max(0.0, 1.0 - self._cdf_interp(x))
-        first_term = (self.l * int_t2f + x * x * tail) / (2.0 * denom * denom)
+        # Both service-moment and tail terms carry a factor lambda (not x^2 alone).
+        first_term = (self.l * int_t2f + self.l * x * x * tail) / (2.0 * denom * denom)
         second_term = self._second_int_interp(x)
         return first_term + second_term
 

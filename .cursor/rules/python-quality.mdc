@@ -1,0 +1,98 @@
+---
+description: Python code quality standards — pylint 10/10, docstrings, ASCII, type hints, no lazy imports
+globs: most_queue/**/*.py
+alwaysApply: false
+---
+
+# Python Code Quality Standards
+
+## Pylint target: 10.00/10
+
+After every substantive edit run pylint on changed files:
+
+```bash
+.venv/bin/pylint <changed_file_or_package> --score=yes
+```
+
+If score drops below 10.00, fix all reported issues before finishing.
+
+## Docstrings — required everywhere public
+
+Every public module, class, and method must have a docstring.
+Private helpers (`_name`) are exempt but encouraged.
+
+```python
+# BAD — missing docstring on public method
+def run(self) -> QueueResults:
+    ...
+
+# GOOD
+def run(self) -> QueueResults:
+    """Compute E[T] and E[W] averaged over the job-size distribution."""
+    ...
+```
+
+## ASCII-only source files
+
+Python source files must contain only ASCII characters.
+Use ASCII equivalents in docstrings and comments — never paste Unicode math symbols:
+
+| Instead of | Write |
+|---|---|
+| `ρ_x`, `λ`, `∫` | `rho_x`, `lam`, `int` |
+| `≥`, `≤` | `>=`, `<=` |
+| `→`, `—` | `->`, `--` |
+
+## No imports inside functions
+
+Lazy imports (`import` inside a function body) are forbidden.
+Move all imports to the module top level.
+
+```python
+# BAD
+def get_pdf(t):
+    from scipy.stats import norm  # C0415
+    return norm.pdf(t)
+
+# GOOD — import at module level
+from scipy.stats import norm
+
+def get_pdf(t):
+    return norm.pdf(t)
+```
+
+## Type hints on all public signatures
+
+```python
+# BAD
+def conditional_mean_response(self, x):
+    ...
+
+# GOOD
+def conditional_mean_response(self, x: float) -> float:
+    ...
+```
+
+## Distribution API consistency
+
+All `Distribution` subclasses in `most_queue.random.distributions` must
+expose `get_pdf(params, t: float) -> float` and `get_cdf(params, t: float) -> float`
+as static methods. Do **not** add private PDF/CDF helpers elsewhere — extend
+the distribution class instead.
+
+## No nested quadrature for repeated inner integrals
+
+When an inner integral appears inside an outer `quad` call, precompute it
+on a grid with `cumulative_trapezoid` + `np.interp` instead of calling
+`quad` again for every outer evaluation point.
+
+```python
+# BAD — O(n²) nested quad
+def outer(x_max):
+    quad(lambda x: f(x) * quad(lambda t: ..., 0, x)[0], 0, x_max)
+
+# GOOD — precompute grid, look up with np.interp
+grid_xs = np.linspace(0, x_max, 2000)
+grid_int = cumulative_trapezoid(integrand(grid_xs), grid_xs, initial=0)
+quad(lambda x: f(x) * np.interp(x, grid_xs, grid_int), 0, x_max)
+```

@@ -2,6 +2,8 @@ error_msg: "System simulation results do not match theoretical values"
 
 num_of_channels: 3
 num_of_jobs: 100000
+# Preemptive / SRPT-style sim vs theory: higher N for sample mean of E[W], E[T]
+num_of_jobs_srpt: 300000
 sim_to_average: 1
 
 utilization_factor: 0.7

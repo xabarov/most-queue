@@ -1,17 +1,21 @@
 """Unit tests for SizeBasedQsSim rank ordering via PrioritySizeQueue."""
 
+import numpy as np
+
 from most_queue.sim.size_based import SizeBasedQsSim
 from most_queue.sim.utils.queue_priority_size import PrioritySizeQueue
 from most_queue.sim.utils.tasks import Task
 
 
 def _pq_for(discipline: str) -> tuple[SizeBasedQsSim, PrioritySizeQueue]:
+    """Return a (sim, priority-queue) pair wired for the given discipline."""
     sim = SizeBasedQsSim(1, discipline=discipline)  # type: ignore[arg-type]
     pq = PrioritySizeQueue(sim._rank_value)
     return sim, pq
 
 
 def test_srpt_preempt_order_smaller_remaining_first():
+    """SRPT orders by remaining work: smaller remaining => higher priority."""
     _sim, pq = _pq_for("SRPT")
     a = Task(1.0)
     a.size = 10.0
@@ -23,6 +27,7 @@ def test_srpt_preempt_order_smaller_remaining_first():
 
 
 def test_psjf_uses_original_size_not_remaining():
+    """PSJF rank is the original job size, not remaining work."""
     _sim, pq = _pq_for("PSJF")
     a = Task(1.0)
     a.size = 3.0
@@ -34,6 +39,7 @@ def test_psjf_uses_original_size_not_remaining():
 
 
 def test_sprpt_predicted_remaining_rank():
+    """SPRPT rank is max(0, predicted_size - served), where served = size - remaining."""
     _sim, pq = _pq_for("SPRPT")
     t = Task(0.0)
     t.size = 10.0
@@ -47,11 +53,6 @@ def test_sprpt_predicted_remaining_rank():
 
 def test_srpt_preempt_uses_true_remaining_not_stale():
     """After time passes, preemption comparison must use actual remaining, not stale field."""
-    import numpy as np
-
-    from most_queue.random.distributions import ExpDistribution
-    from most_queue.sim.size_based import SizeBasedQsSim
-
     rng = np.random.default_rng(99)
     sim = SizeBasedQsSim(1, discipline="SRPT")
     sim.generator = rng
@@ -59,25 +60,20 @@ def test_srpt_preempt_uses_true_remaining_not_stale():
     sim.set_servers(mu, "M")
     sim.set_sources(0.5, "M")
 
-    # Create task in service with large original size but near completion
-    from most_queue.sim.utils.tasks import Task as T
-
-    cur = T(0.0)
+    # Task in service with large original size but near completion.
+    cur = Task(0.0)
     cur.size = 10.0
-    cur.service_remaining = 10.0  # stale â€” was set at t=0 when service started
+    cur.service_remaining = 10.0  # stale: value from service start, not current remaining
     sim.servers[0].tsk_on_service = cur
     sim.servers[0].is_free = False
-    sim.servers[0].time_to_end_service = 0.5  # true remaining = 0.5 (started at t=0)
+    # Service started at t=0, size=10, ends at t=10 => true remaining at t=9.0 is 1.0.
+    sim.servers[0].time_to_end_service = 10.0
     sim.free_channels = 0
-    sim.ttek = 9.5  # now time is 9.5, so server ends at 0.5 => rem = 0.5 - 9.5 < 0... let's fix
-
-    # Restart scenario: service started at t=0, size=10, ends at t=10
     sim.ttek = 9.0
-    sim.servers[0].time_to_end_service = 10.0  # ends at t=10, so true remaining = 1.0
 
-    # New arrival has size=5; stale comparison: 5 < 10 => preempt (WRONG)
-    # Correct comparison: 5 < 1.0 => no preempt
-    new_ts = T(sim.ttek)
+    # New arrival has size=5; stale comparison 5 < 10 would trigger preempt (wrong).
+    # Correct: 5 > 1.0 => no preempt.
+    new_ts = Task(sim.ttek)
     new_ts.size = 5.0
     new_ts.service_remaining = 5.0
     new_ts.predicted_size = 5.0
