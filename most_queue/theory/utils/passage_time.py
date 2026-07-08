@@ -85,10 +85,12 @@ class PassageTimeCalculation:
         d_rows = self.D_input[i].shape[0]
         gammas = []
         if d_rows == 1:
-            gammas.append(self.D_input[i][0])
+            gammas.append(np.asarray(self.D_input[i][0]).reshape(-1)[0])
         else:
             for j in range(d_rows):
-                gammas.append(self.D_input[i][j, j])
+                # np.matrix indexing may return a 1x1 matrix; extract the scalar
+                # (NumPy >= 2.3 refuses implicit size-1-array -> scalar conversion)
+                gammas.append(np.asarray(self.D_input[i][j, j]).reshape(-1)[0])
         return gammas
 
     def _process_matrix(self, matrix, gammas):

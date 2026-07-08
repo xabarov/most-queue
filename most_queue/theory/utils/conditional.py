@@ -46,7 +46,7 @@ def moments_exp_less_than_h2(gamma: float, h2_params: H2Params):
 
     # Step 2: Compute the Numerator
     for k in range(4):
-        numerator = math.factorial(k + 1) * np.sum((y[i] / (mu[i] + gamma) ** (k + 2) for i in range(2)))
+        numerator = math.factorial(k + 1) * np.sum([y[i] / (mu[i] + gamma) ** (k + 2) for i in range(2)])
         b.append(numerator / denominator)
 
     return np.array([mom.real for mom in b])

@@ -49,16 +49,16 @@ def central_diff_weights(num_points: int, ndiv: int = 1) -> np.ndarray:
     return np.array([float(math.factorial(ndiv) * w) for w in inv_row])
 
 
-def derivative(func, x0, dx=1.0, n=1, args=(), order=3):
+def derivative(
+    func, x0, dx=1.0, n=1, args=(), order=3
+):  # pylint: disable=too-many-arguments, too-many-positional-arguments
     """
     n-th derivative of func at x0 using a central difference formula with
     ``order`` points and spacing ``dx``. Same signature and behaviour as the
     removed ``scipy.misc.derivative``.
     """
     if order < n + 1:
-        raise ValueError(
-            "'order' (the number of points used to compute the derivative) must be at least the derivative order 'n' + 1."
-        )
+        raise ValueError("'order' (number of stencil points) must be at least the derivative order 'n' + 1.")
     if order % 2 == 0:
         raise ValueError("'order' (the number of points used to compute the derivative) must be odd.")
     # exact rational weights for the common cases (same table as scipy.misc.derivative)
