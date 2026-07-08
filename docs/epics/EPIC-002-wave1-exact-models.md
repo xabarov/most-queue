@@ -1,6 +1,6 @@
 # EPIC-002: Волна 1 — точные базовые модели
 
-- **Статус:** in progress
+- **Статус:** done (2026-07-08)
 - **Создан:** 2026-07-08
 - **Roadmap:** [../roadmaps/wave1_exact_models_roadmap.md](../roadmaps/wave1_exact_models_roadmap.md)
 
@@ -55,8 +55,32 @@
 По каждой модели — DoD «новая модель СМО» ([../DOD.md](../DOD.md)): BaseQueue-контракт,
 первоисточник в docstring, тест теория-vs-симуляция, запись в `docs/models.md`.
 Аппроксимации явно маркированы. Сравнительный ноутбук дисциплин
-(FCFS/PS/FB/SJF/SRPT/SPJF) в `tutorials/`.
+(FCFS/PS/FB/SJF/SRPT/SPJF) в `tutorials/` — выполнено:
+[tutorials/disciplines_comparison.ipynb](../../tutorials/disciplines_comparison.ipynb).
 
 ## Результаты
 
-*(заполняется по завершении)*
+Все 7 пунктов выполнены за 2026-07-08. Итого:
+
+- **10 новых калькуляторов**: `ErlangBCalc`, `ErlangCCalc`, `MGInfCalc`, `GIG1ApproxCalc`,
+  `GIGmApproxCalc`, `MG1MultipleVacationsCalc`, `MG1NPolicyCalc`, `MG1PSCalc`,
+  `MG1LcfsPrCalc`, `MG1FbCalc`, `MG1UnreliableCalc` — все с первоисточниками (DOI)
+  в docstring, все pylint 10/10.
+- **5 новых симуляторов**: `NPolicyQueueSim`, `ProcessorSharingSim`, `LcfsPRSim`, `FBSim`,
+  `UnreliableQueueSim` + режим `is_multiple_vacations` в `VacationQueueingSystemSimulator`.
+- **21 новый тест** (6 файлов), включая точные частные случаи (KLB=Полячек–Хинчин,
+  Allen–Cunneen=Erlang C, ξ=0 ⇒ M/G/1, N=1 ⇒ M/G/1, exp-обслуживание: FB=PS)
+  и проверку нечувствительности Севастьянова симуляцией с Gamma-обслуживанием.
+- **Каталог**: записи для всех моделей в стиле EPIC-005 (суть + схемы, включая
+  data-driven график замедления `figures/slowdown.png`).
+- **Ноутбук**: `tutorials/disciplines_comparison.ipynb` — 9 дисциплин, таблица E[V],
+  график замедления, кросс-чек с симуляцией; выполнен, выводы зафиксированы.
+
+Отложено (задокументировано в задачах): формула Кимуры (нужен точный D/M/s),
+single vacation (сверка с Takagi Vol.1), старшие моменты PS (Яшков/Отт).
+
+## Замечания по ходу работ
+
+При подготовке ноутбука обнаружена и исправлена ошибка в документации: среднее время
+пребывания LCFS-PR совпадает с PS (b₁/(1−ρ), нечувствительность), но НЕ с FCFS —
+у FCFS среднее зависит от b₂ (при CV=1.5: FCFS 3.354 vs PS/LCFS-PR 2.333).
