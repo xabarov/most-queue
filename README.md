@@ -6,6 +6,7 @@
 
 [🇷🇺 Русская версия](README.ru.md)
 
+[![Tests](https://github.com/xabarov/most-queue/actions/workflows/tests.yml/badge.svg)](https://github.com/xabarov/most-queue/actions/workflows/tests.yml)
 [![PyPI version](https://img.shields.io/pypi/v/most-queue)](https://pypi.org/project/most-queue/)
 [![Python versions](https://img.shields.io/pypi/pyversions/most-queue)](https://pypi.org/project/most-queue/)
 [![License](https://img.shields.io/pypi/l/most-queue)](https://github.com/xabarov/most-queue/blob/main/LICENSE)
@@ -64,7 +65,7 @@ print(f"Mean waiting time: theory {theory.w[0]:.3f} vs simulation {experiment.w[
 Computed by the library's own calculators — conditional slowdown `E[T(x)]/x` by job size
 for FCFS, PS, FB (blind) and SRPT (size-aware):
 
-<img src="https://raw.githubusercontent.com/xabarov/most-queue/main/docs/figures/slowdown.png" alt="Slowdown by job size for FCFS/PS/FB/SRPT" width="720"/>
+<img src="https://raw.githubusercontent.com/xabarov/most-queue/main/docs/figures/slowdown_en.png" alt="Slowdown by job size for FCFS/PS/FB/SRPT" width="720"/>
 
 See the executable comparison of **9 disciplines** in
 [`tutorials/disciplines_comparison.ipynb`](tutorials/disciplines_comparison.ipynb).

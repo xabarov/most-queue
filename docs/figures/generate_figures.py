@@ -627,12 +627,32 @@ def fig_unreliable():
     return fig
 
 
-def fig_slowdown():
+SLOWDOWN_LABELS = {
+    "ru": {
+        "note": "FCFS: короткие заявки страдают сильнее всех\n(кривая уходит вверх, обрезана)",
+        "xlabel": "размер заявки x",
+        "ylabel": "замедление E[T(x)] / x",
+        "title": "Кто платит за дисциплину: замедление заявки в зависимости от её размера\n"
+        "(M/G/1, Gamma-обслуживание, ρ={rho:.1f}, CV={cv}; посчитано калькуляторами most_queue)",
+    },
+    "en": {
+        "note": "FCFS: short jobs suffer the most\n(curve goes off the chart, clipped)",
+        "xlabel": "job size x",
+        "ylabel": "slowdown E[T(x)] / x",
+        "title": "Who pays for the discipline: slowdown as a function of job size\n"
+        "(M/G/1, Gamma service, ρ={rho:.1f}, CV={cv}; computed by most_queue calculators)",
+    },
+}
+
+
+def fig_slowdown(lang: str = "ru"):
     """Conditional slowdown E[T(x)]/x by discipline, computed by the library itself."""
     # local imports: the figure is DATA-DRIVEN — it runs most_queue calculators
     from most_queue.random.distributions import GammaDistribution  # pylint: disable=import-outside-toplevel
     from most_queue.theory.fifo.mg1 import MG1Calc  # pylint: disable=import-outside-toplevel
     from most_queue.theory.srpt import MG1FbCalc, MG1SrptCalc  # pylint: disable=import-outside-toplevel
+
+    labels = SLOWDOWN_LABELS[lang]
 
     lam, mean, cv = 1.0, 0.7, 1.5
     gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean, cv)
@@ -670,18 +690,10 @@ def fig_slowdown():
         ax.plot(xs, ys, color=colors[name], lw=2, label=name)
     ax.set_ylim(0, 12)
     ax.legend(loc="upper right", fontsize=9, frameon=False)
-    ax.text(
-        0.35,
-        11.2,
-        "FCFS: короткие заявки страдают сильнее всех\n(кривая уходит вверх, обрезана)",
-        fontsize=8.5,
-        color=INK2,
-        ha="left",
-        va="top",
-    )
+    ax.text(0.35, 11.2, labels["note"], fontsize=8.5, color=INK2, ha="left", va="top")
     ax.set_xlim(0, 4.2 * mean)
-    ax.set_xlabel("размер заявки x", fontsize=9, color=INK2)
-    ax.set_ylabel("замедление E[T(x)] / x", fontsize=9, color=INK2)
+    ax.set_xlabel(labels["xlabel"], fontsize=9, color=INK2)
+    ax.set_ylabel(labels["ylabel"], fontsize=9, color=INK2)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.spines["left"].set_color(MUTED)
@@ -689,13 +701,7 @@ def fig_slowdown():
     ax.tick_params(colors=MUTED, labelsize=8)
     ax.grid(color=GRID, lw=0.7)
     ax.set_axisbelow(True)
-    ax.set_title(
-        "Кто платит за дисциплину: замедление заявки в зависимости от её размера\n"
-        f"(M/G/1, Gamma-обслуживание, ρ={rho:.1f}, CV={cv}; посчитано калькуляторами most_queue)",
-        fontsize=10,
-        color=INK,
-        pad=12,
-    )
+    ax.set_title(labels["title"].format(rho=rho, cv=cv), fontsize=10, color=INK, pad=12)
     return fig
 
 
@@ -708,6 +714,7 @@ FIGURES = {
     "n_policy": fig_n_policy,
     "unreliable": fig_unreliable,
     "slowdown": fig_slowdown,
+    "slowdown_en": lambda: fig_slowdown("en"),
     "disciplines_timeline": fig_disciplines_timeline,
     "priority": fig_priority,
     "vacations": fig_vacations,
