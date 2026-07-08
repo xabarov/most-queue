@@ -8,13 +8,13 @@ import math
 import time
 
 import numpy as np
-from scipy.misc import derivative
 
 from most_queue.random.distributions import H2Distribution
 from most_queue.structs import QueueResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.binom_probs import calc_binom_probs
 from most_queue.theory.utils.conv import conv_moments
+from most_queue.theory.utils.derivative import derivative
 from most_queue.theory.utils.transforms import lst_exp
 
 

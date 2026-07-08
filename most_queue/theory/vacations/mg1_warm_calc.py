@@ -5,12 +5,12 @@ Class for calculating M/G/1 queue with warm-up.
 import time
 
 import numpy as np
-from scipy.misc import derivative
 
 from most_queue.random.distributions import GammaDistribution, H2Distribution
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+from most_queue.theory.utils.derivative import derivative
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 

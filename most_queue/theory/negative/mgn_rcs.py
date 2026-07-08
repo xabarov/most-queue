@@ -7,11 +7,11 @@ import math
 import time
 
 import numpy as np
-from scipy.misc import derivative
 
 from most_queue.random.distributions import H2Distribution
 from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+from most_queue.theory.utils.derivative import derivative
 from most_queue.theory.utils.restarts import beff_moments_repeat_without_resampling_from_h2
 from most_queue.theory.utils.transforms import lst_exp
 

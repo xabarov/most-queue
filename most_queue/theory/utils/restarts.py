@@ -8,7 +8,8 @@ import math
 from collections.abc import Callable
 
 import numpy as np
-from scipy.misc import derivative
+
+from most_queue.theory.utils.derivative import derivative
 
 
 def beff_pls_from_beta(beta_pls: Callable[[float], complex], s: float, r: float) -> complex:

@@ -6,13 +6,13 @@ import math
 import time
 
 import numpy as np
-from scipy.misc import derivative
 
 from most_queue.random.distributions import GammaDistribution, ParetoDistribution
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.utils.conv import conv_moments
+from most_queue.theory.utils.derivative import derivative
 
 
 class GiMn(BaseQueue):

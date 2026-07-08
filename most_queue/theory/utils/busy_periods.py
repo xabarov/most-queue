@@ -4,9 +4,8 @@ Calculation of busy period time
 
 import math
 
-from scipy.misc import derivative
-
 from most_queue.random.distributions import GammaDistribution, H2Distribution
+from most_queue.theory.utils.derivative import derivative
 from most_queue.theory.utils.transforms import lst_gamma, lst_h2
 
 
