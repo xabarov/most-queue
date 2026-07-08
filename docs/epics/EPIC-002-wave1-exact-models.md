@@ -35,7 +35,11 @@
       проверка моментов добавки). **Single vacation отложен**: формула добавки
       требует сверки с Takagi Vol.1 §2.2 — не реализовывать по памяти;
       семантику симуляции уже поддерживает `cold` без прогрева — 2026-07-08
-- [ ] 5. M/G/1 PS (+ slowdown) и LCFS-PR (через busy period)
+- [x] 5. M/G/1 PS и LCFS-PR (`theory/fifo/mg1_ps.py`, `theory/fifo/mg1_lcfs_pr.py`;
+      новые мини-симуляторы `ProcessorSharingSim` и `LcfsPRSim` в
+      `sim/single_server_disciplines.py`; тесты `test_mg1_ps_lcfs.py` — геометрические
+      вероятности с Gamma-обслуживанием (нечувствительность), моменты sojourn LCFS-PR
+      = busy period). Старшие моменты PS (Яшков/Отт) — отложены — 2026-07-08
 - [ ] 6. M/G/1 FB/LAS (+ режим attained-service в SizeBasedQsSim)
 - [ ] 7. Ненадёжный прибор M/G/1 (Avi-Itzhak–Naor)
 

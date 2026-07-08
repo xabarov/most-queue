@@ -240,6 +240,43 @@ calc.set_predictor(ExpNoisePredictor())
 results = calc.run()
 ```
 
+### M/G/1 PS (Processor Sharing)
+
+**Описание:** Прибор делится поровну между всеми находящимися заявками (каждая из k заявок обслуживается со скоростью 1/k). Вероятности состояний — геометрические, нечувствительные к форме распределения обслуживания; условное среднее время пребывания заявки размера x — ровно x/(1−ρ).
+
+**Суть:** модель процессора, веб-сервера, разделяемого канала: никто не ждёт «в очереди»,
+но все замедляются в одинаковое число раз 1/(1−ρ). Идеально справедливая дисциплина —
+baseline для сравнения с SRPT/SJF (которые быстрее в среднем, но за счёт длинных заявок).
+Пока считаются только средние (старшие моменты — методы Яшкова/Отта, отложено).
+
+**Класс расчета:** `MG1PSCalc` (`most_queue.theory.fifo.mg1_ps`)
+**Симуляция:** `ProcessorSharingSim` (`most_queue.sim.single_server_disciplines`)
+
+**Пример:**
+
+```python
+from most_queue.theory.fifo.mg1_ps import MG1PSCalc
+
+calc = MG1PSCalc()
+calc.set_sources(l=1.0)
+calc.set_servers([0.7, 1.2])  # моменты времени обслуживания
+results = calc.run()
+slowdown = calc.get_mean_slowdown()          # 1/(1-rho)
+t_x = calc.get_conditional_sojourn_mean(2.0)  # x/(1-rho)
+```
+
+### M/G/1 LCFS-PR
+
+**Описание:** Прерывающий стек: новая заявка вытесняет обслуживаемую, вытесненные дообслуживаются с места прерывания. Время пребывания распределено как период занятости M/G/1 — все моменты по рекурсиям Такача; вероятности состояний — те же геометрические (BCMP).
+
+**Суть:** «последний пришёл — первый обслужен»: свежая заявка получает прибор сразу,
+но рискует быть вытесненной. Среднее время пребывания то же, что у PS и FCFS
+(b₁/(1−ρ)), но разброс гораздо больше — наглядный пример того, что дисциплина
+не меняет среднее (для непрерывающих политик без учёта размера), но меняет хвосты.
+
+**Класс расчета:** `MG1LcfsPrCalc` (`most_queue.theory.fifo.mg1_lcfs_pr`)
+**Симуляция:** `LcfsPRSim` (`most_queue.sim.single_server_disciplines`)
+
 ### GI/M/1
 
 **Описание:** Одноканальная система с общим потоком поступления и экспоненциальным обслуживанием.
@@ -789,6 +826,8 @@ results = calc.run()
 | M/G/1 SJF | MG1SjfCalc | SizeBasedQsSim | - | Non-preemptive по размеру |
 | M/G/1 PSJF | MG1PsjfCalc | SizeBasedQsSim | - | Preemptive по исходному размеру |
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | По предсказанию Y |
+| M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Равное разделение, slowdown 1/(1−ρ) |
+| M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Сojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, только w1 |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Да | Прерываемый приоритет |
