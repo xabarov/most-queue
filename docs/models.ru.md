@@ -857,6 +857,66 @@ results = calc.run()
 
 **Пример:** См. тест `test_impatience.py`
 
+### Erlang-A (M/M/n+M)
+
+**Описание:** Многоканальная модель с уходами: n приборов, пуассоновский поток, экспоненциальные обслуживание и «терпение» каждой ждущей заявки. Всегда стабильна; рабочая лошадка staffing-расчётов колл-центров (Palm; Garnett–Mandelbaum–Reiman).
+
+**Суть:** реалистичный колл-центр — часть звонящих вешает трубку, не дождавшись оператора.
+Модель отвечает сразу на оба staffing-вопроса: какая доля клиентов теряется и сколько нужно
+операторов, чтобы удержать её ниже цели (`find_min_servers`).
+
+**Класс расчета:** `MMnImpatienceCalc` (`most_queue.theory.impatience.mmn`)
+**Симуляция:** `ImpatientQueueSim`
+
+## Retrial-очереди (повторные попытки)
+
+![Схема retrial-очереди](figures/retrial.png)
+
+**Суть:** зала ожидания нет вовсе: заявка, заставшая прибор занятым, уходит в невидимую
+**орбиту** и повторяет попытку через случайное время (абонент, услышавший «занято», перезванивает).
+По сравнению с обычной очередью прибор иногда простаивает, пока заявки сидят в орбите, —
+ожидания длиннее, и чем ленивее повторы (меньше γ), тем хуже.
+
+### M/M/1 retrial
+
+**Описание:** Классическая (линейная) retrial-политика: каждая из j заявок орбиты повторяет с интенсивностью γ. Решается точно адаптивным усечением level-dependent цепи.
+
+**Класс расчета:** `MM1RetrialCalc` (`most_queue.theory.retrial`)
+**Симуляция:** `RetrialQueueSim` (`most_queue.sim.retrial`)
+
+### M/G/1 retrial
+
+**Описание:** Произвольное обслуживание; средний размер орбиты и ожидание в замкнутой форме (Falin–Templeton): E[N_o] = λ²b₂/(2(1−ρ)) + λρ/(γ(1−ρ)). При γ→∞ восстанавливается обычная M/G/1.
+
+**Суть:** плата за повторные попытки — аддитивная добавка к обычной длине очереди M/G/1,
+растущая при ленивых повторах. Формула проверена в библиотеке против точного решения
+M/M/1 retrial и симуляции.
+
+**Класс расчета:** `MG1RetrialCalc` (`most_queue.theory.retrial`)
+
+## Матрично-аналитические модели (MAP/PH)
+
+![Коррелированный вход MAP](figures/map_arrivals.png)
+
+**Суть:** реальный трафик пульсирует — за коротким интервалом чаще следует короткий.
+Марковский поток (MAP) ловит эту корреляцию парой матриц (D₀, D₁); фазовые (PH) распределения
+играют ту же роль для обслуживания. Очередь MAP/PH/1 решается **точно** матрично-геометрическим
+(QBD) методом — и ответ может отличаться от renewal-модели с теми же mean/CV в разы
+(см. [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb)).
+
+### MAP/PH/1
+
+**Описание:** Коррелированный вход, фазовое обслуживание, один прибор. Стационарное распределение — QBD с logarithmic reduction (Latouche–Ramaswami); моменты ожидания — дифференцированием LST прибывающей заявки.
+
+**Класс расчета:** `MapPh1Calc` (`most_queue.theory.matrix.map_ph1`)
+**Симуляция:** `QsSim` c `set_sources(map_params, "MAP")` и `set_servers(ph_params, "PH")`
+
+### M/PH/1 и PH/PH/1
+
+**Описание:** Частные случаи на том же QBD-ядре: `MPh1Calc` (пуассоновский вход) в точности воспроизводит Полячека–Хинчина; `PhPh1Calc` (renewal PH-вход) покрывает одноканальные системы типа GI/PH.
+
+**Классы расчета:** `MPh1Calc`, `PhPh1Calc` (`most_queue.theory.matrix.map_ph1`)
+
 ## Закрытые системы
 
 ![Схема закрытой системы Engset](figures/engset.png)
@@ -908,6 +968,11 @@ results = calc.run()
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Отказы+ремонты, completion time |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Параллельное обслуживание |
 | M^x/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Пакетное поступление |
+| Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Уходы, staffing-помощник |
+| M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Орбита, точное усечение цепи |
+| M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Формула Falin–Templeton |
+| MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Коррелированный вход, QBD |
+| M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | Частные случаи QBD |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 
 ## Рекомендации по выбору модели

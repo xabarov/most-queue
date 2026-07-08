@@ -862,6 +862,112 @@ depends on the number of servers.
 
 **Example:** See the test `test_impatience.py`
 
+### Erlang-A (M/M/n+M)
+
+**Description:** The multi-server abandonment model: n servers, Poisson arrivals, exponential service, and an exponential patience clock for every waiting job. Always stable; the workhorse of call-center staffing (Palm; Garnett–Mandelbaum–Reiman).
+
+**In plain words:** the realistic call center: some callers hang up before an agent answers.
+The model answers the two staffing questions at once — what fraction of customers is lost and
+how many servers are needed to keep that fraction below a target
+(`find_min_servers`).
+
+**Calculator class:** `MMnImpatienceCalc` (`most_queue.theory.impatience.mmn`)
+**Simulation:** `ImpatientQueueSim`
+
+**Example:**
+
+```python
+from most_queue.theory.impatience.mmn import MMnImpatienceCalc
+
+calc = MMnImpatienceCalc(n=3, theta=0.3)  # theta — impatience rate
+calc.set_sources(1.0)
+calc.set_servers(0.5)
+results = calc.run()
+p_abandon = calc.get_abandonment_probability()
+n_needed = calc.find_min_servers(target_abandonment=0.05)
+```
+
+## Retrial queues
+
+![Retrial queue diagram](figures/retrial.png)
+
+**In plain words:** there is no waiting room at all: a job that finds the server busy goes to
+an invisible **orbit** and retries after a random time (a caller who got a busy tone and dials
+again). Compared with an ordinary queue, the server sometimes idles while jobs sit in orbit —
+so waits are longer, and the slower the retries (small γ), the worse it gets.
+
+### M/M/1 retrial
+
+**Description:** Classical (linear) retrial policy: each of j orbiting jobs retries at rate γ. Solved exactly by adaptive truncation of the level-dependent chain.
+
+**Calculator class:** `MM1RetrialCalc` (`most_queue.theory.retrial`)
+**Simulation:** `RetrialQueueSim` (`most_queue.sim.retrial`)
+
+**Example:**
+
+```python
+from most_queue.theory.retrial import MM1RetrialCalc
+
+calc = MM1RetrialCalc(gamma=0.7)
+calc.set_sources(1.0)
+calc.set_servers(1.43)
+results = calc.run()
+orbit_mean = calc.get_orbit_mean()
+```
+
+### M/G/1 retrial
+
+**Description:** General service times; mean orbit size and waiting in closed form (Falin–Templeton): E[N_o] = λ²b₂/(2(1−ρ)) + λρ/(γ(1−ρ)). As γ→∞ the ordinary M/G/1 is recovered.
+
+**In plain words:** the retrial penalty is an additive term on top of the ordinary M/G/1
+queue length — it grows as retries become lazier. The formula was verified in this library
+against the exact M/M/1-retrial solution and against simulation.
+
+**Calculator class:** `MG1RetrialCalc` (`most_queue.theory.retrial`)
+**Simulation:** `RetrialQueueSim`
+
+## Matrix-analytic models (MAP/PH)
+
+![MAP correlated arrivals](figures/map_arrivals.png)
+
+**In plain words:** real traffic is bursty — a short interarrival gap tends to be followed by
+another short one. The Markovian Arrival Process (MAP) captures this correlation with a pair of
+matrices (D₀, D₁); phase-type (PH) distributions play the same role for service times. The
+MAP/PH/1 queue is solved **exactly** by the matrix-geometric (QBD) method — and the answer can
+differ from a renewal model with identical mean/CV by several times
+(see [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb)).
+
+### MAP/PH/1
+
+**Description:** Correlated arrivals, phase-type service, one server. Stationary distribution via the QBD logarithmic-reduction method (Latouche–Ramaswami); waiting-time moments by differentiating the arriving-job LST.
+
+**Calculator class:** `MapPh1Calc` (`most_queue.theory.matrix.map_ph1`)
+**Simulation:** `QsSim` with `set_sources(map_params, "MAP")` and `set_servers(ph_params, "PH")`
+
+**Example:**
+
+```python
+import numpy as np
+from most_queue.random.distributions import H2Distribution
+from most_queue.random.map_ph import MAP, PHDistribution
+from most_queue.theory.matrix.map_ph1 import MapPh1Calc
+
+mmpp = MAP.mmpp([2.0, 0.4], np.array([[-0.2, 0.2], [0.3, -0.3]]))  # bursty arrivals
+# any PH: from_exp / from_erlang / from_h2 / from_cox, or a custom (alpha, T)
+service = PHDistribution.from_h2(H2Distribution.get_params_by_mean_and_cv(0.5, 1.2))
+
+calc = MapPh1Calc()
+calc.set_sources(mmpp)
+calc.set_servers(service)
+results = calc.run()
+```
+
+### M/PH/1 and PH/PH/1
+
+**Description:** Special cases via the same QBD engine: `MPh1Calc` (Poisson arrivals) reproduces Pollaczek–Khinchine exactly; `PhPh1Calc` (renewal PH arrivals) covers GI/PH-type single-server systems.
+
+**Calculator classes:** `MPh1Calc`, `PhPh1Calc` (`most_queue.theory.matrix.map_ph1`)
+
 ## Closed systems
 
 ![Engset closed system diagram](figures/engset.png)
@@ -913,6 +1019,11 @@ results = calc.run()
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Breakdowns+repairs, completion time |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Parallel service |
 | M^x/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Batch arrivals |
+| Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Abandonment, staffing helper |
+| M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Orbit, exact truncated chain |
+| M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Falin–Templeton closed form |
+| MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Correlated arrivals, QBD |
+| M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | QBD special cases |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model

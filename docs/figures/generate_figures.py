@@ -13,7 +13,7 @@ Palette: colorblind-safe categorical set (validated, worst adjacent CVD dE=24.2)
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
+from matplotlib.patches import Circle, Ellipse, FancyArrowPatch, FancyBboxPatch
 
 # --- palette (light mode) ---
 BLUE = "#2a78d6"  # customers / series 1
@@ -705,8 +705,82 @@ def fig_slowdown(lang: str = "ru"):
     return fig
 
 
+def fig_retrial():
+    """Retrial queue: blocked jobs join an orbit and retry."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.2), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.5, 1.9))
+    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    for i, xx in enumerate([0.0, 0.6, 1.2]):
+        draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
+    draw_arrow(ax, 1.55, 0, 2.9, 0)
+    draw_server(ax, 3.5, 0, r=0.36, label="μ", busy_color=BLUE)
+    draw_arrow(ax, 3.95, 0, 4.9, 0)
+    draw_customer(ax, 5.2, 0, color=GREEN, r=0.16)
+    ax.text(3.5, 0.85, "очереди нет", fontsize=8.5, color=INK2, ha="center")
+    # orbit ellipse
+    orbit = Ellipse((3.5, -1.55), 4.6, 1.3, fc="white", ec=MUTED, lw=1.3, ls=(0, (5, 3)))
+    ax.add_patch(orbit)
+    for xx in (2.3, 3.5, 4.7):
+        draw_customer(ax, xx, -1.55, color=YELLOW, r=0.16)
+    ax.text(3.5, -2.35, "орбита", fontsize=9, color=INK2, ha="center")
+    # blocked -> orbit
+    draw_arrow(ax, 2.75, -0.25, 2.2, -1.15, color=RED, lw=1.5, ls=(0, (4, 3)))
+    ax.text(0.35, -1.2, "прибор занят —\nв орбиту", fontsize=8.5, color=INK, ha="left")
+    # retry -> server
+    draw_arrow(ax, 4.75, -1.2, 3.75, -0.42, color=YELLOW, lw=1.5, ls=(0, (4, 3)))
+    ax.text(
+        5.6,
+        -1.3,
+        "каждая заявка в орбите повторяет попытку\nчерез случайное время (интенсивность γ);\nзанято — снова в орбиту",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "Retrial-очередь: вместо ожидания — повторные попытки", x=0.44)
+    return fig
+
+
+def fig_map_arrivals():
+    """MAP: bursty correlated arrivals vs a renewal stream."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.8), dpi=150)
+    ax.set_xlim(0, 11.2)
+    ax.set_ylim(-2.1, 1.9)
+    ax.axis("off")
+    # renewal (top): evenly-ish spaced
+    ax.text(0.1, 1.45, "renewal-поток (интервалы независимы):", fontsize=9, color=INK2, ha="left")
+    for xx in (0.7, 1.8, 2.7, 3.9, 4.9, 6.1, 7.0, 8.2, 9.3, 10.3):
+        draw_customer(ax, xx, 0.8, r=0.12)
+    ax.plot([0.4, 10.8], [0.8, 0.8], color=GRID, lw=1.0, zorder=1)
+    # MAP (bottom): bursts
+    ax.text(
+        0.1,
+        0.05,
+        "MAP (например, MMPP): всплески и паузы при той же средней интенсивности:",
+        fontsize=9,
+        color=INK2,
+        ha="left",
+    )
+    for xx in (0.7, 1.0, 1.3, 1.6, 2.0, 4.9, 5.2, 5.5, 5.9, 6.2, 9.4, 9.7, 10.0):
+        draw_customer(ax, xx, -0.6, r=0.12, color=RED)
+    ax.plot([0.4, 10.8], [-0.6, -0.6], color=GRID, lw=1.0, zorder=1)
+    ax.text(
+        0.1,
+        -1.55,
+        "интервалы коррелированы: за коротким чаще следует короткий. Средние и CV могут совпадать\nс renewal-потоком, но очередь при MAP-входе в разы длиннее (см. tutorials/map_ph_correlation.ipynb)",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "Коррелированный вход (MAP): то, чего не видят renewal-модели", x=0.45)
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
+    "retrial": fig_retrial,
+    "map_arrivals": fig_map_arrivals,
     "loss": fig_loss,
     "m_g_inf": fig_m_g_inf,
     "ps": fig_ps,

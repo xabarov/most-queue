@@ -43,6 +43,6 @@
 |---|------|--------|
 | [EPIC-001](EPIC-001-queueing-models-gap-analysis.md) | Исследование: модели теории очередей vs реализованные | done |
 | [EPIC-002](EPIC-002-wave1-exact-models.md) | Волна 1: точные базовые модели (Erlang B/C, M/G/∞, GI/G, vacations, PS/FB, breakdowns) | done |
-| [EPIC-003](EPIC-003-qbd-map-ph.md) | QBD/MAP/PH-стек (матрично-аналитические методы) | proposed |
-| [EPIC-004](EPIC-004-retrial-erlang-a.md) | Retrial-очереди и Erlang-A | proposed |
+| [EPIC-003](EPIC-003-qbd-map-ph.md) | QBD/MAP/PH-стек (матрично-аналитические методы) | done |
+| [EPIC-004](EPIC-004-retrial-erlang-a.md) | Retrial-очереди и Erlang-A | done |
 | [EPIC-005](EPIC-005-illustrated-catalog.md) | Иллюстрированный каталог моделей (простые описания + схемы) | done |
