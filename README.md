@@ -11,6 +11,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/most-queue)](https://pypi.org/project/most-queue/)
 [![License](https://img.shields.io/pypi/l/most-queue)](https://github.com/xabarov/most-queue/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/most-queue)](https://pepy.tech/project/most-queue)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21268402.svg)](https://doi.org/10.5281/zenodo.21268402)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)](https://github.com/xabarov/most-queue/commits/main)
 
 <img src="https://raw.githubusercontent.com/xabarov/most-queue/main/assets/most-queue-nano1.jpeg" alt="Most-Queue banner" width="720"/>
@@ -95,7 +96,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/) — from a first M/M/1 to Takahashi–Takami and SRPT
-- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (matrix-analytic MAP/PH stack, retrial queues, Erlang-A)
+- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (BMAP/G/1, MAP fitting, multi-server retrial, polling)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications
@@ -135,6 +136,7 @@ If you use Most-Queue in research, please cite it (see [`CITATION.cff`](CITATION
   author  = {Khabarov, Roman},
   title   = {Most-Queue: queueing theory calculations and simulation in Python},
   url     = {https://github.com/xabarov/most-queue},
+  doi     = {10.5281/zenodo.21268402},
   license = {MIT}
 }
 ```

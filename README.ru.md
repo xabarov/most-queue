@@ -11,6 +11,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/most-queue)](https://pypi.org/project/most-queue/)
 [![License](https://img.shields.io/pypi/l/most-queue)](https://github.com/xabarov/most-queue/blob/main/LICENSE)
 [![Downloads](https://static.pepy.tech/badge/most-queue)](https://pepy.tech/project/most-queue)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21268402.svg)](https://doi.org/10.5281/zenodo.21268402)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)](https://github.com/xabarov/most-queue/commits/main)
 
 <img src="https://raw.githubusercontent.com/xabarov/most-queue/main/assets/most-queue-nano1.jpeg" alt="Most-Queue" width="720"/>
@@ -99,7 +100,7 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 - 📖 [Документация](docs/README.ru.md) — концепции, руководства по расчётам и симуляции (основная версия — [английская](docs/README.md))
 - 🎓 [Jupyter-туториалы](tutorials/) — от первой M/M/1 до Такахаси–Таками и SRPT
-- 🗺 [Планы развития](docs/epics/README.md) — что дальше (матрично-аналитический стек MAP/PH, retrial-очереди, Erlang-A)
+- 🗺 [Планы развития](docs/epics/README.md) — что дальше (BMAP/G/1, MAP-fitting, многоканальный retrial, polling)
 - 🧪 [Тесты](tests/) — каждая модель сверена с симуляцией; запуск: `pytest -m "not slow"`
 
 ## Области применения
@@ -144,6 +145,7 @@ Issues и pull requests приветствуются! Открывайте [issu
   author  = {Khabarov, Roman},
   title   = {Most-Queue: queueing theory calculations and simulation in Python},
   url     = {https://github.com/xabarov/most-queue},
+  doi     = {10.5281/zenodo.21268402},
   license = {MIT}
 }
 ```

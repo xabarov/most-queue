@@ -6,6 +6,7 @@ authors:
   - family-names: Khabarov
     given-names: Roman
     email: xabarov1985@gmail.com
+doi: 10.5281/zenodo.21268402
 repository-code: "https://github.com/xabarov/most-queue"
 url: "https://github.com/xabarov/most-queue"
 license: MIT
