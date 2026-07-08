@@ -17,12 +17,7 @@ if __name__ == "__main__":
     for cv in cvs:
         params = Weibull.get_params_by_mean_and_cv(MEAN, cv)
 
-        print(
-            f"Weibull params at CV= {
-                cv:1.3f}: k = {
-                params.k:1.3f} W = {
-                params.W:1.3f}"
-        )
+        print(f"Weibull params at CV= {cv:1.3f}: k = {params.k:1.3f} W = {params.W:1.3f}")
         ts = np.linspace(0, 3 * cvs[len(cvs) - 1], 100)
         dfr = [Weibull.get_tail(params, t) for t in ts]
 

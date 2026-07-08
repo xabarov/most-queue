@@ -63,6 +63,15 @@ def create_distribution(params, kendall_notation: str, generator):
         dist = NormalDistribution(params, generator=generator)
     elif kendall_notation == "D":
         dist = DeterministicDistribution(params)
+    elif kendall_notation == "PH":
+        # local import: map_ph pulls in scipy.linalg, keep base import light
+        from most_queue.random.map_ph import PHDistribution  # pylint: disable=import-outside-toplevel
+
+        dist = PHDistribution(params, generator=generator)
+    elif kendall_notation == "MAP":
+        from most_queue.random.map_ph import MAP  # pylint: disable=import-outside-toplevel
+
+        dist = MAP(params, generator=generator)
     else:
         raise ValueError(
             "Incorrect distribution type specified. See most_queue.random.distributions.print_supported_distributions() for list of supported distributions"
