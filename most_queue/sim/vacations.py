@@ -21,6 +21,7 @@ class VacationQueueingSystemSimulator(QsSim):
         verbose: bool = True,
         buffer_type: str = "list",
         is_service_on_warm_up: bool = False,
+        is_multiple_vacations: bool = False,
     ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
@@ -32,6 +33,11 @@ class VacationQueueingSystemSimulator(QsSim):
             if is True, jobs arrived in empty system will be served with warm_phase distribution
             if is False, jobs arrived in empty system will be send to queue,
                 and warm_phase starts with warm_phase distribution
+        :param is_multiple_vacations: bool :
+            if True, the server takes another vacation (cold period) immediately
+            when the queue is still empty at the end of a vacation — classic
+            multiple-vacations discipline. If False (default), the server stays
+            idle after the cold period ends with an empty queue (single vacation).
         """
         super().__init__(num_of_channels, buffer, verbose, buffer_type)
 
@@ -41,6 +47,7 @@ class VacationQueueingSystemSimulator(QsSim):
 
         self.warm_after_cold_starts = 0
         self.is_service_on_warm_up = is_service_on_warm_up
+        self.is_multiple_vacations = is_multiple_vacations
 
     def set_warm(self, params, kendall_notation):
         """
@@ -251,6 +258,11 @@ class VacationQueueingSystemSimulator(QsSim):
 
         self.cold_phase.end(self.ttek)
 
+        if self.is_multiple_vacations and self.queue.size() == 0:
+            # Multiple vacations: queue is still empty, take another vacation
+            self.cold_phase.start(self.ttek)
+            return
+
         if self.warm_phase.is_set:
             if self.queue.size() != 0:
                 # We start warming up only if there are jobs accumulated in the
@@ -314,3 +326,39 @@ class VacationQueueingSystemSimulator(QsSim):
         Returns probability of the system being in the delay cold phase
         """
         return self.cold_delay_phase.get_prob(self.ttek)
+
+
+class NPolicyQueueSim(VacationQueueingSystemSimulator):
+    """
+    Simulation of a queue under N-policy: the server switches off when the
+    system empties and resumes service only when N jobs have accumulated,
+    then serves exhaustively.
+
+    The switched-off state is modeled as an infinitely long cold phase that is
+    terminated as soon as the number of jobs in the system reaches N.
+    """
+
+    _INFINITE_COLD = 1e100
+
+    def __init__(self, num_of_channels: int, big_n: int, **kwargs):
+        """
+        :param num_of_channels: int : number of channels in the system
+        :param big_n: int : policy threshold N (server resumes at N jobs)
+        """
+        super().__init__(num_of_channels, **kwargs)
+        if big_n < 1:
+            raise ValueError(f"N must be >= 1, got {big_n}")
+        self.big_n = big_n
+        self.set_cold(self._INFINITE_COLD, "D")
+        # the system starts empty with the server switched off
+        self.cold_phase.start(0)
+
+    def arrival(self, moment=None, ts=None):
+        """
+        Standard arrival; additionally ends the switched-off (cold) state
+        as soon as N jobs have accumulated.
+        """
+        super().arrival(moment, ts)
+        if self.cold_phase.is_start and self.in_sys >= self.big_n:
+            self.cold_phase.end_time = self.ttek
+            self.on_end_cold()
