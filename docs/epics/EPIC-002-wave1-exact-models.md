@@ -45,7 +45,10 @@
       в событийный `SizeBasedQsSim` FB не встраивается корректно, ранг непрерывно
       меняется; тесты `test_mg1_fb.py`: сверка с симуляцией, exp-обслуживание = PS,
       FB < PS при DHR) — 2026-07-08
-- [ ] 7. Ненадёжный прибор M/G/1 (Avi-Itzhak–Naor)
+- [x] 7. Ненадёжный прибор M/G/1 (`theory/vacations/mg1_unreliable.py` — completion time
+      через кумулянты, до 4 моментов; симулятор `UnreliableQueueSim` в `sim/unreliable.py`;
+      тесты `test_mg1_unreliable.py`: сверка с симуляцией отказов, ξ=0 ⇒ M/G/1 с точностью
+      1e-12, тождество E[C]=b₁(1+ξr₁)) — 2026-07-08
 
 ## Критерии готовности (DoD эпика)
 

@@ -455,9 +455,259 @@ def fig_loss():
     return fig
 
 
+def fig_m_g_inf():
+    """M/G/inf: unlimited servers, no queue at all."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-1.9, 1.9))
+    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    for i, xx in enumerate([0.0, 0.6, 1.2]):
+        draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
+    draw_arrow(ax, 1.55, 0, 2.7, 0)
+    for row, y in enumerate([1.1, 0.0, -1.1]):
+        for col in range(3):
+            x = 3.4 + col * 1.0
+            if row == 2 and col == 2:
+                ax.text(x, y, "…", fontsize=14, color=MUTED, ha="center", va="center")
+            else:
+                busy = (row + col) % 2 == 0
+                draw_server(ax, x, y, r=0.3, color=AQUA if busy else GRID, label="μ" if busy else "")
+    draw_arrow(ax, 5.9, 0, 6.8, 0)
+    draw_customer(ax, 7.1, 0, color=GREEN, r=0.16)
+    ax.text(
+        7.6,
+        0.0,
+        "приборов «бесконечно много»: каждый\nполучает свой сразу, ожидания нет.\nЗанято в среднем a = λ·b₁ приборов\n(и это Пуассон при любом распределении b)",
+        fontsize=9,
+        color=INK,
+        va="center",
+        ha="left",
+    )
+    _title(ax, "M/G/∞: сколько ресурса занято одновременно", x=0.42)
+    return fig
+
+
+def fig_ps():
+    """Processor Sharing: server splits capacity equally."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-1.7, 1.7))
+    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    for i, xx in enumerate([0.0, 0.6, 1.2]):
+        draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
+    draw_arrow(ax, 1.55, 0, 2.6, 0)
+    ax.add_patch(
+        FancyBboxPatch((2.8, -1.2), 3.4, 2.4, boxstyle="round,pad=0.08", fc="white", ec=MUTED, lw=1.4, zorder=2)
+    )
+    ax.text(4.5, 1.02, "прибор (без очереди)", fontsize=9, color=INK2, ha="center")
+    for i, (y, color) in enumerate(zip([0.5, -0.1, -0.7], [BLUE, AQUA, VIOLET])):
+        draw_customer(ax, 3.35, y, color=color, r=0.15)
+        ax.add_patch(
+            FancyBboxPatch((3.7, y - 0.11), 2.2, 0.22, boxstyle="round,pad=0.02", fc=GRID, ec="none", zorder=3)
+        )
+        ax.add_patch(
+            FancyBboxPatch((3.7, y - 0.11), 2.2 / 3, 0.22, boxstyle="round,pad=0.02", fc=color, ec="none", zorder=4)
+        )
+        ax.text(6.0, y, "⅓ μ", fontsize=8.5, color=INK2, ha="left", va="center")
+    draw_arrow(ax, 6.4, 0, 7.3, 0)
+    draw_customer(ax, 7.6, 0, color=GREEN, r=0.16)
+    ax.text(
+        8.05,
+        0.0,
+        "k заявок в системе — каждая получает\n1/k мощности: никто не ждёт,\nно все замедляются в 1/(1−ρ) раз",
+        fontsize=9,
+        color=INK,
+        va="center",
+        ha="left",
+    )
+    _title(ax, "M/G/1 PS: процессор делится поровну между всеми", x=0.44)
+    return fig
+
+
+def fig_lcfs_pr():
+    """LCFS-PR: preemptive stack."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.0, 1.8))
+    # stack
+    labels = ["3-я (обслуживается)", "2-я (вытеснена)", "1-я (вытеснена)"]
+    colors = [YELLOW, AQUA, BLUE]
+    for i, (lab, color) in enumerate(zip(labels, colors)):
+        y = 0.8 - i * 0.75
+        ax.add_patch(
+            FancyBboxPatch((3.0, y - 0.28), 2.6, 0.56, boxstyle="round,pad=0.04", fc=color, ec="none", zorder=3)
+        )
+        ax.text(4.3, y, lab, fontsize=8.5, color="white", ha="center", va="center", fontweight="bold", zorder=4)
+    ax.text(4.3, 1.45, "стек заявок", fontsize=9, color=INK2, ha="center")
+    # new arrival lands on top
+    draw_customer(ax, 1.0, 0.8, color=RED, r=0.16)
+    draw_arrow(ax, 1.25, 0.8, 2.9, 0.85, color=RED, lw=1.6, ls=(0, (4, 3)))
+    ax.text(
+        0.1, 0.1, "новая заявка вытесняет\nтекущую и сразу\nзанимает прибор", fontsize=9, color=INK, ha="left", va="top"
+    )
+    # server on top element
+    draw_server(ax, 6.6, 0.8, r=0.34, label="μ")
+    draw_arrow(ax, 5.68, 0.8, 6.2, 0.8)
+    draw_arrow(ax, 7.0, 0.8, 7.8, 0.8)
+    draw_customer(ax, 8.1, 0.8, color=GREEN, r=0.15)
+    ax.text(
+        6.0,
+        -1.0,
+        "вытесненные дообслуживаются с места прерывания (resume).\nСреднее время пребывания — как у FCFS и PS,\nно распределено как период занятости: хвосты тяжёлые",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "M/G/1 LCFS-PR: прерывающий стек", x=0.42)
+    return fig
+
+
+def fig_n_policy():
+    """N-policy: server sleeps until N jobs accumulate."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.0, 1.8))
+    # left: accumulating, server off
+    draw_queue(ax, 0.6, 0.6, n_slots=4, occupied=3)
+    draw_server(ax, 3.3, 0.6, r=0.32, color=GRID, label="off")
+    ax.text(1.55, 1.35, "прибор спит, заявки копятся…", fontsize=9, color=INK2, ha="center")
+    ax.text(1.55, -0.05, "3 из N=4", fontsize=8.5, color=INK2, ha="center")
+    # arrow to right state
+    draw_arrow(ax, 4.1, 0.6, 5.2, 0.6, lw=1.8)
+    ax.text(4.65, 0.95, "пришла\nN-я", fontsize=8.5, color=INK, ha="center")
+    # right: serving exhaustively
+    draw_queue(ax, 5.5, 0.6, n_slots=4, occupied=4)
+    draw_server(ax, 8.2, 0.6, r=0.32, label="μ", busy_color=BLUE)
+    draw_arrow(ax, 8.6, 0.6, 9.4, 0.6)
+    draw_customer(ax, 9.7, 0.6, color=GREEN, r=0.15)
+    ax.text(
+        5.4,
+        -1.2,
+        "включившись, прибор работает до полного опустошения, затем снова спит.\nСредняя плата за экономию включений: (N−1)/(2λ) к ожиданию",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "M/G/1 под N-policy: включаемся, когда накопилось N заявок", x=0.44)
+    return fig
+
+
+def fig_unreliable():
+    """Unreliable server: breakdown and repair on one job's timeline."""
+    fig, ax = plt.subplots(figsize=(8.2, 2.4), dpi=150)
+    ax.set_xlim(0, 11.2)
+    ax.set_ylim(-1.6, 1.4)
+    ax.axis("off")
+    segments = [
+        (0.5, 2.3, AQUA, "обслуживание"),
+        (2.9, 1.8, RED, "ремонт"),
+        (4.8, 2.5, AQUA, "дообслуживание"),
+    ]
+    for x0, width, color, lab in segments:
+        ax.add_patch(FancyBboxPatch((x0, -0.3), width, 0.6, boxstyle="round,pad=0.03", fc=color, ec="none"))
+        ax.text(x0 + width / 2, 0.0, lab, fontsize=8.5, color="white", ha="center", va="center", fontweight="bold")
+    ax.annotate(
+        "отказ (интенсивность ξ,\nтолько под нагрузкой)",
+        xy=(2.9, 0.32),
+        xytext=(2.0, 1.05),
+        fontsize=8.5,
+        color=INK,
+        arrowprops={"arrowstyle": "-|>", "color": RED, "lw": 1.4},
+    )
+    ax.annotate("", xy=(7.3, -0.75), xytext=(0.5, -0.75), arrowprops={"arrowstyle": "<|-|>", "color": INK2, "lw": 1.3})
+    ax.text(3.9, -1.15, "completion time C = обслуживание + все свои ремонты", fontsize=9, color=INK, ha="center")
+    ax.text(
+        7.6,
+        0.0,
+        "система = обычная M/G/1,\nгде «обслуживание» заменено на C",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "Ненадёжный прибор (Avi-Itzhak–Naor): отказы приклеиваются к заявке", x=0.47)
+    return fig
+
+
+def fig_slowdown():
+    """Conditional slowdown E[T(x)]/x by discipline, computed by the library itself."""
+    # local imports: the figure is DATA-DRIVEN — it runs most_queue calculators
+    from most_queue.random.distributions import GammaDistribution  # pylint: disable=import-outside-toplevel
+    from most_queue.theory.fifo.mg1 import MG1Calc  # pylint: disable=import-outside-toplevel
+    from most_queue.theory.srpt import MG1FbCalc, MG1SrptCalc  # pylint: disable=import-outside-toplevel
+
+    lam, mean, cv = 1.0, 0.7, 1.5
+    gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean, cv)
+    b = GammaDistribution.calc_theory_moments(gamma_params, 5)
+    rho = lam * mean
+
+    fcfs = MG1Calc()
+    fcfs.set_sources(l=lam)
+    fcfs.set_servers(b)
+    w_fcfs = fcfs.get_w(3)[0]
+
+    fb = MG1FbCalc()
+    fb.set_sources(lam)
+    fb.set_servers(gamma_params, "Gamma")
+    fb.run()
+
+    srpt = MG1SrptCalc()
+    srpt.set_sources(lam)
+    srpt.set_servers(gamma_params, "Gamma")
+    srpt.run()
+
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    xs = np.linspace(0.05, 4.0 * mean, 120)
+    curves = {
+        "FCFS": [(w_fcfs + x) / x for x in xs],
+        "PS": [1.0 / (1.0 - rho) for _ in xs],
+        "FB (LAS)": [fb.conditional_mean_response(float(x)) / x for x in xs],
+        "SRPT": [srpt.conditional_mean_response(float(x)) / x for x in xs],
+    }
+    colors = {"FCFS": BLUE, "PS": AQUA, "FB (LAS)": YELLOW, "SRPT": VIOLET}
+
+    fig, ax = plt.subplots(figsize=(8.2, 4.2), dpi=150)
+    for name, ys in curves.items():
+        ax.plot(xs, ys, color=colors[name], lw=2, label=name)
+    ax.set_ylim(0, 12)
+    ax.legend(loc="upper right", fontsize=9, frameon=False)
+    ax.text(
+        0.35,
+        11.2,
+        "FCFS: короткие заявки страдают сильнее всех\n(кривая уходит вверх, обрезана)",
+        fontsize=8.5,
+        color=INK2,
+        ha="left",
+        va="top",
+    )
+    ax.set_xlim(0, 4.2 * mean)
+    ax.set_xlabel("размер заявки x", fontsize=9, color=INK2)
+    ax.set_ylabel("замедление E[T(x)] / x", fontsize=9, color=INK2)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    ax.spines["left"].set_color(MUTED)
+    ax.spines["bottom"].set_color(MUTED)
+    ax.tick_params(colors=MUTED, labelsize=8)
+    ax.grid(color=GRID, lw=0.7)
+    ax.set_axisbelow(True)
+    ax.set_title(
+        "Кто платит за дисциплину: замедление заявки в зависимости от её размера\n"
+        f"(M/G/1, Gamma-обслуживание, ρ={rho:.1f}, CV={cv}; посчитано калькуляторами most_queue)",
+        fontsize=10,
+        color=INK,
+        pad=12,
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "loss": fig_loss,
+    "m_g_inf": fig_m_g_inf,
+    "ps": fig_ps,
+    "lcfs_pr": fig_lcfs_pr,
+    "n_policy": fig_n_policy,
+    "unreliable": fig_unreliable,
+    "slowdown": fig_slowdown,
     "disciplines_timeline": fig_disciplines_timeline,
     "priority": fig_priority,
     "vacations": fig_vacations,
