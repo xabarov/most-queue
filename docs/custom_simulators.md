@@ -1,21 +1,23 @@
-# Руководство по созданию кастомных симуляторов
+# Guide to Building Custom Simulators
 
-Это руководство описывает, как создавать собственные классы симуляторов для системы массового обслуживания, используя новую event-based архитектуру.
+[🇷🇺 Русская версия](custom_simulators.ru.md)
 
-## Обзор архитектуры
+This guide describes how to create your own queueing system simulator classes using the new event-based architecture.
 
-Симуляторы теперь используют event-based подход с системой событий (events) и hook-методами для расширения функциональности. Это делает создание кастомных симуляторов значительно проще.
+## Architecture Overview
 
-### Основные компоненты
+The simulators now use an event-based approach with an event system and hook methods for extending functionality. This makes creating custom simulators significantly easier.
 
-1. **BaseSimulationCore** - базовый класс с общей функциональностью
-2. **QsSim** - основной класс симулятора с event-based логикой
-3. **EventScheduler** - менеджер событий для планирования
-4. **Hook-методы** - точки расширения для кастомизации
+### Core Components
 
-## Базовый пример
+1. **BaseSimulationCore** - base class with shared functionality
+2. **QsSim** - main simulator class with event-based logic
+3. **EventScheduler** - event manager for scheduling
+4. **Hook methods** - extension points for customization
 
-Вот минимальный пример создания кастомного симулятора:
+## Basic Example
+
+Here is a minimal example of a custom simulator:
 
 ```python
 from most_queue.sim.base import QsSim
@@ -23,34 +25,34 @@ from most_queue.sim.base import QsSim
 class MyCustomSimulator(QsSim):
     def __init__(self, num_of_channels, buffer=None, verbose=True):
         super().__init__(num_of_channels, buffer, verbose)
-        # Ваша инициализация
+        # Your initialization
     
     def _get_custom_events(self):
-        """Регистрация кастомных событий"""
+        """Register custom events"""
         return {
-            'my_event': self.my_event_time  # словарь: тип_события -> время
+            'my_event': self.my_event_time  # dict: event_type -> time
         }
     
     def _handle_custom_event(self, event_type):
-        """Обработка кастомных событий"""
+        """Handle custom events"""
         if event_type == 'my_event':
             self.handle_my_event()
         else:
             super()._handle_custom_event(event_type)
     
     def handle_my_event(self):
-        """Логика обработки вашего события"""
-        # Ваша логика здесь
+        """Handling logic for your event"""
+        # Your logic here
         pass
 ```
 
-## Hook-методы
+## Hook Methods
 
-### Методы для регистрации событий
+### Event Registration Methods
 
 #### `_get_custom_events()`
 
-Возвращает словарь с кастомными событиями. Ключ - тип события (строка), значение - время события.
+Returns a dictionary of custom events. The key is the event type (a string), the value is the event time.
 
 ```python
 def _get_custom_events(self):
@@ -62,75 +64,75 @@ def _get_custom_events(self):
 
 #### `_handle_custom_event(event_type)`
 
-Обрабатывает кастомные события. Должен быть переопределен для обработки ваших событий.
+Handles custom events. Must be overridden to handle your events.
 
 ```python
 def _handle_custom_event(self, event_type):
     if event_type == 'my_event':
-        # обработка
+        # handling
         pass
     else:
-        super()._handle_custom_event(event_type)  # для неизвестных событий
+        super()._handle_custom_event(event_type)  # for unknown events
 ```
 
-### Методы для расширения базового поведения
+### Methods for Extending Base Behavior
 
 #### `_before_arrival()` / `_after_arrival()`
 
-Вызываются до и после обработки события прибытия заявки.
+Called before and after processing a job arrival event.
 
 ```python
 def _before_arrival(self, moment=None, ts=None):
-    # Логика перед прибытием
+    # Logic before arrival
     pass
 
 def _after_arrival(self, moment=None, ts=None):
-    # Логика после прибытия
+    # Logic after arrival
     pass
 ```
 
 #### `_before_serving()` / `_after_serving()`
 
-Вызываются до и после завершения обслуживания.
+Called before and after a service completion.
 
 ```python
 def _before_serving(self, channel, is_network=False):
-    # Логика перед обслуживанием
+    # Logic before serving
     pass
 
 def _after_serving(self, channel, task=None, is_network=False):
-    # Логика после обслуживания
+    # Logic after serving
     pass
 ```
 
-### Вспомогательные методы
+### Helper Methods
 
 #### `_update_state_probs(old_time, new_time, state)`
 
-Обновляет массив вероятностей состояний системы. Используйте этот метод вместо прямого изменения `self.p`.
+Updates the array of system state probabilities. Use this method instead of modifying `self.p` directly.
 
 ```python
-# Правильно:
+# Correct:
 self._update_state_probs(self.ttek, new_time, self.in_sys)
 
-# Неправильно:
+# Incorrect:
 self.p[self.in_sys] += new_time - self.ttek
 ```
 
 #### `_mark_servers_time_changed()`
 
-Помечает, что время серверов изменилось. Вызывайте после изменения `time_to_end_service`.
+Marks that the server times have changed. Call it after modifying `time_to_end_service`.
 
 ```python
 self.servers[0].time_to_end_service = new_time
 self._mark_servers_time_changed()
 ```
 
-## Примеры использования
+## Usage Examples
 
-### Пример 1: Симулятор с дополнительным событием
+### Example 1: Simulator with an Additional Event
 
-Симулятор с периодическим событием обслуживания оборудования:
+A simulator with a periodic equipment maintenance event:
 
 ```python
 from most_queue.sim.base import QsSim
@@ -146,24 +148,24 @@ class MaintenanceSimulator(QsSim):
     
     def _handle_custom_event(self, event_type):
         if event_type == 'maintenance':
-            # Остановка всех серверов на обслуживание
+            # Take all servers down for maintenance
             for server in self.servers:
                 if not server.is_free:
-                    # Прервать обслуживание
+                    # Interrupt service
                     server.end_service()
                     self.free_channels += 1
                     self._free_servers.add(server.id - 1)
             
-            # Запланировать следующее обслуживание
+            # Schedule the next maintenance
             self.next_maintenance_time = self.ttek + self.maintenance_interval
             self._mark_servers_time_changed()
         else:
             super()._handle_custom_event(event_type)
 ```
 
-### Пример 2: Симулятор с изменением приоритетов
+### Example 2: Simulator with Priority Adjustment
 
-Симулятор, который изменяет приоритеты заявок в зависимости от времени ожидания:
+A simulator that changes job priorities depending on their waiting time:
 
 ```python
 from most_queue.sim.base import QsSim
@@ -175,20 +177,20 @@ class DynamicPrioritySimulator(QsSim):
         self.priority_threshold = priority_threshold
     
     def _after_arrival(self, moment=None, ts=None):
-        # После прибытия проверяем время ожидания в очереди
-        # и повышаем приоритет старых заявок
+        # After an arrival, check the waiting time in the queue
+        # and promote old jobs
         for task in self.queue.queue:
             wait_time = self.ttek - task.start_waiting_time
             if wait_time > self.priority_threshold:
-                # Переместить в начало очереди (повысить приоритет)
+                # Move to the front of the queue (raise the priority)
                 self.queue.queue.remove(task)
                 self.queue.queue.appendleft(task)
                 break
 ```
 
-### Пример 3: Расширение существующего симулятора
+### Example 3: Extending an Existing Simulator
 
-Добавление функциональности к существующему симулятору:
+Adding functionality to an existing simulator:
 
 ```python
 from most_queue.sim.impatient import ImpatientQueueSim
@@ -196,43 +198,43 @@ from most_queue.sim.impatient import ImpatientQueueSim
 class EnhancedImpatientSimulator(ImpatientQueueSim):
     def __init__(self, num_of_channels, buffer=None):
         super().__init__(num_of_channels, buffer)
-        self.reneged_count = 0  # счетчик ушедших заявок
+        self.reneged_count = 0  # counter of reneged jobs
     
     def _handle_custom_event(self, event_type):
         if event_type == 'task_drop':
             self.reneged_count += 1
-            # Вызвать базовую обработку
+            # Invoke the base handling
             super()._handle_custom_event(event_type)
         else:
             super()._handle_custom_event(event_type)
 ```
 
-## Переопределение стандартных событий
+## Overriding Standard Events
 
-Если вам нужно изменить логику обработки стандартных событий (arrival, serving), вы можете переопределить методы `_get_available_events()` и `_execute_event()`:
+If you need to change the handling logic of standard events (arrival, serving), you can override the `_get_available_events()` and `_execute_event()` methods:
 
 ```python
 def _get_available_events(self):
-    """Переопределяем для добавления дополнительной логики"""
+    """Override to add extra logic"""
     events = super()._get_available_events()
     
-    # Добавляем фильтрацию или дополнительные события
+    # Add filtering or additional events
     if self.some_condition:
         events['special_arrival'] = self.special_arrival_time
     
     return events
 
 def _execute_event(self, event_type):
-    """Переопределяем для изменения логики выполнения"""
+    """Override to change the execution logic"""
     if event_type == 'special_arrival':
         self.handle_special_arrival()
     else:
         super()._execute_event(event_type)
 ```
 
-## Паттерны для типичных расширений
+## Patterns for Typical Extensions
 
-### Добавление нового типа прибытия заявок
+### Adding a New Job Arrival Type
 
 ```python
 def _get_available_events(self):
@@ -247,7 +249,7 @@ def _execute_event(self, event_type):
         super()._execute_event(event_type)
 ```
 
-### Добавление периодических событий
+### Adding Periodic Events
 
 ```python
 def __init__(self, ...):
@@ -264,33 +266,33 @@ def _handle_custom_event(self, event_type):
         self.next_periodic_event = self.ttek + self.periodic_event_interval
 ```
 
-### Добавление условных событий
+### Adding Conditional Events
 
 ```python
 def _get_custom_events(self):
     events = {}
-    # Событие происходит только при определенных условиях
-    if self.in_sys > 10:  # перегрузка системы
-        events['overload_alert'] = self.ttek  # немедленно
+    # The event only fires under certain conditions
+    if self.in_sys > 10:  # system overload
+        events['overload_alert'] = self.ttek  # immediately
     return events
 ```
 
-## Советы и лучшие практики
+## Tips and Best Practices
 
-1. **Всегда вызывайте `super()`** в переопределенных методах, если не заменяете функциональность полностью
-2. **Используйте `_update_state_probs()`** для обновления вероятностей состояний
-3. **Вызывайте `_mark_servers_time_changed()`** после изменения времени серверов
-4. **Документируйте кастомные события** - используйте понятные имена и описывайте их назначение
-5. **Тестируйте изолированно** - убедитесь, что ваши изменения не ломают базовую функциональность
+1. **Always call `super()`** in overridden methods unless you are completely replacing the functionality
+2. **Use `_update_state_probs()`** to update the state probabilities
+3. **Call `_mark_servers_time_changed()`** after changing server times
+4. **Document custom events** - use clear names and describe their purpose
+5. **Test in isolation** - make sure your changes do not break the base functionality
 
-## Миграция существующих симуляторов
+## Migrating Existing Simulators
 
-Если у вас есть существующий симулятор, который переопределяет `run_one_step()`, вы можете мигрировать его следующим образом:
+If you have an existing simulator that overrides `run_one_step()`, you can migrate it as follows:
 
-**До:**
+**Before:**
 ```python
 def run_one_step(self):
-    # Сложная логика выбора следующего события
+    # Complex logic for choosing the next event
     if condition1:
         self.handle_event1()
     elif condition2:
@@ -298,7 +300,7 @@ def run_one_step(self):
     # ...
 ```
 
-**После:**
+**After:**
 ```python
 def _get_custom_events(self):
     events = {}
@@ -313,14 +315,14 @@ def _handle_custom_event(self, event_type):
         self.handle_event1()
     elif event_type == 'event2':
         self.handle_event2()
-    # run_one_step() теперь наследуется и автоматически использует события
+    # run_one_step() is now inherited and uses the events automatically
 ```
 
-## Создание кастомных сетей массового обслуживания
+## Building Custom Queueing Networks
 
-Сети массового обслуживания также поддерживают event-based архитектуру. Принципы работы аналогичны одиночным симуляторам, но есть специфика работы с узлами сети.
+Queueing networks also support the event-based architecture. The principles are the same as for standalone simulators, but there are specifics related to working with network nodes.
 
-### Базовый пример кастомной сети
+### Basic Custom Network Example
 
 ```python
 from most_queue.sim.networks.network import NetworkSimulator
@@ -328,55 +330,55 @@ from most_queue.sim.networks.network import NetworkSimulator
 class MyCustomNetwork(NetworkSimulator):
     def __init__(self):
         super().__init__()
-        # Ваша инициализация
+        # Your initialization
     
     def _get_custom_network_events(self):
-        """Регистрация кастомных событий сети"""
+        """Register custom network events"""
         return {
             'network_maintenance': self.next_maintenance_time
         }
     
     def _handle_custom_network_event(self, event_type):
-        """Обработка кастомных событий сети"""
+        """Handle custom network events"""
         if event_type == 'network_maintenance':
             self.perform_maintenance()
         else:
             super()._handle_custom_network_event(event_type)
 ```
 
-### Hook-методы для сетей
+### Hook Methods for Networks
 
 #### `_before_network_arrival(k=None)` / `_after_network_arrival(k=None)`
 
-Вызываются до и после внешнего прибытия заявки в сеть.
+Called before and after an external job arrival to the network.
 
 ```python
 def _before_network_arrival(self, k=None):
-    # k - номер класса для PriorityNetwork, None для обычных сетей
-    # Логика перед прибытием
+    # k - class index for PriorityNetwork, None for regular networks
+    # Logic before arrival
     pass
 ```
 
 #### `_before_node_serving(node, channel)` / `_after_node_serving(node, channel, task)`
 
-Вызываются до и после обслуживания в конкретном узле сети.
+Called before and after service at a specific network node.
 
 ```python
 def _before_node_serving(self, node, channel):
-    # node - номер узла
-    # channel - номер канала
-    # Логика перед обслуживанием
+    # node - node index
+    # channel - channel index
+    # Logic before serving
     pass
 ```
 
-### Пример: Сеть с периодическим обслуживанием узлов
+### Example: Network with Periodic Node Maintenance
 
 ```python
 from most_queue.sim.networks.network import NetworkSimulator
 
 class MaintenanceNetwork(NetworkSimulator):
     """
-    Сеть с периодическим обслуживанием всех узлов.
+    Network with periodic maintenance of all nodes.
     """
     def __init__(self, maintenance_interval):
         super().__init__()
@@ -385,46 +387,45 @@ class MaintenanceNetwork(NetworkSimulator):
         self.maintenance_count = 0
     
     def _get_custom_network_events(self):
-        """Регистрация события обслуживания"""
+        """Register the maintenance event"""
         return {'network_maintenance': self.next_maintenance_time}
     
     def _handle_custom_network_event(self, event_type):
-        """Обработка обслуживания"""
+        """Handle maintenance"""
         if event_type == 'network_maintenance':
             self.maintenance_count += 1
-            # Остановить все узлы на обслуживание
+            # Take all nodes down for maintenance
             for node_idx, node in enumerate(self.qs):
-                # Логика обслуживания узла
+                # Node maintenance logic
                 pass
-            # Запланировать следующее обслуживание
+            # Schedule the next maintenance
             self.next_maintenance_time = self.ttek + self.maintenance_interval
         else:
             super()._handle_custom_network_event(event_type)
     
     def _before_node_serving(self, node, channel):
-        """Проверка, не идет ли обслуживание сети"""
-        # Можно добавить проверки перед обслуживанием
+        """Check whether network maintenance is in progress"""
+        # You can add checks before serving here
         pass
 ```
 
-### Работа с событиями узлов
+### Working with Node Events
 
-События обслуживания в узлах автоматически собираются методом `_get_node_serving_events()`. Формат события: `'node_serving_{node}_{channel}'`.
+Service events at the nodes are collected automatically by the `_get_node_serving_events()` method. Event format: `'node_serving_{node}_{channel}'`.
 
-Вы можете переопределить `_get_node_serving_events()` для кастомизации сбора событий:
+You can override `_get_node_serving_events()` to customize event collection:
 
 ```python
 def _get_node_serving_events(self):
-    """Переопределить для фильтрации или модификации событий"""
+    """Override to filter or modify events"""
     events = super()._get_node_serving_events()
-    # Добавить фильтрацию или модификацию
+    # Add filtering or modification
     return events
 ```
 
-## Дополнительные ресурсы
+## Additional Resources
 
-- См. примеры в `examples/custom_simulator_example.py`
-- Изучите существующие симуляторы (`vacations.py`, `impatient.py`, `negative.py`) как примеры использования
-- Изучите сети (`networks/network.py`, `networks/priority_network.py`, `networks/negative_network.py`) для примеров работы с сетями
-- Документация по базовым классам: `most_queue/sim/base.py` и `most_queue/sim/networks/base_network_sim.py`
-
+- See the examples in `examples/custom_simulator_example.py`
+- Study the existing simulators (`vacations.py`, `impatient.py`, `negative.py`) as usage examples
+- Study the networks (`networks/network.py`, `networks/priority_network.py`, `networks/negative_network.py`) for network examples
+- Base class documentation: `most_queue/sim/base.py` and `most_queue/sim/networks/base_network_sim.py`

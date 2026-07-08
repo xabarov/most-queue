@@ -1,63 +1,65 @@
-# Временные характеристики СМО с «disaster» (отрицательные заявки, очищающие систему)
+# Time Characteristics of Queueing Systems with Disasters (negative customers that clear the system)
 
-Этот документ описывает подход, используемый в Most-Queue для вычисления временных характеристик (время ожидания и время пребывания) в системах с **отрицательными заявками типа DISASTER**, которые при поступлении **мгновенно очищают систему** (удаляют всех клиентов из очереди и обслуживания).
+[🇷🇺 Русская версия](negative_disasters_time_characteristics.ru.md)
 
-## 1. Модель и термины
+This document describes the approach used in Most-Queue to compute the time characteristics (waiting time and sojourn time) of systems with **negative customers of the DISASTER type**, which upon arrival **instantly clear the system** (remove all customers from the queue and from service).
 
-Рассматривается одноклассовая СМО с:
+## 1. Model and Terminology
 
-- положительными поступлениями (обычно пуассоновский поток) с интенсивностью \(\lambda\);
-- обслуживанием со временем \(B\) (при численном расчёте в теории очередей часто аппроксимируется распределением \(H_2\) или \(C_2\); для имитационного моделирования обычно используется Gamma-распределение);
-- отрицательными поступлениями (disaster) — пуассоновский поток с интенсивностью \(\delta\) (`l_neg`), который при событии disaster **удаляет всех клиентов из системы**.
+We consider a single-class queueing system with:
 
-В симуляторе `QsSimNegatives(..., NegativeServiceType.DISASTER)` семантика такая:
+- positive arrivals (usually a Poisson flow) with rate \(\lambda\);
+- service with time \(B\) (in numerical queueing-theory calculations it is often approximated by an \(H_2\) or \(C_2\) distribution; for simulation, a Gamma distribution is typically used);
+- negative arrivals (disasters) — a Poisson flow with rate \(\delta\) (`l_neg`) which, upon a disaster event, **removes all customers from the system**.
 
-- если disaster случился в момент \(t\), то для всех клиентов, находящихся в системе, фиксируется их время пребывания как \(t - t_{\text{arrival}}\);
-- для клиентов в очереди также фиксируется их накопленное ожидание как \(t - t_{\text{start\_wait}}\);
-- система становится пустой мгновенно.
+In the simulator `QsSimNegatives(..., NegativeServiceType.DISASTER)` the semantics are as follows:
 
-### Какие случайные величины мы хотим получить
+- if a disaster occurs at time \(t\), then for every customer currently in the system, its sojourn time is recorded as \(t - t_{\text{arrival}}\);
+- for customers in the queue, their accumulated waiting is likewise recorded as \(t - t_{\text{start\_wait}}\);
+- the system becomes empty instantly.
 
-Для «типичного» положительного клиента:
+### Which Random Variables We Want to Obtain
 
-- \(W\) — **время ожидания в очереди** (до начала обслуживания **или** до disaster, если он случился раньше).
-- \(V\) — **время пребывания в системе** (до завершения обслуживания **или** до disaster, если он случился раньше).
+For a "typical" positive customer:
 
-Также полезны условные характеристики:
+- \(W\) — the **waiting time in the queue** (until service starts **or** until a disaster, whichever comes first).
+- \(V\) — the **sojourn time in the system** (until service completes **or** until a disaster, whichever comes first).
 
-- \(V_{\text{served}}\) — \(V\) при условии, что клиент **успешно обслужен** (завершил обслуживание до disaster).
-- \(V_{\text{broken}}\) — \(V\) при условии, что клиент **удалён disaster** (disaster раньше завершения обслуживания).
+Conditional characteristics are also useful:
 
-## 2. Ключевая идея: «min(·, Exp(δ))» и LST
+- \(V_{\text{served}}\) — \(V\) conditioned on the customer being **successfully served** (finished service before a disaster).
+- \(V_{\text{broken}}\) — \(V\) conditioned on the customer being **removed by a disaster** (the disaster occurred before service completion).
 
-Пусть \(Y\sim \mathrm{Exp}(\delta)\) — время до **первого disaster после момента прихода клиента**.
+## 2. The Key Idea: "min(·, Exp(δ))" and the LST
 
-Из независимости пуассоновских потоков следует, что \(Y\) независима от всего «внутреннего» поведения системы, если рассматривать его как функцию состояния в момент прихода.
+Let \(Y\sim \mathrm{Exp}(\delta)\) be the time until the **first disaster after the customer's arrival**.
 
-Далее удобно определить две величины, которые относятся к **гипотетической** системе, где disasters *после прихода клиента выключены*:
+By the independence of Poisson flows, \(Y\) is independent of all of the system's "internal" behavior, viewed as a function of the state at the arrival instant.
 
-- \(W_0\) — время до начала обслуживания клиента **если disasters после его прихода не происходят** (но стартуем из стационарного состояния системы с disasters в момент прихода).
-- \(Z_0 = W_0 + B\) — время до завершения обслуживания клиента в той же «no-disaster-after-arrival» картине.
+It is then convenient to define two quantities that refer to a **hypothetical** system in which disasters *after the customer's arrival are switched off*:
 
-Тогда величины, соответствующие симуляции, выражаются через минимум:
+- \(W_0\) — the time until the customer's service starts, **assuming no disasters occur after its arrival** (but starting from the stationary state of the system with disasters at the arrival instant).
+- \(Z_0 = W_0 + B\) — the time until the customer's service completes in the same "no-disaster-after-arrival" picture.
+
+Then the quantities matching the simulation are expressed via the minimum:
 
 - \(W = \min(W_0,\, Y)\)
 - \(V = \min(Z_0,\, Y)\)
 
-### 2.1. Формулы для LST
+### 2.1. LST Formulas
 
-Обозначим преобразование Лапласа–Стилтьеса (LST):
+Denote the Laplace–Stieltjes transform (LST):
 \[
 T^*(s) = \mathbb{E}\left[e^{-sT}\right],\quad s\ge 0.
 \]
 
-Для \(Y\sim \mathrm{Exp}(\delta)\) и независимого \(T\) верно:
+For \(Y\sim \mathrm{Exp}(\delta)\) and an independent \(T\), it holds that:
 \[
 \mathbb{E}\left[e^{-s\min(T,Y)}\right]
 = \frac{\delta}{s+\delta} + \frac{s}{s+\delta}\, T^*(s+\delta).
 \]
 
-Отсюда сразу:
+From this we immediately obtain:
 \[
 W^*(s) = \frac{\delta}{s+\delta} + \frac{s}{s+\delta}\, W_0^*(s+\delta),
 \]
@@ -65,81 +67,80 @@ W^*(s) = \frac{\delta}{s+\delta} + \frac{s}{s+\delta}\, W_0^*(s+\delta),
 V^*(s) = \frac{\delta}{s+\delta} + \frac{s}{s+\delta}\, Z_0^*(s+\delta).
 \]
 
-### 2.2. Как получать моменты из LST
+### 2.2. How to Obtain Moments from the LST
 
-Если \(T\) имеет моменты до порядка \(m\), то:
+If \(T\) has moments up to order \(m\), then:
 \[
 \mathbb{E}[T^m] = (-1)^m \left.\frac{d^m}{ds^m}T^*(s)\right|_{s=0}.
 \]
 
-В коде Most-Queue для этого используется численное дифференцирование `scipy.misc.derivative(...)` (учтите, что в SciPy оно помечено как deprecated; при желании это можно заменить на более современную численную дифференцировку).
+In the Most-Queue code, numerical differentiation via `scipy.misc.derivative(...)` is used for this (note that it is marked as deprecated in SciPy; if desired, it can be replaced with a more modern numerical differentiation routine).
 
-## 3. Одноканальный случай: `MG1Disasters`
+## 3. The Single-Channel Case: `MG1Disasters`
 
-Для M/G/1 с disasters используется PK-подобная формула в терминах LST (см. Jain & Sigman, 1996).
+For M/G/1 with disasters, a PK-like formula in terms of the LST is used (see Jain & Sigman, 1996).
 
-Важно: disaster влияет **и на ожидание, и на обслуживание** (через минимум с \(Y\)), поэтому простая «свёртка моментов» вида
+Important: a disaster affects **both waiting and service** (via the minimum with \(Y\)), so a naive "moment convolution" of the form
 \[
 V \stackrel{\Large\text{x}}{=} W + \min(B,Y)
 \]
-в общем случае **неверна** — потому что \(Y\) может наступить во время ожидания, т.е. «обрезает» и \(W\), и \(B\).
+is in general **incorrect** — because \(Y\) may occur during the waiting period, i.e. it "truncates" both \(W\) and \(B\).
 
-Правильный подход в реализации `most_queue/theory/negative/mg1_disasters.py`:
+The correct approach in the implementation `most_queue/theory/negative/mg1_disasters.py`:
 
-- сначала строится LST ожидания \(W^*(s)\) для системы с очистками;
-- затем LST времени пребывания выражается как:
+- first, the waiting-time LST \(W^*(s)\) is built for the system with clearings;
+- then the sojourn-time LST is expressed as:
 \[
 V^*(s)=\frac{\delta}{s+\delta}+\frac{s}{s+\delta}\,W^*(s+\delta)\,\beta(s+\delta),
 \]
-где \(\beta(s)=\mathbb{E}[e^{-sB}]\) — LST времени обслуживания.
+where \(\beta(s)=\mathbb{E}[e^{-sB}]\) is the LST of the service time.
 
-## 4. Многоканальный случай: `MGnNegativeDisasterCalc` (Takahashi–Takami)
+## 4. The Multi-Channel Case: `MGnNegativeDisasterCalc` (Takahashi–Takami)
 
-В многоканальном случае (M/H₂/n с дискретным уровнем и микросостояниями) прямой «закрытой» формулы типа PK нет, поэтому используется следующая конструкция:
+In the multi-channel case (M/H₂/n with a discrete level and micro-states) there is no direct "closed-form" PK-type formula, so the following construction is used:
 
-1) **Стационарное распределение состояний** для системы с disasters вычисляется расширенным методом Такахаси–Таками (см. `docs/negative_queues_takahasi_takami.md`). Это даёт веса `Y[k][0, i]`, которые интерпретируются как вероятности того, что типичный приход увидит уровень \(k\) и микросостояние \(i\) (PASTA).
+1) **The stationary state distribution** for the system with disasters is computed by an extended Takahashi–Takami method (see `docs/negative_queues_takahasi_takami.md`). This yields weights `Y[k][0, i]`, interpreted as the probabilities that a typical arrival sees level \(k\) and micro-state \(i\) (PASTA).
 
-2) Для вычисления \(W_0^*(s)\) и \(Z_0^*(s)\) используется «гипотетическая» динамика *без disasters после прихода*, но **условная по состоянию, которое клиент увидел в системе с disasters**:
+2) To compute \(W_0^*(s)\) and \(Z_0^*(s)\), the "hypothetical" dynamics *without disasters after arrival* are used, but **conditioned on the state the customer saw in the system with disasters**:
 
-- если клиент пришёл при числе клиентов \(k<n\), то ожидание до старта обслуживания равно нулю, \(W_0=0\);
-- если \(k\ge n\), то ожидание до старта обслуживания равно сумме времен завершения обслуживаний, необходимых, чтобы освободился сервер. В H₂‑модели это даёт LST как произведение экспоненциальных LST по интенсивностям, зависящим от микросостояния.
+- if the customer arrived when the number of customers was \(k<n\), the wait until service start is zero, \(W_0=0\);
+- if \(k\ge n\), the wait until service start equals the sum of the service completion times needed for a server to become free. In the H₂ model this yields an LST as a product of exponential LSTs with rates depending on the micro-state.
 
-Технически в коде это реализовано как суммирование по уровням \(k\ge n\) с матричными степенями переходов «вверх» для базовой системы **без disasters** (`base_mgn.calc_up_probs(...)`), а не через ручную свёртку моментов.
+Technically, this is implemented in the code as a summation over levels \(k\ge n\) with matrix powers of the "upward" transitions of the base system **without disasters** (`base_mgn.calc_up_probs(...)`), rather than through manual convolution of moments.
 
-3) После получения \(W_0^*(s)\) и \(Z_0^*(s)\) применяются общие формулы для minimum с экспонентой:
+3) After obtaining \(W_0^*(s)\) and \(Z_0^*(s)\), the general formulas for the minimum with an exponential are applied:
 
-- \(W^*(s)\) через \(W_0^*(s+\delta)\)
-- \(V^*(s)\) через \(Z_0^*(s+\delta)\)
+- \(W^*(s)\) via \(W_0^*(s+\delta)\)
+- \(V^*(s)\) via \(Z_0^*(s+\delta)\)
 
-4) Условные распределения для `served` и `broken` также выражаются через \(Z_0^*\):
+4) The conditional distributions for `served` and `broken` are likewise expressed via \(Z_0^*\):
 
-- вероятность успешного обслуживания:
+- probability of successful service:
 \[
 p_{\text{served}} = \mathbb{P}(Z_0<Y)=\mathbb{E}[e^{-\delta Z_0}] = Z_0^*(\delta)
 \]
-- LST для обслуженных:
+- LST for served customers:
 \[
 \mathbb{E}[e^{-sV}\mid served] = \frac{Z_0^*(s+\delta)}{Z_0^*(\delta)}
 \]
-- LST для удалённых disaster:
+- LST for customers removed by a disaster:
 \[
 \mathbb{E}[e^{-sV}\mid broken] = \frac{\delta}{s+\delta}\,\frac{1-Z_0^*(s+\delta)}{1-Z_0^*(\delta)}
 \]
 
-## 5. Что это даёт на практике
+## 5. What This Gives in Practice
 
-- **Согласованность с симуляцией**: формулы \(W=\min(W_0,Y)\), \(V=\min(Z_0,Y)\) точно соответствуют тому, как симулятор завершает клиентов при disaster.
-- **Корректность для любых параметров**: не требуется предполагать, что disaster влияет только на обслуживание или только на очередь.
-- **Условные метрики served/broken** получаются из одной и той же базовой величины \(Z_0^*\) без дополнительных эвристик.
+- **Consistency with simulation**: the formulas \(W=\min(W_0,Y)\), \(V=\min(Z_0,Y)\) match exactly how the simulator terminates customers upon a disaster.
+- **Correctness for arbitrary parameters**: there is no need to assume that a disaster affects only the service or only the queue.
+- **Conditional served/broken metrics** are obtained from the same underlying quantity \(Z_0^*\) without additional heuristics.
 
-## 6. Связанные реализации в коде
+## 6. Related Implementations in the Code
 
-- `most_queue/theory/negative/mg1_disasters.py` — M/G/1 с disasters, LST‑подход + моменты через производные.
-- `most_queue/theory/negative/mgn_disaster.py` — M/H₂/n с disasters (расширение Такахаси–Таками) + вычисление \(W, V, V_{served}, V_{broken}\) через LST.
-- `most_queue/sim/negative.py` — симуляционная семантика disasters (`NegativeServiceType.DISASTER`).
+- `most_queue/theory/negative/mg1_disasters.py` — M/G/1 with disasters, LST approach + moments via derivatives.
+- `most_queue/theory/negative/mgn_disaster.py` — M/H₂/n with disasters (Takahashi–Takami extension) + computation of \(W, V, V_{served}, V_{broken}\) via the LST.
+- `most_queue/sim/negative.py` — the simulation semantics of disasters (`NegativeServiceType.DISASTER`).
 
-## 7. Ссылки
+## 7. References
 
 1. Jain, G., Sigman, K. *A Pollaczek–Khintchine formula for M/G/1 queues with disasters.* Journal of Applied Probability 33(4), 1996.
 2. Gelenbe, E. *Product-form queueing networks with negative and positive customers.* J. Appl. Prob., 1991.
-

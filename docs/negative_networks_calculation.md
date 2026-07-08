@@ -1,292 +1,294 @@
-# Расчет сетей массового обслуживания с отрицательными заявками
+# Calculation of Queueing Networks with Negative Customers
 
-## Введение
+[🇷🇺 Русская версия](negative_networks_calculation.ru.md)
 
-Данный документ описывает метод аналитического расчета открытых сетей массового обслуживания, в узлах которых присутствуют отрицательные заявки. Метод основан на потоковой декомпозиции (flow decomposition method) и позволяет вычислять начальные моменты времени пребывания заявок в сети.
+## Introduction
 
-## Постановка задачи
+This document describes a method for the analytical calculation of open queueing networks whose nodes are subject to negative customers. The method is based on flow decomposition (the flow decomposition method) and makes it possible to compute the raw moments of the sojourn time of jobs in the network.
 
-Рассматривается открытая сеть массового обслуживания, состоящая из $m$ узлов. Каждый узел $i$ ($i = 1, 2, \ldots, m$) представляет собой многоканальную систему массового обслуживания M/H2/$n_i$ с отрицательными заявками, где $n_i$ — число каналов обслуживания в узле $i$.
+## Problem Statement
 
-### Параметры сети
+We consider an open queueing network consisting of $m$ nodes. Each node $i$ ($i = 1, 2, \ldots, m$) is a multi-channel M/H2/$n_i$ queueing system with negative customers, where $n_i$ is the number of service channels in node $i$.
 
-- **Внешний поток положительных заявок**: пуассоновский поток с интенсивностью $\lambda_0$
-- **Матрица маршрутизации**: $R = \{r_{ij}\}$, где $r_{ij}$ — вероятность перехода заявки из узла $i$ в узел $j$ ($i, j = 0, 1, \ldots, m$; узел $0$ — внешний источник)
-- **Отрицательные заявки**: поступают независимо от положительных заявок и не следуют матрице маршрутизации
+### Network Parameters
 
-### Типы отрицательных заявок
+- **External flow of positive jobs**: a Poisson flow with rate $\lambda_0$
+- **Routing matrix**: $R = \{r_{ij}\}$, where $r_{ij}$ is the probability that a job moves from node $i$ to node $j$ ($i, j = 0, 1, \ldots, m$; node $0$ is the external source)
+- **Negative customers**: arrive independently of the positive jobs and do not follow the routing matrix
 
-В каждом узле могут использоваться следующие типы отрицательных заявок:
+### Types of Negative Customers
 
-1. **DISASTER** — при поступлении отрицательной заявки все заявки (в обслуживании и в очереди) удаляются из узла
-2. **RCS (Remove Customer in Service)** — при поступлении отрицательной заявки удаляется одна заявка, находящаяся в обслуживании
+Each node may use one of the following negative customer types:
 
-> **Примечание**: В текущей реализации поддерживаются только типы DISASTER и RCS. Типы RCE (Remove Customer at End) и RCH (Remove Customer at Head) в расчете не поддерживаются.
+1. **DISASTER** — when a negative customer arrives, all jobs (in service and in the queue) are removed from the node
+2. **RCS (Remove Customer in Service)** — when a negative customer arrives, one job currently in service is removed
 
-### Режимы поступления отрицательных заявок
+> **Note**: The current implementation supports only the DISASTER and RCS types. The RCE (Remove Customer at End) and RCH (Remove Customer at Head) types are not supported in the calculation.
 
-1. **Глобальный режим** (`"global"`): все узлы сети получают отрицательные заявки с одинаковой интенсивностью $\lambda_{neg}$
-2. **Поузловой режим** (`"per_node"`): каждый узел $i$ имеет свою интенсивность отрицательных заявок $\lambda_{neg}^{(i)}$
+### Negative Customer Arrival Modes
 
-## Метод расчета
+1. **Global mode** (`"global"`): all nodes of the network receive negative customers with the same rate $\lambda_{neg}$
+2. **Per-node mode** (`"per_node"`): each node $i$ has its own negative customer rate $\lambda_{neg}^{(i)}$
 
-Метод расчета основан на потоковой декомпозиции и состоит из следующих этапов:
+## Calculation Method
 
-1. Расчет эффективных интенсивностей положительных заявок в каждом узле через уравнения баланса
-2. Расчет характеристик каждого узла изолированно с учетом отрицательных заявок
-3. Пересчет результатов для всей сети методом потоковой декомпозиции
+The calculation method is based on flow decomposition and consists of the following stages:
 
-### Этап 1: Расчет эффективных интенсивностей положительных заявок
+1. Computing the effective arrival rates of positive jobs at each node via the balance equations
+2. Computing the characteristics of each node in isolation, taking negative customers into account
+3. Recombining the results for the whole network by the flow decomposition method
 
-Для положительных заявок справедливы уравнения баланса потока. Обозначим через $\lambda_i$ эффективную интенсивность поступления положительных заявок в узел $i$.
+### Stage 1: Computing the Effective Arrival Rates of Positive Jobs
 
-Уравнения баланса имеют вид:
+The flow balance equations hold for positive jobs. Let $\lambda_i$ denote the effective arrival rate of positive jobs at node $i$.
+
+The balance equations have the form:
 
 $$\lambda_i = \lambda_0 r_{0i} + \sum_{j=1}^{m} \lambda_j r_{ji}, \quad i = 1, 2, \ldots, m$$
 
-В матричной форме:
+In matrix form:
 
 $$\boldsymbol{\lambda} = \boldsymbol{\lambda}_0 + \boldsymbol{\lambda} Q^T$$
 
-где:
-- $\boldsymbol{\lambda} = (\lambda_1, \lambda_2, \ldots, \lambda_m)^T$ — вектор эффективных интенсивностей
-- $\boldsymbol{\lambda}_0 = (\lambda_0 r_{01}, \lambda_0 r_{02}, \ldots, \lambda_0 r_{0m})^T$ — вектор внешних поступлений
-- $Q = \{r_{ij}\}_{i,j=1}^{m}$ — подматрица маршрутизации между узлами
+where:
+- $\boldsymbol{\lambda} = (\lambda_1, \lambda_2, \ldots, \lambda_m)^T$ — the vector of effective arrival rates
+- $\boldsymbol{\lambda}_0 = (\lambda_0 r_{01}, \lambda_0 r_{02}, \ldots, \lambda_0 r_{0m})^T$ — the vector of external arrivals
+- $Q = \{r_{ij}\}_{i,j=1}^{m}$ — the routing submatrix between the nodes
 
-Отсюда получаем:
+Hence:
 
 $$(I - Q^T) \boldsymbol{\lambda} = \boldsymbol{\lambda}_0$$
 
 $$\boldsymbol{\lambda} = (I - Q^T)^{-1} \boldsymbol{\lambda}_0$$
 
-где $I$ — единичная матрица размера $m \times m$.
+where $I$ is the identity matrix of size $m \times m$.
 
-### Этап 2: Расчет характеристик отдельных узлов
+### Stage 2: Computing the Characteristics of Individual Nodes
 
-Для каждого узла $i$ рассчитываются моменты времени пребывания заявки в узле с учетом отрицательных заявок.
+For each node $i$, the moments of the sojourn time of a job in the node are computed with negative customers taken into account.
 
-#### Параметры узла
+#### Node Parameters
 
-- Интенсивность положительных заявок: $\lambda_i$ (рассчитана на этапе 1)
-- Интенсивность отрицательных заявок: 
-  - для глобального режима: $\lambda_{neg}^{(i)} = \lambda_{neg}$
-  - для поузлового режима: $\lambda_{neg}^{(i)}$ задается индивидуально
-- Число каналов: $n_i$
-- Моменты времени обслуживания: $b_i^{(k)}$, $k = 1, 2, 3, 4$ (начальные моменты распределения времени обслуживания)
+- Arrival rate of positive jobs: $\lambda_i$ (computed at Stage 1)
+- Arrival rate of negative customers:
+  - in global mode: $\lambda_{neg}^{(i)} = \lambda_{neg}$
+  - in per-node mode: $\lambda_{neg}^{(i)}$ is set individually
+- Number of channels: $n_i$
+- Service time moments: $b_i^{(k)}$, $k = 1, 2, 3, 4$ (raw moments of the service time distribution)
 
-#### Расчет для узла с типом DISASTER
+#### Calculation for a Node of the DISASTER Type
 
-Для узла с типом отрицательных заявок DISASTER используется класс `MGnNegativeDisasterCalc`, который реализует метод расчета системы M/H2/$n$ с отрицательными заявками типа "катастрофа".
+For a node with negative customers of the DISASTER type, the `MGnNegativeDisasterCalc` class is used, which implements the calculation method for the M/H2/$n$ system with "disaster"-type negative customers.
 
-**Математическая модель:**
+**Mathematical model:**
 
-Система описывается марковским процессом с состояниями, учитывающими:
-- Число заявок в системе
-- Фазы гиперэкспоненциального распределения времени обслуживания (H2-распределение)
-- Специальные состояния "катастрофы"
+The system is described by a Markov process whose states account for:
+- The number of jobs in the system
+- The phases of the hyperexponential service time distribution (H2 distribution)
+- Special "disaster" states
 
-При поступлении отрицательной заявки все заявки удаляются из системы через искусственные состояния с высокой интенсивностью переходов $\gamma \gg \mu$, где $\mu$ — интенсивность обслуживания.
+When a negative customer arrives, all jobs are removed from the system through artificial states with a high transition rate $\gamma \gg \mu$, where $\mu$ is the service rate.
 
-**Моменты времени пребывания:**
+**Sojourn time moments:**
 
-Моменты времени пребывания $v_i^{(k)}$ ($k = 1, 2, 3, 4$) рассчитываются через преобразование Лапласа-Стилтьеса (ПЛС) времени ожидания $W_i(s)$ и времени обслуживания с учетом прерываний.
+The sojourn time moments $v_i^{(k)}$ ($k = 1, 2, 3, 4$) are computed via the Laplace-Stieltjes transform (LST) of the waiting time $W_i(s)$ and the service time with interruptions taken into account.
 
-Время пребывания в узле складывается из времени ожидания и времени обслуживания:
+The sojourn time in a node is composed of the waiting time and the service time:
 
 $$V_i = W_i + S_i$$
 
-где $S_i$ — время обслуживания с учетом возможных прерываний отрицательными заявками.
+where $S_i$ is the service time accounting for possible interruptions by negative customers.
 
-Для системы с отрицательными заявками типа DISASTER:
+For a system with negative customers of the DISASTER type:
 
 $$S_i = \min(H2_i, \exp(\lambda_{neg}^{(i)}))$$
 
-где $H2_i$ — случайная величина времени обслуживания с H2-распределением, $\exp(\lambda_{neg}^{(i)})$ — экспоненциальное распределение с параметром $\lambda_{neg}^{(i)}$.
+where $H2_i$ is the random service time with the H2 distribution, and $\exp(\lambda_{neg}^{(i)})$ is an exponential distribution with parameter $\lambda_{neg}^{(i)}$.
 
-Моменты $S_i$ вычисляются как:
+The moments of $S_i$ are computed as:
 
 $$S_i^{(k)} = \mathbb{E}[\min(H2_i, \exp(\lambda_{neg}^{(i)}))^k]$$
 
-Моменты времени пребывания получаются сверткой моментов времени ожидания и времени обслуживания:
+The sojourn time moments are obtained by convolving the waiting time and service time moments:
 
 $$v_i^{(k)} = \sum_{j=0}^{k} \binom{k}{j} w_i^{(j)} S_i^{(k-j)}$$
 
-где $w_i^{(j)}$ — моменты времени ожидания, рассчитываемые численно через ПЛС.
+where $w_i^{(j)}$ are the waiting time moments, computed numerically via the LST.
 
-#### Расчет для узла с типом RCS
+#### Calculation for a Node of the RCS Type
 
-Для узла с типом отрицательных заявок RCS используется класс `MGnNegativeRCSCalc`.
+For a node with negative customers of the RCS type, the `MGnNegativeRCSCalc` class is used.
 
-**Математическая модель:**
+**Mathematical model:**
 
-При поступлении отрицательной заявки удаляется одна заявка, находящаяся в обслуживании. Если все каналы заняты, то интенсивность удаления заявки из обслуживания зависит от числа занятых каналов.
+When a negative customer arrives, one job currently in service is removed. If all channels are busy, the rate at which a job is removed from service depends on the number of busy channels.
 
-Для системы с $j$ занятыми каналами ($j = 1, 2, \ldots, n_i$) эффективная интенсивность удаления заявки из обслуживания равна $\lambda_{neg}^{(i)} / j$.
+For a system with $j$ busy channels ($j = 1, 2, \ldots, n_i$), the effective removal rate of a job from service equals $\lambda_{neg}^{(i)} / j$.
 
-**Моменты времени пребывания:**
+**Sojourn time moments:**
 
-Время обслуживания с учетом прерываний:
+The service time accounting for interruptions:
 
 $$S_i = \min(H2_i, \exp(\lambda_{neg}^{(i)} / j))$$
 
-при условии, что в момент начала обслуживания занято $j$ каналов.
+conditioned on $j$ channels being busy at the moment service starts.
 
-Условные моменты времени обслуживания при $j$ занятых каналах:
+The conditional service time moments given $j$ busy channels:
 
 $$S_i^{(k)}(j) = \mathbb{E}[\min(H2_i, \exp(\lambda_{neg}^{(i)} / j))^k]$$
 
-С учетом вероятностей состояний с $j$ занятыми каналами:
+Taking into account the probabilities of the states with $j$ busy channels:
 
 $$S_i^{(k)} = \sum_{j=1}^{n_i} \pi_j^{(i)} S_i^{(k)}(j)$$
 
-где $\pi_j^{(i)}$ — стационарная вероятность того, что в узле $i$ занято $j$ каналов.
+where $\pi_j^{(i)}$ is the stationary probability that $j$ channels are busy in node $i$.
 
-Моменты времени пребывания рассчитываются аналогично случаю DISASTER через свертку моментов времени ожидания и времени обслуживания.
+The sojourn time moments are computed analogously to the DISASTER case, via the convolution of the waiting time and service time moments.
 
-### Этап 3: Пересчет результатов для всей сети
+### Stage 3: Recombining the Results for the Whole Network
 
-После расчета моментов времени пребывания в каждом узле $v_i^{(k)}$ ($i = 1, 2, \ldots, m$, $k = 1, 2, 3, 4$) выполняется пересчет моментов времени пребывания в сети $v_{net}^{(k)}$.
+After the sojourn time moments in each node $v_i^{(k)}$ ($i = 1, 2, \ldots, m$, $k = 1, 2, 3, 4$) have been computed, the network sojourn time moments $v_{net}^{(k)}$ are derived.
 
-#### Аппроксимация распределений времени пребывания
+#### Approximation of the Sojourn Time Distributions
 
-Распределение времени пребывания в каждом узле аппроксимируется гамма-распределением по первым двум моментам.
+The sojourn time distribution in each node is approximated by a gamma distribution fitted to the first two moments.
 
-Параметры гамма-распределения для узла $i$:
+The gamma distribution parameters for node $i$:
 
 $$\alpha_i = \frac{(v_i^{(1)})^2}{v_i^{(2)} - (v_i^{(1)})^2}$$
 
 $$\mu_i = \frac{v_i^{(1)}}{v_i^{(2)} - (v_i^{(1)})^2}$$
 
-где $\alpha_i$ — параметр формы, $\mu_i$ — параметр масштаба.
+where $\alpha_i$ is the shape parameter and $\mu_i$ is the scale parameter.
 
-#### Преобразование Лапласа-Стилтьеса
+#### Laplace-Stieltjes Transform
 
-ПЛС гамма-распределения:
+The LST of the gamma distribution:
 
 $$\mathcal{L}_i(s) = \left(\frac{\mu_i}{\mu_i + s}\right)^{\alpha_i}$$
 
-#### Потоковая декомпозиция
+#### Flow Decomposition
 
-Для расчета ПЛС времени пребывания в сети используется метод потоковой декомпозиции.
+The flow decomposition method is used to compute the LST of the sojourn time in the network.
 
-Обозначим:
-- $P = (r_{01}, r_{02}, \ldots, r_{0m})$ — вектор вероятностей поступления заявок из внешнего источника в узлы
-- $T = (r_{1,m+1}, r_{2,m+1}, \ldots, r_{m,m+1})^T$ — вектор вероятностей выхода из узлов
-- $Q = \{r_{ij}\}_{i,j=1}^{m}$ — матрица переходов между узлами
-- $N(s) = \text{diag}(\mathcal{L}_1(s), \mathcal{L}_2(s), \ldots, \mathcal{L}_m(s))$ — диагональная матрица ПЛС времени пребывания в узлах
+Denote:
+- $P = (r_{01}, r_{02}, \ldots, r_{0m})$ — the vector of probabilities that a job from the external source enters each node
+- $T = (r_{1,m+1}, r_{2,m+1}, \ldots, r_{m,m+1})^T$ — the vector of exit probabilities from the nodes
+- $Q = \{r_{ij}\}_{i,j=1}^{m}$ — the transition matrix between the nodes
+- $N(s) = \text{diag}(\mathcal{L}_1(s), \mathcal{L}_2(s), \ldots, \mathcal{L}_m(s))$ — the diagonal matrix of the node sojourn time LSTs
 
-ПЛС времени пребывания в сети:
+The LST of the sojourn time in the network:
 
 $$G_{net}(s) = P (I - N(s) Q)^{-1} N(s) T$$
 
-где $I$ — единичная матрица размера $m \times m$.
+where $I$ is the identity matrix of size $m \times m$.
 
-#### Вычисление моментов
+#### Computing the Moments
 
-Моменты времени пребывания в сети вычисляются через численное дифференцирование ПЛС.
+The network sojourn time moments are computed by numerical differentiation of the LST.
 
-Выбирается малый шаг $h$ (например, $h = 10^{-4}$) и вычисляются значения ПЛС в точках:
+A small step $h$ is chosen (e.g., $h = 10^{-4}$) and the LST values are evaluated at the points:
 
 $$s_k = h \cdot k, \quad k = 1, 2, 3, 4$$
 
 $$g_k = G_{net}(s_k)$$
 
-Моменты вычисляются по формуле пятиточечного численного дифференцирования:
+The moments are computed by the five-point numerical differentiation formula:
 
 $$v_{net}^{(k)} = (-1)^k \frac{d^k G_{net}(s)}{ds^k}\Big|_{s=0}$$
 
-Для $k = 1, 2, 3$ используются соответствующие формулы численного дифференцирования.
+For $k = 1, 2, 3$, the corresponding numerical differentiation formulas are used.
 
-## Алгоритм расчета
+## Calculation Algorithm
 
-Ниже приведен пошаговый алгоритм расчета сети с отрицательными заявками.
+A step-by-step algorithm for calculating a network with negative customers is given below.
 
-### Входные данные
+### Input Data
 
-1. Интенсивность внешнего потока: $\lambda_0$
-2. Матрица маршрутизации: $R$ размера $(m+1) \times (m+1)$
-3. Режим отрицательных заявок: `"global"` или `"per_node"`
-4. Интенсивность(и) отрицательных заявок: $\lambda_{neg}$ или $\{\lambda_{neg}^{(i)}\}_{i=1}^{m}$
-5. Для каждого узла $i$:
-   - Число каналов: $n_i$
-   - Моменты времени обслуживания: $\{b_i^{(k)}\}_{k=1}^{4}$
-   - Тип отрицательных заявок: DISASTER или RCS
+1. External flow rate: $\lambda_0$
+2. Routing matrix: $R$ of size $(m+1) \times (m+1)$
+3. Negative customer mode: `"global"` or `"per_node"`
+4. Negative customer rate(s): $\lambda_{neg}$ or $\{\lambda_{neg}^{(i)}\}_{i=1}^{m}$
+5. For each node $i$:
+   - Number of channels: $n_i$
+   - Service time moments: $\{b_i^{(k)}\}_{k=1}^{4}$
+   - Negative customer type: DISASTER or RCS
 
-### Алгоритм
+### Algorithm
 
-**Шаг 1.** Решение уравнений баланса для положительных заявок:
+**Step 1.** Solve the balance equations for the positive jobs:
 
 $$\boldsymbol{\lambda} = (I - Q^T)^{-1} \boldsymbol{\lambda}_0$$
 
-**Шаг 2.** Для каждого узла $i = 1, 2, \ldots, m$:
+**Step 2.** For each node $i = 1, 2, \ldots, m$:
 
-2.1. Определение интенсивности отрицательных заявок:
-- Если режим `"global"`: $\lambda_{neg}^{(i)} = \lambda_{neg}$
-- Если режим `"per_node"`: $\lambda_{neg}^{(i)}$ задано индивидуально
+2.1. Determine the negative customer rate:
+- If the mode is `"global"`: $\lambda_{neg}^{(i)} = \lambda_{neg}$
+- If the mode is `"per_node"`: $\lambda_{neg}^{(i)}$ is given individually
 
-2.2. Выбор метода расчета в зависимости от типа отрицательных заявок:
-- Если DISASTER: создание объекта `MGnNegativeDisasterCalc(n_i)`
-- Если RCS: создание объекта `MGnNegativeRCSCalc(n_i)`
+2.2. Choose the calculation method according to the negative customer type:
+- If DISASTER: create an `MGnNegativeDisasterCalc(n_i)` object
+- If RCS: create an `MGnNegativeRCSCalc(n_i)` object
 
-2.3. Установка параметров:
+2.3. Set the parameters:
 - `calc.set_sources(l_pos=λ_i, l_neg=λ_{neg}^{(i)})`
 - `calc.set_servers(b={b_i^{(k)}})`
 
-2.4. Выполнение расчета: `calc.run()`
+2.4. Run the calculation: `calc.run()`
 
-2.5. Получение моментов времени пребывания: $v_i^{(k)}$ получаются из результата расчета (метод `calc.get_results().v`)
+2.5. Obtain the sojourn time moments: $v_i^{(k)}$ are extracted from the calculation result (the `calc.get_results().v` method)
 
-**Шаг 3.** Аппроксимация распределений времени пребывания гамма-распределениями:
+**Step 3.** Approximate the sojourn time distributions by gamma distributions:
 
-Для каждого узла $i$:
-- Вычисление параметров гамма-распределения $(\alpha_i, \mu_i)$ по моментам $v_i^{(1)}$ и $v_i^{(2)}$
+For each node $i$:
+- Compute the gamma distribution parameters $(\alpha_i, \mu_i)$ from the moments $v_i^{(1)}$ and $v_i^{(2)}$
 
-**Шаг 4.** Расчет ПЛС времени пребывания в сети:
+**Step 4.** Compute the LST of the sojourn time in the network:
 
-Для $k = 1, 2, 3, 4$:
+For $k = 1, 2, 3, 4$:
 - $s_k = h \cdot k$
 - $N(s_k) = \text{diag}(\mathcal{L}_1(s_k), \ldots, \mathcal{L}_m(s_k))$
 - $G(s_k) = (I - N(s_k) Q)^{-1}$
 - $g_k = P G(s_k) N(s_k) T$
 
-**Шаг 5.** Вычисление моментов времени пребывания в сети:
+**Step 5.** Compute the network sojourn time moments:
 
 $$v_{net}^{(k)} = (-1)^k \frac{d^k G_{net}(s)}{ds^k}\Big|_{s=0}$$
 
-используя численное дифференцирование по значениям $\{g_k\}_{k=1}^{4}$.
+using numerical differentiation over the values $\{g_k\}_{k=1}^{4}$.
 
-### Выходные данные
+### Output Data
 
-- Моменты времени пребывания в сети: $\{v_{net}^{(k)}\}_{k=1}^{4}$
-- Эффективные интенсивности в узлах: $\{\lambda_i\}_{i=1}^{m}$
-- Коэффициенты загрузки узлов: $\{\rho_i = \lambda_i b_i^{(1)} / n_i\}_{i=1}^{m}$
+- Network sojourn time moments: $\{v_{net}^{(k)}\}_{k=1}^{4}$
+- Effective arrival rates at the nodes: $\{\lambda_i\}_{i=1}^{m}$
+- Node utilization coefficients: $\{\rho_i = \lambda_i b_i^{(1)} / n_i\}_{i=1}^{m}$
 
-## Особенности реализации
+## Implementation Details
 
-### Обработка нулевых столбцов в матрице маршрутизации
+### Handling Zero Columns in the Routing Matrix
 
-При решении уравнений баланса выполняется обработка нулевых столбцов матрицы маршрутизации (узлы, в которые не поступают заявки). Такие столбцы исключаются из системы уравнений, а соответствующие интенсивности полагаются равными нулю.
+When solving the balance equations, zero columns of the routing matrix (nodes that receive no jobs) are handled specially. Such columns are excluded from the system of equations, and the corresponding rates are set to zero.
 
-### Численная устойчивость
+### Numerical Stability
 
-Для обеспечения численной устойчивости при вычислении обратной матрицы $(I - N(s) Q)^{-1}$ используется проверка на вырожденность и обработка особых случаев.
+To ensure numerical stability when computing the inverse matrix $(I - N(s) Q)^{-1}$, a singularity check is performed and special cases are handled.
 
-### Аппроксимация гамма-распределением
+### Gamma Distribution Approximation
 
-Аппроксимация распределения времени пребывания в узле гамма-распределением по первым двум моментам обеспечивает достаточную точность для большинства практических задач, при условии, что коэффициент вариации времени пребывания не слишком велик.
+Approximating the node sojourn time distribution by a gamma distribution fitted to the first two moments provides sufficient accuracy for most practical problems, provided that the coefficient of variation of the sojourn time is not too large.
 
-## Ограничения метода
+## Limitations of the Method
 
-1. Метод применим только для открытых сетей (существует внешний поток и выход из сети)
-2. Поддерживаются только типы отрицательных заявок DISASTER и RCS
-3. Распределение времени обслуживания аппроксимируется H2-распределением
-4. Метод основан на предположении о независимости узлов (приближение декомпозиции)
+1. The method applies only to open networks (there is an external flow and an exit from the network)
+2. Only the DISASTER and RCS negative customer types are supported
+3. The service time distribution is approximated by an H2 distribution
+4. The method relies on the assumption of node independence (the decomposition approximation)
 
-## Сравнение с симуляцией
+## Comparison with Simulation
 
-Для валидации результатов расчета используется сравнение с результатами имитационного моделирования (класс `NegativeNetwork`). Как правило, расхождение между расчетными и симулированными значениями первых моментов времени пребывания не превышает 5-10% при умеренных коэффициентах загрузки узлов ($\rho_i < 0.8$).
+To validate the calculation results, they are compared against the results of discrete-event simulation (the `NegativeNetwork` class). As a rule, the discrepancy between the calculated and simulated values of the first sojourn time moments does not exceed 5-10% at moderate node utilization coefficients ($\rho_i < 0.8$).
 
-## Литература
+## References
 
 1. Gelenbe, E. (1991). Product-form queueing networks with negative and positive customers. *Journal of Applied Probability*, 28(3), 656-663.
 
@@ -294,7 +296,6 @@ $$v_{net}^{(k)} = (-1)^k \frac{d^k G_{net}(s)}{ds^k}\Big|_{s=0}$$
 
 3. Takahashi, Y., & Takami, Y. (1976). A numerical method for the steady-state probabilities of a multi-server queueing system. *Management Science*, 22(6), 656-663.
 
-4. Клейнрок, Л. (1979). *Теория массового обслуживания*. Москва: Машиностроение.
+4. Kleinrock, L. (1979). *Queueing Theory* [Теория массового обслуживания]. Moscow: Mashinostroenie.
 
-5. Бочаров, П. П., Печинкин, А. В. (2004). *Теория массового обслуживания*. Москва: РУДН.
-
+5. Bocharov, P. P., & Pechinkin, A. V. (2004). *Queueing Theory* [Теория массового обслуживания]. Moscow: RUDN.

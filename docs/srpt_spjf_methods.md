@@ -1,61 +1,63 @@
-# SRPT / SPJF в Most-Queue: методы расчёта и сопоставление с симуляцией
+# SRPT / SPJF in Most-Queue: Calculation Methods and Comparison with Simulation
 
-Эта страница дополняет [roadmap](roadmaps/srpt_spjf_roadmap.md) и краткие разделы в [численных методах](calculation.md) и [симуляции](simulation.md). Здесь собраны **формулы**, с которыми работают калькуляторы, **практическая численная схема** (сетки, интегрирование) и **то, как результаты сверяются с `SizeBasedQsSim`**.
+[🇷🇺 Русская версия](srpt_spjf_methods.ru.md)
 
-Источники: Schrage–Miller (1966), Conway–Maxwell–Miller (непрерывный приоритет по размеру), Mitzenmacher (2020) по SPJF; разбор в репозитории: [SPJF.md](../works/queueing_systems_review/SRPT/SPJF.md), [shrage.md](../works/queueing_systems_review/SRPT/shrage.md).
+This page complements the [roadmap](roadmaps/srpt_spjf_roadmap.md) and the short sections in [numerical methods](calculation.md) and [simulation](simulation.md). It gathers the **formulas** the calculators work with, the **practical numerical scheme** (grids, integration), and **how the results are verified against `SizeBasedQsSim`**.
+
+Sources: Schrage–Miller (1966), Conway–Maxwell–Miller (continuous size-based priority), Mitzenmacher (2020) for SPJF; write-ups in the repository: [SPJF.md](../works/queueing_systems_review/SRPT/SPJF.md), [shrage.md](../works/queueing_systems_review/SRPT/shrage.md).
 
 ---
 
-## 1. Что добавлено в библиотеку (по roadmap)
+## 1. What Has Been Added to the Library (per the roadmap)
 
-| Область | Компонент | Назначение |
+| Area | Component | Purpose |
 |--------|-----------|------------|
-| Теория | `most_queue.theory.srpt.MG1SrptCalc` | M/G/1, **SRPT** |
-| Теория | `MG1SjfCalc` | M/G/1, **SJF** (непрерывное SPT) |
-| Теория | `MG1PsjfCalc` | M/G/1, **PSJF** |
-| Теория | `MG1SpjfCalc` + `Predictor` | M/G/1, **SPJF** по модели \((X,Y)\) |
-| Теория | `most_queue.theory.srpt.utils.load_below`, `predictor` | \(\rho_x\), \(\rho'_y\), маргиналь \(g_Y\), «идеальный» и шумовые предикторы |
-| Симуляция | `most_queue.sim.size_based.SizeBasedQsSim` | Одноканальная очередь: FCFS, SJF, PSJF, SRPT, SPJF, PSPJF, SPRPT |
-| Симуляция | `Task.original_size`, `predicted_size`, `service_remaining` | Размер при приходе, предсказание, остаток при прерывании |
-| Симуляция | `PrioritySizeQueue`, предикторы sim-слоя | Heap по рангу; `PerfectSimPredictor`, шум через `sim.utils.predictor` |
+| Theory | `most_queue.theory.srpt.MG1SrptCalc` | M/G/1, **SRPT** |
+| Theory | `MG1SjfCalc` | M/G/1, **SJF** (continuous SPT) |
+| Theory | `MG1PsjfCalc` | M/G/1, **PSJF** |
+| Theory | `MG1SpjfCalc` + `Predictor` | M/G/1, **SPJF** based on the \((X,Y)\) model |
+| Theory | `most_queue.theory.srpt.utils.load_below`, `predictor` | \(\rho_x\), \(\rho'_y\), marginal \(g_Y\), "perfect" and noisy predictors |
+| Simulation | `most_queue.sim.size_based.SizeBasedQsSim` | Single-channel queue: FCFS, SJF, PSJF, SRPT, SPJF, PSPJF, SPRPT |
+| Simulation | `Task.original_size`, `predicted_size`, `service_remaining` | Size at arrival, prediction, remaining work upon preemption |
+| Simulation | `PrioritySizeQueue`, sim-layer predictors | Rank-ordered heap; `PerfectSimPredictor`, noise via `sim.utils.predictor` |
 
-Калькуляторы наследуют общий паттерн `BaseQueue`: `set_sources(λ)`, `set_servers(params, kendall_notation)` — как у `MG1Calc`, но для размера строится **численная** плотность/CDF через `build_pdf_cdf` (поддерживаются распределения из `most_queue.random.distributions` с известной параметризацией).
+The calculators inherit the common `BaseQueue` pattern: `set_sources(λ)`, `set_servers(params, kendall_notation)` — same as `MG1Calc`, but for the size a **numerical** density/CDF is built via `build_pdf_cdf` (distributions from `most_queue.random.distributions` with a known parameterization are supported).
 
 ---
 
-## 2. Аналитические формулы (что именно считается)
+## 2. Analytical Formulas (what exactly is computed)
 
-Обозначения: интенсивность входа \(\lambda\), PDF/CDF размера \(f,F\), \(\mathbb{E}[S]=b_0\), \(\mathbb{E}[S^2]=b_1\). Частичная нагрузка от заявок размера **не больше** \(x\):
+Notation: arrival rate \(\lambda\), size PDF/CDF \(f,F\), \(\mathbb{E}[S]=b_0\), \(\mathbb{E}[S^2]=b_1\). Partial load due to jobs of size **at most** \(x\):
 
 $$
 \rho_x = \lambda \int_0^x t\,f(t)\,dt .
 $$
 
-(В литературе это же часто пишут как \(\rho_{\le x}\) для непрерывного приоритета по размеру.)
+(In the literature this is also frequently written as \(\rho_{\le x}\) for continuous size-based priority.)
 
 ### 2.1. SRPT (Schrage–Miller)
 
-Условное среднее **время пребывания** заявки размера \(x\):
+Conditional mean **sojourn time** of a job of size \(x\):
 
 $$
 \mathbb{E}[T^{\mathrm{SRPT}}(x)] = \frac{\lambda \int_0^x t^2 f(t)\,dt \;+\; \lambda\, x^2 \bigl(1-F(x)\bigr)}{2\bigl(1-\rho_x\bigr)^2} \;+\; \int_0^x \frac{dt}{1-\rho_t}.
 $$
 
-Безусловные средние:
+Unconditional means:
 
 $$
 \mathbb{E}[T^{\mathrm{SRPT}}] = \int_0^\infty f(x)\,\mathbb{E}[T^{\mathrm{SRPT}}(x)]\,dx, \qquad \mathbb{E}[W^{\mathrm{SRPT}}] = \mathbb{E}[T^{\mathrm{SRPT}}] - b_0 .
 $$
 
-В коде `MG1SrptCalc` используется эквивалентная запись первого слагаемого (см. docstring класса); второе слагаемое — отдельный накопленный интеграл по сетке.
+In the code, `MG1SrptCalc` uses an equivalent form of the first term (see the class docstring); the second term is a separately accumulated integral over the grid.
 
-### 2.2. SJF (непрерывный размерный приоритет, non-preemptive)
+### 2.2. SJF (continuous size-based priority, non-preemptive)
 
 $$
 \mathbb{E}[W^{\mathrm{SJF}}(x)] = \frac{\lambda\, b_1}{2\bigl(1-\rho_x\bigr)^2}, \qquad \mathbb{E}[W^{\mathrm{SJF}}] = \int_0^\infty f(x)\,\mathbb{E}[W^{\mathrm{SJF}}(x)]\,dx, \qquad \mathbb{E}[T^{\mathrm{SJF}}] = \mathbb{E}[W^{\mathrm{SJF}}] + b_0 .
 $$
 
-### 2.3. PSJF (прерывание по **исходному** размеру)
+### 2.3. PSJF (preemption based on the **original** size)
 
 $$
 \mathbb{E}[T^{\mathrm{PSJF}}(x)] = \frac{\lambda \int_0^x t^2 f(t)\,dt}{2\bigl(1-\rho_x\bigr)^2} \;+\; \frac{x}{1-\rho_x},
@@ -65,99 +67,99 @@ $$
 \mathbb{E}[T^{\mathrm{PSJF}}] = \int_0^\infty f(x)\,\mathbb{E}[T^{\mathrm{PSJF}}(x)]\,dx, \qquad \mathbb{E}[W^{\mathrm{PSJF}}] = \mathbb{E}[T^{\mathrm{PSJF}}] - b_0 .
 $$
 
-Отличие от SRPT: нет члена \(\int_0^x dt/(1-\rho_t)\), так как ранг не «догоняет» остаток работы.
+The difference from SRPT: there is no \(\int_0^x dt/(1-\rho_t)\) term, since the rank does not "track" the remaining work.
 
 ### 2.4. SPJF (Mitzenmacher 2020)
 
-Совместная плотность \((X,Y)\) истинного размера и предсказания; эффективная нагрузка от заявок с предсказанием \(\le y\):
+Joint density of \((X,Y)\) — the true size and the prediction; effective load due to jobs with prediction \(\le y\):
 
 $$
 \rho'_y = \lambda \int_0^y \!\! \int_0^\infty t\, g(t,z)\,dt\,dz .
 $$
 
-Условное среднее **ожидания** при фиксированном предсказании \(y\):
+Conditional mean **waiting time** for a fixed prediction \(y\):
 
 $$
 \mathbb{E}[W^{\mathrm{SPJF}}(y)] = \frac{\lambda\, b_1}{2\bigl(1-\rho'_y\bigr)^2}, \qquad \mathbb{E}[W^{\mathrm{SPJF}}] = \int_0^\infty g_Y(y)\,\mathbb{E}[W^{\mathrm{SPJF}}(y)]\,dy, \qquad \mathbb{E}[T^{\mathrm{SPJF}}] = \mathbb{E}[W^{\mathrm{SPJF}}] + b_0 ,
 $$
 
-где \(g_Y\) — маргинальная плотность \(Y\). При **идеальных** предсказаниях (\(Y=X\)) результат совпадает с SJF (`PerfectPredictor` в теории / `PerfectSimPredictor` в симуляции).
+where \(g_Y\) is the marginal density of \(Y\). With **perfect** predictions (\(Y=X\)) the result coincides with SJF (`PerfectPredictor` on the theory side / `PerfectSimPredictor` on the simulation side).
 
 ---
 
-## 3. Как это считается в коде (численно)
+## 3. How This Is Computed in Code (numerically)
 
-### 3.1. Общая база SRPT / SJF / PSJF — `_SizeBasedCalcBase`
+### 3.1. Common Base for SRPT / SJF / PSJF — `_SizeBasedCalcBase`
 
-Файл: `most_queue/theory/srpt/_base.py`.
+File: `most_queue/theory/srpt/_base.py`.
 
-1. **Верхняя граница по \(x\)**  
-   `x_max = upper_bound(cdf, p=1e-7)` — практический «хвост» распределения, дальше масса пренебрежима.
+1. **Upper bound on \(x\)**  
+   `x_max = upper_bound(cdf, p=1e-7)` — the practical "tail" of the distribution; the mass beyond it is negligible.
 
-2. **Гибридная сетка по \([0, x_{\max}]\)**  
-   Часть узлов — **логарифмическая** окрестность 0 (острые PDF вроде Gamma/Pareto), часть — **равномерная** на остатке. Константа `_N_GRID = 4000` задаёт число узлов.
+2. **Hybrid grid over \([0, x_{\max}]\)**  
+   Some of the nodes form a **logarithmic** neighborhood of 0 (for sharp PDFs like Gamma/Pareto), the rest are **uniform** on the remainder. The constant `_N_GRID = 4000` sets the number of nodes.
 
-3. **Однократные интегралы по сетке** (`scipy.integrate.cumulative_trapezoid`):
-   - \(\rho_x\) как \(\lambda \int_0^x t f(t)\,dt\);
+3. **One-shot integrals over the grid** (`scipy.integrate.cumulative_trapezoid`):
+   - \(\rho_x\) as \(\lambda \int_0^x t f(t)\,dt\);
    - \(\int_0^x t^2 f(t)\,dt\);
-   - для SRPT: \(\int_0^x dt/(1-\rho_t)\) по узлам сетки (с \(\rho_t\), обрезанным чуть ниже 1, чтобы избежать численного переполнения);
-   - значения CDF на тех же узлах.
+   - for SRPT: \(\int_0^x dt/(1-\rho_t)\) over the grid nodes (with \(\rho_t\) clipped slightly below 1 to avoid numerical overflow);
+   - CDF values at the same nodes.
 
-4. **Быстрые обращения**  
-   Для произвольного \(x\) используется **`np.interp`** к предвычисленным массивам — это замена вложенных квадратур «на каждой точке внешнего интеграла».
+4. **Fast lookups**  
+   For an arbitrary \(x\), **`np.interp`** against the precomputed arrays is used — this replaces nested quadratures "at every point of the outer integral".
 
-5. **Безусловное усреднение по \(X\)** — вычисление
+5. **Unconditional averaging over \(X\)** — computing
 
    $$
    \int_0^{x_{\max}} f(x)\, h(x)\,dx
    $$
 
-   где \(h(x)\) — условное \(\mathbb{E}[T(x)]\) или \(\mathbb{E}[W(x)]\) через интерполяцию. Реализация: **`scipy.integrate.simpson`** на **той же сетке**, т.е. вектор `pdf(xs) * h(xs)` и `simpson(..., x=xs)`.
+   where \(h(x)\) is the conditional \(\mathbb{E}[T(x)]\) or \(\mathbb{E}[W(x)]\) via interpolation. Implementation: **`scipy.integrate.simpson`** on **the same grid**, i.e. the vector `pdf(xs) * h(xs)` and `simpson(..., x=xs)`.
 
-   **Зачем Simpson, а не внешний `quad`:** подынтегральное выражение содержит множители вида \((1-\rho_x)^{-2}\); при \(\rho \to 1\) адаптивный `quad` часто даёт предупреждения о roundoff на хвосте у \(x_{\max}\). Интеграл по **фиксированной** плотной сетке с Simpson стабильнее и согласован с уже посчитанными \(\rho_x\).
+   **Why Simpson rather than an outer `quad`:** the integrand contains factors of the form \((1-\rho_x)^{-2}\); as \(\rho \to 1\), adaptive `quad` often emits roundoff warnings on the tail near \(x_{\max}\). Integration over a **fixed** dense grid with Simpson is more stable and consistent with the already computed \(\rho_x\).
 
-### 3.2. Отдельно: `MG1SpjfCalc`
+### 3.2. Separately: `MG1SpjfCalc`
 
-Здесь нет общего грида по \(x\) для внешнего интеграла по \(y\): маргиналь \(g_Y(y)\) и \(\rho'_y\) задаются объектом **`Predictor`** (`marginal_y_pdf`, `load_below_y`). Безусловное \(\mathbb{E}[W]\) считается **`scipy.integrate.quad`** по \(y \in [0, \infty)\) с ужесточёнными `epsabs`, `epsrel`, `limit` (см. `mg1_spjf.py`), потому что интеграл идёт по другой переменной и по плотности, которую задаёт предиктор.
+Here there is no shared grid over \(x\) for the outer integral over \(y\): the marginal \(g_Y(y)\) and \(\rho'_y\) are supplied by a **`Predictor`** object (`marginal_y_pdf`, `load_below_y`). The unconditional \(\mathbb{E}[W]\) is computed with **`scipy.integrate.quad`** over \(y \in [0, \infty)\) with tightened `epsabs`, `epsrel`, `limit` (see `mg1_spjf.py`), because the integral runs over a different variable and over a density supplied by the predictor.
 
-### 3.3. Устойчивость при высокой загрузке
+### 3.3. Stability Under High Load
 
-- Теория: плотная сетка + Simpson для внешнего среднего по \(X\) (SRPT/SJF/PSJF); отдельные регрессионные тесты на \(\rho \in \{0.95, 0.99\}\) для сценария из Mitzenmacher–Shahout (см. `tests/test_mg1_predictions_table.py`).
-- Симуляция: дисперсия оценок \(\mathbb{E}[T]\), особенно для SRPT, велика; для таблиц из статьи используются сотни тысяч — миллионы заявок (см. `examples/srpt_table.py`).
-
----
-
-## 4. Симуляция `SizeBasedQsSim` и соответствие теории
-
-Идея roadmap: **sample-at-arrival** — размер \(X\) (и при необходимости предсказание \(Y\)) известны в момент прихода; фактическое время обслуживания равно сэмплированному размеру (остаток ведётся в `service_remaining`).
-
-- **`set_servers(params, notation)`** в `SizeBasedQsSim` задаёт **то же распределение размера**, что используется для построения \(f\) в теории (через те же параметры Kendall / H2 и т.д.).
-- **`set_sources(λ, "M")`** — пуассоновский поток с той же \(\lambda\), что в `set_sources` калькулятора.
-- Дисциплина задаётся `discipline=...`; прерывание реализовано сравнением рангов и возвратом задачи в кучу с обновлённым остатком.
-
-Тогда для фиксированных \((\lambda, f)\) и одной и той же дисциплины **средние по симуляции** (например, `results.v[0]`, `results.w[0]`) должны сходиться к **аналитическим** при росте числа заявок; расхождение — только статистическая ошибка + дискретизация теории.
-
-**PSPJF / SPRPT:** в roadmap отмечено, что для них в первой итерации **аналитика в пакете может отсутствовать**; симуляция есть, теория — точка расширения. Сравнение «theory vs sim» в тестах ориентировано на SRPT, SJF, PSJF, SPJF (+ FCFS как база).
+- Theory: dense grid + Simpson for the outer averaging over \(X\) (SRPT/SJF/PSJF); dedicated regression tests at \(\rho \in \{0.95, 0.99\}\) for the Mitzenmacher–Shahout scenario (see `tests/test_mg1_predictions_table.py`).
+- Simulation: the variance of the \(\mathbb{E}[T]\) estimates, especially for SRPT, is large; the tables from the paper use hundreds of thousands to millions of jobs (see `examples/srpt_table.py`).
 
 ---
 
-## 5. Как именно сравниваем с имитационным моделированием
+## 4. The `SizeBasedQsSim` Simulation and Its Correspondence to Theory
 
-1. **Модульные тесты** (`tests/test_mg1_srpt.py`, `test_mg1_sjf.py`, `test_mg1_psjf.py`, `test_mg1_spjf.py`): один и тот же сценарий (например, H₂ с заданными средним и CV), `MG1*Calc.run()` против `SizeBasedQsSim(...).run(N)`; допуски **`MOMENTS_RTOL` / `MOMENTS_ATOL`** из `tests/default_params.yaml`, число заявок **`NUM_OF_JOBS`** подобрано так, чтобы типичная ошибка среднего укладывалась в допуск.
+The roadmap idea: **sample-at-arrival** — the size \(X\) (and, if needed, the prediction \(Y\)) is known at the moment of arrival; the actual service time equals the sampled size (the remainder is tracked in `service_remaining`).
 
-2. **Неравенства и sanity-checks** (`tests/test_srpt_vs_fcfs.py`): например, \(\mathbb{E}[T^{\mathrm{SRPT}}] \le \mathbb{E}[T^{\mathrm{FCFS}}]\) для тестируемых параметров.
+- **`set_servers(params, notation)`** in `SizeBasedQsSim` sets **the same size distribution** that is used to build \(f\) in the theory (via the same Kendall / H2 parameters, etc.).
+- **`set_sources(λ, "M")`** — a Poisson flow with the same \(\lambda\) as in the calculator's `set_sources`.
+- The discipline is set with `discipline=...`; preemption is implemented by rank comparison and returning the task to the heap with the updated remainder.
 
-3. **Регрессия по таблице статьи** (`tests/test_mg1_predictions_table.py`): фиксированная модель предсказаний \(Y \mid X=x \sim \mathrm{Exp}(1/x)\), несколько \(\rho\); sim + при наличии — теория против опубликованных чисел.
+Then, for fixed \((\lambda, f)\) and the same discipline, the **simulation means** (e.g., `results.v[0]`, `results.w[0]`) must converge to the **analytical** ones as the number of jobs grows; any discrepancy is only statistical error plus the discretization of the theory.
 
-4. **Пример для воспроизведения таблицы и графиков**: `examples/srpt_table.py` — теория, симуляция и эталонные значения в одном скрипте (см. также туториал `tutorials/srpt_basics.ipynb`).
-
-Рекомендация при своих экспериментах: фиксировать **`np.random.Generator`** (`sim.generator = np.random.default_rng(seed)`), поднимать \(N\) при больших \(\rho\) и сравнивать с теорией там, где она реализована.
+**PSPJF / SPRPT:** the roadmap notes that, in the first iteration, **the analytics for these may be absent from the package**; simulation is available, theory is an extension point. The "theory vs sim" comparison in the tests targets SRPT, SJF, PSJF, SPJF (+ FCFS as the baseline).
 
 ---
 
-## 6. Связанные разделы документации
+## 5. How Exactly We Compare Against Simulation
 
-- [Основные концепции — size-based термины](concepts.md)
-- [Модели — строки M/G/1 SRPT/SJF/PSJF/SPJF](models.md)
-- [Численные методы — краткие формулы и примеры API](calculation.md) (раздел *Size-based M/G/1 калькуляторы*)
-- [Симуляция — `SizeBasedQsSim`, предикторы, slowdown](simulation.md)
+1. **Unit tests** (`tests/test_mg1_srpt.py`, `test_mg1_sjf.py`, `test_mg1_psjf.py`, `test_mg1_spjf.py`): the same scenario (e.g., H₂ with a given mean and CV), `MG1*Calc.run()` versus `SizeBasedQsSim(...).run(N)`; tolerances **`MOMENTS_RTOL` / `MOMENTS_ATOL`** from `tests/default_params.yaml`, the number of jobs **`NUM_OF_JOBS`** chosen so that the typical error of the mean fits within the tolerance.
+
+2. **Inequalities and sanity checks** (`tests/test_srpt_vs_fcfs.py`): for instance, \(\mathbb{E}[T^{\mathrm{SRPT}}] \le \mathbb{E}[T^{\mathrm{FCFS}}]\) for the tested parameters.
+
+3. **Regression against the paper's table** (`tests/test_mg1_predictions_table.py`): a fixed prediction model \(Y \mid X=x \sim \mathrm{Exp}(1/x)\), several values of \(\rho\); sim + (where available) theory against the published numbers.
+
+4. **Example for reproducing the table and plots**: `examples/srpt_table.py` — theory, simulation, and reference values in a single script (see also the tutorial `tutorials/srpt_basics.ipynb`).
+
+Recommendation for your own experiments: fix the **`np.random.Generator`** (`sim.generator = np.random.default_rng(seed)`), increase \(N\) at large \(\rho\), and compare against theory where it is implemented.
+
+---
+
+## 6. Related Documentation Sections
+
+- [Core Concepts — size-based terminology](concepts.md)
+- [Models — the M/G/1 SRPT/SJF/PSJF/SPJF rows](models.md)
+- [Numerical Methods — concise formulas and API examples](calculation.md) (section *Size-based M/G/1 calculators*)
+- [Simulation — `SizeBasedQsSim`, predictors, slowdown](simulation.md)

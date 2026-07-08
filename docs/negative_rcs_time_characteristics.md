@@ -1,101 +1,102 @@
-# Временные характеристики СМО с отрицательными заявками RCS (Remove Customer in Service)
+# Time Characteristics of Queueing Systems with RCS Negative Customers (Remove Customer in Service)
 
-Этот документ описывает подход к вычислению временных характеристик в системах с отрицательными заявками типа **RCS** — при таком отрицательном событии из системы удаляется **одна заявка, находящаяся в обслуживании** (в симуляторе выбирается случайный занятый сервер).
+[🇷🇺 Русская версия](negative_rcs_time_characteristics.ru.md)
 
-Документ ориентирован на соответствие семантике симуляции `QsSimNegatives(..., NegativeServiceType.RCS)`.
+This document describes the approach to computing the time characteristics of systems with negative customers of the **RCS** type — such a negative event removes **one job currently in service** from the system (the simulator picks a random busy server).
 
-## 1. Модель и ключевое отличие от DISASTER
+The document is aligned with the semantics of the `QsSimNegatives(..., NegativeServiceType.RCS)` simulation.
 
-Пусть:
+## 1. Model and the Key Difference from DISASTER
 
-- \(\lambda\) — интенсивность положительных поступлений;
-- \(B\) — время обслуживания (в теории часто аппроксимируется \(H_2\) или \(C_2\); в имитации нередко используется Gamma);
-- \(\delta\) — интенсивность отрицательных событий (RCS), `l_neg`.
+Let:
 
-**Отличие от DISASTER:**
+- \(\lambda\) — the rate of positive arrivals;
+- \(B\) — the service time (in theory often approximated by \(H_2\) or \(C_2\); in simulation, Gamma is frequently used);
+- \(\delta\) — the rate of negative events (RCS), `l_neg`.
 
-- при DISASTER очищается вся система, т.е. отрицательное событие может завершить клиента и в очереди, и в обслуживании;
-- при RCS отрицательное событие удаляет **только** клиента в обслуживании, очередь не затрагивается.
+**Difference from DISASTER:**
 
-Отсюда следует важный вывод:
+- with DISASTER the entire system is cleared, i.e. a negative event can terminate a customer both in the queue and in service;
+- with RCS a negative event removes **only** the customer in service; the queue is not affected.
 
-- время ожидания в очереди \(W\) **не обрезается** минимумом с \(\mathrm{Exp}(\delta)\), но **зависит** от \(\delta\), потому что RCS может освобождать серверы раньше (сервисный клиент удалён → сервер освобождён).
+This leads to an important conclusion:
 
-## 2. Семантика симуляции (RCS)
+- the waiting time in the queue \(W\) is **not truncated** by a minimum with \(\mathrm{Exp}(\delta)\), yet it **depends** on \(\delta\), because RCS can free servers earlier (the customer in service is removed → the server becomes free).
 
-В `most_queue/sim/negative.py` для `NegativeServiceType.RCS`:
+## 2. Simulation Semantics (RCS)
 
-- если система пуста, отрицательное событие ничего не делает;
-- иначе выбирается случайный занятый сервер и заявка в обслуживании удаляется;
-- для удалённой заявки фиксируется время пребывания \(V\) как \(t - t_{\text{arrival}}\);
-- ожидание \(W\) у удалённой заявки — то, что она накопила до начала обслуживания (если она успела начать обслуживание).
+In `most_queue/sim/negative.py`, for `NegativeServiceType.RCS`:
 
-## 3. Эффективная «опасность удаления» в обслуживании
+- if the system is empty, a negative event does nothing;
+- otherwise, a random busy server is selected and the job in service is removed;
+- for the removed job, the sojourn time \(V\) is recorded as \(t - t_{\text{arrival}}\);
+- the waiting time \(W\) of the removed job is whatever it had accumulated before its service started (if it managed to start service).
 
-Когда в системе занято \(m\) серверов, каждое отрицательное событие выбирает один из \(m\) занятых серверов равновероятно. Поэтому для **конкретной** обслуживаемой заявки интенсивность удаления равна:
+## 3. The Effective "Removal Hazard" in Service
+
+When \(m\) servers are busy, each negative event picks one of the \(m\) busy servers uniformly at random. Therefore, for a **specific** job in service the removal rate is:
 \[
 r(m) = \frac{\delta}{m}.
 \]
 
-Если считать, что во время обслуживания \(m\) приблизительно постоянно, то время в обслуживании для типичной заявки становится:
+If we assume that \(m\) is approximately constant during the service, the time in service for a typical job becomes:
 \[
 S = \min(B,\; Y),\quad Y\sim \mathrm{Exp}(r(m)).
 \]
 
-### 3.1. LST для \(\min(B, \mathrm{Exp}(r))\)
+### 3.1. LST for \(\min(B, \mathrm{Exp}(r))\)
 
-Для независимых \(B\) и \(Y\sim \mathrm{Exp}(r)\):
+For independent \(B\) and \(Y\sim \mathrm{Exp}(r)\):
 \[
 S^*(s) = \mathbb{E}[e^{-s\min(B,Y)}]
 = \frac{r}{s+r} + \frac{s}{s+r}\,\beta(s+r),
 \]
-где \(\beta(s)=\mathbb{E}[e^{-sB}]\) — LST обслуживания.
+where \(\beta(s)=\mathbb{E}[e^{-sB}]\) is the LST of the service time.
 
-## 4. Ожидание \(W\): LST через структуру уровней (Takahashi–Takami)
+## 4. The Waiting Time \(W\): LST via the Level Structure (Takahashi–Takami)
 
-В многоканальном методе Такахаси–Таками ожидание до начала обслуживания при FIFO можно получать через LST, суммируя по уровням \(k\ge n\) и микросостояниям (PASTA).
+In the multi-channel Takahashi–Takami method, the waiting time until service start under FIFO can be obtained via the LST by summing over levels \(k\ge n\) and micro-states (PASTA).
 
-Для RCS меняется «время до следующего освобождения сервера» на уровне \(k\ge n\):
+For RCS, what changes is the "time until the next server release" at level \(k\ge n\):
 
-- в микросостоянии \(j\) суммарная интенсивность завершения обслуживания равна \(\text{service\_rate}(j)\);
-- дополнительно сервер может освободиться из‑за RCS с интенсивностью \(\delta\) (удаляется кто‑то из обслуживаемых).
+- in micro-state \(j\), the total service completion rate is \(\text{service\_rate}(j)\);
+- additionally, a server can be released due to RCS with rate \(\delta\) (one of the jobs in service is removed).
 
-Поэтому в LST ожидания используется экспоненциальный фактор вида:
+Therefore, the waiting-time LST uses an exponential factor of the form:
 \[
 \mathrm{Exp}(\text{service\_rate}(j) + \delta).
 \]
 
-Итоговая структура:
+The resulting structure:
 
-- с вероятностью \(\mathbb{P}(k<n)\) ожидание нулевое;
-- дефектная часть \( \mathbb{E}[e^{-sW};\,k\ge n] \) вычисляется матричным суммированием по уровням.
+- with probability \(\mathbb{P}(k<n)\) the wait is zero;
+- the defective part \( \mathbb{E}[e^{-sW};\,k\ge n] \) is computed by matrix summation over the levels.
 
-В Most-Queue это реализовано в `most_queue/theory/negative/mgn_rcs.py` в виде функции LST ожидания \(W^*(s)\), после чего моменты получаются численным дифференцированием в нуле.
+In Most-Queue this is implemented in `most_queue/theory/negative/mgn_rcs.py` as a function of the waiting-time LST \(W^*(s)\), after which the moments are obtained by numerical differentiation at zero.
 
-## 5. Пребывание в системе \(V\), served/broken
+## 5. Sojourn Time \(V\), served/broken
 
-В RCS клиент может выйти двумя способами:
+Under RCS a customer can leave in two ways:
 
-- **served**: обслуживание завершилось раньше удаления;
-- **broken**: клиент удалён отрицательным событием во время обслуживания.
+- **served**: service completed before removal;
+- **broken**: the customer was removed by a negative event during service.
 
-При фиксированном \(m\) (занятых серверов в момент старта обслуживания) условная структура проста:
+For a fixed \(m\) (servers busy at the moment service starts), the conditional structure is simple:
 \[
 V = W + \min(B, \mathrm{Exp}(\delta/m)).
 \]
 
-Проблема на практике в том, что \(m\) зависит от состояния:
+The practical difficulty is that \(m\) depends on the state:
 
-- если клиент приходит при уровне \(k<n\), он начинает обслуживаться сразу и естественно \(m=k+1\);
-- если клиент приходит при уровне \(k\ge n\), он ждёт и затем, в грубом приближении, стартует сервис при \(m\approx n\).
+- if the customer arrives at level \(k<n\), it starts service immediately, and naturally \(m=k+1\);
+- if the customer arrives at level \(k\ge n\), it waits and then, as a rough approximation, starts service with \(m\approx n\).
 
-В Most-Queue используется именно эта аппроксимация (смесь случаев \(k<n\) и \(k\ge n\)), но вычисление идёт через LST, чтобы:
+Most-Queue uses exactly this approximation (a mixture of the cases \(k<n\) and \(k\ge n\)), but the computation is carried out via the LST in order to:
 
-- корректно учитывать, что \(W\) уже «включает» влияние \(\delta\);
-- получить \(V\), \(V_{\text{served}}\), \(V_{\text{broken}}\) без ручной свёртки моментов с неверным ожиданием.
+- correctly account for the fact that \(W\) already "incorporates" the influence of \(\delta\);
+- obtain \(V\), \(V_{\text{served}}\), \(V_{\text{broken}}\) without a manual convolution of moments with an incorrect expectation.
 
-## 6. Связанные реализации в коде
+## 6. Related Implementations in the Code
 
-- `most_queue/theory/negative/mgn_rcs.py` — M/H₂/n с отрицательными RCS.
-- `most_queue/sim/negative.py` — симуляционная семантика `NegativeServiceType.RCS`.
-
+- `most_queue/theory/negative/mgn_rcs.py` — M/H₂/n with negative RCS customers.
+- `most_queue/sim/negative.py` — the simulation semantics of `NegativeServiceType.RCS`.

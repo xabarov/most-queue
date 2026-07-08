@@ -1,69 +1,71 @@
-# Системы с приоритетами
+# Priority Systems
 
-Системы с приоритетами позволяют разделить заявки на классы с разными приоритетами обслуживания. Библиотека Most-Queue поддерживает как прерываемый (PR), так и непрерываемый (NP) приоритет.
+[🇷🇺 Русская версия](priorities.ru.md)
 
-## Типы приоритетов
+Priority systems make it possible to split jobs into classes with different service priorities. The Most-Queue library supports both preemptive (PR) and non-preemptive (NP) priority.
 
-### Прерываемый приоритет (PR - Preemptive Resume)
+## Priority Types
 
-При прерываемом приоритете обслуживание низкоприоритетной заявки может быть прервано при поступлении заявки более высокого приоритета. После прерывания обслуживание низкоприоритетной заявки возобновляется с того места, где было прервано (resume).
+### Preemptive Priority (PR - Preemptive Resume)
 
-**Характеристики:**
-- Высокоприоритетные заявки обслуживаются немедленно
-- Низкоприоритетные заявки могут быть прерваны
-- После прерывания обслуживание возобновляется
+With preemptive priority, the service of a low-priority job can be interrupted when a higher-priority job arrives. After the interruption, the service of the low-priority job resumes from the point where it was interrupted (resume).
 
-### Непрерываемый приоритет (NP - Non-Preemptive)
+**Characteristics:**
+- High-priority jobs are served immediately
+- Low-priority jobs can be preempted
+- After preemption, service is resumed
 
-При непрерываемом приоритете начатое обслуживание не прерывается. Приоритеты учитываются только при выборе следующей заявки из очереди после завершения текущего обслуживания.
+### Non-Preemptive Priority (NP - Non-Preemptive)
 
-**Характеристики:**
-- Начатое обслуживание завершается полностью
-- Приоритеты влияют только на порядок выбора из очереди
-- Более справедливая дисциплина для низкоприоритетных заявок
+With non-preemptive priority, service that has already started is never interrupted. Priorities are taken into account only when selecting the next job from the queue after the current service is completed.
 
-## Симуляция систем с приоритетами
+**Characteristics:**
+- Service that has started is completed in full
+- Priorities affect only the order of selection from the queue
+- A fairer discipline for low-priority jobs
 
-### Класс PriorityQueueSimulator
+## Simulation of Priority Systems
 
-Класс `PriorityQueueSimulator` используется для симуляции многоканальных систем с приоритетами.
+### The PriorityQueueSimulator Class
 
-### Создание симулятора
+The `PriorityQueueSimulator` class is used to simulate multi-channel systems with priorities.
+
+### Creating a Simulator
 
 ```python
 from most_queue.sim.priority import PriorityQueueSimulator
 
-# Создание симулятора
-# num_of_channels - число каналов
-# num_of_classes - число классов приоритетов
-# prty_type - тип приоритета: "PR" или "NP"
+# Create a simulator
+# num_of_channels - number of channels
+# num_of_classes - number of priority classes
+# prty_type - priority type: "PR" or "NP"
 qs = PriorityQueueSimulator(
     num_of_channels=5,
     num_of_classes=3,
-    prty_type="PR"  # или "NP"
+    prty_type="PR"  # or "NP"
 )
 ```
 
-### Настройка потоков поступления
+### Configuring the Arrival Flows
 
-Для каждого класса приоритета настраивается отдельный поток поступления:
+A separate arrival flow is configured for each priority class:
 
 ```python
-# Список словарей с параметрами потоков для каждого класса
+# List of dictionaries with flow parameters for each class
 sources = []
 
 for j in range(num_of_classes):
     sources.append({
-        "type": "M",                    # тип распределения
-        "params": arrival_rates[j]      # параметры (для M - интенсивность)
+        "type": "M",                    # distribution type
+        "params": arrival_rates[j]      # parameters (for M - the arrival rate)
     })
 
 qs.set_sources(sources)
 ```
 
-### Настройка обслуживания
+### Configuring the Service
 
-Для каждого класса настраиваются параметры времени обслуживания:
+Service time parameters are configured for each class:
 
 ```python
 from most_queue.random.distributions import GammaDistribution
@@ -71,7 +73,7 @@ from most_queue.random.distributions import GammaDistribution
 servers_params = []
 
 for j in range(num_of_classes):
-    # Параметры распределения времени обслуживания для класса j
+    # Service time distribution parameters for class j
     gamma_params = GammaDistribution.get_params_by_mean_and_cv(
         mean=service_means[j],
         cv=service_cv
@@ -84,32 +86,32 @@ for j in range(num_of_classes):
 qs.set_servers(servers_params)
 ```
 
-### Полный пример симуляции
+### Complete Simulation Example
 
 ```python
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.random.distributions import GammaDistribution
 from most_queue.io.tables import print_sojourn_multiclass
 
-# Параметры системы
+# System parameters
 num_channels = 5
 num_classes = 3
 arrival_rates = [0.1, 0.2, 0.3]
 service_means = [2.25, 4.5, 6.75]
 service_cv = 0.8
 
-# Создание симулятора с прерываемым приоритетом
+# Create a simulator with preemptive priority
 qs = PriorityQueueSimulator(num_channels, num_classes, "PR")
 
-# Настройка потоков
+# Configure the flows
 sources = []
 servers_params = []
 
 for j in range(num_classes):
-    # Поток поступления
+    # Arrival flow
     sources.append({"type": "M", "params": arrival_rates[j]})
     
-    # Параметры обслуживания
+    # Service parameters
     gamma_params = GammaDistribution.get_params_by_mean_and_cv(
         mean=service_means[j],
         cv=service_cv
@@ -119,48 +121,48 @@ for j in range(num_classes):
 qs.set_sources(sources)
 qs.set_servers(servers_params)
 
-# Запуск симуляции
+# Run the simulation
 qs.run(50000)
 
-# Получение результатов
-v_sim = qs.v  # моменты времени пребывания для каждого класса
-# v_sim[i][j] - j-й момент для класса i
+# Get the results
+v_sim = qs.v  # sojourn time moments for each class
+# v_sim[i][j] - j-th moment for class i
 ```
 
-## Расчет систем с приоритетами
+## Calculation of Priority Systems
 
-### M/G/1 с прерываемым приоритетом
+### M/G/1 with Preemptive Priority
 
-Класс `MG1Preemptive` для расчета одноканальной системы:
+The `MG1Preemptive` class for calculating a single-channel system:
 
 ```python
 from most_queue.theory.priority.preemptive.mg1 import MG1Preemptive
 
 calc = MG1Preemptive(num_of_classes=3)
 
-# Интенсивности поступления для каждого класса
+# Arrival rates for each class
 calc.set_sources([0.1, 0.2, 0.3])
 
-# Моменты времени обслуживания для каждого класса
-# b[i][j] - j-й момент для класса i
+# Service time moments for each class
+# b[i][j] - j-th moment for class i
 b = [
-    [2.25, 5.06, 15.19],  # класс 1 (высший приоритет)
-    [4.5, 24.3, 145.8],   # класс 2
-    [6.75, 54.68, 410.1]  # класс 3 (низший приоритет)
+    [2.25, 5.06, 15.19],  # class 1 (highest priority)
+    [4.5, 24.3, 145.8],   # class 2
+    [6.75, 54.68, 410.1]  # class 3 (lowest priority)
 ]
 calc.set_servers(b)
 
 results = calc.run()
 
-# Результаты для каждого класса
-print(f"Класс 1: среднее время пребывания = {results.v[0][0]:.4f}")
-print(f"Класс 2: среднее время пребывания = {results.v[1][0]:.4f}")
-print(f"Класс 3: среднее время пребывания = {results.v[2][0]:.4f}")
+# Results for each class
+print(f"Class 1: mean sojourn time = {results.v[0][0]:.4f}")
+print(f"Class 2: mean sojourn time = {results.v[1][0]:.4f}")
+print(f"Class 3: mean sojourn time = {results.v[2][0]:.4f}")
 ```
 
-### M/G/1 с непрерываемым приоритетом
+### M/G/1 with Non-Preemptive Priority
 
-Класс `MG1NonPreemptive`:
+The `MG1NonPreemptive` class:
 
 ```python
 from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptive
@@ -171,29 +173,29 @@ calc.set_servers(b)
 results = calc.run()
 ```
 
-### M/G/c с приоритетами
+### M/G/c with Priorities
 
-Класс `MGnInvarApproximation` для многоканальных систем:
+The `MGnInvarApproximation` class for multi-channel systems:
 
 ```python
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
 
-# Прерываемый приоритет
+# Preemptive priority
 calc_pr = MGnInvarApproximation(n=5, priority="PR")
 calc_pr.set_sources([0.1, 0.2, 0.3])
 calc_pr.set_servers(b)
 results_pr = calc_pr.get_v()
 
-# Непрерываемый приоритет
+# Non-preemptive priority
 calc_np = MGnInvarApproximation(n=5, priority="NP")
 calc_np.set_sources([0.1, 0.2, 0.3])
 calc_np.set_servers(b)
 results_np = calc_np.get_v()
 ```
 
-## Сравнение PR и NP приоритетов
+## Comparing PR and NP Priorities
 
-### Пример сравнения
+### Comparison Example
 
 ```python
 from most_queue.sim.priority import PriorityQueueSimulator
@@ -206,7 +208,7 @@ arrival_rates = [0.1, 0.2, 0.3]
 service_means = [2.25, 4.5, 6.75]
 service_cv = 0.8
 
-# Подготовка параметров
+# Prepare the parameters
 gamma_params = []
 for j in range(num_classes):
     gamma_params.append(
@@ -219,112 +221,111 @@ for j in range(num_classes):
 sources = [{"type": "M", "params": arrival_rates[j]} for j in range(num_classes)]
 servers_params = [{"type": "Gamma", "params": gamma_params[j]} for j in range(num_classes)]
 
-# Прерываемый приоритет
+# Preemptive priority
 qs_pr = PriorityQueueSimulator(num_channels, num_classes, "PR")
 qs_pr.set_sources(sources)
 qs_pr.set_servers(servers_params)
 qs_pr.run(50000)
 
-# Непрерываемый приоритет
+# Non-preemptive priority
 qs_np = PriorityQueueSimulator(num_channels, num_classes, "NP")
 qs_np.set_sources(sources)
 qs_np.set_servers(servers_params)
 qs_np.run(50000)
 
-# Сравнение результатов
-print("Прерываемый приоритет (PR):")
+# Compare the results
+print("Preemptive priority (PR):")
 for i in range(num_classes):
-    print(f"  Класс {i+1}: {qs_pr.v[i][0]:.4f}")
+    print(f"  Class {i+1}: {qs_pr.v[i][0]:.4f}")
 
-print("\nНепрерываемый приоритет (NP):")
+print("\nNon-preemptive priority (NP):")
 for i in range(num_classes):
-    print(f"  Класс {i+1}: {qs_np.v[i][0]:.4f}")
+    print(f"  Class {i+1}: {qs_np.v[i][0]:.4f}")
 ```
 
-### Особенности
+### Key Properties
 
-**Прерываемый приоритет (PR):**
-- Высокоприоритетные заявки обслуживаются быстрее
-- Низкоприоритетные заявки могут ждать очень долго
-- Подходит для критически важных заявок
+**Preemptive priority (PR):**
+- High-priority jobs are served faster
+- Low-priority jobs may wait a very long time
+- Suitable for mission-critical jobs
 
-**Непрерываемый приоритет (NP):**
-- Более справедливое распределение времени ожидания
-- Низкоприоритетные заявки не "голодают"
-- Подходит для систем, где важна справедливость
+**Non-preemptive priority (NP):**
+- A fairer distribution of waiting time
+- Low-priority jobs do not "starve"
+- Suitable for systems where fairness matters
 
-## Структура результатов
+## Result Structure
 
-### Многоклассовые результаты
+### Multiclass Results
 
-Для систем с приоритетами результаты структурированы по классам:
+For priority systems, the results are structured by class:
 
 ```python
-# Моменты времени пребывания
-v = results.v  # v[i][j] - j-й момент для класса i
+# Sojourn time moments
+v = results.v  # v[i][j] - j-th moment for class i
 
-# Моменты времени ожидания
-w = results.w  # w[i][j] - j-й момент для класса i
+# Waiting time moments
+w = results.w  # w[i][j] - j-th moment for class i
 
-# Вероятности состояний (обычно для низкоприоритетных заявок)
+# State probabilities (usually for low-priority jobs)
 p = results.p
 ```
 
-### Пример анализа результатов
+### Example of Result Analysis
 
 ```python
 results = calc.run()
 
-print("Анализ результатов по классам:")
+print("Analysis of results by class:")
 for i in range(num_classes):
-    print(f"\nКласс {i+1} (приоритет {i+1}):")
-    print(f"  Среднее время ожидания: {results.w[i][0]:.4f}")
-    print(f"  Среднее время пребывания: {results.v[i][0]:.4f}")
+    print(f"\nClass {i+1} (priority {i+1}):")
+    print(f"  Mean waiting time: {results.w[i][0]:.4f}")
+    print(f"  Mean sojourn time: {results.v[i][0]:.4f}")
     
-    # Второй момент для вычисления дисперсии
+    # Second moment for computing the variance
     if len(results.w[i]) > 1:
         variance = results.w[i][1] - results.w[i][0]**2
-        print(f"  Дисперсия времени ожидания: {variance:.4f}")
+        print(f"  Waiting time variance: {variance:.4f}")
 ```
 
-## Практические рекомендации
+## Practical Recommendations
 
-### Выбор типа приоритета
+### Choosing the Priority Type
 
-1. **Используйте PR**, когда:
-   - Критически важно быстрое обслуживание высокоприоритетных заявок
-   - Низкоприоритетные заявки могут ждать
-   - Примеры: системы реального времени, экстренные службы
+1. **Use PR** when:
+   - Fast service of high-priority jobs is critical
+   - Low-priority jobs can wait
+   - Examples: real-time systems, emergency services
 
-2. **Используйте NP**, когда:
-   - Важна справедливость обслуживания
-   - Низкоприоритетные заявки не должны "голодать"
-   - Примеры: справедливое распределение ресурсов
+2. **Use NP** when:
+   - Fairness of service matters
+   - Low-priority jobs must not "starve"
+   - Examples: fair resource sharing
 
-### Настройка классов
+### Configuring the Classes
 
-1. **Определите число классов** — обычно 2-5 классов достаточно
-2. **Настройте интенсивности** — учитывайте реальное распределение заявок
-3. **Выберите распределения обслуживания** — используйте данные о реальных временах обслуживания
-4. **Проверьте загрузку** — убедитесь, что система устойчива для всех классов
+1. **Determine the number of classes** — usually 2-5 classes are enough
+2. **Set the arrival rates** — account for the actual distribution of jobs
+3. **Choose the service distributions** — use data on real service times
+4. **Check the load** — make sure the system is stable for all classes
 
-### Анализ результатов
+### Analyzing the Results
 
-1. **Сравните времена ожидания** — проверьте, что приоритеты работают как ожидается
-2. **Проверьте справедливость** — для NP приоритета низкоприоритетные заявки не должны ждать слишком долго
-3. **Оптимизируйте параметры** — настройте интенсивности и распределения для достижения целей
+1. **Compare waiting times** — verify that the priorities work as expected
+2. **Check fairness** — with NP priority, low-priority jobs should not wait too long
+3. **Optimize the parameters** — tune the arrival rates and distributions to meet your goals
 
-## Примеры использования
+## Usage Examples
 
-Подробные примеры можно найти в тестах:
-- `test_qs_sim_prty.py` — симуляция систем с приоритетами
-- `test_mmn_prty_busy_approx.py` — расчет M/M/c с приоритетами
-- `test_m_ph_n_prty.py` — системы с фазовым распределением и приоритетами
+Detailed examples can be found in the tests:
+- `test_qs_sim_prty.py` — simulation of priority systems
+- `test_mmn_prty_busy_approx.py` — calculation of M/M/c with priorities
+- `test_m_ph_n_prty.py` — systems with phase-type distribution and priorities
 
 ---
 
-**См. также:**
-- [Симуляция СМО](simulation.md) — основы симуляции
-- [Численные методы](calculation.md) — аналитические расчеты
-- [Сети очередей](networks.md) — сети с приоритетами в узлах
-
+**See also:**
+- [Queueing System Simulation](simulation.md) — simulation basics
+- [Numerical Methods](calculation.md) — analytical calculations
+- [Queueing Networks](networks.md) — networks with priorities in the nodes

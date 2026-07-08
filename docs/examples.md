@@ -1,40 +1,42 @@
-# Расширенные примеры использования
+# Extended Usage Examples
 
-Этот раздел содержит практические примеры использования библиотеки Most-Queue для решения реальных задач.
+[🇷🇺 Русская версия](examples.ru.md)
 
-## Пример 1: Моделирование call-центра
+This section contains practical examples of using the Most-Queue library to solve real-world problems.
 
-### Задача
+## Example 1: Modeling a Call Center
 
-Смоделировать call-центр с несколькими операторами и двумя типами звонков: обычные и приоритетные (VIP).
+### Problem
 
-### Решение
+Model a call center with several operators and two types of calls: regular and priority (VIP).
+
+### Solution
 
 ```python
 from most_queue.sim.priority import PriorityQueueSimulator
 from most_queue.random.distributions import GammaDistribution
 from most_queue.io.tables import print_sojourn_multiclass
 
-# Параметры call-центра
+# Call center parameters
 num_operators = 10
-num_classes = 2  # обычные и VIP звонки
+num_classes = 2  # regular and VIP calls
 
-# Интенсивности поступления
-# Обычные звонки: 5 звонков в минуту
-# VIP звонки: 1 звонок в минуту
-arrival_rates = [5.0 / 60, 1.0 / 60]  # переводим в секунды
+# Arrival rates
+# Regular calls: 5 calls per minute
+# VIP calls: 1 call per minute
+arrival_rates = [5.0 / 60, 1.0 / 60]  # convert to seconds
 
-# Средние времена обслуживания
-# Обычные: 3 минуты
-# VIP: 5 минут (более сложные запросы)
-service_means = [3.0 * 60, 5.0 * 60]  # в секундах
+# Mean service times
+# Regular: 3 minutes
+# VIP: 5 minutes (more complex requests)
+service_means = [3.0 * 60, 5.0 * 60]  # in seconds
 service_cv = 0.7
 
-# Создание симулятора с непрерываемым приоритетом
-# (VIP звонки имеют приоритет, но начатый разговор не прерывается)
+# Create a simulator with non-preemptive priority
+# (VIP calls have priority, but a call in progress is not interrupted)
 qs = PriorityQueueSimulator(num_operators, num_classes, "NP")
 
-# Настройка потоков
+# Configure the arrival processes
 sources = []
 servers_params = []
 
@@ -50,93 +52,93 @@ for j in range(num_classes):
 qs.set_sources(sources)
 qs.set_servers(servers_params)
 
-# Симуляция на 10000 звонков
+# Simulate 10000 calls
 qs.run(10000)
 
-# Анализ результатов
-print("Результаты моделирования call-центра:")
-print(f"Обычные звонки:")
-print(f"  Среднее время ожидания: {qs.v[0][0] / 60:.2f} минут")
-print(f"  Среднее время пребывания: {qs.v[0][0] / 60:.2f} минут")
+# Analyze the results
+print("Call center simulation results:")
+print(f"Regular calls:")
+print(f"  Mean waiting time: {qs.v[0][0] / 60:.2f} minutes")
+print(f"  Mean sojourn time: {qs.v[0][0] / 60:.2f} minutes")
 
-print(f"\nVIP звонки:")
-print(f"  Среднее время ожидания: {qs.v[1][0] / 60:.2f} минут")
-print(f"  Среднее время пребывания: {qs.v[1][0] / 60:.2f} минут")
+print(f"\nVIP calls:")
+print(f"  Mean waiting time: {qs.v[1][0] / 60:.2f} minutes")
+print(f"  Mean sojourn time: {qs.v[1][0] / 60:.2f} minutes")
 
-# Проверка загрузки
+# Check the load
 total_load = sum(arrival_rates[i] * service_means[i] for i in range(num_classes))
 utilization = total_load / num_operators
-print(f"\nКоэффициент загрузки: {utilization:.2%}")
+print(f"\nUtilization: {utilization:.2%}")
 ```
 
-## Пример 2: Анализ облачной инфраструктуры
+## Example 2: Analyzing Cloud Infrastructure
 
-### Задача
+### Problem
 
-Проанализировать производительность облачного сервера с несколькими виртуальными машинами, обрабатывающими запросы с разными характеристиками.
+Analyze the performance of a cloud server with several virtual machines processing requests with different characteristics.
 
-### Решение
+### Solution
 
 ```python
 from most_queue.sim.base import QsSim
 from most_queue.random.distributions import H2Distribution
 from most_queue.io.tables import print_waiting_moments, print_sojourn_moments
 
-# Параметры сервера
-num_vms = 8  # число виртуальных машин
+# Server parameters
+num_vms = 8  # number of virtual machines
 
-# Поток запросов: 100 запросов в секунду
+# Request stream: 100 requests per second
 arrival_rate = 100.0
 
-# Время обработки запроса: среднее 50 мс, CV = 1.2
-service_mean = 0.05  # секунды
+# Request processing time: mean 50 ms, CV = 1.2
+service_mean = 0.05  # seconds
 service_cv = 1.2
 
-# Создание параметров H2-распределения для моделирования
-# высокого коэффициента вариации
+# Create H2 distribution parameters to model
+# a high coefficient of variation
 h2_params = H2Distribution.get_params_by_mean_and_cv(
     mean=service_mean,
     cv=service_cv
 )
 
-# Симуляция
+# Simulation
 qs = QsSim(num_of_channels=num_vms)
 qs.set_sources(arrival_rate, "M")
 qs.set_servers(h2_params, "H")
 
 results = qs.run(100000)
 
-# Анализ результатов
-print("Анализ облачного сервера:")
-print(f"Число виртуальных машин: {num_vms}")
-print(f"Интенсивность запросов: {arrival_rate} зап/сек")
-print(f"\nРезультаты:")
-print(f"  Среднее время ожидания: {results.w[0] * 1000:.2f} мс")
-print(f"  Среднее время обработки: {results.v[0] * 1000:.2f} мс")
-print(f"  Коэффициент загрузки: {results.utilization:.2%}")
+# Analyze the results
+print("Cloud server analysis:")
+print(f"Number of virtual machines: {num_vms}")
+print(f"Request rate: {arrival_rate} req/s")
+print(f"\nResults:")
+print(f"  Mean waiting time: {results.w[0] * 1000:.2f} ms")
+print(f"  Mean processing time: {results.v[0] * 1000:.2f} ms")
+print(f"  Utilization: {results.utilization:.2%}")
 
-# Анализ вероятностей состояний
+# Analyze the state probabilities
 p = results.p
-print(f"\nВероятности состояний:")
-print(f"  Простой сервера: {p[0]:.2%}")
-print(f"  1-4 запроса в обработке: {sum(p[1:5]):.2%}")
-print(f"  5-8 запросов в обработке: {sum(p[5:9]):.2%}")
-print(f"  Очередь (9+ запросов): {sum(p[9:]):.2%}")
+print(f"\nState probabilities:")
+print(f"  Server idle: {p[0]:.2%}")
+print(f"  1-4 requests in processing: {sum(p[1:5]):.2%}")
+print(f"  5-8 requests in processing: {sum(p[5:9]):.2%}")
+print(f"  Queue (9+ requests): {sum(p[9:]):.2%}")
 
-# Рекомендации
+# Recommendations
 if results.utilization > 0.8:
-    print("\n⚠️  Внимание: высокая загрузка! Рекомендуется увеличить число ВМ.")
+    print("\n⚠️  Warning: high load! Consider increasing the number of VMs.")
 elif results.w[0] > 0.1:
-    print("\n⚠️  Внимание: большое время ожидания! Рекомендуется оптимизация.")
+    print("\n⚠️  Warning: long waiting time! Optimization is recommended.")
 ```
 
-## Пример 3: Оптимизация транспортной системы
+## Example 3: Optimizing a Transportation System
 
-### Задача
+### Problem
 
-Оптимизировать работу станции техобслуживания с несколькими постами и различными типами работ.
+Optimize the operation of a vehicle service station with several service bays and different types of work.
 
-### Решение
+### Solution
 
 ```python
 from most_queue.sim.base import QsSim
@@ -144,29 +146,29 @@ from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.random.distributions import GammaDistribution
 from most_queue.io.tables import print_waiting_moments
 
-# Параметры станции
-arrival_rate = 10.0 / 60  # 10 машин в час = машин в минуту
+# Station parameters
+arrival_rate = 10.0 / 60  # 10 cars per hour = cars per minute
 
-# Время обслуживания: среднее 20 минут, CV = 0.6
+# Service time: mean 20 minutes, CV = 0.6
 service_mean = 20.0
 service_cv = 0.6
 
-# Тестируем разное число постов
+# Test different numbers of service bays
 num_posts_options = [2, 3, 4, 5]
 
-print("Анализ различных конфигураций станции:")
-print(f"Интенсивность поступления: {arrival_rate * 60:.1f} машин/час")
-print(f"Среднее время обслуживания: {service_mean} минут\n")
+print("Analysis of different station configurations:")
+print(f"Arrival rate: {arrival_rate * 60:.1f} cars/hour")
+print(f"Mean service time: {service_mean} minutes\n")
 
 best_config = None
 best_waiting_time = float('inf')
 
 for num_posts in num_posts_options:
-    # Расчет интенсивности обслуживания для заданной загрузки
+    # Compute the service rate for the target utilization
     target_utilization = 0.75
     service_rate = arrival_rate / (num_posts * target_utilization)
     
-    # Симуляция
+    # Simulation
     qs = QsSim(num_of_channels=num_posts)
     qs.set_sources(arrival_rate, "M")
     
@@ -178,13 +180,13 @@ for num_posts in num_posts_options:
     
     results = qs.run(50000)
     
-    # Анализ
+    # Analysis
     waiting_time_min = results.w[0]
     utilization = results.utilization
     
-    print(f"{num_posts} поста(ов):")
-    print(f"  Среднее время ожидания: {waiting_time_min:.2f} минут")
-    print(f"  Коэффициент загрузки: {utilization:.2%}")
+    print(f"{num_posts} bay(s):")
+    print(f"  Mean waiting time: {waiting_time_min:.2f} minutes")
+    print(f"  Utilization: {utilization:.2%}")
     
     if waiting_time_min < best_waiting_time:
         best_waiting_time = waiting_time_min
@@ -192,17 +194,17 @@ for num_posts in num_posts_options:
     
     print()
 
-print(f"Рекомендуемая конфигурация: {best_config} поста(ов)")
-print(f"Ожидаемое время ожидания: {best_waiting_time:.2f} минут")
+print(f"Recommended configuration: {best_config} bay(s)")
+print(f"Expected waiting time: {best_waiting_time:.2f} minutes")
 ```
 
-## Пример 4: Сравнение симуляции и расчета
+## Example 4: Comparing Simulation and Calculation
 
-### Задача
+### Problem
 
-Проверить корректность симуляции, сравнив результаты с аналитическими расчетами.
+Verify the correctness of a simulation by comparing its results against analytical calculations.
 
-### Решение
+### Solution
 
 ```python
 from most_queue.sim.base import QsSim
@@ -214,63 +216,63 @@ from most_queue.io.tables import (
     probs_print
 )
 
-# Параметры системы M/G/1
+# M/G/1 system parameters
 arrival_rate = 0.4
 service_mean = 2.0
 service_cv = 0.8
 
-# Создание параметров H2-распределения
+# Create H2 distribution parameters
 h2_params = H2Distribution.get_params_by_mean_and_cv(
     mean=service_mean,
     cv=service_cv
 )
 
-# Вычисление моментов для расчета
+# Compute the moments for the calculation
 b = H2Distribution.calc_theory_moments(h2_params, 5)
 
-print("Сравнение симуляции и расчета для M/G/1:")
-print(f"Интенсивность поступления: {arrival_rate}")
-print(f"Среднее время обслуживания: {service_mean}")
-print(f"Коэффициент вариации: {service_cv}\n")
+print("Comparison of simulation and calculation for M/G/1:")
+print(f"Arrival rate: {arrival_rate}")
+print(f"Mean service time: {service_mean}")
+print(f"Coefficient of variation: {service_cv}\n")
 
-# Расчет
+# Calculation
 mg1_calc = MG1Calc()
 mg1_calc.set_sources(l=arrival_rate)
 mg1_calc.set_servers(b)
 calc_results = mg1_calc.run()
 
-# Симуляция
+# Simulation
 qs = QsSim(num_of_channels=1)
 qs.set_sources(arrival_rate, "M")
 qs.set_servers(h2_params, "H")
 sim_results = qs.run(50000)
 
-# Сравнение
-print("Моменты времени ожидания:")
+# Comparison
+print("Waiting time moments:")
 print_waiting_moments(sim_results.w, calc_results.w)
 
-print("\nМоменты времени пребывания:")
+print("\nSojourn time moments:")
 print_sojourn_moments(sim_results.v, calc_results.v)
 
-print("\nВероятности состояний:")
+print("\nState probabilities:")
 probs_print(sim_results.p, calc_results.p, size=10)
 
-# Проверка точности
+# Check the accuracy
 w_error = abs(sim_results.w[0] - calc_results.w[0]) / calc_results.w[0] * 100
 v_error = abs(sim_results.v[0] - calc_results.v[0]) / calc_results.v[0] * 100
 
-print(f"\nОтносительная ошибка:")
-print(f"  Время ожидания: {w_error:.2f}%")
-print(f"  Время пребывания: {v_error:.2f}%")
+print(f"\nRelative error:")
+print(f"  Waiting time: {w_error:.2f}%")
+print(f"  Sojourn time: {v_error:.2f}%")
 ```
 
-## Пример 5: Анализ производительности с различными распределениями
+## Example 5: Performance Analysis with Different Distributions
 
-### Задача
+### Problem
 
-Исследовать влияние коэффициента вариации времени обслуживания на характеристики системы.
+Study the influence of the service time coefficient of variation on the system characteristics.
 
-### Решение
+### Solution
 
 ```python
 from most_queue.sim.base import QsSim
@@ -284,38 +286,38 @@ arrival_rate = 0.5
 service_mean = 2.0
 num_channels = 2
 
-# Различные коэффициенты вариации
+# Different coefficients of variation
 cvs = [0.3, 0.5, 0.7, 1.0, 1.2, 1.5]
 
-print("Влияние коэффициента вариации на характеристики системы:")
-print(f"Интенсивность поступления: {arrival_rate}")
-print(f"Среднее время обслуживания: {service_mean}")
-print(f"Число каналов: {num_channels}\n")
+print("Influence of the coefficient of variation on system characteristics:")
+print(f"Arrival rate: {arrival_rate}")
+print(f"Mean service time: {service_mean}")
+print(f"Number of channels: {num_channels}\n")
 
 results_table = []
 
 for cv in cvs:
-    # Выбор распределения в зависимости от CV
+    # Choose the distribution depending on CV
     if cv < 1.0:
-        # Используем Эрланга для CV < 1
+        # Use Erlang for CV < 1
         params = ErlangDistribution.get_params_by_mean_and_cv(
             mean=service_mean,
             cv=cv
         )
         dist_type = "E"
     elif cv == 1.0:
-        # Экспоненциальное для CV = 1
+        # Exponential for CV = 1
         params = 1.0 / service_mean
         dist_type = "M"
     else:
-        # Используем H2 для CV > 1
+        # Use H2 for CV > 1
         params = H2Distribution.get_params_by_mean_and_cv(
             mean=service_mean,
             cv=cv
         )
         dist_type = "H"
     
-    # Симуляция
+    # Simulation
     qs = QsSim(num_of_channels=num_channels)
     qs.set_sources(arrival_rate, "M")
     qs.set_servers(params, dist_type)
@@ -329,38 +331,38 @@ for cv in cvs:
         'utilization': results.utilization
     })
 
-# Вывод результатов
-print(f"{'CV':<8} {'Ожидание':<12} {'Пребывание':<12} {'Загрузка':<10}")
+# Print the results
+print(f"{'CV':<8} {'Waiting':<12} {'Sojourn':<12} {'Load':<10}")
 print("-" * 45)
 for r in results_table:
     print(f"{r['CV']:<8.2f} {r['waiting']:<12.4f} {r['sojourn']:<12.4f} {r['utilization']:<10.2%}")
 
-# Выводы
-print("\nВыводы:")
-print("- С увеличением CV время ожидания увеличивается")
-print("- Система становится менее предсказуемой")
-print("- Рекомендуется минимизировать вариативность времени обслуживания")
+# Conclusions
+print("\nConclusions:")
+print("- As CV increases, the waiting time increases")
+print("- The system becomes less predictable")
+print("- Minimizing service time variability is recommended")
 ```
 
-## Пример 6: Визуализация результатов
+## Example 6: Visualizing Results
 
-### Задача
+### Problem
 
-Визуализировать вероятности состояний системы для различных конфигураций.
+Visualize the system state probabilities for different configurations.
 
-### Решение
+### Solution
 
 ```python
 from most_queue.sim.base import QsSim
 from most_queue.theory.fifo.mmnr import MMnrCalc
 import matplotlib.pyplot as plt
 
-# Параметры
+# Parameters
 arrival_rate = 2.0
 service_rate = 1.0
 num_channels_options = [1, 2, 3, 4]
 
-# Расчет вероятностей для разных конфигураций
+# Compute the probabilities for different configurations
 probabilities = {}
 
 for n in num_channels_options:
@@ -368,38 +370,37 @@ for n in num_channels_options:
     calc.set_sources(l=arrival_rate)
     calc.set_servers(mu=service_rate)
     results = calc.run()
-    probabilities[n] = results.p[:15]  # первые 15 состояний
+    probabilities[n] = results.p[:15]  # first 15 states
 
-# Визуализация
+# Visualization
 fig, ax = plt.subplots(figsize=(12, 6))
 
 for n, probs in probabilities.items():
     states = list(range(len(probs)))
     ax.plot(states, probs, marker='o', label=f'M/M/{n}')
 
-ax.set_xlabel('Число заявок в системе')
-ax.set_ylabel('Вероятность')
-ax.set_title('Распределение вероятностей состояний')
+ax.set_xlabel('Number of jobs in the system')
+ax.set_ylabel('Probability')
+ax.set_title('State probability distribution')
 ax.legend()
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('state_probabilities.png', dpi=150)
-print("График сохранен в state_probabilities.png")
+print("Plot saved to state_probabilities.png")
 ```
 
-## Советы по использованию примеров
+## Tips for Using the Examples
 
-1. **Адаптируйте параметры** — измените значения под вашу задачу
-2. **Проверяйте устойчивость** — убедитесь, что ρ < 1
-3. **Используйте достаточно заявок** — для точности нужно 50000+ заявок
-4. **Сравнивайте результаты** — используйте расчет для проверки симуляции
-5. **Анализируйте вероятности** — они дают полную картину поведения системы
+1. **Adapt the parameters** — change the values to fit your problem
+2. **Check stability** — make sure ρ < 1
+3. **Use enough jobs** — accuracy requires 50000+ jobs
+4. **Compare results** — use the calculation to verify the simulation
+5. **Analyze the probabilities** — they give a complete picture of system behavior
 
 ---
 
-**См. также:**
-- [Быстрый старт](getting_started.md) — основы использования
-- [Симуляция СМО](simulation.md) — детали симуляции
-- [Численные методы](calculation.md) — аналитические расчеты
-
+**See also:**
+- [Getting Started](getting_started.md) — usage basics
+- [Queueing System Simulation](simulation.md) — simulation details
+- [Numerical Methods](calculation.md) — analytical calculations

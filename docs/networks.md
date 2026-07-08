@@ -1,74 +1,76 @@
-# Сети очередей
+# Queueing Networks
 
-Сети очередей (сети СМО) представляют собой системы, состоящие из нескольких узлов (отдельных СМО), между которыми могут перемещаться заявки. Библиотека Most-Queue поддерживает моделирование и расчет открытых сетей очередей.
+[🇷🇺 Русская версия](networks.ru.md)
 
-## Введение в сети очередей
+Queueing networks are systems consisting of several nodes (individual queueing systems) between which jobs can move. The Most-Queue library supports simulation and calculation of open queueing networks.
 
-### Основные понятия
+## Introduction to Queueing Networks
 
-- **Узел сети** — отдельная СМО в сети
-- **Матрица переходов** — правила маршрутизации заявок между узлами
-- **Внешний поток** — заявки, поступающие в сеть извне
-- **Выходной поток** — заявки, покидающие сеть
+### Basic Concepts
 
-### Типы сетей
+- **Network node** — an individual queueing system within the network
+- **Transition matrix** — routing rules for jobs between nodes
+- **External flow** — jobs arriving at the network from outside
+- **Output flow** — jobs leaving the network
 
-- **Открытая сеть** — заявки могут поступать из внешней среды и покидать сеть
-- **Закрытая сеть** — фиксированное число заявок циркулирует в сети
+### Network Types
 
-## Симуляция сетей очередей
+- **Open network** — jobs can arrive from the external environment and leave the network
+- **Closed network** — a fixed number of jobs circulates within the network
 
-### Класс NetworkSimulator
+## Simulation of Queueing Networks
 
-Класс `NetworkSimulator` используется для имитационного моделирования сетей очередей.
+### The NetworkSimulator Class
 
-### Создание сети
+The `NetworkSimulator` class is used for discrete-event simulation of queueing networks.
+
+### Creating a Network
 
 ```python
 from most_queue.sim.networks.network import NetworkSimulator
 
-# Создание симулятора сети
+# Create a network simulator
 network = NetworkSimulator()
 ```
 
-### Настройка матрицы переходов
+### Configuring the Transition Matrix
 
-Матрица переходов определяет, как заявки перемещаются между узлами сети.
+The transition matrix defines how jobs move between the network nodes.
 
 ```python
 import numpy as np
 
-# Матрица переходов R
-# R[i, j] - вероятность перехода из узла i в узел j
-# R[i, 0] - вероятность выхода из сети из узла i
-# Первая строка (индекс 0) - вход в сеть
-# Последний столбец (индекс n+1) - выход из сети
+# Transition matrix R
+# R[i, j] - probability of transition from node i to node j
+# R[i, 0] - probability of leaving the network from node i
+# First row (index 0) - entry into the network
+# Last column (index n+1) - exit from the network
 
 R = np.matrix([
-    [1, 0, 0, 0, 0, 0],      # вход: все заявки идут в узел 1
-    [0, 0.4, 0.6, 0, 0, 0],  # узел 1: 40% в узел 2, 60% в узел 3
-    [0, 0, 0.2, 0.4, 0.4, 0], # узел 2: 20% остаются, 40% в узел 4, 40% в узел 5
-    [0, 0, 0, 0, 1, 0],      # узел 3: все в узел 5
-    [0, 0, 0, 0, 1, 0],      # узел 4: все в узел 5
-    [0, 0, 0, 0, 0, 1],      # узел 5: все выходят
+    [1, 0, 0, 0, 0, 0],      # entry: all jobs go to node 1
+    [0, 0.4, 0.6, 0, 0, 0],  # node 1: 40% to node 2, 60% to node 3
+    [0, 0, 0.2, 0.4, 0.4, 0], # node 2: 20% stay, 40% to node 4, 40% to node 5
+    [0, 0, 0, 0, 1, 0],      # node 3: all to node 5
+    [0, 0, 0, 0, 1, 0],      # node 4: all to node 5
+    [0, 0, 0, 0, 0, 1],      # node 5: all leave the network
 ])
 
 network.set_sources(arrival_rate=1.0, R=R)
 ```
 
-### Настройка узлов сети
+### Configuring the Network Nodes
 
-Каждый узел настраивается отдельно с указанием числа каналов и параметров обслуживания.
+Each node is configured separately, specifying the number of channels and the service parameters.
 
 ```python
 from most_queue.random.distributions import H2Distribution
 
-# Параметры обслуживания для каждого узла
+# Service parameters for each node
 serv_params = []
-num_channels = [3, 2, 3, 4, 3]  # число каналов в каждом узле
+num_channels = [3, 2, 3, 4, 3]  # number of channels in each node
 
-for i in range(5):  # 5 узлов
-    # Создание параметров H2-распределения для узла i
+for i in range(5):  # 5 nodes
+    # Create H2-distribution parameters for node i
     h2_params = H2Distribution.get_params_by_mean_and_cv(
         mean=2.0,
         cv=0.8
@@ -78,43 +80,43 @@ for i in range(5):  # 5 узлов
         "params": h2_params
     })
 
-# Настройка узлов
+# Configure the nodes
 network.set_nodes(serv_params=serv_params, n=num_channels)
 ```
 
-### Запуск симуляции
+### Running the Simulation
 
 ```python
-# Запуск симуляции на 50000 заявок
+# Run the simulation for 50000 jobs
 results = network.run(50000)
 
-# Результаты
-print(f"Среднее время пребывания в сети: {results.v[0]:.4f}")
-print(f"Интенсивности в узлах: {results.intensities}")
-print(f"Загрузки узлов: {results.loads}")
+# Results
+print(f"Mean sojourn time in the network: {results.v[0]:.4f}")
+print(f"Node arrival rates: {results.intensities}")
+print(f"Node utilizations: {results.loads}")
 ```
 
-### Полный пример симуляции
+### Complete Simulation Example
 
 ```python
 import numpy as np
 from most_queue.sim.networks.network import NetworkSimulator
 from most_queue.random.distributions import H2Distribution
 
-# Создание сети
+# Create the network
 network = NetworkSimulator()
 
-# Матрица переходов для сети с 3 узлами
+# Transition matrix for a network with 3 nodes
 R = np.matrix([
-    [1, 0, 0, 0],      # вход -> узел 1
-    [0, 0.5, 0.5, 0], # узел 1 -> узел 2 (50%) или узел 3 (50%)
-    [0, 0, 0, 1],     # узел 2 -> выход
-    [0, 0, 0, 1],     # узел 3 -> выход
+    [1, 0, 0, 0],      # entry -> node 1
+    [0, 0.5, 0.5, 0], # node 1 -> node 2 (50%) or node 3 (50%)
+    [0, 0, 0, 1],     # node 2 -> exit
+    [0, 0, 0, 1],     # node 3 -> exit
 ])
 
 network.set_sources(arrival_rate=2.0, R=R)
 
-# Настройка узлов
+# Configure the nodes
 serv_params = []
 num_channels = [2, 3, 2]
 
@@ -124,31 +126,31 @@ for i in range(3):
 
 network.set_nodes(serv_params=serv_params, n=num_channels)
 
-# Симуляция
+# Simulation
 results = network.run(50000)
 
-print(f"Время пребывания: {results.v[0]:.4f}")
-print(f"Интенсивности: {results.intensities}")
-print(f"Загрузки: {results.loads}")
+print(f"Sojourn time: {results.v[0]:.4f}")
+print(f"Arrival rates: {results.intensities}")
+print(f"Utilizations: {results.loads}")
 ```
 
-## Расчет сетей очередей
+## Calculation of Queueing Networks
 
-### Класс OpenNetworkCalc
+### The OpenNetworkCalc Class
 
-Класс `OpenNetworkCalc` используется для аналитического расчета открытых сетей очередей методом декомпозиции.
+The `OpenNetworkCalc` class is used for analytical calculation of open queueing networks by the decomposition method.
 
-### Пример расчета
+### Calculation Example
 
 ```python
 import numpy as np
 from most_queue.theory.networks.open_network import OpenNetworkCalc
 from most_queue.random.distributions import H2Distribution
 
-# Создание калькулятора
+# Create the calculator
 net_calc = OpenNetworkCalc()
 
-# Матрица переходов
+# Transition matrix
 R = np.matrix([
     [1, 0, 0, 0],
     [0, 0.5, 0.5, 0],
@@ -156,10 +158,10 @@ R = np.matrix([
     [0, 0, 0, 1],
 ])
 
-# Настройка внешнего потока
+# Configure the external flow
 net_calc.set_sources(R=R, arrival_rate=2.0)
 
-# Вычисление моментов обслуживания для каждого узла
+# Compute service moments for each node
 b = []
 num_channels = [2, 3, 2]
 
@@ -167,34 +169,34 @@ for i in range(3):
     h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
     b.append(H2Distribution.calc_theory_moments(h2_params, 4))
 
-# Настройка узлов
+# Configure the nodes
 net_calc.set_nodes(b=b, n=num_channels)
 
-# Расчет
+# Calculation
 results = net_calc.run()
 
-print(f"Интенсивности в узлах: {results.intensities}")
-print(f"Загрузки узлов: {results.loads}")
-print(f"Среднее время пребывания: {results.v[0]:.4f}")
+print(f"Node arrival rates: {results.intensities}")
+print(f"Node utilizations: {results.loads}")
+print(f"Mean sojourn time: {results.v[0]:.4f}")
 ```
 
-## Сети с приоритетами
+## Networks with Priorities
 
-### Класс PriorityNetworkSimulator
+### The PriorityNetworkSimulator Class
 
-Для симуляции сетей с приоритетными дисциплинами в узлах используется класс `PriorityNetworkSimulator`.
+The `PriorityNetworkSimulator` class is used to simulate networks with priority disciplines in the nodes.
 
-### Пример сети с приоритетами
+### Example of a Network with Priorities
 
 ```python
 import numpy as np
 from most_queue.sim.networks.priority_network import PriorityNetworkSimulator
 from most_queue.random.distributions import GammaDistribution
 
-# Создание сети с приоритетами
+# Create a network with priorities
 network = PriorityNetworkSimulator()
 
-# Матрица переходов
+# Transition matrix
 R = np.matrix([
     [1, 0, 0, 0],
     [0, 0.6, 0.4, 0],
@@ -202,21 +204,21 @@ R = np.matrix([
     [0, 0, 0, 1],
 ])
 
-# Настройка потоков для каждого класса приоритета
-arrival_rates = [1.0, 0.5]  # интенсивности для двух классов
+# Configure the flows for each priority class
+arrival_rates = [1.0, 0.5]  # arrival rates for two classes
 network.set_sources(arrival_rates=arrival_rates, R=R)
 
-# Настройка узлов с приоритетами
+# Configure the nodes with priorities
 serv_params = []
 num_channels = [2, 3]
 num_classes = 2
 
 for i in range(2):
-    # Параметры обслуживания для каждого класса в узле
+    # Service parameters for each class in the node
     node_params = []
     for j in range(num_classes):
         gamma_params = GammaDistribution.get_params_by_mean_and_cv(
-            mean=1.5 + j * 0.5,  # разные средние для разных классов
+            mean=1.5 + j * 0.5,  # different means for different classes
             cv=0.7
         )
         node_params.append({
@@ -228,18 +230,18 @@ for i in range(2):
 network.set_nodes(
     serv_params=serv_params,
     n=num_channels,
-    priority="PR"  # или "NP"
+    priority="PR"  # or "NP"
 )
 
-# Симуляция
+# Simulation
 results = network.run(50000)
 
-# Результаты для каждого класса
-print(f"Время пребывания класса 1: {results.v[0][0]:.4f}")
-print(f"Время пребывания класса 2: {results.v[1][0]:.4f}")
+# Results for each class
+print(f"Sojourn time, class 1: {results.v[0][0]:.4f}")
+print(f"Sojourn time, class 2: {results.v[1][0]:.4f}")
 ```
 
-### Расчет сетей с приоритетами
+### Calculation of Networks with Priorities
 
 ```python
 from most_queue.theory.networks.open_network_prty import OpenNetworkPrtyCalc
@@ -247,24 +249,24 @@ from most_queue.theory.networks.open_network_prty import OpenNetworkPrtyCalc
 calc = OpenNetworkPrtyCalc()
 calc.set_sources(arrival_rates=[1.0, 0.5], R=R)
 
-# Моменты обслуживания для каждого класса в каждом узле
-b = []  # b[i][j] - моменты для узла i, класса j
+# Service moments for each class in each node
+b = []  # b[i][j] - moments for node i, class j
 calc.set_nodes(b=b, n=num_channels, priority="PR")
 
 results = calc.run()
 ```
 
-## Сети с отрицательными заявками
+## Networks with Negative Customers
 
-### Расчет сетей с отрицательными заявками
+### Calculation of Networks with Negative Customers
 
-Для аналитического расчета сетей с отрицательными заявками используется класс `NegativeNetworkCalc`, реализующий метод потоковой декомпозиции. Подробное описание математического метода расчета с формулами приведено в документе [Расчет сетей с отрицательными заявками](negative_networks_calculation.md).
+For analytical calculation of networks with negative customers, use the `NegativeNetworkCalc` class, which implements the flow decomposition method. A detailed description of the mathematical calculation method with formulas is given in the document [Calculation of Networks with Negative Customers](negative_networks_calculation.md).
 
-### Класс NegativeNetworkCalc
+### The NegativeNetworkCalc Class
 
-Класс `NegativeNetworkCalc` используется для аналитического расчета открытых сетей очередей с отрицательными заявками методом декомпозиции.
+The `NegativeNetworkCalc` class is used for analytical calculation of open queueing networks with negative customers by the decomposition method.
 
-### Пример расчета
+### Calculation Example
 
 ```python
 import numpy as np
@@ -272,10 +274,10 @@ from most_queue.theory.networks.negative_network import NegativeNetworkCalc
 from most_queue.sim.negative import NegativeServiceType
 from most_queue.random.distributions import H2Distribution
 
-# Создание калькулятора с глобальными отрицательными заявками
+# Create a calculator with global negative customers
 net_calc = NegativeNetworkCalc(negative_arrival_type="global")
 
-# Матрица переходов
+# Transition matrix
 R = np.matrix([
     [1, 0, 0, 0],
     [0, 0.5, 0.5, 0],
@@ -283,128 +285,128 @@ R = np.matrix([
     [0, 0, 0, 1],
 ])
 
-# Настройка источников
+# Configure the sources
 net_calc.set_sources(
     arrival_rate=2.0,
     R=R,
-    negative_arrival_rate=0.1  # глобальная интенсивность отрицательных заявок
+    negative_arrival_rate=0.1  # global arrival rate of negative customers
 )
 
-# Вычисление моментов обслуживания для каждого узла
+# Compute service moments for each node
 b = []
 num_channels = [2, 3, 2]
 negative_types = [
-    NegativeServiceType.DISASTER,  # узел 1: тип DISASTER
-    NegativeServiceType.RCS,       # узел 2: тип RCS
-    NegativeServiceType.DISASTER,  # узел 3: тип DISASTER
+    NegativeServiceType.DISASTER,  # node 1: DISASTER type
+    NegativeServiceType.RCS,       # node 2: RCS type
+    NegativeServiceType.DISASTER,  # node 3: DISASTER type
 ]
 
 for i in range(3):
     h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
     b.append(H2Distribution.calc_theory_moments(h2_params, 4))
 
-# Настройка узлов
+# Configure the nodes
 net_calc.set_nodes(b=b, n=num_channels, negative_types=negative_types)
 
-# Расчет
+# Calculation
 results = net_calc.run()
 
-print(f"Интенсивности в узлах: {results.intensities}")
-print(f"Загрузки узлов: {results.loads}")
-print(f"Среднее время пребывания: {results.v[0]:.4f}")
+print(f"Node arrival rates: {results.intensities}")
+print(f"Node utilizations: {results.loads}")
+print(f"Mean sojourn time: {results.v[0]:.4f}")
 ```
 
-### Пример с поузловыми отрицательными заявками
+### Example with Per-Node Negative Customers
 
 ```python
-# Создание калькулятора с поузловыми отрицательными заявками
+# Create a calculator with per-node negative customers
 net_calc = NegativeNetworkCalc(negative_arrival_type="per_node")
 
-# Настройка источников с индивидуальными интенсивностями
+# Configure the sources with individual arrival rates
 net_calc.set_sources(
     arrival_rate=2.0,
     R=R,
-    negative_arrival_rates=[0.1, 0.05, 0.15]  # индивидуальные интенсивности для каждого узла
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # individual rates for each node
 )
 
-# Остальная настройка аналогична предыдущему примеру
+# The remaining setup is the same as in the previous example
 ```
 
-### Класс NegativeNetwork
+### The NegativeNetwork Class
 
-Для симуляции сетей с отрицательными заявками (negative jobs) в каждом узле используется класс `NegativeNetwork`. Отрицательные заявки могут прерывать обслуживание обычных (положительных) заявок в зависимости от типа отрицательного обслуживания.
+The `NegativeNetwork` class is used to simulate networks with negative customers (negative jobs) in each node. Negative customers can interrupt the service of ordinary (positive) jobs, depending on the negative service type.
 
-### Типы отрицательных заявок
+### Types of Negative Customers
 
-Отрицательные заявки могут иметь следующие типы воздействия на систему:
+Negative customers can affect the system in the following ways:
 
-- **DISASTER** — удаляет все заявки из узла (в обслуживании и в очереди)
-- **RCS** (Remove Customer in Service) — удаляет одну заявку из обслуживания
-- **RCH** (Remove Customer at Head) — удаляет заявку из начала очереди
-- **RCE** (Remove Customer at End) — удаляет заявку из конца очереди
+- **DISASTER** — removes all jobs from the node (both in service and in the queue)
+- **RCS** (Remove Customer in Service) — removes one job from service
+- **RCH** (Remove Customer at Head) — removes the job at the head of the queue
+- **RCE** (Remove Customer at End) — removes the job at the end of the queue
 
-### Типы поступления отрицательных заявок
+### Negative Customer Arrival Modes
 
-`NegativeNetwork` поддерживает два режима поступления отрицательных заявок:
+`NegativeNetwork` supports two arrival modes for negative customers:
 
-1. **"global"** — отрицательные заявки поступают глобально и влияют на все узлы одновременно
-2. **"per_node"** — каждый узел имеет свой собственный поток отрицательных заявок
+1. **"global"** — negative customers arrive globally and affect all nodes simultaneously
+2. **"per_node"** — each node has its own flow of negative customers
 
-### Создание сети с отрицательными заявками
+### Creating a Network with Negative Customers
 
 ```python
 from most_queue.sim.networks.negative_network import NegativeNetwork
 from most_queue.sim.negative import NegativeServiceType
 import numpy as np
 
-# Создание сети с глобальными отрицательными заявками
+# Create a network with global negative customers
 network = NegativeNetwork(negative_arrival_type="global")
 
-# Или с индивидуальными отрицательными заявками для каждого узла
+# Or with individual negative customers for each node
 network = NegativeNetwork(negative_arrival_type="per_node")
 ```
 
-### Настройка источников
+### Configuring the Sources
 
-#### Глобальные отрицательные заявки
+#### Global Negative Customers
 
 ```python
-# Матрица переходов
+# Transition matrix
 R = np.matrix([
-    [1, 0, 0, 0],      # вход -> узел 1
-    [0, 0.5, 0.5, 0], # узел 1 -> узел 2 (50%) или узел 3 (50%)
-    [0, 0, 0, 1],     # узел 2 -> выход
-    [0, 0, 0, 1],     # узел 3 -> выход
+    [1, 0, 0, 0],      # entry -> node 1
+    [0, 0.5, 0.5, 0], # node 1 -> node 2 (50%) or node 3 (50%)
+    [0, 0, 0, 1],     # node 2 -> exit
+    [0, 0, 0, 1],     # node 3 -> exit
 ])
 
-# Настройка источников с глобальными отрицательными заявками
+# Configure the sources with global negative customers
 network.set_sources(
-    positive_arrival_rate=2.0,      # интенсивность положительных заявок
+    positive_arrival_rate=2.0,      # arrival rate of positive jobs
     R=R,
-    negative_arrival_rate=0.1       # интенсивность глобальных отрицательных заявок
+    negative_arrival_rate=0.1       # arrival rate of global negative customers
 )
 ```
 
-#### Индивидуальные отрицательные заявки для каждого узла
+#### Individual Negative Customers for Each Node
 
 ```python
-# ВАЖНО: set_nodes() должен быть вызван ПЕРЕД set_sources() для per_node типа
-network.set_nodes(...)  # см. ниже
+# IMPORTANT: set_nodes() must be called BEFORE set_sources() for the per_node type
+network.set_nodes(...)  # see below
 
-# Настройка источников с индивидуальными отрицательными заявками
+# Configure the sources with individual negative customers
 network.set_sources(
     positive_arrival_rate=2.0,
     R=R,
-    negative_arrival_rates=[0.1, 0.05, 0.15]  # интенсивности для каждого узла
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # rates for each node
 )
 ```
 
-### Настройка узлов
+### Configuring the Nodes
 
 ```python
 from most_queue.random.distributions import H2Distribution
 
-# Параметры обслуживания для каждого узла
+# Service parameters for each node
 serv_params = []
 num_channels = [2, 3, 2]
 
@@ -412,23 +414,23 @@ for i in range(3):
     h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
     serv_params.append({"type": "H", "params": h2_params})
 
-# Типы отрицательных заявок для каждого узла
+# Negative customer types for each node
 negative_types = [
-    NegativeServiceType.DISASTER,  # узел 1: удаляет все заявки
-    NegativeServiceType.RCS,       # узел 2: удаляет заявку из обслуживания
-    NegativeServiceType.RCH,        # узел 3: удаляет заявку из начала очереди
+    NegativeServiceType.DISASTER,  # node 1: removes all jobs
+    NegativeServiceType.RCS,       # node 2: removes the job in service
+    NegativeServiceType.RCH,        # node 3: removes the job at the head of the queue
 ]
 
-# Настройка узлов
+# Configure the nodes
 network.set_nodes(
     serv_params=serv_params,
     n=num_channels,
-    negative_types=negative_types,  # типы отрицательных заявок
-    buffers=[None, 50, None]        # размеры буферов (опционально)
+    negative_types=negative_types,  # negative customer types
+    buffers=[None, 50, None]        # buffer sizes (optional)
 )
 ```
 
-### Полный пример
+### Complete Example
 
 ```python
 import numpy as np
@@ -436,10 +438,10 @@ from most_queue.sim.networks.negative_network import NegativeNetwork
 from most_queue.sim.negative import NegativeServiceType
 from most_queue.random.distributions import H2Distribution
 
-# Создание сети с глобальными отрицательными заявками
+# Create a network with global negative customers
 network = NegativeNetwork(negative_arrival_type="global")
 
-# Матрица переходов
+# Transition matrix
 R = np.matrix([
     [1, 0, 0, 0],
     [0, 0.5, 0.5, 0],
@@ -447,14 +449,14 @@ R = np.matrix([
     [0, 0, 0, 1],
 ])
 
-# Настройка источников
+# Configure the sources
 network.set_sources(
     positive_arrival_rate=2.0,
     R=R,
-    negative_arrival_rate=0.1  # глобальная интенсивность отрицательных заявок
+    negative_arrival_rate=0.1  # global arrival rate of negative customers
 )
 
-# Настройка узлов
+# Configure the nodes
 serv_params = []
 num_channels = [2, 3, 2]
 
@@ -462,24 +464,24 @@ for i in range(3):
     h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
     serv_params.append({"type": "H", "params": h2_params})
 
-# Все узлы используют DISASTER по умолчанию
+# All nodes use DISASTER by default
 network.set_nodes(serv_params=serv_params, n=num_channels)
 
-# Симуляция
+# Simulation
 results = network.run(50000)
 
-print(f"Время пребывания: {results.v[0]:.4f}")
-print(f"Обслужено заявок: {results.served}")
-print(f"Поступило заявок: {results.arrived}")
+print(f"Sojourn time: {results.v[0]:.4f}")
+print(f"Jobs served: {results.served}")
+print(f"Jobs arrived: {results.arrived}")
 ```
 
-### Пример с индивидуальными отрицательными заявками
+### Example with Individual Negative Customers
 
 ```python
-# Создание сети с индивидуальными отрицательными заявками
+# Create a network with individual negative customers
 network = NegativeNetwork(negative_arrival_type="per_node")
 
-# Сначала настраиваем узлы (обязательно перед set_sources для per_node)
+# Configure the nodes first (required before set_sources for per_node)
 serv_params = []
 num_channels = [2, 3, 2]
 
@@ -499,7 +501,7 @@ network.set_nodes(
     negative_types=negative_types
 )
 
-# Затем настраиваем источники
+# Then configure the sources
 R = np.matrix([
     [1, 0, 0, 0],
     [0, 0.5, 0.5, 0],
@@ -510,39 +512,39 @@ R = np.matrix([
 network.set_sources(
     positive_arrival_rate=2.0,
     R=R,
-    negative_arrival_rates=[0.1, 0.05, 0.15]  # индивидуальные интенсивности
+    negative_arrival_rates=[0.1, 0.05, 0.15]  # individual rates
 )
 
-# Симуляция
+# Simulation
 results = network.run(50000)
 ```
 
-### Важные замечания
+### Important Notes
 
-1. **Порядок вызовов для per_node типа**: При использовании `negative_arrival_type="per_node"` необходимо сначала вызвать `set_nodes()`, а затем `set_sources()`, так как для настройки источников нужно знать количество узлов.
+1. **Call order for the per_node type**: When using `negative_arrival_type="per_node"`, you must call `set_nodes()` first and then `set_sources()`, because configuring the sources requires knowing the number of nodes.
 
-2. **Отключение отрицательных заявок**: Чтобы отключить отрицательные заявки, передайте `negative_arrival_rate=None` (для global) или `negative_arrival_rates=None` (для per_node).
+2. **Disabling negative customers**: To disable negative customers, pass `negative_arrival_rate=None` (for global) or `negative_arrival_rates=None` (for per_node).
 
-3. **Типы отрицательных заявок по умолчанию**: Если не указать `negative_types` в `set_nodes()`, все узлы будут использовать `NegativeServiceType.DISASTER` по умолчанию.
+3. **Default negative customer types**: If `negative_types` is not specified in `set_nodes()`, all nodes will use `NegativeServiceType.DISASTER` by default.
 
-4. **Результаты**: `NegativeNetwork` возвращает стандартный объект `NetworkResults` с информацией о времени пребывания, количестве обслуженных и поступивших заявок.
+4. **Results**: `NegativeNetwork` returns a standard `NetworkResults` object with information about the sojourn time and the numbers of served and arrived jobs.
 
-## Оптимизация сетей
+## Network Optimization
 
-Библиотека также предоставляет методы оптимизации матрицы переходов сети для минимизации времени пребывания заявок.
+The library also provides methods for optimizing the network transition matrix to minimize the sojourn time of jobs.
 
-### Пример оптимизации
+### Optimization Example
 
 ```python
 from most_queue.theory.networks.opt.transition import TransitionOptimization
 
-# Создание оптимизатора
+# Create the optimizer
 optimizer = TransitionOptimization()
 
-# Начальная матрица переходов
+# Initial transition matrix
 R0 = np.matrix([...])
 
-# Оптимизация
+# Optimization
 R_opt = optimizer.optimize(
     R0=R0,
     arrival_rate=2.0,
@@ -550,98 +552,97 @@ R_opt = optimizer.optimize(
     n=num_channels
 )
 
-print(f"Оптимизированная матрица:\n{R_opt}")
+print(f"Optimized matrix:\n{R_opt}")
 ```
 
-## Структура результатов
+## Result Structures
 
 ### NetworkResults
 
 ```python
 @dataclass
 class NetworkResults:
-    v: list[float] | None              # моменты времени пребывания в сети
-    intensities: list[float] | None    # эффективные интенсивности в узлах
-    loads: list[float] | None          # загрузки узлов
-    duration: float = 0.0              # время расчета/симуляции
-    arrived: int = 0                    # число поступивших заявок (симуляция)
-    served: int = 0                     # число обслуженных заявок (симуляция)
+    v: list[float] | None              # moments of the sojourn time in the network
+    intensities: list[float] | None    # effective arrival rates at the nodes
+    loads: list[float] | None          # node utilizations
+    duration: float = 0.0              # calculation/simulation time
+    arrived: int = 0                    # number of arrived jobs (simulation)
+    served: int = 0                     # number of served jobs (simulation)
 ```
 
 ### NetworkResultsPriority
 
-Для сетей с приоритетами:
+For networks with priorities:
 
 ```python
 @dataclass
 class NetworkResultsPriority:
-    v: list[list[float]] | None        # моменты для каждого класса
-    intensities: list[list[float]] | None  # интенсивности для каждого класса
-    loads: list[float] | None          # загрузки узлов
+    v: list[list[float]] | None        # moments for each class
+    intensities: list[list[float]] | None  # arrival rates for each class
+    loads: list[float] | None          # node utilizations
     duration: float = 0.0
     arrived: int = 0
     served: int = 0
 ```
 
-## Построение матрицы переходов
+## Building the Transition Matrix
 
-### Правила построения
+### Construction Rules
 
-1. **Первая строка (индекс 0)** — вход в сеть
-   - `R[0, i]` — вероятность поступления заявки в узел `i-1`
-   - Сумма должна быть равна 1
+1. **First row (index 0)** — entry into the network
+   - `R[0, i]` — probability that a job enters node `i-1`
+   - The sum must equal 1
 
-2. **Строки 1..n** — узлы сети
-   - `R[i, j]` — вероятность перехода из узла `i-1` в узел `j-1`
-   - `R[i, 0]` — вероятность выхода из сети из узла `i-1`
-   - `R[i, n+1]` — выход из сети (обычно 1 для последнего столбца)
+2. **Rows 1..n** — network nodes
+   - `R[i, j]` — probability of transition from node `i-1` to node `j-1`
+   - `R[i, 0]` — probability of leaving the network from node `i-1`
+   - `R[i, n+1]` — exit from the network (usually 1 in the last column)
 
-3. **Последний столбец** — выход из сети
-   - Обычно все элементы равны 1
+3. **Last column** — exit from the network
+   - Usually all elements equal 1
 
-### Пример построения
+### Construction Example
 
 ```python
 import numpy as np
 
-# Сеть с 3 узлами
+# Network with 3 nodes
 num_nodes = 3
 
 R = np.matrix([
-    # Вход -> узлы
-    [1, 0, 0, 0],           # все заявки идут в узел 1
+    # Entry -> nodes
+    [1, 0, 0, 0],           # all jobs go to node 1
     
-    # Узел 1
-    [0, 0.3, 0.5, 0.2],     # 30% остаются, 50% в узел 2, 20% выходят
+    # Node 1
+    [0, 0.3, 0.5, 0.2],     # 30% stay, 50% to node 2, 20% leave
     
-    # Узел 2
-    [0, 0, 0.4, 0.6],       # 40% остаются, 60% выходят
+    # Node 2
+    [0, 0, 0.4, 0.6],       # 40% stay, 60% leave
     
-    # Узел 3
-    [0, 0, 0, 1],           # все выходят
+    # Node 3
+    [0, 0, 0, 1],           # all leave
 ])
 ```
 
-## Советы по работе с сетями
+## Tips for Working with Networks
 
-1. **Проверяйте матрицу переходов** — убедитесь, что сумма вероятностей в каждой строке равна 1
-2. **Проверяйте устойчивость** — каждый узел должен быть устойчив (ρ < 1)
-3. **Используйте симуляцию для проверки** — сравните результаты расчета и симуляции
-4. **Анализируйте загрузки узлов** — найдите узкие места в сети
-5. **Оптимизируйте маршрутизацию** — используйте методы оптимизации для улучшения характеристик
+1. **Check the transition matrix** — make sure the probabilities in each row sum to 1
+2. **Check stability** — every node must be stable (ρ < 1)
+3. **Use simulation for verification** — compare calculation and simulation results
+4. **Analyze node utilizations** — find the bottlenecks in the network
+5. **Optimize routing** — use the optimization methods to improve performance characteristics
 
-## Примеры использования
+## Usage Examples
 
-Подробные примеры можно найти в тестах:
-- `test_network_no_prty.py` — сеть без приоритетов
-- `test_network_im_prty.py` — сеть с приоритетами
-- `test_network_opt.py` — оптимизация сети
-- `test_negative_network.py` — сеть с отрицательными заявками
+Detailed examples can be found in the tests:
+- `test_network_no_prty.py` — network without priorities
+- `test_network_im_prty.py` — network with priorities
+- `test_network_opt.py` — network optimization
+- `test_negative_network.py` — network with negative customers
 
 ---
 
-**См. также:**
-- [Симуляция СМО](simulation.md) — основы симуляции
-- [Приоритетные системы](priorities.md) — работа с приоритетами
-- [Примеры использования](examples.md) — практические примеры
-
+**See also:**
+- [Queueing System Simulation](simulation.md) — simulation basics
+- [Priority Systems](priorities.md) — working with priorities
+- [Usage Examples](examples.md) — practical examples

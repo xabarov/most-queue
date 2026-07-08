@@ -1,334 +1,335 @@
-# Основные концепции теории массового обслуживания
+# Core Concepts of Queueing Theory
 
-Этот раздел содержит основные понятия и терминологию теории массового обслуживания (ТМО), используемые в библиотеке Most-Queue.
+[🇷🇺 Русская версия](concepts.ru.md)
 
-## 1. Базовые элементы системы массового обслуживания (СМО)
+This section covers the basic notions and terminology of queueing theory used in the Most-Queue library.
 
-### Система массового обслуживания (СМО)
+## 1. Basic Elements of a Queueing System
 
-Абстрактная модель реальной обслуживающей системы (кассы, серверы, линии связи и т.п.), в которой:
-- поступают требования (заявки),
-- возможно ожидание в очереди,
-- выполняется обслуживание одним или несколькими каналами.
+### Queueing system
 
-### Требование / заявка / клиент
+An abstract model of a real service system (checkout counters, servers, communication lines, etc.) in which:
+- jobs (customers) arrive,
+- waiting in a queue is possible,
+- service is performed by one or more channels.
 
-Объект, который приходит в систему и требует обслуживания (клиент в банке, пакет в сети, звонок в АТС и т.п.).
+### Job / customer
 
-### Источник требований
+An entity that arrives at the system and requires service (a customer in a bank, a packet in a network, a call at a telephone exchange, etc.).
 
-Множество (реальное или абстрактное), из которого поступают требования. Может быть:
-- **неограниченным** (потенциально бесконечное число клиентов),
-- **ограниченным** (фиксированное число клиентов, например $N$ абонентов).
+### Source of jobs
 
-### Канал обслуживания (обслуживающий прибор, сервер)
+The population (real or abstract) from which jobs arrive. It may be:
+- **unlimited** (a potentially infinite number of customers),
+- **limited** (a fixed number of customers, e.g., $N$ subscribers).
 
-Элемент СМО, непосредственно выполняющий обслуживание одного (иногда нескольких) требований.
+### Service channel (server)
 
-### Число каналов обслуживания $c$
+The element of the queueing system that directly performs the service of one (sometimes several) jobs.
 
-Количество параллельных обслуживающих приборов в системе.
+### Number of service channels $c$
 
-### Очередь
+The number of parallel servers in the system.
 
-Множество требований, ожидающих начала обслуживания.
+### Queue
 
-### Буфер / емкость системы
+The set of jobs waiting for service to begin.
 
-Максимальное число требований, которое одновременно может находиться в системе (в обслуживании + в очереди). Обозначают $K$.
+### Buffer / system capacity
 
-### Типы систем по обработке заявок
+The maximum number of jobs that can be in the system at the same time (in service + in the queue). Denoted by $K$.
 
-- **Система с ожиданием** — СМО, где при занятии всех каналов требования могут ждать в очереди.
-- **Система с отказами** — СМО, где при занятии всех каналов входящие требования немедленно получают отказ и не входят ни в очередь, ни в систему.
-- **Система с ограниченной очередью** — СМО, в которой существует ограничение на длину очереди (часто включается в общий параметр емкости $K$).
+### System types by job handling
 
-## 2. Потоки поступления и обслуживания
+- **Waiting (delay) system** — a queueing system where jobs may wait in the queue when all channels are busy.
+- **Loss system** — a queueing system where, when all channels are busy, arriving jobs are immediately rejected and enter neither the queue nor the system.
+- **System with a finite queue** — a queueing system with a limit on the queue length (often folded into the overall capacity parameter $K$).
 
-### Входящий поток требований
+## 2. Arrival and Service Processes
 
-Случайный процесс, описывающий времена поступления заявок в систему.
+### Arrival process
 
-### Межприходное время
+A stochastic process describing the arrival times of jobs at the system.
 
-Случайная величина — интервал между моментами поступления соседних требований.
+### Interarrival time
 
-### Простейший (пуассоновский) поток
+A random variable — the interval between the arrival instants of consecutive jobs.
 
-Входящий поток, в котором:
-- числа поступлений на непересекающихся интервалах независимы,
-- число поступлений за интервал длины $t$ имеет распределение Пуассона с параметром $\lambda t$,
-- межприходные времена независимы и имеют экспоненциальное распределение с параметром $\lambda$.
+### Poisson (simple) process
 
-### Интенсивность потока поступления $\lambda$
+An arrival process in which:
+- the numbers of arrivals on non-overlapping intervals are independent,
+- the number of arrivals in an interval of length $t$ has a Poisson distribution with parameter $\lambda t$,
+- interarrival times are independent and exponentially distributed with parameter $\lambda$.
 
-Среднее число требований, поступающих в единицу времени (параметр пуассоновского потока).
+### Arrival rate $\lambda$
 
-### Процесс обслуживания
+The mean number of jobs arriving per unit of time (the parameter of the Poisson process).
 
-Случайный процесс, описывающий времена обслуживания требований каждым каналом.
+### Service process
 
-### Время обслуживания
+A stochastic process describing the service times of jobs at each channel.
 
-Случайная величина — время, затрачиваемое каналом на обслуживание одного требования.
+### Service time
 
-### Интенсивность обслуживания $\mu$
+A random variable — the time a channel spends serving one job.
 
-Параметр экспоненциального распределения времени обслуживания: среднее число обслуживаний, которое канал может выполнить в единицу времени.
+### Service rate $\mu$
 
-### Суммарная интенсивность обслуживания $c\mu$
+The parameter of the exponential service time distribution: the mean number of service completions a channel can perform per unit of time.
 
-В системе с $c$ одинаковыми каналами: максимальная средняя пропускная способность (если все каналы заняты).
+### Total service rate $c\mu$
 
-### Свойства потоков
+In a system with $c$ identical channels: the maximum mean throughput (when all channels are busy).
 
-- **Ординарный поток** — поток, в котором вероятность одновременного поступления двух и более требований пренебрежимо мала (обычно подразумевается для реальных систем).
-- **Стационарный поток** — поток, чьи статистические характеристики не зависят от сдвига по времени (распределения зависят только от длины интервала, а не от его положения).
+### Properties of processes
 
-## 3. Дисциплины обслуживания
+- **Orderly process** — a process in which the probability of two or more jobs arriving simultaneously is negligible (usually assumed for real systems).
+- **Stationary process** — a process whose statistical characteristics are invariant under time shifts (distributions depend only on the interval length, not on its position).
 
-### Дисциплина обслуживания
+## 3. Service Disciplines
 
-Правило выбора следующего требования из очереди для обслуживания.
+### Service discipline
 
-### Основные виды дисциплин
+The rule for choosing the next job from the queue for service.
+
+### Main disciplines
 
 - **FIFO (First In – First Out) / FCFS (First Come – First Served)**  
-  Первым обслуживается требование, которое прибыло раньше всех (классическая «живая очередь»).
+  The job that arrived earliest is served first (the classic waiting line).
 
 - **LIFO (Last In – First Out) / LCFS (Last Come – First Served)**  
-  Первым обслуживается последнее поступившее требование (стек).
+  The most recently arrived job is served first (a stack).
 
 - **SIRO (Service In Random Order)**  
-  Следующее для обслуживания требование выбирается случайным образом из очереди.
+  The next job to be served is picked from the queue at random.
 
-- **Приоритетное обслуживание**  
-  Заявки разделяются на классы приоритетов. Существуют различные правила:
-  - **жесткий (абсолютный) приоритет** — приоритетная заявка обслуживается раньше любой низкоприоритетной,
-  - **относительный приоритет** — приоритет влияет на вероятности выбора, но не полностью исключает другие классы.
+- **Priority service**  
+  Jobs are divided into priority classes. Various rules exist:
+  - **strict (absolute) priority** — a high-priority job is served before any low-priority one,
+  - **relative priority** — priority influences the selection probabilities but does not fully exclude other classes.
 
-- **Preemptive (прерываемый) приоритет (PR)**  
-  Обслуживание низкоприоритетной заявки может быть прервано при приходе заявки более высокого приоритета.
+- **Preemptive priority (PR)**  
+  Service of a low-priority job may be interrupted upon the arrival of a higher-priority job.
 
-- **Non-preemptive (непрерываемый) приоритет (NP)**  
-  Начатое обслуживание не прерывается; приоритеты учитываются при выборе следующей заявки после завершения текущего обслуживания.
+- **Non-preemptive priority (NP)**  
+  Service in progress is never interrupted; priorities are taken into account when choosing the next job after the current service completes.
 
 - **Processor Sharing (PS)**  
-  Все заявки одновременно разделяют мощность сервера (каждая получает некоторую долю ресурса).
+  All jobs share the server capacity simultaneously (each receiving some fraction of the resource).
 
-### Size-based scheduling (по размеру заявки / предсказанию)
+### Size-based scheduling (by job size / prediction)
 
-Дисциплины, в которых при поступлении заявке известен (или оценён) **размер работы** \(X\) — полное время обслуживания при отсутствии прерываний. В библиотеке размер задаётся при приходе (`Task.original_size`), остаток — в `Task.service_remaining`.
+Disciplines in which the **job size** \(X\) — the total service time in the absence of interruptions — is known (or estimated) upon arrival. In the library, the size is set at arrival time (`Task.original_size`), and the remaining work is stored in `Task.service_remaining`.
 
-- **SJF / SPT** (Shortest Job First / Shortest Processing Time) — непрерываемое обслуживание: следующая заявка выбирается с минимальным **истинным** размером \(X\).
-- **PSJF** (Preemptive Shortest Job First) — прерываемое: приоритет по **исходному** размеру \(X\) (не по остатку); отличается от SRPT.
-- **SRPT** (Shortest Remaining Processing Time) — прерываемое: приоритет по **оставшемуся** объёму работы; для M/G/1 минимизирует среднее время пребывания среди всех работосберегающих дисциплин (Schrage, 1968).
-- **SPJF** (Shortest Predicted Job First) — непрерываемое: приоритет по **предсказанному** размеру \(Y\) (Mitzenmacher, 2020). При \(Y=X\) совпадает с SJF.
-- **PSPJF** — прерываемое по предсказанию \(Y\) (как PSJF, но с вытеснением).
-- **SPRPT** — прерываемое по **предсказанному остатку** \(\max(0, Y - a)\), где \(a\) — уже полученное обслуживание.
+- **SJF / SPT** (Shortest Job First / Shortest Processing Time) — non-preemptive: the next job selected is the one with the smallest **true** size \(X\).
+- **PSJF** (Preemptive Shortest Job First) — preemptive: priority by the **original** size \(X\) (not by the remainder); differs from SRPT.
+- **SRPT** (Shortest Remaining Processing Time) — preemptive: priority by the **remaining** amount of work; for M/G/1 it minimizes the mean sojourn time among all work-conserving disciplines (Schrage, 1968).
+- **SPJF** (Shortest Predicted Job First) — non-preemptive: priority by the **predicted** size \(Y\) (Mitzenmacher, 2020). When \(Y=X\), it coincides with SJF.
+- **PSPJF** — preemptive by prediction \(Y\) (like PSJF, but with preemption).
+- **SPRPT** — preemptive by the **predicted remainder** \(\max(0, Y - a)\), where \(a\) is the amount of service already received.
 
-**Price of Misprediction (PoM)** — отношение среднего времени пребывания при политике с предсказаниями из совместного распределения \(g(x,y)\) к среднему при SRPT с **идеальной** информацией о размерах: \(\mathrm{PoM}(g) = E[T^{\text{pred-policy}}] / E[T^{\text{SRPT, perfect}}]\). Зависит от всего совместного закона \((X,Y)\), а не только от точности в смысле MAE.
+**Price of Misprediction (PoM)** — the ratio of the mean sojourn time under a prediction-based policy with joint distribution \(g(x,y)\) to the mean under SRPT with **perfect** size information: \(\mathrm{PoM}(g) = E[T^{\text{pred-policy}}] / E[T^{\text{SRPT, perfect}}]\). It depends on the entire joint law of \((X,Y)\), not just on accuracy in the MAE sense.
 
-**Slowdown** — отношение времени пребывания к размеру заявки: \(T/X\); стандартная метрика для анализа SRPT и хвостов.
+**Slowdown** — the ratio of the sojourn time to the job size: \(T/X\); a standard metric for analyzing SRPT and tail behavior.
 
-Подробнее: [Численные методы](calculation.md) (раздел *Size-based M/G/1 калькуляторы*), [Симуляция](simulation.md) (раздел *SizeBasedQsSim*), [Модели](models.md).
+For more detail, see [Numerical Methods](calculation.md) (the *Size-based M/G/1 calculators* section), [Simulation](simulation.md) (the *SizeBasedQsSim* section), and [Models](models.md).
 
-## 4. Состояния системы и случайные процессы
+## 4. System States and Stochastic Processes
 
-### Состояние СМО
+### State of a queueing system
 
-Набор величин, описывающих систему в текущий момент: обычно — количество требований в системе (в обслуживании + в очереди).
+The set of quantities describing the system at the current instant: usually the number of jobs in the system (in service + in the queue).
 
-### Пространство состояний
+### State space
 
-Множество возможных значений числа требований в системе (например, $\{0,1,2,\dots\}$ или $\{0,1,\dots,K\}$).
+The set of possible values of the number of jobs in the system (e.g., $\{0,1,2,\dots\}$ or $\{0,1,\dots,K\}$).
 
-### Марковский процесс
+### Markov process
 
-Случайный процесс, у которого будущее зависит от прошлого только через текущее состояние (свойство отсутствия памяти).
+A stochastic process whose future depends on the past only through the current state (the memorylessness property).
 
-### Процесс рождения–гибели (birth–death process)
+### Birth–death process
 
-Частный вид марковского процесса с дискретным пространством состояний, переходы возможны только между соседними состояниями:
-- «рождение» — увеличение числа требований (поступление),
-- «гибель» — уменьшение числа требований (завершение обслуживания).
+A special kind of Markov process with a discrete state space, where transitions are possible only between neighboring states:
+- "birth" — an increase in the number of jobs (an arrival),
+- "death" — a decrease in the number of jobs (a service completion).
 
-### Стационарный (установившийся) режим
+### Stationary (steady-state) regime
 
-Режим, при котором распределение состояний системы не меняется во времени; характеристики (средние числа, времена и т.п.) устойчивы.
+A regime in which the distribution of system states does not change over time; the characteristics (mean counts, times, etc.) are stable.
 
-### Устойчивость системы
+### System stability
 
-Свойство СМО, при котором среднее число требований в системе не возрастает безгранично.  
-Для простейшей $M/M/1$-системы условие устойчивости: $\rho = \dfrac{\lambda}{\mu} < 1$.
+The property of a queueing system whereby the mean number of jobs in the system does not grow without bound.  
+For the simple $M/M/1$ system, the stability condition is $\rho = \dfrac{\lambda}{\mu} < 1$.
 
-## 5. Основные количественные характеристики
+## 5. Main Quantitative Characteristics
 
-### Число требований в системе $N(t)$
+### Number of jobs in the system $N(t)$
 
-Случайная величина — количество требований в обслуживании и в очереди в момент времени $t$.
+A random variable — the number of jobs in service and in the queue at time $t$.
 
-### Длина очереди $Q(t)$
+### Queue length $Q(t)$
 
-Случайная величина — число требований, находящихся в очереди (не обслуживаются) в момент $t$.
+A random variable — the number of jobs in the queue (not being served) at time $t$.
 
-### Среднее число требований в системе $L$
+### Mean number of jobs in the system $L$
 
-Математическое ожидание $N(t)$ в стационарном режиме: $L = \mathbb{E}[N]$.
+The expectation of $N(t)$ in the steady state: $L = \mathbb{E}[N]$.
 
-### Среднее число требований в очереди $L_q$
+### Mean number of jobs in the queue $L_q$
 
-Математическое ожидание длины очереди: $L_q = \mathbb{E}[Q]$.
+The expectation of the queue length: $L_q = \mathbb{E}[Q]$.
 
-### Время ожидания в очереди $W_q$
+### Waiting time in the queue $W_q$
 
-Случайная величина — промежуток времени от поступления требования до начала его обслуживания.
+A random variable — the time from a job's arrival until the start of its service.
 
-### Среднее время ожидания $E[W_q]$
+### Mean waiting time $E[W_q]$
 
-Математическое ожидание времени ожидания в очереди.
+The expectation of the waiting time in the queue.
 
-### Время пребывания в системе $W$
+### Sojourn time in the system $W$
 
-Случайная величина — полный промежуток времени от поступления требования в систему до завершения его обслуживания (ожидание + обслуживание).
+A random variable — the total time from a job's arrival at the system until its service completes (waiting + service).
 
-### Среднее время пребывания в системе $E[W]$
+### Mean sojourn time $E[W]$
 
-Математическое ожидание $W$.
+The expectation of $W$.
 
-### Коэффициент загрузки канала $\rho$
+### Channel utilization factor $\rho$
 
-Отношение средней интенсивности поступления к интенсивности обслуживания:  
-- для $M/M/1$: $\rho = \dfrac{\lambda}{\mu}$;  
-- для $M/M/c$: $\rho = \dfrac{\lambda}{c\mu}$ (средняя загрузка на один канал $\lambda/(c\mu)$, общая $\lambda/\mu$).
+The ratio of the mean arrival rate to the service rate:  
+- for $M/M/1$: $\rho = \dfrac{\lambda}{\mu}$;  
+- for $M/M/c$: $\rho = \dfrac{\lambda}{c\mu}$ (mean load per channel $\lambda/(c\mu)$, total $\lambda/\mu$).
 
-### Вероятность отказа $P_{\text{отк}}$
+### Blocking (loss) probability $P_{\text{loss}}$
 
-Вероятность того, что новое требование не будет допущено в систему (например, все места заняты, а очередь запрещена).
+The probability that a new job is not admitted to the system (e.g., all places are occupied and queueing is not allowed).
 
-### Вероятность ожидания $P_{\text{ож}}$
+### Waiting probability $P_{\text{wait}}$
 
-Вероятность того, что поступившее требование не начнет обслуживание сразу, а будет ждать.
+The probability that an arriving job does not start service immediately and has to wait.
 
-### Вероятность простоя (пустой системы) $P_0$
+### Idle (empty system) probability $P_0$
 
-Вероятность того, что в системе нет ни одного требования.
+The probability that there is not a single job in the system.
 
-### Пропускная способность / интенсивность выхода
+### Throughput / departure rate
 
-Среднее число требований, покидающих систему в единицу времени (в стационарном режиме обычно равно $\lambda_{\text{эфф}}$ — эффективной интенсивности прихода).
+The mean number of jobs leaving the system per unit of time (in the steady state, usually equal to $\lambda_{\text{eff}}$, the effective arrival rate).
 
-### Закон Литтла (Little's Law)
+### Little's Law
 
-Фундаментальное соотношение для устойчивых систем в стационарном режиме:  
-$$L = \lambda_{\text{эфф}} \cdot E[W],$$  
-где $L$ — среднее число требований в системе, $\lambda_{\text{эфф}}$ — средняя интенсивность входа (или выхода), $E[W]$ — среднее время пребывания в системе.  
+A fundamental relationship for stable systems in the steady state:  
+$$L = \lambda_{\text{eff}} \cdot E[W],$$  
+where $L$ is the mean number of jobs in the system, $\lambda_{\text{eff}}$ is the mean arrival (or departure) rate, and $E[W]$ is the mean sojourn time in the system.  
 
-Аналогично для очереди: $$L_q = \lambda_{\text{эфф}} \cdot E[W_q].$$
+Similarly for the queue: $$L_q = \lambda_{\text{eff}} \cdot E[W_q].$$
 
-## 6. Обозначения Кендалла и типовые модели
+## 6. Kendall's Notation and Standard Models
 
-### Обозначение Кендалла
+### Kendall's notation
 
-Стандартная форма записи типов СМО:  
+The standard form for classifying queueing systems:  
 $$A/B/c/K/N/\text{Disc}$$  
-где  
-- $A$ — распределение межприходных времен,  
-- $B$ — распределение времени обслуживания,  
-- $c$ — число каналов,  
-- $K$ — емкость системы (макс. число требований в системе, включая обслуживание и очередь),  
-- $N$ — размер источника (макс. возможное число требований в источнике),  
-- $\text{Disc}$ — дисциплина обслуживания.  
+where  
+- $A$ — the interarrival time distribution,  
+- $B$ — the service time distribution,  
+- $c$ — the number of channels,  
+- $K$ — the system capacity (maximum number of jobs in the system, including those in service and in the queue),  
+- $N$ — the source size (maximum possible number of jobs in the source),  
+- $\text{Disc}$ — the service discipline.  
 
-Чаще всего пишут укороченный вид $A/B/c$ (остальные параметры предполагаются стандартными: $K=\infty$, $N=\infty$, дисциплина — FIFO).
+Most often the shortened form $A/B/c$ is used (the remaining parameters are assumed to be the defaults: $K=\infty$, $N=\infty$, discipline — FIFO).
 
-### Основные обозначения распределений
+### Main distribution symbols
 
-- **$M$ (Markovian)** — экспоненциальное (для интервалов — пуассоновский процесс).
-- **$D$ (Deterministic)** — детерминированные интервалы/времена (нет разброса).
-- **$G$ (General)** — общее распределение (произвольное).
-- **$E_k$ (Erlang)** — распределение Эрланга с параметром $k$ (сумма $k$ независимых экспоненциальных с одинаковым параметром).
-- **$H_k$ (Hyperexponential)** — гиперэкспоненциальное распределение (смесь нескольких экспоненциальных).
+- **$M$ (Markovian)** — exponential (for intervals — a Poisson process).
+- **$D$ (Deterministic)** — deterministic intervals/times (no variability).
+- **$G$ (General)** — a general (arbitrary) distribution.
+- **$E_k$ (Erlang)** — the Erlang distribution with parameter $k$ (the sum of $k$ independent exponentials with the same parameter).
+- **$H_k$ (Hyperexponential)** — the hyperexponential distribution (a mixture of several exponentials).
 
-### Примеры классических моделей
+### Examples of classical models
 
 - **$M/M/1$**  
-  Простейшая система: пуассоновский приток, экспоненциальное обслуживание, один канал, неограниченная очередь и источник, дисциплина FIFO.
+  The simplest system: Poisson arrivals, exponential service, one channel, unlimited queue and source, FIFO discipline.
 
 - **$M/M/c$**  
-  Пуассоновский приток, экспоненциальное обслуживание, $c$ параллельных каналов, неограниченная очередь, FIFO.
+  Poisson arrivals, exponential service, $c$ parallel channels, unlimited queue, FIFO.
 
 - **$M/M/1/K$**  
-  Как $M/M/1$, но емкость системы ограничена $K$ (система с отказами при $N(t) = K$).
+  Like $M/M/1$, but the system capacity is limited to $K$ (jobs are rejected when $N(t) = K$).
 
-- **$M/M/c/c$ (формула Эрланга B)**  
-  $c$ каналов, емкость $K=c$, очередь отсутствует; при занятии всех каналов новые требования получают отказ.
+- **$M/M/c/c$ (Erlang B formula)**  
+  $c$ channels, capacity $K=c$, no queue; when all channels are busy, new jobs are rejected.
 
-- **$M/M/c/\infty$ с ожиданием (формула Эрланга C)**  
-  $c$ каналов, неограниченная очередь; интересует вероятность ожидания и среднее время ожидания.
+- **$M/M/c/\infty$ with waiting (Erlang C formula)**  
+  $c$ channels, unlimited queue; the quantities of interest are the waiting probability and the mean waiting time.
 
 - **$M/G/1$**  
-  Пуассоновский приток, одно обслуживание с общим распределением времени обслуживания.
+  Poisson arrivals, a single server with a general service time distribution.
 
 - **$G/M/1$**  
-  Общий входящий поток, экспоненциальное обслуживание, один канал.
+  A general arrival process, exponential service, one channel.
 
 - **$GI/G/1$**  
-  Наиболее общая модель одиночного канала: независимые (но не обязательно экспоненциальные) межприходные времена и произвольное распределение времени обслуживания.
+  The most general single-channel model: independent (but not necessarily exponential) interarrival times and an arbitrary service time distribution.
 
-## 7. Сети очередей (сети СМО)
+## 7. Queueing Networks
 
-### Сеть очередей (сеть СМО)
+### Queueing network
 
-Система, состоящая из нескольких узлов (СМО), между которыми могут перемещаться заявки.
+A system consisting of several nodes (queueing systems) between which jobs can move.
 
-### Открытая сеть очередей
+### Open queueing network
 
-Сеть, в которую поступают заявки из внешней среды и из которой они могут покидать систему.
+A network into which jobs arrive from the outside and from which they can leave.
 
-### Закрытая сеть очередей
+### Closed queueing network
 
-Сеть с фиксированным числом заявок, которые постоянно циркулируют между узлами (нет прихода и ухода из внешней среды).
+A network with a fixed number of jobs that continually circulate between the nodes (no arrivals from or departures to the outside).
 
-### Сеть Джексона
+### Jackson network
 
-Класс открытых сетей с пуассоновскими входами и экспоненциальным обслуживанием, в которых вероятностная структура позволяет представить стационарное распределение в виде произведения распределений по узлам.
+A class of open networks with Poisson inputs and exponential service, whose probabilistic structure allows the stationary distribution to be expressed as a product of per-node distributions.
 
-### Сеть Гордона–Ньюэлла
+### Gordon–Newell network
 
-Класс закрытых сетей очередей с экспоненциальным обслуживанием, для которых также существует факторизуемое (произведение по узлам) стационарное распределение.
+A class of closed queueing networks with exponential service that also admit a product-form (per-node factorized) stationary distribution.
 
-### Маршрутизация
+### Routing
 
-Правила перехода заявок из одного узла сети в другой (матрица вероятностей перехода).
+The rules for jobs moving from one network node to another (the transition probability matrix).
 
-## 8. Дополнительные понятия и свойства
+## 8. Additional Concepts and Properties
 
 ### PASTA (Poisson Arrivals See Time Averages)
 
-Свойство: в системах с пуассоновским потоком поступления состояние системы, «увиденное» приходящими заявками, имеет то же распределение, что и состояние системы в произвольный момент времени (в стационарном режиме).
+A property of systems with Poisson arrivals: the system state "seen" by arriving jobs has the same distribution as the system state at an arbitrary point in time (in the steady state).
 
-### Интенсивность потерь
+### Loss rate
 
-Средняя скорость потерь заявок (например, из-за отказов при переполнении системы).
+The mean rate at which jobs are lost (e.g., due to rejections when the system is full).
 
-### Эффективная интенсивность входа $\lambda_{\text{эфф}}$
+### Effective arrival rate $\lambda_{\text{eff}}$
 
-Интенсивность заявок, которые реально входят в систему (для систем с отказами $\lambda_{\text{эфф}} < \lambda$).
+The rate of jobs that actually enter the system (for loss systems, $\lambda_{\text{eff}} < \lambda$).
 
-### Система с ограничением времени ожидания
+### System with a waiting time limit
 
-СМО, где заявка покидает очередь (теряется или уходит) при превышении некоторого допустимого времени ожидания.
+A queueing system where a job leaves the queue (is lost or departs) once a certain allowed waiting time is exceeded.
 
-### Система с «нетерпеливыми» заявками
+### System with impatient customers
 
-- **Balking** — отказ войти в очередь, если она слишком длинная.  
-- **Reneging** — уход из очереди, если ожидание затянулось.
+- **Balking** — refusing to join the queue if it is too long.  
+- **Reneging** — leaving the queue if the wait drags on.
 
 ---
 
-**См. также:**
-- [Быстрый старт](getting_started.md)
-- [Симуляция СМО](simulation.md)
-- [Численные методы](calculation.md)
-
+**See also:**
+- [Quick Start](getting_started.md)
+- [Queueing System Simulation](simulation.md)
+- [Numerical Methods](calculation.md)

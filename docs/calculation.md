@@ -1,123 +1,125 @@
-# Руководство по численным методам расчета СМО
+# Numerical Methods Guide for Queueing System Analysis
 
-Это руководство описывает использование модуля численных методов библиотеки Most-Queue для аналитического расчета характеристик систем массового обслуживания.
+[🇷🇺 Русская версия](calculation.ru.md)
 
-## Введение
+This guide describes how to use the numerical methods module of the Most-Queue library for the analytical calculation of queueing system characteristics.
 
-Численные методы позволяют получить точные аналитические результаты для СМО, для которых существуют математические решения. В отличие от симуляции, расчет дает мгновенные результаты без необходимости моделирования большого числа заявок.
+## Introduction
 
-## Базовый класс BaseQueue
+Numerical methods provide exact analytical results for queueing systems that have known mathematical solutions. Unlike simulation, calculation yields results instantly, without the need to model a large number of jobs.
 
-Все классы расчета наследуются от базового класса `BaseQueue`, который предоставляет единый интерфейс:
+## The BaseQueue Base Class
+
+All calculation classes inherit from the `BaseQueue` base class, which provides a unified interface:
 
 ```python
 from most_queue.theory.base_queue import BaseQueue
 ```
 
-### Общий API
+### Common API
 
-Все классы расчета следуют единому паттерну:
+All calculation classes follow a single pattern:
 
-1. **Создание объекта** — инициализация с параметрами системы
-2. **`set_sources()`** — настройка потока поступления
-3. **`set_servers()`** — настройка обслуживания
-4. **`run()`** — выполнение расчета
-5. **Получение результатов** — доступ к характеристикам системы
+1. **Object creation** — initialization with the system parameters
+2. **`set_sources()`** — configure the arrival process
+3. **`set_servers()`** — configure service
+4. **`run()`** — perform the calculation
+5. **Retrieving results** — access the system characteristics
 
-## Примеры классов расчета
+## Examples of Calculation Classes
 
-### M/G/1 система
+### M/G/1 System
 
-Класс `MG1Calc` для расчета системы M/G/1 (пуассоновский поток, произвольное распределение времени обслуживания).
+The `MG1Calc` class calculates the M/G/1 system (Poisson arrivals, arbitrary service time distribution).
 
 ```python
 from most_queue.theory.fifo.mg1 import MG1Calc
 from most_queue.random.distributions import H2Distribution
 
-# Создание калькулятора
+# Create the calculator
 mg1 = MG1Calc()
 
-# Настройка потока поступления (пуассоновский)
+# Configure the arrival process (Poisson)
 mg1.set_sources(l=0.5)  # λ = 0.5
 
-# Настройка обслуживания через моменты распределения
-# Сначала создаем параметры H2-распределения
+# Configure service via distribution moments
+# First create the H2 distribution parameters
 h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8)  # mean, cv
 
-# Вычисляем моменты распределения
+# Compute the distribution moments
 b = H2Distribution.calc_theory_moments(h2_params, 5)
-# b[0] - среднее, b[1] - второй момент, и т.д.
+# b[0] - mean, b[1] - second moment, and so on
 
-# Устанавливаем моменты обслуживания
+# Set the service moments
 mg1.set_servers(b)
 
-# Выполняем расчет
+# Perform the calculation
 results = mg1.run()
 
-# Получаем результаты
-print(f"Среднее время ожидания: {results.w[0]:.4f}")
-print(f"Среднее время пребывания: {results.v[0]:.4f}")
-print(f"Коэффициент загрузки: {results.utilization:.4f}")
+# Retrieve the results
+print(f"Mean waiting time: {results.w[0]:.4f}")
+print(f"Mean sojourn time: {results.v[0]:.4f}")
+print(f"Utilization: {results.utilization:.4f}")
 ```
 
-### GI/M/1 система
+### GI/M/1 System
 
-Класс `GIM1Calc` для расчета системы GI/M/1 (общий поток поступления, экспоненциальное обслуживание).
+The `GIM1Calc` class calculates the GI/M/1 system (general arrival process, exponential service).
 
 ```python
 from most_queue.theory.fifo.gi_m_1 import GIM1Calc
 from most_queue.random.distributions import GammaDistribution
 
-# Создание калькулятора
+# Create the calculator
 gim1 = GIM1Calc()
 
-# Настройка потока поступления через моменты
-# Создаем параметры гамма-распределения
+# Configure the arrival process via moments
+# Create the gamma distribution parameters
 gamma_params = GammaDistribution.get_params_by_mean_and_cv(2.0, 0.6)  # mean, cv
 
-# Вычисляем моменты межприходных времен
+# Compute the inter-arrival time moments
 a = GammaDistribution.calc_theory_moments(gamma_params)
 gim1.set_sources(a)
 
-# Настройка обслуживания (экспоненциальное)
-mu = 0.6  # интенсивность обслуживания
+# Configure service (exponential)
+mu = 0.6  # service rate
 gim1.set_servers(mu)
 
-# Выполняем расчет
+# Perform the calculation
 results = gim1.run()
 
-print(f"GI/M/1 результаты:")
-print(f"  Среднее время ожидания: {results.w[0]:.4f}")
-print(f"  Среднее время пребывания: {results.v[0]:.4f}")
+print(f"GI/M/1 results:")
+print(f"  Mean waiting time: {results.w[0]:.4f}")
+print(f"  Mean sojourn time: {results.v[0]:.4f}")
 ```
 
-### M/M/c система
+### M/M/c System
 
-Класс `MMnrCalc` для расчета системы M/M/c (пуассоновский поток, экспоненциальное обслуживание, c каналов).
+The `MMnrCalc` class calculates the M/M/c system (Poisson arrivals, exponential service, c channels).
 
 ```python
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
-# Создание калькулятора для M/M/3
-mm3 = MMnrCalc(n=3)  # 3 канала
+# Create a calculator for M/M/3
+mm3 = MMnrCalc(n=3)  # 3 channels
 
-# Настройка потока
+# Configure the arrival process
 mm3.set_sources(l=2.0)  # λ = 2.0
 
-# Настройка обслуживания
+# Configure service
 mm3.set_servers(mu=1.0)  # μ = 1.0
 
-# Выполняем расчет
+# Perform the calculation
 results = mm3.run(num_of_moments=4)
 
-print(f"M/M/3 результаты:")
-print(f"  Среднее время ожидания: {results.w[0]:.4f}")
-print(f"  Коэффициент загрузки: {results.utilization:.4f}")
+print(f"M/M/3 results:")
+print(f"  Mean waiting time: {results.w[0]:.4f}")
+print(f"  Utilization: {results.utilization:.4f}")
 ```
 
-### H₂/M/c система
+### H₂/M/c System
 
-Класс `H2MnCalc` для системы с гиперэкспоненциальным потоком поступления и экспоненциальным обслуживанием (алгоритм §7.6.1):
+The `H2MnCalc` class handles a system with hyperexponential arrivals and exponential service (algorithm of §7.6.1):
 
 ```python
 from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
@@ -127,51 +129,51 @@ calc = H2MnCalc(n=3)
 
 h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2, is_clx=True)  # mean, cv
 #
-# Для CV<1 используйте complex-fit: is_clx=True.
-# Важно: симулятор `QsSim` не умеет генерировать H2 с комплексными параметрами,
-# поэтому сравнение с симуляцией возможно только для вещественных параметров.
+# For CV<1 use the complex fit: is_clx=True.
+# Important: the `QsSim` simulator cannot generate H2 with complex parameters,
+# so comparison against simulation is only possible for real-valued parameters.
 calc.set_sources(h2_params)
 
-calc.set_servers(b=2.0)  # среднее время обслуживания
+calc.set_servers(b=2.0)  # mean service time
 results = calc.run()
 
-print(f"H2/M/3: p0={results.p[0]:.4f}, время ожидания={results.w[0]:.4f}")
+print(f"H2/M/3: p0={results.p[0]:.4f}, waiting time={results.w[0]:.4f}")
 ```
 
-**CV<1 и валидация:** при \(CV<1\) для H₂ используется complex-fit (комплексные параметры аппроксимации).
-`QsSim` не поддерживает генерацию H₂ с комплексными параметрами, поэтому сравнение “теория vs симуляция”
-в таких случаях разумно делать через `Gamma`-симуляцию с тем же mean и CV (пример — `tests/test_tt_vs_sim_gamma_cvl1.py`).
+**CV<1 and validation:** for \(CV<1\), H₂ uses a complex fit (complex-valued approximation parameters).
+`QsSim` does not support generating H₂ with complex parameters, so in such cases a "theory vs simulation"
+comparison is best done via a `Gamma` simulation with the same mean and CV (see `tests/test_tt_vs_sim_gamma_cvl1.py` for an example).
 
-### M/M/c/r система с ограниченной очередью
+### M/M/c/r System with a Bounded Queue
 
-Тот же класс `MMnrCalc` с параметром `r`:
+The same `MMnrCalc` class with the `r` parameter:
 
 ```python
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
-# Система M/M/3/20 (3 канала, очередь до 20 заявок)
+# M/M/3/20 system (3 channels, queue of up to 20 jobs)
 mm3r = MMnrCalc(n=3, r=20)
 
 mm3r.set_sources(l=2.0)
 mm3r.set_servers(mu=1.0)
 
 results = mm3r.run()
-print(f"Вероятность потери: {1 - sum(results.p):.4f}")
+print(f"Loss probability: {1 - sum(results.p):.4f}")
 ```
 
-## Работа с моментами распределений
+## Working with Distribution Moments
 
-### Что такое моменты?
+### What Are Moments?
 
-Моменты распределения — это числовые характеристики случайной величины:
-- **Первый момент** (b[0]) — математическое ожидание (среднее значение)
-- **Второй момент** (b[1]) — математическое ожидание квадрата
-- **Третий момент** (b[2]) — математическое ожидание куба
-- И т.д.
+Distribution moments are numerical characteristics of a random variable:
+- **First moment** (b[0]) — the expected value (mean)
+- **Second moment** (b[1]) — the expected value of the square
+- **Third moment** (b[2]) — the expected value of the cube
+- And so on
 
-### Получение моментов из распределений
+### Computing Moments from Distributions
 
-Библиотека предоставляет методы для вычисления моментов различных распределений:
+The library provides methods for computing the moments of various distributions:
 
 ```python
 from most_queue.random.distributions import (
@@ -180,20 +182,20 @@ from most_queue.random.distributions import (
     ErlangDistribution
 )
 
-# H2-распределение (для CV<1 нужен complex-fit)
+# H2 distribution (for CV<1 the complex fit is required)
 h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8, is_clx=True)  # mean, cv
 b_h2 = H2Distribution.calc_theory_moments(h2_params, num=5)
 
-# Гамма-распределение
+# Gamma distribution
 gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.6)
 b_gamma = GammaDistribution.calc_theory_moments(gamma_params, num=5)
 
-# Распределение Эрланга
+# Erlang distribution
 erlang_params = ErlangDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.5)
 b_erlang = ErlangDistribution.calc_theory_moments(erlang_params, num=5)
 ```
 
-### Пример: расчет M/G/1 с различными распределениями
+### Example: Calculating M/G/1 with Different Distributions
 
 ```python
 from most_queue.theory.fifo.mg1 import MG1Calc
@@ -203,7 +205,7 @@ arrival_rate = 0.4
 service_mean = 2.5
 service_cv = 0.7
 
-# Вариант 1: H2-распределение
+# Option 1: H2 distribution
 h2_params = H2Distribution.get_params_by_mean_and_cv(service_mean, service_cv)
 b_h2 = H2Distribution.calc_theory_moments(h2_params, 5)
 
@@ -212,7 +214,7 @@ mg1_h2.set_sources(l=arrival_rate)
 mg1_h2.set_servers(b_h2)
 results_h2 = mg1_h2.run()
 
-# Вариант 2: Гамма-распределение
+# Option 2: Gamma distribution
 gamma_params = GammaDistribution.get_params_by_mean_and_cv(service_mean, service_cv)
 b_gamma = GammaDistribution.calc_theory_moments(gamma_params, 5)
 
@@ -221,54 +223,54 @@ mg1_gamma.set_sources(l=arrival_rate)
 mg1_gamma.set_servers(b_gamma)
 results_gamma = mg1_gamma.run()
 
-# Сравнение результатов
-print(f"H2: среднее время ожидания = {results_h2.w[0]:.4f}")
-print(f"Gamma: среднее время ожидания = {results_gamma.w[0]:.4f}")
+# Compare the results
+print(f"H2: mean waiting time = {results_h2.w[0]:.4f}")
+print(f"Gamma: mean waiting time = {results_gamma.w[0]:.4f}")
 ```
 
-## Структура результатов
+## Result Structure
 
 ### QueueResults
 
-Все классы расчета возвращают объект `QueueResults`:
+All calculation classes return a `QueueResults` object:
 
 ```python
 @dataclass
 class QueueResults:
-    v: list[float] | None = None      # моменты времени пребывания
-    w: list[float] | None = None      # моменты времени ожидания
-    p: list[float] | None = None      # вероятности состояний
-    pi: list[float] | None = None     # вероятности перед поступлением
-    utilization: float | None = None   # коэффициент загрузки
-    duration: float = 0.0              # время расчета в секундах
+    v: list[float] | None = None      # sojourn time moments
+    w: list[float] | None = None      # waiting time moments
+    p: list[float] | None = None      # state probabilities
+    pi: list[float] | None = None     # probabilities at arrival instants
+    utilization: float | None = None   # utilization
+    duration: float = 0.0              # calculation time in seconds
 ```
 
-### Доступ к результатам
+### Accessing Results
 
 ```python
 results = calc.run()
 
-# Моменты времени ожидания
-w_mean = results.w[0]      # среднее время ожидания
-w_second = results.w[1]    # второй момент
+# Waiting time moments
+w_mean = results.w[0]      # mean waiting time
+w_second = results.w[1]    # second moment
 
-# Моменты времени пребывания
-v_mean = results.v[0]       # среднее время пребывания
+# Sojourn time moments
+v_mean = results.v[0]       # mean sojourn time
 
-# Вероятности состояний
-p0 = results.p[0]          # вероятность простоя
-p1 = results.p[1]          # вероятность 1 заявки в системе
+# State probabilities
+p0 = results.p[0]          # idle probability
+p1 = results.p[1]          # probability of 1 job in the system
 
-# Коэффициент загрузки
+# Utilization
 ro = results.utilization
 
-# Время расчета
+# Calculation time
 calc_time = results.duration
 ```
 
-## Сравнение расчета и симуляции
+## Comparing Calculation and Simulation
 
-Для проверки корректности можно сравнить результаты расчета и симуляции:
+To verify correctness, you can compare the calculation results against a simulation:
 
 ```python
 from most_queue.sim.base import QsSim
@@ -280,52 +282,52 @@ arrival_rate = 0.5
 service_mean = 2.0
 service_cv = 0.8
 
-# Параметры H2-распределения
+# H2 distribution parameters
 h2_params = H2Distribution.get_params_by_mean_and_cv(service_mean, service_cv)
 b = H2Distribution.calc_theory_moments(h2_params, 5)
 
-# Расчет
+# Calculation
 mg1_calc = MG1Calc()
 mg1_calc.set_sources(l=arrival_rate)
 mg1_calc.set_servers(b)
 calc_results = mg1_calc.run()
 
-# Симуляция
+# Simulation
 qs = QsSim(num_of_channels=1)
 qs.set_sources(arrival_rate, "M")
 qs.set_servers(h2_params, "H")
 sim_results = qs.run(50000)
 
-# Сравнение
-print("Сравнение моментов времени ожидания:")
+# Comparison
+print("Comparison of waiting time moments:")
 print_waiting_moments(sim_results.w, calc_results.w)
 
-print("\nСравнение моментов времени пребывания:")
+print("\nComparison of sojourn time moments:")
 print_sojourn_moments(sim_results.v, calc_results.v)
 ```
 
-## Доступные классы расчета
+## Available Calculation Classes
 
-### FIFO системы
+### FIFO Systems
 
-- **`MG1Calc`** — M/G/1 система
-- **`GIM1Calc`** — GI/M/1 система
-- **`GiMn`** — GI/M/c система
-- **`MMnrCalc`** — M/M/c/r система
-- **`MDnCalc`** — M/D/c система
-- **`EkDnCalc`** — E_k/D/c система
-- **`MGnCalc`** — M/G/c система (метод Такахаси-Таками)
-- **`MG1SrptCalc`**, **`MG1SjfCalc`**, **`MG1PsjfCalc`**, **`MG1SpjfCalc`** — M/G/1 с size-based дисциплинами (см. ниже)
+- **`MG1Calc`** — M/G/1 system
+- **`GIM1Calc`** — GI/M/1 system
+- **`GiMn`** — GI/M/c system
+- **`MMnrCalc`** — M/M/c/r system
+- **`MDnCalc`** — M/D/c system
+- **`EkDnCalc`** — E_k/D/c system
+- **`MGnCalc`** — M/G/c system (Takahashi-Takami method)
+- **`MG1SrptCalc`**, **`MG1SjfCalc`**, **`MG1PsjfCalc`**, **`MG1SpjfCalc`** — M/G/1 with size-based disciplines (see below)
 
-## Size-based M/G/1 калькуляторы
+## Size-Based M/G/1 Calculators
 
-Подробное описание численной реализации (сетка, `cumulative_trapezoid`, интерполяция, внешний интеграл Simpson vs `quad` для SPJF) и сопоставления с симуляцией см. на странице **[SRPT / SPJF: методы и верификация](srpt_spjf_methods.md)**.
+For a detailed description of the numerical implementation (grid, `cumulative_trapezoid`, interpolation, outer integral via Simpson vs `quad` for SPJF) and the comparison against simulation, see the **[SRPT / SPJF: Methods and Verification](srpt_spjf_methods.md)** page.
 
-Одноканальная **M/G/1** с пуассоновским потоком поступления (интенсивность \(\lambda\)) и произвольным распределением размера заявки \(X\) с плотностью \(f(x)\), CDF \(F(x)\), моментами обслуживания \(E[S]=b_0\), \(E[S^2]=b_1\). Частичная нагрузка от заявок размера не больше \(x\): \(\rho_x = \lambda \int_0^x t f(t)\,dt\).
+Single-channel **M/G/1** with a Poisson arrival process (rate \(\lambda\)) and an arbitrary job size distribution \(X\) with density \(f(x)\), CDF \(F(x)\), and service moments \(E[S]=b_0\), \(E[S^2]=b_1\). Partial load contributed by jobs of size at most \(x\): \(\rho_x = \lambda \int_0^x t f(t)\,dt\).
 
 ### SRPT (`MG1SrptCalc`)
 
-Условное среднее время пребывания заявки размера \(x\) (Schrage–Miller, 1966):
+Conditional mean sojourn time for a job of size \(x\) (Schrage–Miller, 1966):
 
 $$
 \mathbb{E}[T^{\mathrm{SRPT}}(x)]
@@ -333,7 +335,7 @@ $$
 + \int_0^x \frac{dt}{1-\rho_t}.
 $$
 
-Безусловное: \(\mathbb{E}[T^{\mathrm{SRPT}}] = \int_0^\infty f(x)\,\mathbb{E}[T^{\mathrm{SRPT}}(x)]\,dx\), \(\mathbb{E}[W] = \mathbb{E}[T] - E[S]\). Реализация: численная сетка + `simpson` по \(x\) (устойчиво при высокой загрузке).
+Unconditional: \(\mathbb{E}[T^{\mathrm{SRPT}}] = \int_0^\infty f(x)\,\mathbb{E}[T^{\mathrm{SRPT}}(x)]\,dx\), \(\mathbb{E}[W] = \mathbb{E}[T] - E[S]\). Implementation: numerical grid + `simpson` over \(x\) (stable under high load).
 
 ```python
 from most_queue.theory.srpt import MG1SrptCalc
@@ -347,7 +349,7 @@ print(r.v[0], r.w[0])
 
 ### SJF (`MG1SjfCalc`)
 
-Непрерываемый приоритет по размеру (Conway–Maxwell–Miller):
+Non-preemptive priority by size (Conway–Maxwell–Miller):
 
 $$
 \mathbb{E}[W^{\mathrm{SJF}}(x)] = \frac{\lambda\, \mathbb{E}[S^2]}{2(1-\rho_x)^2}, \qquad
@@ -360,16 +362,16 @@ $$
 \mathbb{E}[T^{\mathrm{PSJF}}(x)] = \frac{\lambda \int_0^x t^2 f(t)\,dt}{2(1-\rho_x)^2} + \frac{x}{1-\rho_x}.
 $$
 
-### SPJF с предсказаниями (`MG1SpjfCalc`)
+### SPJF with Predictions (`MG1SpjfCalc`)
 
-Совместная плотность \((X,Y)\) задаётся **предиктором** (протокол в `most_queue.theory.srpt.utils.predictor`). Эффективная нагрузка от заявок с предсказанием \(\le y\): \(\rho'_y\). Тогда
+The joint density of \((X,Y)\) is defined by a **predictor** (protocol in `most_queue.theory.srpt.utils.predictor`). Effective load contributed by jobs with prediction \(\le y\): \(\rho'_y\). Then
 
 $$
 \mathbb{E}[W^{\mathrm{SPJF}}(y)] = \frac{\lambda\, \mathbb{E}[S^2]}{2(1-\rho'_y)^2}, \qquad
 \mathbb{E}[W^{\mathrm{SPJF}}] = \int g_Y(y)\,\mathbb{E}[W^{\mathrm{SPJF}}(y)]\,dy.
 $$
 
-Реализации предиктора: **`PerfectPredictor`** (\(Y=X\), совпадает с SJF), **`ExpNoisePredictor`** (\(Y\mid X=x \sim \mathrm{Exp}(1/x)\)), **`LognormalNoisePredictor`**.
+Predictor implementations: **`PerfectPredictor`** (\(Y=X\), coincides with SJF), **`ExpNoisePredictor`** (\(Y\mid X=x \sim \mathrm{Exp}(1/x)\)), **`LognormalNoisePredictor`**.
 
 ```python
 from most_queue.theory.srpt import MG1SpjfCalc
@@ -382,27 +384,27 @@ calc.set_predictor(ExpNoisePredictor())
 r = calc.run()
 ```
 
-Импорт с верхнего уровня пакета: `from most_queue.theory.srpt import MG1SrptCalc, ExpNoisePredictor, ...`.
+Top-level package import: `from most_queue.theory.srpt import MG1SrptCalc, ExpNoisePredictor, ...`.
 
-## Расширение метода Такахаси-Таками
+## Extending the Takahashi-Takami Method
 
-Класс `MGnCalc` реализует численный метод Такахаси-Таками для расчета многоканальных систем M/G/c. Этот класс спроектирован для легкого расширения, что позволяет создавать кастомные методы расчета для различных типов систем массового обслуживания.
+The `MGnCalc` class implements the Takahashi-Takami numerical method for calculating multi-channel M/G/c systems. This class is designed for easy extension, allowing you to create custom calculation methods for various types of queueing systems.
 
-### Архитектура расширяемости
+### Extensibility Architecture
 
-`MGnCalc` использует паттерн Template Method, разделяя алгоритм на переопределяемые хуки:
+`MGnCalc` uses the Template Method pattern, splitting the algorithm into overridable hooks:
 
-- **Методы построения матриц** — определяют структуру переходных матриц
-- **Хуки итераций** — позволяют кастомизировать логику алгоритма
-- **Методы расчета результатов** — настраивают вычисление характеристик системы
+- **Matrix construction methods** — define the structure of the transition matrices
+- **Iteration hooks** — allow customizing the algorithm's logic
+- **Result calculation methods** — configure how the system characteristics are computed
 
-### Базовое использование MGnCalc
+### Basic Usage of MGnCalc
 
 ```python
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.random.distributions import H2Distribution
 
-calc = MGnCalc(n=5)  # 5 каналов
+calc = MGnCalc(n=5)  # 5 channels
 calc.set_sources(l=2.0)
 
 h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 1.2, is_clx=True)
@@ -411,16 +413,16 @@ calc.set_servers(h2_params)
 results = calc.run()
 ```
 
-### Создание кастомного расширения
+### Creating a Custom Extension
 
-Для создания собственного калькулятора на основе метода Такахаси-Таками:
+To create your own calculator based on the Takahashi-Takami method:
 
-1. Наследуйтесь от `MGnCalc`
-2. Переопределите методы построения матриц (при необходимости)
-3. Переопределите хуки итераций (при необходимости)
-4. Переопределите методы расчета результатов (при необходимости)
+1. Inherit from `MGnCalc`
+2. Override the matrix construction methods (if needed)
+3. Override the iteration hooks (if needed)
+4. Override the result calculation methods (if needed)
 
-**Пример:** Добавление отрицательных заявок
+**Example:** Adding negative customers
 
 ```python
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
@@ -429,112 +431,111 @@ import numpy as np
 class CustomNegativeQueueCalc(MGnCalc):
     def __init__(self, n, buffer=None, calc_params=None):
         super().__init__(n, buffer, calc_params)
-        self.l_neg = None  # интенсивность отрицательных заявок
+        self.l_neg = None  # rate of negative customers
     
     def set_sources(self, l_pos, l_neg):
         self.l_pos = l_pos
         self.l_neg = l_neg
-        self.l = l_pos  # базовая интенсивность
+        self.l = l_pos  # base rate
         self.is_sources_set = True
     
     def _build_big_d_matrix(self, num):
-        # Переопределяем D-матрицу для учета отрицательных заявок
+        # Override the D matrix to account for negative customers
         base_matrix = super()._build_big_d_matrix(num)
-        # Добавляем отрицательные заявки к диагональным элементам
+        # Add negative customers to the diagonal elements
         for i in range(base_matrix.shape[0]):
             base_matrix[i, i] += self.l_neg
         return base_matrix
 ```
 
-### Точки расширения
+### Extension Points
 
-**Обязательные для переопределения (если меняется структура матриц):**
-- `fill_cols()` — определение структуры колонок для каждого уровня
-- `_build_big_a_matrix(num)` — матрица переходов вверх (поступления)
-- `_build_big_b_matrix(num)` — матрица переходов вниз (обслуживание)
-- `_build_big_d_matrix(num)` — диагональные элементы матрицы
+**Required to override (if the matrix structure changes):**
+- `fill_cols()` — define the column structure for each level
+- `_build_big_a_matrix(num)` — upward transition matrix (arrivals)
+- `_build_big_b_matrix(num)` — downward transition matrix (service)
+- `_build_big_d_matrix(num)` — diagonal elements of the matrix
 
-**Опциональные для переопределения:**
-- `_pre_run_setup()` — подготовка перед основным циклом
-- `_update_level_j(j)` — обновление переменных для уровня j
-- `_update_level_0()` — обновление уровня 0
-- `_calculate_p()` — расчет вероятностей состояний
-- `get_results()` — формирование результатов
+**Optional to override:**
+- `_pre_run_setup()` — preparation before the main loop
+- `_update_level_j(j)` — update variables for level j
+- `_update_level_0()` — update level 0
+- `_calculate_p()` — calculate the state probabilities
+- `get_results()` — assemble the results
 
-### Примеры существующих расширений
+### Examples of Existing Extensions
 
-- **`MGnNegativeRCSCalc`** — система с отрицательными заявками и дисциплиной RCS
-- **`MGnNegativeDisasterCalc`** — система с отрицательными заявками (катастрофы)
-- **`MH2nH2Warm`** — система с периодами разогрева
-- **`MPhNPrty`** — система с приоритетами
+- **`MGnNegativeRCSCalc`** — system with negative customers and the RCS discipline
+- **`MGnNegativeDisasterCalc`** — system with negative customers (disasters)
+- **`MH2nH2Warm`** — system with warm-up periods
+- **`MPhNPrty`** — system with priorities
 
-Подробную документацию и примеры см. в `most_queue/theory/fifo/takahasi_base.py`.
+For detailed documentation and examples, see `most_queue/theory/fifo/takahasi_base.py`.
 
-### Системы с приоритетами
+### Priority Systems
 
-- **`MG1Preemptive`** — M/G/1 с прерываемым приоритетом
-- **`MG1NonPreemptive`** — M/G/1 с непрерываемым приоритетом
-- **`MGnInvarApproximation`** — M/G/c с приоритетами (метод инвариантных соотношений)
+- **`MG1Preemptive`** — M/G/1 with preemptive priority
+- **`MG1NonPreemptive`** — M/G/1 with non-preemptive priority
+- **`MGnInvarApproximation`** — M/G/c with priorities (invariant relations method)
 
-### Специализированные системы
+### Specialized Systems
 
-- **`BatchMM1`** — M^x/M/1 с пакетным поступлением
-- **`EngsetCalc`** — закрытая система Engset
-- **`ForkJoinMarkovianCalc`** — Fork-Join система M/M/c
-- И другие (см. [Модели СМО](models.md))
+- **`BatchMM1`** — M^x/M/1 with batch arrivals
+- **`EngsetCalc`** — closed Engset system
+- **`ForkJoinMarkovianCalc`** — Fork-Join M/M/c system
+- And others (see [Queueing Models](models.md))
 
-## Параметры расчета
+## Calculation Parameters
 
 ### CalcParams
 
-Некоторые классы принимают параметры расчета:
+Some classes accept calculation parameters:
 
 ```python
 from most_queue.theory.calc_params import CalcParams
 
 calc_params = CalcParams(
-    p_num=100,              # число вероятностей состояний для расчета
-    tolerance=1e-6,         # точность вычислений
-    approx_distr="gamma"    # тип распределения для аппроксимации
+    p_num=100,              # number of state probabilities to calculate
+    tolerance=1e-6,         # computation tolerance
+    approx_distr="gamma"    # distribution type for approximation
 )
 
 mg1 = MG1Calc(calc_params=calc_params)
 ```
 
-## Советы по использованию
+## Usage Tips
 
-1. **Проверяйте устойчивость** — убедитесь, что ρ < 1 перед расчетом
-2. **Используйте достаточно моментов** — для точности нужны несколько моментов распределения
-3. **Сравнивайте с симуляцией** — проверяйте результаты на простых случаях
-4. **Обрабатывайте ошибки** — некоторые системы могут не иметь решения
-5. **Используйте подходящие распределения** — выбирайте распределения, соответствующие реальным данным
+1. **Check stability** — make sure ρ < 1 before calculating
+2. **Use enough moments** — accuracy requires several distribution moments
+3. **Compare against simulation** — verify results on simple cases
+4. **Handle errors** — some systems may not have a solution
+5. **Use appropriate distributions** — pick distributions that match your real data
 
-## Производительность
+## Performance
 
-Численные методы обычно работают значительно быстрее симуляции:
+Numerical methods are usually much faster than simulation:
 
 ```python
 import time
 
-# Расчет
+# Calculation
 start = time.time()
 results = calc.run()
 calc_time = time.time() - start
 
-# Симуляция
+# Simulation
 start = time.time()
 results = qs.run(50000)
 sim_time = time.time() - start
 
-print(f"Расчет: {calc_time:.4f} сек")
-print(f"Симуляция: {sim_time:.4f} сек")
-print(f"Ускорение: {sim_time/calc_time:.1f}x")
+print(f"Calculation: {calc_time:.4f} s")
+print(f"Simulation: {sim_time:.4f} s")
+print(f"Speedup: {sim_time/calc_time:.1f}x")
 ```
 
 ---
 
-**См. также:**
-- [Симуляция СМО](simulation.md) — имитационное моделирование
-- [Распределения](distributions.md) — справочник по распределениям
-- [Модели СМО](models.md) — каталог поддерживаемых моделей
-
+**See also:**
+- [Queueing System Simulation](simulation.md) — discrete-event modeling
+- [Distributions](distributions.md) — distribution reference
+- [Queueing Models](models.md) — catalog of supported models

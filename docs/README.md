@@ -1,118 +1,120 @@
-# Документация библиотеки Most-Queue
+# Most-Queue Library Documentation
+
+[🇷🇺 Русская версия](README.ru.md)
 
 ![Queue](../assets/most-queue-nano1.jpeg)
 
-**Most-Queue** — это Python-библиотека для симуляции и численного анализа систем массового обслуживания (СМО) и сетей очередей.
+**Most-Queue** is a Python library for simulation and numerical analysis of queueing systems and queueing networks.
 
-## 📚 Навигация по документации
+## 📚 Documentation Guide
 
-### Начало работы
-- **[Быстрый старт](getting_started.md)** — установка и первые примеры использования
-- **[Основные концепции](concepts.md)** — теория массового обслуживания и терминология
+### Getting Started
+- **[Quick Start](getting_started.md)** — installation and first usage examples
+- **[Core Concepts](concepts.md)** — queueing theory and terminology
+- **[Thesaurus](tesaurus.md)** — glossary of queueing theory terms
 
-### Основные разделы
-- **[Симуляция СМО](simulation.md)** — руководство по моделированию систем массового обслуживания (в т.ч. раздел *SizeBasedQsSim* — SRPT, SJF, SPJF и др.)
-- **[Численные методы](calculation.md)** — расчет характеристик СМО аналитическими методами (в т.ч. раздел *Size-based M/G/1 калькуляторы*)
-- **[Распределения](distributions.md)** — справочник по поддерживаемым распределениям
-- **[Модели СМО](models.md)** — каталог поддерживаемых типов систем массового обслуживания
+### Main Sections
+- **[Queueing System Simulation](simulation.md)** — guide to modeling queueing systems (including the *SizeBasedQsSim* section — SRPT, SJF, SPJF, etc.)
+- **[Numerical Methods](calculation.md)** — computing queueing system characteristics with analytical methods (including the *Size-based M/G/1 calculators* section)
+- **[Distributions](distributions.md)** — reference for supported distributions
+- **[Queueing Models](models.md)** — catalog of supported queueing system types
 
-### Для разработчиков
-- **[Описание проекта](PROJECT.md)** — устройство репозитория, соглашения, где искать теорию
-- **[Инфраструктура](INFRASTRUCTURE.md)** — сборка, тесты, качество кода, публикация
-- **[Definition of Done](DOD.md)** — критерии готовности задач
-- **[Эпики](epics/README.md)** — планирование крупных направлений разработки
-- **[Gap-анализ моделей](models_gap_analysis.md)** — что реализовано, чего не хватает, приоритеты (EPIC-001)
+### For Developers
+- **[Project Overview](PROJECT.md)** (in Russian) — repository layout, conventions, where to find the theory
+- **[Infrastructure](INFRASTRUCTURE.md)** (in Russian) — building, testing, code quality, publishing
+- **[Definition of Done](DOD.md)** (in Russian) — task completion criteria
+- **[Epics](epics/README.md)** (in Russian) — planning of major development directions
+- **[Model Gap Analysis](models_gap_analysis.md)** (in Russian) — what is implemented, what is missing, priorities (EPIC-001)
 
-### Специализированные темы
-- **[SRPT / SPJF: методы расчёта и верификация](srpt_spjf_methods.md)** — формулы, численная схема (сетки, Simpson, quad), сопоставление с `SizeBasedQsSim` и тестами (по [roadmap](roadmaps/srpt_spjf_roadmap.md))
-- **[Сети очередей](networks.md)** — моделирование и расчет сетей СМО
-- **[Приоритетные системы](priorities.md)** — системы с приоритетным обслуживанием
-- **[Disaster (отрицательные заявки): временные характеристики](negative_disasters_time_characteristics.md)** — подход к вычислению \(W, V, V_{served}, V_{broken}\) через LST
-- **[RCS (отрицательные заявки): временные характеристики](negative_rcs_time_characteristics.md)** — подход к вычислению \(W, V, V_{served}, V_{broken}\) в модели RCS
-- **[Расширенные примеры](examples.md)** — практические кейсы и сложные сценарии
+### Specialized Topics
+- **[SRPT / SPJF: Calculation Methods and Verification](srpt_spjf_methods.md)** — formulas, numerical scheme (grids, Simpson, quad), comparison with `SizeBasedQsSim` and tests (per the [roadmap](roadmaps/srpt_spjf_roadmap.md) (in Russian))
+- **[Queueing Networks](networks.md)** — simulation and calculation of queueing networks
+- **[Priority Systems](priorities.md)** — systems with priority service
+- **[Disasters (negative customers): Time Characteristics](negative_disasters_time_characteristics.md)** — computing \(W, V, V_{served}, V_{broken}\) via LST
+- **[RCS (negative customers): Time Characteristics](negative_rcs_time_characteristics.md)** — computing \(W, V, V_{served}, V_{broken}\) in the RCS model
+- **[Advanced Examples](examples.md)** — practical cases and complex scenarios
 
-## 🎯 Основные возможности
+## 🎯 Key Features
 
-### Симуляция
-- Моделирование различных типов СМО (M/M/c, M/G/1, GI/M/c и др.)
-- Поддержка различных распределений времени поступления и обслуживания
-- Системы с приоритетами, отпусками, отрицательными заявками
-- Fork-Join и Split-Join системы
-- Сети очередей
+### Simulation
+- Modeling of various queueing system types (M/M/c, M/G/1, GI/M/c, and others)
+- Support for a variety of arrival and service time distributions
+- Systems with priorities, vacations, negative customers
+- Fork-Join and Split-Join systems
+- Queueing networks
 
-### Численные методы
-- Аналитический расчет стационарных характеристик
-- Методы для различных типов СМО
-- Высокая точность расчетов
-- Быстрое получение результатов
+### Numerical Methods
+- Analytical calculation of steady-state characteristics
+- Methods for various queueing system types
+- High calculation accuracy
+- Fast results
 
-### Анализ результатов
-- Моменты времени ожидания и пребывания
-- Вероятности состояний системы
-- Коэффициент загрузки
-- Визуализация и таблицы результатов
+### Result Analysis
+- Moments of waiting and sojourn times
+- System state probabilities
+- Utilization factor
+- Visualization and result tables
 
-## 📦 Установка
+## 📦 Installation
 
 ```bash
 pip install most-queue
 ```
 
-Или установка из репозитория:
+Or install from the repository:
 
 ```bash
 pip install -e .
 ```
 
-## 🔍 Быстрый пример
+## 🔍 Quick Example
 
 ```python
 from most_queue.sim.base import QsSim
 
-# Создаем симулятор M/M/1 системы
+# Create an M/M/1 system simulator
 qs = QsSim(num_of_channels=1)
 
-# Настраиваем поток поступления (пуассоновский с интенсивностью 0.5)
+# Configure the arrival process (Poisson with rate 0.5)
 qs.set_sources(0.5, "M")
 
-# Настраиваем обслуживание (экспоненциальное с интенсивностью 1.0)
+# Configure the service (exponential with rate 1.0)
 qs.set_servers(1.0, "M")
 
-# Запускаем симуляцию на 10000 заявок
+# Run the simulation for 10000 jobs
 results = qs.run(10000)
 
-# Получаем результаты
-print(f"Среднее время ожидания: {results.w[0]:.4f}")
-print(f"Среднее время пребывания: {results.v[0]:.4f}")
-print(f"Коэффициент загрузки: {results.utilization:.4f}")
+# Get the results
+print(f"Mean waiting time: {results.w[0]:.4f}")
+print(f"Mean sojourn time: {results.v[0]:.4f}")
+print(f"Utilization factor: {results.utilization:.4f}")
 ```
 
-## 📖 Структура библиотеки
+## 📖 Library Structure
 
-Библиотека состоит из двух основных модулей:
+The library consists of two main modules:
 
-- **`most_queue.sim`** — модуль симуляции СМО
-- **`most_queue.theory`** — модуль численных методов расчета
+- **`most_queue.sim`** — queueing system simulation module
+- **`most_queue.theory`** — numerical calculation methods module
 
-## 🧪 Примеры и тесты
+## 🧪 Examples and Tests
 
-- Примеры использования находятся в папке [`tests/`](../tests/)
-- Jupyter-туториалы доступны в папке [`tutorials/`](../tutorials/)
+- Usage examples can be found in the [`tests/`](../tests/) folder
+- Jupyter tutorials are available in the [`tutorials/`](../tutorials/) folder
 
-## 📝 Версия
+## 📝 Version
 
-Текущая версия: **2.7**
+Current version: **2.8**
 
-## 🔗 Полезные ссылки
+## 🔗 Useful Links
 
-- [Репозиторий на GitHub](https://github.com/xabarov/most-queue)
-- [Issues и предложения](https://github.com/xabarov/most-queue/issues)
+- [GitHub Repository](https://github.com/xabarov/most-queue)
+- [Issues and Suggestions](https://github.com/xabarov/most-queue/issues)
 
-## 👥 Контакты
+## 👥 Contact
 
-По вопросам и предложениям: xabarov1985@gmail.com
+For questions and suggestions: xabarov1985@gmail.com
 
 ---
 
-**Примечание**: Эта документация на русском языке. Для английской версии см. [README.md](../README.md) в корне проекта.
-
+**Note**: This documentation is in English. Russian versions of the pages are available via the language-switcher links at the top of each page.

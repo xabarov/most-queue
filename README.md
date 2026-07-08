@@ -91,7 +91,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 ## Documentation & tutorials
 
-- 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (in Russian; code and docstrings are in English)
+- 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/) — from a first M/M/1 to Takahashi–Takami and SRPT
 - 🗺 [Development roadmaps](docs/epics/README.md) — what's next (matrix-analytic MAP/PH stack, retrial queues, Erlang-A)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
