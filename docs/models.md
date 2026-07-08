@@ -240,6 +240,30 @@ calc.set_predictor(ExpNoisePredictor())
 results = calc.run()
 ```
 
+### M/G/1 FB (Foreground-Background / LAS)
+
+**Описание:** Прерывающая **blind**-дисциплина: прибор всегда обслуживает заявку с наименьшим *полученным* обслуживанием (least attained service); при равенстве — делится поровну. Размеры заявок знать не нужно.
+
+**Суть:** «дадим шанс новичкам»: свежая заявка сразу получает прибор и держит его, пока не
+догонит по обслуженному объёму остальных. Если короткие заявки часты (убывающий hazard rate,
+CV > 1) — FB приближается к SRPT, не зная размеров; если время обслуживания почти постоянное —
+FB проигрывает даже FCFS. Экспоненциальное обслуживание — граница: FB совпадает с PS.
+
+**Класс расчета:** `MG1FbCalc` (`most_queue.theory.srpt`)
+**Симуляция:** `FBSim` (`most_queue.sim.single_server_disciplines`)
+
+**Пример:**
+
+```python
+from most_queue.theory.srpt import MG1FbCalc
+from most_queue.random.distributions import GammaDistribution
+
+calc = MG1FbCalc()
+calc.set_sources(1.0)
+calc.set_servers(GammaDistribution.get_params_by_mean_and_cv(0.7, 1.2), "Gamma")
+results = calc.run()
+```
+
 ### M/G/1 PS (Processor Sharing)
 
 **Описание:** Прибор делится поровну между всеми находящимися заявками (каждая из k заявок обслуживается со скоростью 1/k). Вероятности состояний — геометрические, нечувствительные к форме распределения обслуживания; условное среднее время пребывания заявки размера x — ровно x/(1−ρ).
@@ -826,6 +850,7 @@ results = calc.run()
 | M/G/1 SJF | MG1SjfCalc | SizeBasedQsSim | - | Non-preemptive по размеру |
 | M/G/1 PSJF | MG1PsjfCalc | SizeBasedQsSim | - | Preemptive по исходному размеру |
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | По предсказанию Y |
+| M/G/1 FB/LAS | MG1FbCalc | FBSim | - | Blind, по attained service |
 | M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Равное разделение, slowdown 1/(1−ρ) |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Сojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |

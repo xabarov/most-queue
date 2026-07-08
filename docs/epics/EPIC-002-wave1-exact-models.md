@@ -40,7 +40,11 @@
       `sim/single_server_disciplines.py`; тесты `test_mg1_ps_lcfs.py` — геометрические
       вероятности с Gamma-обслуживанием (нечувствительность), моменты sojourn LCFS-PR
       = busy period). Старшие моменты PS (Яшков/Отт) — отложены — 2026-07-08
-- [ ] 6. M/G/1 FB/LAS (+ режим attained-service в SizeBasedQsSim)
+- [x] 6. M/G/1 FB/LAS (`theory/srpt/mg1_fb.py` на сетках `_SizeBasedCalcBase`;
+      симулятор `FBSim` с батч-разделением в `sim/single_server_disciplines.py` —
+      в событийный `SizeBasedQsSim` FB не встраивается корректно, ранг непрерывно
+      меняется; тесты `test_mg1_fb.py`: сверка с симуляцией, exp-обслуживание = PS,
+      FB < PS при DHR) — 2026-07-08
 - [ ] 7. Ненадёжный прибор M/G/1 (Avi-Itzhak–Naor)
 
 ## Критерии готовности (DoD эпика)

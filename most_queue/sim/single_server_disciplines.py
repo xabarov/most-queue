@@ -1,8 +1,8 @@
 """
 Compact single-server simulators for work-conserving disciplines that the
-event/channel engine of QsSim does not cover: egalitarian Processor Sharing
-and preemptive-resume LCFS. Both track remaining work of every job in the
-system directly.
+event/channel engine of QsSim does not cover: egalitarian Processor Sharing,
+preemptive-resume LCFS and FB/LAS. All of them track the remaining or
+attained work of every job in the system directly.
 """
 
 import time
@@ -163,5 +163,63 @@ class LcfsPRSim(_SingleServerWorkSim):
                 self.ttek = completion_time
                 _, arr_time, size = stack.pop()
                 self._register_departure(self.ttek - arr_time, size)
+
+        return self._results(start_time)
+
+
+class FBSim(_SingleServerWorkSim):
+    """
+    M(GI)/G/1 with FB / LAS (Foreground-Background, Least Attained Service):
+    the server always works on the job(s) with the least attained service;
+    jobs tied at the minimal attained service share the server equally.
+    """
+
+    _TOL = 1e-12
+
+    def run(self, total_served: int) -> QueueResults:
+        start_time = time.process_time()
+        if self.source is None or self.server_dist is None:
+            raise ValueError("Set sources and servers first (set_sources/set_servers).")
+
+        jobs = []  # [attained, size, arrival_time]
+        next_arrival = self.source.generate()
+
+        while self.served < total_served:
+            if not jobs:
+                self._advance_stats(next_arrival - self.ttek, 0)
+                self.ttek = next_arrival
+                jobs.append([0.0, self.server_dist.generate(), self.ttek])
+                next_arrival = self.ttek + self.source.generate()
+                continue
+
+            min_att = min(job[0] for job in jobs)
+            batch = [job for job in jobs if job[0] <= min_att + self._TOL]
+            k = len(batch)
+
+            # time until some job of the batch completes
+            dt_complete = min(job[1] - job[0] for job in batch) * k
+            # time until the batch catches up with the next attained level
+            higher = [job[0] for job in jobs if job[0] > min_att + self._TOL]
+            dt_catch_up = (min(higher) - min_att) * k if higher else float("inf")
+            dt_arrival = next_arrival - self.ttek
+
+            dt = min(dt_complete, dt_catch_up, dt_arrival)
+            for job in batch:
+                job[0] += dt / k
+            self._advance_stats(dt, len(jobs))
+            self.ttek += dt
+
+            if dt == dt_arrival:
+                jobs.append([0.0, self.server_dist.generate(), self.ttek])
+                next_arrival = self.ttek + self.source.generate()
+            elif dt == dt_complete:
+                done_idx = min(range(len(jobs)), key=lambda i: jobs[i][1] - jobs[i][0])
+                _, size, arr_time = jobs.pop(done_idx)
+                self._register_departure(self.ttek - arr_time, size)
+            else:
+                # batch caught up with the next attained level: snap to avoid drift
+                target = min(higher)
+                for job in batch:
+                    job[0] = target
 
         return self._results(start_time)
