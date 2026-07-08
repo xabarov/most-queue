@@ -1,0 +1,6 @@
+# Keep GitHub's language statistics meaningful: the repo is a Python library,
+# notebooks and research materials are documentation, not source code.
+*.ipynb linguist-documentation
+docs/** linguist-documentation
+works/** linguist-documentation
+tutorials/** linguist-documentation

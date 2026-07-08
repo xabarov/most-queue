@@ -1,293 +1,137 @@
-# Most-Queue — симуляция и численные методы для СМО и сетей очередей
+<div align="center">
 
-![PyPI version](https://img.shields.io/pypi/v/most-queue)
-![Python versions](https://img.shields.io/pypi/pyversions/most-queue)
-![License](https://img.shields.io/pypi/l/most-queue)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)
+# Most-Queue
 
-![Queue](assets/most-queue-nano1.jpeg)
+**Queueing theory in Python: exact analytical solvers paired with discrete-event simulation — for 40+ models from M/M/1 to SRPT scheduling, vacations, negative customers and queueing networks.**
 
-**Most-Queue** — Python-библиотека для симуляции и численного анализа систем массового обслуживания (СМО) и сетей очередей.
+[🇷🇺 Русская версия](README.ru.md)
 
-_Most-Queue is a Python library for simulation and numerical analysis of queueing systems and queueing networks._
+[![PyPI version](https://img.shields.io/pypi/v/most-queue)](https://pypi.org/project/most-queue/)
+[![Python versions](https://img.shields.io/pypi/pyversions/most-queue)](https://pypi.org/project/most-queue/)
+[![License](https://img.shields.io/pypi/l/most-queue)](https://github.com/xabarov/most-queue/blob/main/LICENSE)
+[![Downloads](https://static.pepy.tech/badge/most-queue)](https://pepy.tech/project/most-queue)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/xabarov/most-queue)](https://github.com/xabarov/most-queue/commits/main)
 
----
+<img src="https://raw.githubusercontent.com/xabarov/most-queue/main/assets/most-queue-nano1.jpeg" alt="Most-Queue banner" width="720"/>
 
-## 🔗 Быстрая навигация
+</div>
 
-- **Документация**: [`docs/README.md`](docs/README.md)
-- **Быстрый старт**: [`docs/getting_started.md`](docs/getting_started.md)
-- **Модели**: [`docs/models.md`](docs/models.md)
-- **Туториалы (Jupyter)**: [`tutorials/`](tutorials/)
+## Why Most-Queue?
 
----
+- **Analytics and simulation together.** Nearly every analytical calculator ships with a paired
+  discrete-event simulator, and the test suite cross-validates them against each other. You get
+  fast exact numbers *and* a way to check them.
+- **Models you won't find elsewhere in open source**: size-based scheduling analytics
+  (SRPT, SJF, PSJF, SPJF with ML-style size predictions, FB/LAS), M/G/1 vacation models,
+  negative customers (RCS / disasters), unreliable servers, multi-server phase-type systems
+  solved by the Takahashi–Takami method (including CV < 1 via complex-fit H₂).
+- **Moments, not just means**: waiting/sojourn time raw moments, state probabilities,
+  utilization — with a uniform `set_sources() / set_servers() / run()` API across all models.
+- **Pure Python + NumPy/SciPy**, pip-installable, MIT license.
 
-## 📚 Документация
-
-**Подробная документация доступна:**
-
-- **[📖 Полная документация (Русский)](docs/README.md)** — Полное руководство на русском языке с подробными туториалами, примерами и теорией
-- **[🚀 Быстрый старт](docs/getting_started.md)** — Начните работу за несколько минут
-- **[📘 Основные концепции](docs/concepts.md)** — Основы теории массового обслуживания
-- **[🎮 Руководство по симуляции](docs/simulation.md)** — Имитационное моделирование
-- **[🧮 Руководство по расчетам](docs/calculation.md)** — Численные методы
-- **[⏱ SRPT / SPJF: методы и верификация](docs/srpt_spjf_methods.md)** — формулы, численная схема, сравнение с симуляцией
-- **[📊 Каталог моделей](docs/models.md)** — Поддерживаемые модели СМО
-- **[🌐 Сети очередей](docs/networks.md)** — Сети СМО
-- **[⭐ Приоритетные системы](docs/priorities.md)** — Системы с приоритетами
-- **[💡 Примеры использования](docs/examples.md)** — Практические примеры
-
----
-
-## 🔍 Основные возможности
-
-- **Симуляция**: Моделирование различных типов систем массового обслуживания и сетей
-- **Численные методы**: Решение стационарных задач теории массового обслуживания
-- **Метрики производительности**: Анализ времени ожидания, времени пребывания, коэффициентов загрузки и многое другое
-- **Широкая поддержка моделей**: FIFO, приоритеты, отпуска/прогрев/охлаждение, отрицательные заявки, fork-join, сети и многое другое
-
----
-
-## 📦 Установка
+## Installation
 
 ```bash
-python3 -m pip install -U most-queue
+pip install most-queue
 ```
 
-### Установка из репозитория (для разработки)
+Requires Python ≥ 3.9. For network visualization you may also need the system `graphviz` package.
 
-```bash
-git clone https://github.com/xabarov/most-queue.git
-cd most-queue
-python3 -m venv .venv
-source .venv/bin/activate
-python3 -m pip install -U pip
-python3 -m pip install -e .
-```
-
-### Примечание про Graphviz
-
-Для визуализации графов/сетей может понадобиться системный пакет `graphviz` (даже при установленном Python-пакете `graphviz`):
-
-```bash
-sudo apt-get update
-sudo apt-get install -y graphviz
-```
-
-**Требования:** Python >= 3.9 (см. `pyproject.toml`)
-
----
-
-## 📰 Новости
-
-- **Апрель 2026** — **Size-based scheduling** для M/G/1: аналитика SRPT / SJF / PSJF / SPJF (`most_queue.theory.srpt`) и симулятор `SizeBasedQsSim` с предикторами; воспроизведение таблицы Mitzenmacher–Shahout (2025) в тестах. См. [методы SRPT/SPJF](docs/srpt_spjf_methods.md), [расчёты](docs/calculation.md), [симуляцию](docs/simulation.md), пример [`examples/srpt_table.py`](examples/srpt_table.py), туториал [`tutorials/srpt_basics.ipynb`](tutorials/srpt_basics.ipynb).
-- **Препринт (2026)** — Расчёт многоканальных СМО с отрицательными заявками (метод Такахаси–Таками): [препринт (PDF)](works/negative_queues/negative_queues_takahasi_takami.pdf), [код расчётов и воспроизведения](works/negative_queues/).
-- **Февраль 2026** — Добавлены расчеты по методу **Такахаси–Таками** для FIFO-моделей **H₂/M/c** и **H₂/H₂/c**:
-  - `most_queue/theory/fifo/gmc_takahasi.py` — **H₂/M/c**
-  - `most_queue/theory/fifo/hkhk_takahasi.py` — **H₂/H₂/c**
-  - Улучшено API: `H2MnCalc.set_sources()` и `MGnCalc.set_servers()` теперь принимают `H2Params` напрямую (без повторного фиттинга), а `HkHkNCalc` корректно работает с complex-fit для \(CV<1\).
-- **2025** — Для метода расчета многоканальной СМО с **разогревом**, **охлаждением** и **задержкой начала охлаждения** опубликована статья (реализация: `most_queue/theory/vacations/mgn_with_h2_delay_cold_warm.py`):
-  - Лохвицкий, В. А. Численный расчет многоканальной системы массового обслуживания с разогревом, охлаждением и задержкой начала охлаждения / В. А. Лохвицкий, Р. С. Хабаров, Е. Л. Яковлев // Авиакосмическое приборостроение. – 2025. – № 1. – С. 44–57. – DOI [10.25791/aviakosmos.1.2025.1456](https://doi.org/10.25791/aviakosmos.1.2025.1456). – EDN OVJXK
-
----
-
-## 🎉 Версия 2.7
-
-**Основные изменения:**
-
-- **M/G/1 SRPT, SJF, PSJF, SPJF**: численные калькуляторы `MG1SrptCalc`, `MG1SjfCalc`, `MG1PsjfCalc`, `MG1SpjfCalc` и симулятор `SizeBasedQsSim` (предсказания, таблица Mitzenmacher–Shahout 2025 в тестах)
-- **Метод Такахаси–Таками для FIFO H₂-моделей**: расчёты для **H₂/M/c** (`H2MnCalc`) и **H₂/H₂/c** (`HkHkNCalc`)
-- **Поддержка complex-fit для H₂ (CV<1) в расчётах**: численные методы корректно работают с комплексными параметрами H₂-аппроксимации
-- **Улучшено API для H₂-параметров**: `H2MnCalc.set_sources()` и `MGnCalc.set_servers()` принимают `H2Params` напрямую (без повторного фиттинга)
-- **Тесты валидации с таблицами**:
-  - `tests/test_tt_vs_sim_cv105.py` — TT vs симуляция при CV≈1.05 (одинаковые `H2Params`)
-  - `tests/test_tt_vs_sim_gamma_cvl1.py` — CV<1: TT (H₂ complex-fit) vs `Gamma`‑симуляция (одинаковые mean/CV)
-
----
-
-## 🚀 Быстрый старт
-
-### Базовый пример: M/M/1 система
-
-```python
-from most_queue.sim.base import QsSim
-
-# Создание симулятора
-qs = QsSim(num_of_channels=1)
-
-# Настройка потока поступления (пуассоновский с интенсивностью λ = 0.5)
-qs.set_sources(0.5, "M")
-
-# Настройка обслуживания (экспоненциальное с интенсивностью μ = 1.0)
-qs.set_servers(1.0, "M")
-
-# Запуск симуляции
-results = qs.run(10000)
-
-# Получение результатов
-print(f"Среднее время ожидания: {results.w[0]:.4f}")
-print(f"Среднее время пребывания: {results.v[0]:.4f}")
-print(f"Коэффициент загрузки: {results.utilization:.4f}")
-```
-
-### Численный расчет
+## Quick start: theory vs simulation in 20 lines
 
 ```python
 from most_queue.theory.fifo.mmnr import MMnrCalc
+from most_queue.sim.base import QsSim
 
-# Создание калькулятора
-calc = MMnrCalc(n=1)
-calc.set_sources(l=0.5)
+# Analytical M/M/3 with a finite queue
+calc = MMnrCalc(n=3, r=100)
+calc.set_sources(l=2.0)
 calc.set_servers(mu=1.0)
+theory = calc.run()
 
-# Выполнение расчета
-results = calc.run()
-print(f"Среднее время ожидания: {results.w[0]:.4f}")
+# The same system, simulated
+sim = QsSim(3)
+sim.set_sources(2.0, "M")
+sim.set_servers(1.0, "M")
+experiment = sim.run(100_000)
+
+print(f"Mean waiting time: theory {theory.w[0]:.3f} vs simulation {experiment.w[0]:.3f}")
+# Mean waiting time: theory 0.444 vs simulation 0.448
 ```
 
-**См. [Руководство по быстрому старту](docs/getting_started.md) для дополнительных примеров.**
+## Showcase: who pays for the scheduling discipline?
 
----
+Computed by the library's own calculators — conditional slowdown `E[T(x)]/x` by job size
+for FCFS, PS, FB (blind) and SRPT (size-aware):
 
-## 📚 Структура проекта
+<img src="https://raw.githubusercontent.com/xabarov/most-queue/main/docs/figures/slowdown.png" alt="Slowdown by job size for FCFS/PS/FB/SRPT" width="720"/>
 
-Most-Queue состоит из двух основных модулей:
+See the executable comparison of **9 disciplines** in
+[`tutorials/disciplines_comparison.ipynb`](tutorials/disciplines_comparison.ipynb).
 
-- **`most_queue.sim`** — Программы симуляции систем массового обслуживания
-- **`most_queue.theory`** — Численные методы для расчета моделей теории массового обслуживания
+## What's inside
 
----
+| Family | Models | Method |
+|---|---|---|
+| Classic FIFO | M/M/c, M/M/c/r, Erlang B/C, M/G/1, GI/M/c, M/D/c, Eₖ/D/c, M/G/∞ | exact |
+| Multi-server phase-type | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 via complex fit) | Takahashi–Takami |
+| Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
+| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR | exact / invariant approximation |
+| Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
+| Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
+| Reliability | M/G/1 with breakdowns & repairs | Avi-Itzhak–Naor |
+| GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
+| Batch, impatience, closed | Mˣ/M/1, M/M/1+M, Engset | exact |
+| Parallel service | Fork-Join, Split-Join | Markovian / order statistics |
+| Networks | open networks, priority networks, networks with negative customers, routing optimization | decomposition |
 
-## 🧪 Поддерживаемые модели
+Every model comes with a plain-language explanation and a diagram in the
+[illustrated model catalog](docs/models.md).
 
-### FIFO системы
-- **M/M/c**, **M/M/c/r** — Многоканальные системы с пуассоновским потоком
-- **M/G/1**, **M/G/c** — Системы с произвольным распределением времени обслуживания
-- **M/G/1 SRPT / SJF / PSJF / SPJF** — Size-based дисциплины и политики с предсказаниями размера (Schrage 1968, Mitzenmacher 2020); симуляция `SizeBasedQsSim`, расчёты в `most_queue.theory.srpt`
-- **GI/M/1**, **GI/M/c** — Системы с общим потоком поступления
-- **H₂/M/c** — Гиперэкспоненциальный поток поступления, метод Такахаси-Таками (§7.6.1)
-- **M/D/c**, **E_k/D/c** — Системы с детерминированным обслуживанием
-- **M/H₂/c** — Метод Такахаси-Таками с гиперэкспоненциальным обслуживанием
-- **H₂/H₂/c** — Метод Такахаси-Таками для гиперэкспоненциального потока и обслуживания
+## Documentation & tutorials
 
-**Примечание про H₂ и \(CV<1\)**: реальное H₂-распределение имеет \(CV \ge 1\), но для численных методов допускается **complex-fit** (комплексные параметры аппроксимации). Симулятор `QsSim` не генерирует H₂ с комплексными параметрами, поэтому сравнение “теория vs симуляция” возможно только когда параметры вещественные.
+- 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (in Russian; code and docstrings are in English)
+- 🎓 [Jupyter tutorials](tutorials/) — from a first M/M/1 to Takahashi–Takami and SRPT
+- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (matrix-analytic MAP/PH stack, retrial queues, Erlang-A)
+- 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
-Для \(CV<1\) валидацию удобно делать через `Gamma`‑симуляцию с теми же mean/CV (см. `tests/test_tt_vs_sim_gamma_cvl1.py`).
+## Applications
 
-### Системы с приоритетами
-- **M/G/1/PR**, **M/G/1/NP** — Одноканальные с прерываемым/непрерываемым приоритетом
-- **M/G/c/PR**, **M/G/c/NP** — Многоканальные с приоритетами
-- **M/Ph/c/PR** — Фазовое распределение обслуживания с приоритетами
+Capacity planning for cloud services and data centers · call-center staffing ·
+manufacturing lines · telecom traffic · healthcare resource planning ·
+scheduling research (SRPT/LAS with ML size predictions).
 
-### Специализированные системы
-- **Прогулки** — Системы с прогулками серверов и прогревом
-- **Отрицательные заявки** — Модели RCS и disaster
-- **Fork-Join** — Системы параллельной обработки
-- **Пакетное поступление** — Системы M^x/M/1
-- **Нетерпеливые заявки** — Системы с уходом клиентов
-- **Engset** — Закрытые системы с конечным числом источников
-- **Сети** — Открытые и закрытые сети очередей
+## Recent highlights
 
-**См. [Каталог моделей](docs/models.md) для полного списка и деталей.**
+- **2026** — Wave of exact classics: Erlang B/C, M/G/∞, GI/G approximations, M/G/1 vacation
+  models (multiple vacations, N-policy), PS, LCFS-PR, FB/LAS, unreliable server — each with a
+  paired simulator and tests. Illustrated model catalog with generated diagrams.
+- **2026** — Size-based scheduling analytics: SRPT / SJF / PSJF / SPJF with prediction models
+  (reproduces the Mitzenmacher–Shahout 2025 table in tests) + `SizeBasedQsSim`.
+- **2026 (preprint)** — Multi-server queues with negative customers via Takahashi–Takami:
+  [preprint & reproduction code](works/negative_queues/).
+- **2025 (paper)** — Multi-channel system with warm-up, cooling and cooling delay:
+  Lokhvitsky, Khabarov, Yakovlev, DOI [10.25791/aviakosmos.1.2025.1456](https://doi.org/10.25791/aviakosmos.1.2025.1456).
 
----
+## Contributing
 
-## 📌 Области применения
+Issues and pull requests are welcome! Open an [issue](https://github.com/xabarov/most-queue/issues)
+for bugs or model requests. Development conventions: [docs/PROJECT.md](docs/PROJECT.md),
+definition of done: [docs/DOD.md](docs/DOD.md).
 
-- **Облачные вычисления**: Моделирование масштабируемости и производительности инфраструктуры
-- **Call-центры**: Оптимизация штата и времени ожидания клиентов
-- **Транспорт**: Улучшение транспортных потоков и логистики
-- **Сетевой трафик**: Анализ и прогнозирование потоков данных
-- **Производство**: Оптимизация производственных линий
-- **Здравоохранение**: Планирование ресурсов больниц
+## Citation
 
-**См. [Примеры использования](docs/examples.md) для практических кейсов.**
+If you use Most-Queue in research, please cite it (see [`CITATION.cff`](CITATION.cff)):
 
----
-
-## 📖 Most-Queue 2.x API
-
-Единый API для симуляции и расчета:
-
-```python
-# from most_queue.theory.fifo.mgn_takahasi import MGnCalc
-# from most_queue.sim.base import QsSim
-#
-# Численный расчет
-calc = MGnCalc(n=NUM_OF_CHANNELS)
-calc.set_sources(l=ARRIVAL_RATE)
-calc.set_servers(b=b)
-calc_results = calc.run()
-
-# Симуляция
-qs = QsSim(NUM_OF_CHANNELS)
-qs.set_sources(ARRIVAL_RATE, "M")
-qs.set_servers(gamma_params, "Gamma")
-sim_results = qs.run(NUM_OF_JOBS)
+```bibtex
+@software{most_queue,
+  author  = {Khabarov, Roman},
+  title   = {Most-Queue: queueing theory calculations and simulation in Python},
+  url     = {https://github.com/xabarov/most-queue},
+  license = {MIT}
+}
 ```
 
----
+## License
 
-## 📁 Ресурсы
-
-- **[Тесты](tests/)** — Примеры с сравнением теоретических и симуляционных результатов
-- **[Туториалы](tutorials/)** — Jupyter-ноутбуки с пошаговыми руководствами
-- **[Документация](docs/)** — Подробная документация на русском языке
-
----
-
-## 🧪 Запуск тестов (разработчикам)
-
-```bash
-python3 -m pip install -U pip
-python3 -m pip install -e .
-python3 -m pip install -U pytest
-pytest -q
-```
-
-Если вам нужны ноутбуки/док‑инструменты (Jupyter/Sphinx и т. п.), установите полный набор зависимостей:
-
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-Если нужно исключить медленные тесты:
-
-```bash
-pytest -q -m "not slow"
-```
-
----
-
-## 🔍 Ключевые слова для поиска
-
-- Теория массового обслуживания
-- Симуляция
-- Численные методы
-- Сети очередей
-- Анализ производительности
-- Облачные вычисления
-- Оптимизация call-центров
-- Транспортные системы
-- Сетевой трафик
-- Python-пакет
-
----
-
-## 👥 Участие в разработке
-
-Мы приветствуем ваш вклад!
-
-- Откройте [issue](https://github.com/xabarov/most-queue/issues) для сообщений об ошибках или предложений
-- Отправьте pull request для улучшений функциональности
-- Контакты: xabarov1985@gmail.com
-
----
-
-## 📄 Лицензия
-
-См. файл [LICENSE](LICENSE) для деталей.
-
----
-
-**Для подробной документации, примеров и туториалов см. [docs/README.md](docs/README.md)**
+[MIT](LICENSE) © Roman Khabarov

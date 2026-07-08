@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use Most-Queue in your research, please cite it as below."
+title: "Most-Queue: queueing theory calculations and simulation in Python"
+type: software
+authors:
+  - family-names: Khabarov
+    given-names: Roman
+    email: xabarov1985@gmail.com
+repository-code: "https://github.com/xabarov/most-queue"
+url: "https://github.com/xabarov/most-queue"
+license: MIT
+keywords:
+  - queueing theory
+  - simulation
+  - numerical methods
+  - queueing networks
+  - performance analysis
+  - SRPT
+  - scheduling
+references:
+  - type: article
+    title: >-
+      Numerical calculation of a multi-channel queueing system with warm-up,
+      cooling and cooling start delay
+    authors:
+      - family-names: Lokhvitsky
+        given-names: Vladimir
+      - family-names: Khabarov
+        given-names: Roman
+      - family-names: Yakovlev
+        given-names: Evgeny
+    journal: "Aerospace Instrument-Making"
+    year: 2025
+    issue: "1"
+    start: 44
+    end: 57
+    doi: 10.25791/aviakosmos.1.2025.1456
