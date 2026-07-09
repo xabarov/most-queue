@@ -8,7 +8,6 @@ from most_queue.random.distributions import GammaDistribution, ParetoDistributio
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
-from most_queue.theory.utils.conv import conv_moments_minus
 from most_queue.theory.utils.q_poisson_arrival_calc import get_q_gamma
 
 
@@ -125,8 +124,12 @@ class GIM1Calc(BaseQueue):
 
     def get_w(self, num: int = 3) -> list[float]:
         """
-        Calculation of the raw moments of the waiting time
-         num - number of moments
+        Calculation of the raw moments of the waiting time.
+
+        In GI/M/1 the waiting time is zero with probability 1 - sigma and
+        exponential with rate mu*(1 - sigma) otherwise (sigma is the root of
+        sigma = A*(mu*(1 - sigma))), hence exactly:
+        w_k = k! * sigma / (mu*(1 - sigma))^k.
         """
 
         if self.w:
@@ -134,17 +137,11 @@ class GIM1Calc(BaseQueue):
 
         self.w_param = self.w_param or self._get_w_param()
 
-        if self.v is None:
-            self.v = self.get_v(num)
+        w = [0.0] * num
+        for k in range(num):
+            w[k] = math.factorial(k + 1) * self.w_param / pow(self.mu * (1.0 - self.w_param), k + 1)
 
-        b = [
-            1.0 / self.mu,
-            2.0 / pow(self.mu, 2),
-            6.0 / pow(self.mu, 3),
-            24.0 / pow(self.mu, 4),
-        ]
-        self.w = conv_moments_minus(self.v, b, num)
-
+        self.w = w
         return self.w
 
     def get_p(self) -> list[float]:

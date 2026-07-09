@@ -90,9 +90,9 @@ def test_phph1_matches_gim1():
     exact_results = exact.run()
 
     print_waiting_moments(results.w, exact_results.w)
-    # only the mean: GIM1Calc's higher waiting moments disagree with both this
-    # QBD solver and simulation (bug recorded in the EPIC-001 refactoring backlog)
-    assert np.isclose(results.w[0], exact_results.w[0], rtol=1e-3), ERROR_MSG
+    # all three moments: the GIM1Calc higher-moment bug found by this test
+    # was fixed (closed form w_k = k! * sigma / (mu*(1-sigma))^k)
+    assert np.allclose(results.w, exact_results.w[:3], rtol=1e-3), ERROR_MSG
 
 
 def test_map_ph1_vs_sim():
