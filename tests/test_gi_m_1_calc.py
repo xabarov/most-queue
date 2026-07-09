@@ -58,8 +58,8 @@ def test_gi_m_1():
 
     # for verification, we use sim.
     # create an instance of the sim class and pass the number of service
-    # channels
-    qs = QsSim(1)
+    # channels (seeded for a reproducible, non-flaky run)
+    qs = QsSim(1, seed=1234)
 
     # set the input stream. The method needs to be passed parameters
     # of distribution as a list and type of distribution.
