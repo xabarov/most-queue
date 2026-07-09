@@ -469,6 +469,28 @@ correlation can multiply the mean waiting time several-fold — see the exact
 [MAP/PH/1 model](models.md#matrix-analytic-models-mapph) and the demo notebook
 [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb).
 
+### Fitting a MAP to data
+
+Usually you don't have a MAP — you have a stream of measured interarrival times. The helper
+`most_queue.random.map_fit` fits a two-state MMPP to three statistics: the rate, the squared
+coefficient of variation (SCV) and the lag-1 autocorrelation. An MMPP is always overdispersed
+and positively correlated, so it needs **SCV ≥ 1** and **lag-1 ≥ 0** (a clear error is raised
+otherwise).
+
+```python
+from most_queue.random.map_fit import fit_mmpp2, fit_map_from_trace, map_statistics
+
+# fit to target statistics...
+mmpp = fit_mmpp2(rate=1.0, scv=3.0, lag1=0.2)
+
+# ...or straight from a trace of interarrival times
+mmpp = fit_map_from_trace(interarrival_samples)
+
+print(map_statistics(mmpp))  # (rate, scv, lag1) actually achieved
+```
+
+The fitted `MAPParams` plug directly into the MAP/PH/1, MAP/M/c and simulation models above.
+
 ## Computing distribution moments
 
 Numerical calculation methods require the raw moments of the distributions:

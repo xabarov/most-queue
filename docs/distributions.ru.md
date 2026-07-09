@@ -471,6 +471,28 @@ qs.set_servers(1.5, "M")
 [MAP/PH/1](models.ru.md) и демо-ноутбук
 [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb).
 
+### Подгонка MAP по данным
+
+Обычно у вас нет готового MAP — есть поток измеренных интервалов между приходами. Хелпер
+`most_queue.random.map_fit` подгоняет двухфазный MMPP к трём статистикам: интенсивности,
+квадрату коэффициента вариации (SCV) и лаг-1 автокорреляции. MMPP всегда переразбросан и
+положительно коррелирован, поэтому требует **SCV ≥ 1** и **лаг-1 ≥ 0** (иначе — понятная
+ошибка).
+
+```python
+from most_queue.random.map_fit import fit_mmpp2, fit_map_from_trace, map_statistics
+
+# подгонка к целевым статистикам...
+mmpp = fit_mmpp2(rate=1.0, scv=3.0, lag1=0.2)
+
+# ...или прямо из трейса интервалов
+mmpp = fit_map_from_trace(interarrival_samples)
+
+print(map_statistics(mmpp))  # (rate, scv, lag1) — что фактически получилось
+```
+
+Полученный `MAPParams` напрямую подставляется в модели MAP/PH/1, MAP/M/c и симулятор выше.
+
 ## Получение моментов распределений
 
 Для использования в численных методах расчета нужны моменты распределений:
