@@ -1035,6 +1035,32 @@ calc.set_servers(mu=2.5)
 results = calc.run()
 ```
 
+### BMAP/PH/1
+
+**Description:** Batch Markovian arrivals with **phase-type** service — the general-service member of the BMAP family. Solved by level truncation over (level, BMAP phase, service phase). A general (non-PH) service time is handled by first fitting a PH distribution to its moments.
+
+**In plain words:** bursty batch traffic meeting variable (not just exponential) service.
+Reduces exactly to BMAP/M/1 (exponential service) and to MAP/PH/1 (batches of size one).
+
+**Calculator class:** `BmapPh1Calc` (`most_queue.theory.matrix.bmap_ph1`)
+**Simulation:** `BmapPh1Sim` (`most_queue.sim.bmap`)
+
+**Example:**
+
+```python
+from most_queue.random.map_ph import bmap_poisson_batch, PHDistribution
+from most_queue.random.distributions import H2Distribution
+from most_queue.theory.matrix.bmap_ph1 import BmapPh1Calc
+
+bmap = bmap_poisson_batch(0.4, [0.2, 0.3, 0.1, 0.2, 0.2])
+service = PHDistribution.from_h2(H2Distribution.get_params_by_mean_and_cv(0.5, 1.3))
+
+calc = BmapPh1Calc()
+calc.set_sources(bmap)
+calc.set_servers(service)
+results = calc.run()
+```
+
 ## Closed systems
 
 ![Engset closed system diagram](figures/engset.png)
@@ -1094,6 +1120,7 @@ results = calc.run()
 | MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Multi-server, correlated arrivals |
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Multi-server, correlated arrivals + PH service |
 | BMAP/M/1 | BmapM1Calc | - | - | Batch (correlated) arrivals |
+| BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Batch arrivals + PH service |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model

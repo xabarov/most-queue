@@ -984,6 +984,32 @@ calc.set_servers(mu=2.5)
 results = calc.run()
 ```
 
+### BMAP/PH/1
+
+**Описание:** Пакетный марковский вход с **фазовым** обслуживанием — представитель семейства BMAP с общим обслуживанием. Решается усечением уровней над (уровень, фаза BMAP, фаза обслуживания). Произвольное (не PH) обслуживание задаётся PH-фиттингом по его моментам.
+
+**Суть:** пульсирующий пакетный трафик встречает вариативное (не только экспоненциальное)
+обслуживание. В точности сводится к BMAP/M/1 (exp-обслуживание) и к MAP/PH/1 (пачки размера 1).
+
+**Класс расчета:** `BmapPh1Calc` (`most_queue.theory.matrix.bmap_ph1`)
+**Симуляция:** `BmapPh1Sim` (`most_queue.sim.bmap`)
+
+**Пример:**
+
+```python
+from most_queue.random.map_ph import bmap_poisson_batch, PHDistribution
+from most_queue.random.distributions import H2Distribution
+from most_queue.theory.matrix.bmap_ph1 import BmapPh1Calc
+
+bmap = bmap_poisson_batch(0.4, [0.2, 0.3, 0.1, 0.2, 0.2])
+service = PHDistribution.from_h2(H2Distribution.get_params_by_mean_and_cv(0.5, 1.3))
+
+calc = BmapPh1Calc()
+calc.set_sources(bmap)
+calc.set_servers(service)
+results = calc.run()
+```
+
 ## Закрытые системы
 
 ![Схема закрытой системы Engset](figures/engset.ru.png)
@@ -1043,6 +1069,7 @@ results = calc.run()
 | MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Многоканальный, коррелированный вход |
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Многоканальный, коррелированный вход + PH-обслуживание |
 | BMAP/M/1 | BmapM1Calc | - | - | Пакетный (коррелированный) вход |
+| BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Пакетный вход + PH-обслуживание |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 
 ## Рекомендации по выбору модели
