@@ -45,8 +45,8 @@ def test_sim():
     # Calculate service rate based on utilization
     service_rate = ARRIVAL_RATE / (NUM_OF_CHANNELS * UTILIZATION_FACTOR)
 
-    # Initialize simulation model
-    qs = QsSim(NUM_OF_CHANNELS, buffer=QUEUE_LENGTH)
+    # Initialize simulation model (seeded for a reproducible, non-flaky run)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=QUEUE_LENGTH, seed=1234)
 
     # Set arrival process parameters and distribution (M for Markovian)
     qs.set_sources(ARRIVAL_RATE, "M")

@@ -26,15 +26,16 @@ class QsSim(BaseSimulationCore):
     Base class for Queueing System Simulator
     """
 
-    def __init__(self, num_of_channels, buffer=None, verbose=True, buffer_type="list"):
+    def __init__(self, num_of_channels, buffer=None, verbose=True, buffer_type="list", seed=None):
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
         :param num_of_channels: int : number of channels in the system
         :param buffer: Optional(int, None) : maximum length of the queue, None if infinite
         :param verbose: bool : whether to print detailed information during simulation
         :param buffer_type: str : type of the buffer, "list" or "deque"
+        :param seed: Optional(int, None) : RNG seed for reproducible runs (None — non-deterministic)
         """
-        super().__init__()
+        super().__init__(seed=seed)
 
         self.n = num_of_channels
         self.buffer = buffer

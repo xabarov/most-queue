@@ -13,10 +13,14 @@ class BaseSimulationCore:
     Contains common attributes and methods shared across different simulator types.
     """
 
-    def __init__(self):
-        """Initialize the base simulation core."""
+    def __init__(self, seed: int | None = None):
+        """Initialize the base simulation core.
+
+        :param seed: optional RNG seed for reproducible simulation runs
+            (None — non-deterministic, as before).
+        """
         self.ttek = 0  # current simulation time
-        self.generator = np.random.default_rng()
+        self.generator = np.random.default_rng(seed)
         self.time_spent = 0
 
         # Statistics for busy periods
