@@ -71,6 +71,19 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://github.com/xabarov/most-queue"
 
+[tool.hatch.build.targets.wheel]
+packages = ["most_queue"]
+
+[tool.hatch.build.targets.sdist]
+# Ship only the package, license and README; keep research PDFs (works/),
+# tutorials, docs, tests and assets out of the ~44 MB sdist.
+include = [
+  "most_queue",
+  "README.md",
+  "LICENSE",
+  "pyproject.toml",
+]
+
 [tool.pytest.ini_options]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
