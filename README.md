@@ -82,7 +82,8 @@ See the executable comparison of **9 disciplines** in
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
 | Reliability | M/G/1 with breakdowns & repairs | Avi-Itzhak–Naor |
-| Matrix-analytic | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c — correlated (bursty) arrivals, single- & multi-server | QBD, logarithmic reduction |
+| Matrix-analytic (MAP/PH) | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c, MAP/PH/c — correlated (bursty) arrivals, single- & multi-server; MMPP fitting | QBD, logarithmic reduction |
+| Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch, impatience, closed | Mˣ/M/1, M/M/1+M, Engset | exact |
@@ -96,7 +97,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/) — from a first M/M/1 to Takahashi–Takami and SRPT
-- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (BMAP/G/1, MAP fitting, multi-server retrial, polling)
+- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (closed networks / MVA, multi-server retrial, polling)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications
@@ -107,10 +108,12 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
-- **2026** — **Matrix-analytic stack**: PH distributions and MAPs (`most_queue.random.map_ph`),
-  QBD solver with logarithmic reduction, exact MAP/PH/1 / M/PH/1 / PH/PH/1 calculators, MAP and
-  PH sources in the simulator; plus retrial queues (orbit) and Erlang-A abandonment with a
-  staffing helper. See [`tutorials/map_ph_correlation.ipynb`](tutorials/map_ph_correlation.ipynb).
+- **2026** — **Matrix-analytic MAP/PH stack**: PH distributions and MAPs
+  (`most_queue.random.map_ph`), a QBD solver with logarithmic reduction, and exact calculators
+  for MAP/PH/1, M/PH/1, PH/PH/1, **MAP/M/c**, **MAP/PH/c**, plus **BMAP/M/1** and **BMAP/PH/1**
+  for batch arrivals and **MMPP fitting** from data; MAP and PH sources in the simulator. Plus
+  retrial queues (orbit) and Erlang-A abandonment with a staffing helper.
+  See [`tutorials/map_ph_correlation.ipynb`](tutorials/map_ph_correlation.ipynb).
 - **2026** — Wave of exact classics: Erlang B/C, M/G/∞, GI/G approximations, M/G/1 vacation
   models (multiple vacations, N-policy), PS, LCFS-PR, FB/LAS, unreliable server — each with a
   paired simulator and tests. Illustrated model catalog with generated diagrams.
