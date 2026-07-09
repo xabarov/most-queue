@@ -937,6 +937,10 @@ MAP/PH/1 queue is solved **exactly** by the matrix-geometric (QBD) method — an
 differ from a renewal model with identical mean/CV by several times
 (see [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb)).
 
+New to PH and MAP? They are introduced step by step — with diagrams showing how Exp, Erlang,
+H₂ and Coxian are all special cases of PH, and how the MMPP works — in the
+[distributions reference](distributions.md#phase-type-distributions-ph).
+
 ### MAP/PH/1
 
 **Description:** Correlated arrivals, phase-type service, one server. Stationary distribution via the QBD logarithmic-reduction method (Latouche–Ramaswami); waiting-time moments by differentiating the arriving-job LST.

@@ -777,10 +777,129 @@ def fig_map_arrivals():
     return fig
 
 
+def _ph_phase(ax, x, y, label, color=AQUA, r=0.30):
+    ax.add_patch(Circle((x, y), r, fc=color, ec="none", zorder=3))
+    ax.text(x, y, label, ha="center", va="center", fontsize=8.5, color="white", fontweight="bold", zorder=4)
+
+
+def _ph_exit(ax, x, y):
+    ax.add_patch(
+        FancyBboxPatch((x - 0.14, y - 0.14), 0.28, 0.28, boxstyle="round,pad=0.03", fc=GREEN, ec="none", zorder=3)
+    )
+
+
+def fig_ph_gallery():
+    """Familiar distributions drawn as phase-type (PH) chains."""
+    fig, axes = plt.subplots(2, 2, figsize=(8.6, 4.4), dpi=150)
+    for ax in axes.flat:
+        ax.set_xlim(-0.3, 5.4)
+        ax.set_ylim(-1.5, 1.5)
+        ax.set_aspect("equal")
+        ax.axis("off")
+
+    # --- Exp(mu): a single phase
+    ax = axes[0, 0]
+    ax.set_title("Экспоненциальное = 1 фаза", fontsize=9.5, color=INK)
+    draw_arrow(ax, 0.2, 0, 1.0, 0)
+    _ph_phase(ax, 1.4, 0, "μ")
+    draw_arrow(ax, 1.75, 0, 2.6, 0)
+    _ph_exit(ax, 2.9, 0)
+    ax.text(0.2, 0.45, "α=[1]", fontsize=8, color=INK2)
+
+    # --- Erlang-3: chain
+    ax = axes[0, 1]
+    ax.set_title("Эрланга E₃ = цепочка из 3 фаз", fontsize=9.5, color=INK)
+    draw_arrow(ax, 0.0, 0, 0.7, 0)
+    for i in range(3):
+        _ph_phase(ax, 1.1 + i * 1.3, 0, "μ")
+        if i < 2:
+            draw_arrow(ax, 1.45 + i * 1.3, 0, 1.9 + i * 1.3, 0)
+    draw_arrow(ax, 4.05, 0, 4.7, 0)
+    _ph_exit(ax, 5.0, 0)
+
+    # --- H2: two parallel phases
+    ax = axes[1, 0]
+    ax.set_title("Гиперэкспоненциальное H₂ = 2 параллельные фазы", fontsize=9.5, color=INK)
+    draw_arrow(ax, 0.1, 0, 0.9, 0.62, lw=1.3)
+    draw_arrow(ax, 0.1, 0, 0.9, -0.62, lw=1.3)
+    ax.text(0.35, 0.55, "p₁", fontsize=8, color=INK2)
+    ax.text(0.35, -0.7, "1−p₁", fontsize=8, color=INK2)
+    _ph_phase(ax, 1.3, 0.7, "μ₁")
+    _ph_phase(ax, 1.3, -0.7, "μ₂")
+    draw_arrow(ax, 1.65, 0.7, 2.6, 0.1, lw=1.3)
+    draw_arrow(ax, 1.65, -0.7, 2.6, -0.1, lw=1.3)
+    _ph_exit(ax, 2.9, 0)
+
+    # --- Cox-2: chain with early exit
+    ax = axes[1, 1]
+    ax.set_title("Кокса C₂ = цепочка с досрочным выходом", fontsize=9.5, color=INK)
+    draw_arrow(ax, 0.0, 0, 0.7, 0)
+    _ph_phase(ax, 1.1, 0, "μ₁")
+    draw_arrow(ax, 1.45, 0, 2.3, 0)
+    ax.text(1.85, 0.22, "p₁", fontsize=8, color=INK2)
+    _ph_phase(ax, 2.7, 0, "μ₂")
+    draw_arrow(ax, 3.05, 0, 3.9, 0)
+    _ph_exit(ax, 4.2, 0)
+    draw_arrow(ax, 1.3, -0.35, 3.95, -1.05, lw=1.2, ls=(0, (4, 3)))
+    ax.text(0.15, -1.25, "1−p₁ (сразу на выход)", fontsize=8, color=INK2, ha="left")
+    _ph_exit(ax, 4.2, -1.1)
+
+    fig.suptitle(
+        "PH-распределение = время блуждания по цепочке экспоненциальных фаз до выхода:\n"
+        "старт по вектору α, переходы по матрице T. Всё знакомое — частные случаи PH(α, T)",
+        fontsize=10,
+        color=INK,
+        y=1.02,
+    )
+    fig.tight_layout()
+    return fig
+
+
+def fig_mmpp():
+    """MMPP mechanics: Poisson process modulated by a two-state chain."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.2, 1.9))
+    # fast phase
+    ax.add_patch(Circle((2.2, 0.2), 0.85, fc=BLUE, ec="none", zorder=3))
+    ax.text(2.2, 0.36, "фаза 1", ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
+    ax.text(2.2, -0.05, "λ₁ = 2.0", ha="center", fontsize=8.5, color="white", zorder=4)
+    # slow phase
+    ax.add_patch(Circle((7.4, 0.2), 0.85, fc=VIOLET, ec="none", zorder=3))
+    ax.text(7.4, 0.36, "фаза 2", ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
+    ax.text(7.4, -0.05, "λ₂ = 0.4", ha="center", fontsize=8.5, color="white", zorder=4)
+    # switching arrows
+    draw_arrow(ax, 3.15, 0.55, 6.45, 0.55, lw=1.5)
+    draw_arrow(ax, 6.45, -0.15, 3.15, -0.15, lw=1.5)
+    ax.text(4.8, 0.78, "переключение q₁₂", fontsize=8.5, color=INK2, ha="center")
+    ax.text(4.8, -0.45, "q₂₁", fontsize=8.5, color=INK2, ha="center")
+    # emitted arrivals
+    for xx in (1.5, 1.9, 2.3, 2.7):
+        draw_customer(ax, xx, -1.45, r=0.11, color=BLUE)
+    draw_arrow(ax, 2.2, -0.75, 2.2, -1.15, lw=1.2)
+    ax.text(2.2, -1.85, "заявки сыплются часто", fontsize=8.5, color=INK2, ha="center")
+    for xx in (7.2, 7.8):
+        draw_customer(ax, xx, -1.45, r=0.11, color=VIOLET)
+    draw_arrow(ax, 7.4, -0.75, 7.4, -1.15, lw=1.2)
+    ax.text(7.4, -1.85, "заявки редки", fontsize=8.5, color=INK2, ha="center")
+    ax.text(
+        9.0,
+        0.2,
+        "D₀ — переходы фаз\nбез заявки,\nD₁ — с заявкой.\nMMPP: D₁ = diag(λᵢ)",
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="center",
+    )
+    _title(ax, "MMPP — простейший содержательный MAP: Пуассон, переключаемый марковской цепью", x=0.46)
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "retrial": fig_retrial,
     "map_arrivals": fig_map_arrivals,
+    "ph_gallery": fig_ph_gallery,
+    "mmpp": fig_mmpp,
     "loss": fig_loss,
     "m_g_inf": fig_m_g_inf,
     "ps": fig_ps,

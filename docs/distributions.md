@@ -338,6 +338,106 @@ qs.set_sources(0.5, "M")
 qs.set_servers(gaussian_params, "Norm")
 ```
 
+## Phase-type distributions (PH)
+
+**Kendall notation:** PH
+
+![Familiar distributions as phase-type chains](figures/ph_gallery.png)
+
+**In plain words:** if you have worked with Exponential, Erlang, H₂ or Coxian distributions,
+you already know phase-type distributions — those are all special cases. A PH random variable
+is the time a "token" spends walking through a chain of exponential **phases** until it exits:
+the initial phase is drawn from a vector **α**, and the transitions between phases are governed
+by a sub-generator matrix **T** (exit rates are `t0 = -T @ 1`). Chain the phases in a row — you
+get Erlang; put them in parallel — H₂; allow an early exit — Coxian. An arbitrary (α, T) gives
+you a family dense enough to approximate any positive distribution.
+
+| Familiar distribution | PH structure | Converter |
+|---|---|---|
+| Exponential(μ) | single phase | `PHDistribution.from_exp(mu)` |
+| Erlang-r | chain of r identical phases | `PHDistribution.from_erlang(params)` |
+| H₂ | two parallel phases | `PHDistribution.from_h2(params)` |
+| Coxian-2 | chain with early exit | `PHDistribution.from_cox(params)` |
+
+Raw moments are available in closed form: `m_k = k! · α (−T)⁻ᵏ 1`.
+
+### Usage
+
+```python
+import numpy as np
+from most_queue.random.map_ph import PHDistribution, PHParams
+from most_queue.random.utils.params import ErlangParams
+
+# ready-made converter...
+ph = PHDistribution.from_erlang(ErlangParams(r=3, mu=2.0))
+
+# ...or any custom (alpha, T): here Erlang-2 with a slower second phase
+custom = PHParams(alpha=np.array([1.0, 0.0]), T=np.array([[-2.0, 2.0], [0.0, -0.7]]))
+
+moments = PHDistribution.calc_theory_moments(custom, 4)
+f_at_1 = PHDistribution.get_pdf(custom, 1.0)
+
+# in simulation: PH works as a source or a server distribution
+from most_queue.sim.base import QsSim
+qs = QsSim(1)
+qs.set_sources(1.0, "M")
+qs.set_servers(custom, "PH")
+```
+
+**Why bother, if H₂/Erlang already exist?** PH is the service-side language of the
+**matrix-analytic** solvers: the [MAP/PH/1 calculator](models.md#matrix-analytic-models-mapph)
+accepts any PH service, so one model covers everything from deterministic-like (long Erlang
+chains) to highly variable (H₂) service within a single exact method.
+
+## Markovian Arrival Process (MAP)
+
+**Kendall notation:** MAP
+
+![MMPP mechanics](figures/mmpp.png)
+
+**In plain words:** every arrival model above is a *renewal* process — interarrival times are
+independent, a coin with no memory. Real traffic is usually **bursty**: a short gap tends to be
+followed by another short one. A MAP adds exactly this memory: a background Markov chain wanders
+between phases, and arrivals are generated at a phase-dependent rate. Two matrices define it:
+**D₀** (phase transitions *without* an arrival) and **D₁** (transitions that *emit* an arrival).
+
+The simplest meaningful example is the **MMPP** (Markov-modulated Poisson process) in the figure:
+a fast phase and a slow phase, switching occasionally — the arrival stream alternates between
+bursts and lulls while the long-run rate stays fixed.
+
+Special cases: a one-phase MAP is the Poisson process; `D1 = t0 @ alpha` gives a renewal process
+with PH interarrival times (no correlation). The interarrival raw moments and the **lag-k
+autocorrelation** are available in closed form.
+
+### Usage
+
+```python
+import numpy as np
+from most_queue.random.map_ph import MAP, PHDistribution
+
+# MMPP-2: rate 2.0 in phase 1, rate 0.4 in phase 2, slow switching
+mmpp = MAP.mmpp([2.0, 0.4], np.array([[-0.2, 0.2], [0.3, -0.3]]))
+
+print(MAP.arrival_rate(mmpp))            # long-run rate
+print(MAP.calc_theory_moments(mmpp, 3))  # interarrival raw moments
+print(MAP.lag_correlation(mmpp, 1))      # the burstiness a renewal model cannot see
+
+# other factories
+poisson = MAP.poisson(1.0)
+renewal_h2 = MAP.from_ph_renewal(PHDistribution.from_exp(1.0))
+
+# in simulation: a MAP is a stateful arrival source
+from most_queue.sim.base import QsSim
+qs = QsSim(1)
+qs.set_sources(mmpp, "MAP")
+qs.set_servers(1.5, "M")
+```
+
+**Why it matters:** at the same utilization, mean and CV of interarrival times, positive
+correlation can multiply the mean waiting time several-fold — see the exact
+[MAP/PH/1 model](models.md#matrix-analytic-models-mapph) and the demo notebook
+[`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb).
+
 ## Computing distribution moments
 
 Numerical calculation methods require the raw moments of the distributions:
