@@ -1010,6 +1010,31 @@ combinatorially, so keep the PH order and c modest (e.g. 2-phase service, c ≤ 
 **Calculator class:** `MapPhCCalc` (`most_queue.theory.matrix.map_phc`)
 **Simulation:** `QsSim(c)` with `set_sources(map_params, "MAP")` and `set_servers(ph_params, "PH")`
 
+### BMAP/M/1
+
+**Description:** **Batch** Markovian arrivals (jobs arrive in correlated batches) served by a single exponential server. Because a batch raises the level by more than one, this is an M/G/1-type chain; it is solved here by robust level truncation.
+
+**In plain words:** traffic that arrives in bursts of several jobs at once (packet trains, bulk
+orders), with the batch process itself Markov-modulated. Reduces exactly to M^[X]/M/1
+(Poisson batches) and to MAP/M/1 (batches of size one).
+
+**Calculator class:** `BmapM1Calc` (`most_queue.theory.matrix.bmap_m1`)
+
+**Example:**
+
+```python
+from most_queue.random.map_ph import bmap_poisson_batch
+from most_queue.theory.matrix.bmap_m1 import BmapM1Calc
+
+# batches arrive Poisson(rate=0.5); size 1..5 with these probabilities
+bmap = bmap_poisson_batch(0.5, [0.2, 0.3, 0.1, 0.2, 0.2])
+
+calc = BmapM1Calc()
+calc.set_sources(bmap)
+calc.set_servers(mu=2.5)
+results = calc.run()
+```
+
 ## Closed systems
 
 ![Engset closed system diagram](figures/engset.png)
@@ -1068,6 +1093,7 @@ results = calc.run()
 | M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | QBD special cases |
 | MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Multi-server, correlated arrivals |
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Multi-server, correlated arrivals + PH service |
+| BMAP/M/1 | BmapM1Calc | - | - | Batch (correlated) arrivals |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model

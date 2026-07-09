@@ -959,6 +959,31 @@ results = calc.run()  # вероятности состояний + средни
 **Класс расчета:** `MapPhCCalc` (`most_queue.theory.matrix.map_phc`)
 **Симуляция:** `QsSim(c)` c `set_sources(map_params, "MAP")` и `set_servers(ph_params, "PH")`
 
+### BMAP/M/1
+
+**Описание:** **Пакетный** марковский вход (заявки приходят коррелированными пачками), один экспоненциальный прибор. Пачка поднимает уровень больше чем на 1, поэтому это цепь M/G/1-типа; решается устойчивым усечением уровней.
+
+**Суть:** трафик, приходящий пачками сразу по несколько заявок (пакетные поезда, оптовые
+заказы), причём сам пакетный процесс марковски-модулирован. В точности сводится к M^[X]/M/1
+(пуассоновские пачки) и к MAP/M/1 (пачки размера 1).
+
+**Класс расчета:** `BmapM1Calc` (`most_queue.theory.matrix.bmap_m1`)
+
+**Пример:**
+
+```python
+from most_queue.random.map_ph import bmap_poisson_batch
+from most_queue.theory.matrix.bmap_m1 import BmapM1Calc
+
+# пачки приходят Poisson(rate=0.5); размер 1..5 с этими вероятностями
+bmap = bmap_poisson_batch(0.5, [0.2, 0.3, 0.1, 0.2, 0.2])
+
+calc = BmapM1Calc()
+calc.set_sources(bmap)
+calc.set_servers(mu=2.5)
+results = calc.run()
+```
+
 ## Закрытые системы
 
 ![Схема закрытой системы Engset](figures/engset.ru.png)
@@ -1017,6 +1042,7 @@ results = calc.run()
 | M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | Частные случаи QBD |
 | MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Многоканальный, коррелированный вход |
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Многоканальный, коррелированный вход + PH-обслуживание |
+| BMAP/M/1 | BmapM1Calc | - | - | Пакетный (коррелированный) вход |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 
 ## Рекомендации по выбору модели
