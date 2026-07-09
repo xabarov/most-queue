@@ -998,6 +998,18 @@ calc.set_servers(mu=1.0)
 results = calc.run()  # state probabilities + Little-law means
 ```
 
+### MAP/PH/c
+
+**Description:** The most general single-station model here: correlated MAP arrivals, phase-type service and c servers. Solved as a QBD whose phase is the MAP phase times the multiset of the busy servers' service phases.
+
+**In plain words:** combines everything — bursty arrivals *and* variable (phase-type) service
+*and* multiple servers. Reduces exactly to MAP/M/c (exponential service), MAP/PH/1 (one server)
+and the Takahashi–Takami M/H₂/c (Poisson arrivals). The service-phase space grows
+combinatorially, so keep the PH order and c modest (e.g. 2-phase service, c ≤ 6).
+
+**Calculator class:** `MapPhCCalc` (`most_queue.theory.matrix.map_phc`)
+**Simulation:** `QsSim(c)` with `set_sources(map_params, "MAP")` and `set_servers(ph_params, "PH")`
+
 ## Closed systems
 
 ![Engset closed system diagram](figures/engset.png)
@@ -1055,6 +1067,7 @@ results = calc.run()
 | MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Correlated arrivals, QBD |
 | M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | QBD special cases |
 | MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Multi-server, correlated arrivals |
+| MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Multi-server, correlated arrivals + PH service |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model
