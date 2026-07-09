@@ -106,23 +106,32 @@ size-based, суммирование потоков, сети — обычные
 - [ ] Единый стиль аббревиатур приоритетов: `MPhNPrty` (Prty) vs `MMnPR2ClsBusyApprox` (PR, Cls)
       vs `MGnInvarApproximation` (полное слово).
 - [ ] Регистр «GI»: `GIM1Calc` vs `GiMn` → единообразно (`GIM1Calc`, `GIMnCalc`).
-- [ ] Реэкспортировать публичные классы в `__init__.py` подпакетов theory (как уже сделано
-      в `theory/srpt/`) — стабильные пути импорта, устойчивые к переименованию модулей.
-- [ ] После ренейминга — прогнать сверку каталога снова (скрипт: выполнение всех
-      `from most_queue...` строк из `docs/models.md`); кандидат в юнит-тест
-      `tests/units/test_docs_imports.py`, чтобы каталог не расходился с кодом впредь.
+- [x] Реэкспортировать публичные классы в `__init__.py` подпакетов theory
+      (**выполнено 2026-07-09** для всех 12 подпакетов) — стабильные пути импорта
+      `from most_queue.theory.<sub> import <Calc>`, устойчивые к переименованию модулей.
+- [x] Тест сверки каталога с кодом `tests/units/test_docs_imports.py` (**2026-07-09**):
+      исполняет все 88 `from most_queue...import` строк из `models.md`/`models.ru.md` —
+      каталог больше не разойдётся с кодом молча.
+- [ ] **Полная унификация суффикса `Calc` — отложено в v3.0** (осознанное решение 2026-07-09).
+      16 из 52 классов не оканчиваются на `Calc` (`Engset`, `MDn`, `EkDn`, `GiMn`, `BatchMM1`,
+      `MM1Impatience`, `MPhNPrty`, `MG1Disasters`, `MH2nH2Warm`, `MGnH2ServingColdWarmDelay`,
+      `MM2BusyApprox3Classes`, `MMnHyperExpWarmAndCold`, `MMnPR2ClsBusyApprox`,
+      `MGnInvarApproximation`) + порядок слов (`MG1NegativeCalcRCS`, `OpenNetworkCalcPriorities`)
+      + регистр (`GiMn` vs `GIM1Calc`). Ломающее изменение публичного API на 16 классов
+      с deprecation-алиасами и правкой обоих каталогов/README — правильнее батчить в мажорный
+      релиз с migration guide. Стабильные реэкспорты выше уже снимают основную боль.
 - [x] **Баг GIM1Calc** (исправлен 2026-07-09): `get_w` считал ожидание вычитанием
       обслуживания из пребывания как независимых величин (`conv_moments_minus`) —
       среднее случайно верно, старшие моменты нет. Заменено точной замкнутой формой
       w_k = k!·σ/(μ(1−σ))^k; совпадение с QBD до 4 знаков, тест
       `test_phph1_matches_gim1` ужесточён до трёх моментов. `gi_m_n.py` проверен —
       чист (путь через LST корректен, GiMn(n=1) совпадает с QBD).
-- [ ] sdist на PyPI весит ~44 МБ: hatchling включает `works/` (PDF статей) и другие
-      не-пакетные каталоги. Добавить `[tool.hatch.build.targets.sdist] exclude`
-      (works/, docs/, tutorials/, tests/, assets/) перед следующим релизом.
-- [ ] Флаки-тест: `tests/test_qs_sim.py::test_sim` падает при прогоне полного набора
-      (2026-07-08, порядок-зависимость/статистический допуск), но стабильно проходит
-      отдельно. Разобраться (сид генератора? допуски?) и стабилизировать.
+- [x] **sdist** (исправлено 2026-07-09): `[tool.hatch.build.targets.sdist] include`
+      оставляет только `most_queue/`, README и LICENSE — с ~44 МБ до ~200 КБ. Заодно
+      `__version__` теперь из `importlib.metadata` (был захардкожен и разошёлся 2.7↔2.8).
+- [x] **Флаки-тест** (исправлено 2026-07-09): в `BaseSimulationCore`/`QsSim` добавлен
+      опциональный `seed`; `test_qs_sim::test_sim` засиден — воспроизводимый прогон, больше
+      не падает на невезучих сэмплах.
 
 ## Критерии готовности (DoD эпика)
 
