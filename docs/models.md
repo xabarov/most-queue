@@ -248,7 +248,7 @@ results = calc.run()
 The next three disciplines (FB, PS, LCFS-PR) complete the size-based family. How each of them
 treats jobs of different sizes is computed by the library's own calculators:
 
-![Slowdown by job size for FCFS/PS/FB/SRPT](figures/slowdown_en.png)
+![Slowdown by job size for FCFS/PS/FB/SRPT](figures/slowdown.png)
 
 ### M/G/1 FB (Foreground-Background / LAS)
 

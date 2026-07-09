@@ -30,6 +30,14 @@ GRID = "#e1e0d9"
 
 OUT_DIR = Path(__file__).parent
 
+# --- bilingual text: `_LANG` is flipped by main() for each render pass ---
+_LANG = "en"
+
+
+def t(en: str, ru: str) -> str:
+    return ru if _LANG == "ru" else en
+
+
 plt.rcParams.update(
     {
         "font.family": "DejaVu Sans",
@@ -110,26 +118,32 @@ def fig_fifo_mmn():
     fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
     _clean_axes(ax, (-0.4, 10.6), (-1.5, 1.6))
     # arrivals
-    ax.text(0.1, 0.72, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    ax.text(0.1, 0.72, t("arrival stream, λ", "поток заявок, λ"), fontsize=9, color=INK2, ha="left")
     for i, xx in enumerate([0.0, 0.55, 1.1]):
         draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
     draw_arrow(ax, 1.45, 0, 2.25, 0)
     # queue
     draw_queue(ax, 2.45, 0, n_slots=5, occupied=3)
-    ax.text(3.5, -0.62, "очередь (FIFO)", fontsize=9, color=INK2, ha="center")
+    ax.text(3.5, -0.62, t("queue (FIFO)", "очередь (FIFO)"), fontsize=9, color=INK2, ha="center")
     draw_arrow(ax, 4.75, 0, 5.55, 0)
     # servers
     for i, sy in enumerate([1.0, 0.0, -1.0]):
         draw_server(ax, 6.3, sy, label="μ", sub=None)
         draw_arrow(ax, 5.62, 0, 5.94, sy, lw=1.1)
         draw_arrow(ax, 6.66, sy, 7.5, 0, lw=1.1)
-    ax.text(6.3, -1.45, "c приборов", fontsize=9, color=INK2, ha="center")
+    ax.text(6.3, -1.45, t("c servers", "c приборов"), fontsize=9, color=INK2, ha="center")
     # departures
     draw_arrow(ax, 7.55, 0, 8.4, 0)
     for i, xx in enumerate([8.7, 9.25, 9.8]):
         draw_customer(ax, xx, 0, color=GREEN, alpha=1.0 - 0.27 * i)
-    ax.text(9.25, 0.6, "обслуженные", fontsize=9, color=INK2, ha="center")
-    _title(ax, "Классическая СМО M/M/c: общая очередь и c одинаковых приборов")
+    ax.text(9.25, 0.6, t("served", "обслуженные"), fontsize=9, color=INK2, ha="center")
+    _title(
+        ax,
+        t(
+            "Classic M/M/c queueing system: one shared queue and c identical servers",
+            "Классическая СМО M/M/c: общая очередь и c одинаковых приборов",
+        ),
+    )
     return fig
 
 
@@ -191,7 +205,14 @@ def fig_disciplines_timeline():
             ax.plot([arr], [0.55], marker="v", color=colors[name], markersize=7, clip_on=False)
         mean_t = sum(finish[n] - a for n, a, _ in jobs) / len(jobs)
         ax.set_ylabel(disc, rotation=0, ha="right", va="center", fontsize=10, color=INK)
-        ax.text(11.15, 0, f"ср. время\nв системе: {mean_t:.2f}", fontsize=8.5, color=INK2, va="center")
+        ax.text(
+            11.15,
+            0,
+            t(f"mean time\nin system: {mean_t:.2f}", f"ср. время\nв системе: {mean_t:.2f}"),
+            fontsize=8.5,
+            color=INK2,
+            va="center",
+        )
         ax.set_yticks([])
         ax.set_xlim(0, 11.1)
         ax.set_ylim(-0.6, 0.9)
@@ -201,10 +222,14 @@ def fig_disciplines_timeline():
         ax.tick_params(colors=MUTED, labelsize=8)
         ax.grid(axis="x", color=GRID, lw=0.7)
         ax.set_axisbelow(True)
-    axes[-1].set_xlabel("время", fontsize=9, color=INK2)
+    axes[-1].set_xlabel(t("time", "время"), fontsize=9, color=INK2)
     fig.suptitle(
-        "Один прибор, одни и те же заявки: A(размер 5), B(2), C(1), D(3) — метки ▼ это моменты прихода.\n"
-        "SJF выбирает короткую заявку в момент освобождения прибора, SRPT может прервать текущую.",
+        t(
+            "One server, the same jobs: A(size 5), B(2), C(1), D(3) — ▼ marks are arrival instants.\n"
+            "SJF picks the shortest job when the server frees up, SRPT may preempt the current one.",
+            "Один прибор, одни и те же заявки: A(размер 5), B(2), C(1), D(3) — метки ▼ это моменты прихода.\n"
+            "SJF выбирает короткую заявку в момент освобождения прибора, SRPT может прервать текущую.",
+        ),
         fontsize=9.5,
         color=INK2,
         y=1.0,
@@ -219,19 +244,32 @@ def fig_priority():
     _clean_axes(ax, (-0.4, 11.2), (-2.1, 2.0))
     # two queues
     draw_queue(ax, 1.2, 1.0, n_slots=4, occupied=2, occ_color=RED)
-    ax.text(0.9, 1.0, "класс 1\n(важные)", fontsize=8.5, color=INK2, ha="right", va="center")
+    ax.text(0.9, 1.0, t("class 1\n(high)", "класс 1\n(важные)"), fontsize=8.5, color=INK2, ha="right", va="center")
     draw_queue(ax, 1.2, -1.0, n_slots=4, occupied=3, occ_color=BLUE)
-    ax.text(0.9, -1.0, "класс 2\n(обычные)", fontsize=8.5, color=INK2, ha="right", va="center")
+    ax.text(
+        0.9, -1.0, t("class 2\n(ordinary)", "класс 2\n(обычные)"), fontsize=8.5, color=INK2, ha="right", va="center"
+    )
     draw_arrow(ax, 3.15, 1.0, 4.2, 0.15)
     draw_arrow(ax, 3.15, -1.0, 4.2, -0.15, color=MUTED)
     draw_server(ax, 4.7, 0, r=0.4, label="μ", busy_color=BLUE)
     draw_arrow(ax, 5.15, 0, 5.9, 0)
-    ax.text(4.7, -0.85, "прибор занят\nобычной заявкой", fontsize=8, color=INK2, ha="center", va="top")
+    ax.text(
+        4.7,
+        -0.85,
+        t("server busy with\nan ordinary job", "прибор занят\nобычной заявкой"),
+        fontsize=8,
+        color=INK2,
+        ha="center",
+        va="top",
+    )
     # annotations PR / NP
     ax.text(
         6.3,
         1.15,
-        "PR (прерывающий): важная заявка вытесняет\nобычную с прибора, та дообслужится позже",
+        t(
+            "PR (preemptive): a high-priority job pushes\nthe ordinary one off the server, it resumes later",
+            "PR (прерывающий): важная заявка вытесняет\nобычную с прибора, та дообслужится позже",
+        ),
         fontsize=9,
         color=INK,
         va="center",
@@ -240,12 +278,22 @@ def fig_priority():
     ax.text(
         6.3,
         -1.2,
-        "NP (непрерывающий): важная заявка ждёт\nконца текущего обслуживания, но обгоняет очередь",
+        t(
+            "NP (non-preemptive): a high-priority job waits\nfor the current service to end, but jumps the queue",
+            "NP (непрерывающий): важная заявка ждёт\nконца текущего обслуживания, но обгоняет очередь",
+        ),
         fontsize=9,
         color=INK,
         va="center",
     )
-    _title(ax, "Приоритетное обслуживание: отдельная очередь на каждый класс", x=0.44)
+    _title(
+        ax,
+        t(
+            "Priority service: a separate queue for each class",
+            "Приоритетное обслуживание: отдельная очередь на каждый класс",
+        ),
+        x=0.44,
+    )
     return fig
 
 
@@ -254,10 +302,26 @@ def fig_vacations():
     fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
     _clean_axes(ax, (-0.3, 11.4), (-1.7, 1.5))
     states = [
-        ("обслуживание", AQUA, "очередь не пуста —\nприбор работает"),
-        ("задержка", YELLOW, "очередь опустела,\nещё ждём (delay)"),
-        ("охлаждение /\nотпуск", VIOLET, "прибор выключен\n(cooling, vacation)"),
-        ("прогрев", BLUE, "пришла заявка —\nвключаемся (warm-up)"),
+        (
+            t("service", "обслуживание"),
+            AQUA,
+            t("queue non-empty —\nserver working", "очередь не пуста —\nприбор работает"),
+        ),
+        (
+            t("delay", "задержка"),
+            YELLOW,
+            t("queue emptied,\nstill waiting (delay)", "очередь опустела,\nещё ждём (delay)"),
+        ),
+        (
+            t("cooling /\nvacation", "охлаждение /\nотпуск"),
+            VIOLET,
+            t("server off\n(cooling, vacation)", "прибор выключен\n(cooling, vacation)"),
+        ),
+        (
+            t("warm-up", "прогрев"),
+            BLUE,
+            t("a job arrived —\npowering up (warm-up)", "пришла заявка —\nвключаемся (warm-up)"),
+        ),
     ]
     xs = [0.9, 3.7, 6.5, 9.3]
     for (name, color, sub), x in zip(states, xs):
@@ -273,7 +337,13 @@ def fig_vacations():
     ax.plot([0.9, 0.9, 9.3], [1.06, 1.06, 1.06], color=INK2, lw=1.4)
     ax.plot([0.9, 0.9], [1.06, 0.66], color=INK2, lw=1.4)
     draw_arrow(ax, 0.9, 0.8, 0.9, 0.6, lw=1.4)
-    _title(ax, "Vacation-модели: жизненный цикл прибора (у конкретной модели — своё подмножество фаз)")
+    _title(
+        ax,
+        t(
+            "Vacation models: the server's life cycle (each model uses its own subset of phases)",
+            "Vacation-модели: жизненный цикл прибора (у конкретной модели — своё подмножество фаз)",
+        ),
+    )
     return fig
 
 
@@ -294,7 +364,10 @@ def fig_negative():
             ax.text(
                 7.0,
                 y0 + 0.72,
-                "RCS: отрицательная заявка «выбивает»\nтолько ту, что на приборе",
+                t(
+                    'RCS: a negative customer "knocks out"\nonly the job currently on the server',
+                    "RCS: отрицательная заявка «выбивает»\nтолько ту, что на приборе",
+                ),
                 fontsize=9,
                 color=INK,
                 va="center",
@@ -305,13 +378,32 @@ def fig_negative():
             ax.text(
                 7.0,
                 y0 + 0.72,
-                "Disaster: катастрофа очищает всю систему —\nи очередь, и прибор",
+                t(
+                    "Disaster: a disaster clears the whole system —\nboth the queue and the server",
+                    "Disaster: катастрофа очищает всю систему —\nи очередь, и прибор",
+                ),
                 fontsize=9,
                 color=INK,
                 va="center",
             )
-    ax.text(0.35, 2.45, "λ — обычные заявки,  λ⁻ — отрицательные (красные)", fontsize=9, color=INK2)
-    _title(ax, "Отрицательные заявки: два сценария воздействия", x=0.45)
+    ax.text(
+        0.35,
+        2.45,
+        t(
+            "λ — ordinary jobs,  λ⁻ — negative customers (red)",
+            "λ — обычные заявки,  λ⁻ — отрицательные (красные)",
+        ),
+        fontsize=9,
+        color=INK2,
+    )
+    _title(
+        ax,
+        t(
+            "Negative customers: two impact scenarios",
+            "Отрицательные заявки: два сценария воздействия",
+        ),
+        x=0.45,
+    )
     return fig
 
 
@@ -320,9 +412,9 @@ def fig_fork_join():
     fig, ax = plt.subplots(figsize=(8.2, 3.2), dpi=150)
     _clean_axes(ax, (-0.5, 11.3), (-1.9, 1.9))
     draw_customer(ax, 0.4, 0, r=0.22)
-    ax.text(0.4, 0.5, "заявка", fontsize=9, color=INK2, ha="center")
+    ax.text(0.4, 0.5, t("job", "заявка"), fontsize=9, color=INK2, ha="center")
     draw_arrow(ax, 0.7, 0, 1.55, 0)
-    ax.text(1.95, 0.55, "fork:\nделим на части", fontsize=8.5, color=INK2, ha="center")
+    ax.text(1.95, 0.55, t("fork:\nsplit into parts", "fork:\nделим на части"), fontsize=8.5, color=INK2, ha="center")
     ys = [1.15, 0.0, -1.15]
     for i, y in enumerate(ys):
         draw_arrow(ax, 1.75, 0, 2.9, y, lw=1.2)
@@ -333,11 +425,33 @@ def fig_fork_join():
     ax.add_patch(
         FancyBboxPatch((6.15, -0.55), 1.5, 1.1, boxstyle="round,pad=0.05", fc="white", ec=MUTED, lw=1.2, zorder=2)
     )
-    ax.text(6.9, 0, "join:\nждём все\nчасти", ha="center", va="center", fontsize=8.5, color=INK)
+    ax.text(
+        6.9,
+        0,
+        t("join:\nwait for all\nparts", "join:\nждём все\nчасти"),
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=INK,
+    )
     draw_arrow(ax, 7.75, 0, 8.6, 0)
     draw_customer(ax, 8.9, 0, r=0.22, color=GREEN)
-    ax.text(9.0, 0.55, "готово, когда завершилась\nсамая медленная часть", fontsize=8.5, color=INK2, ha="center")
-    _title(ax, "Fork-Join: заявка обслуживается по частям параллельно", x=0.45)
+    ax.text(
+        9.0,
+        0.55,
+        t("done once the slowest\npart finishes", "готово, когда завершилась\nсамая медленная часть"),
+        fontsize=8.5,
+        color=INK2,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "Fork-Join: a job is served in parts in parallel",
+            "Fork-Join: заявка обслуживается по частям параллельно",
+        ),
+        x=0.45,
+    )
     return fig
 
 
@@ -349,7 +463,9 @@ def fig_batch():
     for gx, size in [(0.6, 3), (2.3, 1), (3.6, 2)]:
         for i in range(size):
             draw_customer(ax, gx + 0.34 * i, 0, r=0.15)
-        ax.text(gx + 0.17 * (size - 1), -0.5, f"пачка ×{size}", fontsize=8, color=INK2, ha="center")
+        ax.text(
+            gx + 0.17 * (size - 1), -0.5, t(f"batch ×{size}", f"пачка ×{size}"), fontsize=8, color=INK2, ha="center"
+        )
     draw_arrow(ax, 4.6, 0, 5.35, 0)
     draw_queue(ax, 5.55, 0, n_slots=4, occupied=2)
     draw_arrow(ax, 7.5, 0, 8.2, 0)
@@ -359,12 +475,22 @@ def fig_batch():
     ax.text(
         2.2,
         1.1,
-        "заявки приходят группами случайного размера (моменты прихода — пуассоновские)",
+        t(
+            "jobs arrive in groups of random size (arrival instants are Poisson)",
+            "заявки приходят группами случайного размера (моменты прихода — пуассоновские)",
+        ),
         fontsize=9,
         color=INK2,
         ha="left",
     )
-    _title(ax, "Пакетное поступление M[X]/M/1: приходят пачками, обслуживаются по одной", x=0.46)
+    _title(
+        ax,
+        t(
+            "Batch arrivals M[X]/M/1: arrive in batches, served one at a time",
+            "Пакетное поступление M[X]/M/1: приходят пачками, обслуживаются по одной",
+        ),
+        x=0.46,
+    )
     return fig
 
 
@@ -385,13 +511,23 @@ def fig_impatience():
     ax.text(
         3.0,
         -1.35,
-        "не дождалась: у каждой заявки свой «запас терпения»,\nпо его истечении она уходит из очереди",
+        t(
+            'gave up waiting: each job has its own "patience budget",\nonce it runs out the job leaves the queue',
+            "не дождалась: у каждой заявки свой «запас терпения»,\nпо его истечении она уходит из очереди",
+        ),
         fontsize=9,
         color=INK,
         va="center",
         ha="left",
     )
-    _title(ax, "Нетерпеливые заявки (M/M/1+M): ожидание ограничено терпением клиента", x=0.45)
+    _title(
+        ax,
+        t(
+            "Impatient jobs (M/M/1+M): waiting is bounded by the customer's patience",
+            "Нетерпеливые заявки (M/M/1+M): ожидание ограничено терпением клиента",
+        ),
+        x=0.45,
+    )
     return fig
 
 
@@ -404,9 +540,16 @@ def fig_engset():
         ax.add_patch(
             FancyBboxPatch((0.0, y - 0.26), 1.25, 0.52, boxstyle="round,pad=0.04", fc="white", ec=MUTED, lw=1.1)
         )
-        ax.text(0.62, y, f"источник {i + 1}", ha="center", va="center", fontsize=8, color=INK)
+        ax.text(0.62, y, t(f"source {i + 1}", f"источник {i + 1}"), ha="center", va="center", fontsize=8, color=INK)
         draw_arrow(ax, 1.35, y, 2.6, 0.12 * (1 if y > 0 else -1), lw=1.0)
-    ax.text(0.62, 1.75, "N источников (станков, абонентов)", fontsize=9, color=INK2, ha="left")
+    ax.text(
+        0.62,
+        1.75,
+        t("N sources (machines, subscribers)", "N источников (станков, абонентов)"),
+        fontsize=9,
+        color=INK2,
+        ha="left",
+    )
     draw_queue(ax, 2.9, 0, n_slots=3, occupied=1)
     draw_arrow(ax, 4.35, 0, 5.05, 0)
     draw_server(ax, 5.5, 0, r=0.34, label="μ")
@@ -416,13 +559,23 @@ def fig_engset():
     ax.text(
         7.3,
         -0.9,
-        "обслуженный источник возвращается «в работу»\nи лишь потом может снова прислать заявку:\nчем больше заявок внутри, тем слабее входящий поток",
+        t(
+            'a served source goes back "to work"\nand only then can send a job again:\nthe more jobs inside, the weaker the arrival stream',
+            "обслуженный источник возвращается «в работу»\nи лишь потом может снова прислать заявку:\nчем больше заявок внутри, тем слабее входящий поток",
+        ),
         fontsize=9,
         color=INK,
         va="center",
         ha="left",
     )
-    _title(ax, "Закрытая система (Engset): заявки порождает конечное число источников", x=0.42)
+    _title(
+        ax,
+        t(
+            "Closed system (Engset): jobs are generated by a finite number of sources",
+            "Закрытая система (Engset): заявки порождает конечное число источников",
+        ),
+        x=0.42,
+    )
     return fig
 
 
@@ -430,11 +583,13 @@ def fig_loss():
     """Erlang B loss system: no queue, blocked customer is lost."""
     fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
     _clean_axes(ax, (-0.4, 11.2), (-2.4, 2.1))
-    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    ax.text(0.1, 0.65, t("arrival stream, λ", "поток заявок, λ"), fontsize=9, color=INK2, ha="left")
     for i, xx in enumerate([0.0, 0.6, 1.2]):
         draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
     draw_arrow(ax, 1.55, 0, 2.9, 0)
-    ax.text(3.9, 1.75, "очереди нет: только n приборов", fontsize=9, color=INK2, ha="center")
+    ax.text(
+        3.9, 1.75, t("no queue: only n servers", "очереди нет: только n приборов"), fontsize=9, color=INK2, ha="center"
+    )
     for sy in [1.05, 0.0, -1.05]:
         draw_server(ax, 3.9, sy, r=0.3, label="μ")
     draw_arrow(ax, 4.3, 0, 5.2, 0)
@@ -445,13 +600,23 @@ def fig_loss():
     ax.text(
         3.1,
         -1.75,
-        "все приборы заняты — заявка теряется (блокировка).\nДоля потерянных = формула Эрланга B",
+        t(
+            "all servers busy — the job is lost (blocking).\nLoss fraction = Erlang B formula",
+            "все приборы заняты — заявка теряется (блокировка).\nДоля потерянных = формула Эрланга B",
+        ),
         fontsize=9,
         color=INK,
         va="center",
         ha="left",
     )
-    _title(ax, "Система с потерями M/M/n/0 (Erlang B): мест для ожидания нет", x=0.45)
+    _title(
+        ax,
+        t(
+            "Loss system M/M/n/0 (Erlang B): no room to wait",
+            "Система с потерями M/M/n/0 (Erlang B): мест для ожидания нет",
+        ),
+        x=0.45,
+    )
     return fig
 
 
@@ -459,7 +624,7 @@ def fig_m_g_inf():
     """M/G/inf: unlimited servers, no queue at all."""
     fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
     _clean_axes(ax, (-0.4, 11.2), (-1.9, 1.9))
-    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    ax.text(0.1, 0.65, t("arrival stream, λ", "поток заявок, λ"), fontsize=9, color=INK2, ha="left")
     for i, xx in enumerate([0.0, 0.6, 1.2]):
         draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
     draw_arrow(ax, 1.55, 0, 2.7, 0)
@@ -476,13 +641,23 @@ def fig_m_g_inf():
     ax.text(
         7.6,
         0.0,
-        "приборов «бесконечно много»: каждый\nполучает свой сразу, ожидания нет.\nЗанято в среднем a = λ·b₁ приборов\n(и это Пуассон при любом распределении b)",
+        t(
+            'there are "infinitely many" servers: each job\ngets its own immediately, no waiting.\nOn average a = λ·b₁ servers are busy\n(and it is Poisson for any service distribution b)',
+            "приборов «бесконечно много»: каждый\nполучает свой сразу, ожидания нет.\nЗанято в среднем a = λ·b₁ приборов\n(и это Пуассон при любом распределении b)",
+        ),
         fontsize=9,
         color=INK,
         va="center",
         ha="left",
     )
-    _title(ax, "M/G/∞: сколько ресурса занято одновременно", x=0.42)
+    _title(
+        ax,
+        t(
+            "M/G/∞: how much resource is busy simultaneously",
+            "M/G/∞: сколько ресурса занято одновременно",
+        ),
+        x=0.42,
+    )
     return fig
 
 
@@ -490,14 +665,14 @@ def fig_ps():
     """Processor Sharing: server splits capacity equally."""
     fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
     _clean_axes(ax, (-0.4, 11.2), (-1.7, 1.7))
-    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    ax.text(0.1, 0.65, t("arrival stream, λ", "поток заявок, λ"), fontsize=9, color=INK2, ha="left")
     for i, xx in enumerate([0.0, 0.6, 1.2]):
         draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
     draw_arrow(ax, 1.55, 0, 2.6, 0)
     ax.add_patch(
         FancyBboxPatch((2.8, -1.2), 3.4, 2.4, boxstyle="round,pad=0.08", fc="white", ec=MUTED, lw=1.4, zorder=2)
     )
-    ax.text(4.5, 1.02, "прибор (без очереди)", fontsize=9, color=INK2, ha="center")
+    ax.text(4.5, 1.02, t("server (no queue)", "прибор (без очереди)"), fontsize=9, color=INK2, ha="center")
     for i, (y, color) in enumerate(zip([0.5, -0.1, -0.7], [BLUE, AQUA, VIOLET])):
         draw_customer(ax, 3.35, y, color=color, r=0.15)
         ax.add_patch(
@@ -512,13 +687,23 @@ def fig_ps():
     ax.text(
         8.05,
         0.0,
-        "k заявок в системе — каждая получает\n1/k мощности: никто не ждёт,\nно все замедляются в 1/(1−ρ) раз",
+        t(
+            "k jobs in the system — each gets\n1/k of the capacity: nobody waits,\nbut everyone slows down by a factor of 1/(1−ρ)",
+            "k заявок в системе — каждая получает\n1/k мощности: никто не ждёт,\nно все замедляются в 1/(1−ρ) раз",
+        ),
         fontsize=9,
         color=INK,
         va="center",
         ha="left",
     )
-    _title(ax, "M/G/1 PS: процессор делится поровну между всеми", x=0.44)
+    _title(
+        ax,
+        t(
+            "M/G/1 PS: the processor is shared equally among all jobs",
+            "M/G/1 PS: процессор делится поровну между всеми",
+        ),
+        x=0.44,
+    )
     return fig
 
 
@@ -527,7 +712,11 @@ def fig_lcfs_pr():
     fig, ax = plt.subplots(figsize=(8.2, 2.9), dpi=150)
     _clean_axes(ax, (-0.4, 11.2), (-2.0, 1.8))
     # stack
-    labels = ["3-я (обслуживается)", "2-я (вытеснена)", "1-я (вытеснена)"]
+    labels = [
+        t("3rd (in service)", "3-я (обслуживается)"),
+        t("2nd (preempted)", "2-я (вытеснена)"),
+        t("1st (preempted)", "1-я (вытеснена)"),
+    ]
     colors = [YELLOW, AQUA, BLUE]
     for i, (lab, color) in enumerate(zip(labels, colors)):
         y = 0.8 - i * 0.75
@@ -535,12 +724,21 @@ def fig_lcfs_pr():
             FancyBboxPatch((3.0, y - 0.28), 2.6, 0.56, boxstyle="round,pad=0.04", fc=color, ec="none", zorder=3)
         )
         ax.text(4.3, y, lab, fontsize=8.5, color="white", ha="center", va="center", fontweight="bold", zorder=4)
-    ax.text(4.3, 1.45, "стек заявок", fontsize=9, color=INK2, ha="center")
+    ax.text(4.3, 1.45, t("stack of jobs", "стек заявок"), fontsize=9, color=INK2, ha="center")
     # new arrival lands on top
     draw_customer(ax, 1.0, 0.8, color=RED, r=0.16)
     draw_arrow(ax, 1.25, 0.8, 2.9, 0.85, color=RED, lw=1.6, ls=(0, (4, 3)))
     ax.text(
-        0.1, 0.1, "новая заявка вытесняет\nтекущую и сразу\nзанимает прибор", fontsize=9, color=INK, ha="left", va="top"
+        0.1,
+        0.1,
+        t(
+            "a new job preempts\nthe current one and takes\nthe server immediately",
+            "новая заявка вытесняет\nтекущую и сразу\nзанимает прибор",
+        ),
+        fontsize=9,
+        color=INK,
+        ha="left",
+        va="top",
     )
     # server on top element
     draw_server(ax, 6.6, 0.8, r=0.34, label="μ")
@@ -550,13 +748,16 @@ def fig_lcfs_pr():
     ax.text(
         6.0,
         -1.0,
-        "вытесненные дообслуживаются с места прерывания (resume).\nСреднее время пребывания — как у PS: b₁/(1−ρ),\nно распределено как период занятости: хвосты тяжёлые",
+        t(
+            "preempted jobs resume from the interruption point.\nMean sojourn time — same as PS: b₁/(1−ρ),\nbut distributed like a busy period: heavy tails",
+            "вытесненные дообслуживаются с места прерывания (resume).\nСреднее время пребывания — как у PS: b₁/(1−ρ),\nно распределено как период занятости: хвосты тяжёлые",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "M/G/1 LCFS-PR: прерывающий стек", x=0.42)
+    _title(ax, t("M/G/1 LCFS-PR: a preemptive stack", "M/G/1 LCFS-PR: прерывающий стек"), x=0.42)
     return fig
 
 
@@ -567,11 +768,18 @@ def fig_n_policy():
     # left: accumulating, server off
     draw_queue(ax, 0.6, 0.6, n_slots=4, occupied=3)
     draw_server(ax, 3.3, 0.6, r=0.32, color=GRID, label="off")
-    ax.text(1.55, 1.35, "прибор спит, заявки копятся…", fontsize=9, color=INK2, ha="center")
-    ax.text(1.55, -0.05, "3 из N=4", fontsize=8.5, color=INK2, ha="center")
+    ax.text(
+        1.55,
+        1.35,
+        t("server sleeps, jobs pile up…", "прибор спит, заявки копятся…"),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+    )
+    ax.text(1.55, -0.05, t("3 of N=4", "3 из N=4"), fontsize=8.5, color=INK2, ha="center")
     # arrow to right state
     draw_arrow(ax, 4.1, 0.6, 5.2, 0.6, lw=1.8)
-    ax.text(4.65, 0.95, "пришла\nN-я", fontsize=8.5, color=INK, ha="center")
+    ax.text(4.65, 0.95, t("the N-th\narrived", "пришла\nN-я"), fontsize=8.5, color=INK, ha="center")
     # right: serving exhaustively
     draw_queue(ax, 5.5, 0.6, n_slots=4, occupied=4)
     draw_server(ax, 8.2, 0.6, r=0.32, label="μ", busy_color=BLUE)
@@ -580,13 +788,23 @@ def fig_n_policy():
     ax.text(
         5.4,
         -1.2,
-        "включившись, прибор работает до полного опустошения, затем снова спит.\nСредняя плата за экономию включений: (N−1)/(2λ) к ожиданию",
+        t(
+            "once on, the server works until fully drained, then sleeps again.\nAverage price of saving on startups: (N−1)/(2λ) added to waiting",
+            "включившись, прибор работает до полного опустошения, затем снова спит.\nСредняя плата за экономию включений: (N−1)/(2λ) к ожиданию",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "M/G/1 под N-policy: включаемся, когда накопилось N заявок", x=0.44)
+    _title(
+        ax,
+        t(
+            "M/G/1 under N-policy: turn on once N jobs have accumulated",
+            "M/G/1 под N-policy: включаемся, когда накопилось N заявок",
+        ),
+        x=0.44,
+    )
     return fig
 
 
@@ -597,15 +815,18 @@ def fig_unreliable():
     ax.set_ylim(-1.6, 1.4)
     ax.axis("off")
     segments = [
-        (0.5, 2.3, AQUA, "обслуживание"),
-        (2.9, 1.8, RED, "ремонт"),
-        (4.8, 2.5, AQUA, "дообслуживание"),
+        (0.5, 2.3, AQUA, t("service", "обслуживание")),
+        (2.9, 1.8, RED, t("repair", "ремонт")),
+        (4.8, 2.5, AQUA, t("resumed service", "дообслуживание")),
     ]
     for x0, width, color, lab in segments:
         ax.add_patch(FancyBboxPatch((x0, -0.3), width, 0.6, boxstyle="round,pad=0.03", fc=color, ec="none"))
         ax.text(x0 + width / 2, 0.0, lab, fontsize=8.5, color="white", ha="center", va="center", fontweight="bold")
     ax.annotate(
-        "отказ (интенсивность ξ,\nтолько под нагрузкой)",
+        t(
+            "breakdown (rate ξ,\nonly under load)",
+            "отказ (интенсивность ξ,\nтолько под нагрузкой)",
+        ),
         xy=(2.9, 0.32),
         xytext=(2.0, 1.05),
         fontsize=8.5,
@@ -613,46 +834,46 @@ def fig_unreliable():
         arrowprops={"arrowstyle": "-|>", "color": RED, "lw": 1.4},
     )
     ax.annotate("", xy=(7.3, -0.75), xytext=(0.5, -0.75), arrowprops={"arrowstyle": "<|-|>", "color": INK2, "lw": 1.3})
-    ax.text(3.9, -1.15, "completion time C = обслуживание + все свои ремонты", fontsize=9, color=INK, ha="center")
+    ax.text(
+        3.9,
+        -1.15,
+        t(
+            "completion time C = service + all its own repairs",
+            "completion time C = обслуживание + все свои ремонты",
+        ),
+        fontsize=9,
+        color=INK,
+        ha="center",
+    )
     ax.text(
         7.6,
         0.0,
-        "система = обычная M/G/1,\nгде «обслуживание» заменено на C",
+        t(
+            'system = ordinary M/G/1,\nwhere "service" is replaced by C',
+            "система = обычная M/G/1,\nгде «обслуживание» заменено на C",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "Ненадёжный прибор (Avi-Itzhak–Naor): отказы приклеиваются к заявке", x=0.47)
+    _title(
+        ax,
+        t(
+            "Unreliable server (Avi-Itzhak–Naor): breakdowns stick to the job",
+            "Ненадёжный прибор (Avi-Itzhak–Naor): отказы приклеиваются к заявке",
+        ),
+        x=0.47,
+    )
     return fig
 
 
-SLOWDOWN_LABELS = {
-    "ru": {
-        "note": "FCFS: короткие заявки страдают сильнее всех\n(кривая уходит вверх, обрезана)",
-        "xlabel": "размер заявки x",
-        "ylabel": "замедление E[T(x)] / x",
-        "title": "Кто платит за дисциплину: замедление заявки в зависимости от её размера\n"
-        "(M/G/1, Gamma-обслуживание, ρ={rho:.1f}, CV={cv}; посчитано калькуляторами most_queue)",
-    },
-    "en": {
-        "note": "FCFS: short jobs suffer the most\n(curve goes off the chart, clipped)",
-        "xlabel": "job size x",
-        "ylabel": "slowdown E[T(x)] / x",
-        "title": "Who pays for the discipline: slowdown as a function of job size\n"
-        "(M/G/1, Gamma service, ρ={rho:.1f}, CV={cv}; computed by most_queue calculators)",
-    },
-}
-
-
-def fig_slowdown(lang: str = "ru"):
+def fig_slowdown():
     """Conditional slowdown E[T(x)]/x by discipline, computed by the library itself."""
     # local imports: the figure is DATA-DRIVEN — it runs most_queue calculators
     from most_queue.random.distributions import GammaDistribution  # pylint: disable=import-outside-toplevel
     from most_queue.theory.fifo.mg1 import MG1Calc  # pylint: disable=import-outside-toplevel
     from most_queue.theory.srpt import MG1FbCalc, MG1SrptCalc  # pylint: disable=import-outside-toplevel
-
-    labels = SLOWDOWN_LABELS[lang]
 
     lam, mean, cv = 1.0, 0.7, 1.5
     gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean, cv)
@@ -690,10 +911,21 @@ def fig_slowdown(lang: str = "ru"):
         ax.plot(xs, ys, color=colors[name], lw=2, label=name)
     ax.set_ylim(0, 12)
     ax.legend(loc="upper right", fontsize=9, frameon=False)
-    ax.text(0.35, 11.2, labels["note"], fontsize=8.5, color=INK2, ha="left", va="top")
+    ax.text(
+        0.35,
+        11.2,
+        t(
+            "FCFS: short jobs suffer the most\n(curve goes off the chart, clipped)",
+            "FCFS: короткие заявки страдают сильнее всех\n(кривая уходит вверх, обрезана)",
+        ),
+        fontsize=8.5,
+        color=INK2,
+        ha="left",
+        va="top",
+    )
     ax.set_xlim(0, 4.2 * mean)
-    ax.set_xlabel(labels["xlabel"], fontsize=9, color=INK2)
-    ax.set_ylabel(labels["ylabel"], fontsize=9, color=INK2)
+    ax.set_xlabel(t("job size x", "размер заявки x"), fontsize=9, color=INK2)
+    ax.set_ylabel(t("slowdown E[T(x)] / x", "замедление E[T(x)] / x"), fontsize=9, color=INK2)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
     ax.spines["left"].set_color(MUTED)
@@ -701,7 +933,17 @@ def fig_slowdown(lang: str = "ru"):
     ax.tick_params(colors=MUTED, labelsize=8)
     ax.grid(color=GRID, lw=0.7)
     ax.set_axisbelow(True)
-    ax.set_title(labels["title"].format(rho=rho, cv=cv), fontsize=10, color=INK, pad=12)
+    ax.set_title(
+        t(
+            "Who pays for the discipline: slowdown as a function of job size\n"
+            f"(M/G/1, Gamma service, ρ={rho:.1f}, CV={cv}; computed by most_queue calculators)",
+            "Кто платит за дисциплину: замедление заявки в зависимости от её размера\n"
+            f"(M/G/1, Gamma-обслуживание, ρ={rho:.1f}, CV={cv}; посчитано калькуляторами most_queue)",
+        ),
+        fontsize=10,
+        color=INK,
+        pad=12,
+    )
     return fig
 
 
@@ -709,35 +951,45 @@ def fig_retrial():
     """Retrial queue: blocked jobs join an orbit and retry."""
     fig, ax = plt.subplots(figsize=(8.2, 3.2), dpi=150)
     _clean_axes(ax, (-0.4, 11.2), (-2.5, 1.9))
-    ax.text(0.1, 0.65, "поток заявок, λ", fontsize=9, color=INK2, ha="left")
+    ax.text(0.1, 0.65, t("arrival stream, λ", "поток заявок, λ"), fontsize=9, color=INK2, ha="left")
     for i, xx in enumerate([0.0, 0.6, 1.2]):
         draw_customer(ax, xx, 0, alpha=0.45 + 0.27 * i)
     draw_arrow(ax, 1.55, 0, 2.9, 0)
     draw_server(ax, 3.5, 0, r=0.36, label="μ", busy_color=BLUE)
     draw_arrow(ax, 3.95, 0, 4.9, 0)
     draw_customer(ax, 5.2, 0, color=GREEN, r=0.16)
-    ax.text(3.5, 0.85, "очереди нет", fontsize=8.5, color=INK2, ha="center")
+    ax.text(3.5, 0.85, t("no queue", "очереди нет"), fontsize=8.5, color=INK2, ha="center")
     # orbit ellipse
     orbit = Ellipse((3.5, -1.55), 4.6, 1.3, fc="white", ec=MUTED, lw=1.3, ls=(0, (5, 3)))
     ax.add_patch(orbit)
     for xx in (2.3, 3.5, 4.7):
         draw_customer(ax, xx, -1.55, color=YELLOW, r=0.16)
-    ax.text(3.5, -2.35, "орбита", fontsize=9, color=INK2, ha="center")
+    ax.text(3.5, -2.35, t("orbit", "орбита"), fontsize=9, color=INK2, ha="center")
     # blocked -> orbit
     draw_arrow(ax, 2.75, -0.25, 2.2, -1.15, color=RED, lw=1.5, ls=(0, (4, 3)))
-    ax.text(0.35, -1.2, "прибор занят —\nв орбиту", fontsize=8.5, color=INK, ha="left")
+    ax.text(0.35, -1.2, t("server busy —\nto orbit", "прибор занят —\nв орбиту"), fontsize=8.5, color=INK, ha="left")
     # retry -> server
     draw_arrow(ax, 4.75, -1.2, 3.75, -0.42, color=YELLOW, lw=1.5, ls=(0, (4, 3)))
     ax.text(
         5.6,
         -1.3,
-        "каждая заявка в орбите повторяет попытку\nчерез случайное время (интенсивность γ);\nзанято — снова в орбиту",
+        t(
+            "each job in the orbit retries\nafter a random time (rate γ);\nif busy — back to orbit",
+            "каждая заявка в орбите повторяет попытку\nчерез случайное время (интенсивность γ);\nзанято — снова в орбиту",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "Retrial-очередь: вместо ожидания — повторные попытки", x=0.44)
+    _title(
+        ax,
+        t(
+            "Retrial queue: instead of waiting — repeated retries",
+            "Retrial-очередь: вместо ожидания — повторные попытки",
+        ),
+        x=0.44,
+    )
     return fig
 
 
@@ -748,7 +1000,14 @@ def fig_map_arrivals():
     ax.set_ylim(-2.1, 1.9)
     ax.axis("off")
     # renewal (top): evenly-ish spaced
-    ax.text(0.1, 1.45, "renewal-поток (интервалы независимы):", fontsize=9, color=INK2, ha="left")
+    ax.text(
+        0.1,
+        1.45,
+        t("renewal stream (interarrival times are independent):", "renewal-поток (интервалы независимы):"),
+        fontsize=9,
+        color=INK2,
+        ha="left",
+    )
     for xx in (0.7, 1.8, 2.7, 3.9, 4.9, 6.1, 7.0, 8.2, 9.3, 10.3):
         draw_customer(ax, xx, 0.8, r=0.12)
     ax.plot([0.4, 10.8], [0.8, 0.8], color=GRID, lw=1.0, zorder=1)
@@ -756,7 +1015,10 @@ def fig_map_arrivals():
     ax.text(
         0.1,
         0.05,
-        "MAP (например, MMPP): всплески и паузы при той же средней интенсивности:",
+        t(
+            "MAP (e.g. MMPP): bursts and lulls at the same mean rate:",
+            "MAP (например, MMPP): всплески и паузы при той же средней интенсивности:",
+        ),
         fontsize=9,
         color=INK2,
         ha="left",
@@ -767,13 +1029,23 @@ def fig_map_arrivals():
     ax.text(
         0.1,
         -1.55,
-        "интервалы коррелированы: за коротким чаще следует короткий. Средние и CV могут совпадать\nс renewal-потоком, но очередь при MAP-входе в разы длиннее (см. tutorials/map_ph_correlation.ipynb)",
+        t(
+            "interarrival times are correlated: a short one is more often followed by a short one. Means and CV may match\nthe renewal stream, but the queue under a MAP input is many times longer (see tutorials/map_ph_correlation.ipynb)",
+            "интервалы коррелированы: за коротким чаще следует короткий. Средние и CV могут совпадать\nс renewal-потоком, но очередь при MAP-входе в разы длиннее (см. tutorials/map_ph_correlation.ipynb)",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "Коррелированный вход (MAP): то, чего не видят renewal-модели", x=0.45)
+    _title(
+        ax,
+        t(
+            "Correlated input (MAP): what renewal models miss",
+            "Коррелированный вход (MAP): то, чего не видят renewal-модели",
+        ),
+        x=0.45,
+    )
     return fig
 
 
@@ -799,7 +1071,7 @@ def fig_ph_gallery():
 
     # --- Exp(mu): a single phase
     ax = axes[0, 0]
-    ax.set_title("Экспоненциальное = 1 фаза", fontsize=9.5, color=INK)
+    ax.set_title(t("Exponential = 1 phase", "Экспоненциальное = 1 фаза"), fontsize=9.5, color=INK)
     draw_arrow(ax, 0.2, 0, 1.0, 0)
     _ph_phase(ax, 1.4, 0, "μ")
     draw_arrow(ax, 1.75, 0, 2.6, 0)
@@ -808,7 +1080,7 @@ def fig_ph_gallery():
 
     # --- Erlang-3: chain
     ax = axes[0, 1]
-    ax.set_title("Эрланга E₃ = цепочка из 3 фаз", fontsize=9.5, color=INK)
+    ax.set_title(t("Erlang E₃ = a chain of 3 phases", "Эрланга E₃ = цепочка из 3 фаз"), fontsize=9.5, color=INK)
     draw_arrow(ax, 0.0, 0, 0.7, 0)
     for i in range(3):
         _ph_phase(ax, 1.1 + i * 1.3, 0, "μ")
@@ -819,7 +1091,11 @@ def fig_ph_gallery():
 
     # --- H2: two parallel phases
     ax = axes[1, 0]
-    ax.set_title("Гиперэкспоненциальное H₂ = 2 параллельные фазы", fontsize=9.5, color=INK)
+    ax.set_title(
+        t("Hyperexponential H₂ = 2 parallel phases", "Гиперэкспоненциальное H₂ = 2 параллельные фазы"),
+        fontsize=9.5,
+        color=INK,
+    )
     draw_arrow(ax, 0.1, 0, 0.9, 0.62, lw=1.3)
     draw_arrow(ax, 0.1, 0, 0.9, -0.62, lw=1.3)
     ax.text(0.35, 0.55, "p₁", fontsize=8, color=INK2)
@@ -832,7 +1108,9 @@ def fig_ph_gallery():
 
     # --- Cox-2: chain with early exit
     ax = axes[1, 1]
-    ax.set_title("Кокса C₂ = цепочка с досрочным выходом", fontsize=9.5, color=INK)
+    ax.set_title(
+        t("Cox C₂ = a chain with early exit", "Кокса C₂ = цепочка с досрочным выходом"), fontsize=9.5, color=INK
+    )
     draw_arrow(ax, 0.0, 0, 0.7, 0)
     _ph_phase(ax, 1.1, 0, "μ₁")
     draw_arrow(ax, 1.45, 0, 2.3, 0)
@@ -841,12 +1119,16 @@ def fig_ph_gallery():
     draw_arrow(ax, 3.05, 0, 3.9, 0)
     _ph_exit(ax, 4.2, 0)
     draw_arrow(ax, 1.3, -0.35, 3.95, -1.05, lw=1.2, ls=(0, (4, 3)))
-    ax.text(0.15, -1.25, "1−p₁ (сразу на выход)", fontsize=8, color=INK2, ha="left")
+    ax.text(0.15, -1.25, t('1−p₁ ("straight to exit")', "1−p₁ (сразу на выход)"), fontsize=8, color=INK2, ha="left")
     _ph_exit(ax, 4.2, -1.1)
 
     fig.suptitle(
-        "PH-распределение = время блуждания по цепочке экспоненциальных фаз до выхода:\n"
-        "старт по вектору α, переходы по матрице T. Всё знакомое — частные случаи PH(α, T)",
+        t(
+            "PH distribution = time spent wandering through a chain of exponential phases until exit:\n"
+            "start via vector α, transitions via matrix T. Everything familiar is a special case of PH(α, T)",
+            "PH-распределение = время блуждания по цепочке экспоненциальных фаз до выхода:\n"
+            "старт по вектору α, переходы по матрице T. Всё знакомое — частные случаи PH(α, T)",
+        ),
         fontsize=10,
         color=INK,
         y=1.02,
@@ -861,36 +1143,46 @@ def fig_mmpp():
     _clean_axes(ax, (-0.4, 11.2), (-2.2, 1.9))
     # fast phase
     ax.add_patch(Circle((2.2, 0.2), 0.85, fc=BLUE, ec="none", zorder=3))
-    ax.text(2.2, 0.36, "фаза 1", ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
+    ax.text(2.2, 0.36, t("phase 1", "фаза 1"), ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
     ax.text(2.2, -0.05, "λ₁ = 2.0", ha="center", fontsize=8.5, color="white", zorder=4)
     # slow phase
     ax.add_patch(Circle((7.4, 0.2), 0.85, fc=VIOLET, ec="none", zorder=3))
-    ax.text(7.4, 0.36, "фаза 2", ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
+    ax.text(7.4, 0.36, t("phase 2", "фаза 2"), ha="center", fontsize=9.5, color="white", fontweight="bold", zorder=4)
     ax.text(7.4, -0.05, "λ₂ = 0.4", ha="center", fontsize=8.5, color="white", zorder=4)
     # switching arrows
     draw_arrow(ax, 3.15, 0.55, 6.45, 0.55, lw=1.5)
     draw_arrow(ax, 6.45, -0.15, 3.15, -0.15, lw=1.5)
-    ax.text(4.8, 0.78, "переключение q₁₂", fontsize=8.5, color=INK2, ha="center")
+    ax.text(4.8, 0.78, t("switching q₁₂", "переключение q₁₂"), fontsize=8.5, color=INK2, ha="center")
     ax.text(4.8, -0.45, "q₂₁", fontsize=8.5, color=INK2, ha="center")
     # emitted arrivals
     for xx in (1.5, 1.9, 2.3, 2.7):
         draw_customer(ax, xx, -1.45, r=0.11, color=BLUE)
     draw_arrow(ax, 2.2, -0.75, 2.2, -1.15, lw=1.2)
-    ax.text(2.2, -1.85, "заявки сыплются часто", fontsize=8.5, color=INK2, ha="center")
+    ax.text(2.2, -1.85, t("jobs pour in often", "заявки сыплются часто"), fontsize=8.5, color=INK2, ha="center")
     for xx in (7.2, 7.8):
         draw_customer(ax, xx, -1.45, r=0.11, color=VIOLET)
     draw_arrow(ax, 7.4, -0.75, 7.4, -1.15, lw=1.2)
-    ax.text(7.4, -1.85, "заявки редки", fontsize=8.5, color=INK2, ha="center")
+    ax.text(7.4, -1.85, t("jobs are rare", "заявки редки"), fontsize=8.5, color=INK2, ha="center")
     ax.text(
         9.0,
         0.2,
-        "D₀ — переходы фаз\nбез заявки,\nD₁ — с заявкой.\nMMPP: D₁ = diag(λᵢ)",
+        t(
+            "D₀ — phase transitions\nwithout a job,\nD₁ — with a job.\nMMPP: D₁ = diag(λᵢ)",
+            "D₀ — переходы фаз\nбез заявки,\nD₁ — с заявкой.\nMMPP: D₁ = diag(λᵢ)",
+        ),
         fontsize=9,
         color=INK,
         ha="left",
         va="center",
     )
-    _title(ax, "MMPP — простейший содержательный MAP: Пуассон, переключаемый марковской цепью", x=0.46)
+    _title(
+        ax,
+        t(
+            "MMPP — the simplest meaningful MAP: a Poisson process switched by a Markov chain",
+            "MMPP — простейший содержательный MAP: Пуассон, переключаемый марковской цепью",
+        ),
+        x=0.46,
+    )
     return fig
 
 
@@ -907,7 +1199,6 @@ FIGURES = {
     "n_policy": fig_n_policy,
     "unreliable": fig_unreliable,
     "slowdown": fig_slowdown,
-    "slowdown_en": lambda: fig_slowdown("en"),
     "disciplines_timeline": fig_disciplines_timeline,
     "priority": fig_priority,
     "vacations": fig_vacations,
@@ -920,13 +1211,15 @@ FIGURES = {
 
 
 def main() -> None:
-    """Regenerate every figure into the directory of this script."""
+    """Regenerate every figure (English + Russian) into the directory of this script."""
+    global _LANG
     for name, builder in FIGURES.items():
-        fig = builder()
-        out = OUT_DIR / f"{name}.png"
-        fig.savefig(out, bbox_inches="tight")
-        plt.close(fig)
-        print(f"saved {out}")
+        for lang, suffix in (("en", ""), ("ru", ".ru")):
+            _LANG = lang
+            fig = builder()
+            fig.savefig(OUT_DIR / f"{name}{suffix}.png", bbox_inches="tight")
+            plt.close(fig)
+            print(f"saved {name}{suffix}.png")
 
 
 if __name__ == "__main__":
