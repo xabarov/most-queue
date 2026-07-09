@@ -124,10 +124,11 @@ class BatchMM1(BaseQueue):
 
     def get_w1(self):
         """
-        Mean wait time
+        Mean wait time (Little's law on the queue): E[Nq] / job-arrival-rate,
+        where the job arrival rate is mean_batch_size * lambda.
         """
         self.mean_jobs_on_queue = self.mean_jobs_on_queue or self.get_mean_jobs_on_queue()
-        return self.mean_jobs_on_queue / self.ro_tilda
+        return self.mean_jobs_on_queue / (self.l_moments[0] * self.lam)
 
     def get_v1(self):
         """

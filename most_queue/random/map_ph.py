@@ -43,6 +43,54 @@ class MAPParams:
     D1: np.ndarray  # transitions generating an arrival, shape (m, m)
 
 
+@dataclass
+class BMAPParams:
+    """
+    Batch Markovian Arrival Process parameters: a list of matrices
+    D[0], D[1], D[2], ... where D[0] holds phase transitions without arrivals
+    and D[k] (k >= 1) holds transitions that generate a batch of k arrivals.
+    sum_k D[k] is the generator of the phase process.
+    """
+
+    D: list  # [D0, D1, D2, ...], each an (m, m) matrix
+
+
+def bmap_poisson_batch(rate: float, batch_probs: list) -> BMAPParams:
+    """
+    Single-phase BMAP: batches arrive as a Poisson process of intensity
+    ``rate`` with batch-size probabilities ``batch_probs`` (batch_probs[k-1] is
+    P(batch size = k)). Equivalent to the M^[X]/... batch arrival stream.
+    """
+    p = np.asarray(batch_probs, dtype=float)
+    if abs(p.sum() - 1.0) > 1e-9 or np.any(p < 0):
+        raise ValueError("batch_probs must be a probability vector")
+    d = [np.array([[-rate]])]
+    for pk in p:
+        d.append(np.array([[rate * pk]]))
+    return BMAPParams(D=d)
+
+
+def bmap_from_map(params: MAPParams) -> BMAPParams:
+    """A MAP as a BMAP with only size-1 batches (D[1] = D1)."""
+    return BMAPParams(D=[np.asarray(params.D0, dtype=float), np.asarray(params.D1, dtype=float)])
+
+
+def bmap_arrival_rate(params: BMAPParams) -> float:
+    """
+    Fundamental arrival rate of a BMAP: pi @ (sum_k k * D[k]) @ 1, where pi is
+    the stationary distribution of the phase generator sum_k D[k].
+    """
+    mats = [np.asarray(x, dtype=float) for x in params.D]
+    gen = np.sum(mats, axis=0)
+    m = gen.shape[0]
+    a = np.vstack([gen.T, np.ones(m)])
+    b = np.zeros(m + 1)
+    b[-1] = 1.0
+    pi, *_ = np.linalg.lstsq(a, b, rcond=None)
+    batch_rate = np.sum([k * mats[k] for k in range(1, len(mats))], axis=0)
+    return float(pi @ batch_rate @ np.ones(m))
+
+
 def _validate_ph(alpha: np.ndarray, T: np.ndarray) -> None:
     if T.ndim != 2 or T.shape[0] != T.shape[1]:
         raise ValueError("T must be a square matrix")
