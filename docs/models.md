@@ -972,6 +972,32 @@ results = calc.run()
 
 **Calculator classes:** `MPh1Calc`, `PhPh1Calc` (`most_queue.theory.matrix.map_ph1`)
 
+### MAP/M/c
+
+**Description:** Correlated arrivals with **c** exponential servers, solved as a level-dependent-boundary QBD (levels 0..c-1 encode the number of busy servers, homogeneous from level c on). The realistic model of a call center or data center fed by bursty traffic.
+
+**In plain words:** the multi-server companion of MAP/PH/1 — Erlang C, but with the arrival
+burstiness that Erlang C ignores. A one-phase (Poisson) MAP reproduces Erlang C exactly; a
+bursty MAP with the same rate produces a much longer wait.
+
+**Calculator class:** `MapMMcCalc` (`most_queue.theory.matrix.map_mmc`)
+**Simulation:** `QsSim(c)` with `set_sources(map_params, "MAP")` and `set_servers(mu, "M")`
+
+**Example:**
+
+```python
+import numpy as np
+from most_queue.random.map_ph import MAP
+from most_queue.theory.matrix.map_mmc import MapMMcCalc
+
+mmpp = MAP.mmpp([2.5, 0.5], np.array([[-0.15, 0.15], [0.25, -0.25]]))  # bursty arrivals
+
+calc = MapMMcCalc(n=3)  # 3 servers
+calc.set_sources(mmpp)
+calc.set_servers(mu=1.0)
+results = calc.run()  # state probabilities + Little-law means
+```
+
 ## Closed systems
 
 ![Engset closed system diagram](figures/engset.png)
@@ -1028,6 +1054,7 @@ results = calc.run()
 | M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Falin–Templeton closed form |
 | MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Correlated arrivals, QBD |
 | M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | QBD special cases |
+| MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Multi-server, correlated arrivals |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model

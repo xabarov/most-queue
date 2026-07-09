@@ -82,7 +82,7 @@ See the executable comparison of **9 disciplines** in
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
 | Reliability | M/G/1 with breakdowns & repairs | Avi-Itzhak–Naor |
-| Matrix-analytic | MAP/PH/1, M/PH/1, PH/PH/1 — correlated (bursty) arrivals | QBD, logarithmic reduction |
+| Matrix-analytic | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c — correlated (bursty) arrivals, single- & multi-server | QBD, logarithmic reduction |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch, impatience, closed | Mˣ/M/1, M/M/1+M, Engset | exact |

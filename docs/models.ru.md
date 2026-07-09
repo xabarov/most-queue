@@ -921,6 +921,32 @@ M/M/1 retrial и симуляции.
 
 **Классы расчета:** `MPh1Calc`, `PhPh1Calc` (`most_queue.theory.matrix.map_ph1`)
 
+### MAP/M/c
+
+**Описание:** Коррелированный вход и **c** экспоненциальных приборов, решается как QBD с уровне-зависимой границей (уровни 0..c-1 — число занятых приборов, однородный блок от уровня c). Реалистичная модель колл-центра или ЦОД с bursty-трафиком.
+
+**Суть:** многоканальный аналог MAP/PH/1 — Erlang C, но с пульсацией входа, которую Erlang C
+игнорирует. Однофазный (пуассоновский) MAP в точности воспроизводит Erlang C; bursty-MAP с той
+же интенсивностью даёт заметно большее ожидание.
+
+**Класс расчета:** `MapMMcCalc` (`most_queue.theory.matrix.map_mmc`)
+**Симуляция:** `QsSim(c)` c `set_sources(map_params, "MAP")` и `set_servers(mu, "M")`
+
+**Пример:**
+
+```python
+import numpy as np
+from most_queue.random.map_ph import MAP
+from most_queue.theory.matrix.map_mmc import MapMMcCalc
+
+mmpp = MAP.mmpp([2.5, 0.5], np.array([[-0.15, 0.15], [0.25, -0.25]]))  # bursty-вход
+
+calc = MapMMcCalc(n=3)  # 3 прибора
+calc.set_sources(mmpp)
+calc.set_servers(mu=1.0)
+results = calc.run()  # вероятности состояний + средние по Литтлу
+```
+
 ## Закрытые системы
 
 ![Схема закрытой системы Engset](figures/engset.ru.png)
@@ -977,6 +1003,7 @@ results = calc.run()
 | M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Формула Falin–Templeton |
 | MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Коррелированный вход, QBD |
 | M/PH/1, PH/PH/1 | MPh1Calc, PhPh1Calc | QsSim | - | Частные случаи QBD |
+| MAP/M/c | MapMMcCalc | QsSim("MAP","M") | - | Многоканальный, коррелированный вход |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 
 ## Рекомендации по выбору модели

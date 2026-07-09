@@ -47,3 +47,4 @@
 | [EPIC-004](EPIC-004-retrial-erlang-a.md) | Retrial-очереди и Erlang-A | done |
 | [EPIC-005](EPIC-005-illustrated-catalog.md) | Иллюстрированный каталог моделей (простые описания + схемы) | done |
 | [EPIC-006](EPIC-006-english-docs.md) | EN-центричная документация (перевод + двуязычные схемы) | done |
+| [EPIC-007](EPIC-007-map-phase2.md) | MAP-стек, фаза 2 (MAP/M/c, фиттинг, BMAP) | in progress |
