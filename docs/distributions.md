@@ -361,6 +361,37 @@ you a family dense enough to approximate any positive distribution.
 
 Raw moments are available in closed form: `m_k = k! · α (−T)⁻ᵏ 1`.
 
+### How to read the T matrix
+
+T holds **rates** (units 1/time), not probabilities — so its rows do NOT sum to 1:
+
+- **Off-diagonal** `T[i][j] ≥ 0` — the transition rate from phase i to phase j.
+- **Diagonal** `T[i][i] < 0` — minus the TOTAL rate of leaving phase i (including exiting
+  the distribution), so the time spent in phase i is Exp(−T[i][i]).
+- **Row sums are ≤ 0**, and the shortfall to zero is exactly the exit rate:
+  `t0 = −T @ 1`. A row summing to zero means "no direct exit from this phase".
+
+Having stayed in phase i for Exp(−T[i][i]), the token picks a direction with probabilities
+`T[i][j] / (−T[i][i])` (to phase j) or `t0[i] / (−T[i][i])` (exit) — the probabilities are
+*derived* from the rates, never stored in T. The familiar structures in matrix form:
+
+```text
+H2(p1, mu1, mu2):  alpha = [p1, 1-p1]   T = [[-mu1,   0 ],    t0 = [mu1]
+                                             [  0,  -mu2]]         [mu2]
+
+Erlang-3(mu):      alpha = [1, 0, 0]    T = [[-mu,  mu,   0]   t0 = [0]
+                                             [  0, -mu,  mu]        [0]
+                                             [  0,   0, -mu]]       [mu]
+
+Coxian-2:          alpha = [1, 0]       T = [[-mu1, p1*mu1]    t0 = [(1-p1)*mu1]
+                                             [  0,   -mu2 ]]        [   mu2    ]
+```
+
+`PHDistribution` validates all of this on construction (negative diagonal, non-negative
+off-diagonal, row sums ≤ 0, α summing to 1). The MAP matrices below follow the same logic:
+D₀ plays the role of T, and the pair must satisfy "no exit at all" — (D₀ + D₁) has zero
+row sums, because a MAP never stops, it only emits arrivals.
+
 ### Usage
 
 ```python
