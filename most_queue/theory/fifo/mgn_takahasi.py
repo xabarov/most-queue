@@ -176,6 +176,7 @@ class MGnCalc(BaseQueue):
         x_max1, x_max2 = self._iteration_setup()
 
         self.num_of_iter_ = 0
+        max_iter = getattr(self.calc_params, "max_iter", 300)
 
         while not self._check_convergence(x_max1, x_max2):
             x_max2 = x_max1
@@ -187,6 +188,20 @@ class MGnCalc(BaseQueue):
             self._update_level_0()
 
             x_max1 = np.max(self.x)
+
+            # Guard against numerical breakdown: without this the loop can spin
+            # forever (a NaN never satisfies the convergence test) or return
+            # silent garbage. Fail loudly instead. This only triggers when the
+            # Takahashi-Takami fixed point has already diverged.
+            x_arr = np.asarray(self.x, dtype=complex)
+            if not np.all(np.isfinite(x_arr)) or np.max(np.abs(x_arr)) > 1e50:
+                raise FloatingPointError(
+                    f"Takahashi-Takami iteration diverged (non-finite or overflowing "
+                    f"value at iteration {self.num_of_iter_}); the chain is likely too "
+                    f"large or ill-conditioned for these parameters."
+                )
+            if self.num_of_iter_ >= max_iter:
+                break
 
             if self.verbose:
                 print(f"End iter # {self.num_of_iter_}")
@@ -299,6 +314,24 @@ class MGnCalc(BaseQueue):
         """
         self._calculate_p()
         self._calculate_y()
+        self._validate_probabilities()
+
+    def _validate_probabilities(self):
+        """
+        Sanity-check the stationary distribution. A diverged Takahashi-Takami
+        fixed point can be finite yet non-physical (a large negative probability
+        mass cancelling to sum 1), which then yields nonsensical moments. Detect
+        that and fail loudly instead of returning silent garbage. Small negative
+        values from complex arithmetic are tolerated.
+        """
+        p = np.asarray(self.p, dtype=complex)
+        negative_mass = float(np.sum(np.minimum(p.real, 0.0)))
+        if not np.all(np.isfinite(p)) or negative_mass < -0.05:
+            raise FloatingPointError(
+                "Takahashi-Takami produced a non-physical stationary distribution "
+                f"(negative probability mass {negative_mass:.3g}); the chain is likely "
+                "too large or ill-conditioned for these parameters."
+            )
 
     def get_results(self, num_of_moments: int = 4, derivate=False) -> QueueResults:
         """

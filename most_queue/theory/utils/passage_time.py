@@ -9,6 +9,8 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
+from most_queue.theory.matrix.qbd import logarithmic_reduction_g
+
 
 @dataclass
 class TransitionMatrices:
@@ -152,33 +154,40 @@ class PassageTimeCalculation:
                 self.Br[i].append(np.dot(left_mrx[r], self.B[i]))
                 self.Lr[i].append(np.dot(left_mrx[r], self.L[i]))
 
+    def _G_linear_iteration(self):
+        """
+        Legacy fallback: the repeating-part G via plain functional iteration
+        G = B + L G + F G G (linearly convergent, slow near rho -> 1).
+        """
+        b_rows, b_cols = self.B[self.l_tilda].shape
+        dtype = "complex64" if self.is_clx else float
+        g = np.eye(b_rows, b_cols, dtype=dtype)
+        max_elem_pr = np.inf
+        while abs(max_elem_pr - g.max()) > self.e:
+            g_next = self.B[self.l_tilda] + np.dot(self.L[self.l_tilda], g) + np.dot(self.F[self.l_tilda], np.dot(g, g))
+            max_elem_pr = g.max()
+            g = g_next
+        return g
+
     def _G_tilda_calc(self):
         """
-        calculation of the matrix G = G_l_tilda
+        Repeating-part G matrix via logarithmic reduction (Latouche-Ramaswami,
+        quadratic convergence) on the rate blocks: a0 = A (up), a2 = B (down),
+        a1 = C - D (local with the negative out-rate on the diagonal). This is
+        the same G as the functional iteration G = B + L G + F G G, but much
+        faster at high load. Falls back to the iteration if the result is not
+        stochastic (a safety net for pathological blocks).
         """
-        b_rows = self.B[self.l_tilda].shape[0]
-        b_cols = self.B[self.l_tilda].shape[1]
-        if self.is_clx:
-            self.G_l_tilda = np.eye(
-                b_rows, b_cols, dtype="complex64"
-            )  # присвоить первоначальное значение G = B не работает !!!
-        else:
-            self.G_l_tilda = np.eye(b_rows, b_cols)
-        max_elem_pr = np.inf
-        n_iter = 0
-
-        while abs(max_elem_pr - self.G_l_tilda.max()) > self.e:
-            G_next = (
-                self.B[self.l_tilda]
-                + np.dot(self.L[self.l_tilda], self.G_l_tilda)
-                + np.dot(self.F[self.l_tilda], np.dot(self.G_l_tilda, self.G_l_tilda))
-            )
-            max_elem_pr = self.G_l_tilda.max()
-            self.G_l_tilda = G_next
-            n_iter += 1
-
-        if self.is_verbose:
-            print(f"Number of iterations to calculate the matrix G_l_tilda = {n_iter}")
+        a0 = np.asarray(self.A_input[self.l_tilda])
+        a2 = np.asarray(self.B_input[self.l_tilda])
+        a1 = np.asarray(self.C_input[self.l_tilda]) - np.asarray(self.D_input[self.l_tilda])
+        try:
+            g = logarithmic_reduction_g(a0, a1, a2, tol=self.e)
+            if np.max(np.abs(1.0 - g.sum(axis=1))) > 1e-6:
+                raise ValueError("non-stochastic G")
+        except (np.linalg.LinAlgError, ValueError):
+            g = self._G_linear_iteration()
+        self.G_l_tilda = g.astype("complex64") if self.is_clx else g
 
     def _norm_mrx(self, mrx, is_max=True):
         """
@@ -312,20 +321,22 @@ class PassageTimeCalculation:
             F = self.F[self.l_tilda - i - 1]
             G_plus_one = self.G[self.l_tilda - i]
 
-            G = copy.deepcopy(B)
-
-            max_elem = self._norm_mrx(G)
-            max_elem_pr = 0
-            n_iter = 0
-            while abs(max_elem - max_elem_pr) > self.e:
-                G = B + np.dot(L, G) + np.dot(F, np.dot(G_plus_one, G))
-                max_elem_pr = max_elem
-                max_elem = self._norm_mrx(G)
-                n_iter += 1
-
-            if self.is_verbose:
-                print(f"Number of iterations to calculate matrix  G{self.l_tilda - i} = {n_iter}")
-
+            # Closed form (paper's Appendix A, eq. for G^(l), l < l_tilda):
+            # G = B + L G + F G^(l+1) G  =>  (I - L - F G^(l+1)) G = B.
+            # A single linear solve — the non-repeating levels need no iteration.
+            # If the coefficient matrix is singular (a level state that never
+            # reaches the level below on its own), fall back to the functional
+            # iteration, which converges to the same minimal solution.
+            n = L.shape[0]
+            coeff = np.eye(n, dtype=L.dtype) - L - np.dot(F, G_plus_one)
+            try:
+                G = np.linalg.solve(coeff, B)
+            except np.linalg.LinAlgError:
+                G = copy.deepcopy(B)
+                max_elem, max_elem_pr = self._norm_mrx(G), 0
+                while abs(max_elem - max_elem_pr) > self.e:
+                    G = B + np.dot(L, G) + np.dot(F, np.dot(G_plus_one, G))
+                    max_elem_pr, max_elem = max_elem, self._norm_mrx(G)
             self.G[self.l_tilda - i - 1] = G
 
     def _Gr_calc(self):

@@ -122,14 +122,11 @@ class MM2BusyApprox3Classes(MGnCalc):
         self.iter_num_ = 0
         self.b1[0][0, 0] = 0
         self.b2[0][0, 0] = 0
-        x_max1 = 0
-        x_max2 = 0
-
-        for i in range(self.N):
-            if self.x[i] > x_max1:
-                x_max1 = self.x[i]
-        while math.fabs(x_max2.real - x_max1.real) >= self.e1:
-            x_max2 = x_max1
+        # Convergence is measured on the whole ratio vector x, not on a single
+        # scalar max(x): the latter can coincidentally match the arbitrary seed
+        # x[0] after one step and stop the fixed point prematurely (wrong tail).
+        x_prev = [self.x[i] for i in range(self.N)]
+        while True:
             self.iter_num_ += 1
             for j in range(1, self.N):  # по всем ярусам, кроме первого.
 
@@ -161,10 +158,10 @@ class MM2BusyApprox3Classes(MGnCalc):
             self.t[0] = np.dot(self.x[0], t1B1)
             self.t[0] = np.dot(self.t[0], np.linalg.inv(self.D[0] - self.C[0]))
 
-            x_max1 = 0
-            for i in range(self.N):
-                if self.x[i] > x_max1:
-                    x_max1 = self.x[i]
+            delta = max(abs(complex(self.x[i]) - complex(x_prev[i])) for i in range(self.N))
+            x_prev = [self.x[i] for i in range(self.N)]
+            if (self.iter_num_ >= 2 and delta < self.e1) or self.iter_num_ >= self.calc_params.max_iter:
+                break
 
         self._calculate_p()
         self._calculate_y()

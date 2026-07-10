@@ -49,3 +49,4 @@
 | [EPIC-006](EPIC-006-english-docs.md) | EN-центричная документация (перевод + двуязычные схемы) | done |
 | [EPIC-007](EPIC-007-map-phase2.md) | MAP-стек, фаза 2 (MAP/M/c, MAP/PH/c, фиттинг, BMAP/M/1) | done |
 | [EPIC-008](EPIC-008-map-phase3.md) | MAP-стек, фаза 3 (BMAP/PH/1 общего вида) | done |
+| [EPIC-009](EPIC-009-rdr-priority.md) | RDR: многоканальные многоприоритетные СМО (оптимизация G-матрицы + RDR-A + точная CTMC + фикс сходимости + аудит статьи) | done |
