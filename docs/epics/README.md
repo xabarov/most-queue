@@ -50,10 +50,10 @@
 | [EPIC-007](EPIC-007-map-phase2.md) | MAP-стек, фаза 2 (MAP/M/c, MAP/PH/c, фиттинг, BMAP/M/1) | done |
 | [EPIC-008](EPIC-008-map-phase3.md) | MAP-стек, фаза 3 (BMAP/PH/1 общего вида) | done |
 | [EPIC-009](EPIC-009-rdr-priority.md) | RDR: многоканальные многоприоритетные СМО (оптимизация G-матрицы + RDR-A + точная CTMC + фикс сходимости + аудит статьи) | done |
-| [EPIC-010](EPIC-010-age-of-information.md) | Age of Information (AoI/PAoI) — свежесть информации | proposed |
-| [EPIC-011](EPIC-011-multiserver-job.md) | Multiserver-job (MSJ): заявка занимает k серверов одновременно | proposed |
-| [EPIC-012](EPIC-012-bulk-service.md) | Bulk-service очереди (batching, LLM inference) | proposed |
-| [EPIC-013](EPIC-013-predictions-scheduling.md) | Планирование с предсказаниями (learning-augmented) | proposed |
+| [EPIC-010](EPIC-010-age-of-information.md) | Age of Information (AoI/PAoI) — свежесть информации | done |
+| [EPIC-011](EPIC-011-multiserver-job.md) | Multiserver-job (MSJ): заявка занимает k серверов одновременно | done |
+| [EPIC-012](EPIC-012-bulk-service.md) | Bulk-service очереди (batching, LLM inference) | done |
+| [EPIC-013](EPIC-013-predictions-scheduling.md) | Планирование с предсказаниями (learning-augmented) | done |
 
 Направления EPIC-010…013 выбраны по обзору трендов сообщества:
 [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md).

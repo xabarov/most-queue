@@ -3,6 +3,7 @@ Size-based M/G/1 analytical calculators (SRPT, SJF, PSJF, SPJF)
 and the blind FB/LAS discipline sharing the same machinery.
 """
 
+from most_queue.theory.srpt.degradation import DegradationCurve, prediction_degradation_curve
 from most_queue.theory.srpt.mg1_fb import MG1FbCalc
 from most_queue.theory.srpt.mg1_psjf import MG1PsjfCalc
 from most_queue.theory.srpt.mg1_sjf import MG1SjfCalc
@@ -19,4 +20,6 @@ __all__ = [
     "PerfectPredictor",
     "ExpNoisePredictor",
     "LognormalNoisePredictor",
+    "prediction_degradation_curve",
+    "DegradationCurve",
 ]

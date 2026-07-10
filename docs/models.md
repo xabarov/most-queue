@@ -245,6 +245,23 @@ calc.set_predictor(ExpNoisePredictor())
 results = calc.run()
 ```
 
+#### Graceful degradation of predictions (learning-augmented scheduling)
+
+**Description:** How does SPJF's mean response time change as predictions get noisier? The helper
+`prediction_degradation_curve` sweeps the log-normal prediction noise σ and returns the SPJF mean
+response bracketed by SRPT (size-aware optimum), SJF (perfect predictions) and blind FB/LAS. It
+reports the **break-even noise** at which SPJF starts losing to the *blind* policy — reproducing the
+central open problem of the SIGMETRICS 2025 survey "Queueing, Predictions, and LLMs" (there is no
+free graceful-degradation guarantee).
+
+```python
+from most_queue.theory.srpt import prediction_degradation_curve
+
+curve = prediction_degradation_curve(0.7, service_h2_params, "H")
+# curve.spjf[i] at curve.sigmas[i]; curve.srpt / curve.sjf / curve.blind_fb references;
+# curve.breakeven_sigma — noise where SPJF becomes worse than blind
+```
+
 The next three disciplines (FB, PS, LCFS-PR) complete the size-based family. How each of them
 treats jobs of different sizes is computed by the library's own calculators:
 
@@ -707,6 +724,7 @@ calc = RDRAPriorityPH(n=2)
 calc.set_sources([0.2, 0.2, 0.2, 0.2])                 # arrival rates, highest priority first
 calc.set_servers([[1.0, 9.0, 135.0]] * 4)              # 3 service moments per class
 results = calc.run()  # results.v[k][0] — mean sojourn of class k
+```
 
 ## Systems with vacations
 
@@ -945,6 +963,29 @@ calc.set_servers(mu=1.0)
 results = calc.run()
 ```
 
+### M/M^[a,b]/1 — bulk (batch) service
+
+**Description:** The server serves customers in **batches**: it starts once at least `a` are queued
+and takes up to `b` of them, finishing the whole batch after one exponential batch-service time. This
+is the base model for **request batching in LLM inference serving** — the batch-service rate may
+depend on the batch size (a bigger batch is slower per batch but amortises fixed cost across
+requests, so there is an optimal maximum batch size). Solved as an exact CTMC on (batch-in-service,
+number waiting).
+
+**Calculator class:** `BulkServiceMM1Calc` (`most_queue.theory.batch.bulk_service`) ·
+**Simulator:** `BulkServiceSim` (`most_queue.sim.bulk_service`)
+
+**Example:**
+
+```python
+from most_queue.theory.batch.bulk_service import BulkServiceMM1Calc
+
+calc = BulkServiceMM1Calc(a=1, b=8)   # serve up to 8 at a time
+calc.set_sources(2.0)
+calc.set_servers(lambda size: 1.0 / (0.3 + 0.08 * size))  # LLM-style: batch time grows with size
+results = calc.run()  # results.v[0] mean sojourn, results.w[0] mean wait
+```
+
 ## Systems with impatient jobs
 
 ![Impatient jobs diagram](figures/impatience.png)
@@ -1160,6 +1201,94 @@ calc.set_sources(bmap)
 calc.set_servers(service)
 results = calc.run()
 ```
+
+## Multiserver-job systems (MSJ)
+
+**In plain words:** in modern datacenters and GPU clusters a single job often needs **several
+servers at once** (cores, GPUs) for its whole run — unlike the classic M/M/c where one job uses one
+server. A job waits until enough servers are simultaneously free. This "multiserver-job" model is a
+very active research topic (its mean response time was, until recently, largely unknown), and no
+other open-source package provides it.
+
+### FCFS MSJ — exact response time (small systems)
+
+**Description:** k servers; each job class has a **server need** (servers held simultaneously) and an
+exponential rate. FCFS with head-of-line blocking: the oldest jobs fill the servers greedily and the
+first job that does not fit stops the scan. Exact mean response time (overall and per class) via a
+CTMC on the arrival-ordered job sequence — for small k / few classes / moderate load.
+
+**Calculator class:** `MsjExactCalc` (`most_queue.theory.msj`) ·
+**Simulator:** `MsjSim` (`most_queue.sim.msj`)
+
+```python
+from most_queue.theory.msj import MsjExactCalc, MsjClass
+
+calc = MsjExactCalc(k=2, classes=[MsjClass(0.4, 1, 1.0), MsjClass(0.2, 2, 1.0)])
+r = calc.run()          # r.v[0] overall mean sojourn; r.v_per_class per class
+```
+
+### Saturated MSJ — throughput and stability threshold
+
+**Description:** The stability region of an MSJ system is characterised by its *saturated*
+(always-backlogged) version. `MsjSaturatedCalc` solves the saturated CTMC exactly and returns the
+throughput `X_sat`, which is the **maximum total arrival rate** the open system can sustain — it is
+stable iff Λ < X_sat. Reproduces the product-form stability results of Grosof, Harchol-Balter &
+Scheller-Wolf.
+
+**Calculator class:** `MsjSaturatedCalc` (`most_queue.theory.msj`)
+
+```python
+from most_queue.theory.msj import MsjSaturatedCalc, MsjClass
+
+sat = MsjSaturatedCalc(k=2, classes=[MsjClass(1.0, 1, 1.0), MsjClass(1.0, 2, 1.0)])
+x_sat = sat.run()       # max sustainable total arrival rate (class mix from arrival ratios)
+```
+
+## Age of Information (AoI)
+
+**In plain words:** in monitoring and status-update systems (IoT sensors, telemetry, networked
+control) what matters is not throughput but **freshness** — how old is the newest piece of
+information the receiver holds. The *age* Δ(t) grows linearly since the last delivered update and
+drops at each fresh delivery. The **time-average AoI** and the **peak AoI** (PAoI, the average of
+the pre-delivery peaks) quantify staleness. Sending too rarely leaves data stale; sending too often
+congests the queue and *also* makes data stale — there is an optimal update rate.
+
+### M/M/1 and general single-server FCFS AoI
+
+**Description:** Time-average AoI and peak AoI. For M/M/1: Δ̄ = (1/μ)(1 + 1/ρ + ρ²/(1−ρ)). For any
+single-server FCFS queue every update is delivered in order, so the peak AoI equals the mean sojourn
+plus the mean interarrival: **PAoI = E[T] + 1/λ** (exact; the mean sojourn comes from
+Pollaczek–Khinchine for M/G/1). The general M/G/1 *average* AoI is not a function of the service
+moments alone — use the simulator for it.
+
+**Calculator class:** `AoICalc` (`most_queue.theory.aoi`)
+
+**Example:**
+
+```python
+from most_queue.theory.aoi import AoICalc
+
+calc = AoICalc()
+calc.set_sources(0.6)          # update generation rate lambda
+calc.set_servers(mu=1.0)       # exponential service (or b=[E[S], E[S^2], ...] for M/G/1)
+res = calc.run()
+# res.avg_aoi (M/M/1 only), res.peak_aoi = E[T] + 1/lambda
+```
+
+### Preemptive-LCFS M/M/1 AoI
+
+**Description:** A fresh update preempts and discards the stale one in service — minimises age and is
+stable for **any** load. Time-average AoI Δ̄ = (1/μ)(1 + 1/ρ).
+
+**Calculator class:** `LcfsPreemptiveAoICalc` (`most_queue.theory.aoi`)
+
+### AoI simulator
+
+**Description:** Discrete-event AoI simulator tracking the sawtooth age process; supports FCFS, LCFS
+(non-preemptive) and LCFS-PR (preemptive) on one or more servers, any arrival/service distribution.
+Ground truth for average AoI where no moment-closed formula exists (M/G/1, M/M/c, D/M/1).
+
+**Simulator class:** `AoISim` (`most_queue.sim.aoi`)
 
 ## Closed systems
 
