@@ -65,7 +65,9 @@ def test_mgn_tt():
     # also can find out how many iterations were required
     num_of_iter = tt.num_of_iter_
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    # seed the simulator: the higher waiting-time moments are high-variance, so an
+    # unseeded run occasionally drifts past tolerance and makes this test flaky in CI
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
 
     # set arrival process. M - exponential with rate l
     qs.set_sources(ARRIVAL_RATE, "M")
