@@ -1350,6 +1350,12 @@ results = calc.run()
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Multi-server, correlated arrivals + PH service |
 | BMAP/M/1 | BmapM1Calc | - | - | Batch (correlated) arrivals |
 | BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Batch arrivals + PH service |
+| M/M/k, m classes (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Yes | Multi-server multi-priority, RDR |
+| M/M/k, m classes (exact) | MMkPriorityExact | PriorityQueueSimulator | Yes | Exact CTMC + per-class response variance |
+| M/PH/k, m classes | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Yes | Phase-type service (RDR §2.3) |
+| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Jobs holding k servers; stability threshold |
+| Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
+| M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 
 ## Choosing a model

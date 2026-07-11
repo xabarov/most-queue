@@ -100,11 +100,11 @@ The library consists of two main modules:
 ## 🧪 Examples and Tests
 
 - Usage examples can be found in the [`tests/`](../tests/) folder
-- Jupyter tutorials are available in the [`tutorials/`](../tutorials/) folder
+- [Jupyter tutorials](../tutorials/README.md) — counter-intuitive queueing insights for engineers
 
 ## 📝 Version
 
-Current version: **2.8**
+Current version: **2.9**
 
 ## 🔗 Useful Links
 

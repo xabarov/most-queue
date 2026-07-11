@@ -100,7 +100,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/README.md) — counter-intuitive queueing insights for engineers (the utilization trap, why variability dominates delay, multiserver jobs, Age of Information, …)
-- 🗺 [Development roadmaps](docs/epics/README.md) — what's next (closed networks / MVA, multi-server retrial, polling)
+- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (load balancing / power-of-d, queueing-inventory, closed networks / MVA, polling)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications

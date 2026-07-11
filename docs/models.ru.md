@@ -1301,6 +1301,12 @@ results = calc.run()
 | MAP/PH/c | MapPhCCalc | QsSim("MAP","PH") | - | Многоканальный, коррелированный вход + PH-обслуживание |
 | BMAP/M/1 | BmapM1Calc | - | - | Пакетный (коррелированный) вход |
 | BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Пакетный вход + PH-обслуживание |
+| M/M/k, m классов (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Да | Многоканальные многоприоритетные, RDR |
+| M/M/k, m классов (точно) | MMkPriorityExact | PriorityQueueSimulator | Да | Точная CTMC + дисперсия отклика по классам |
+| M/PH/k, m классов | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Да | Фазовое обслуживание (RDR §2.3) |
+| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Заявка занимает k серверов; порог устойчивости |
+| Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
+| M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 
 ## Рекомендации по выбору модели

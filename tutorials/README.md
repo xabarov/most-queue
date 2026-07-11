@@ -1,5 +1,7 @@
 # Tutorials — counter-intuitive queueing insights for engineers
 
+[🇷🇺 Русская версия](README.ru.md)
+
 Short, runnable notebooks. Each one uses the library's own calculators (paired with simulation to
 validate) to demonstrate a result that surprises most engineers — the kind of thing that changes how
 you size systems, schedule work, or reason about latency.
