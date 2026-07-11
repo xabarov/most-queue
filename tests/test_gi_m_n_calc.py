@@ -66,7 +66,7 @@ def test_gi_m_n():
 
     # for verification, we use simulation.
     # create an instance of the Simulation class and pass the number of servers
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
 
     # set the ariival distribution paprams.
     # The method needs to be passed parameters as a list and the type of

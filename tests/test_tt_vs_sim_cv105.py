@@ -63,7 +63,7 @@ def test_h2_h2_cv105():
     calc.set_servers(y=y_srv, mu=mu_srv)
     calc_results = calc.run()
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
     qs.set_sources(h2_arr, "H")
     qs.set_servers(h2_srv, "H")
     sim_results = qs.run(NUM_OF_JOBS)
@@ -87,7 +87,7 @@ def test_h2_m_cv105():
     calc.set_servers(b_mean)
     calc_results = calc.run()
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
     qs.set_sources(h2_params, "H")
     qs.set_servers(1.0 / b_mean, "M")
     sim_results = qs.run(NUM_OF_JOBS)
@@ -112,7 +112,7 @@ def test_m_h2_cv105():
     calc.set_servers(h2_srv)
     calc_results = calc.run()
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
     qs.set_sources(lam, "M")
     qs.set_servers(h2_srv, "H")
     sim_results = qs.run(NUM_OF_JOBS)

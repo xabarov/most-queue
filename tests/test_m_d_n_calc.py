@@ -54,7 +54,7 @@ def test_mdn():
     # for verification, we use simulation modeling
     # create an instance of the simulation class and pass the number of
     # service channels
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
 
     # set arrivals. The method needs to be passed distribution parameters and
     # type of distribution.

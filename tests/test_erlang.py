@@ -45,7 +45,7 @@ def test_erlang_b_vs_sim():
     calc.set_servers(mu=service_rate)
     calc_results = calc.run()
 
-    qs = QsSim(NUM_OF_CHANNELS, buffer=0)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=0, seed=42)
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(service_rate, "M")
     sim_results = qs.run(NUM_OF_JOBS)
@@ -79,7 +79,7 @@ def test_erlang_b_insensitivity():
     calc_results = calc.run()
 
     gamma_srv = GammaDistribution.get_params_by_mean_and_cv(service_mean, SERVICE_CV)
-    qs = QsSim(NUM_OF_CHANNELS, buffer=0)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=0, seed=42)
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(gamma_srv, "Gamma")
     sim_results = qs.run(NUM_OF_JOBS)
@@ -109,7 +109,7 @@ def test_erlang_c_vs_sim_and_mmnr():
     calc.set_servers(mu=service_rate)
     calc_results = calc.run()
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(service_rate, "M")
     sim_results = qs.run(NUM_OF_JOBS)

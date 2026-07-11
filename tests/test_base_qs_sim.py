@@ -43,7 +43,7 @@ def test_sim_mmnr():
     mu = ARRIVAL_RATE / (UTILIZATION_FACTOR * NUM_OF_CHANNELS)  # Service intensity
 
     # Create simulation instance
-    qs = QsSim(NUM_OF_CHANNELS, buffer=BUFFER)
+    qs = QsSim(NUM_OF_CHANNELS, buffer=BUFFER, seed=42)
 
     # Set arrival process parameters and distribution as exponential
     qs.set_sources(ARRIVAL_RATE, "M")
@@ -71,7 +71,7 @@ def test_sim_mdn():
     """
     Test the simulation model for a M/D/n
     """
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
 
     mu = ARRIVAL_RATE / (UTILIZATION_FACTOR * NUM_OF_CHANNELS)  # Service intensity
 

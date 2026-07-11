@@ -52,7 +52,7 @@ def test_m_g_inf():
     offered_load = calc.get_offered_load()
     assert np.isclose(offered_load, ARRIVAL_RATE * SERVICE_MEAN), ERROR_MSG
 
-    qs = QsSim(SIM_CHANNELS)
+    qs = QsSim(SIM_CHANNELS, seed=42)
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(gamma_params, "Gamma")
     sim_results = qs.run(NUM_OF_JOBS)

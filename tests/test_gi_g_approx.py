@@ -102,7 +102,7 @@ def test_gig1_klb_vs_sim_grid():
         approx.set_servers(b)
         w1_klb = approx.run().w[0]
 
-        qs = QsSim(1)
+        qs = QsSim(1, seed=42)
         qs.set_sources(GammaDistribution.get_params_by_mean_and_cv(1.0 / ARRIVAL_RATE, cv_a), "Gamma")
         qs.set_servers(GammaDistribution.get_params_by_mean_and_cv(rho / ARRIVAL_RATE, cv_b), "Gamma")
         w1_sim = qs.run(NUM_OF_JOBS).w[0]
@@ -129,7 +129,7 @@ def test_gigm_allen_cunneen_vs_sim():
     approx.set_servers(b)
     w1_ac = approx.run().w[0]
 
-    qs = QsSim(NUM_OF_CHANNELS)
+    qs = QsSim(NUM_OF_CHANNELS, seed=42)
     qs.set_sources(GammaDistribution.get_params_by_mean_and_cv(1.0 / ARRIVAL_RATE, cv_a), "Gamma")
     qs.set_servers(GammaDistribution.get_params_by_mean_and_cv(service_mean, cv_b), "Gamma")
     w1_sim = qs.run(NUM_OF_JOBS).w[0]

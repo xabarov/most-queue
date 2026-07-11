@@ -108,7 +108,7 @@ def test_map_ph1_vs_sim():
     calc.set_servers(ph_srv)
     calc_results = calc.run()
 
-    sim = QsSim(1)
+    sim = QsSim(1, seed=42)
     sim.set_sources(mmpp, "MAP")
     sim.set_servers(ph_srv, "PH")
     sim_results = sim.run(NUM_OF_JOBS)
