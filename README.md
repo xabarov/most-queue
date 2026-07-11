@@ -2,7 +2,7 @@
 
 # Most-Queue
 
-**Queueing theory in Python: exact analytical solvers paired with discrete-event simulation — for 40+ models from M/M/1 to SRPT scheduling, vacations, negative customers and queueing networks.**
+**Queueing theory in Python: exact analytical solvers paired with discrete-event simulation — for 50+ models from M/M/1 to multiserver-jobs, RDR priorities, SRPT scheduling, age of information, vacations and queueing networks.**
 
 [🇷🇺 Русская версия](README.ru.md)
 
@@ -77,8 +77,10 @@ See the executable comparison of **9 disciplines** in
 |---|---|---|
 | Classic FIFO | M/M/c, M/M/c/r, Erlang B/C, M/G/1, GI/M/c, M/D/c, Eₖ/D/c, M/G/∞ | exact |
 | Multi-server phase-type | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 via complex fit) | Takahashi–Takami |
-| Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
-| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR | exact / invariant approximation |
+| Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors + graceful-degradation curves), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
+| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance | exact / RDR / invariant approximation |
+| Multiserver-job (MSJ) | jobs holding several servers at once — FCFS response time, saturated-system stability/throughput | exact CTMC / saturated product-form |
+| Age of Information | M/M/1, M/G/1, preemptive-LCFS — average & peak AoI | closed-form + simulation |
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
 | Reliability | M/G/1 with breakdowns & repairs | Avi-Itzhak–Naor |
@@ -86,7 +88,8 @@ See the executable comparison of **9 disciplines** in
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
-| Batch, impatience, closed | Mˣ/M/1, M/M/1+M, Engset | exact |
+| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
+| Impatience & closed | M/M/1+M, Engset | exact |
 | Parallel service | Fork-Join, Split-Join | Markovian / order statistics |
 | Networks | open networks, priority networks, networks with negative customers, routing optimization | decomposition |
 
@@ -108,6 +111,13 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026 (v2.9)** — **Datacenter & multi-priority wave**: **RDR** for multi-server multi-class
+  preemptive priorities (M/M/k and M/PH/k, exact + RDR-A, per-class response-time variance);
+  the **multiserver-job** model (jobs holding several servers at once — FCFS response time and
+  saturated-system stability, the first open-source implementation); **Age of Information**
+  (average & peak AoI); **bulk-service** queues for LLM inference batching; and
+  **graceful-degradation curves** for prediction-based scheduling. See the
+  [trends survey](docs/research/queueing-trends-2026.md).
 - **2026** — **Matrix-analytic MAP/PH stack**: PH distributions and MAPs
   (`most_queue.random.map_ph`), a QBD solver with logarithmic reduction, and exact calculators
   for MAP/PH/1, M/PH/1, PH/PH/1, **MAP/M/c**, **MAP/PH/c**, plus **BMAP/M/1** and **BMAP/PH/1**
