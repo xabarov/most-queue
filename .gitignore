@@ -199,3 +199,5 @@ docs/статьи/
 works/queueing_systems_review/SRPT/pdf/
 works/experiments/rabbitmq_prefetch/
 works/reviews/
+# RDR paper PDF (external, not redistributed) — keep only COVERAGE.md audit
+works/articles/multichannel-pr/*.pdf

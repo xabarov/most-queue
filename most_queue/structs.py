@@ -7,6 +7,15 @@ from dataclasses import asdict, dataclass, is_dataclass
 
 
 @dataclass
+class AoIResults:
+    """Age-of-Information results: time-average age and average peak age."""
+
+    avg_aoi: float | None = None  # time-average age of information
+    peak_aoi: float | None = None  # average peak age of information (PAoI)
+    duration: float = 0.0
+
+
+@dataclass
 class QueueResults:
     """
     Result of calculation for queueing system.
