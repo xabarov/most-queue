@@ -722,6 +722,35 @@ calc.set_servers([[1.0, 9.0, 135.0]] * 4)              # 3 момента обс
 results = calc.run()  # results.v[k][0] — среднее время пребывания класса k
 ```
 
+## Polling-системы (циклический сервер)
+
+**Простыми словами:** один сервер циклически обходит несколько очередей (token ring, USB/Bluetooth
+host, обслуживающая бригада на обходе, светофор). Переход между очередями стоит **времени
+переключения** (switchover), поэтому система *не* work-conserving. Тем не менее **псевдо-закон
+сохранения** точно фиксирует взвешенную по загрузке сумму средних ожиданий — приоритет-по-позиции
+перераспределяет задержку, а накладные switchover задают инвариант.
+
+### M/G/1 polling — псевдо-закон сохранения и симметричное ожидание
+
+**Описание:** Q очередей, циклическое обслуживание по дисциплине **exhaustive** (до опустошения)
+или **gated** (только присутствовавшие в момент опроса) с временами переключения. Считает точную
+псевдо-сумму сохранения `Σ ρ_i W_i` (Boxma–Groenevelt) для любой (асимметричной) системы; для
+симметричной среднее ожидание по очереди `W = (Σ ρ_i W_i)/ρ`. Общие асимметричные ожидания по
+очередям — из парного симулятора.
+
+**Класс расчета:** `PollingCalc` (`most_queue.theory.polling`) ·
+**Симулятор:** `PollingSim` (`most_queue.sim.polling`)
+
+```python
+from most_queue.theory.polling import PollingCalc
+
+calc = PollingCalc(discipline="exhaustive")   # или "gated"
+calc.set_sources([0.2, 0.2, 0.2])             # интенсивности входа по очередям
+calc.set_servers([1.0, 2.0, 6.0])             # моменты обслуживания (общие или по очередям)
+calc.set_switchover(0.5)                       # среднее время переключения между очередями
+res = calc.run()   # res.pseudo_conservation_sum, res.mean_wait_symmetric, res.mean_cycle
+```
+
 ## Системы с отпусками (Vacations)
 
 ![Жизненный цикл прибора в vacation-моделях](figures/vacations.ru.png)
@@ -1195,6 +1224,70 @@ sat = MsjSaturatedCalc(k=2, classes=[MsjClass(1.0, 1, 1.0), MsjClass(1.0, 2, 1.0
 x_sat = sat.run()       # макс. суммарная интенсивность входа (микс классов — из соотношения rates)
 ```
 
+## Балансировка нагрузки / диспетчеризация (mean-field)
+
+**Простыми словами:** при большом пуле серверов диспетчер решает, куда отправить каждую заявку.
+Политика критично важна: **случайный** сервер сильно хуже, чем опросить несколько и выбрать
+короткий (**power-of-d** / «power of two choices»), что почти так же хорошо, как опрос всех
+(**JSQ**) или выбор простаивающего (**JIQ**). В пределе большого пула (mean-field) есть замкнутые
+формулы.
+
+### Power-of-d, JSQ, JIQ — время отклика в mean-field
+
+**Описание:** При нагрузке на сервер ρ доля серверов с ≥ k заявками — `s_k = ρ^((d^k−1)/(d−1))` для
+power-of-d (d=1 = случайный = геометрия M/M/1; d≥2 спадает **двойной** экспонентой — power of two
+choices), и `s_k = 0` при k ≥ 2 для JSQ/JIQ ниже ёмкости (асимптотически нулевое ожидание). Среднее
+число на сервер `L = Σ s_k`, отклик `W = L/(ρμ)`.
+
+**Класс расчета:** `LoadBalancingMeanField` (`most_queue.theory.load_balancing`) ·
+**Симулятор:** `LoadBalancingSim` (`most_queue.sim.load_balancing`)
+
+```python
+from most_queue.theory.load_balancing import LoadBalancingMeanField
+
+calc = LoadBalancingMeanField(policy="power-of-d", d=2)   # или "jsq", "jiq", "random"
+calc.set_sources(0.9)     # нагрузка на сервер rho
+calc.set_servers(1.0)     # интенсивность обслуживания mu
+res = calc.run()          # res.w среднее время отклика, res.tail = [s_0, s_1, s_2, ...]
+```
+
+См. [туториал power-of-two-choices](../tutorials/power_of_two_choices.ipynb).
+
+## Нестационарные очереди Mt/M/c (переменная нагрузка)
+
+**Простыми словами:** реальная интенсивность прихода не постоянна — call-центры, дороги и трафик
+ЦОД нарастают и спадают в течение суток. Подставить *пиковую* интенсивность в стационарную формулу
+— переоценить штат; подставить *среднюю* — недооценить в час пик. Когда нагрузка меняется медленно,
+система успевает за ней и работает *поточечная* стационарная формула; когда быстро — система
+**отстаёт** от нагрузки, и нужна формула, учитывающая это отставание.
+
+### Приближения PSA и MOL для Mt/M/c
+
+**Описание:** Для переменной интенсивности λ(t) и c серверов — два приближения вероятности блокировки
+(потери, `kind="loss"`, Erlang B) или вероятности ожидания (задержка, `kind="delay"`, Erlang C):
+
+- **PSA (pointwise stationary approximation)** — вычислять стационарную формулу Эрланга в мгновенной
+  предложенной нагрузке a(t) = λ(t)/μ. Точна при медленной вариации / большом c.
+- **MOL (modified offered load)** — сначала пропустить λ(t) через отклик M/M/∞
+  `dm/dt = λ(t) − μ·m(t)`, получив запаздывающую сглаженную нагрузку m(t), затем подставить m(t) в
+  формулу Эрланга. Учитывает отставание, которое PSA игнорирует; заметно точнее при быстрой вариации.
+
+**Класс расчета:** `TimeVaryingMMcCalc` (`most_queue.theory.time_varying`) ·
+**Симулятор:** `TimeVaryingMMcSim` (`most_queue.sim.time_varying`, неоднородный пуассоновский поток
+методом прореживания, система с потерями)
+
+```python
+import numpy as np
+from most_queue.theory.time_varying import TimeVaryingMMcCalc
+
+calc = TimeVaryingMMcCalc(n=5, kind="loss")       # или "delay"
+calc.set_sources(lambda t: 4.0 * (1 + 0.6 * np.sin(t)))   # lambda(t)
+calc.set_servers(mu=1.0)
+t_grid = np.linspace(0, 4 * np.pi, 80)
+res = calc.run(t_grid, mol_warmup=8.0)
+# res.psa, res.mol (вероятность блокировки по t_grid), res.offered_load (m(t) для MOL)
+```
+
 ## Age of Information (AoI, свежесть информации)
 
 **Простыми словами:** в системах мониторинга и статус-апдейтов (IoT-сенсоры, телеметрия, сетевое
@@ -1305,6 +1398,9 @@ results = calc.run()
 | M/M/k, m классов (точно) | MMkPriorityExact | PriorityQueueSimulator | Да | Точная CTMC + дисперсия отклика по классам |
 | M/PH/k, m классов | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Да | Фазовое обслуживание (RDR §2.3) |
 | Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Заявка занимает k серверов; порог устойчивости |
+| Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
+| Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
+| Нестационарная Mt/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |

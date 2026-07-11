@@ -726,6 +726,35 @@ calc.set_servers([[1.0, 9.0, 135.0]] * 4)              # 3 service moments per c
 results = calc.run()  # results.v[k][0] — mean sojourn of class k
 ```
 
+## Polling systems (cyclic server)
+
+**In plain words:** one server cyclically visits several queues (a token ring, a USB/Bluetooth
+host polling devices, a maintenance crew touring machines, a traffic light). Moving between queues
+costs a **switchover** time, so the system is *not* work-conserving. Yet a **pseudo-conservation
+law** pins down the load-weighted sum of the mean waits exactly — priorities-by-position
+redistribute delay, but the switchover overhead sets the invariant.
+
+### M/G/1 polling — pseudo-conservation law & symmetric wait
+
+**Description:** Q queues, cyclic service under **exhaustive** (serve a queue until empty) or
+**gated** (serve only what was present at the polling instant) discipline, with switchover times.
+Computes the exact pseudo-conservation sum `Σ ρ_i W_i` (Boxma–Groenevelt) for any (asymmetric)
+system; for a symmetric system the per-queue mean wait is `W = (Σ ρ_i W_i)/ρ`. General asymmetric
+per-queue waits come from the paired simulator.
+
+**Calculator class:** `PollingCalc` (`most_queue.theory.polling`) ·
+**Simulator:** `PollingSim` (`most_queue.sim.polling`)
+
+```python
+from most_queue.theory.polling import PollingCalc
+
+calc = PollingCalc(discipline="exhaustive")   # or "gated"
+calc.set_sources([0.2, 0.2, 0.2])             # per-queue arrival rates
+calc.set_servers([1.0, 2.0, 6.0])             # service raw moments (shared or per-queue)
+calc.set_switchover(0.5)                       # mean switchover between queues
+res = calc.run()   # res.pseudo_conservation_sum, res.mean_wait_symmetric, res.mean_cycle
+```
+
 ## Systems with vacations
 
 ![Server life cycle in vacation models](figures/vacations.png)
@@ -1244,6 +1273,71 @@ sat = MsjSaturatedCalc(k=2, classes=[MsjClass(1.0, 1, 1.0), MsjClass(1.0, 2, 1.0
 x_sat = sat.run()       # max sustainable total arrival rate (class mix from arrival ratios)
 ```
 
+## Load balancing / dispatching (mean-field)
+
+**In plain words:** with a large pool of servers, a dispatcher decides where each job goes. The
+policy matters enormously: sending to a **random** server is far worse than sampling a few and
+picking the shortest (**power-of-d** / "power of two choices"), which in turn is nearly as good as
+polling all of them (**JSQ**) or always picking an idle one (**JIQ**). In the large-pool
+(mean-field) limit these have closed forms.
+
+### Power-of-d, JSQ, JIQ — mean-field response time
+
+**Description:** For per-server load ρ, the stationary fraction of servers with ≥ k jobs is
+`s_k = ρ^((d^k−1)/(d−1))` for power-of-d (d=1 = random = M/M/1 geometric tail; d≥2 decays *doubly*
+exponentially — the power of two choices), and `s_k = 0` for k ≥ 2 under JSQ/JIQ below capacity
+(asymptotically zero waiting). Mean number per server `L = Σ s_k`, response time `W = L/(ρμ)`.
+
+**Calculator class:** `LoadBalancingMeanField` (`most_queue.theory.load_balancing`) ·
+**Simulator:** `LoadBalancingSim` (`most_queue.sim.load_balancing`)
+
+```python
+from most_queue.theory.load_balancing import LoadBalancingMeanField
+
+calc = LoadBalancingMeanField(policy="power-of-d", d=2)   # or "jsq", "jiq", "random"
+calc.set_sources(0.9)     # per-server load rho
+calc.set_servers(1.0)     # service rate mu
+res = calc.run()          # res.w mean response, res.tail = [s_0, s_1, s_2, ...]
+```
+
+See the [power-of-two-choices tutorial](../tutorials/power_of_two_choices.ipynb).
+
+## Non-stationary Mt/M/c queues (time-varying load)
+
+**In plain words:** real arrival rates are not constant — call centres, roads, and data-centre
+traffic surge and ebb over the day. Plugging the *peak* rate into a stationary formula overstaffs;
+plugging the *average* rate understaffs during the peak. When the load moves slowly the system
+tracks it and a *pointwise* stationary formula works; when it moves fast the system **lags** behind
+the load, and you need a formula that captures that lag.
+
+### PSA and MOL approximations for Mt/M/c
+
+**Description:** For a time-varying arrival rate λ(t) and c servers, two approximations of the
+blocking probability (loss, `kind="loss"`, Erlang B) or waiting probability (delay, `kind="delay"`,
+Erlang C):
+
+- **PSA (pointwise stationary approximation)** — evaluate the stationary Erlang formula at the
+  instantaneous offered load a(t) = λ(t)/μ. Exact under slow variation / large c.
+- **MOL (modified offered load)** — first pass λ(t) through an M/M/∞ response
+  `dm/dt = λ(t) − μ·m(t)` to obtain a lagged, damped offered load m(t), then plug m(t) into the
+  Erlang formula. Captures the lag PSA misses; markedly more accurate under fast variation.
+
+**Calculator class:** `TimeVaryingMMcCalc` (`most_queue.theory.time_varying`) ·
+**Simulator:** `TimeVaryingMMcSim` (`most_queue.sim.time_varying`, non-homogeneous Poisson via
+thinning, loss system)
+
+```python
+import numpy as np
+from most_queue.theory.time_varying import TimeVaryingMMcCalc
+
+calc = TimeVaryingMMcCalc(n=5, kind="loss")       # or "delay"
+calc.set_sources(lambda t: 4.0 * (1 + 0.6 * np.sin(t)))   # lambda(t)
+calc.set_servers(mu=1.0)
+t_grid = np.linspace(0, 4 * np.pi, 80)
+res = calc.run(t_grid, mol_warmup=8.0)
+# res.psa, res.mol (blocking prob over t_grid), res.offered_load (MOL m(t))
+```
+
 ## Age of Information (AoI)
 
 **In plain words:** in monitoring and status-update systems (IoT sensors, telemetry, networked
@@ -1354,6 +1448,9 @@ results = calc.run()
 | M/M/k, m classes (exact) | MMkPriorityExact | PriorityQueueSimulator | Yes | Exact CTMC + per-class response variance |
 | M/PH/k, m classes | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Yes | Phase-type service (RDR §2.3) |
 | Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Jobs holding k servers; stability threshold |
+| Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
+| Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
+| Non-stationary Mt/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
