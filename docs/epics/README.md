@@ -54,6 +54,9 @@
 | [EPIC-011](EPIC-011-multiserver-job.md) | Multiserver-job (MSJ): заявка занимает k серверов одновременно | done |
 | [EPIC-012](EPIC-012-bulk-service.md) | Bulk-service очереди (batching, LLM inference) | done |
 | [EPIC-013](EPIC-013-predictions-scheduling.md) | Планирование с предсказаниями (learning-augmented) | done |
+| [EPIC-014](EPIC-014-load-balancing.md) | Балансировка нагрузки / диспетчеризация (JSQ/power-of-d/JIQ, mean-field) | proposed |
+| [EPIC-015](EPIC-015-polling.md) | Polling-системы (циклический сервер, switchover) | proposed |
+| [EPIC-016](EPIC-016-time-varying.md) | Нестационарные очереди Mt/M/c (PSA/MOL) | proposed |
 
-Направления EPIC-010…013 выбраны по обзору трендов сообщества:
-[../research/queueing-trends-2026.md](../research/queueing-trends-2026.md).
+Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
+сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md).
