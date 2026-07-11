@@ -36,6 +36,7 @@ you size systems, schedule work, or reason about latency.
 |---|---|
 | [power_of_two_choices.ipynb](power_of_two_choices.ipynb) | Sampling **two** random servers and taking the shorter is dramatically better than one and nearly as good as polling all `N` — the "power of two choices" behind modern load balancers. |
 | [multiserver_jobs.ipynb](multiserver_jobs.ipynb) | Jobs that grab **several servers at once** (GPU/core reservations): you **can't use `k·μ`** — packing and blocking cost 20–30% of capacity. |
+| [time_varying_load.ipynb](time_varying_load.ipynb) | **Peak congestion isn't at peak demand** — a busy system lags the load, so staffing to the instantaneous rate arrives late. When to use PSA vs MOL for time-varying `Mt/M/c`. |
 | [age_of_information.ipynb](age_of_information.ipynb) | **Sending updates faster can make your data staler** — freshness (Age of Information) is U-shaped in the update rate, with an optimum in the middle. |
 | [map_ph_correlation.ipynb](map_ph_correlation.ipynb) | **Correlated (bursty) arrivals** blow up delay even at the *same* average rate — the MAP/PH matrix-analytic stack captures it. |
 

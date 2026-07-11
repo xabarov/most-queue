@@ -80,6 +80,9 @@ See the executable comparison of **9 disciplines** in
 | Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors + graceful-degradation curves), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
 | Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance | exact / RDR / invariant approximation |
 | Multiserver-job (MSJ) | jobs holding several servers at once — FCFS response time, saturated-system stability/throughput | exact CTMC / saturated product-form |
+| Load balancing (mean-field) | dispatching over a large pool — power-of-d / JSQ / JIQ / random | mean-field fixed point |
+| Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |
+| Non-stationary Mt/M/c | time-varying arrival rate λ(t) — blocking & waiting probability | PSA & MOL approximations |
 | Age of Information | M/M/1, M/G/1, preemptive-LCFS — average & peak AoI | closed-form + simulation |
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
@@ -100,7 +103,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/README.md) — counter-intuitive queueing insights for engineers (the utilization trap, why variability dominates delay, multiserver jobs, Age of Information, …)
-- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (load balancing / power-of-d, queueing-inventory, closed networks / MVA, polling)
+- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (queueing-inventory, closed networks / MVA, fork-join extensions)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications
@@ -111,6 +114,13 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026** — **Scale & dynamics wave**: **load balancing** in the mean-field limit
+  (power-of-d / JSQ / JIQ — the "power of two choices" behind modern dispatchers);
+  **polling systems** (one server touring Q queues with switchover, exhaustive/gated, the
+  Boxma–Groenevelt pseudo-conservation law); and **non-stationary Mt/M/c** with time-varying
+  load (PSA & MOL approximations for surging demand — call-center staffing, autoscaling).
+  Each with a paired simulator and tests. See the
+  [trends survey](docs/research/queueing-trends-2026.md).
 - **2026 (v2.9)** — **Datacenter & multi-priority wave**: **RDR** for multi-server multi-class
   preemptive priorities (M/M/k and M/PH/k, exact + RDR-A, per-class response-time variance);
   the **multiserver-job** model (jobs holding several servers at once — FCFS response time and
