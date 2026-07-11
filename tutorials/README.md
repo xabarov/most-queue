@@ -11,6 +11,7 @@ you size systems, schedule work, or reason about latency.
 | [utilization_trap.ipynb](utilization_trap.ipynb) | Why the **last 10% of utilization is the most expensive** (latency blows up like `1/(1-ρ)`), and why **pooling servers** beats many small queues at the same load. |
 | [variability_matters.ipynb](variability_matters.ipynb) | Same *average* service time, **10×+ different delay** — waiting scales with the service-time variability `C²`, not just the mean (Pollaczek–Khinchine). |
 | [littles_law.ipynb](littles_law.ipynb) | `L = λW` holds for **any** system, discipline and distribution — turn the metric you can't measure into the two you can (latency from concurrency). |
+| [heavy_traffic.ipynb](heavy_traffic.ipynb) | Near saturation the waiting time becomes **exponential for any service distribution** — the queue "forgets" the shape; only the first two moments matter. |
 
 ### Scheduling
 
@@ -20,13 +21,20 @@ you size systems, schedule work, or reason about latency.
 | [srpt_basics.ipynb](srpt_basics.ipynb) | **Size-aware scheduling** (SRPT/SJF) slashes response time; predictions can stand in for exact sizes, with graceful degradation. |
 | [conservation_law.ipynb](conservation_law.ipynb) | **Priority is a zero-sum game**: blind class-priority conserves the load-weighted total wait `Σ ρ_i W_i` — it redistributes delay, it can't remove it. |
 
-### Modelling pitfalls & modern systems
+### Sampling & paradoxes
 
 | Notebook | The insight |
 |---|---|
 | [pasta.ipynb](pasta.ipynb) | **Only Poisson arrivals see time averages** — with regular/bursty traffic, what an arriving request experiences differs from the average, biasing measurements and formulas. |
-| [age_of_information.ipynb](age_of_information.ipynb) | **Sending updates faster can make your data staler** — freshness (Age of Information) is U-shaped in the update rate, with an optimum in the middle. |
+| [inspection_paradox.ipynb](inspection_paradox.ipynb) | A random observer **waits longer than half the average gap** — you over-sample the long intervals (`E[X²]/2E[X]`). The bus-waiting paradox. |
+
+### Load balancing & modern systems
+
+| Notebook | The insight |
+|---|---|
+| [power_of_two_choices.ipynb](power_of_two_choices.ipynb) | Sampling **two** random servers and taking the shorter is dramatically better than one and nearly as good as polling all `N` — the "power of two choices" behind modern load balancers. |
 | [multiserver_jobs.ipynb](multiserver_jobs.ipynb) | Jobs that grab **several servers at once** (GPU/core reservations): you **can't use `k·μ`** — packing and blocking cost 20–30% of capacity. |
+| [age_of_information.ipynb](age_of_information.ipynb) | **Sending updates faster can make your data staler** — freshness (Age of Information) is U-shaped in the update rate, with an optimum in the middle. |
 | [map_ph_correlation.ipynb](map_ph_correlation.ipynb) | **Correlated (bursty) arrivals** blow up delay even at the *same* average rate — the MAP/PH matrix-analytic stack captures it. |
 
 Run any of them with Jupyter after `pip install most-queue` (plus `jupyter`, `matplotlib`, `pandas`).
