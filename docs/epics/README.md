@@ -57,6 +57,8 @@
 | [EPIC-014](EPIC-014-load-balancing.md) | Балансировка нагрузки / диспетчеризация (JSQ/power-of-d/JIQ, mean-field) | done |
 | [EPIC-015](EPIC-015-polling.md) | Polling-системы (циклический сервер, switchover) | done |
 | [EPIC-016](EPIC-016-time-varying.md) | Нестационарные очереди Mt/M/c (PSA/MOL) | done |
+| [EPIC-017](EPIC-017-networks-exact-methods.md) | Сети МО: закрытые сети и точные методы (MVA/Бьюзен, Джексон, QNA, G-networks, BCMP) | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
-сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md).
+сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
+EPIC-017 — по обзору сетей: [../research/queueing-networks-2026.md](../research/queueing-networks-2026.md).

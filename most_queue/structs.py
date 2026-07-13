@@ -85,6 +85,50 @@ class NetworkResults:
 
 
 @dataclass
+class ClosedNetworkResults(NetworkResults):
+    """
+    Results for a closed queueing network (MVA / Buzen convolution).
+
+    v[0] holds the mean cycle time N / X (time for a job to complete one
+    full cycle relative to the reference node with visit ratio e = 1).
+    """
+
+    throughput: float = 0.0  # X — throughput of the reference node (visit ratio 1)
+    mean_jobs: list[float] | None = None  # L_i — mean number of jobs at each node
+    v_node: list[float] | None = None  # W_i — mean sojourn time per visit at each node
+
+
+@dataclass
+class NetworkMeansResults(NetworkResults):
+    """
+    Mean-value results for open networks (Jackson, QNA, G-network).
+
+    Only the mean network sojourn time v[0] is produced (for product-form
+    solvers it is exact; higher moments are not available in closed form
+    because of overtaking).
+    """
+
+    mean_jobs: list[float] | None = None  # L_i — mean number of jobs at each node
+    v_node: list[float] | None = None  # mean sojourn time per visit at each node
+    negative_intensities: list[float] | None = None  # G-networks: total negative rate per node
+
+
+@dataclass
+class BCMPNetworkResults:
+    """
+    Results for a multi-class BCMP network (open or closed).
+    """
+
+    v: list[list[float]] | None = None  # per class: [mean network sojourn / cycle time]
+    intensities: list[list[float]] | None = None  # per class arrival rate at each node
+    loads: list[float] | None = None  # total utilization per node
+    mean_jobs: list[list[float]] | None = None  # per class mean jobs at each node
+    v_node: list[list[float]] | None = None  # per class mean sojourn per visit at each node
+    throughput: list[float] | None = None  # per class throughput (closed networks)
+    duration: float = 0.0
+
+
+@dataclass
 class NetworkResultsPriority:
     """
     Data class to store results for network with priority discipline in nodes.

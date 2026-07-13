@@ -180,6 +180,132 @@ print(f"Node utilizations: {results.loads}")
 print(f"Mean sojourn time: {results.v[0]:.4f}")
 ```
 
+## Exact Jackson Networks (Product Form)
+
+For a Markovian open network (Poisson external arrivals, exponential M/M/n
+nodes) the `JacksonNetworkCalc` class gives the **exact** product-form
+solution (Jackson, 1957/1963). Mean values are exact, so it serves as a
+baseline for the approximate decomposition of `OpenNetworkCalc`.
+
+```python
+from most_queue.theory.networks.jackson_network import JacksonNetworkCalc
+
+calc = JacksonNetworkCalc()
+calc.set_sources(arrival_rate=1.0, R=R)      # same routing format as OpenNetworkCalc
+calc.set_nodes(mu=[1.0, 2.0, 1.5], n=[2, 3, 2])
+res = calc.run()
+print(res.v[0], res.mean_jobs, res.loads)    # exact means
+```
+
+## QNA — Non-Poisson Internal Flows (Whitt)
+
+The plain decomposition treats every internal flow as Poisson. The
+`OpenNetworkCalcQNA` class implements Whitt's **Queueing Network Analyzer**
+(1983): the squared coefficient of variation of interarrival times is
+propagated through departure, splitting and superposition operations, and
+each node is approximated as a GI/G/n queue with the Kraemer &
+Langenbach-Belz correction. On networks with highly variable service the
+error drops substantially (e.g. from ~20% to ~2% on an H2 tandem with
+c² = 4 at utilization 0.8).
+
+```python
+from most_queue.theory.networks.qna import OpenNetworkCalcQNA
+
+qna = OpenNetworkCalcQNA()
+qna.set_sources(arrival_rate=1.0, R=R, arrival_cv2=1.0)
+qna.set_nodes(b=b, n=num_channels)           # raw service moments per node
+res = qna.run()
+print(res.v[0], qna.arrival_cv2_nodes)       # mean sojourn + per-node arrival cv²
+```
+
+## Closed Networks (MVA and Buzen Convolution)
+
+A closed network has no external arrivals: a fixed population of N jobs
+circulates over the nodes (Gordon–Newell model). The `ClosedNetworkCalc`
+class provides three solvers:
+
+- `method="mva"` — exact Mean Value Analysis (Reiser–Lavenberg, 1980),
+  including multi-server stations (via marginal probabilities) and
+  infinite-server (delay) nodes — pass `n=[..., None, ...]` for a delay node;
+- `method="convolution"` — Buzen's convolution algorithm (1973) for the
+  normalization constant G(N); matches MVA to machine precision;
+- `method="schweitzer"` — Schweitzer–Bard approximate MVA for large
+  populations (multi-server stations via the Seidmann approximation).
+
+```python
+import numpy as np
+from most_queue.theory.networks.closed_network import ClosedNetworkCalc
+
+# Central-server model: CPU + 2 disks, 8 jobs
+routing = np.array([
+    [0.1, 0.5, 0.4],
+    [1.0, 0.0, 0.0],
+    [1.0, 0.0, 0.0],
+])
+
+calc = ClosedNetworkCalc(method="mva")
+calc.set_sources(R=routing, N=8)             # m x m matrix, rows sum to 1
+calc.set_nodes(b=[0.02, 0.06, 0.08], n=[2, 1, 1])
+res = calc.run()
+print(res.throughput, res.mean_jobs, res.v[0])   # X, L_i, mean cycle time N/X
+```
+
+The paired simulator is `ClosedNetworkSim` (`most_queue.sim.networks.closed_network`),
+with the same `set_sources` / `set_nodes` interface (Kendall-notation service
+distributions) and a `seed` parameter.
+
+## G-Networks (Negative Customers, Gelenbe Product Form)
+
+For M/M/1 nodes the `GNetworkCalc` class gives the **exact** product-form
+solution of a G-network (Gelenbe, 1991): a job completing service moves to
+the next node as a positive customer or as a **negative signal** that removes
+one customer from a non-empty node. External positive and negative Poisson
+flows are set per node. The nonlinear traffic equations are solved by
+fixed-point iteration. This complements the approximate
+`NegativeNetworkCalc` decomposition (DISASTER/RCS, M/G/n nodes) with an
+exact baseline for the Markovian single-channel case.
+
+```python
+import numpy as np
+from most_queue.theory.networks.g_network import GNetworkCalc
+
+calc = GNetworkCalc()
+calc.set_sources(
+    positive_rates=[0.5, 0.2],
+    P_plus=np.array([[0.0, 0.4], [0.2, 0.0]]),    # movement as positive customers
+    P_minus=np.array([[0.0, 0.2], [0.1, 0.0]]),   # movement as negative signals
+    negative_rates=[0.1, 0.0],                     # external negative flows
+)
+calc.set_nodes(mu=[1.0, 1.5])
+res = calc.run()
+print(res.loads, res.mean_jobs, res.negative_intensities)
+```
+
+## BCMP Networks (Multi-Class Product Form)
+
+The BCMP theorem (Baskett–Chandy–Muntz–Palacios, 1975) extends product form
+to **multi-class** networks with four station types: FCFS (exponential,
+class-independent rate), PS, LCFS-PR and IS (delay); PS/LCFS-PR/IS stations
+are insensitive — only mean service times matter.
+
+- `BCMPOpenNetworkCalc` — open network, per-class Poisson arrivals and
+  per-class routing matrices; exact per-class means.
+- `BCMPClosedNetworkCalc` — closed multi-chain network solved by **exact
+  multi-chain MVA** (recursion over all population vectors).
+
+```python
+from most_queue.theory.networks.bcmp_network import BCMPClosedNetworkCalc
+
+calc = BCMPClosedNetworkCalc()
+calc.set_sources(R=[routing_class1, routing_class2], N=[3, 2])
+calc.set_nodes(
+    s=[[0.5, 0.8], [0.3, 0.4]],                  # s[node][class] mean service times
+    station_types=["ps", "fcfs"],
+)
+res = calc.run()
+print(res.throughput, res.mean_jobs)             # per class
+```
+
 ## Networks with Priorities
 
 ### The PriorityNetworkSimulator Class

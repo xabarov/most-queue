@@ -180,6 +180,133 @@ print(f"Загрузки узлов: {results.loads}")
 print(f"Среднее время пребывания: {results.v[0]:.4f}")
 ```
 
+## Точные сети Джексона (product-form)
+
+Для марковской открытой сети (пуассоновский внешний поток, экспоненциальные
+узлы M/M/n) класс `JacksonNetworkCalc` даёт **точное** решение в форме
+произведения (Джексон, 1957/1963). Средние значения точны, поэтому класс
+служит эталоном для приближённой декомпозиции `OpenNetworkCalc`.
+
+```python
+from most_queue.theory.networks.jackson_network import JacksonNetworkCalc
+
+calc = JacksonNetworkCalc()
+calc.set_sources(arrival_rate=1.0, R=R)      # тот же формат маршрутизации, что и в OpenNetworkCalc
+calc.set_nodes(mu=[1.0, 2.0, 1.5], n=[2, 3, 2])
+res = calc.run()
+print(res.v[0], res.mean_jobs, res.loads)    # точные средние
+```
+
+## QNA — непуассоновские внутренние потоки (Уитт)
+
+Базовая декомпозиция считает все внутренние потоки пуассоновскими. Класс
+`OpenNetworkCalcQNA` реализует **Queueing Network Analyzer** Уитта (1983):
+квадратичный коэффициент вариации интервалов между заявками
+распространяется через операции выхода, разрежения и слияния потоков, а
+каждый узел аппроксимируется как GI/G/n с поправкой Крамера —
+Лангенбах-Бельца. На сетях с высоковариативным обслуживанием ошибка падает
+существенно (например, с ~20% до ~2% на тандеме H2 с c² = 4 при загрузке 0.8).
+
+```python
+from most_queue.theory.networks.qna import OpenNetworkCalcQNA
+
+qna = OpenNetworkCalcQNA()
+qna.set_sources(arrival_rate=1.0, R=R, arrival_cv2=1.0)
+qna.set_nodes(b=b, n=num_channels)           # начальные моменты обслуживания по узлам
+res = qna.run()
+print(res.v[0], qna.arrival_cv2_nodes)       # среднее время пребывания + c² потока в узлах
+```
+
+## Закрытые сети (MVA и свёртка Бьюзена)
+
+В закрытой сети нет внешнего потока: фиксированная популяция из N заявок
+циркулирует по узлам (модель Гордона — Ньюэлла). Класс `ClosedNetworkCalc`
+содержит три решателя:
+
+- `method="mva"` — точный Mean Value Analysis (Райзер — Лавенберг, 1980),
+  включая многоканальные станции (через маргинальные вероятности) и
+  delay-узлы с бесконечным числом приборов — для delay-узла передайте
+  `n=[..., None, ...]`;
+- `method="convolution"` — алгоритм свёртки Бьюзена (1973) для
+  нормализационной константы G(N); совпадает с MVA до машинной точности;
+- `method="schweitzer"` — приближённый MVA Швейцера — Барда для больших
+  популяций (многоканальные станции — аппроксимация Зайдмана).
+
+```python
+import numpy as np
+from most_queue.theory.networks.closed_network import ClosedNetworkCalc
+
+# Модель центрального сервера: CPU + 2 диска, 8 заявок
+routing = np.array([
+    [0.1, 0.5, 0.4],
+    [1.0, 0.0, 0.0],
+    [1.0, 0.0, 0.0],
+])
+
+calc = ClosedNetworkCalc(method="mva")
+calc.set_sources(R=routing, N=8)             # матрица m x m, суммы строк равны 1
+calc.set_nodes(b=[0.02, 0.06, 0.08], n=[2, 1, 1])
+res = calc.run()
+print(res.throughput, res.mean_jobs, res.v[0])   # X, L_i, среднее время цикла N/X
+```
+
+Парный симулятор — `ClosedNetworkSim` (`most_queue.sim.networks.closed_network`)
+с тем же интерфейсом `set_sources` / `set_nodes` (распределения обслуживания
+в нотации Кендалла) и параметром `seed`.
+
+## G-сети (отрицательные заявки, product-form Геленбе)
+
+Для узлов M/M/1 класс `GNetworkCalc` даёт **точное** решение G-сети в форме
+произведения (Геленбе, 1991): заявка после обслуживания переходит в
+следующий узел как позитивная либо как **негативный сигнал**, удаляющий
+одну заявку из непустого узла. Внешние позитивные и негативные пуассоновские
+потоки задаются по узлам. Нелинейные уравнения трафика решаются методом
+простой итерации. Класс дополняет приближённую декомпозицию
+`NegativeNetworkCalc` (DISASTER/RCS, узлы M/G/n) точным эталоном для
+марковского одноканального случая.
+
+```python
+import numpy as np
+from most_queue.theory.networks.g_network import GNetworkCalc
+
+calc = GNetworkCalc()
+calc.set_sources(
+    positive_rates=[0.5, 0.2],
+    P_plus=np.array([[0.0, 0.4], [0.2, 0.0]]),    # переходы позитивными заявками
+    P_minus=np.array([[0.0, 0.2], [0.1, 0.0]]),   # переходы негативными сигналами
+    negative_rates=[0.1, 0.0],                     # внешние негативные потоки
+)
+calc.set_nodes(mu=[1.0, 1.5])
+res = calc.run()
+print(res.loads, res.mean_jobs, res.negative_intensities)
+```
+
+## BCMP-сети (мультиклассовый product-form)
+
+Теорема BCMP (Баскет — Чанди — Мунц — Паласиос, 1975) распространяет форму
+произведения на **мультиклассовые** сети с четырьмя типами станций: FCFS
+(экспоненциальное обслуживание, интенсивность не зависит от класса), PS,
+LCFS-PR и IS (delay); станции PS/LCFS-PR/IS нечувствительны к виду
+распределения — важны только средние времена обслуживания.
+
+- `BCMPOpenNetworkCalc` — открытая сеть, пуассоновские потоки и матрицы
+  маршрутизации по классам; точные средние по классам.
+- `BCMPClosedNetworkCalc` — закрытая многоцепочечная сеть, решается
+  **точным мультичейн-MVA** (рекурсия по всем векторам популяций).
+
+```python
+from most_queue.theory.networks.bcmp_network import BCMPClosedNetworkCalc
+
+calc = BCMPClosedNetworkCalc()
+calc.set_sources(R=[routing_class1, routing_class2], N=[3, 2])
+calc.set_nodes(
+    s=[[0.5, 0.8], [0.3, 0.4]],                  # s[узел][класс] — средние времена обслуживания
+    station_types=["ps", "fcfs"],
+)
+res = calc.run()
+print(res.throughput, res.mean_jobs)             # по классам
+```
+
 ## Сети с приоритетами
 
 ### Класс PriorityNetworkSimulator

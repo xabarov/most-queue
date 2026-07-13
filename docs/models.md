@@ -1410,6 +1410,24 @@ calc.set_servers(mu=1.0)
 results = calc.run()
 ```
 
+## Queueing networks
+
+**In plain words:** several queueing systems connected by routing: a job served at one node moves
+to another (or leaves). Open networks have external arrivals; in closed networks a fixed
+population of N jobs circulates forever (the classic "N terminals + central server" capacity
+model). See the [networks guide](networks.md) for the full API.
+
+- **Open network, decomposition** — `OpenNetworkCalc` (approximate, M/G/n nodes), with priority
+  (`OpenNetworkCalcPriorities`) and negative-customer (`NegativeNetworkCalc`) variants.
+- **Jackson network** — `JacksonNetworkCalc`: exact product form for Markovian open networks.
+- **QNA (Whitt)** — `OpenNetworkCalcQNA`: two-moment propagation of internal-flow variability;
+  much tighter than plain decomposition when service is highly variable.
+- **Closed networks** — `ClosedNetworkCalc`: exact MVA (Reiser–Lavenberg), Buzen convolution and
+  Schweitzer approximate MVA; multi-server and delay stations; paired `ClosedNetworkSim`.
+- **G-networks (Gelenbe)** — `GNetworkCalc`: exact product form with negative customers/signals.
+- **BCMP** — `BCMPOpenNetworkCalc` / `BCMPClosedNetworkCalc`: multi-class product form
+  (FCFS/PS/LCFS-PR/IS stations), closed case via exact multi-chain MVA.
+
 ## Model comparison table
 
 | Model | Calculator class | Simulation | Priorities | Notes |
@@ -1454,6 +1472,12 @@ results = calc.run()
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
+| Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
+| Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
+| Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |
+| Closed network | ClosedNetworkCalc | ClosedNetworkSim | - | Exact MVA / Buzen convolution / Schweitzer, delay stations |
+| G-network (Gelenbe) | GNetworkCalc | NegativeNetwork | - | Negative customers/signals, exact product form |
+| BCMP multi-class network | BCMPOpenNetworkCalc, BCMPClosedNetworkCalc | - | - | FCFS/PS/LCFS-PR/IS, multi-chain MVA |
 
 ## Choosing a model
 

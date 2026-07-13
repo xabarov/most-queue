@@ -94,7 +94,7 @@ See the executable comparison of **9 disciplines** in
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
 | Parallel service | Fork-Join, Split-Join | Markovian / order statistics |
-| Networks | open networks, priority networks, networks with negative customers, routing optimization | decomposition |
+| Networks | open (decomposition, exact Jackson, QNA two-moment flows), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 
 Every model comes with a plain-language explanation and a diagram in the
 [illustrated model catalog](docs/models.md).
@@ -103,7 +103,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/README.md) — counter-intuitive queueing insights for engineers (the utilization trap, why variability dominates delay, multiserver jobs, Age of Information, …)
-- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (queueing-inventory, closed networks / MVA, fork-join extensions)
+- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (queueing-inventory, networks with blocking, fork-join extensions)
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications

@@ -1360,6 +1360,24 @@ calc.set_servers(mu=1.0)
 results = calc.run()
 ```
 
+## Сети массового обслуживания
+
+**Простыми словами:** несколько СМО, связанных маршрутизацией: заявка, обслуженная в одном узле,
+переходит в другой (или покидает сеть). В открытых сетях есть внешний поток; в закрытых —
+фиксированная популяция из N заявок циркулирует по узлам бесконечно (классическая модель ёмкости
+«N терминалов + центральный сервер»). Полное API — в [руководстве по сетям](networks.ru.md).
+
+- **Открытая сеть, декомпозиция** — `OpenNetworkCalc` (приближённо, узлы M/G/n), варианты с
+  приоритетами (`OpenNetworkCalcPriorities`) и отрицательными заявками (`NegativeNetworkCalc`).
+- **Сеть Джексона** — `JacksonNetworkCalc`: точный product-form для марковских открытых сетей.
+- **QNA (Уитт)** — `OpenNetworkCalcQNA`: двухмоментное распространение вариабельности внутренних
+  потоков; заметно точнее базовой декомпозиции при высоковариативном обслуживании.
+- **Закрытые сети** — `ClosedNetworkCalc`: точный MVA (Райзер–Лавенберг), свёртка Бьюзена и
+  приближённый MVA Швейцера; многоканальные и delay-станции; парный `ClosedNetworkSim`.
+- **G-сети (Геленбе)** — `GNetworkCalc`: точный product-form с отрицательными заявками/сигналами.
+- **BCMP** — `BCMPOpenNetworkCalc` / `BCMPClosedNetworkCalc`: мультиклассовый product-form
+  (станции FCFS/PS/LCFS-PR/IS), закрытый случай — точный мультичейн-MVA.
+
 ## Сравнительная таблица моделей
 
 | Модель | Класс расчета | Симуляция | Приоритеты | Особенности |
@@ -1404,6 +1422,12 @@ results = calc.run()
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
+| Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |
+| Сеть Джексона | JacksonNetworkCalc | NetworkSimulator | - | Точный product-form, узлы M/M/n |
+| Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |
+| Закрытая сеть | ClosedNetworkCalc | ClosedNetworkSim | - | Точный MVA / свёртка Бьюзена / Швейцер, delay-станции |
+| G-сеть (Геленбе) | GNetworkCalc | NegativeNetwork | - | Отрицательные заявки/сигналы, точный product-form |
+| BCMP мультиклассовая сеть | BCMPOpenNetworkCalc, BCMPClosedNetworkCalc | - | - | FCFS/PS/LCFS-PR/IS, мультичейн-MVA |
 
 ## Рекомендации по выбору модели
 
