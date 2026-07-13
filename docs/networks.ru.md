@@ -307,6 +307,69 @@ res = calc.run()
 print(res.throughput, res.mean_jobs)             # по классам
 ```
 
+## Тандемы с конечными буферами (блокировка после обслуживания)
+
+`TandemBlockingCalc` — тандем производственной линии, где узел i вмещает не
+более K_i заявок: заявка, закончившая обслуживание, остаётся на приборе
+(блокируя его), пока следующий узел полон; внешние заявки, заставшие первый
+узел полным, теряются. Двухпроходная декомпозиция (Brandwajn–Jow 1988;
+Dallery–Frein 1993): пропускная способность в пределах ~1% от точной CTMC на
+коротких линиях. Парный симулятор — `TandemBlockingSim`
+(`most_queue.sim.networks.tandem_blocking`).
+
+```python
+from most_queue.theory.networks.blocking import TandemBlockingCalc
+
+calc = TandemBlockingCalc()
+calc.set_sources(arrival_rate=0.8)
+calc.set_nodes(mu=[1.0, 1.2], capacity=[4, 3])   # None = узел без ограничения
+res = calc.run()
+print(calc.throughput, calc.loss_prob, calc.blocking_probs)
+```
+
+## Fork-join станции внутри сети
+
+`OpenNetworkCalcForkJoin` встраивает fork-join станции в маршрутизируемую
+открытую сеть: заявка разветвляется на k параллельных одноканальных ветвей и
+продолжает путь после завершения последней подзадачи (аппроксимации отклика
+Нельсона–Тантави / Вармы). Парный симулятор — `ForkJoinNetworkSim`.
+
+```python
+from most_queue.theory.networks.fork_join_network import OpenNetworkCalcForkJoin
+
+net = OpenNetworkCalcForkJoin()
+net.set_sources(arrival_rate=0.5, R=R)
+net.set_nodes([
+    {"kind": "queue", "mu": 0.4, "n": 2},
+    {"kind": "fork_join", "mu": 1.0, "k": 3},
+])
+res = net.run()
+```
+
+## MAP-вход сети
+
+`NetworkSimulator.set_sources(..., source_kendall="MAP", source_params=map_params)`
+подаёт в сеть пачечный MAP-поток; на аналитической стороне передайте в QNA
+вариабельность интервалов MAP через `map_arrival_cv2(map_params)`. QNA —
+двухмоментный метод: он учитывает c² интервалов, но не автокорреляцию,
+поэтому для сильно коррелированных MAP даёт нижнюю оценку перегрузки.
+
+## Нестационарные сети (PSA)
+
+`TimeVaryingNetworkCalc` решает открытую марковскую сеть с интенсивностью
+λ(t) кусочно-стационарной аппроксимацией — стационарный снимок сети Джексона
+в каждой точке сетки (точно при медленной модуляции). Парный симулятор —
+`TimeVaryingNetworkSim` (NHPP прореживанием, статистика по фазовым корзинам).
+
+```python
+from most_queue.theory.networks.time_varying_network import TimeVaryingNetworkCalc
+
+calc = TimeVaryingNetworkCalc()
+calc.set_sources(lam_fn=lambda t: 0.5 + 0.2 * math.sin(2 * math.pi * t / 2000), R=R)
+calc.set_nodes(mu=[1.0, 1.4], n=[1, 1])
+res = calc.run(t_grid=range(0, 2000, 100))   # res.v, res.mean_jobs_total по точкам
+```
+
 ## Сети с приоритетами
 
 ### Класс PriorityNetworkSimulator

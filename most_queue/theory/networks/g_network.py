@@ -24,13 +24,24 @@ reduces to an open Jackson network.
 v[0] is the mean time in the network per external positive arrival (Little's
 law over the whole network; the sojourn of jobs later destroyed by signals is
 counted up to the destruction instant).
+
+`GNetworkMulticlassCalc` extends the model to multiple classes (Gelenbe,
+Theoretical Computer Science, 1996): processor-sharing nodes with
+class-dependent rates; a class-r signal arriving at a node removes a class-r
+positive customer with probability equal to the class's service share
+k_ir / k_i (and vanishes otherwise). The stationary law is the product of
+per-node multinomial-geometric factors with q_ir = lam_plus_ir /
+(mu_ir + lam_minus_ir); mean class-r jobs at node i: L_ir = q_ir / (1 - q_i).
+The kill semantics was pinned down numerically: this variant satisfies the
+exact global balance to truncation error, while "always kill if present"
+does not.
 """
 
 import time
 
 import numpy as np
 
-from most_queue.structs import NetworkMeansResults
+from most_queue.structs import BCMPNetworkResults, NetworkMeansResults
 from most_queue.theory.networks.base_network_calc import BaseNetwork
 
 
@@ -129,6 +140,120 @@ class GNetworkCalc(BaseNetwork):
             mean_jobs=[float(x) for x in mean_jobs],
             v_node=v_node,
             negative_intensities=[float(x) for x in lam_minus],
+            duration=time.process_time() - start,
+        )
+        return self.results
+
+
+class GNetworkMulticlassCalc:
+    """
+    Multiclass G-network with processor-sharing nodes (Gelenbe, 1996).
+
+    Class-r positive customers are served at node i with PS rate
+    mu[i][r] * k_ir / k_i; a class-r signal removes a class-r customer with
+    probability k_ir / k_i. Exact product form; mean values per class.
+
+    :param max_iter: fixed-point iteration limit for the traffic equations.
+    :param tol: fixed-point convergence tolerance.
+    """
+
+    def __init__(self, max_iter: int = 20000, tol: float = 1e-14):
+        self.positive_rates = None  # [i][r]
+        self.negative_rates = None  # [i][r]
+        self.P_plus = None  # per class, m x m
+        self.P_minus = None  # per class, m x m
+        self.mu = None  # [i][r]
+        self.max_iter = max_iter
+        self.tol = tol
+        self.is_sources_set = False
+        self.is_nodes_set = False
+        self.results = None
+        self.q = None  # q_ir after the fixed point
+
+    def set_sources(
+        self,
+        positive_rates,
+        P_plus: list,
+        P_minus: list | None = None,
+        negative_rates=None,
+    ):
+        """
+        :param positive_rates: external positive rates, [i][r].
+        :param P_plus: per-class routing matrices (m x m) for positive moves.
+        :param P_minus: per-class routing matrices (m x m) for signals (None — no signals).
+        :param negative_rates: external negative rates, [i][r] (None — no external negatives).
+        """
+        self.positive_rates = np.asarray(positive_rates, dtype=float)
+        m, n_classes = self.positive_rates.shape
+        self.P_plus = [np.asarray(p, dtype=float) for p in P_plus]
+        if len(self.P_plus) != n_classes:
+            raise ValueError("Need one P_plus matrix per class")
+        if P_minus is None:
+            self.P_minus = [np.zeros((m, m)) for _ in range(n_classes)]
+        else:
+            self.P_minus = [np.asarray(p, dtype=float) for p in P_minus]
+        self.negative_rates = (
+            np.zeros((m, n_classes)) if negative_rates is None else np.asarray(negative_rates, dtype=float)
+        )
+        for r in range(n_classes):
+            depart = self.P_plus[r].sum(axis=1) + self.P_minus[r].sum(axis=1)
+            if np.any(depart > 1.0 + 1e-9):
+                raise ValueError(f"Class {r}: rows of P_plus + P_minus must sum to <= 1")
+        self.is_sources_set = True
+
+    def set_nodes(self, mu):
+        """
+        :param mu: PS service rates, mu[i][r] — node i, class r.
+        """
+        self.mu = np.asarray(mu, dtype=float)
+        self.is_nodes_set = True
+
+    def run(self) -> BCMPNetworkResults:
+        """
+        Solve the per-class nonlinear traffic equations and evaluate the
+        product form.
+        """
+        start = time.process_time()
+        if not (self.is_sources_set and self.is_nodes_set):
+            raise ValueError("Sources and nodes must be set before run()")
+
+        m, n_classes = self.positive_rates.shape
+        q = np.zeros((m, n_classes))
+        lam_plus = self.positive_rates.copy()
+        lam_minus = self.negative_rates.copy()
+
+        for _ in range(self.max_iter):
+            q_prev = q.copy()
+            lam_plus = self.positive_rates.copy()
+            lam_minus = self.negative_rates.copy()
+            for r in range(n_classes):
+                flow_r = q[:, r] * self.mu[:, r]  # class-r service completions
+                lam_plus[:, r] += flow_r @ self.P_plus[r]
+                lam_minus[:, r] += flow_r @ self.P_minus[r]
+            q = lam_plus / (self.mu + lam_minus)
+            if np.max(np.abs(q - q_prev)) < self.tol:
+                break
+
+        q_total = q.sum(axis=1)
+        if np.any(q_total >= 1.0):
+            raise ValueError(f"G-network is unstable: node loads {q_total}")
+
+        self.q = q
+        mean_jobs = q / (1.0 - q_total)[:, None]  # L_ir
+
+        ext_per_class = self.positive_rates.sum(axis=0)
+        v = []
+        for r in range(n_classes):
+            if ext_per_class[r] > 1e-12:
+                v.append([float(mean_jobs[:, r].sum() / ext_per_class[r])])
+            else:
+                v.append([0.0])
+
+        self.results = BCMPNetworkResults(
+            v=v,
+            intensities=[[float(lam_plus[i, r]) for i in range(m)] for r in range(n_classes)],
+            loads=[float(x) for x in q_total],
+            mean_jobs=[[float(mean_jobs[i, r]) for i in range(m)] for r in range(n_classes)],
             duration=time.process_time() - start,
         )
         return self.results

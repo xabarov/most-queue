@@ -144,6 +144,7 @@ class BCMPClosedNetworkCalc:
         self.R = None  # per-class routing matrices, (m x m) each
         self.N = None  # population per class
         self.s = None
+        self.n = None  # channels per node
         self.station_types = None
         self.e = None  # visit ratios e[r][i]
         self.is_sources_set = False
@@ -162,14 +163,21 @@ class BCMPClosedNetworkCalc:
                 raise ValueError(f"Class {k}: rows of a closed routing matrix must sum to 1")
         self.is_sources_set = True
 
-    def set_nodes(self, s: list[list[float]], station_types: list[str]):
+    def set_nodes(self, s: list[list[float]], station_types: list[str], n: list[int] | None = None):
         """
         :param s: mean service times, s[i][r] — node i, class r.
         :param station_types: per node, one of "fcfs", "ps", "lcfs_pr", "is".
+        :param n: channels per node (default 1 everywhere). Multi-server
+            stations (n_i > 1) are supported for "fcfs" only (BCMP type 1:
+            exponential, class-independent rate); "is" ignores n.
         """
         self.s = np.asarray(s, dtype=float)
         self.station_types = _validate_station_types(station_types)
         _validate_fcfs_rates(self.station_types, self.s)
+        self.n = [1] * self.s.shape[0] if n is None else [int(x) for x in n]
+        for i, (t, ni) in enumerate(zip(self.station_types, self.n)):
+            if ni > 1 and t != "fcfs" and t != "is":
+                raise ValueError(f"Node {i}: multi-server stations are supported for 'fcfs' only, got '{t}'")
         self.is_nodes_set = True
 
     def _visit_ratios(self) -> np.ndarray:
@@ -197,8 +205,14 @@ class BCMPClosedNetworkCalc:
         m = self.s.shape[0]
         self.e = self._visit_ratios()
 
-        # l_total[n] — total mean jobs per node for population vector n
-        l_total = {tuple([0] * n_classes): np.zeros(m)}
+        multi = [i for i in range(m) if self.n[i] > 1 and self.station_types[i] == "fcfs"]
+
+        # l_total[n] — total mean jobs per node for population vector n;
+        # marg[n][i] — marginal probabilities pi_i(j | n), j = 0..n_i - 1,
+        # kept for multi-server FCFS stations.
+        zero = tuple([0] * n_classes)
+        l_total = {zero: np.zeros(m)}
+        marg = {zero: {i: np.eye(self.n[i], 1).ravel() for i in multi}}
         w = np.zeros((m, n_classes))
         x = np.zeros(n_classes)
         l_per_class = np.zeros((m, n_classes))
@@ -215,9 +229,14 @@ class BCMPClosedNetworkCalc:
                 prev = list(n_vec)
                 prev[r] -= 1
                 l_prev = l_total[tuple(prev)]
+                marg_prev = marg[tuple(prev)]
                 for i, t in enumerate(self.station_types):
                     if t == "is":
                         w[i, r] = self.s[i, r]
+                    elif i in marg_prev:
+                        ni = self.n[i]
+                        correction = sum((ni - j - 1) * marg_prev[i][j] for j in range(ni - 1))
+                        w[i, r] = self.s[i, r] / ni * (1.0 + l_prev[i] + correction)
                     else:
                         w[i, r] = self.s[i, r] * (1.0 + l_prev[i])
 
@@ -227,10 +246,28 @@ class BCMPClosedNetworkCalc:
             l_per_class = w * (self.e.T * x)  # L_ir = X_r e_ir W_ir
             l_total[n_vec] = l_per_class.sum(axis=1)
 
+            marg[n_vec] = {}
+            for i in multi:
+                ni = self.n[i]
+                s_i = self.s[i, 0]  # class-independent (validated for fcfs)
+                new_pi = np.zeros(ni)
+                for j in range(1, ni):
+                    acc = 0.0
+                    for r in range(n_classes):
+                        if n_vec[r] == 0:
+                            continue
+                        prev = list(n_vec)
+                        prev[r] -= 1
+                        acc += x[r] * self.e[r][i] * marg[tuple(prev)][i][j - 1]
+                    new_pi[j] = s_i / j * acc
+                busy_share = sum(x[r] * self.e[r][i] * s_i for r in range(n_classes))
+                new_pi[0] = 1.0 - (busy_share + sum((ni - j) * new_pi[j] for j in range(1, ni))) / ni
+                marg[n_vec][i] = new_pi
+
         loads = np.zeros(m)
         for i, t in enumerate(self.station_types):
             if t in QUEUEING_TYPES:
-                loads[i] = float(sum(x[r] * self.e[r][i] * self.s[i, r] for r in range(n_classes)))
+                loads[i] = float(sum(x[r] * self.e[r][i] * self.s[i, r] for r in range(n_classes))) / self.n[i]
 
         v = [[float(self.N[r] / x[r])] if x[r] > 0 else [0.0] for r in range(n_classes)]
 

@@ -10,6 +10,7 @@ from colorama import Fore, init
 from tqdm import tqdm
 
 from most_queue.random.distributions import ExpDistribution
+from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base import QsSim
 from most_queue.sim.networks.base_network_sim import BaseSimNetwork, NetworkResults
 from most_queue.sim.utils.tasks import Task
@@ -49,7 +50,9 @@ class NetworkSimulator(BaseSimNetwork):
         self.in_sys = 0
         self.arrived = 0
 
-    def set_sources(self, arrival_rate: float, R: np.matrix):  # pylint: disable=arguments-differ
+    def set_sources(
+        self, arrival_rate: float, R: np.matrix, source_kendall: str = "M", source_params=None
+    ):  # pylint: disable=arguments-differ
         """
         Set the arrival rate and routing matrix.
         Parameters:
@@ -60,10 +63,17 @@ class NetworkSimulator(BaseSimNetwork):
             R[0, 0] is transition frome source to first node.
             R[0, m] is transition from source to out of system.
 
+            source_kendall: external flow distribution in Kendall notation
+                ("M" — Poisson; "MAP", "H", "E", ... — non-Poisson external flow).
+            source_params: parameters for the non-Poisson source (e.g.
+                MAPParams for "MAP"); ignored for "M".
         """
         self.arrival_rate = arrival_rate
 
-        self.source = ExpDistribution(self.arrival_rate)
+        if source_kendall == "M" and source_params is None:
+            self.source = ExpDistribution(self.arrival_rate)
+        else:
+            self.source = create_distribution(source_params, source_kendall, np.random.default_rng())
         self.arrival_time = self.source.generate()
 
         self.R = R

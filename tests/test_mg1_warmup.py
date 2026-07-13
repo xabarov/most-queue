@@ -44,6 +44,8 @@ def test_mg1_warm():
     Compare theoretical and simulated moments.
     """
 
+    np.random.seed(42)  # the simulator draws from the global RNG stream
+
     b1 = UTILIZATION_FACTOR / ARRIVAL_RATE
     b_s = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
     service_params = GammaDistribution.get_params(b_s)

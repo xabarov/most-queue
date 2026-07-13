@@ -31,6 +31,27 @@ from most_queue.theory.networks.base_network_calc import BaseNetwork
 from most_queue.theory.networks.traffic import solve_traffic_equations
 
 
+def map_arrival_cv2(map_params) -> tuple[float, float]:
+    """
+    Rate and squared coefficient of variation of the stationary interarrival
+    time of a MAP — for feeding a MAP-driven external flow into QNA
+    (`set_sources(..., arrival_cv2=cv2)`).
+
+    Note: QNA is a two-moment (renewal) approximation; the autocorrelation of
+    the MAP is NOT captured, only its interarrival variability. For strongly
+    correlated arrivals QNA gives a lower bound on congestion.
+
+    :param map_params: MAPParams (D0, D1).
+    :return: (arrival_rate, cv2 of interarrival times).
+    """
+    from most_queue.random.map_ph import MAP  # pylint: disable=import-outside-toplevel
+
+    moments = MAP.calc_theory_moments(map_params, num=2)
+    rate = 1.0 / moments[0]
+    cv2 = (moments[1] - moments[0] ** 2) / moments[0] ** 2
+    return rate, cv2
+
+
 class OpenNetworkCalcQNA(BaseNetwork):
     """
     QNA (Whitt) calculator for open networks with GI/G/n nodes.

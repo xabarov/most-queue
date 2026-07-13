@@ -1186,8 +1186,212 @@ def fig_mmpp():
     return fig
 
 
+def _draw_station(ax, x, y, mu_label="μ", n_slots=3, occupied=2, sub=None, occ_color=BLUE):
+    """Mini station: short queue + one server, centred at the server."""
+    draw_queue(ax, x - n_slots * 0.42 - 0.25, y, n_slots=n_slots, occupied=occupied, occ_color=occ_color)
+    draw_server(ax, x + 0.35, y, label=mu_label, sub=sub)
+
+
+def fig_open_network():
+    """Open network: routed stations, external arrivals and departures."""
+    fig, ax = plt.subplots(figsize=(8.6, 3.4), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.0, 2.1))
+    ax.text(0.0, 0.62, t("external flow, λ", "внешний поток, λ"), fontsize=9, color=INK2, ha="left")
+    draw_customer(ax, 0.2, 0, alpha=0.7)
+    draw_arrow(ax, 0.5, 0, 1.35, 0)
+    _draw_station(ax, 2.8, 0, sub=t("node 1", "узел 1"))
+    draw_arrow(ax, 3.35, 0.25, 4.55, 1.05)
+    ax.text(3.9, 0.95, "p₁₂", fontsize=9, color=INK2)
+    draw_arrow(ax, 3.35, -0.25, 4.55, -1.05)
+    ax.text(3.9, -1.15, "p₁₃", fontsize=9, color=INK2)
+    _draw_station(ax, 6.1, 1.05, sub=t("node 2", "узел 2"))
+    _draw_station(ax, 6.1, -1.05, sub=t("node 3", "узел 3"))
+    draw_arrow(ax, 6.7, 1.05, 8.0, 0.15)
+    draw_arrow(ax, 6.7, -1.05, 8.0, -0.15)
+    for i, xx in enumerate([8.4, 8.95, 9.5]):
+        draw_customer(ax, xx, 0, color=GREEN, alpha=1.0 - 0.27 * i)
+    ax.text(9.0, 0.6, t("served", "обслуженные"), fontsize=9, color=INK2, ha="center")
+    _title(
+        ax,
+        t(
+            "Open network: jobs are routed between stations by a transition matrix",
+            "Открытая сеть: заявки движутся между узлами по матрице переходов",
+        ),
+    )
+    return fig
+
+
+def fig_closed_network():
+    """Closed network: N jobs circulate between a delay node and a server."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.6), dpi=150)
+    _clean_axes(ax, (-0.4, 10.6), (-2.3, 2.3))
+    # delay node (terminals, think time)
+    ax.add_patch(Ellipse((2.6, 1.0), 3.6, 1.7, fc="white", ec=MUTED, lw=1.2, zorder=1))
+    for i, xx in enumerate([1.6, 2.4, 3.2]):
+        draw_customer(ax, xx, 1.0, alpha=0.6 + 0.2 * i)
+    ax.text(
+        2.6,
+        -0.05,
+        t("N terminals, think time Z (delay node)", "N терминалов, время Z (delay-узел)"),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+        va="top",
+    )
+    # server station
+    _draw_station(ax, 6.7, -1.2, sub=t("server, b", "сервер, b"))
+    # circulation arrows
+    draw_arrow(ax, 4.3, 0.8, 5.6, -0.9)
+    draw_arrow(ax, 7.4, -0.9, 4.5, 1.35)
+    ax.text(
+        7.0,
+        0.6,
+        t("fixed population N circulates", "фиксированная популяция N циркулирует"),
+        fontsize=9,
+        color=INK2,
+        ha="left",
+    )
+    _title(
+        ax,
+        t(
+            "Closed network: no external arrivals — N jobs loop forever (MVA / Buzen)",
+            "Закрытая сеть: внешнего потока нет — N заявок циркулируют вечно (MVA / Бьюзен)",
+        ),
+    )
+    return fig
+
+
+def fig_g_network():
+    """G-network: positive flow plus negative signals that remove customers."""
+    fig, ax = plt.subplots(figsize=(8.6, 3.2), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.1, 1.9))
+    ax.text(0.0, 0.62, t("positive flow, λ⁺", "позитивный поток, λ⁺"), fontsize=9, color=INK2, ha="left")
+    draw_customer(ax, 0.2, 0, alpha=0.7)
+    draw_arrow(ax, 0.5, 0, 1.35, 0)
+    _draw_station(ax, 2.8, 0, sub=t("node 1", "узел 1"))
+    draw_arrow(ax, 3.4, 0, 4.6, 0)
+    ax.text(4.0, 0.2, "p⁺", fontsize=9, color=INK2)
+    _draw_station(ax, 6.1, 0, sub=t("node 2", "узел 2"))
+    draw_arrow(ax, 6.7, 0, 7.8, 0)
+    draw_customer(ax, 8.15, 0, color=GREEN)
+    # negative signal: routed from node 1 and external
+    draw_arrow(ax, 3.3, -0.45, 4.75, -1.3, color=RED, ls=(0, (4, 3)))
+    ax.text(3.7, -1.15, t("signal p⁻", "сигнал p⁻"), fontsize=9, color=RED)
+    draw_arrow(ax, 4.9, -1.35, 5.7, -0.5, color=RED, ls=(0, (4, 3)))
+    draw_arrow(ax, 7.3, -1.7, 6.3, -0.55, color=RED, ls=(0, (4, 3)))
+    ax.text(7.45, -1.9, t("external negatives, λ⁻", "внешние негативные, λ⁻"), fontsize=9, color=RED, ha="left")
+    ax.text(
+        4.2,
+        -1.85,
+        t("a signal removes one customer", "сигнал удаляет одну заявку"),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "G-network (Gelenbe): negative signals kill customers — exact product form",
+            "G-сеть (Геленбе): негативные сигналы удаляют заявки — точный product form",
+        ),
+    )
+    return fig
+
+
+def fig_bcmp():
+    """BCMP: multi-class network with different station types."""
+    fig, ax = plt.subplots(figsize=(8.6, 3.2), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.0, 1.9))
+    ax.text(0.0, 0.92, t("class 1, λ₁", "класс 1, λ₁"), fontsize=9, color=BLUE, ha="left")
+    draw_customer(ax, 0.2, 0.35, color=BLUE, alpha=0.8)
+    ax.text(0.0, -1.0, t("class 2, λ₂", "класс 2, λ₂"), fontsize=9, color=YELLOW, ha="left")
+    draw_customer(ax, 0.2, -0.5, color=YELLOW, alpha=0.9)
+    draw_arrow(ax, 0.6, 0.35, 1.55, 0.05)
+    draw_arrow(ax, 0.6, -0.5, 1.55, -0.15)
+    # PS station with mixed classes
+    draw_queue(ax, 1.75, 0, n_slots=3, occupied=2, occ_color=BLUE)
+    draw_customer(ax, 2.6, 0, color=YELLOW, r=0.14)
+    draw_server(ax, 3.35, 0, label="PS", sub=t("sharing", "разделение"))
+    draw_arrow(ax, 3.85, 0, 4.8, 0)
+    # FCFS station
+    draw_queue(ax, 5.0, 0, n_slots=3, occupied=2, occ_color=YELLOW)
+    draw_server(ax, 6.6, 0, label="μ", sub="FCFS")
+    draw_arrow(ax, 7.1, 0, 8.05, 0)
+    # IS station
+    ax.add_patch(Ellipse((8.9, 0), 1.5, 1.1, fc="white", ec=MUTED, lw=1.2, zorder=1))
+    draw_customer(ax, 8.6, 0, color=BLUE, r=0.14)
+    draw_customer(ax, 9.2, 0, color=YELLOW, r=0.14)
+    ax.text(8.9, -0.75, "IS", fontsize=9, color=INK2, ha="center")
+    draw_arrow(ax, 9.7, 0, 10.5, 0)
+    ax.text(
+        5.6,
+        -1.6,
+        t(
+            "per-class routing and service; product form by the BCMP theorem",
+            "маршрутизация и обслуживание по классам; product form по теореме BCMP",
+        ),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "BCMP network: several job classes over FCFS / PS / LCFS-PR / IS stations",
+            "BCMP-сеть: несколько классов заявок и станции FCFS / PS / LCFS-PR / IS",
+        ),
+    )
+    return fig
+
+
+def fig_tandem_blocking():
+    """Tandem with finite buffers: the middle node is full, upstream blocked."""
+    fig, ax = plt.subplots(figsize=(8.6, 3.0), dpi=150)
+    _clean_axes(ax, (-0.4, 11.2), (-2.0, 1.7))
+    ax.text(0.0, 0.62, "λ", fontsize=10, color=INK2, ha="left")
+    draw_arrow(ax, 0.3, 0, 1.15, 0)
+    # node 1: server holds a finished job (blocked)
+    draw_queue(ax, 1.35, 0, n_slots=2, occupied=2)
+    draw_server(ax, 2.6, 0, label="μ₁", busy_color=RED)
+    ax.text(2.6, 0.95, t("blocked (BAS)", "блокирован (BAS)"), fontsize=9, color=RED, ha="center")
+    draw_arrow(ax, 3.1, 0, 4.05, 0)
+    # node 2: buffer full
+    draw_queue(ax, 4.25, 0, n_slots=3, occupied=3)
+    draw_server(ax, 5.9, 0, label="μ₂")
+    ax.text(4.9, -0.75, t("buffer full, K₂", "буфер полон, K₂"), fontsize=9, color=INK2, ha="center")
+    draw_arrow(ax, 6.4, 0, 7.35, 0)
+    # node 3
+    draw_queue(ax, 7.55, 0, n_slots=3, occupied=1)
+    draw_server(ax, 9.2, 0, label="μ₃")
+    draw_arrow(ax, 9.7, 0, 10.5, 0)
+    ax.text(
+        5.4,
+        -1.55,
+        t(
+            "a finished job waits on the server until space frees downstream",
+            "готовая заявка ждёт на приборе, пока не освободится место дальше",
+        ),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "Tandem with finite buffers: blocking after service caps the throughput",
+            "Тандем с конечными буферами: блокировка после обслуживания режет пропускную способность",
+        ),
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
+    "open_network": fig_open_network,
+    "closed_network": fig_closed_network,
+    "g_network": fig_g_network,
+    "bcmp": fig_bcmp,
+    "tandem_blocking": fig_tandem_blocking,
     "retrial": fig_retrial,
     "map_arrivals": fig_map_arrivals,
     "ph_gallery": fig_ph_gallery,

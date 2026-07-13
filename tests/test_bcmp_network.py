@@ -154,3 +154,54 @@ if __name__ == "__main__":
     test_closed_single_chain_reduces_to_mva()
     test_closed_two_class_ps_vs_ctmc()
     test_fcfs_class_dependent_rates_rejected()
+
+
+def test_closed_single_chain_multiserver_reduces_to_mva():
+    """Single-chain multi-server BCMP MVA equals the exact single-class MVA."""
+    routing = np.array(
+        [
+            [0.1, 0.5, 0.4],
+            [1.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+        ]
+    )
+    b = [0.02, 0.06, 0.08]
+    n_channels = [2, 1, 3]
+    n_pop = 7
+
+    bcmp = BCMPClosedNetworkCalc()
+    bcmp.set_sources(R=[routing], N=[n_pop])
+    bcmp.set_nodes(s=[[b[0]], [b[1]], [b[2]]], station_types=["fcfs", "fcfs", "fcfs"], n=n_channels)
+    bcmp_res = bcmp.run()
+
+    mva = ClosedNetworkCalc(method="mva")
+    mva.set_sources(R=routing, N=n_pop)
+    mva.set_nodes(b=b, n=n_channels)
+    mva_res = mva.run()
+
+    assert np.isclose(bcmp_res.throughput[0], mva_res.throughput, rtol=1e-12)
+    assert np.allclose(bcmp_res.mean_jobs[0], mva_res.mean_jobs, rtol=1e-10)
+
+
+def test_closed_multiserver_two_identical_classes_aggregate():
+    """Two identical classes must aggregate to one class of combined
+    population on a multi-server FCFS network (class-independent rates)."""
+    routing = np.array([[0.0, 1.0], [1.0, 0.0]])
+    s_one = [[0.5], [0.3]]
+    s_two = [[0.5, 0.5], [0.3, 0.3]]
+    n_channels = [2, 1]
+
+    two = BCMPClosedNetworkCalc()
+    two.set_sources(R=[routing, routing], N=[2, 3])
+    two.set_nodes(s=s_two, station_types=["fcfs", "fcfs"], n=n_channels)
+    two_res = two.run()
+
+    one = BCMPClosedNetworkCalc()
+    one.set_sources(R=[routing], N=[5])
+    one.set_nodes(s=s_one, station_types=["fcfs", "fcfs"], n=n_channels)
+    one_res = one.run()
+
+    total_throughput = two_res.throughput[0] + two_res.throughput[1]
+    assert np.isclose(total_throughput, one_res.throughput[0], rtol=1e-10)
+    l_total_two = [two_res.mean_jobs[0][i] + two_res.mean_jobs[1][i] for i in range(2)]
+    assert np.allclose(l_total_two, one_res.mean_jobs[0], rtol=1e-10)

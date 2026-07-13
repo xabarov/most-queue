@@ -94,7 +94,7 @@ See the executable comparison of **9 disciplines** in
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
 | Parallel service | Fork-Join, Split-Join | Markovian / order statistics |
-| Networks | open (decomposition, exact Jackson, QNA two-moment flows), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe), priorities, negative customers, routing optimization | decomposition / product form / MVA |
+| Networks | open (decomposition, exact Jackson, QNA two-moment flows, MAP input), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe, multi-class), tandems with blocking (finite buffers), fork-join stations, time-varying λ(t), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 
 Every model comes with a plain-language explanation and a diagram in the
 [illustrated model catalog](docs/models.md).

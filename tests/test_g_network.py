@@ -134,3 +134,109 @@ if __name__ == "__main__":
     test_g_network_vs_exact_ctmc()
     test_g_network_reduces_to_jackson()
     test_negatives_reduce_load()
+
+
+def test_multiclass_reduces_to_single_class():
+    """R=1 multiclass G-network must equal the single-class solver."""
+    from most_queue.theory.networks.g_network import GNetworkMulticlassCalc
+
+    single = GNetworkCalc()
+    single.set_sources(positive_rates=EXT_PLUS, P_plus=P_PLUS, P_minus=P_MINUS, negative_rates=EXT_MINUS)
+    single.set_nodes(mu=MU)
+    res_single = single.run()
+
+    multi = GNetworkMulticlassCalc()
+    multi.set_sources(
+        positive_rates=[[EXT_PLUS[0]], [EXT_PLUS[1]]],
+        P_plus=[P_PLUS],
+        P_minus=[P_MINUS],
+        negative_rates=[[EXT_MINUS[0]], [EXT_MINUS[1]]],
+    )
+    multi.set_nodes(mu=[[MU[0]], [MU[1]]])
+    res_multi = multi.run()
+
+    assert np.allclose(res_multi.loads, res_single.loads, rtol=1e-10)
+    assert np.allclose([res_multi.mean_jobs[0][i] for i in range(2)], res_single.mean_jobs, rtol=1e-10)
+
+
+def test_multiclass_product_form_satisfies_global_balance():
+    """The multinomial-geometric product form with q_ir from the solver must
+    satisfy the exact global balance equations of the 2-class PS dynamics
+    (class-r signal kills with probability k_ir / k_i) to truncation error."""
+    import itertools
+    import math
+
+    from most_queue.theory.networks.g_network import GNetworkMulticlassCalc
+
+    mu = [[1.0, 1.5], [2.0, 1.2]]
+    ext_p = [[0.25, 0.15], [0.1, 0.2]]
+    ext_m = [[0.1, 0.0], [0.0, 0.15]]
+    p_plus = [np.array([[0.0, 0.3], [0.2, 0.0]]), np.array([[0.0, 0.4], [0.1, 0.0]])]
+    p_minus = [np.array([[0.0, 0.1], [0.0, 0.0]]), np.array([[0.0, 0.0], [0.2, 0.0]])]
+    k_max = 9
+
+    calc = GNetworkMulticlassCalc()
+    calc.set_sources(positive_rates=ext_p, P_plus=p_plus, P_minus=p_minus, negative_rates=ext_m)
+    calc.set_nodes(mu=mu)
+    calc.run()
+    q = calc.q
+    q_i = q.sum(axis=1)
+
+    states = [s for s in itertools.product(range(k_max + 1), repeat=4) if s[0] + s[1] <= k_max and s[2] + s[3] <= k_max]
+    idx = {s: n for n, s in enumerate(states)}
+    Q = np.zeros((len(states), len(states)))
+
+    def kcount(s, i, r):
+        return s[2 * i + r]
+
+    def move(s, i, r, d):
+        lst = list(s)
+        lst[2 * i + r] += d
+        return tuple(lst)
+
+    for s in states:
+        n_from = idx[s]
+
+        def add(tgt, rate):
+            if rate > 0 and tgt in idx:
+                Q[n_from, idx[tgt]] += rate
+
+        def kill(s2, j, r, rate):
+            kj = kcount(s2, j, r)
+            tot_j = kcount(s2, j, 0) + kcount(s2, j, 1)
+            if kj == 0:
+                add(s2, rate)
+            else:
+                p_hit = kj / tot_j
+                add(move(s2, j, r, -1), rate * p_hit)
+                add(s2, rate * (1.0 - p_hit))
+
+        for i in range(2):
+            tot = kcount(s, i, 0) + kcount(s, i, 1)
+            for r in range(2):
+                add(move(s, i, r, +1), ext_p[i][r])
+                kill(s, i, r, ext_m[i][r])
+                if kcount(s, i, r) > 0:
+                    rate = mu[i][r] * kcount(s, i, r) / tot
+                    dep = move(s, i, r, -1)
+                    stay = 1.0
+                    for j in range(2):
+                        add(move(dep, j, r, +1), rate * p_plus[r][i, j])
+                        kill(dep, j, r, rate * p_minus[r][i, j])
+                        stay -= p_plus[r][i, j] + p_minus[r][i, j]
+                    add(dep, rate * stay)
+    np.fill_diagonal(Q, 0.0)
+    np.fill_diagonal(Q, -Q.sum(axis=1))
+
+    pi = np.zeros(len(states))
+    for s in states:
+        val = 1.0
+        for i in range(2):
+            k0, k1 = s[2 * i], s[2 * i + 1]
+            coef = math.factorial(k0 + k1) / (math.factorial(k0) * math.factorial(k1))
+            val *= (1 - q_i[i]) * coef * q[i, 0] ** k0 * q[i, 1] ** k1
+        pi[idx[s]] = val
+    pi /= pi.sum()
+
+    residual = np.max(np.abs(pi @ Q))
+    assert residual < 1e-4, f"global balance residual {residual}"

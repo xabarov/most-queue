@@ -49,6 +49,8 @@ def test_mmn_h2cold_h2_warm():
     for an MMn queueing system with H2 cold and warm-up phases.
     """
 
+    np.random.seed(42)  # the simulator draws from the global RNG stream
+
     b1 = NUM_OF_CHANNELS * UTILIZATION_FACTOR / ARRIVAL_RATE
     mean_warmup_time = b1 * WARMUP_TIME_PROPORTION
     mean_cold_time = b1 * COLD_TIME_PROPORTION

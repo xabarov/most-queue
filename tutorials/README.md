@@ -40,5 +40,13 @@ you size systems, schedule work, or reason about latency.
 | [age_of_information.ipynb](age_of_information.ipynb) | **Sending updates faster can make your data staler** — freshness (Age of Information) is U-shaped in the update rate, with an optimum in the middle. |
 | [map_ph_correlation.ipynb](map_ph_correlation.ipynb) | **Correlated (bursty) arrivals** blow up delay even at the *same* average rate — the MAP/PH matrix-analytic stack captures it. |
 
+### Queueing networks
+
+| Notebook | The insight |
+|---|---|
+| [closed_network_capacity.ipynb](closed_network_capacity.ipynb) | **Users self-throttle**: a closed network doesn't die at ρ=1 — the capacity knee is at `N* = 1 + Z/b`, computable without any solver, and past it response grows linearly. The open-model approximation diverges exactly where you need the answer. |
+| [network_bottleneck.ipynb](network_bottleneck.ipynb) | Rank services by **demand `e·b`** (visits × time per visit), not per-call latency: the bottleneck is often the *fast* node everyone calls three times, and optimizing anything else is capped at a few percent (Amdahl for networks). |
+| [poisson_illusion.ipynb](poisson_illusion.ipynb) | **Internal network traffic is not Poisson** — departures inherit service variability, so plain node-by-node decomposition hides ~20% of latency on a bursty tandem; QNA's two-moment flows recover it. Burke's theorem (exponential service) is the only legal case. |
+
 Run any of them with Jupyter after `pip install most-queue` (plus `jupyter`, `matplotlib`, `pandas`).
 Every model shown here is documented in the [illustrated model catalog](../docs/models.md).

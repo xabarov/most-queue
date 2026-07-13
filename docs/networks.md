@@ -306,6 +306,69 @@ res = calc.run()
 print(res.throughput, res.mean_jobs)             # per class
 ```
 
+## Tandems with Finite Buffers (Blocking After Service)
+
+`TandemBlockingCalc` handles a production-line tandem where node i holds at
+most K_i jobs: a job finishing service stays on the server (blocking it)
+while the next node is full; external arrivals that find node 1 full are
+lost. Two-pass decomposition (Brandwajn & Jow 1988; Dallery & Frein 1993):
+throughput within ~1% of the exact CTMC on small lines. Paired simulator —
+`TandemBlockingSim` (`most_queue.sim.networks.tandem_blocking`).
+
+```python
+from most_queue.theory.networks.blocking import TandemBlockingCalc
+
+calc = TandemBlockingCalc()
+calc.set_sources(arrival_rate=0.8)
+calc.set_nodes(mu=[1.0, 1.2], capacity=[4, 3])   # None = unlimited node
+res = calc.run()
+print(calc.throughput, calc.loss_prob, calc.blocking_probs)
+```
+
+## Fork-Join Stations Inside a Network
+
+`OpenNetworkCalcForkJoin` embeds fork-join stations into a routed open
+network: a job forks into k parallel single-server branches and continues
+when the last sub-task finishes (response approximations of Nelson–Tantawi /
+Varma). Paired simulator — `ForkJoinNetworkSim`.
+
+```python
+from most_queue.theory.networks.fork_join_network import OpenNetworkCalcForkJoin
+
+net = OpenNetworkCalcForkJoin()
+net.set_sources(arrival_rate=0.5, R=R)
+net.set_nodes([
+    {"kind": "queue", "mu": 0.4, "n": 2},
+    {"kind": "fork_join", "mu": 1.0, "k": 3},
+])
+res = net.run()
+```
+
+## MAP External Flow
+
+`NetworkSimulator.set_sources(..., source_kendall="MAP", source_params=map_params)`
+drives the network with a bursty MAP flow; on the analytic side feed QNA with
+the MAP interarrival variability via `map_arrival_cv2(map_params)`. QNA is a
+two-moment method: it captures the interarrival cv² but not the
+autocorrelation, so for strongly correlated MAPs it lower-bounds congestion.
+
+## Time-Varying Networks (PSA)
+
+`TimeVaryingNetworkCalc` solves an open Markovian network with arrival rate
+λ(t) by the pointwise stationary approximation — a stationary Jackson
+snapshot at every grid instant (accurate for slow modulation). Paired
+simulator — `TimeVaryingNetworkSim` (NHPP by thinning, phase-bucketed
+statistics).
+
+```python
+from most_queue.theory.networks.time_varying_network import TimeVaryingNetworkCalc
+
+calc = TimeVaryingNetworkCalc()
+calc.set_sources(lam_fn=lambda t: 0.5 + 0.2 * math.sin(2 * math.pi * t / 2000), R=R)
+calc.set_nodes(mu=[1.0, 1.4], n=[1, 1])
+res = calc.run(t_grid=range(0, 2000, 100))   # res.v, res.mean_jobs_total per instant
+```
+
 ## Networks with Priorities
 
 ### The PriorityNetworkSimulator Class
