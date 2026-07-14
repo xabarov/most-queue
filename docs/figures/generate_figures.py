@@ -1385,8 +1385,204 @@ def fig_tandem_blocking():
     return fig
 
 
+def fig_polling():
+    """Polling: one server cyclically visits Q queues with switchover."""
+    fig, ax = plt.subplots(figsize=(7.8, 3.4), dpi=150)
+    _clean_axes(ax, (-0.4, 10.4), (-2.2, 2.2))
+    ys = [1.5, 0.0, -1.5]
+    for i, y in enumerate(ys):
+        ax.text(-0.3, y + 0.42, f"λ{chr(0x2081 + i)}", fontsize=9, color=INK2)
+        draw_arrow(ax, 0.0, y, 0.9, y, lw=1.2)
+        draw_queue(ax, 1.1, y, n_slots=3, occupied=2 - (i == 1))
+    draw_server(ax, 4.6, 0.0, r=0.42, label="μ")
+    ax.text(4.6, -0.75, t("one server", "один сервер"), fontsize=9, color=INK2, ha="center")
+    # cyclic visits with switchover
+    draw_arrow(ax, 4.35, 0.42, 2.75, 1.4, color=VIOLET, ls=(0, (4, 3)))
+    draw_arrow(ax, 2.75, -1.4, 4.35, -0.42, color=VIOLET, ls=(0, (4, 3)))
+    draw_arrow(ax, 2.6, 1.25, 2.6, -1.25, color=VIOLET, ls=(0, (4, 3)))
+    ax.text(
+        3.1,
+        1.85,
+        t("cyclic visits, switchover r", "циклический обход, переключение r"),
+        fontsize=9,
+        color=VIOLET,
+        ha="left",
+    )
+    draw_arrow(ax, 5.1, 0, 6.0, 0)
+    for i, xx in enumerate([6.35, 6.9, 7.45]):
+        draw_customer(ax, xx, 0, color=GREEN, alpha=1.0 - 0.27 * i)
+    ax.text(
+        9.0,
+        0.0,
+        t("exhaustive / gated\nper-queue discipline", "exhaustive / gated\nдисциплина по очереди"),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+        va="center",
+    )
+    _title(
+        ax,
+        t(
+            "Polling: one server tours Q queues; switchover makes it non-work-conserving",
+            "Polling: сервер обходит Q очередей; переключение делает систему не work-conserving",
+        ),
+    )
+    return fig
+
+
+def fig_msj():
+    """Multiserver job: one job occupies several servers at once."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
+    _clean_axes(ax, (-0.4, 10.8), (-1.9, 1.8))
+    ax.text(1.3, 1.15, t("jobs need k servers each", "заявкам нужно k серверов"), fontsize=9, color=INK2, ha="center")
+    for xx, k, col in [(0.4, 1, BLUE), (1.3, 2, YELLOW), (2.2, 3, VIOLET)]:
+        draw_customer(ax, xx, 0.55, color=col, r=0.2, label=str(k))
+    draw_arrow(ax, 2.7, 0.55, 3.6, 0.2)
+    for i in range(6):
+        x = 4.3 + i * 1.05
+        busy = i in (0, 1, 2)
+        draw_server(ax, x, -0.35, color=YELLOW if busy else AQUA, label="μ")
+    ax.add_patch(
+        FancyBboxPatch((3.85, -0.95), 3.05, 1.2, boxstyle="round,pad=0.04", fc="none", ec=VIOLET, lw=1.8, zorder=4)
+    )
+    ax.text(
+        5.35,
+        -1.35,
+        t("one job holds k = 3 servers simultaneously", "одна заявка держит k = 3 сервера одновременно"),
+        fontsize=9,
+        color=VIOLET,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "Multiserver jobs: capacity is lost to packing — you can't just use c·μ",
+            "Multiserver-job: ёмкость теряется на упаковке — просто c·μ использовать нельзя",
+        ),
+    )
+    return fig
+
+
+def fig_load_balancing():
+    """Power-of-d dispatching over a pool of queues."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.4), dpi=150)
+    _clean_axes(ax, (-0.4, 10.8), (-2.3, 2.3))
+    draw_customer(ax, 0.3, 0, alpha=0.8)
+    draw_arrow(ax, 0.6, 0, 1.4, 0)
+    draw_server(ax, 1.9, 0, r=0.38, color=VIOLET, label="LB")
+    ax.text(1.9, -0.75, t("dispatcher", "диспетчер"), fontsize=9, color=INK2, ha="center")
+    ys = [1.6, 0.55, -0.55, -1.6]
+    occupied = [3, 1, 2, 3]
+    for y, occ in zip(ys, occupied):
+        draw_queue(ax, 5.0, y, n_slots=4, occupied=occ)
+        draw_server(ax, 7.15, y, r=0.28)
+        draw_arrow(ax, 7.42, y, 8.1, y, lw=1.0)
+    draw_arrow(ax, 2.3, 0.25, 4.8, 1.5, color=MUTED, ls=(0, (4, 3)))
+    draw_arrow(ax, 2.3, 0.1, 4.8, 0.55, color=GREEN, lw=2.0)
+    ax.text(3.15, 1.4, t("sampled, longer", "опрошена, длиннее"), fontsize=8.5, color=MUTED)
+    ax.text(3.15, 0.06, t("sampled, shorter — join", "опрошена, короче — сюда"), fontsize=8.5, color=GREEN)
+    ax.text(
+        9.5,
+        -1.55,
+        t("N queues,\nonly d = 2 sampled", "N очередей,\nопрошены лишь d = 2"),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+        va="center",
+    )
+    _title(
+        ax,
+        t(
+            "Power of two choices: sample d random queues, join the shortest",
+            "Power of two choices: опросить d случайных очередей и встать в кратчайшую",
+        ),
+    )
+    return fig
+
+
+def fig_time_varying():
+    """Mt/M/c: congestion lags the time-varying load."""
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    fig, ax = plt.subplots(figsize=(7.6, 3.2), dpi=150)
+    x = np.linspace(0, 4 * 3.14159, 300)
+    lam = 1.0 + 0.55 * np.sin(x)
+    resp = 1.0 + 0.55 * np.sin(x - 0.7)
+    ax.plot(x, lam, color=BLUE, lw=2, label=t("load λ(t)", "нагрузка λ(t)"))
+    ax.plot(x, resp, color=RED, lw=2, ls="--", label=t("congestion (lags)", "перегрузка (отстаёт)"))
+    peak = 3.14159 / 2
+    ax.axvline(peak, color=MUTED, lw=1, ls=":")
+    ax.axvline(peak + 0.7, color=MUTED, lw=1, ls=":")
+    ax.annotate(
+        t("lag", "запаздывание"),
+        xy=(peak + 0.7, 1.62),
+        xytext=(peak + 1.7, 1.72),
+        fontsize=9,
+        color=INK2,
+        arrowprops={"arrowstyle": "->", "color": INK2},
+    )
+    ax.set_ylim(0.3, 1.95)
+    ax.set_yticks([])
+    ax.set_xticks([])
+    ax.set_xlabel(t("time of day", "время суток"), fontsize=9, color=INK2)
+    ax.legend(loc="lower left", fontsize=8.5, frameon=False)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    _title(
+        ax,
+        t(
+            "Time-varying Mₜ/M/c: peak congestion is NOT at peak demand (PSA vs MOL)",
+            "Нестационарная Mₜ/M/c: пик перегрузки НЕ в пике спроса (PSA vs MOL)",
+        ),
+    )
+    return fig
+
+
+def fig_aoi():
+    """Age of Information: sawtooth age process."""
+    fig, ax = plt.subplots(figsize=(7.6, 3.2), dpi=150)
+    deliveries = [1.6, 2.5, 4.4, 5.6, 7.2]
+    ages_after = [0.7, 0.4, 0.9, 0.6, 0.5]
+    xs, ys = [0.0], [0.8]
+    tt, age = 0.0, 0.8
+    for d, a in zip(deliveries, ages_after):
+        xs.append(d)
+        ys.append(age + (d - tt))
+        xs.append(d)
+        ys.append(a)
+        tt, age = d, a
+    xs.append(8.4)
+    ys.append(age + 8.4 - tt)
+    ax.plot(xs, ys, color=BLUE, lw=2)
+    for d in deliveries:
+        ax.axvline(d, color=GRID, lw=1)
+        ax.plot([d], [0.06], marker="^", color=GREEN, markersize=7, clip_on=False)
+    ax.axhline(1.35, color=RED, lw=1.4, ls="--")
+    ax.text(8.3, 1.45, t("mean AoI", "средний AoI"), fontsize=9, color=RED, ha="right")
+    ax.text(4.35, -0.34, t("updates delivered", "доставленные обновления"), fontsize=9, color=GREEN, ha="center")
+    ax.set_ylim(0, 3.2)
+    ax.set_yticks([])
+    ax.set_xticks([])
+    ax.set_ylabel(t("age of data", "возраст данных"), fontsize=9, color=INK2)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    _title(
+        ax,
+        t(
+            "Age of Information: age grows between updates and resets on delivery",
+            "Age of Information: возраст растёт между обновлениями и сбрасывается при доставке",
+        ),
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
+    "polling": fig_polling,
+    "msj": fig_msj,
+    "load_balancing": fig_load_balancing,
+    "time_varying": fig_time_varying,
+    "aoi": fig_aoi,
     "open_network": fig_open_network,
     "closed_network": fig_closed_network,
     "g_network": fig_g_network,

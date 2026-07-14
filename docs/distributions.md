@@ -416,7 +416,7 @@ qs.set_servers(custom, "PH")
 ```
 
 **Why bother, if H₂/Erlang already exist?** PH is the service-side language of the
-**matrix-analytic** solvers: the [MAP/PH/1 calculator](models.md#matrix-analytic-models-mapph)
+**matrix-analytic** solvers: the [MAP/PH/1 calculator](models/map-ph.md)
 accepts any PH service, so one model covers everything from deterministic-like (long Erlang
 chains) to highly variable (H₂) service within a single exact method.
 
@@ -466,7 +466,7 @@ qs.set_servers(1.5, "M")
 
 **Why it matters:** at the same utilization, mean and CV of interarrival times, positive
 correlation can multiply the mean waiting time several-fold — see the exact
-[MAP/PH/1 model](models.md#matrix-analytic-models-mapph) and the demo notebook
+[MAP/PH/1 model](models/map-ph.md) and the demo notebook
 [`tutorials/map_ph_correlation.ipynb`](../tutorials/map_ph_correlation.ipynb).
 
 ### Fitting a MAP to data
