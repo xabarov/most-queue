@@ -1576,8 +1576,62 @@ def fig_aoi():
     return fig
 
 
+def fig_machine_repair():
+    """Machine repair problem: finite park, spares, repair crew."""
+    fig, ax = plt.subplots(figsize=(8.4, 3.4), dpi=150)
+    _clean_axes(ax, (-0.4, 11.0), (-2.3, 2.2))
+    # operating machines
+    for xx in [0.6, 1.7, 2.8]:
+        draw_server(ax, xx, 1.2, color=AQUA, label="M")
+    ax.text(1.7, 0.45, t("M operating machines", "M работающих машин"), fontsize=9, color=INK2, ha="center")
+    # warm spares
+    for xx in [0.9, 2.0]:
+        draw_server(ax, xx, -1.3, color=YELLOW, label="S")
+    ax.text(1.45, -2.05, t("S warm spares", "S тёплых резервных"), fontsize=9, color=INK2, ha="center")
+    # failure arrow to repair queue
+    draw_arrow(ax, 3.35, 1.2, 4.7, 0.15, color=RED, ls=(0, (4, 3)))
+    ax.text(3.55, 0.9, t("failures, ξ", "отказы, ξ"), fontsize=9, color=RED)
+    # repair queue + crew
+    draw_queue(ax, 4.9, 0, n_slots=3, occupied=2, occ_color=RED)
+    for sy in (0.55, -0.55):
+        draw_server(ax, 7.1, sy, r=0.3, color=VIOLET, label="η")
+    ax.text(7.1, -1.25, t("R repairmen", "R ремонтников"), fontsize=9, color=INK2, ha="center")
+    # repaired units return as spares
+    draw_arrow(ax, 7.55, -0.6, 2.6, -1.5, color=GREEN, ls=(0, (4, 3)))
+    ax.text(
+        5.1,
+        -1.75,
+        t("repaired -> spare / operation", "починенные -> резерв / работа"),
+        fontsize=9,
+        color=GREEN,
+        ha="center",
+    )
+    draw_arrow(ax, 2.0, -0.85, 2.7, 0.75, color=INK2, ls=(0, (2, 2)), lw=1.1)
+    ax.text(
+        9.4,
+        0.7,
+        t(
+            "closed loop:\nfewer machines run —\nfewer failures happen",
+            "замкнутый цикл:\nменьше машин работает —\nреже отказы",
+        ),
+        fontsize=8.5,
+        color=INK2,
+        ha="center",
+        va="center",
+    )
+    _title(
+        ax,
+        t(
+            "Machine repair problem: a finite park self-regulates through failures and repairs",
+            "Machine repair problem: конечный парк саморегулируется отказами и ремонтами",
+        ),
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
+    "machine_repair": fig_machine_repair,
     "polling": fig_polling,
     "msj": fig_msj,
     "load_balancing": fig_load_balancing,

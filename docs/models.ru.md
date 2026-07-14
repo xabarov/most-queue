@@ -27,6 +27,7 @@
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
+| [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem, working breakdowns, катастрофы с ремонтом, retrial + отказы |
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
 
 ## Сравнительная таблица моделей
@@ -52,6 +53,11 @@
 | M/G/1 multiple vacations | MG1MultipleVacationsCalc | VacationQueueingSystemSimulator | - | Fuhrmann–Cooper |
 | M/G/1 N-policy | MG1NPolicyCalc | NPolicyQueueSim | - | Порог включения N |
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Отказы+ремонты, completion time |
+| M/M/c отказы и ремонты | MMcBreakdownsCalc | MMcBreakdownsSim | - | Независимые отказы, доступность, R ремонтников |
+| Machine repair problem | MachineRepairCalc | MachineRepairSim | - | Конечный парк, тёплый резерв, R ремонтников (Palm) |
+| M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Пониженная скорость во время ремонта (Kalidass-Kasturi) |
+| M/M/1 катастрофы + ремонт | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Сброс очереди, фаза ремонта, P(down)=δ/(δ+η) |
+| M/M/1 retrial ненадёжный | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Активные отказы, орбита, доступность |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Параллельное обслуживание |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Пакетное поступление |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Уходы, staffing-помощник |

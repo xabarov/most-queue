@@ -59,7 +59,11 @@
 | [EPIC-016](EPIC-016-time-varying.md) | Нестационарные очереди Mt/M/c (PSA/MOL) | done |
 | [EPIC-017](EPIC-017-networks-exact-methods.md) | Сети МО: закрытые сети и точные методы (MVA/Бьюзен, Джексон, QNA, G-networks, BCMP) | done |
 | [EPIC-018](EPIC-018-networks-wave2.md) | Сети МО, волна 2: блокировки, fork-join в сети, MAP-вход, transient, схемы каталога, туториалы | done |
+| [EPIC-019](EPIC-019-unreliable-servers.md) | Ненадёжные приборы: M/M/c с отказами, machine repair, working breakdowns, катастрофы с ремонтом, retrial + отказы | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
-EPIC-017 — по обзору сетей: [../research/queueing-networks-2026.md](../research/queueing-networks-2026.md).
+EPIC-017 и EPIC-018 — по обзору сетей:
+[../research/queueing-networks-2026.md](../research/queueing-networks-2026.md);
+EPIC-019 — по обзору ненадёжных приборов:
+[../research/unreliable-queues-2026.md](../research/unreliable-queues-2026.md).

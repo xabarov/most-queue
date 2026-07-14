@@ -86,7 +86,7 @@ See the executable comparison of **9 disciplines** in
 | Age of Information | M/M/1, M/G/1, preemptive-LCFS — average & peak AoI | closed-form + simulation |
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
-| Reliability | M/G/1 with breakdowns & repairs | Avi-Itzhak–Naor |
+| Reliability | M/G/1 and M/M/c with breakdowns & repairs, machine repair problem (spares, R repairmen), working breakdowns, disasters with a repair phase, retrial with an unreliable server | Avi-Itzhak–Naor / exact CTMC / birth-death |
 | Matrix-analytic (MAP/PH) | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c, MAP/PH/c — correlated (bursty) arrivals, single- & multi-server; MMPP fitting | QBD, logarithmic reduction |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |

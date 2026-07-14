@@ -1,26 +1,34 @@
 """
 Regression guard: every ``from most_queue... import ...`` line that appears in
-the model catalog (docs/models.md and docs/models.ru.md) must actually import.
+the model catalog (the docs/models.md hub and the per-family pages in
+docs/models/) must actually import.
 
 This keeps the documentation and the code in sync — a class rename or a moved
 module that is not reflected in the catalog fails here instead of silently
 shipping broken examples.
 """
 
+import glob
 import os
 import re
 
 import pytest
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CATALOGS = ["docs/models.md", "docs/models.ru.md"]
 
 _IMPORT_RE = re.compile(r"^\s*from\s+most_queue[\w.]*\s+import\s+.+$", re.MULTILINE)
 
 
+def _catalog_files():
+    files = ["docs/models.md", "docs/models.ru.md"]
+    families = glob.glob(os.path.join(REPO_ROOT, "docs", "models", "*.md"))
+    files += [os.path.relpath(p, REPO_ROOT) for p in sorted(families)]
+    return files
+
+
 def _catalog_import_lines():
     lines = []
-    for rel in CATALOGS:
+    for rel in _catalog_files():
         path = os.path.join(REPO_ROOT, rel)
         if not os.path.exists(path):
             continue

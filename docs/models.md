@@ -27,6 +27,7 @@ add a figure function and regenerate the PNGs.
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
+| [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem, working breakdowns, disasters with repair, retrial + failures |
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
 
 ## Model comparison table
@@ -52,6 +53,11 @@ add a figure function and regenerate the PNGs.
 | M/G/1 multiple vacations | MG1MultipleVacationsCalc | VacationQueueingSystemSimulator | - | Fuhrmann–Cooper |
 | M/G/1 N-policy | MG1NPolicyCalc | NPolicyQueueSim | - | Activation threshold N |
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Breakdowns+repairs, completion time |
+| M/M/c breakdowns & repairs | MMcBreakdownsCalc | MMcBreakdownsSim | - | Independent failures, availability, R repairmen |
+| Machine repair problem | MachineRepairCalc | MachineRepairSim | - | Finite park, warm spares, R repairmen (Palm) |
+| M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Degraded rate during repair (Kalidass-Kasturi) |
+| M/M/1 disasters + repair | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Queue flush, repair phase, P(down)=δ/(δ+η) |
+| M/M/1 retrial unreliable | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Active breakdowns, orbit, availability |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Parallel service |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Batch arrivals |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Abandonment, staffing helper |

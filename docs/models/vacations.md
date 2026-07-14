@@ -52,36 +52,7 @@ of equipment, infrequent shuttle runs). N=1 is the ordinary M/G/1.
 **Calculator class:** `MG1NPolicyCalc` (`most_queue.theory.vacations.mg1_vacations`)
 **Simulation:** `NPolicyQueueSim(1, big_n=N)`
 
-### M/G/1 with an unreliable server (breakdowns & repairs)
-
-![Unreliable server diagram](../figures/unreliable.png)
-
-**Description:** The server fails at Poisson rate ξ while serving; the repair time has a general distribution; the interrupted job resumes from where it stopped. Exact reduction to an M/G/1 with a "completion time" (service plus its own repairs) — Avi-Itzhak–Naor (1963).
-
-**In plain words:** a machine that breaks under load: a job occupies the server for its service
-time plus all the repairs that happen during it. The cumulants of the completion time are
-computed in closed form, after which the ordinary Pollaczek–Khinchine formula applies.
-
-**Calculator class:** `MG1UnreliableCalc` (`most_queue.theory.vacations.mg1_unreliable`)
-**Simulation:** `UnreliableQueueSim` (`most_queue.sim.unreliable`)
-
-**Example:**
-
-```python
-from most_queue.theory.vacations.mg1_unreliable import MG1UnreliableCalc
-from most_queue.random.distributions import GammaDistribution
-
-b = GammaDistribution.calc_theory_moments(
-    GammaDistribution.get_params_by_mean_and_cv(0.5, 1.2), 5)
-r = GammaDistribution.calc_theory_moments(
-    GammaDistribution.get_params_by_mean_and_cv(0.4, 1.2), 5)
-
-calc = MG1UnreliableCalc()
-calc.set_sources(l=1.0)
-calc.set_servers(b)
-calc.set_breakdowns(xi=0.3, repair=r)
-results = calc.run()
-```
+> The unreliable-server model moved to the [Reliability family](reliability.md).
 
 ### M/H₂/c with warm-up
 
