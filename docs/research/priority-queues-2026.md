@@ -125,7 +125,9 @@
 | 5 | **M/G/1 preemptive-repeat (RS/RW) — аналитика** | Gaver 1962; Avi-Itzhak–Naor 1963 | Дисциплины уже в симуляторе — теории нет; completion-time техника в репо отработана на `MG1UnreliableCalc` | малая-средняя |
 | 6 | Резерв: точная многоканальная NP CTMC; полные моменты низших классов; heterogeneous servers; mixed PR+NP; EDF/deadline; learning-augmented priorities (стык с EPIC-013); generalized cμ как оптимизационный хелпер | — | следующая волна | — |
 
-Пункты 1–5 оформлены как [EPIC-020](../epics/EPIC-020-priority-wave2.md); п. 6 — резерв.
+Пункты 1–5 реализованы в [EPIC-020](../epics/EPIC-020-priority-wave2.md) (done,
+2026-07-16); п. 6 — резерв (плюс из эпика: распределения APQ, PR-вариант нетерпения,
+RW-очередь, разбор расхождения `MG1PreemptiveCalc` с точной CTMC).
 Попутно в эпик включены мелкие долги стека: рассинхрон примеров в `docs/priorities.md` с
 фактическими сигнатурами и отсутствие экспорта `MMkPriorityExact`/`RDRAPriorityCalc`/
 `RDRAPriorityPH`/`MPhPhK2Class` из `theory/priority/__init__.py`.

@@ -133,12 +133,12 @@ v_sim = qs.v  # sojourn time moments for each class
 
 ### M/G/1 with Preemptive Priority
 
-The `MG1Preemptive` class for calculating a single-channel system:
+The `MG1PreemptiveCalc` class for calculating a single-channel system:
 
 ```python
-from most_queue.theory.priority.preemptive.mg1 import MG1Preemptive
+from most_queue.theory.priority.preemptive.mg1 import MG1PreemptiveCalc
 
-calc = MG1Preemptive(num_of_classes=3)
+calc = MG1PreemptiveCalc()
 
 # Arrival rates for each class
 calc.set_sources([0.1, 0.2, 0.3])
@@ -162,12 +162,12 @@ print(f"Class 3: mean sojourn time = {results.v[2][0]:.4f}")
 
 ### M/G/1 with Non-Preemptive Priority
 
-The `MG1NonPreemptive` class:
+The `MG1NonPreemptiveCalc` class:
 
 ```python
-from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptive
+from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptiveCalc
 
-calc = MG1NonPreemptive(num_of_classes=3)
+calc = MG1NonPreemptiveCalc()
 calc.set_sources([0.1, 0.2, 0.3])
 calc.set_servers(b)
 results = calc.run()

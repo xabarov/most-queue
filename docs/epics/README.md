@@ -60,7 +60,7 @@
 | [EPIC-017](EPIC-017-networks-exact-methods.md) | Сети МО: закрытые сети и точные методы (MVA/Бьюзен, Джексон, QNA, G-networks, BCMP) | done |
 | [EPIC-018](EPIC-018-networks-wave2.md) | Сети МО, волна 2: блокировки, fork-join в сети, MAP-вход, transient, схемы каталога, туториалы | done |
 | [EPIC-019](EPIC-019-unreliable-servers.md) | Ненадёжные приборы: M/M/c с отказами, machine repair, working breakdowns, катастрофы с ремонтом, retrial + отказы | done |
-| [EPIC-020](EPIC-020-priority-wave2.md) | Приоритеты, волна 2: accumulating priority, нетерпение, MAP-вход, retrial, preemptive-repeat | proposed |
+| [EPIC-020](EPIC-020-priority-wave2.md) | Приоритеты, волна 2: accumulating priority, нетерпение, MAP-вход, retrial, preemptive-repeat | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

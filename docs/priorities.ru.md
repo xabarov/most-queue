@@ -133,12 +133,12 @@ v_sim = qs.v  # моменты времени пребывания для каж
 
 ### M/G/1 с прерываемым приоритетом
 
-Класс `MG1Preemptive` для расчета одноканальной системы:
+Класс `MG1PreemptiveCalc` для расчета одноканальной системы:
 
 ```python
-from most_queue.theory.priority.preemptive.mg1 import MG1Preemptive
+from most_queue.theory.priority.preemptive.mg1 import MG1PreemptiveCalc
 
-calc = MG1Preemptive(num_of_classes=3)
+calc = MG1PreemptiveCalc()
 
 # Интенсивности поступления для каждого класса
 calc.set_sources([0.1, 0.2, 0.3])
@@ -162,12 +162,12 @@ print(f"Класс 3: среднее время пребывания = {results.
 
 ### M/G/1 с непрерываемым приоритетом
 
-Класс `MG1NonPreemptive`:
+Класс `MG1NonPreemptiveCalc`:
 
 ```python
-from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptive
+from most_queue.theory.priority.non_preemptive.mg1 import MG1NonPreemptiveCalc
 
-calc = MG1NonPreemptive(num_of_classes=3)
+calc = MG1NonPreemptiveCalc()
 calc.set_sources([0.1, 0.2, 0.3])
 calc.set_servers(b)
 results = calc.run()

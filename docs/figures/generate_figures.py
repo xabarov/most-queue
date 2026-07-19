@@ -1629,9 +1629,61 @@ def fig_machine_repair():
     return fig
 
 
+def fig_apq():
+    """Accumulating priority: credit grows linearly while waiting."""
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    fig, ax = plt.subplots(figsize=(7.8, 3.4), dpi=150)
+    t_grid = np.linspace(0, 8, 100)
+    # urgent class arrives later but accumulates faster and overtakes
+    t_low, rate_low = 0.0, 0.55
+    t_high, rate_high = 2.6, 1.6
+    ax.plot(
+        t_grid,
+        rate_low * (t_grid - t_low),
+        color=BLUE,
+        lw=2,
+        label=t("routine class, rate b₂", "обычный класс, скорость b₂"),
+    )
+    mask = t_grid >= t_high
+    ax.plot(
+        t_grid[mask],
+        rate_high * (t_grid[mask] - t_high),
+        color=RED,
+        lw=2,
+        label=t("urgent class, rate b₁ > b₂", "срочный класс, скорость b₁ > b₂"),
+    )
+    t_cross = (rate_high * t_high - rate_low * t_low) / (rate_high - rate_low)
+    ax.axvline(t_cross, color=MUTED, lw=1, ls=":")
+    ax.annotate(
+        t("urgent overtakes", "срочный обгоняет"),
+        xy=(t_cross, rate_low * t_cross),
+        xytext=(t_cross + 0.7, rate_low * t_cross - 0.9),
+        fontsize=9,
+        color=INK2,
+        arrowprops={"arrowstyle": "->", "color": INK2},
+    )
+    ax.set_xlabel(t("time in queue", "время в очереди"), fontsize=9, color=INK2)
+    ax.set_ylabel(t("accumulated priority", "накопленный приоритет"), fontsize=9, color=INK2)
+    ax.set_yticks([])
+    ax.set_xticks([])
+    ax.legend(loc="upper left", fontsize=8.5, frameon=False)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    _title(
+        ax,
+        t(
+            "Accumulating priority: served next = largest credit b·(waiting time)",
+            "Накапливаемый приоритет: следующим идёт максимальный кредит b·(время ожидания)",
+        ),
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
+    "apq": fig_apq,
     "polling": fig_polling,
     "msj": fig_msj,
     "load_balancing": fig_load_balancing,

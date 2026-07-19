@@ -13,7 +13,7 @@
 | Семейство | Что внутри |
 |---|---|
 | [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1 + size-based дисциплины (SRPT/SJF/PS/FB/LCFS-PR), GI/G-аппроксимации, H₂-решатели Такахаси-Таками |
-| [Системы с приоритетами](models/priority.ru.md) | M/G/1 и M/G/c с классами PR/NP, RDR для многоканальных многоприоритетных, точные CTMC-эталоны |
+| [Системы с приоритетами](models/priority.ru.md) | M/G/1 и M/G/c с классами PR/NP, RDR для многоканальных многоприоритетных, точные CTMC-эталоны; накапливаемый приоритет (APQ), нетерпение, MMAP/PH-вход, retrial с приоритетом, preemptive repeat |
 | [Polling-системы (циклический сервер)](models/polling.ru.md) | циклический сервер по Q очередям с переключением, псевдо-закон сохранения |
 | [Системы с отпусками (Vacations)](models/vacations.ru.md) | многократные отпуска, N-policy, разогрев/охлаждение, ненадёжный прибор |
 | [Системы с отрицательными заявками](models/negative.ru.md) | отрицательные заявки: RCS и disasters, одно- и многоканальные |
@@ -72,6 +72,11 @@
 | M/M/k, m классов (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Да | Многоканальные многоприоритетные, RDR |
 | M/M/k, m классов (точно) | MMkPriorityExact | PriorityQueueSimulator | Да | Точная CTMC + дисперсия отклика по классам |
 | M/PH/k, m классов | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Да | Фазовое обслуживание (RDR §2.3) |
+| M/G/1 накапливаемый приоритет | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Да | Клейнрок/APQ, спектр FIFO <-> строгие приоритеты |
+| M/M/n+M приоритет + нетерпение | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Да | Приоритетный Erlang-A, уходы по классам |
+| MMAP/PH/1 приоритеты | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Да | Коррелированный вход, NP/PR/RS, точная CTMC |
+| M/M/1 retrial + приоритет | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Да | Очередь приоритетных + орбита |
+| M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Да | Точный RS; completion times Гавера для RW |
 | Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Заявка занимает k серверов; порог устойчивости |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |

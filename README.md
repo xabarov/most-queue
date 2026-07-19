@@ -78,7 +78,7 @@ See the executable comparison of **9 disciplines** in
 | Classic FIFO | M/M/c, M/M/c/r, Erlang B/C, M/G/1, GI/M/c, M/D/c, Eₖ/D/c, M/G/∞ | exact |
 | Multi-server phase-type | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 via complex fit) | Takahashi–Takami |
 | Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors + graceful-degradation curves), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
-| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance | exact / RDR / invariant approximation |
+| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance; **accumulating priority** (Kleinrock/APQ), priority Erlang-A (impatience), MMAP/PH/1 priorities (NP/PR/RS), retrial with a priority class, preemptive repeat | exact / RDR / CTMC / invariant approximation |
 | Multiserver-job (MSJ) | jobs holding several servers at once — FCFS response time, saturated-system stability/throughput | exact CTMC / saturated product-form |
 | Load balancing (mean-field) | dispatching over a large pool — power-of-d / JSQ / JIQ / random | mean-field fixed point |
 | Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |

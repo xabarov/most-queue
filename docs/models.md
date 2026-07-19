@@ -13,7 +13,7 @@ add a figure function and regenerate the PNGs.
 | Family | What's inside |
 |---|---|
 | [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1 + size-based disciplines (SRPT/SJF/PS/FB/LCFS-PR), GI/G approximations, Takahashi-Takami H₂ solvers |
-| [Priority systems](models/priority.md) | M/G/1 and M/G/c with PR/NP classes, RDR multi-server multi-priority, exact CTMC references |
+| [Priority systems](models/priority.md) | M/G/1 and M/G/c with PR/NP classes, RDR multi-server multi-priority, exact CTMC references; accumulating priority (APQ), impatience, MMAP/PH input, retrial with priority, preemptive repeat |
 | [Polling systems (cyclic server)](models/polling.md) | cyclic server over Q queues with switchover, pseudo-conservation law |
 | [Systems with vacations](models/vacations.md) | multiple vacations, N-policy, warm-up/cooling, unreliable server |
 | [Systems with negative customers](models/negative.md) | negative customers: RCS and disasters, single- and multi-server |
@@ -72,6 +72,11 @@ add a figure function and regenerate the PNGs.
 | M/M/k, m classes (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Yes | Multi-server multi-priority, RDR |
 | M/M/k, m classes (exact) | MMkPriorityExact | PriorityQueueSimulator | Yes | Exact CTMC + per-class response variance |
 | M/PH/k, m classes | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Yes | Phase-type service (RDR §2.3) |
+| M/G/1 accumulating priority | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Yes | Kleinrock/APQ, FIFO <-> strict priority spectrum |
+| M/M/n+M priority + impatience | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Yes | Priority Erlang-A, per-class abandonment |
+| MMAP/PH/1 priority | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Yes | Correlated arrivals, NP/PR/RS, exact CTMC |
+| M/M/1 retrial + priority | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Yes | Priority queue + orbit |
+| M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Yes | Exact RS; Gaver completion times for RW |
 | Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Jobs holding k servers; stability threshold |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
