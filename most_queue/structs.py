@@ -66,6 +66,17 @@ class EDFResults(MulticlassResults):
 
 
 @dataclass
+class AdmissionControlResults(QueueResults):
+    """
+    Results of a queue with deadline-aware admission control: v/w are
+    conditional on admission (rejected jobs never join, so their moments
+    are undefined) -- see loss_prob for the rejection rate.
+    """
+
+    loss_prob: float = 0.0  # P(an arriving job is rejected outright)
+
+
+@dataclass
 class QueueingInventoryResults(QueueResults):
     """
     Result of a queueing-inventory system (queue + stock replenishment).

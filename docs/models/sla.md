@@ -83,4 +83,6 @@ LLM-serving papers (sharp rise as utilization approaches the stability boundary)
 compares two SLO tiers (premium/free) sharing the same server via `MG1NonPreemptiveCalc`.
 
 See also: [Priority systems](priority.md), [Systems with batch arrivals](batch.md),
-[Matrix-analytic models (MAP/PH)](map-ph.md).
+[Matrix-analytic models (MAP/PH)](map-ph.md), [EDF scheduling](edf.md) and
+[deadline-aware admission control](admission-control.md) — two other SLO-management mechanisms
+that change the discipline itself, rather than just reporting a metric on top of it.

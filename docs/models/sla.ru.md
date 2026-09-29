@@ -83,4 +83,6 @@ fit-хвостом `deadline_violation_prob`.
 `MG1NonPreemptiveCalc`.
 
 См. также: [Приоритетные системы](priority.ru.md), [Системы с пакетным приходом](batch.ru.md),
-[Матрично-аналитические модели (MAP/PH)](map-ph.ru.md).
+[Матрично-аналитические модели (MAP/PH)](map-ph.ru.md), [EDF-планирование](edf.ru.md) и
+[admission control по дедлайну](admission-control.ru.md) — два других механизма управления SLO,
+которые меняют саму дисциплину, а не просто считают метрику поверх неё.

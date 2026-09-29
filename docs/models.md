@@ -31,6 +31,7 @@ add a figure function and regenerate the PNGs.
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
 | [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
+| [Deadline-aware admission control](models/admission-control.md) | Accept/reject at arrival based on own-deadline feasibility (not reordering); exact convergent series for Exp(θ) deadline |
 | [Queueing-inventory systems](models/inventory.md) | M/M/1, M/M/c or M/M/2-heterogeneous with stock-consuming service, general (s,S) replenishment, backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
@@ -97,6 +98,7 @@ add a figure function and regenerate the PNGs.
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |
 | M/M/2 queueing-inventory, heterogeneous | MM2QueueingInventoryHeterogeneousCalc | MM2QueueingInventoryHeterogeneousSim | - | 2 servers with different rates, exact QBD, reduces to identical-server c=2 above |
 | EDF scheduling | - (no closed form, see docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Deadline-order service discipline, DES-exact, conservation-law check |
+| M/M/1 deadline admission control | MM1DeadlineAdmissionControlCalc | MM1DeadlineAdmissionControlSim | - | Exp(θ) deadline, exact convergent series (level-crossing functional equation) |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
 | Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |
