@@ -73,6 +73,7 @@
 | [EPIC-030](EPIC-030-fork-join-dag-heterogeneous.md) | Fork-Join с гетерогенными ветвями и series-parallel DAG: `heterogeneous_max_moments`, `ForkJoinDAGCalc` | done |
 | [EPIC-031](EPIC-031-fork-join-nk-heterogeneous.md) | (n,k)-Fork-Join поверх гетерогенных/DAG-ветвей: `pareto_kth_order_moments`, `heterogeneous_kth_order_moments`, `("parallel",...,k)` | done |
 | [EPIC-032](EPIC-032-bulk-service-waiting-moments.md) | Bulk-service (LLM/GPU dynamic batching): точные моменты `N`/`W` поверх `BulkServiceMM1Calc` | done |
+| [EPIC-033](EPIC-033-queueing-inventory-heterogeneous-servers.md) | Queueing-inventory с c=2 гетерогенными серверами: расщепление состояний + сложенный граничный суперблок QBD | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -105,4 +106,6 @@ EPIC-030 — по обзору fork-join с гетерогенными ветв�
 EPIC-031 — по обзору (n,k)-fork-join поверх гетерогенных/DAG-ветвей:
 [../research/fork-join-nk-heterogeneous-2026.md](../research/fork-join-nk-heterogeneous-2026.md);
 EPIC-032 — по обзору bulk-service и трендов теории очередей 2025-2026:
-[../research/bulk-service-waiting-moments-2026.md](../research/bulk-service-waiting-moments-2026.md).
+[../research/bulk-service-waiting-moments-2026.md](../research/bulk-service-waiting-moments-2026.md);
+EPIC-033 — по обзору queueing-inventory с гетерогенными серверами:
+[../research/queueing-inventory-heterogeneous-servers-2026.md](../research/queueing-inventory-heterogeneous-servers-2026.md).

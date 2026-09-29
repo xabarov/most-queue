@@ -114,7 +114,34 @@ res = calc.run()
 # rho = l / (c*mu) должно быть < 1 -- необходимо, но не достаточно (stockout блокирует все серверы)
 ```
 
+### Гетерогенные серверы (c=2)
+
+**Описание:** `MM2QueueingInventoryHeterogeneousCalc(s_max, s=0, policy="backorder")` снимает
+предположение «серверы одинаковы» модели `M/M/c` выше для случая `c=2`: сервер 1 и сервер 2 могут
+иметь разные скорости `mu1 != mu2`, деля один и тот же склад. Комбинирует две уже проверенные
+техники, а не новую математику: расщепление состояний для двух гетерогенных экспоненциальных
+серверов (Krishnamoorthi 1963, уже использовано для [machine repair](reliability.ru.md) и
+[приоритетных очередей](priority-dynamic.ru.md)) со сложенным граничным суперблоком QBD из модели
+`M/M/c` выше. Состояние отслеживает, КАКОЙ именно сервер — единственный занятый, только когда в
+системе ровно один клиент (`n=1`) — при `n=0` никто не занят, при `n≥2` заняты оба, неоднозначности
+нет. При `mu1=mu2` результат точно совпадает с `MMcQueueingInventoryCalc(c=2, ...)`. См.
+[`docs/research/queueing-inventory-heterogeneous-servers-2026.md`](../research/queueing-inventory-heterogeneous-servers-2026.md)
+и
+[`docs/roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md)
+для вывода блоков. Ограничено `c=2` — общий `c` гетерогенных серверов потребовал бы отслеживать,
+КАКОЕ ИМЕННО подмножество серверов занято на каждом промежуточном уровне (`n=1,...,c-1`) —
+комбинаторный рост пространства состояний, оставлен в резерве.
+
+```python
+from most_queue.theory.inventory import MM2QueueingInventoryHeterogeneousCalc
+
+calc = MM2QueueingInventoryHeterogeneousCalc(s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(mu1=1.5, mu2=0.7, theta=1.0)  # сервер 1 быстрее сервера 2
+res = calc.run()
+```
+
 ### Точность и охват
 
-Точно (matrix-geometric QBD, не аппроксимация) для `(0,S)`/общей `(s,S)`, `c=1` или `c>1`
-серверов, backorder или lost-sales — для всех моделей выше.
+Точно (matrix-geometric QBD, не аппроксимация) для `(0,S)`/общей `(s,S)`, `c=1`, одинаковых `c>1`
+серверов, или `c=2` гетерогенных серверов, backorder или lost-sales — для всех моделей выше.

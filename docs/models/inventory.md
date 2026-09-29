@@ -113,7 +113,34 @@ res = calc.run()
 # rho = l / (c*mu) must be < 1 -- necessary, not sufficient (stockouts can block all servers)
 ```
 
+### Heterogeneous servers (c=2)
+
+**Description:** `MM2QueueingInventoryHeterogeneousCalc(s_max, s=0, policy="backorder")` drops the
+"identical servers" assumption of the `M/M/c` model above for the `c=2` case: server 1 and server 2
+may have different rates `mu1 != mu2`, sharing the same stock pool. Combines two already-validated
+techniques rather than new math: the state-splitting technique for two heterogeneous exponential
+servers (Krishnamoorthi 1963, already used for [machine repair](reliability.md) and
+[priority queues](priority-dynamic.md)) with the stacked-boundary-superblock QBD trick from the
+`M/M/c` model above. State tracks *which* server is the sole busy one only when there's exactly one
+customer in the system (`n=1`) — for `n=0` nobody is busy, for `n≥2` both are, so no ambiguity
+there. `mu1=mu2` reproduces `MMcQueueingInventoryCalc(c=2, ...)` exactly. See
+[`docs/research/queueing-inventory-heterogeneous-servers-2026.md`](../research/queueing-inventory-heterogeneous-servers-2026.md)
+and
+[`docs/roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md)
+for the block derivation. Limited to `c=2` — general `c` heterogeneous servers would need tracking
+*which subset* of servers is busy at every intermediate level (`n=1,...,c-1`), a combinatorial
+state-space blow-up left as a reserve item.
+
+```python
+from most_queue.theory.inventory import MM2QueueingInventoryHeterogeneousCalc
+
+calc = MM2QueueingInventoryHeterogeneousCalc(s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(mu1=1.5, mu2=0.7, theta=1.0)  # server 1 faster than server 2
+res = calc.run()
+```
+
 ### Accuracy and scope
 
-Exact (matrix-geometric QBD, not an approximation) for `(0,S)`/general `(s,S)`, `c=1` or `c>1`
-servers, backorder or lost-sales — all of the models above.
+Exact (matrix-geometric QBD, not an approximation) for `(0,S)`/general `(s,S)`, `c=1`, identical
+`c>1` servers, or `c=2` heterogeneous servers, backorder or lost-sales — all of the models above.
