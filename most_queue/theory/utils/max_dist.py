@@ -3,6 +3,9 @@ Calculate distribution of maximum of n independent random variables with given d
 """
 
 import math
+from typing import Any, Callable
+
+from scipy.integrate import quad
 
 from most_queue.random.distributions import (
     ErlangDistribution,
@@ -15,6 +18,8 @@ from most_queue.random.distributions import (
 )
 from most_queue.random.utils.params import ParetoParams
 from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
+
+BranchSpec = tuple[str, Any]  # (family, ParetoParams | raw moments), see branch_tail()
 
 
 def pareto_max_tail(params: ParetoParams, n: int, x: float) -> float:
@@ -61,6 +66,188 @@ def pareto_max_moments(params: ParetoParams, n: int, num: int) -> list[float]:
         # log-space Beta function -- avoids overflow for large n.
         log_beta = math.lgamma(n) + math.lgamma(1.0 - k / alpha) - math.lgamma(n + 1.0 - k / alpha)
         moments.append(math.pow(scale, k) * n * math.exp(log_beta))
+    return moments
+
+
+def pareto_kth_order_moments(params: ParetoParams, n: int, k: int, num: int) -> list[float]:
+    """
+    Exact raw moments E[X_(k)^m], m=1..num, of the k-th order statistic
+    (ascending: k=1 the minimum, k=n the maximum) of n iid Pareto(alpha, K)
+    random variables -- no approximation, no quadrature. Generalizes
+    ``pareto_max_moments`` (the k=n special case, exact regression check).
+
+    Derivation: as in ``pareto_max_moments``, substitute U = F(X) ~
+    Uniform(0,1); X_(k) = K / (1 - U_(k))^(1/alpha), and the k-th order
+    statistic of n Uniform(0,1) is U_(k) ~ Beta(k, n-k+1), so
+    1 - U_(k) ~ Beta(n-k+1, k). Then
+    ``E[X_(k)^m] = K^m * E[(1-U_(k))^(-m/alpha)]
+                 = K^m * B(n-k+1 - m/alpha, k) / B(n-k+1, k)``,
+    convergent only for m < alpha*(n-k+1) (reduces to the existing m < alpha
+    condition at k=n).
+    """
+    if n < 1:
+        raise ValueError(f"n must be >= 1, got {n}")
+    if not 1 <= k <= n:
+        raise ValueError(f"k must satisfy 1 <= k <= n, got k={k}, n={n}")
+    alpha, scale = params.alpha, params.K
+    moments = []
+    for m in range(1, num + 1):
+        if m >= alpha * (n - k + 1):
+            raise ValueError(
+                f"E[X_({k})^{m}] does not exist for Pareto(alpha={alpha}), n={n}: requires "
+                f"m < alpha*(n-k+1) (got {len(moments)} of {num} requested moments)"
+            )
+        # log-space Beta-function ratio -- avoids overflow, see docstring.
+        log_ratio = (
+            math.lgamma(n - k + 1 - m / alpha)
+            - math.lgamma(n + 1 - m / alpha)
+            - math.lgamma(n - k + 1)
+            + math.lgamma(n + 1)
+        )
+        moments.append(math.pow(scale, m) * math.exp(log_ratio))
+    return moments
+
+
+def branch_tail(family: str, spec: Any) -> Callable[[float], float]:
+    """
+    P(X > t) for one fork-join branch, given its (family, spec):
+    - "pareto": spec is a ParetoParams -- exact, no fitting.
+    - "gamma"/"h2"/"erlang": spec is a list of raw moments -- fitted via that
+      family's get_params (same moment-matching MaxDistribution already
+      uses for the i.i.d. case).
+    """
+    if family == "pareto":
+        # ParetoDistribution.get_tail assumes t >= K (the distribution's minimum
+        # support value); below K, P(X>t) = 1 exactly, not the unclamped formula.
+        return lambda t: 1.0 if t < spec.K else ParetoDistribution.get_tail(spec, t)
+    if family == "gamma":
+        params = GammaDistribution.get_params(spec)
+        return lambda t: 1.0 - GammaDistribution.get_cdf(params, t)
+    if family == "h2":
+        params = H2Distribution.get_params(spec)
+        return lambda t: 1.0 - H2Distribution.get_cdf(params, t)
+    if family == "erlang":
+        params = ErlangDistribution.get_params(spec)
+        return lambda t: 1.0 - ErlangDistribution.get_cdf(params, t)
+    raise ValueError(f"unknown family {family!r}; expected 'pareto', 'gamma', 'h2' or 'erlang'")
+
+
+def heterogeneous_max_moments(branches: list[BranchSpec], num: int) -> list[float]:
+    """
+    Raw moments E[max(X_1,...,X_n)^k], k=1..num, of the maximum of `n`
+    INDEPENDENT but not necessarily identically distributed random variables.
+
+    Unlike ``pareto_max_moments`` (exact closed form, i.i.d. only), there is
+    no closed form for the heterogeneous case in general -- but the moments
+    are still numerically exact given each branch's assumed family, via the
+    standard identity for a non-negative random variable Y = max(X_i):
+
+        P(Y > t) = 1 - prod_i (1 - P(X_i > t))
+        E[Y^k]   = k * integral_0^inf t^(k-1) * P(Y > t) dt
+
+    evaluated with scipy.integrate.quad (the same numerical-integration
+    standard used elsewhere in the library, e.g.
+    most_queue.theory.srpt.utils.predictor). Reduces to ``pareto_max_moments``
+    when all branches are the same Pareto(alpha, K) -- see
+    docs/roadmaps/fork_join_dag_heterogeneous_roadmap.md sec. 1.
+
+    :param branches: list of (family, spec) -- see ``branch_tail``.
+    :param num: number of raw moments to compute.
+    """
+    if not branches:
+        raise ValueError("branches must be non-empty")
+    tails = [branch_tail(family, spec) for family, spec in branches]
+    # Pareto branches have a hard kink in their tail at t=K (P(X>t)=1 below it);
+    # quad's adaptive integration over the full [0, inf) struggles with a kink
+    # this close to the singular endpoint, so split there explicitly.
+    kinks = sorted({spec.K for family, spec in branches if family == "pareto"})
+
+    def surv_max(t: float) -> float:
+        p = 1.0
+        for tail in tails:
+            p *= 1.0 - tail(t)
+        return 1.0 - p
+
+    moments = []
+    for k in range(1, num + 1):
+        integrand = lambda t, k=k: k * t ** (k - 1) * surv_max(t)  # noqa: E731
+        value = 0.0
+        bounds = [0.0, *kinks, math.inf]
+        for lo, hi in zip(bounds[:-1], bounds[1:]):
+            # the last (semi-infinite) piece needs a much larger subdivision
+            # budget for moments near a heavy-tailed branch's existence
+            # boundary (k close to alpha), where the integrand decays slowly.
+            part, _ = quad(integrand, lo, hi, limit=200 if hi != math.inf else 2000)
+            value += part
+        moments.append(value)
+    return moments
+
+
+def _poisson_binomial_at_least(probs: list[float], m: int) -> float:
+    """
+    P(at least m of n independent Bernoulli(p_i) events occur), via Rushdi's
+    O(n^2) DP for the Poisson-Binomial distribution (Rushdi A.M., Recursive
+    algorithm for reliability evaluation of a k-out-of-n:G system, IEEE
+    Trans. Reliability, 1985, doi:10.1109/tr.1985.5221975 -- the same DP used
+    for k-out-of-n:G system reliability with heterogeneous components).
+
+        Q_0(0) = 1, Q_0(j) = 0 for j > 0
+        Q_i(j) = Q_{i-1}(j)*(1-p_i) + Q_{i-1}(j-1)*p_i
+
+    P(at least m) = sum_{j=m}^{n} Q_n(j).
+    """
+    n = len(probs)
+    if m <= 0:
+        return 1.0
+    if m > n:
+        return 0.0
+    q = [1.0] + [0.0] * n  # q[j] = Q_i(j), updated in place as i grows
+    for p in probs:
+        for j in range(n, 0, -1):
+            q[j] = q[j] * (1.0 - p) + q[j - 1] * p
+        q[0] *= 1.0 - p
+    return sum(q[m:])
+
+
+def heterogeneous_kth_order_moments(branches: list[BranchSpec], k: int, num: int) -> list[float]:
+    """
+    Raw moments E[X_(k)^m], m=1..num, of the k-th order statistic (ascending:
+    k=1 the minimum, k=n the maximum) of n INDEPENDENT but not necessarily
+    identically distributed random variables.
+
+    P(X_(k) <= x) = P(at least k of the n branches have X_i <= x) -- e.g.
+    k=n (max) requires ALL n to have finished, matching P(max<=x)=prod(CDF_i(x));
+    k=1 (min) requires at least 1 to have finished. Same DP as the
+    k-out-of-n:G system reliability problem with heterogeneous component
+    lifetimes (``_poisson_binomial_at_least``). Moments via the same
+    tail-integral identity as ``heterogeneous_max_moments`` (k=n reduces to
+    it exactly -- regression test).
+
+    :param branches: list of (family, spec) -- see ``branch_tail``.
+    :param k: order (1 <= k <= n, ascending: k=1 min, k=n max).
+    :param num: number of raw moments to compute.
+    """
+    n = len(branches)
+    if n == 0:
+        raise ValueError("branches must be non-empty")
+    if not 1 <= k <= n:
+        raise ValueError(f"k must satisfy 1 <= k <= n, got k={k}, n={n}")
+    tails = [branch_tail(family, spec) for family, spec in branches]
+    kinks = sorted({spec.K for family, spec in branches if family == "pareto"})
+
+    def surv_kth(t: float) -> float:
+        probs = [1.0 - tail(t) for tail in tails]  # P(X_i <= t)
+        return 1.0 - _poisson_binomial_at_least(probs, k)
+
+    moments = []
+    for m in range(1, num + 1):
+        integrand = lambda t, m=m: m * t ** (m - 1) * surv_kth(t)  # noqa: E731
+        value = 0.0
+        bounds = [0.0, *kinks, math.inf]
+        for lo, hi in zip(bounds[:-1], bounds[1:]):
+            part, _ = quad(integrand, lo, hi, limit=200 if hi != math.inf else 2000)
+            value += part
+        moments.append(value)
     return moments
 
 

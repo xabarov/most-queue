@@ -70,6 +70,8 @@
 | [EPIC-027](EPIC-027-queueing-inventory-general-sS.md) | Queueing-inventory, общая политика (s,S): параметр `s` на `MM1QueueingInventoryCalc` | done |
 | [EPIC-028](EPIC-028-queueing-inventory-multiserver.md) | Queueing-inventory, многоканальный случай (M/M/c): `MMcQueueingInventoryCalc`, точный QBD со сложенным граничным суперблоком | done |
 | [EPIC-029](EPIC-029-edf-scheduling.md) | EDF scheduling discipline: DES-симулятор + закон сохранения работы (только при редком reneging) + композиция с SLA-слоем (EPIC-021) | done |
+| [EPIC-030](EPIC-030-fork-join-dag-heterogeneous.md) | Fork-Join с гетерогенными ветвями и series-parallel DAG: `heterogeneous_max_moments`, `ForkJoinDAGCalc` | done |
+| [EPIC-031](EPIC-031-fork-join-nk-heterogeneous.md) | (n,k)-Fork-Join поверх гетерогенных/DAG-ветвей: `pareto_kth_order_moments`, `heterogeneous_kth_order_moments`, `("parallel",...,k)` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -96,4 +98,8 @@ EPIC-027 — по обзору queueing-inventory общей политики (s
 EPIC-028 — по обзору многоканального queueing-inventory:
 [../research/queueing-inventory-multiserver-2026.md](../research/queueing-inventory-multiserver-2026.md);
 EPIC-029 — по обзору EDF-планирования:
-[../research/edf-scheduling-2026.md](../research/edf-scheduling-2026.md).
+[../research/edf-scheduling-2026.md](../research/edf-scheduling-2026.md);
+EPIC-030 — по обзору fork-join с гетерогенными ветвями и DAG:
+[../research/fork-join-dag-heterogeneous-2026.md](../research/fork-join-dag-heterogeneous-2026.md);
+EPIC-031 — по обзору (n,k)-fork-join поверх гетерогенных/DAG-ветвей:
+[../research/fork-join-nk-heterogeneous-2026.md](../research/fork-join-nk-heterogeneous-2026.md).

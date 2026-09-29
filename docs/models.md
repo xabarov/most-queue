@@ -20,7 +20,7 @@ add a figure function and regenerate the PNGs.
 | [Polling systems (cyclic server)](models/polling.md) | cyclic server over Q queues with switchover, pseudo-conservation law |
 | [Systems with vacations](models/vacations.md) | multiple vacations, N-policy, warm-up/cooling, unreliable server |
 | [Systems with negative customers](models/negative.md) | negative customers: RCS and disasters, single- and multi-server |
-| [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n sub-task service |
+| [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join |
 | [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 |
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
@@ -66,6 +66,7 @@ add a figure function and regenerate the PNGs.
 | M/M/1 disasters + repair | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Queue flush, repair phase, P(down)=δ/(δ+η) |
 | M/M/1 retrial unreliable | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Active breakdowns, orbit, availability |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Parallel service |
+| Fork-Join, series-parallel DAG | ForkJoinDAGCalc | - | - | Heterogeneous branches, nested series/parallel task graph |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Batch arrivals |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Abandonment, staffing helper |
 | M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Orbit, exact truncated chain |

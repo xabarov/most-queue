@@ -20,7 +20,7 @@
 | [Polling-системы (циклический сервер)](models/polling.ru.md) | циклический сервер по Q очередям с переключением, псевдо-закон сохранения |
 | [Системы с отпусками (Vacations)](models/vacations.ru.md) | многократные отпуска, N-policy, разогрев/охлаждение, ненадёжный прибор |
 | [Системы с отрицательными заявками](models/negative.ru.md) | отрицательные заявки: RCS и disasters, одно- и многоканальные |
-| [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач |
+| [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач; гетерогенные ветви, series-parallel DAG задач, (n,k)-join |
 | [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 |
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
@@ -66,6 +66,7 @@
 | M/M/1 катастрофы + ремонт | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Сброс очереди, фаза ремонта, P(down)=δ/(δ+η) |
 | M/M/1 retrial ненадёжный | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Активные отказы, орбита, доступность |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Параллельное обслуживание |
+| Fork-Join, series-parallel DAG | ForkJoinDAGCalc | - | - | Гетерогенные ветви, вложенный series/parallel граф задач |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Пакетное поступление |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Уходы, staffing-помощник |
 | M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Орбита, точное усечение цепи |
