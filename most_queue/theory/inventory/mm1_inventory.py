@@ -1,25 +1,36 @@
 """
-M/M/1 queueing-inventory system, (0,S) replenishment policy, backordering.
+M/M/1 queueing-inventory system, (0,S) replenishment policy, backordering or
+lost sales.
 
 Customers arrive Poisson(lambda) and are served FCFS at rate mu -- but
 service consumes one unit of stock, released only when service completes.
 Stock S_max is depleted by completed services; the moment it hits 0, an
 order for S_max units is placed automatically ((0,S) policy) and arrives
-after Exp(theta) (positive lead time). While stock is 0, arriving customers
-still queue (backordering, not lost sales) but the server is blocked --
-service cannot start without a unit in stock.
+after Exp(theta) (positive lead time). While stock is 0, service is blocked
+(cannot start without a unit in stock); what happens to a customer arriving
+during the stockout depends on `policy`:
 
-Classic formulation: Schwarz M., Daduna H., M/M/1 Queueing systems with
-inventory, Queueing Systems, 2006, doi:10.1007/s11134-006-8710-5; Schwarz M.,
-Wichelhaus C., Daduna H., Queueing systems with inventory management with
-random lead times and with backordering, Mathematical Methods of Operations
-Research, 2006, doi:10.1007/s00186-006-0085-1.
+- "backorder" (default): the customer still queues and waits for
+  replenishment (Schwarz M., Daduna H., M/M/1 Queueing systems with
+  inventory, Queueing Systems, 2006, doi:10.1007/s11134-006-8710-5; Schwarz
+  M., Wichelhaus C., Daduna H., Queueing systems with inventory management
+  with random lead times and with backordering, Mathematical Methods of
+  Operations Research, 2006, doi:10.1007/s00186-006-0085-1).
+- "lost_sales": the customer is turned away instead (Saffari M., Haji R.,
+  Hassanzadeh F., The M/M/1 queue with inventory, lost sale, and general
+  lead times, Queueing Systems, 2013, doi:10.1007/s11134-012-9337-3).
 
 Exactly a QBD process: level n = number of customers in the system
 (unbounded), phase i in {0,...,S_max} = stock level. Solved via the
 library's general QBD solver (theory.matrix.qbd.QBDSolver) -- see
-docs/roadmaps/queueing_inventory_roadmap.md sec. 2 for the block derivation.
+docs/roadmaps/queueing_inventory_roadmap.md sec. 2 for the backorder block
+derivation, and docs/roadmaps/queueing_inventory_lost_sales_roadmap.md sec. 2
+for the (single-block) lost-sales modification: an arrival at stock=0 is not
+a state transition at all under lost sales, so A0/B01 lose their phase-0 row
+and A1[0,0]/B00[0,0] lose the lambda term.
 """
+
+from typing import Literal
 
 import numpy as np
 
@@ -28,21 +39,26 @@ from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
 from most_queue.theory.matrix.qbd import QBDSolver
 
+Policy = Literal["backorder", "lost_sales"]
+
 
 class MM1QueueingInventoryCalc(BaseQueue):
     """
-    M/M/1 queueing-inventory system with a (0, S) replenishment policy and
-    backordering (arriving customers wait, never lost, even during a
-    stockout -- only service is blocked).
+    M/M/1 queueing-inventory system with a (0, S) replenishment policy.
 
     :param s_max: S -- stock level restored to after each replenishment.
+    :param policy: "backorder" (arrivals wait out a stockout, never lost) or
+        "lost_sales" (arrivals during a stockout are turned away).
     """
 
-    def __init__(self, s_max: int, calc_params: CalcParams | None = None):
+    def __init__(self, s_max: int, policy: Policy = "backorder", calc_params: CalcParams | None = None):
         super().__init__(n=1, calc_params=calc_params)
         if s_max < 1:
             raise ValueError(f"s_max must be >= 1, got {s_max}")
+        if policy not in ("backorder", "lost_sales"):
+            raise ValueError(f"policy must be 'backorder' or 'lost_sales', got {policy!r}")
         self.s_max = int(s_max)
+        self.policy: Policy = policy
         self.l = None
         self.mu = None
         self.theta = None
@@ -75,8 +91,11 @@ class MM1QueueingInventoryCalc(BaseQueue):
 
         m = self.s_max + 1  # phases: stock level i = 0..S
         lam, mu, theta = self.l, self.mu, self.theta
+        lost = self.policy == "lost_sales"
 
         a0 = lam * np.eye(m)  # arrival: level up, phase unchanged
+        if lost:
+            a0[0, 0] = 0.0  # an arrival at stock=0 is lost, not a transition
 
         a2 = np.zeros((m, m))  # service completion: level down, stock -1
         for i in range(1, m):
@@ -85,13 +104,13 @@ class MM1QueueingInventoryCalc(BaseQueue):
 
         a1 = np.zeros((m, m))
         a1[0, self.s_max] = theta  # replenishment: same level, stock 0 -> S
-        a1[0, 0] = -(lam + theta)
+        a1[0, 0] = -theta if lost else -(lam + theta)
         for i in range(1, m):
             a1[i, i] = -(lam + mu)
 
         b00 = np.zeros((m, m))  # level 0: nothing to serve, no mu-transitions
         b00[0, self.s_max] = theta
-        b00[0, 0] = -(lam + theta)
+        b00[0, 0] = -theta if lost else -(lam + theta)
         for i in range(1, m):
             b00[i, i] = -lam
 
@@ -125,6 +144,18 @@ class MM1QueueingInventoryCalc(BaseQueue):
         inv = np.linalg.inv(np.eye(m) - solver.r)
         return solver.pi0 + solver.pi1 @ inv
 
+    def _effective_arrival_rate(self) -> float:
+        """
+        Throughput of customers that actually enter the system. Equals lambda
+        under backorder (nobody is turned away); under lost_sales it is
+        lambda * P(stock > 0), since level n only counts accepted customers
+        -- Little's law must use this, not the nominal lambda.
+        """
+        if self.policy == "backorder":
+            return self.l
+        stockout_prob = float(self._phase_marginal()[0])
+        return self.l * (1.0 - stockout_prob)
+
     # ------------------------------------------------------------- results
     def get_p(self, num_levels: int | None = None) -> list[float]:
         """Probabilities of the number of customers in the system (levels)."""
@@ -135,8 +166,8 @@ class MM1QueueingInventoryCalc(BaseQueue):
         return self.p
 
     def get_v(self) -> list[float]:
-        """Mean sojourn time (first moment only): E[V] = E[N] / lambda (Little's law)."""
-        self.v = [self._mean_in_system() / self.l]
+        """Mean sojourn time (first moment only): E[V] = E[N] / lambda_effective (Little's law)."""
+        self.v = [self._mean_in_system() / self._effective_arrival_rate()]
         return self.v
 
     def get_w(self) -> list[float]:
@@ -159,6 +190,11 @@ class MM1QueueingInventoryCalc(BaseQueue):
             w = self.get_w()
             stock = self.get_stock_distribution()
 
+        # Under lost sales every arrival that finds stock=0 is turned away, so
+        # (by PASTA) the loss probability is exactly the stockout probability;
+        # under backorder nobody is ever lost.
+        loss_prob = stock[0] if self.policy == "lost_sales" else 0.0
+
         result = QueueingInventoryResults(
             v=v,
             w=w,
@@ -167,6 +203,7 @@ class MM1QueueingInventoryCalc(BaseQueue):
             stock_distribution=stock,
             stockout_prob=stock[0],
             fill_rate=1.0 - stock[0],
+            loss_prob=loss_prob,
         )
         self._set_duration(result, start)
         return result

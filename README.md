@@ -78,7 +78,7 @@ See the executable comparison of **9 disciplines** in
 | Classic FIFO | M/M/c, M/M/c/r, Erlang B/C, M/G/1, GI/M/c, M/D/c, Eₖ/D/c, M/G/∞ | exact |
 | Multi-server phase-type | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 via complex fit) | Takahashi–Takami |
 | Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors + graceful-degradation curves), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
-| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance; **accumulating priority** (Kleinrock/APQ), priority Erlang-A (impatience), MMAP/PH/1 priorities (NP/PR/RS), retrial with a priority class, preemptive repeat | exact / RDR / CTMC / invariant approximation |
+| Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance; M/M/2 with **heterogeneous servers** (exact non-birth-death CTMC); **accumulating priority** (Kleinrock/APQ), priority Erlang-A (impatience), MMAP/PH/1 priorities (NP/PR/RS), retrial with a priority class, preemptive repeat | exact / RDR / CTMC / invariant approximation |
 | Multiserver-job (MSJ) | jobs holding several servers at once — FCFS response time, saturated-system stability/throughput | exact CTMC / saturated product-form |
 | Load balancing (mean-field) | dispatching over a large pool — power-of-d / JSQ / JIQ / random | mean-field fixed point |
 | Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |
@@ -94,7 +94,7 @@ See the executable comparison of **9 disciplines** in
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
-| Queueing-inventory | M/M/1 with stock-consuming service, (0,S) replenishment, backordering | exact QBD |
+| Queueing-inventory | M/M/1 with stock-consuming service, (0,S) replenishment, backordering or lost sales | exact QBD |
 | Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n sub-task service | Markovian / order statistics / exact (Beta function) |
 | Networks | open (decomposition, exact Jackson, QNA two-moment flows, MAP input), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe, multi-class), tandems with blocking (finite buffers), fork-join stations, time-varying λ(t), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 

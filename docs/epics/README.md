@@ -65,6 +65,8 @@
 | [EPIC-022](EPIC-022-fork-join-heavy-tail.md) | Fork-Join с тяжёлыми хвостами: точный max n·Pareto (CDF + моменты через Beta-функцию) | done |
 | [EPIC-023](EPIC-023-machine-repair-heterogeneous.md) | Machine repair с двумя гетерогенными ремонтниками: точная CTMC (Krishnamoorthi 1963) | done |
 | [EPIC-024](EPIC-024-queueing-inventory.md) | Queueing-inventory systems: M/M/1, (0,S)-политика, backorder, точный QBD | done |
+| [EPIC-025](EPIC-025-priority-heterogeneous-servers.md) | M/M/2 с приоритетами и гетерогенными серверами: усечённая CTMC (Krishnamoorthi + приоритеты) | done |
+| [EPIC-026](EPIC-026-queueing-inventory-lost-sales.md) | Queueing-inventory lost-sales: параметр политики на `MM1QueueingInventoryCalc` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -81,4 +83,8 @@ EPIC-022 — по обзору fork-join с тяжёлыми хвостами:
 EPIC-023 — по обзору machine repair с гетерогенными ремонтниками:
 [../research/machine-repair-heterogeneous-2026.md](../research/machine-repair-heterogeneous-2026.md);
 EPIC-024 — по обзору queueing-inventory систем:
-[../research/queueing-inventory-2026.md](../research/queueing-inventory-2026.md).
+[../research/queueing-inventory-2026.md](../research/queueing-inventory-2026.md);
+EPIC-025 — по обзору приоритетов с гетерогенными серверами:
+[../research/priority-heterogeneous-servers-2026.md](../research/priority-heterogeneous-servers-2026.md);
+EPIC-026 — по обзору queueing-inventory lost-sales:
+[../research/queueing-inventory-lost-sales-2026.md](../research/queueing-inventory-lost-sales-2026.md).

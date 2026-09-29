@@ -65,6 +65,7 @@ class QueueingInventoryResults(QueueResults):
     stock_distribution: list[float] | None = None  # P(inventory level = i), i = 0..S
     stockout_prob: float = 0.0  # P(inventory level = 0)
     fill_rate: float = 0.0  # 1 - stockout_prob
+    loss_prob: float = 0.0  # P(an arriving customer is turned away) -- lost-sales policy only
 
 
 @dataclass

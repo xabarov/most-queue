@@ -30,7 +30,7 @@ add a figure function and regenerate the PNGs.
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
-| [Queueing-inventory systems](models/inventory.md) | M/M/1 with stock-consuming service, (0,S) replenishment, backordering — exact QBD |
+| [Queueing-inventory systems](models/inventory.md) | M/M/1 with stock-consuming service, (0,S) replenishment, backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
@@ -77,6 +77,7 @@ add a figure function and regenerate the PNGs.
 | BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Batch arrivals + PH service |
 | M/M/k, m classes (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Yes | Multi-server multi-priority, RDR |
 | M/M/k, m classes (exact) | MMkPriorityExact | PriorityQueueSimulator | Yes | Exact CTMC + per-class response variance |
+| M/M/2, 2 classes, heterogeneous servers | MM2PriorityHeterogeneousCalc | MM2PriorityHeterogeneousSim | Yes | Exact CTMC, non-birth-death (Krishnamoorthi 1963 technique) |
 | M/PH/k, m classes | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Yes | Phase-type service (RDR §2.3) |
 | M/G/1 accumulating priority | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Yes | Kleinrock/APQ, FIFO <-> strict priority spectrum |
 | M/M/n+M priority + impatience | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Yes | Priority Erlang-A, per-class abandonment |
@@ -90,7 +91,7 @@ add a figure function and regenerate the PNGs.
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
-| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering, exact QBD |
+| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
 | Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |

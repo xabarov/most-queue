@@ -43,12 +43,35 @@ res = calc.run()
 # res.stock_distribution[i] = P(stock level == i)
 ```
 
+### Lost-sales variant
+
+**Description:** Set `policy="lost_sales"`: an arrival that finds the stock empty (`i = 0`) is
+turned away instead of queueing — more realistic for retail/e-commerce, where a customer seeing
+"out of stock" leaves rather than joining a virtual queue. The difference from backordering is
+**exactly one transition**: an arrival at `i = 0` is not a state change at all under lost sales (it
+never enters the CTMC), so `A0`/`B01` lose their phase-0 row and the `i = 0` diagonal entry of
+`A1`/`B00` loses the `λ` term — everything else (service, replenishment) is identical. Implemented
+as a parameter on the same calculator, not a separate class. Classic formulation: Saffari, Haji &
+Hassanzadeh, *The M/M/1 queue with inventory, lost sale, and general lead times*, Queueing
+Systems, 2013.
+
+Mean sojourn/queue length are computed via Little's law using the **effective** (accepted)
+arrival rate `λ·(1 − loss_prob)`, not the nominal `λ` — a subtlety worth knowing if you reuse the
+internals: `level n` under lost sales only counts customers that were actually admitted.
+
+```python
+calc = MM1QueueingInventoryCalc(s_max=4, policy="lost_sales")
+calc.set_sources(l=0.5)
+calc.set_servers(mu=1.0, theta=0.5)
+res = calc.run()
+# res.loss_prob = P(an arriving customer is turned away) -- equals stockout_prob by PASTA
+```
+
 ### Accuracy and scope
 
-Exact (matrix-geometric QBD, not an approximation) for the `(0,S)` backorder model above. Two
-natural extensions are **not yet implemented** (see
+Exact (matrix-geometric QBD, not an approximation) for both the `(0,S)` backorder and lost-sales
+models above. The general **`(s,S)` policy** (`s > 0`, requiring an extra "order already placed"
+state bit) and the **multi-server** case remain **not yet implemented** — see
 [`docs/research/queueing-inventory-2026.md`](../research/queueing-inventory-2026.md) for the
-gap-analysis and literature): the **lost-sales** variant (arrivals during a stockout are turned
-away rather than queueing) and the general **`(s,S)` policy** (`s > 0`, requiring an extra "order
-already placed" state bit). Both are QBD-compatible extensions of the same solver, just a
+gap-analysis and literature. Both are QBD-compatible extensions of the same solver, just a
 different block structure.

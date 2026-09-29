@@ -115,4 +115,34 @@ calc.set_servers(b=[b_high, b_low])            # 3 raw moments per class
 res = calc.run()   # exact RS means; calc.completion_means["RS"/"RW"]
 ```
 
+### M/M/2 with two preemptive priority classes and heterogeneous servers
+
+**Description:** Every prior multi-server priority model above (`MMkPriorityExact`,
+`RDRAPriorityCalc`, `MPhPhK2Class`) assumes interchangeable servers — it never matters *which* one
+is busy. With two servers at **different** rates (`mu_a ≠ mu_b`) that stops being true, the same
+way it did for [machine repair with two heterogeneous repairmen](reliability.md): exact solution
+needs a state that disambiguates which physical server is occupied whenever that's ambiguous
+(exactly one class-0 job in service, or exactly one class-1 job with no class-0 present). Dispatch:
+an idle server is always preferred over preempting one already in service; a job never migrates to
+a different server once it has started (sticky). Reduces exactly to `MMkPriorityExact(n=2, ...)`
+when `mu_a = mu_b`.
+
+**In plain words:** a senior (fast) and a junior (slow) technician share one queue with two
+priority tiers. The senior tech is always given to the top-priority job whenever there is one; a
+junior-tier job in progress is never pulled off its technician just because the other one frees up
+— it finishes where it started.
+
+**Calculator class:** `MM2PriorityHeterogeneousCalc`
+(`most_queue.theory.priority.preemptive.mm2_heterogeneous`)
+**Simulation:** `MM2PriorityHeterogeneousSim` (`most_queue.sim.priority_heterogeneous`)
+
+```python
+from most_queue.theory.priority.preemptive.mm2_heterogeneous import MM2PriorityHeterogeneousCalc
+
+calc = MM2PriorityHeterogeneousCalc(truncation=50)
+calc.set_sources([0.4, 0.3])      # [lambda_0, lambda_1], class 0 = high priority
+calc.set_servers(1.5, 0.5)        # server rates, any order
+res = calc.run()   # res.v[k][0], res.w[k][0] -- exact mean sojourn/wait per class
+```
+
 **See also:** [SLA / deadline-violation probability](sla.md) — turn these moments into a deadline-violation probability or SLO quantile.

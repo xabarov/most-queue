@@ -30,7 +30,7 @@
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
 | [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
-| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1 с расходуемым при обслуживании запасом, пополнение (0,S), backorder — точный QBD |
+| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1 с расходуемым при обслуживании запасом, пополнение (0,S), backorder или lost sales — точный QBD |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
 | [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem (включая 2 гетерогенных ремонтника), working breakdowns, катастрофы с ремонтом, retrial + отказы |
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
@@ -77,6 +77,7 @@
 | BMAP/PH/1 | BmapPh1Calc | BmapPh1Sim | - | Пакетный вход + PH-обслуживание |
 | M/M/k, m классов (RDR-A) | RDRAPriorityCalc | PriorityQueueSimulator | Да | Многоканальные многоприоритетные, RDR |
 | M/M/k, m классов (точно) | MMkPriorityExact | PriorityQueueSimulator | Да | Точная CTMC + дисперсия отклика по классам |
+| M/M/2, 2 класса, гетерогенные серверы | MM2PriorityHeterogeneousCalc | MM2PriorityHeterogeneousSim | Да | Точная не-birth-death CTMC (техника Krishnamoorthi 1963) |
 | M/PH/k, m классов | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Да | Фазовое обслуживание (RDR §2.3) |
 | M/G/1 накапливаемый приоритет | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Да | Клейнрок/APQ, спектр FIFO <-> строгие приоритеты |
 | M/M/n+M приоритет + нетерпение | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Да | Приоритетный Erlang-A, уходы по классам |
@@ -90,7 +91,7 @@
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
-| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder, точный QBD |
+| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
 | Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |
 | Сеть Джексона | JacksonNetworkCalc | NetworkSimulator | - | Точный product-form, узлы M/M/n |
 | Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |
