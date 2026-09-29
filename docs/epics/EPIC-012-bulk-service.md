@@ -47,3 +47,8 @@ KV-cache (см. [research](../research/queueing-trends-2026.md)).
   LLM-батчинга. **`BulkServiceSim`** — парный симулятор.
 - Валидация: b=1 = M/M/1 точно; сверка с симуляцией; LLM trade-off. Тесты (8 шт., зелёные).
 - Каталог EN+RU.
+
+**Обновление (EPIC-032, 2026-09-29):** добавлены точные моменты `N` (`get_n_moments`, любые `a,b`)
+и `W` (`get_w`, точно при `a=1` — доминирующий случай для GPU/LLM dynamic batching без порога),
+заменяющие приближённую оценку среднего `E[W]` в `run()` при `a=1`. Подробности:
+[EPIC-032](EPIC-032-bulk-service-waiting-moments.md).

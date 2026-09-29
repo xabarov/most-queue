@@ -72,6 +72,7 @@
 | [EPIC-029](EPIC-029-edf-scheduling.md) | EDF scheduling discipline: DES-симулятор + закон сохранения работы (только при редком reneging) + композиция с SLA-слоем (EPIC-021) | done |
 | [EPIC-030](EPIC-030-fork-join-dag-heterogeneous.md) | Fork-Join с гетерогенными ветвями и series-parallel DAG: `heterogeneous_max_moments`, `ForkJoinDAGCalc` | done |
 | [EPIC-031](EPIC-031-fork-join-nk-heterogeneous.md) | (n,k)-Fork-Join поверх гетерогенных/DAG-ветвей: `pareto_kth_order_moments`, `heterogeneous_kth_order_moments`, `("parallel",...,k)` | done |
+| [EPIC-032](EPIC-032-bulk-service-waiting-moments.md) | Bulk-service (LLM/GPU dynamic batching): точные моменты `N`/`W` поверх `BulkServiceMM1Calc` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -102,4 +103,6 @@ EPIC-029 — по обзору EDF-планирования:
 EPIC-030 — по обзору fork-join с гетерогенными ветвями и DAG:
 [../research/fork-join-dag-heterogeneous-2026.md](../research/fork-join-dag-heterogeneous-2026.md);
 EPIC-031 — по обзору (n,k)-fork-join поверх гетерогенных/DAG-ветвей:
-[../research/fork-join-nk-heterogeneous-2026.md](../research/fork-join-nk-heterogeneous-2026.md).
+[../research/fork-join-nk-heterogeneous-2026.md](../research/fork-join-nk-heterogeneous-2026.md);
+EPIC-032 — по обзору bulk-service и трендов теории очередей 2025-2026:
+[../research/bulk-service-waiting-moments-2026.md](../research/bulk-service-waiting-moments-2026.md).
