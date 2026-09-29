@@ -67,11 +67,53 @@ res = calc.run()
 # res.loss_prob = P(an arriving customer is turned away) -- equals stockout_prob by PASTA
 ```
 
+### General (s,S) policy
+
+**Description:** pass `s` (reorder point, `0 <= s < s_max`) to either calculator: replenishment
+triggers as soon as stock drops to `s`, not only when it hits 0 — the usual generalization used to
+keep a safety-stock buffer instead of running all the way to a stockout before reordering.
+Surprisingly, this needs **no extra state dimension**: because the lead time is exponential
+(memoryless), "an order is currently in transit" is fully determined by `i <= s` alone, exactly as
+`i == 0` alone determined it in the `(0,S)` special case — so the QBD phase space stays
+`i ∈ {0,...,S}` and only the replenishment transition's active range changes (`i <= s` instead of
+`i == 0`). `s=0` reproduces the `(0,S)` models above exactly. Compatible with both `policy`
+values. See [`docs/research/queueing-inventory-general-sS-2026.md`](../research/queueing-inventory-general-sS-2026.md).
+
+```python
+calc = MM1QueueingInventoryCalc(s_max=4, s=2, policy="backorder")  # reorder as soon as stock hits 2
+calc.set_sources(l=0.5)
+calc.set_servers(mu=1.0, theta=0.5)
+res = calc.run()
+# larger s (more safety stock) never increases stockout_prob or mean wait
+```
+
+### Multi-server case (M/M/c)
+
+**Description:** `MMcQueueingInventoryCalc(c, s_max, s=0, policy="backorder")` generalizes the
+`(s,S)` model above to `c` identical servers, each service still consuming one unit from the same
+shared stock. The number of busy servers is `min(n, c)` — a deterministic function of the number
+of customers `n` in the system, exactly as in the ordinary `M/M/c` queue — so no extra state
+dimension is needed. What *does* change is that the service rate depends on `n` while `n < c`
+(rate `n·μ`, not all servers saturated yet) and only becomes level-independent (`c·μ`) once
+`n ≥ c`, giving `c` distinct boundary levels instead of one; these are stacked into a single
+super-block for the QBD solver (still the same `QBDSolver`, no new numerical method). `c=1`
+reproduces `MM1QueueingInventoryCalc` exactly. See
+[`docs/research/queueing-inventory-multiserver-2026.md`](../research/queueing-inventory-multiserver-2026.md)
+(Yue, Zhao & Yue 2016; Krishnamoorthy, Manikandan & Dhanya 2015) and
+[`docs/roadmaps/queueing_inventory_multiserver_roadmap.md`](../roadmaps/queueing_inventory_multiserver_roadmap.md)
+for the block derivation.
+
+```python
+from most_queue.theory.inventory import MMcQueueingInventoryCalc
+
+calc = MMcQueueingInventoryCalc(c=2, s_max=4, s=1)  # 2 servers, reorder at stock=1
+calc.set_sources(l=1.0)
+calc.set_servers(mu=1.0, theta=0.5)
+res = calc.run()
+# rho = l / (c*mu) must be < 1 -- necessary, not sufficient (stockouts can block all servers)
+```
+
 ### Accuracy and scope
 
-Exact (matrix-geometric QBD, not an approximation) for both the `(0,S)` backorder and lost-sales
-models above. The general **`(s,S)` policy** (`s > 0`, requiring an extra "order already placed"
-state bit) and the **multi-server** case remain **not yet implemented** — see
-[`docs/research/queueing-inventory-2026.md`](../research/queueing-inventory-2026.md) for the
-gap-analysis and literature. Both are QBD-compatible extensions of the same solver, just a
-different block structure.
+Exact (matrix-geometric QBD, not an approximation) for `(0,S)`/general `(s,S)`, `c=1` or `c>1`
+servers, backorder or lost-sales — all of the models above.

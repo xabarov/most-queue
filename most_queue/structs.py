@@ -57,6 +57,15 @@ class PriorityResults(MulticlassResults):
 
 
 @dataclass
+class EDFResults(MulticlassResults):
+    """
+    Results of an EDF (Earliest Deadline First) queue simulation.
+    """
+
+    miss_prob: list[float] | None = None  # P(deadline missed), per class
+
+
+@dataclass
 class QueueingInventoryResults(QueueResults):
     """
     Result of a queueing-inventory system (queue + stock replenishment).

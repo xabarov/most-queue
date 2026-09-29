@@ -30,7 +30,8 @@
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
 | [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
-| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1 с расходуемым при обслуживании запасом, пополнение (0,S), backorder или lost sales — точный QBD |
+| [EDF-планирование](models/edf.ru.md) | Earliest-Deadline-First как реальная дисциплина обслуживания (не post-hoc SLA); точна по построению (DES), точной теории нет (открытая задача) |
+| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1 или M/M/c с расходуемым при обслуживании запасом, общая политика (s,S), backorder или lost sales — точный QBD |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
 | [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem (включая 2 гетерогенных ремонтника), working breakdowns, катастрофы с ремонтом, retrial + отказы |
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
@@ -91,7 +92,9 @@
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
-| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
+| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
+| M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |
+| EDF-планирование | - (точной теории нет, см. docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Дисциплина обслуживания по дедлайну, точна по построению (DES), проверка законом сохранения работы |
 | Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |
 | Сеть Джексона | JacksonNetworkCalc | NetworkSimulator | - | Точный product-form, узлы M/M/n |
 | Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |

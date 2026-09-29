@@ -67,6 +67,9 @@
 | [EPIC-024](EPIC-024-queueing-inventory.md) | Queueing-inventory systems: M/M/1, (0,S)-политика, backorder, точный QBD | done |
 | [EPIC-025](EPIC-025-priority-heterogeneous-servers.md) | M/M/2 с приоритетами и гетерогенными серверами: усечённая CTMC (Krishnamoorthi + приоритеты) | done |
 | [EPIC-026](EPIC-026-queueing-inventory-lost-sales.md) | Queueing-inventory lost-sales: параметр политики на `MM1QueueingInventoryCalc` | done |
+| [EPIC-027](EPIC-027-queueing-inventory-general-sS.md) | Queueing-inventory, общая политика (s,S): параметр `s` на `MM1QueueingInventoryCalc` | done |
+| [EPIC-028](EPIC-028-queueing-inventory-multiserver.md) | Queueing-inventory, многоканальный случай (M/M/c): `MMcQueueingInventoryCalc`, точный QBD со сложенным граничным суперблоком | done |
+| [EPIC-029](EPIC-029-edf-scheduling.md) | EDF scheduling discipline: DES-симулятор + закон сохранения работы (только при редком reneging) + композиция с SLA-слоем (EPIC-021) | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -87,4 +90,10 @@ EPIC-024 — по обзору queueing-inventory систем:
 EPIC-025 — по обзору приоритетов с гетерогенными серверами:
 [../research/priority-heterogeneous-servers-2026.md](../research/priority-heterogeneous-servers-2026.md);
 EPIC-026 — по обзору queueing-inventory lost-sales:
-[../research/queueing-inventory-lost-sales-2026.md](../research/queueing-inventory-lost-sales-2026.md).
+[../research/queueing-inventory-lost-sales-2026.md](../research/queueing-inventory-lost-sales-2026.md);
+EPIC-027 — по обзору queueing-inventory общей политики (s,S):
+[../research/queueing-inventory-general-sS-2026.md](../research/queueing-inventory-general-sS-2026.md);
+EPIC-028 — по обзору многоканального queueing-inventory:
+[../research/queueing-inventory-multiserver-2026.md](../research/queueing-inventory-multiserver-2026.md);
+EPIC-029 — по обзору EDF-планирования:
+[../research/edf-scheduling-2026.md](../research/edf-scheduling-2026.md).

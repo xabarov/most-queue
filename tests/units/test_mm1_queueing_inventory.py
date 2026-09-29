@@ -1,10 +1,10 @@
 """
-Unit tests for the M/M/1 queueing-inventory system, (0,S) policy, backorder
-(most_queue.theory.inventory.mm1_inventory), EPIC-024, and lost-sales
-(EPIC-026).
+Unit tests for the M/M/1 queueing-inventory system (most_queue.theory.inventory.mm1_inventory):
+(0,S) policy backorder (EPIC-024), lost-sales (EPIC-026), general (s,S) (EPIC-027).
 """
 
 import numpy as np
+import pytest
 
 from most_queue.theory.fifo.mg1 import MG1Calc
 from most_queue.theory.inventory import MM1QueueingInventoryCalc
@@ -155,6 +155,58 @@ def test_lost_sales_sojourn_equals_wait_plus_service():
     assert np.isclose(res.v[0], res.w[0] + 1.0 / calc.mu, atol=1e-9)
 
 
+# ------------------------------------------------------------------ EPIC-027: general (s,S)
+@pytest.mark.parametrize("policy", ["backorder", "lost_sales"])
+def test_s_zero_reduces_exactly_to_0S(policy):
+    """s=0 must exactly reproduce the (0,S) special case (EPIC-024/026 behaviour, unchanged)."""
+    kwargs = dict(s_max=4, l=0.5, mu=1.0, theta=0.5)
+
+    explicit = MM1QueueingInventoryCalc(s_max=kwargs["s_max"], s=0, policy=policy)
+    explicit.set_sources(kwargs["l"])
+    explicit.set_servers(mu=kwargs["mu"], theta=kwargs["theta"])
+    res_explicit = explicit.run()
+
+    default = MM1QueueingInventoryCalc(s_max=kwargs["s_max"], policy=policy)  # s defaults to 0
+    default.set_sources(kwargs["l"])
+    default.set_servers(mu=kwargs["mu"], theta=kwargs["theta"])
+    res_default = default.run()
+
+    assert np.isclose(res_explicit.v[0], res_default.v[0], atol=1e-10)
+    assert np.isclose(res_explicit.stockout_prob, res_default.stockout_prob, atol=1e-10)
+
+
+@pytest.mark.parametrize("policy", ["backorder", "lost_sales"])
+def test_larger_reorder_point_does_not_increase_stockout_or_wait(policy):
+    """More safety stock (larger s) must not increase stockout probability or mean wait."""
+    prev_stockout = prev_wait = None
+    for s in (0, 1, 2):
+        calc = MM1QueueingInventoryCalc(s_max=4, s=s, policy=policy)
+        calc.set_sources(0.5)
+        calc.set_servers(mu=1.0, theta=0.5)
+        res = calc.run()
+        if prev_stockout is not None:
+            assert res.stockout_prob <= prev_stockout + 1e-9
+            assert res.w[0] <= prev_wait + 1e-9
+        prev_stockout, prev_wait = res.stockout_prob, res.w[0]
+
+
+def test_general_sS_qbd_residual_is_negligible():
+    calc = MM1QueueingInventoryCalc(s_max=6, s=3)
+    calc.set_sources(0.4)
+    calc.set_servers(mu=1.0, theta=0.8)
+    calc.run(num_levels=100)
+    assert calc._solver.residual() < 1e-8  # pylint: disable=protected-access
+
+
+def test_invalid_reorder_point_rejected():
+    for bad_s in (-1, 4, 5):
+        try:
+            MM1QueueingInventoryCalc(s_max=4, s=bad_s)
+            assert False, f"expected ValueError for s={bad_s}, s_max=4"
+        except ValueError:
+            pass
+
+
 if __name__ == "__main__":
     test_reduces_to_plain_mm1_when_stock_never_runs_out()
     test_qbd_residual_is_negligible()
@@ -168,4 +220,9 @@ if __name__ == "__main__":
     test_lost_sales_loss_prob_equals_stockout_prob()
     test_backorder_never_loses()
     test_lost_sales_sojourn_equals_wait_plus_service()
+    for p in ("backorder", "lost_sales"):
+        test_s_zero_reduces_exactly_to_0S(p)
+        test_larger_reorder_point_does_not_increase_stockout_or_wait(p)
+    test_general_sS_qbd_residual_is_negligible()
+    test_invalid_reorder_point_rejected()
     print("all mm1 queueing-inventory tests passed")

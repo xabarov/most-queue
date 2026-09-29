@@ -1,14 +1,15 @@
 """
-M/M/1 queueing-inventory system, (0,S) replenishment policy, backordering or
+M/M/1 queueing-inventory system, (s,S) replenishment policy, backordering or
 lost sales.
 
 Customers arrive Poisson(lambda) and are served FCFS at rate mu -- but
 service consumes one unit of stock, released only when service completes.
-Stock S_max is depleted by completed services; the moment it hits 0, an
-order for S_max units is placed automatically ((0,S) policy) and arrives
-after Exp(theta) (positive lead time). While stock is 0, service is blocked
-(cannot start without a unit in stock); what happens to a customer arriving
-during the stockout depends on `policy`:
+Stock S_max is depleted by completed services; the moment it drops to the
+reorder point `s` (0 <= s < S_max; s=0 is the (0,S) special case), an order
+for S_max - (current stock) units is placed automatically and arrives after
+Exp(theta) (positive lead time), restoring stock to S_max. While stock is 0,
+service is blocked (cannot start without a unit in stock); what happens to a
+customer arriving during the stockout depends on `policy`:
 
 - "backorder" (default): the customer still queues and waits for
   replenishment (Schwarz M., Daduna H., M/M/1 Queueing systems with
@@ -23,11 +24,17 @@ during the stockout depends on `policy`:
 Exactly a QBD process: level n = number of customers in the system
 (unbounded), phase i in {0,...,S_max} = stock level. Solved via the
 library's general QBD solver (theory.matrix.qbd.QBDSolver) -- see
-docs/roadmaps/queueing_inventory_roadmap.md sec. 2 for the backorder block
-derivation, and docs/roadmaps/queueing_inventory_lost_sales_roadmap.md sec. 2
-for the (single-block) lost-sales modification: an arrival at stock=0 is not
-a state transition at all under lost sales, so A0/B01 lose their phase-0 row
-and A1[0,0]/B00[0,0] lose the lambda term.
+docs/roadmaps/queueing_inventory_roadmap.md sec. 2 for the (0,S) backorder
+block derivation, docs/roadmaps/queueing_inventory_lost_sales_roadmap.md
+sec. 2 for the lost-sales modification (an arrival at stock=0 is not a state
+transition at all under lost sales, so A0/B01 lose their phase-0 row and
+A1[0,0]/B00[0,0] lose the lambda term), and
+docs/roadmaps/queueing_inventory_general_sS_roadmap.md sec. 2 for the general
+(s,S) modification: with memoryless (exponential) lead time, "an order is in
+transit" is fully determined by i <= s (no extra state bit needed, exactly
+as i == 0 fully determined it for (0,S)) -- the replenishment transition is
+simply active for every phase i <= s, not just i == 0. s=0 reduces exactly
+to the original (0,S) formulas.
 """
 
 from typing import Literal
@@ -44,20 +51,25 @@ Policy = Literal["backorder", "lost_sales"]
 
 class MM1QueueingInventoryCalc(BaseQueue):
     """
-    M/M/1 queueing-inventory system with a (0, S) replenishment policy.
+    M/M/1 queueing-inventory system with an (s, S) replenishment policy.
 
     :param s_max: S -- stock level restored to after each replenishment.
+    :param s: reorder point, 0 <= s < s_max. s=0 is the (0,S) special case
+        (default -- preserves the EPIC-024/026 behaviour exactly).
     :param policy: "backorder" (arrivals wait out a stockout, never lost) or
         "lost_sales" (arrivals during a stockout are turned away).
     """
 
-    def __init__(self, s_max: int, policy: Policy = "backorder", calc_params: CalcParams | None = None):
+    def __init__(self, s_max: int, s: int = 0, policy: Policy = "backorder", calc_params: CalcParams | None = None):
         super().__init__(n=1, calc_params=calc_params)
         if s_max < 1:
             raise ValueError(f"s_max must be >= 1, got {s_max}")
+        if not 0 <= s < s_max:
+            raise ValueError(f"reorder point s must satisfy 0 <= s < s_max, got s={s}, s_max={s_max}")
         if policy not in ("backorder", "lost_sales"):
             raise ValueError(f"policy must be 'backorder' or 'lost_sales', got {policy!r}")
         self.s_max = int(s_max)
+        self.s = int(s)
         self.policy: Policy = policy
         self.l = None
         self.mu = None
@@ -102,16 +114,26 @@ class MM1QueueingInventoryCalc(BaseQueue):
             a2[i, i - 1] = mu
         # a2[0, :] stays 0: service is blocked when stock is 0
 
+        # Replenishment (rate theta, phase i -> S) is active for every phase
+        # i <= s -- an order is "in transit" throughout that range, not just
+        # at i == 0 (see module docstring: no extra state bit needed thanks
+        # to the memoryless lead time).
         a1 = np.zeros((m, m))
-        a1[0, self.s_max] = theta  # replenishment: same level, stock 0 -> S
+        for i in range(self.s + 1):
+            a1[i, self.s_max] = theta
         a1[0, 0] = -theta if lost else -(lam + theta)
-        for i in range(1, m):
+        for i in range(1, self.s + 1):
+            a1[i, i] = -(lam + mu + theta)  # service still possible (i >= 1) AND an order is in transit
+        for i in range(self.s + 1, m):
             a1[i, i] = -(lam + mu)
 
         b00 = np.zeros((m, m))  # level 0: nothing to serve, no mu-transitions
-        b00[0, self.s_max] = theta
+        for i in range(self.s + 1):
+            b00[i, self.s_max] = theta
         b00[0, 0] = -theta if lost else -(lam + theta)
-        for i in range(1, m):
+        for i in range(1, self.s + 1):
+            b00[i, i] = -(lam + theta)
+        for i in range(self.s + 1, m):
             b00[i, i] = -lam
 
         b01 = a0.copy()

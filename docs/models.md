@@ -30,7 +30,8 @@ add a figure function and regenerate the PNGs.
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
-| [Queueing-inventory systems](models/inventory.md) | M/M/1 with stock-consuming service, (0,S) replenishment, backordering or lost sales — exact QBD |
+| [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
+| [Queueing-inventory systems](models/inventory.md) | M/M/1 or M/M/c with stock-consuming service, general (s,S) replenishment, backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
@@ -91,7 +92,9 @@ add a figure function and regenerate the PNGs.
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
-| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
+| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
+| M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |
+| EDF scheduling | - (no closed form, see docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Deadline-order service discipline, DES-exact, conservation-law check |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
 | Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |

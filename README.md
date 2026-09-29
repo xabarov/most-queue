@@ -94,7 +94,8 @@ See the executable comparison of **9 disciplines** in
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
-| Queueing-inventory | M/M/1 with stock-consuming service, (0,S) replenishment, backordering or lost sales | exact QBD |
+| Queueing-inventory | M/M/1 or M/M/c with stock-consuming service, general (s,S) replenishment, backordering or lost sales | exact QBD |
+| EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n sub-task service | Markovian / order statistics / exact (Beta function) |
 | Networks | open (decomposition, exact Jackson, QNA two-moment flows, MAP input), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe, multi-class), tandems with blocking (finite buffers), fork-join stations, time-varying λ(t), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 
@@ -116,6 +117,15 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-09** — **Priorities, inventory & scheduling wave**: **M/M/2 priorities with
+  heterogeneous servers** (exact non-birth-death CTMC, canonicalized state construction);
+  **queueing-inventory** generalized to lost-sales, the full **(s,S)** reorder-point policy
+  (not just (0,S)), and **M/M/c** multi-server stock-sharing (exact QBD via a stacked
+  boundary superblock, reduces exactly to M/M/1 at c=1); and **EDF (Earliest Deadline First)**
+  as an actual service discipline rather than a post-hoc SLA metric — deliberately DES-only,
+  since exact finite-state EDF analysis turned out to be a genuinely open problem (four
+  candidate exact reductions were tried and numerically/analytically disproven; see
+  [`docs/research/edf-scheduling-2026.md`](docs/research/edf-scheduling-2026.md)).
 - **2026-09** — **SLA & exact-extensions wave**: a horizontal **SLA/deadline-violation
   probability** layer (`P(W > D)` and SLO quantiles from raw moments, on top of *any* calculator
   in the table above — LLM-serving TTFT SLO example); exact **heavy-tailed (Pareto) fork-join**
