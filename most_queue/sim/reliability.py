@@ -134,6 +134,93 @@ class MachineRepairSim(BaseSimulationCore):
         return QueueResults(duration=time.process_time() - start)
 
 
+class MachineRepairHeterogeneousSim(BaseSimulationCore):
+    """
+    Machine repair problem with warm spares and two heterogeneous repairmen
+    (see most_queue.theory.reliability.machine_repair_heterogeneous, EPIC-023).
+
+    Unlike the homogeneous MachineRepairSim, the state must track *which*
+    repairman is engaged, not just how many failed units there are: repair
+    progresses at a different rate depending on that. Fastest-available-first
+    dispatch on a fresh failure; the queue re-engages the repairman that just
+    freed up only if there is still a backlog beyond what the other one alone
+    covers (see the roadmap for the state-transition derivation).
+    """
+
+    def __init__(self, n_machines: int, n_spares: int = 0, seed: int | None = None):
+        super().__init__(seed=seed)
+        self.m, self.s = n_machines, n_spares
+        self.xi = None
+        self.xi_s = None
+        self.eta_a = None
+        self.eta_b = None
+        self.availability = None
+        self.mean_failed = None
+        self.utilization_a = None
+        self.utilization_b = None
+
+    def set_sources(self, xi: float, eta_a: float, eta_b: float, xi_s: float = 0.0):
+        """:param xi: machine failure rate; :param eta_a/eta_b: repair rates (any order);
+        :param xi_s: warm-spare failure rate."""
+        self.xi = xi
+        self.eta_a, self.eta_b = max(eta_a, eta_b), min(eta_a, eta_b)
+        self.xi_s = xi_s
+
+    def run(self, total_events: int, warmup_fraction: float = 0.05) -> QueueResults:
+        """Run for `total_events` transitions."""
+        start = time.process_time()
+        rng = self.generator
+        t, failed = 0.0, 0
+        busy_a, busy_b = False, False
+        warm = int(total_events * warmup_fraction)
+        area_failed = avail_time = area_busy_a = area_busy_b = 0.0
+        t0 = 0.0
+
+        for step in range(total_events):
+            operating = min(self.m, self.m + self.s - failed)
+            spares = max(0, self.s - failed)
+            b = self.xi * operating + self.xi_s * spares
+            d_a = self.eta_a if busy_a else 0.0
+            d_b = self.eta_b if busy_b else 0.0
+            rate = b + d_a + d_b
+            dt = rng.exponential(1 / rate)
+            if step >= warm:
+                area_failed += failed * dt
+                if failed <= self.s:
+                    avail_time += dt
+                area_busy_a += dt if busy_a else 0.0
+                area_busy_b += dt if busy_b else 0.0
+            else:
+                t0 = t + dt
+            t += dt
+
+            u = rng.random() * rate
+            if u < b:
+                failed += 1
+                if not busy_a:
+                    busy_a = True
+                elif not busy_b:
+                    busy_b = True
+                # else: both already busy -- the new failure just queues
+            elif u < b + d_a:
+                failed -= 1
+                busy_a = False
+                if failed > (1 if busy_b else 0):
+                    busy_a = True  # backlog beyond what B alone covers -- A re-engages
+            else:
+                failed -= 1
+                busy_b = False
+                if failed > (1 if busy_a else 0):
+                    busy_b = True
+
+        elapsed = t - t0
+        self.availability = avail_time / elapsed
+        self.mean_failed = area_failed / elapsed
+        self.utilization_a = area_busy_a / elapsed
+        self.utilization_b = area_busy_b / elapsed
+        return QueueResults(duration=time.process_time() - start)
+
+
 class MM1WorkingBreakdownsSim(BaseSimulationCore):
     """M/M/1 with working breakdowns (degraded service rate during repair)."""
 

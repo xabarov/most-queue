@@ -11,8 +11,57 @@ from most_queue.random.distributions import (
     GammaParams,
     H2Distribution,
     H2Params,
+    ParetoDistribution,
 )
+from most_queue.random.utils.params import ParetoParams
 from most_queue.theory.utils.conv import conv_moments, get_self_conv_moments
+
+
+def pareto_max_tail(params: ParetoParams, n: int, x: float) -> float:
+    """
+    Exact P(max(X_1, ..., X_n) > x) for n iid Pareto(alpha, K) random variables.
+
+    ``1 - F(x)^n`` by independence of the max, where F is the Pareto CDF.
+    Unlike the moments (see ``pareto_max_moments``), the tail/CDF is always
+    well-defined -- valid for any x >= 0, n >= 1, alpha > 0.
+    """
+    if n < 1:
+        raise ValueError(f"n must be >= 1, got {n}")
+    cdf = ParetoDistribution.get_cdf(params, x)
+    return 1.0 - cdf**n
+
+
+def pareto_max_moments(params: ParetoParams, n: int, num: int) -> list[float]:
+    """
+    Exact raw moments E[max^k], k=1..num, of the maximum of n iid Pareto(alpha, K)
+    random variables -- no approximation, no quadrature.
+
+    Derivation: the substitution U = F(X) ~ Uniform(0,1) maps max of n Pareto to
+    max of n Uniform(0,1) =: U_(n), with density n*u^(n-1) on (0,1). Then
+    ``E[max^k] = K^k * E[(1-U_(n))^(-k/alpha)] = K^k * n * B(n, 1 - k/alpha)``,
+    where B is the Beta function -- convergent (as for a single Pareto) only for
+    k < alpha.
+
+    Raises ``ValueError`` at the first k >= alpha (moment does not exist),
+    rather than the silent truncation ``ParetoDistribution.calc_theory_moments``
+    uses: callers here (``MaxDistribution``-style consumers, e.g.
+    ``SplitJoinCalc``) expect a fixed-length list, so a clear failure beats a
+    silently short one.
+    """
+    if n < 1:
+        raise ValueError(f"n must be >= 1, got {n}")
+    alpha, scale = params.alpha, params.K
+    moments = []
+    for k in range(1, num + 1):
+        if k >= alpha:
+            raise ValueError(
+                f"E[max^{k}] does not exist for Pareto(alpha={alpha}): requires k < alpha "
+                f"(got {len(moments)} of {num} requested moments)"
+            )
+        # log-space Beta function -- avoids overflow for large n.
+        log_beta = math.lgamma(n) + math.lgamma(1.0 - k / alpha) - math.lgamma(n + 1.0 - k / alpha)
+        moments.append(math.pow(scale, k) * n * math.exp(log_beta))
+    return moments
 
 
 class MaxDistribution:

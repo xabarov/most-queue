@@ -5,6 +5,7 @@ retrial queues with server failures.
 """
 
 from most_queue.theory.reliability.machine_repair import MachineRepairCalc
+from most_queue.theory.reliability.machine_repair_heterogeneous import MachineRepairHeterogeneousCalc
 from most_queue.theory.reliability.mm1_disaster_repair import MM1DisasterRepairCalc
 from most_queue.theory.reliability.mm1_working_breakdowns import MM1WorkingBreakdownsCalc
 from most_queue.theory.reliability.mmc_breakdowns import MMcBreakdownsCalc
@@ -16,4 +17,5 @@ __all__ = [
     "MM1WorkingBreakdownsCalc",
     "MMcBreakdownsCalc",
     "MachineRepairCalc",
+    "MachineRepairHeterogeneousCalc",
 ]

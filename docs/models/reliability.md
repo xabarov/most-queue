@@ -84,6 +84,35 @@ calc.set_sources(xi=0.25, eta=1.0, xi_s=0.05)   # warm spares fail too
 res = calc.run()   # res.availability, res.mean_failed, res.repairmen_utilization
 ```
 
+### Machine repair, two heterogeneous repairmen
+
+**Description:** The repair crew above assumes identical repairmen — irrelevant *which* one is
+busy, only how many. With two repairmen at **different** rates (η_a ≠ η_b) that stops being true:
+progress at one failed unit depends on which repairman picked it up. Exact solution needs a small
+non-birth-death CTMC that splits the "one unit failed" state by which repairman is engaged
+(classic technique for M/M/2 with heterogeneous servers — Krishnamoorthi, *Operations Research*,
+1963 — applied here to the finite-source machine-repair-with-warm-spares model, matching
+*Optimization and Engineering*, 2012). Dispatch policy: the faster repairman is always engaged
+first on a fresh failure; the slower one only engages once the fast one is already busy. Reduces
+exactly to `MachineRepairCalc(n_repairmen=2, ...)` when η_a = η_b.
+
+**In plain words:** a senior technician and a junior one covering the same shop floor. Sending
+every job to the senior tech first (until they're swamped) is the obvious policy — but it means
+the system's state isn't just "how many machines are down," it's "how many, and is the senior
+tech currently on one of them."
+
+**Calculator class:** `MachineRepairHeterogeneousCalc`
+(`most_queue.theory.reliability.machine_repair_heterogeneous`)
+**Simulation:** `MachineRepairHeterogeneousSim` (`most_queue.sim.reliability`)
+
+```python
+from most_queue.theory.reliability import MachineRepairHeterogeneousCalc
+
+calc = MachineRepairHeterogeneousCalc(n_machines=6, n_spares=2)
+calc.set_sources(xi=0.3, eta_a=1.5, eta_b=0.5, xi_s=0.1)  # rates in any order
+res = calc.run()   # res.utilization_a, res.utilization_b, res.mean_failed, res.availability
+```
+
 ### M/M/1 with working breakdowns
 
 **Description:** During a breakdown the server keeps working at a reduced rate μ_d < μ instead

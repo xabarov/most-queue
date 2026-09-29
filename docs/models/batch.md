@@ -50,3 +50,5 @@ calc.set_sources(2.0)
 calc.set_servers(lambda size: 1.0 / (0.3 + 0.08 * size))  # LLM-style: batch time grows with size
 results = calc.run()  # results.v[0] mean sojourn, results.w[0] mean wait
 ```
+
+**See also:** [SLA / deadline-violation probability](sla.md) — turn these moments into a deadline-violation probability or SLO quantile.

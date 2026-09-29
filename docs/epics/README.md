@@ -61,6 +61,10 @@
 | [EPIC-018](EPIC-018-networks-wave2.md) | Сети МО, волна 2: блокировки, fork-join в сети, MAP-вход, transient, схемы каталога, туториалы | done |
 | [EPIC-019](EPIC-019-unreliable-servers.md) | Ненадёжные приборы: M/M/c с отказами, machine repair, working breakdowns, катастрофы с ремонтом, retrial + отказы | done |
 | [EPIC-020](EPIC-020-priority-wave2.md) | Приоритеты, волна 2: accumulating priority, нетерпение, MAP-вход, retrial, preemptive-repeat | done |
+| [EPIC-021](EPIC-021-slo-deadline-queueing.md) | SLA/deadline-violation probability: SLO-калькуляторы поверх каталога моделей, LLM-serving TTFT | done |
+| [EPIC-022](EPIC-022-fork-join-heavy-tail.md) | Fork-Join с тяжёлыми хвостами: точный max n·Pareto (CDF + моменты через Beta-функцию) | done |
+| [EPIC-023](EPIC-023-machine-repair-heterogeneous.md) | Machine repair с двумя гетерогенными ремонтниками: точная CTMC (Krishnamoorthi 1963) | done |
+| [EPIC-024](EPIC-024-queueing-inventory.md) | Queueing-inventory systems: M/M/1, (0,S)-политика, backorder, точный QBD | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -69,4 +73,12 @@ EPIC-017 и EPIC-018 — по обзору сетей:
 EPIC-019 — по обзору ненадёжных приборов:
 [../research/unreliable-queues-2026.md](../research/unreliable-queues-2026.md);
 EPIC-020 — по обзору приоритетов:
-[../research/priority-queues-2026.md](../research/priority-queues-2026.md).
+[../research/priority-queues-2026.md](../research/priority-queues-2026.md);
+EPIC-021 — по обзору SLA/deadline-aware очередей:
+[../research/sla-deadline-queueing-2026.md](../research/sla-deadline-queueing-2026.md);
+EPIC-022 — по обзору fork-join с тяжёлыми хвостами:
+[../research/fork-join-heavy-tail-2026.md](../research/fork-join-heavy-tail-2026.md);
+EPIC-023 — по обзору machine repair с гетерогенными ремонтниками:
+[../research/machine-repair-heterogeneous-2026.md](../research/machine-repair-heterogeneous-2026.md);
+EPIC-024 — по обзору queueing-inventory систем:
+[../research/queueing-inventory-2026.md](../research/queueing-inventory-2026.md).

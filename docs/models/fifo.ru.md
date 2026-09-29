@@ -5,10 +5,14 @@
 ![Схема M/M/c](../figures/fifo_mmn.ru.png)
 
 **Простыми словами:** заявки (клиенты, задачи, пакеты) приходят в случайные моменты, встают
-в общую очередь и обслуживаются в порядке прихода первым освободившимся прибором. Разница
-между моделями этого раздела — только в том, насколько «случайны» поток и обслуживание:
-от полностью бес­памятных M/M/c до произвольных распределений, приближаемых гиперэкспонентой
-(метод Такахаси-Таками).
+в общую очередь и обслуживаются в порядке прихода первым освободившимся прибором. Модели ниже
+покрывают «классический» спектр FIFO: от полностью бес­памятного M/M/c через общее распределение
+M/G/1 и GI/M/1 до двухмоментных GI/G-аппроксимаций.
+
+Две смежные темы вынесены на отдельные страницы: **[size-based дисциплины](size-based.ru.md)**
+(прибор выбирает заявки по размеру, а не по порядку прихода — SRPT/SJF/PSJF/SPJF/FB/PS/LCFS-PR) и
+**[многоканальные H₂-системы](multiserver-h2.ru.md)** (метод Такахаси-Таками для многоканальных
+систем с гиперэкспоненциальным потоком/обслуживанием).
 
 ### M/M/c
 
@@ -154,169 +158,6 @@ calc.set_servers(b)
 results = calc.run()
 ```
 
-Следующие четыре модели — **size-based дисциплины**: прибор выбирает, кого обслуживать,
-глядя на *размер* заявки (известный или предсказанный), а не на порядок прихода. Вот как
-одни и те же заявки проходят через один прибор при разных дисциплинах:
-
-![Сравнение дисциплин FCFS/SJF/SRPT](../figures/disciplines_timeline.ru.png)
-
-### M/G/1 SRPT
-
-**Описание:** Одноканальная M/G/1 с дисциплиной **Shortest Remaining Processing Time** (прерывание по остатку работы). Численно: формула Schrage–Miller (1966).
-
-**Суть:** прибор всегда занят заявкой, которой *осталось* меньше всего работы; если пришла
-более короткая — текущая прерывается и ждёт (см. на схеме выше, как заявка A уступает место
-и дообслуживается в конце). SRPT доказуемо минимизирует среднее время пребывания среди всех
-дисциплин.
-
-**Класс расчета:** `MG1SrptCalc`  
-**Симуляция:** `SizeBasedQsSim(discipline="SRPT")` — размер заявки сэмплируется при приходе.
-
-**Пример:**
-
-```python
-from most_queue.theory.srpt import MG1SrptCalc
-from most_queue.random.distributions import H2Distribution
-
-calc = MG1SrptCalc()
-calc.set_sources(1.0)
-h2 = H2Distribution.get_params_by_mean_and_cv(0.7, 1.2)
-calc.set_servers(h2, "H")
-results = calc.run()
-```
-
-### M/G/1 SJF (SPT)
-
-**Описание:** Непрерываемое обслуживание по **наименьшему истинному размеру** (Shortest Job First / Shortest Processing Time).
-
-**Суть:** без прерываний — в момент освобождения прибора из очереди берётся самая короткая
-заявка, но начатое обслуживание всегда доводится до конца.
-
-**Класс расчета:** `MG1SjfCalc`  
-**Симуляция:** `SizeBasedQsSim(discipline="SJF")`
-
-### M/G/1 PSJF
-
-**Описание:** Прерываемое обслуживание по **исходному** размеру заявки (отличается от SRPT).
-
-**Суть:** как SRPT, но сравнивается *полный исходный* размер, а не остаток: почти
-дообслуженная длинная заявка всё равно уступит новой короткой.
-
-**Класс расчета:** `MG1PsjfCalc`  
-**Симуляция:** `SizeBasedQsSim(discipline="PSJF")`
-
-### M/G/1 SPJF (с предсказаниями)
-
-**Описание:** Непрерываемое обслуживание по **предсказанному** размеру \(Y\) (Mitzenmacher, 2020). Совместное распределение \((X,Y)\) задаётся объектом предиктора (`PerfectPredictor`, `ExpNoisePredictor`, …).
-
-**Суть:** истинный размер заявки неизвестен, но есть его *предсказание* (например, от
-ML-модели) — обслуживаем короткие «по прогнозу». Модель отвечает на вопрос, сколько
-выигрыша от SJF сохраняется при неточных предсказаниях. При идеальном предикторе
-переходит в SJF.
-
-**Класс расчета:** `MG1SpjfCalc`  
-**Симуляция:** `SizeBasedQsSim(discipline="SPJF")` + `set_predictor(...)`.
-
-**Пример:**
-
-```python
-from most_queue.theory.srpt import MG1SpjfCalc
-from most_queue.theory.srpt.utils.predictor import ExpNoisePredictor
-
-calc = MG1SpjfCalc()
-calc.set_sources(0.5)
-calc.set_servers(1.0, "M")
-calc.set_predictor(ExpNoisePredictor())
-results = calc.run()
-```
-
-#### Graceful degradation предсказаний (learning-augmented scheduling)
-
-**Описание:** Как меняется среднее время отклика SPJF по мере ухудшения предсказаний? Хелпер
-`prediction_degradation_curve` проходит по уровню лог-нормального шума σ и возвращает среднее SPJF в
-рамке SRPT (size-aware оптимум), SJF (идеальные предсказания) и слепой FB/LAS. Возвращает
-**точку перелома** — уровень шума, при котором SPJF начинает проигрывать *слепой* политике,
-воспроизводя центральную открытую задачу survey SIGMETRICS 2025 «Queueing, Predictions, and LLMs»
-(гарантии graceful degradation нет «бесплатно»).
-
-```python
-from most_queue.theory.srpt import prediction_degradation_curve
-
-curve = prediction_degradation_curve(0.7, service_h2_params, "H")
-# curve.spjf[i] при curve.sigmas[i]; ссылки curve.srpt / curve.sjf / curve.blind_fb;
-# curve.breakeven_sigma — шум, при котором SPJF становится хуже слепой политики
-```
-
-Следующие три дисциплины (FB, PS, LCFS-PR) дополняют size-based семейство. Кто из них
-как обращается с заявками разного размера — считают сами калькуляторы библиотеки:
-
-![Замедление по размерам заявки для FCFS/PS/FB/SRPT](../figures/slowdown.ru.png)
-
-### M/G/1 FB (Foreground-Background / LAS)
-
-**Описание:** Прерывающая **blind**-дисциплина: прибор всегда обслуживает заявку с наименьшим *полученным* обслуживанием (least attained service); при равенстве — делится поровну. Размеры заявок знать не нужно.
-
-**Суть:** «дадим шанс новичкам»: свежая заявка сразу получает прибор и держит его, пока не
-догонит по обслуженному объёму остальных. Если короткие заявки часты (убывающий hazard rate,
-CV > 1) — FB приближается к SRPT, не зная размеров; если время обслуживания почти постоянное —
-FB проигрывает даже FCFS. Экспоненциальное обслуживание — граница: FB совпадает с PS.
-
-**Класс расчета:** `MG1FbCalc` (`most_queue.theory.srpt`)
-**Симуляция:** `FBSim` (`most_queue.sim.single_server_disciplines`)
-
-**Пример:**
-
-```python
-from most_queue.theory.srpt import MG1FbCalc
-from most_queue.random.distributions import GammaDistribution
-
-calc = MG1FbCalc()
-calc.set_sources(1.0)
-calc.set_servers(GammaDistribution.get_params_by_mean_and_cv(0.7, 1.2), "Gamma")
-results = calc.run()
-```
-
-### M/G/1 PS (Processor Sharing)
-
-![Схема Processor Sharing](../figures/ps.ru.png)
-
-**Описание:** Прибор делится поровну между всеми находящимися заявками (каждая из k заявок обслуживается со скоростью 1/k). Вероятности состояний — геометрические, нечувствительные к форме распределения обслуживания; условное среднее время пребывания заявки размера x — ровно x/(1−ρ).
-
-**Суть:** модель процессора, веб-сервера, разделяемого канала: никто не ждёт «в очереди»,
-но все замедляются в одинаковое число раз 1/(1−ρ). Идеально справедливая дисциплина —
-baseline для сравнения с SRPT/SJF (которые быстрее в среднем, но за счёт длинных заявок).
-Пока считаются только средние (старшие моменты — методы Яшкова/Отта, отложено).
-
-**Класс расчета:** `MG1PSCalc` (`most_queue.theory.fifo.mg1_ps`)
-**Симуляция:** `ProcessorSharingSim` (`most_queue.sim.single_server_disciplines`)
-
-**Пример:**
-
-```python
-from most_queue.theory.fifo.mg1_ps import MG1PSCalc
-
-calc = MG1PSCalc()
-calc.set_sources(l=1.0)
-calc.set_servers([0.7, 1.2])  # моменты времени обслуживания
-results = calc.run()
-slowdown = calc.get_mean_slowdown()          # 1/(1-rho)
-t_x = calc.get_conditional_sojourn_mean(2.0)  # x/(1-rho)
-```
-
-### M/G/1 LCFS-PR
-
-![Схема LCFS-PR](../figures/lcfs_pr.ru.png)
-
-**Описание:** Прерывающий стек: новая заявка вытесняет обслуживаемую, вытесненные дообслуживаются с места прерывания. Время пребывания распределено как период занятости M/G/1 — все моменты по рекурсиям Такача; вероятности состояний — те же геометрические (BCMP).
-
-**Суть:** «последний пришёл — первый обслужен»: свежая заявка получает прибор сразу,
-но рискует быть вытесненной. Среднее время пребывания то же, что у PS (b₁/(1−ρ),
-нечувствительность к форме распределения), но разброс гораздо больше — хвосты как у
-периода занятости. У FCFS среднее другое: оно зависит ещё и от b₂ (Полячек–Хинчин).
-
-**Класс расчета:** `MG1LcfsPrCalc` (`most_queue.theory.fifo.mg1_lcfs_pr`)
-**Симуляция:** `LcfsPRSim` (`most_queue.sim.single_server_disciplines`)
-
 ### GI/M/1
 
 **Описание:** Одноканальная система с общим потоком поступления и экспоненциальным обслуживанием.
@@ -391,65 +232,6 @@ calc.set_servers(GammaDistribution.calc_theory_moments(b_params, 4))
 results = calc.run()  # results.w — [w1], только первый момент
 ```
 
-### H₂/M/c (метод Такахаси-Таками)
-
-**Описание:** Многоканальная система с гиперэкспоненциальным потоком поступления (H₂) и экспоненциальным обслуживанием (M). Использует упрощённый алгоритм §7.6.1 (формулы для z_j, x_j, t_{j,i}, уровень 0).
-
-**Суть:** H₂ («смесь двух экспонент») — универсальная заготовка: подобрав её параметры по
-среднему и коэффициенту вариации, можно приблизить почти любое реальное распределение
-(при CV < 1 — с комплексными параметрами). Метод Такахаси-Таками — итерационный численный
-алгоритм, точно решающий такие многоканальные фазовые модели.
-
-**Класс расчета:** `H2MnCalc`
-
-**Пример:**
-
-```python
-from most_queue.theory.fifo.gmc_takahasi import H2MnCalc
-from most_queue.random.distributions import H2Distribution
-
-calc = H2MnCalc(n=3)
-
-h2_params = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2, is_clx=True)  # mean, cv
-#
-# Для CV<1 используйте complex-fit: is_clx=True.
-# Важно: симулятор `QsSim` не умеет генерировать H2 с комплексными параметрами,
-# поэтому сравнение с симуляцией возможно только когда параметры вещественные.
-calc.set_sources(h2_params)
-
-calc.set_servers(b=2.0)  # среднее время обслуживания
-
-results = calc.run()
-```
-
-### H₂/H₂/c (метод Такахаси-Таками)
-
-**Описание:** Многоканальная система с гиперэкспоненциальным потоком поступления и гиперэкспоненциальным обслуживанием. Использует алгоритм §7.6.2 (CH7).
-
-**Класс расчета:** `HkHkNCalc`
-
-**Пример:**
-
-```python
-from most_queue.theory.fifo.hkhk_takahasi import HkHkNCalc
-from most_queue.random.distributions import H2Distribution
-
-calc = HkHkNCalc(n=3, k=2)
-
-h2_arr = H2Distribution.get_params_by_mean_and_cv(1.0, 1.2)
-# Для CV<1 используйте complex-fit: is_clx=True (тогда параметры могут быть комплексными).
-calc.set_sources(u=[h2_arr.p1, 1 - h2_arr.p1], lam=[h2_arr.mu1, h2_arr.mu2])
-
-h2_srv = H2Distribution.get_params_by_mean_and_cv(2.0, 1.2)
-calc.set_servers(y=[h2_srv.p1, 1 - h2_srv.p1], mu=[h2_srv.mu1, h2_srv.mu2])
-
-results = calc.run()
-```
-
-**Примечание про CV<1:** при \(CV<1\) H₂ аппроксимация использует *complex-fit* (комплексные параметры).
-Симулятор `QsSim` не генерирует H₂ с комплексными параметрами, поэтому для валидации удобно
-сравнивать расчёт (H₂ complex-fit) с симуляцией эквивалентной по mean/CV `Gamma`-модели (см. тесты `tests/test_tt_vs_sim_gamma_cvl1.py`).
-
 ### M/D/c
 
 **Описание:** Многоканальная система с пуассоновским потоком и детерминированным временем обслуживания.
@@ -491,24 +273,5 @@ calc.set_servers(b=1.0)
 results = calc.run()
 ```
 
-### M/H₂/c (метод Такахаси-Таками)
-
-**Описание:** Многоканальная система с пуассоновским потоком и гиперэкспоненциальным обслуживанием. Использует численный метод Такахаси-Таками с комплексными параметрами.
-
-**Класс расчета:** `MGnCalc`
-
-**Пример:**
-
-```python
-from most_queue.theory.fifo.mgn_takahasi import MGnCalc
-from most_queue.random.distributions import H2Distribution
-
-calc = MGnCalc(n=5)
-
-calc.set_sources(l=2.0)
-
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2, is_clx=True)
-calc.set_servers(h2_params)
-
-results = calc.run()
-```
+**Далее:** [Size-based дисциплины](size-based.ru.md) (SRPT/SJF/PSJF/SPJF/FB/PS/LCFS-PR) ·
+[Многоканальные H₂-системы (Такахаси-Таками)](multiserver-h2.ru.md)

@@ -562,6 +562,7 @@ class QsSim(BaseSimulationCore):
         if count is None:
             count = self.taked
         self.w = refresh_moments_stat(self.w, new_a, count)
+        self._record_deadline_hit(new_a)
 
     def get_p(self) -> list[float]:
         """

@@ -84,16 +84,18 @@ See the executable comparison of **9 disciplines** in
 | Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |
 | Non-stationary Mt/M/c | time-varying arrival rate λ(t) — blocking & waiting probability | PSA & MOL approximations |
 | Age of Information | M/M/1, M/G/1, preemptive-LCFS — average & peak AoI | closed-form + simulation |
+| SLA / deadline-violation probability | `P(W > D)` and SLO quantile from raw moments — works on top of any model in this table; LLM-serving TTFT SLO example | H2/Gamma tail fit, M/M/1 exact anchor |
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
-| Reliability | M/G/1 and M/M/c with breakdowns & repairs, machine repair problem (spares, R repairmen), working breakdowns, disasters with a repair phase, retrial with an unreliable server | Avi-Itzhak–Naor / exact CTMC / birth-death |
+| Reliability | M/G/1 and M/M/c with breakdowns & repairs, machine repair problem (spares, R repairmen, 2 heterogeneous repairmen), working breakdowns, disasters with a repair phase, retrial with an unreliable server | Avi-Itzhak–Naor / exact CTMC / birth-death |
 | Matrix-analytic (MAP/PH) | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c, MAP/PH/c — correlated (bursty) arrivals, single- & multi-server; MMPP fitting | QBD, logarithmic reduction |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
-| Parallel service | Fork-Join, Split-Join | Markovian / order statistics |
+| Queueing-inventory | M/M/1 with stock-consuming service, (0,S) replenishment, backordering | exact QBD |
+| Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n sub-task service | Markovian / order statistics / exact (Beta function) |
 | Networks | open (decomposition, exact Jackson, QNA two-moment flows, MAP input), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe, multi-class), tandems with blocking (finite buffers), fork-join stations, time-varying λ(t), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 
 Every model comes with a plain-language explanation and a diagram in the
@@ -103,7 +105,7 @@ Every model comes with a plain-language explanation and a diagram in the
 
 - 📖 [Documentation](docs/README.md) — concepts, calculation and simulation guides (English; Russian versions available via in-page switchers)
 - 🎓 [Jupyter tutorials](tutorials/README.md) — counter-intuitive queueing insights for engineers (the utilization trap, why variability dominates delay, multiserver jobs, Age of Information, …)
-- 🗺 [Development roadmaps](docs/epics/README.md) & [trends survey](docs/research/queueing-trends-2026.md) — what's next (queueing-inventory, networks with blocking, fork-join extensions)
+- 🗺 [Development roadmaps](docs/epics/README.md) & [trends surveys](docs/research/) — literature-driven gap analysis behind each epic, and what's next
 - 🧪 [Tests](tests/) — every model validated against simulation; run with `pytest -m "not slow"`
 
 ## Applications
@@ -114,6 +116,14 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-09** — **SLA & exact-extensions wave**: a horizontal **SLA/deadline-violation
+  probability** layer (`P(W > D)` and SLO quantiles from raw moments, on top of *any* calculator
+  in the table above — LLM-serving TTFT SLO example); exact **heavy-tailed (Pareto) fork-join**
+  (closed-form max-of-n via the Beta function, no approximation); **machine repair with two
+  heterogeneous repairmen** (Krishnamoorthi's non-birth-death CTMC technique); and the first
+  **queueing-inventory system** (M/M/1 with stock-consuming service, (0,S) replenishment,
+  backordering — an exact QBD, reusing the MAP/PH stack's solver). See the
+  [research](docs/research/) folder for the literature review behind each.
 - **2026** — **Scale & dynamics wave**: **load balancing** in the mean-field limit
   (power-of-d / JSQ / JIQ — the "power of two choices" behind modern dispatchers);
   **polling systems** (one server touring Q queues with switchover, exhaustive/gated, the

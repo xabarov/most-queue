@@ -12,12 +12,15 @@
 
 | Семейство | Что внутри |
 |---|---|
-| [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1 + size-based дисциплины (SRPT/SJF/PS/FB/LCFS-PR), GI/G-аппроксимации, H₂-решатели Такахаси-Таками |
-| [Системы с приоритетами](models/priority.ru.md) | M/G/1 и M/G/c с классами PR/NP, RDR для многоканальных многоприоритетных, точные CTMC-эталоны; накапливаемый приоритет (APQ), нетерпение, MMAP/PH-вход, retrial с приоритетом, preemptive repeat |
+| [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G-аппроксимации |
+| [Size-based дисциплины](models/size-based.ru.md) | SRPT/SJF/PSJF/SPJF (с предсказаниями), FB/LAS, PS, LCFS-PR |
+| [Многоканальные H₂-системы (Такахаси-Таками)](models/multiserver-h2.ru.md) | итерационные решатели H₂/M/c, H₂/H₂/c, M/H₂/c |
+| [Системы с приоритетами, часть 1: статические классы](models/priority.ru.md) | M/G/1 и M/G/c с классами PR/NP, RDR для многоканальных многоприоритетных, точные CTMC-эталоны |
+| [Системы с приоритетами, часть 2: динамические и расширенные](models/priority-dynamic.ru.md) | накапливаемый приоритет (APQ), нетерпение, MMAP/PH-вход, retrial с приоритетом, preemptive repeat |
 | [Polling-системы (циклический сервер)](models/polling.ru.md) | циклический сервер по Q очередям с переключением, псевдо-закон сохранения |
 | [Системы с отпусками (Vacations)](models/vacations.ru.md) | многократные отпуска, N-policy, разогрев/охлаждение, ненадёжный прибор |
 | [Системы с отрицательными заявками](models/negative.ru.md) | отрицательные заявки: RCS и disasters, одно- и многоканальные |
-| [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join |
+| [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач |
 | [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 |
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
@@ -26,8 +29,10 @@
 | [Балансировка нагрузки / диспетчеризация (mean-field)](models/load-balancing.ru.md) | диспетчеризация power-of-d / JSQ / JIQ, mean-field |
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
+| [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
+| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1 с расходуемым при обслуживании запасом, пополнение (0,S), backorder — точный QBD |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
-| [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem, working breakdowns, катастрофы с ремонтом, retrial + отказы |
+| [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem (включая 2 гетерогенных ремонтника), working breakdowns, катастрофы с ремонтом, retrial + отказы |
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
 
 ## Сравнительная таблица моделей
@@ -55,6 +60,7 @@
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Отказы+ремонты, completion time |
 | M/M/c отказы и ремонты | MMcBreakdownsCalc | MMcBreakdownsSim | - | Независимые отказы, доступность, R ремонтников |
 | Machine repair problem | MachineRepairCalc | MachineRepairSim | - | Конечный парк, тёплый резерв, R ремонтников (Palm) |
+| Machine repair, 2 гетерогенных ремонтника | MachineRepairHeterogeneousCalc | MachineRepairHeterogeneousSim | - | Разные скорости ремонта, точная не-birth-death CTMC (Krishnamoorthi 1963) |
 | M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Пониженная скорость во время ремонта (Kalidass-Kasturi) |
 | M/M/1 катастрофы + ремонт | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Сброс очереди, фаза ремонта, P(down)=δ/(δ+η) |
 | M/M/1 retrial ненадёжный | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Активные отказы, орбита, доступность |
@@ -84,6 +90,7 @@
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
+| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder, точный QBD |
 | Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |
 | Сеть Джексона | JacksonNetworkCalc | NetworkSimulator | - | Точный product-form, узлы M/M/n |
 | Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |

@@ -115,3 +115,5 @@ calc.set_sources(bmap)
 calc.set_servers(service)
 results = calc.run()
 ```
+
+**См. также:** [SLA / вероятность нарушения дедлайна](sla.ru.md) — превратить эти моменты в вероятность нарушения дедлайна или SLO-квантиль.

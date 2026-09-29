@@ -4,8 +4,10 @@ Helpers for size-based M/G/1 formulas.
 ``build_pdf_cdf`` -- returns ``(pdf_fn, cdf_fn)`` callables for the
 distribution identified by *kendall_notation*.
 
-``load_below`` / ``upper_bound`` -- numeric building blocks used by the
-grid precomputation in ``_SizeBasedCalcBase``.
+``load_below`` -- numeric building block used by the grid precomputation in
+``_SizeBasedCalcBase``. ``upper_bound`` is re-exported from
+``most_queue.theory.utils.tail`` (moved there -- it is a generic
+tail-bisection primitive, also used by the SLA/deadline-violation layer).
 """
 
 from __future__ import annotations
@@ -24,9 +26,18 @@ from most_queue.random.distributions import (
     ParetoDistribution,
     UniformDistribution,
 )
+from most_queue.theory.utils.tail import upper_bound
 
 PdfFn = Callable[[float], float]
 CdfFn = Callable[[float], float]
+
+__all__ = [
+    "get_distribution_class",
+    "get_theory_moments",
+    "build_pdf_cdf",
+    "upper_bound",
+    "load_below",
+]
 
 # CoxDistribution is intentionally excluded: it has no density helpers.
 KENDALL_TO_CLASS = {
@@ -77,38 +88,6 @@ def build_pdf_cdf(params, kendall_notation: str) -> tuple[PdfFn, CdfFn]:
 # ---------------------------------------------------------------------------
 # Numeric primitives
 # ---------------------------------------------------------------------------
-
-
-def upper_bound(cdf_fn: CdfFn, p: float = 1e-7, start: float = 1.0, max_iter: int = 100) -> float:
-    """
-    Find the smallest x such that the tail 1 - CDF(x) < p.
-
-    Uses exponential expansion to bracket the root, then 80 bisection steps.
-    """
-    if not 0 < p < 1:
-        raise ValueError("p must be in (0, 1)")
-    if start <= 0:
-        raise ValueError("start must be positive")
-
-    left = 0.0
-    right = float(start)
-
-    for _ in range(max_iter):
-        if 1.0 - float(cdf_fn(right)) < p:
-            break
-        left = right
-        right *= 2.0
-    else:
-        raise ValueError("Could not find a finite upper integration bound")
-
-    for _ in range(80):
-        mid = 0.5 * (left + right)
-        if 1.0 - float(cdf_fn(mid)) < p:
-            right = mid
-        else:
-            left = mid
-
-    return right
 
 
 def load_below(l: float, pdf_fn: PdfFn, x_upper: float) -> float:

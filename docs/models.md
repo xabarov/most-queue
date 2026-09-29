@@ -12,12 +12,15 @@ add a figure function and regenerate the PNGs.
 
 | Family | What's inside |
 |---|---|
-| [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1 + size-based disciplines (SRPT/SJF/PS/FB/LCFS-PR), GI/G approximations, Takahashi-Takami H₂ solvers |
-| [Priority systems](models/priority.md) | M/G/1 and M/G/c with PR/NP classes, RDR multi-server multi-priority, exact CTMC references; accumulating priority (APQ), impatience, MMAP/PH input, retrial with priority, preemptive repeat |
+| [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G approximations |
+| [Size-based scheduling](models/size-based.md) | SRPT/SJF/PSJF/SPJF (with predictions), FB/LAS, PS, LCFS-PR |
+| [Multiserver H₂ systems (Takahashi–Takami)](models/multiserver-h2.md) | H₂/M/c, H₂/H₂/c, M/H₂/c iterative solvers |
+| [Priority systems, part 1: static classes](models/priority.md) | M/G/1 and M/G/c with PR/NP classes, RDR multi-server multi-priority, exact CTMC references |
+| [Priority systems, part 2: dynamic and extended](models/priority-dynamic.md) | Accumulating priority (APQ), impatience, MMAP/PH input, retrial with priority, preemptive repeat |
 | [Polling systems (cyclic server)](models/polling.md) | cyclic server over Q queues with switchover, pseudo-conservation law |
 | [Systems with vacations](models/vacations.md) | multiple vacations, N-policy, warm-up/cooling, unreliable server |
 | [Systems with negative customers](models/negative.md) | negative customers: RCS and disasters, single- and multi-server |
-| [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service |
+| [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n sub-task service |
 | [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 |
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
@@ -26,8 +29,10 @@ add a figure function and regenerate the PNGs.
 | [Load balancing / dispatching (mean-field)](models/load-balancing.md) | power-of-d / JSQ / JIQ dispatching, mean-field |
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
+| [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
+| [Queueing-inventory systems](models/inventory.md) | M/M/1 with stock-consuming service, (0,S) replenishment, backordering — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
-| [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem, working breakdowns, disasters with repair, retrial + failures |
+| [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
 
 ## Model comparison table
@@ -55,6 +60,7 @@ add a figure function and regenerate the PNGs.
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Breakdowns+repairs, completion time |
 | M/M/c breakdowns & repairs | MMcBreakdownsCalc | MMcBreakdownsSim | - | Independent failures, availability, R repairmen |
 | Machine repair problem | MachineRepairCalc | MachineRepairSim | - | Finite park, warm spares, R repairmen (Palm) |
+| Machine repair, 2 heterogeneous repairmen | MachineRepairHeterogeneousCalc | MachineRepairHeterogeneousSim | - | Different repair rates, exact non-birth-death CTMC (Krishnamoorthi 1963) |
 | M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Degraded rate during repair (Kalidass-Kasturi) |
 | M/M/1 disasters + repair | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Queue flush, repair phase, P(down)=δ/(δ+η) |
 | M/M/1 retrial unreliable | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Active breakdowns, orbit, availability |
@@ -84,6 +90,7 @@ add a figure function and regenerate the PNGs.
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
+| M/M/1 queueing-inventory (0,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering, exact QBD |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
 | Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |

@@ -84,6 +84,34 @@ calc.set_sources(xi=0.25, eta=1.0, xi_s=0.05)   # тёплый резерв то
 res = calc.run()   # res.availability, res.mean_failed, res.repairmen_utilization
 ```
 
+### Machine repair, два гетерогенных ремонтника
+
+**Описание:** Бригада выше предполагает одинаковых ремонтников — не важно, *какой* именно занят,
+только сколько. При двух ремонтниках с **разной** скоростью (η_a ≠ η_b) это перестаёт быть верным:
+прогресс по конкретной неисправной единице зависит от того, кто её взял. Точное решение требует
+малой (не birth-death) CTMC, расщепляющей состояние «одна единица неисправна» по тому, какой
+ремонтник занят (классическая техника для M/M/2 с гетерогенными серверами — Krishnamoorthi,
+*Operations Research*, 1963 — применённая здесь к конечно-источниковой модели machine repair с
+тёплым резервом, по образцу *Optimization and Engineering*, 2012). Политика назначения: быстрый
+ремонтник всегда берёт свежую поломку первым; медленный включается только когда быстрый уже занят.
+Точно сводится к `MachineRepairCalc(n_repairmen=2, ...)` при η_a = η_b.
+
+**Суть:** старший техник и младший обслуживают один и тот же цех. Направлять всё старшему (пока
+не завален работой) — очевидная политика, но она означает, что состояние системы — это не просто
+«сколько станков сломано», а «сколько, и занят ли сейчас старший техник одним из них».
+
+**Класс расчета:** `MachineRepairHeterogeneousCalc`
+(`most_queue.theory.reliability.machine_repair_heterogeneous`)
+**Симуляция:** `MachineRepairHeterogeneousSim` (`most_queue.sim.reliability`)
+
+```python
+from most_queue.theory.reliability import MachineRepairHeterogeneousCalc
+
+calc = MachineRepairHeterogeneousCalc(n_machines=6, n_spares=2)
+calc.set_sources(xi=0.3, eta_a=1.5, eta_b=0.5, xi_s=0.1)  # ставки в любом порядке
+res = calc.run()   # res.utilization_a, res.utilization_b, res.mean_failed, res.availability
+```
+
 ### M/M/1 с working breakdowns
 
 **Описание:** Во время поломки прибор продолжает работать с пониженной скоростью μ_d < μ, а не

@@ -36,6 +36,39 @@ class BaseSimulationCore:
         self.v: list[float] = [0, 0, 0, 0]
         self.w: list[float] = [0, 0, 0, 0]
 
+        # Optional online deadline-violation counters (SLA cross-validation),
+        # see most_queue.theory.utils.sla. Empty until set_deadline_thresholds
+        # is called -- zero overhead for simulators that don't use it.
+        self.deadline_thresholds: list[float] = []
+        self.deadline_hits: dict[float, int] = {}
+        self.deadline_n: int = 0
+
+    def set_deadline_thresholds(self, thresholds: list[float]) -> None:
+        """
+        Start tracking, for each deadline D in `thresholds`, how many served
+        tasks had wait_time > D. Call before run(); resets any previous count.
+        """
+        self.deadline_thresholds = list(thresholds)
+        self.deadline_hits = dict.fromkeys(self.deadline_thresholds, 0)
+        self.deadline_n = 0
+
+    def _record_deadline_hit(self, wait_time: float) -> None:
+        """Update deadline-violation counters for one observed wait time."""
+        if not self.deadline_thresholds:
+            return
+        self.deadline_n += 1
+        for d in self.deadline_thresholds:
+            if wait_time > d:
+                self.deadline_hits[d] += 1
+
+    def get_empirical_violation_prob(self, deadline: float) -> float:
+        """Empirical P(wait_time > deadline) accumulated since set_deadline_thresholds()."""
+        if deadline not in self.deadline_hits:
+            raise KeyError(f"deadline {deadline} is not tracked; pass it to set_deadline_thresholds() before run()")
+        if self.deadline_n == 0:
+            raise RuntimeError("no samples recorded yet -- call run() first")
+        return self.deadline_hits[deadline] / self.deadline_n
+
     def refresh_busy_stat(self, new_a: float, count: int = None) -> None:
         """
         Update statistics of the busy period.

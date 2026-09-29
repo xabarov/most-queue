@@ -9,6 +9,7 @@ import math
 import numpy as np
 
 from most_queue.sim.reliability import (
+    MachineRepairHeterogeneousSim,
     MachineRepairSim,
     MM1DisasterRepairSim,
     MM1RetrialUnreliableSim,
@@ -17,6 +18,7 @@ from most_queue.sim.reliability import (
 )
 from most_queue.theory.reliability import (
     MachineRepairCalc,
+    MachineRepairHeterogeneousCalc,
     MM1DisasterRepairCalc,
     MM1RetrialUnreliableCalc,
     MM1WorkingBreakdownsCalc,
@@ -97,6 +99,22 @@ def test_machine_repair_vs_sim():
 
     assert np.isclose(res.mean_failed, sim.mean_failed, rtol=0.02)
     assert np.isclose(res.availability, sim.availability, rtol=0.02)
+
+
+def test_machine_repair_heterogeneous_vs_sim():
+    """Exact heterogeneous-repairmen CTMC (EPIC-023) against the seeded simulator."""
+    calc = MachineRepairHeterogeneousCalc(n_machines=6, n_spares=2)
+    calc.set_sources(xi=0.3, eta_a=1.5, eta_b=0.5, xi_s=0.1)
+    res = calc.run()
+
+    sim = MachineRepairHeterogeneousSim(n_machines=6, n_spares=2, seed=42)
+    sim.set_sources(xi=0.3, eta_a=1.5, eta_b=0.5, xi_s=0.1)
+    sim.run(400_000)
+
+    assert np.isclose(res.mean_failed, sim.mean_failed, rtol=0.03)
+    assert np.isclose(res.availability, sim.availability, rtol=0.03)
+    assert np.isclose(res.utilization_a, sim.utilization_a, rtol=0.03)
+    assert np.isclose(res.utilization_b, sim.utilization_b, rtol=0.03)
 
 
 # ---------------------------------------------------------------- П.3 working breakdowns
@@ -211,6 +229,7 @@ if __name__ == "__main__":
     test_mmc_breakdowns_vs_sim()
     test_machine_repair_binomial_special_case()
     test_machine_repair_vs_sim()
+    test_machine_repair_heterogeneous_vs_sim()
     test_working_breakdowns_reduces_to_mm1()
     test_working_breakdowns_vs_sim()
     test_disaster_repair_down_probability()

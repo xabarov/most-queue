@@ -30,6 +30,8 @@ class MachineRepairResults:
     repairmen_utilization: float = 0.0  # E[min(j, R)] / R
     failure_throughput: float = 0.0  # long-run failures per unit time
     p: list = field(default_factory=list)  # distribution of failed units
+    utilization_a: float | None = None  # P(repairman A busy) -- heterogeneous case only
+    utilization_b: float | None = None  # P(repairman B busy) -- heterogeneous case only
     duration: float = 0.0
 
 

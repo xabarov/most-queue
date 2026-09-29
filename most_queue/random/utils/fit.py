@@ -51,14 +51,27 @@ def fit_h2(moments: list[float]) -> H2Params:
     tn = 0.0
 
     if t_min > moments[2]:
-        # one phase distibution
+        # Boundary case (third moment at or below the minimum achievable for
+        # this mean/cv): q = q_max is the extremal point where phase 2
+        # degenerates to zero mean time (t2 = 0 exactly, algebraically, at
+        # q = q_max -- see docs/roadmaps/slo_deadline_roadmap.md sec. 11 for
+        # the derivation). Using the *general* t1/t2 formulas below (the same
+        # ones the bisection loop uses at convergence) keeps this branch
+        # consistent with it, instead of a separately hand-rolled formula.
         q_new = q_max
-        mu1 = (1.0 - math.sqrt(q_new * (v * v - 1.0) / (2 * (1.0 - q_new)))) * moments[0]
-        if math.isclose(mu1, 0):
-            mu1 = 1e10
-        else:
-            mu1 = 1.0 / mu1
-        res = H2Params(p1=q_max, mu1=mu1, mu2=1e6)
+        t1 = (1.0 + math.sqrt((1.0 - q_new) * (v * v - 1.0) / (2 * q_new))) * moments[0]
+        t2_arg = q_new * (v * v - 1.0) / (2 * (1.0 - q_new))
+        # t2_arg is exactly 1.0 at q_new = q_max in exact arithmetic; guard
+        # against floating-point noise pushing it a hair above 1 (which would
+        # make the sqrt argument, and thus t2, invalid/negative).
+        t2 = (1.0 - math.sqrt(min(max(t2_arg, 0.0), 1.0))) * moments[0]
+
+        mu1 = 1.0 / t1
+        # t2 ~ 0: phase 2 is an (effectively) instantaneous component. Scale
+        # the sentinel rate to the mean so it stays "instantaneous" (and
+        # numerically finite) regardless of the absolute time scale.
+        mu2 = 1.0 / t2 if not math.isclose(t2, 0.0, abs_tol=1e-9 * moments[0]) else 1e10 / moments[0]
+        res = H2Params(p1=q_new, mu1=mu1, mu2=mu2)
         return res
 
     max_iteration = MAX_FIT_ITERATIONS

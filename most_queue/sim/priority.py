@@ -65,6 +65,13 @@ class PriorityQueueSimulator(BaseSimulationCore):
         self.w = []  # wait moments of the system
         self.v = []  # sojourn moments of the system
 
+        # Optional online deadline-violation counters, per class (SLA
+        # cross-validation, see most_queue.theory.utils.sla). Empty until
+        # set_deadline_thresholds is called.
+        self.deadline_thresholds: list[float] = []
+        self.deadline_hits: list[dict[float, int]] = []
+        self.deadline_n: list[int] = [0] * self.k
+
         # probability of states of the system (number of requests in it j):
         self.p = []
 
@@ -681,6 +688,34 @@ class PriorityQueueSimulator(BaseSimulationCore):
 
         """
         self.w[k] = refresh_moments_stat(self.w[k], new_a, self.served[k])
+        self._record_deadline_hit(k, new_a)
+
+    def set_deadline_thresholds(self, thresholds) -> None:  # pylint: disable=arguments-differ
+        """
+        Start tracking, per class, how many served tasks of that class had
+        wait_time > D for each D in `thresholds`. Call before run(); resets
+        any previous count.
+        """
+        self.deadline_thresholds = list(thresholds)
+        self.deadline_hits = [dict.fromkeys(self.deadline_thresholds, 0) for _ in range(self.k)]
+        self.deadline_n = [0] * self.k
+
+    def _record_deadline_hit(self, k, wait_time) -> None:  # pylint: disable=arguments-differ
+        """Update per-class deadline-violation counters for one observed wait time."""
+        if not self.deadline_thresholds:
+            return
+        self.deadline_n[k] += 1
+        for d in self.deadline_thresholds:
+            if wait_time > d:
+                self.deadline_hits[k][d] += 1
+
+    def get_empirical_violation_prob(self, k, deadline) -> float:  # pylint: disable=arguments-differ
+        """Empirical P(wait_time > deadline) for class k, accumulated since set_deadline_thresholds()."""
+        if not self.deadline_hits or deadline not in self.deadline_hits[k]:
+            raise KeyError(f"deadline {deadline} is not tracked; pass it to set_deadline_thresholds() before run()")
+        if self.deadline_n[k] == 0:
+            raise RuntimeError("no samples recorded yet -- call run() first")
+        return self.deadline_hits[k][deadline] / self.deadline_n[k]
 
     def get_p(self) -> list[list[float]]:
         """

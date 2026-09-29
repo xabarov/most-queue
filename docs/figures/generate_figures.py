@@ -1680,6 +1680,89 @@ def fig_apq():
     return fig
 
 
+def fig_sla():
+    """SLA: raw moments -> fitted tail -> deadline-violation probability."""
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    fig, ax = plt.subplots(figsize=(7.8, 3.4), dpi=150)
+    d_grid = np.linspace(0.01, 6, 200)
+    tail = 0.9 * np.exp(-0.9 * d_grid)  # illustrative tail shape, not a specific distribution
+    ax.plot(d_grid, tail, color=BLUE, lw=2)
+
+    d_target = 3.0
+    p_target = 0.9 * float(np.exp(-0.9 * d_target))
+    ax.axvline(d_target, color=RED, lw=1.2, ls=(0, (4, 3)))
+    ax.scatter([d_target], [p_target], color=RED, zorder=5)
+    ax.annotate(
+        t("P(W > D)", "P(W > D)"),
+        xy=(d_target, p_target),
+        xytext=(d_target + 0.5, p_target * 3.5),
+        fontsize=9,
+        color=RED,
+        arrowprops={"arrowstyle": "->", "color": RED},
+    )
+    ax.set_yscale("log")
+    ax.set_ylim(3e-3, 1.3)
+    ax.set_xlabel(t("deadline D", "дедлайн D"), fontsize=9, color=INK2)
+    ax.set_ylabel(t("violation probability", "вероятность нарушения"), fontsize=9, color=INK2)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    _title(
+        ax,
+        t(
+            "SLA: raw moments -> fitted tail -> deadline-violation probability",
+            "SLA: моменты -> подогнанный хвост -> вероятность нарушения дедлайна",
+        ),
+    )
+    return fig
+
+
+def fig_inventory():
+    """Queueing-inventory: service consumes stock, blocked without it, (0,S) replenishment."""
+    fig, ax = plt.subplots(figsize=(8.6, 3.3), dpi=150)
+    _clean_axes(ax, (-0.6, 9.6), (-2.3, 1.9))
+
+    draw_arrow(ax, -0.4, 0.6, 0.5, 0.6, color=INK2)
+    ax.text(-0.4, 1.0, t("arrivals, λ", "приход, λ"), fontsize=9, color=INK2, ha="left")
+    draw_queue(ax, 1.5, 0.6, n_slots=4, occupied=2, occ_color=BLUE)
+    draw_server(ax, 3.9, 0.6, color=AQUA, label="μ")
+    draw_arrow(ax, 4.3, 0.6, 5.2, 0.6, color=INK2)
+    ax.text(5.3, 0.9, t("served, departs", "обслужена, уходит"), fontsize=8.5, color=INK2, ha="left")
+
+    draw_queue(ax, 3.9, -1.3, n_slots=4, occupied=1, occ_color=YELLOW)
+    ax.text(3.9, -2.05, t("stock, up to S units", "запас, до S единиц"), fontsize=9, color=INK2, ha="center")
+    draw_arrow(ax, 3.9, -0.85, 3.9, 0.13, color=YELLOW, ls=(0, (2, 2)))
+    ax.text(
+        4.35,
+        -0.35,
+        t("consumed on\nservice completion", "расходуется при\nзавершении обслуживания"),
+        fontsize=7.5,
+        color=INK2,
+        ha="left",
+        va="center",
+    )
+
+    draw_arrow(ax, 7.6, -1.3, 5.55, -1.3, color=GREEN, ls=(0, (4, 3)))
+    ax.text(
+        7.7,
+        -1.3,
+        t("replenish, θ\n(triggered at stock=0)", "пополнение, θ\n(при запасе=0)"),
+        fontsize=8.5,
+        color=GREEN,
+        ha="left",
+        va="center",
+    )
+
+    _title(
+        ax,
+        t(
+            "Queueing-inventory: service blocked without stock; (0,S) replenishment, backordering",
+            "Queueing-inventory: обслуживание блокировано без запаса; пополнение (0,S), backorder",
+        ),
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -1713,6 +1796,8 @@ FIGURES = {
     "batch": fig_batch,
     "impatience": fig_impatience,
     "engset": fig_engset,
+    "sla": fig_sla,
+    "inventory": fig_inventory,
 }
 
 
