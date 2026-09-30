@@ -92,11 +92,12 @@ See the executable comparison of **9 disciplines** in
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
-| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching | exact |
+| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
-| Queueing-inventory | M/M/1 or M/M/c with stock-consuming service, general (s,S) replenishment, backordering or lost sales | exact QBD |
+| Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server H2-fitted) with stock-consuming service, general (s,S) replenishment, backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
-| Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n sub-task service | Markovian / order statistics / exact (Beta function) |
+| Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
+| Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join over heterogeneous/DAG branches | Markovian / order statistics / exact (Beta function) |
 | Networks | open (decomposition, exact Jackson, QNA two-moment flows, MAP input), closed (exact MVA / Buzen / Schweitzer), multi-class BCMP, G-networks (Gelenbe, multi-class), tandems with blocking (finite buffers), fork-join stations, time-varying λ(t), priorities, negative customers, routing optimization | decomposition / product form / MVA |
 
 Every model comes with a plain-language explanation and a diagram in the
@@ -117,6 +118,18 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-09** — **Realism wave: heterogeneous branches, general service, admission control**:
+  **fork-join** generalized to heterogeneous branches, series-parallel task DAGs and (n,k)-join
+  (exact order-statistics moments, closed-form Pareto); **bulk-service** batch-service time
+  generalized from exponential to **Erlang** (CV≤1) and **H2** (CV≥1) phase-type fits, with exact
+  N/W moments and an auto-dispatcher picking the family by CV; exact **deadline-aware admission
+  control** (accept/reject at arrival based on own-deadline feasibility, Exp(θ) deadline — solved
+  via a level-crossing functional equation and truncated power-series moment extraction, after an
+  initial "obvious" shortcut was proven wrong); and **queueing-inventory** generalized to `c`
+  heterogeneous servers (state-splitting + stacked-boundary QBD) with, going one step further,
+  **per-server H2-fitted (non-exponential) service time** — each server can have its own realistic
+  service-time distribution instead of a single shared rate. See the
+  [epic registry](docs/epics/README.md) for the full breakdown (EPIC-030 through EPIC-039).
 - **2026-09** — **Priorities, inventory & scheduling wave**: **M/M/2 priorities with
   heterogeneous servers** (exact non-birth-death CTMC, canonicalized state construction);
   **queueing-inventory** generalized to lost-sales, the full **(s,S)** reorder-point policy

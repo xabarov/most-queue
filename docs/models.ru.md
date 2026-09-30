@@ -32,7 +32,7 @@
 | [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
 | [EDF-планирование](models/edf.ru.md) | Earliest-Deadline-First как реальная дисциплина обслуживания (не post-hoc SLA); точна по построению (DES), точной теории нет (открытая задача) |
 | [Admission control по дедлайну](models/admission-control.ru.md) | Приём/отклонение при приходе по осуществимости дедлайна (не переупорядочивание); точный сходящийся ряд для Exp(θ) |
-| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1, M/M/c или M/M/2-гетерогенная с расходуемым при обслуживании запасом, общая политика (s,S), backorder или lost sales — точный QBD |
+| [Queueing-inventory системы](models/inventory.ru.md) | M/M/1, M/M/c, или c гетерогенных серверов (одинаковых, экспоненциальных или с H2-подгонкой на сервер) с расходуемым при обслуживании запасом, общая политика (s,S), backorder или lost sales — точный QBD |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
 | [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem (включая 2 гетерогенных ремонтника), working breakdowns, катастрофы с ремонтом, retrial + отказы |
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
@@ -99,6 +99,8 @@
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |
 | M/M/2 queueing-inventory, гетерогенные | MM2QueueingInventoryHeterogeneousCalc | MM2QueueingInventoryHeterogeneousSim | - | 2 сервера с разной скоростью, точный QBD, сводится к одинаковым c=2 выше |
+| M/M/c queueing-inventory, гетерогенные | MMcQueueingInventoryHeterogeneousCalc | MMcQueueingInventoryHeterogeneousSim | - | Общее c серверов с разной скоростью, точный QBD, сводится к c=2 и одинаковым серверам выше |
+| M/H2/c queueing-inventory, гетерогенные | MMcQueueingInventoryHeterogeneousH2Calc | MMcQueueingInventoryHeterogeneousH2Sim | - | У каждого сервера своё H2-подогнанное (неэкспоненциальное) обслуживание, точный QBD, сводится к обычным гетерогенным c выше |
 | EDF-планирование | - (точной теории нет, см. docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Дисциплина обслуживания по дедлайну, точна по построению (DES), проверка законом сохранения работы |
 | M/M/1 admission control по дедлайну | MM1DeadlineAdmissionControlCalc | MM1DeadlineAdmissionControlSim | - | Дедлайн Exp(θ), точный сходящийся ряд (level-crossing функциональное уравнение) |
 | Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |

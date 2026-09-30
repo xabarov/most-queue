@@ -78,6 +78,8 @@
 | [EPIC-035](EPIC-035-bulk-service-general-erlang.md) | M/G^[a,b]/1 с общим (Erlang-подогнанным) обслуживанием батча: фазовое расширение CTMC | done |
 | [EPIC-036](EPIC-036-bulk-service-general-h2.md) | M/H2^[a,b]/1 с H2-подогнанным обслуживанием батча (CV≥1): фазовое расширение CTMC | done |
 | [EPIC-037](EPIC-037-bulk-service-auto-dispatch.md) | Единый Erlang/H2 auto-dispatch для bulk-service батча по CV: `fit_bulk_service_calc` | done |
+| [EPIC-038](EPIC-038-queueing-inventory-heterogeneous-servers-general-c.md) | Queueing-inventory с общим числом c гетерогенных серверов: расщепление на подмножества + сложенный граничный суперблок QBD | done |
+| [EPIC-039](EPIC-039-queueing-inventory-heterogeneous-servers-h2-service.md) | Queueing-inventory, c гетерогенных серверов с H2-подогнанным обслуживанием (своё H2 на каждый сервер) | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -120,4 +122,8 @@ EPIC-035 — по обзору bulk-service с общим обслуживани
 EPIC-036 — по обзору H2-подгонки bulk-service:
 [../research/bulk-service-general-h2-2026.md](../research/bulk-service-general-h2-2026.md);
 EPIC-037 — по обзору auto-dispatch bulk-service:
-[../research/bulk-service-auto-dispatch-2026.md](../research/bulk-service-auto-dispatch-2026.md).
+[../research/bulk-service-auto-dispatch-2026.md](../research/bulk-service-auto-dispatch-2026.md);
+EPIC-038 — по обзору queueing-inventory с общим c гетерогенных серверов:
+[../research/queueing-inventory-heterogeneous-servers-general-c-2026.md](../research/queueing-inventory-heterogeneous-servers-general-c-2026.md);
+EPIC-039 — по обзору H2-подогнанного обслуживания у гетерогенных серверов:
+[../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md](../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md).

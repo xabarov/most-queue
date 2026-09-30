@@ -127,9 +127,7 @@ there. `mu1=mu2` reproduces `MMcQueueingInventoryCalc(c=2, ...)` exactly. See
 [`docs/research/queueing-inventory-heterogeneous-servers-2026.md`](../research/queueing-inventory-heterogeneous-servers-2026.md)
 and
 [`docs/roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_roadmap.md)
-for the block derivation. Limited to `c=2` — general `c` heterogeneous servers would need tracking
-*which subset* of servers is busy at every intermediate level (`n=1,...,c-1`), a combinatorial
-state-space blow-up left as a reserve item.
+for the block derivation.
 
 ```python
 from most_queue.theory.inventory import MM2QueueingInventoryHeterogeneousCalc
@@ -140,7 +138,91 @@ calc.set_servers(mu1=1.5, mu2=0.7, theta=1.0)  # server 1 faster than server 2
 res = calc.run()
 ```
 
+### Heterogeneous servers, general c
+
+**Description:** `MMcQueueingInventoryHeterogeneousCalc(c, s_max, s=0, policy="backorder")`
+generalizes the `c=2` model above to an arbitrary number of heterogeneous servers. For
+heterogeneous servers, state-splitting must track *which* servers are busy, not just how many —
+at boundary level `n` (`n < c` customers, all in service), the busy set is one of `C(c,n)`
+subsets of `{0,...,c-1}`, so the boundary phase space grows as `2^c - 1` (combinatorial in `c`,
+tractable for realistic `c`, say up to 6-8). Built mechanically (the canonicalize-style pure-
+function pattern from [priority queues with heterogeneous servers](priority-dynamic.md)) from
+three small functions — which idle server an arrival joins (lowest-index/highest-priority idle
+server, deterministic), which subset results from each possible departure, and the aggregate
+service rate of a subset — rather than a hand-derived transition table. Once `n >= c`, all
+servers are always busy (any freed server instantly grabs the next queued customer), so the
+repeating part of the QBD needs no subset tracking at all, same shape as the identical-server
+`M/M/c` model. `c=2` reproduces `MM2QueueingInventoryHeterogeneousCalc` exactly; `mu_1=...=mu_c`
+reproduces `MMcQueueingInventoryCalc` exactly. See
+[`docs/research/queueing-inventory-heterogeneous-servers-general-c-2026.md`](../research/queueing-inventory-heterogeneous-servers-general-c-2026.md)
+and
+[`docs/roadmaps/queueing_inventory_heterogeneous_servers_general_c_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_general_c_roadmap.md)
+for the block derivation.
+
+```python
+from most_queue.theory.inventory import MMcQueueingInventoryHeterogeneousCalc
+
+calc = MMcQueueingInventoryHeterogeneousCalc(c=3, s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(mus=[1.5, 1.0, 0.7], theta=1.0)  # priority-order rates: server 0 preferred first
+res = calc.run()
+```
+
+### Heterogeneous servers, each with H2-fitted (non-exponential) service
+
+**Description:** `MMcQueueingInventoryHeterogeneousH2Calc(c, s_max, s=0, policy="backorder")`
+drops the "exponential service" assumption of the general-`c` model above: each server has its
+OWN H2(`p1_k`,`mu1_k`,`mu2_k`) service-time distribution, not just a scalar rate — a more
+realistic model, since real service times are rarely exponential. Combines EPIC-036's H2
+phase-type CTMC augmentation with the subset-tracking above: each server's state is extended from
+binary (idle/busy) to ternary (idle / busy-branch-0 / busy-branch-1), where the branch is chosen
+once when that server starts a customer's service and stays fixed until departure (H2's defining
+property — unlike Erlang's sequential phase-advance, which was deliberately deferred as a harder
+reserve item). Boundary phase count grows to `3^c - 2^c`; the repeating part (`n >= c`) gets a
+genuinely non-scalar `2^c`-sized phase space (branch combinations across all servers), since
+completion rate now depends on which branch each busy server is running — but still has NO
+transitions *within* a level, since a branch never changes except at departure, keeping the same
+QBD shape as the plain-exponential model. `p1_k=1` for every server (H2 collapses to
+`Exp(mu1_k)`) reproduces `MMcQueueingInventoryHeterogeneousCalc` exactly.
+
+**Why not complex-valued H2 parameters:** a CTMC generator's rates and branch probabilities must
+be real and non-negative by construction, or the "chain" isn't a valid stochastic process.
+`fit_h2_clx` (the complex-capable moment-matching method) is used elsewhere in this library only
+for approximate CDF/tail fitting (the [SLA layer](sla.md)), never to build an actual Markov chain.
+`set_servers_from_moments` here uses `H2Distribution.get_params` (`fit_h2`, Aliev's method),
+which is real by construction and degenerates gracefully outside the H2-feasible region — the
+same convention as every other H2-based CTMC augmentation in this library (EPIC-036). See
+[`docs/research/queueing-inventory-heterogeneous-servers-h2-service-2026.md`](../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md)
+and
+[`docs/roadmaps/queueing_inventory_heterogeneous_servers_h2_service_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_h2_service_roadmap.md)
+for the block derivation.
+
+```python
+from most_queue.random.utils.params import H2Params
+from most_queue.theory.inventory import MMcQueueingInventoryHeterogeneousH2Calc
+
+calc = MMcQueueingInventoryHeterogeneousH2Calc(c=2, s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(
+    [H2Params(p1=0.5, mu1=1.5, mu2=3.0), H2Params(p1=0.3, mu1=0.8, mu2=2.5)],  # own H2 per server
+    theta=1.0,
+)
+res = calc.run()
+
+# or fit each server's H2 independently from its own raw moments:
+calc2 = MMcQueueingInventoryHeterogeneousH2Calc(c=2, s_max=4, s=1)
+calc2.set_sources(l=1.0)
+calc2.set_servers_from_moments([[1.0, 4.0, 30.0], [1.5, 6.0, 50.0]], theta=1.0)
+```
+
+**Accuracy and scope:** exact given the per-server H2-fitted family (mean-only, same scope as
+every other model in this section). Not covered (reserve): Erlang-per-server service (needs
+within-level phase-advance transitions, a materially harder QBD); mixed families; phase-type
+replenishment lead time; exact moments beyond the mean.
+
 ### Accuracy and scope
 
 Exact (matrix-geometric QBD, not an approximation) for `(0,S)`/general `(s,S)`, `c=1`, identical
-`c>1` servers, or `c=2` heterogeneous servers, backorder or lost-sales — all of the models above.
+`c>1` servers, or heterogeneous servers (any `c`, exponential or per-server H2-fitted), backorder
+or lost-sales — all of the models
+above.
