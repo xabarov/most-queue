@@ -76,6 +76,8 @@
 | [EPIC-033](EPIC-033-queueing-inventory-heterogeneous-servers.md) | Queueing-inventory с c=2 гетерогенными серверами: расщепление состояний + сложенный граничный суперблок QBD | done |
 | [EPIC-034](EPIC-034-llm-serving-deadline-admission-control.md) | M/M/1 с точным admission control по дедлайну (Exp(θ)): level-crossing функциональное уравнение, степенные ряды | done |
 | [EPIC-035](EPIC-035-bulk-service-general-erlang.md) | M/G^[a,b]/1 с общим (Erlang-подогнанным) обслуживанием батча: фазовое расширение CTMC | done |
+| [EPIC-036](EPIC-036-bulk-service-general-h2.md) | M/H2^[a,b]/1 с H2-подогнанным обслуживанием батча (CV≥1): фазовое расширение CTMC | done |
+| [EPIC-037](EPIC-037-bulk-service-auto-dispatch.md) | Единый Erlang/H2 auto-dispatch для bulk-service батча по CV: `fit_bulk_service_calc` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -114,4 +116,8 @@ EPIC-033 — по обзору queueing-inventory с гетерогенными 
 EPIC-034 — по обзору LLM-serving SLO/deadline admission control:
 [../research/llm-serving-deadline-admission-control-2026.md](../research/llm-serving-deadline-admission-control-2026.md);
 EPIC-035 — по обзору bulk-service с общим обслуживанием батча:
-[../research/bulk-service-general-erlang-2026.md](../research/bulk-service-general-erlang-2026.md).
+[../research/bulk-service-general-erlang-2026.md](../research/bulk-service-general-erlang-2026.md);
+EPIC-036 — по обзору H2-подгонки bulk-service:
+[../research/bulk-service-general-h2-2026.md](../research/bulk-service-general-h2-2026.md);
+EPIC-037 — по обзору auto-dispatch bulk-service:
+[../research/bulk-service-auto-dispatch-2026.md](../research/bulk-service-auto-dispatch-2026.md).

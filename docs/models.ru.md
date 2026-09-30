@@ -21,7 +21,7 @@
 | [Системы с отпусками (Vacations)](models/vacations.ru.md) | многократные отпуска, N-policy, разогрев/охлаждение, ненадёжный прибор |
 | [Системы с отрицательными заявками](models/negative.ru.md) | отрицательные заявки: RCS и disasters, одно- и многоканальные |
 | [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач; гетерогенные ветви, series-parallel DAG задач, (n,k)-join |
-| [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 (или общее Erlang-подогнанное обслуживание батча) |
+| [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 (или общее Erlang/H2-подогнанное обслуживание батча) |
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
 | [Матрично-аналитические модели (MAP/PH)](models/map-ph.ru.md) | коррелированные потоки: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP-варианты, фиттинг MMPP |
@@ -94,6 +94,7 @@
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM; точные моменты N/W при a=1 |
 | M/Erlang(k)^[a,b]/1 групповое обслуживание | BulkServiceErlangCalc | - | - | Общее (Erlang-подогнанное, CV≤1) время обслуживания батча; сводится к k=1 выше |
+| M/H2^[a,b]/1 групповое обслуживание | BulkServiceH2Calc | - | - | Общее (H2-подогнанное, CV≥1) время обслуживания батча; сводится к p1=1 выше |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |

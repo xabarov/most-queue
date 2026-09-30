@@ -124,4 +124,62 @@ separate follow-up epic). Not covered (reserve): H2 fitting for CV`≥1`; exact 
 the mean; batch-size-dependent Erlang parameters (the exponential model above supports a callable
 rate per batch size — not yet ported to this phase-type case).
 
+### General (H2-fitted) batch-service time (CV ≥ 1)
+
+**Description:** the CV`≥1` complement to the Erlang case above — batch-service time fitted to an
+H2(`p1`,`mu1`,`mu2`) (hyperexponential, 2-phase mixture) representation from its raw moments, for
+batch-service times that are more variable than exponential. Unlike Erlang (a sequential chain of
+phases), H2 is a **branch**: at the moment a batch starts service, one of two exponential phases is
+chosen once (phase 0 w.p. `p1`, rate `mu1`; phase 1 w.p. `p2=1-p1`, rate `mu2`) and the batch stays
+in that phase until it completes — no mid-service phase transitions. The CTMC state gets an extra
+phase dimension: `(batch size i, phase ∈ {0,1}, waiting j)`; every "batch starts" transition splits
+into two weighted sub-transitions (`×p1`, `×p2`) instead of Erlang's single deterministic one.
+`p1=1` (H2 collapses to `Exp(mu1)`) reduces **exactly** to `BulkServiceMM1Calc` — the primary
+regression check, verified to full float64 precision. Unlike the Erlang case, the general
+(genuinely two-phase) case matched an independent DES on the first attempt — no bug found, likely
+because "choose-once-at-start" branching is structurally simpler to get right than Erlang's
+sequential-phase-advance rate convention. See
+[`docs/research/bulk-service-general-h2-2026.md`](../research/bulk-service-general-h2-2026.md) for
+the full account.
+
+**Calculator class:** `BulkServiceH2Calc` (`most_queue.theory.batch.bulk_service_h2`)
+
+```python
+from most_queue.theory.batch.bulk_service_h2 import BulkServiceH2Calc
+
+calc = BulkServiceH2Calc(a=1, b=4)
+calc.set_sources(1.0)
+calc.set_servers(p1=0.5, mu1=1.0, mu2=3.0)     # mean batch service = p1/mu1 + p2/mu2
+res = calc.run()                                # res.v[0], res.w[0] -- mean only (see below)
+
+# or fit (p1, mu1, mu2) from raw moments directly:
+calc2 = BulkServiceH2Calc(a=1, b=4)
+calc2.set_sources(1.0)
+calc2.set_servers_from_moments([2.0, 12.0, 100.0])   # [mean, E[S^2], E[S^3]], CV >= 1
+```
+
+**Accuracy and scope:** exact given the H2-fitted family (mean-only, same starting scope as the
+Erlang case above). Not covered (reserve): exact raw moments beyond the mean (needs a PASTA
+argument that also tracks which phase an arrival finds the batch in); batch-size-dependent H2
+parameters.
+
+### Auto-dispatch (don't compute CV by hand)
+
+**Description:** `fit_bulk_service_calc(a, b, moments, family="auto")`
+(`most_queue.theory.batch.bulk_service_general`) picks between the two calculators above
+automatically from the CV of the given raw moments — `cv ≤ 1` → `BulkServiceErlangCalc`, `cv > 1`
+→ `BulkServiceH2Calc` — mirroring `theory.utils.sla.fit_from_moments`'s `family="auto"` convention.
+Returns a calculator with `set_servers()` already applied from the moments; the caller still calls
+`set_sources()` then `run()`. Explicit `family="erlang"`/`"h2"` overrides validate CV-feasibility
+and raise `ValueError` rather than silently producing a wrong fit.
+
+```python
+from most_queue.theory.batch.bulk_service_general import fit_bulk_service_calc
+
+calc = fit_bulk_service_calc(a=1, b=4, moments=[2.0, 4.5])        # cv < 1 -> Erlang
+calc = fit_bulk_service_calc(a=1, b=4, moments=[2.0, 12.0, 100.0])  # cv > 1 -> H2 (needs 3 moments)
+calc.set_sources(1.0)
+res = calc.run()
+```
+
 **See also:** [SLA / deadline-violation probability](sla.md) — turn these moments into a deadline-violation probability or SLO quantile.

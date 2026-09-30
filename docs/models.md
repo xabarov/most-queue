@@ -21,7 +21,7 @@ add a figure function and regenerate the PNGs.
 | [Systems with vacations](models/vacations.md) | multiple vacations, N-policy, warm-up/cooling, unreliable server |
 | [Systems with negative customers](models/negative.md) | negative customers: RCS and disasters, single- and multi-server |
 | [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join |
-| [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 (or general Erlang-fitted batch service) |
+| [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 (or general Erlang/H2-fitted batch service) |
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
 | [Matrix-analytic models (MAP/PH)](models/map-ph.md) | correlated arrivals: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP variants, MMPP fitting |
@@ -94,6 +94,7 @@ add a figure function and regenerate the PNGs.
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching; exact N/W moments at a=1 |
 | M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above |
+| M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |
