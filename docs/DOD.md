@@ -37,7 +37,9 @@
 
 ## DoD: любая задача с кодом
 
-- [ ] `pytest tests/ -m "not slow"` проходит локально; затронутые slow-тесты прогнаны отдельно.
+- [ ] `pytest tests/ -m "not slow" -n auto` проходит локально; затронутые slow-тесты прогнаны
+      отдельно; перед `done`/коммитом эпика — полный `pytest tests/ -n auto` (см.
+      [INFRASTRUCTURE.md](INFRASTRUCTURE.md) про `-n auto`/`pytest-xdist`).
 - [ ] Код отформатирован: `black` + `isort` (line-length 120); `pylint most_queue` без новых замечаний.
 - [ ] Публичные классы/методы имеют docstring на английском (как в существующем коде).
 - [ ] Документация (`docs/`) и при необходимости README обновлены.

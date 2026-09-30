@@ -25,10 +25,11 @@ jobs:
       - name: Install package and test dependencies
         run: |
           python -m pip install -U pip
-          python -m pip install -e .
-          python -m pip install pytest pytest-rerunfailures
+          python -m pip install -e .[dev]
 
       - name: Run tests (fast set)
+        # -n auto: parallelize across CPU cores (pytest-xdist) -- roughly
+        # halves wall time on a multi-core runner with no shared test state.
         # --reruns 1: simulation-vs-theory tests are statistical; a single
         # rerun absorbs rare unlucky sample paths without hiding real breakage
-        run: pytest tests/ -m "not slow" -q --reruns 1 --only-rerun AssertionError
+        run: pytest tests/ -m "not slow" -q -n auto --reruns 1 --only-rerun AssertionError

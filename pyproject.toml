@@ -71,6 +71,16 @@ dependencies = [
   "pyyaml",
 ]
 
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-xdist",
+  "pytest-rerunfailures",
+  "black",
+  "isort",
+  "pylint",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/xabarov/most-queue"
 
