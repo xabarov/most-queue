@@ -26,6 +26,17 @@ Mean-only (E[N], E[V], E[W] via Little's law), same scope as EPIC-035's
 BulkServiceErlangCalc -- exact moments for this phase-type-augmented case
 are a reserve item (would need a PASTA-based tagged-customer argument that
 also tracks which phase an arrival finds the batch in).
+
+EPIC-042 adds batch-size-dependent parameters: p1/mu1/mu2 may each be a
+callable `f(batch_size) -> value`, porting BulkServiceMM1Calc's existing
+callable-mu convention. A subtlety absent from the Erlang case (EPIC-042's
+Erlang generalization only needed the CURRENT batch's rate): the branch
+SPLIT at a "batch starts" transition must use p1 of the NEW batch about to
+form, not of the batch that just completed -- e.g. at a completion event
+i -> take (take = min(b, j)), the outflow rate uses the completing batch's
+own (i, phase) rate, but the p1/p2 weights splitting into the new batch's
+two phases must be p1(take), not p1(i). Getting this backwards would
+silently use the wrong batch's H2 parameters whenever p1 varies with size.
 """
 
 import numpy as np
@@ -56,33 +67,43 @@ class BulkServiceH2Calc(BaseQueue):
         self.b = b
         self.N = queue_truncation
         self.l = None
-        self.p1 = None
-        self.mu1 = None
-        self.mu2 = None
+        self.p1_fn = None
+        self.mu1_fn = None
+        self.mu2_fn = None
 
     def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """:param l: arrival rate (Poisson)."""
         self.l = l
         self.is_sources_set = True
 
-    def set_servers(self, p1: float, mu1: float, mu2: float):  # pylint: disable=arguments-differ
-        """:param p1: probability of choosing phase 0 (rate mu1) at batch start; phase 1 (rate mu2) w.p. 1-p1."""
-        if not 0.0 <= p1 <= 1.0:
-            raise ValueError(f"p1 must be in [0, 1], got {p1}")
-        if mu1 <= 0 or mu2 <= 0:
-            raise ValueError(f"mu1, mu2 must be positive, got {mu1}, {mu2}")
-        self.p1 = p1
-        self.mu1 = mu1
-        self.mu2 = mu2
+    def set_servers(self, p1, mu1, mu2):  # pylint: disable=arguments-differ
+        """
+        :param p1: probability of choosing phase 0 (rate mu1) at batch start; phase 1 (rate mu2)
+            w.p. 1-p1. Each of p1/mu1/mu2 may be a scalar (batch-size-independent) or a callable
+            f(batch_size) -> value (e.g. LLM batching where a bigger batch has different
+            variability/rate).
+        """
+
+        def _as_fn(value):
+            if callable(value):
+                return value
+            return lambda _i, _v=float(value): _v
+
+        self.p1_fn = _as_fn(p1)
+        self.mu1_fn = _as_fn(mu1)
+        self.mu2_fn = _as_fn(mu2)
+        for size in range(self.a, self.b + 1):
+            p1_val, mu1_val, mu2_val = self.p1_fn(size), self.mu1_fn(size), self.mu2_fn(size)
+            if not 0.0 <= p1_val <= 1.0:
+                raise ValueError(f"p1({size}) must be in [0, 1], got {p1_val}")
+            if mu1_val <= 0 or mu2_val <= 0:
+                raise ValueError(f"mu1({size}), mu2({size}) must be positive, got {mu1_val}, {mu2_val}")
         self.is_servers_set = True
 
     def set_servers_from_moments(self, moments: list[float]):
         """Fit (p1, mu1, mu2) from raw moments (mean, second moment, ...) via H2Distribution.get_params."""
         params: H2Params = H2Distribution.get_params(moments)
-        self.p1 = params.p1
-        self.mu1 = params.mu1
-        self.mu2 = params.mu2
-        self.is_servers_set = True
+        self.set_servers(params.p1, params.mu1, params.mu2)
 
     def _idle_index(self, j: int) -> int:
         return j
@@ -96,7 +117,7 @@ class BulkServiceH2Calc(BaseQueue):
         start = self._measure_time()
 
         a, b, N, lam = self.a, self.b, self.N, self.l
-        p1, p2, mu1, mu2 = self.p1, 1.0 - self.p1, self.mu1, self.mu2
+        p1_fn, mu1_fn, mu2_fn = self.p1_fn, self.mu1_fn, self.mu2_fn
         n_states = (N + 1) + b * 2 * (N + 1)
         rows, cols, vals = [], [], []
 
@@ -105,24 +126,26 @@ class BulkServiceH2Calc(BaseQueue):
             cols.append(dst)
             vals.append(r)
 
+        p1_a = p1_fn(a)
         for j in range(N + 1):
             s = self._idle_index(j)
             if j + 1 < a:
                 add(s, self._idle_index(j + 1), lam)
-            else:  # threshold reached -> batch of size a starts, split by phase
-                add(s, self._busy_index(a, 0, 0), lam * p1)
-                add(s, self._busy_index(a, 1, 0), lam * p2)
+            else:  # threshold reached -> batch of size a starts, split by phase (new batch's own p1)
+                add(s, self._busy_index(a, 0, 0), lam * p1_a)
+                add(s, self._busy_index(a, 1, 0), lam * (1.0 - p1_a))
 
         for i in range(1, b + 1):
-            for phase, mu in ((0, mu1), (1, mu2)):
+            for phase, mu in ((0, mu1_fn(i)), (1, mu2_fn(i))):
                 for j in range(N + 1):
                     s = self._busy_index(i, phase, j)
                     if j < N:
                         add(s, self._busy_index(i, phase, j + 1), lam)
                     if j >= a:
                         take = min(b, j)
-                        add(s, self._busy_index(take, 0, j - take), mu * p1)
-                        add(s, self._busy_index(take, 1, j - take), mu * p2)
+                        p1_take = p1_fn(take)  # the NEW batch's own p1, not the completing batch's
+                        add(s, self._busy_index(take, 0, j - take), mu * p1_take)
+                        add(s, self._busy_index(take, 1, j - take), mu * (1.0 - p1_take))
                     else:
                         add(s, self._idle_index(j), mu)
 
@@ -139,15 +162,27 @@ class BulkServiceH2Calc(BaseQueue):
         pi = pi / pi.sum()
 
         e_n = 0.0
+        p_busy_size = np.zeros(b + 1)  # P(batch size = i | server busy), i=1..b
         for j in range(N + 1):
             e_n += pi[self._idle_index(j)] * j
         for i in range(1, b + 1):
             for phase in (0, 1):
                 for j in range(N + 1):
-                    e_n += pi[self._busy_index(i, phase, j)] * (i + j)
+                    prob = pi[self._busy_index(i, phase, j)]
+                    e_n += prob * (i + j)
+                    p_busy_size[i] += prob
 
         e_t = e_n / lam
-        mean_batch_service = p1 / mu1 + p2 / mu2
+
+        def mean_service_of(size):
+            p1_val = p1_fn(size)
+            return p1_val / mu1_fn(size) + (1.0 - p1_val) / mu2_fn(size)
+
+        p_busy_total = p_busy_size.sum()
+        if p_busy_total > 0:
+            mean_batch_service = sum(mean_service_of(i) * p_busy_size[i] for i in range(1, b + 1)) / p_busy_total
+        else:
+            mean_batch_service = mean_service_of(b)
         e_w = e_t - mean_batch_service
 
         res = QueueResults(

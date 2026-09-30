@@ -92,9 +92,9 @@ See the executable comparison of **9 disciplines** in
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
-| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV | exact |
+| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV and batch-size-dependent parameters; exact W moments for the Erlang-fitted case | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
-| Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server H2-fitted) with stock-consuming service, general (s,S) replenishment, backordering or lost sales | exact QBD |
+| Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
 | Parallel service | Fork-Join, Split-Join; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join over heterogeneous/DAG branches | Markovian / order statistics / exact (Beta function) |
@@ -118,6 +118,16 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-09** — **Realism wave, part 2: Erlang everywhere, batch-size-dependent params, exact
+  moments**: **queueing-inventory** replenishment lead time generalized from `Exp(θ)` to
+  **Erlang-fitted** (the phase dimension only applies where an order can be in transit — a first
+  for this phase-type family); the per-server heterogeneous model gained an **Erlang-fitted
+  (CV≤1) service** sibling to its H2 case, with a real outflow-splitting bug (departure vs.
+  mid-service phase-advance rates) caught via a deliberately non-degenerate regression check;
+  **bulk-service** batch-service parameters (Erlang and H2) can now depend on batch size (LLM/GPU
+  dynamic-batching realism), and the Erlang-fitted case gained **exact raw moments of W** (not
+  just the mean), extending EPIC-032's PASTA technique to the phase-augmented CTMC. See the
+  [epic registry](docs/epics/README.md) for the full breakdown (EPIC-040 through EPIC-043).
 - **2026-09** — **Realism wave: heterogeneous branches, general service, admission control**:
   **fork-join** generalized to heterogeneous branches, series-parallel task DAGs and (n,k)-join
   (exact order-statistics moments, closed-form Pareto); **bulk-service** batch-service time

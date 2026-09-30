@@ -110,19 +110,35 @@ from most_queue.theory.batch.bulk_service_erlang import BulkServiceErlangCalc
 calc = BulkServiceErlangCalc(a=1, b=4, k=3)   # Erlang(3, rate): CV = 1/sqrt(3)
 calc.set_sources(1.0)
 calc.set_servers(rate=1.5)                     # mean batch service = k/rate = 2.0
-res = calc.run()                                # res.v[0], res.w[0] -- mean only (see below)
+res = calc.run()                                # res.v[0] mean; res.w -- exact moments at a=1 (see below)
+
+# exact raw moments of W (not just the mean), a=1 only:
+w_moments = calc.get_w(num=4)                   # [E[W], E[W^2], E[W^3], E[W^4]]
 
 # or fit (k, rate) from raw moments directly:
 calc2 = BulkServiceErlangCalc(a=1, b=4, k=1)   # k is overwritten by the fit
 calc2.set_sources(1.0)
 calc2.set_servers_from_moments([2.0, 4.5])     # [mean, E[S^2]] of batch-service time
+
+# rate may also be a callable rate(batch_size) -- k (phase count) stays fixed,
+# only the per-phase rate varies with the size of the batch currently in service:
+calc3 = BulkServiceErlangCalc(a=1, b=4, k=3)
+calc3.set_sources(1.0)
+calc3.set_servers(lambda size: 3.0 + 0.2 * size)  # bigger batches slower per phase (LLM/GPU-style)
 ```
 
-**Accuracy and scope:** exact given the Erlang-fitted family (mean-only — the same starting scope
-EPIC-012 originally shipped for the exponential case, before EPIC-032 added exact moments as a
-separate follow-up epic). Not covered (reserve): H2 fitting for CV`≥1`; exact raw moments beyond
-the mean; batch-size-dependent Erlang parameters (the exponential model above supports a callable
-rate per batch size — not yet ported to this phase-type case).
+**Accuracy and scope:** exact given the Erlang-fitted family. `get_w()` gives EXACT raw moments of
+`W` at `a=1` (EPIC-043, porting EPIC-032's PASTA/hypoexponential-decomposition technique to this
+phase-augmented case — the remaining service of the batch an arrival finds in progress is
+`Erlang(k-p, rate)`, `p` = the phase found, plus `j//b` full batches ahead each `Erlang(k, rate(b))`,
+convolved); `run()` uses this exact mean for `a=1` and falls back to a busy-time-weighted-average
+approximate mean for `a>1` (same `a>1` restriction as `BulkServiceMM1Calc`, see
+[`docs/research/bulk-service-waiting-moments-2026.md`](../research/bulk-service-waiting-moments-2026.md)
+for why). Not covered (reserve): H2 fitting for CV`≥1` combined with exact moments (EPIC-036's H2
+calculator is still mean-only); batch-size-dependent phase COUNT (`k`) — EPIC-042 ported the
+exponential model's callable-rate convention to this phase-type case, but `k` itself stays fixed
+across batch sizes (a materially harder extension, same class of difficulty as EPIC-041's
+per-server phase counts).
 
 ### General (H2-fitted) batch-service time (CV ≥ 1)
 
@@ -156,12 +172,19 @@ res = calc.run()                                # res.v[0], res.w[0] -- mean onl
 calc2 = BulkServiceH2Calc(a=1, b=4)
 calc2.set_sources(1.0)
 calc2.set_servers_from_moments([2.0, 12.0, 100.0])   # [mean, E[S^2], E[S^3]], CV >= 1
+
+# p1/mu1/mu2 may each be a callable f(batch_size) -- the two-branch structure stays
+# fixed, only the branch probability/rates vary with the size of the NEW batch starting:
+calc3 = BulkServiceH2Calc(a=1, b=4)
+calc3.set_sources(1.0)
+calc3.set_servers(lambda size: 0.3 + 0.1 * size, mu1=1.5, mu2=3.0)
 ```
 
 **Accuracy and scope:** exact given the H2-fitted family (mean-only, same starting scope as the
 Erlang case above). Not covered (reserve): exact raw moments beyond the mean (needs a PASTA
-argument that also tracks which phase an arrival finds the batch in); batch-size-dependent H2
-parameters.
+argument that also tracks which phase an arrival finds the batch in); batch-size-dependent
+branch COUNT (the two-branch structure itself stays fixed — EPIC-042 only made the per-branch
+probability/rates batch-size-dependent).
 
 ### Auto-dispatch (don't compute CV by hand)
 

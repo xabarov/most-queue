@@ -87,6 +87,44 @@ res = calc.run()
 # larger s (more safety stock) never increases stockout_prob or mean wait
 ```
 
+### Erlang-fitted (non-exponential) replenishment lead time
+
+**Description:** `MM1QueueingInventoryErlangReplenishmentCalc(s_max, s=0, policy="backorder")`
+drops the "exponential lead time" assumption: unlike every other phase-type augmentation in this
+library (which adds a phase dimension to *every* state), this one only needs a phase dimension
+where an order can be in transit — stock levels `i <= s`; levels `i > s` have no pending order and
+need no phase at all. A service completion crossing from `i=s+1` into `i=s` is exactly the moment
+an order is placed (phase initialized to 0); further service completions while the order is
+pending preserve its phase (the order's own progress doesn't care how low stock drifts meanwhile);
+the only way back to the no-order zone is the order's last phase completing, which restocks to `S`
+directly. `r=1` (Erlang collapses to `Exp(rate)`) reproduces `MM1QueueingInventoryCalc` exactly.
+See [`docs/research/queueing-inventory-phase-type-replenishment-2026.md`](../research/queueing-inventory-phase-type-replenishment-2026.md)
+and
+[`docs/roadmaps/queueing_inventory_phase_type_replenishment_roadmap.md`](../roadmaps/queueing_inventory_phase_type_replenishment_roadmap.md)
+for the block derivation, including a validation trap worth knowing: holding the Erlang `rate`
+fixed while increasing `r` *increases the mean lead time* (`mean = r/rate`), not just lowers its
+CV — comparisons across `r` must hold `r/rate` fixed, exactly like EPIC-035's `k`-vs-`k*rate`
+pitfall for bulk-service.
+
+```python
+from most_queue.theory.inventory import MM1QueueingInventoryErlangReplenishmentCalc
+
+calc = MM1QueueingInventoryErlangReplenishmentCalc(s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(mu=2.0, r=3, rate=2.4)  # mean lead time = r/rate = 1.25
+res = calc.run()
+
+# or fit (r, rate) from the lead time's raw moments directly:
+calc2 = MM1QueueingInventoryErlangReplenishmentCalc(s_max=4, s=1)
+calc2.set_sources(l=1.0)
+calc2.set_replenishment_from_moments(mu=2.0, moments=[1.25, 1.8])
+```
+
+**Accuracy and scope:** exact given the Erlang-fitted family (mean-only). Scoped to the M/M/1
+base case — not yet ported to the M/M/c or heterogeneous-server calculators above (reserve; the
+augmentation is local to the stock/phase block and doesn't touch the server-busy dimension, so
+should port directly). H2 replenishment (CV≥1) is also reserve.
+
 ### Multi-server case (M/M/c)
 
 **Description:** `MMcQueueingInventoryCalc(c, s_max, s=0, policy="backorder")` generalizes the
@@ -216,13 +254,59 @@ calc2.set_servers_from_moments([[1.0, 4.0, 30.0], [1.5, 6.0, 50.0]], theta=1.0)
 ```
 
 **Accuracy and scope:** exact given the per-server H2-fitted family (mean-only, same scope as
-every other model in this section). Not covered (reserve): Erlang-per-server service (needs
-within-level phase-advance transitions, a materially harder QBD); mixed families; phase-type
-replenishment lead time; exact moments beyond the mean.
+every other model in this section). Not covered (reserve): mixed families; exact moments beyond
+the mean.
+
+### Heterogeneous servers, each with Erlang-fitted (non-exponential) service
+
+**Description:** `MMcQueueingInventoryHeterogeneousErlangCalc(c, s_max, s=0, policy="backorder")`
+is the CV≤1 complement to the H2 model above: each server has its own Erlang(`r_k`,`rate_k`)
+service-time distribution. Unlike H2 (branch fixed at service start), Erlang's sequential-phase-
+advance means a busy server's phase CAN change without a departure — a same-level ("stay")
+transition the H2 model never needed, making this the first heterogeneous-server model in this
+family whose repeating QBD part has within-level transitions. `r_k=1` for every server (Erlang
+collapses to `Exp(rate_k)`) reproduces `MMcQueueingInventoryHeterogeneousCalc` exactly.
+
+**A bug caught before shipping, via the non-degenerate `r_k>1` check, not the degenerate `r_k=1`
+one:** a config's total outflow at stock=0 must exclude only the rate of servers *at their last
+phase* (whose completion actually consumes a stock unit — the usual "blocked at zero stock"
+convention); a server's *intermediate* phase advance doesn't touch stock and must never be
+blocked. Reusing the existing `diag_block` helper unmodified lumped both rate components together
+and silently dropped outflow from the generator's diagonal at `i=0` — the resulting matrix failed
+a basic row-sum-to-zero check and made the QBD solver diverge for any `r_k>1`, while `r_k=1`
+(where "last phase" and "the whole server" coincide) passed by coincidence. Fixed by splitting
+outflow into a `departure_rate` (blocked at `i=0`) and an `advance_rate` (never blocked). See
+[`docs/research/queueing-inventory-heterogeneous-servers-erlang-service-2026.md`](../research/queueing-inventory-heterogeneous-servers-erlang-service-2026.md)
+and
+[`docs/roadmaps/queueing_inventory_heterogeneous_servers_erlang_service_roadmap.md`](../roadmaps/queueing_inventory_heterogeneous_servers_erlang_service_roadmap.md)
+for the full account.
+
+```python
+from most_queue.random.utils.params import ErlangParams
+from most_queue.theory.inventory import MMcQueueingInventoryHeterogeneousErlangCalc
+
+calc = MMcQueueingInventoryHeterogeneousErlangCalc(c=2, s_max=4, s=1)
+calc.set_sources(l=1.0)
+calc.set_servers(
+    [ErlangParams(r=2, mu=2.4), ErlangParams(r=3, mu=3.2)],  # own Erlang per server
+    theta=1.0,
+)
+res = calc.run()
+
+# or fit each server's Erlang independently from its own raw moments:
+calc2 = MMcQueueingInventoryHeterogeneousErlangCalc(c=2, s_max=4, s=1)
+calc2.set_sources(l=1.0)
+calc2.set_servers_from_moments([[1.0, 1.2], [1.5, 2.4]], theta=1.0)
+```
+
+**Accuracy and scope:** exact given the per-server Erlang-fitted family (mean-only). Not covered
+(reserve): mixed families (some servers Erlang, some H2); phase-type replenishment lead time
+(EPIC-040 covers the M/M/1 base case only); exact moments beyond the mean.
 
 ### Accuracy and scope
 
 Exact (matrix-geometric QBD, not an approximation) for `(0,S)`/general `(s,S)`, `c=1`, identical
-`c>1` servers, or heterogeneous servers (any `c`, exponential or per-server H2-fitted), backorder
+`c>1` servers, or heterogeneous servers (any `c`, exponential, per-server Erlang-, or
+per-server H2-fitted), backorder
 or lost-sales — all of the models
 above.

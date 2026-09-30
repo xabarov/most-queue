@@ -7,7 +7,7 @@ EPIC-024) or lost sales (EPIC-026).
 import time
 from typing import Literal
 
-from most_queue.random.utils.params import H2Params
+from most_queue.random.utils.params import ErlangParams, H2Params
 from most_queue.sim.base_core import BaseSimulationCore
 from most_queue.structs import QueueResults
 
@@ -83,6 +83,93 @@ class MM1QueueingInventorySim(BaseSimulationCore):
                 i -= 1
             else:
                 i = self.s_max
+
+        elapsed = t - t0
+        self.mean_in_system = area_n / elapsed
+        self.stock_distribution = [x / elapsed for x in area_stock]
+        self.stockout_prob = self.stock_distribution[0]
+        self.loss_prob = (lost / arrivals) if self.policy == "lost_sales" else 0.0
+        return QueueResults(duration=time.process_time() - start)
+
+
+class MM1QueueingInventoryErlangReplenishmentSim(BaseSimulationCore):
+    """
+    M/M/1 queueing-inventory simulator with Erlang(r, rate) replenishment
+    lead time (EPIC-040): an order's progress (phase 0..r-1) is tracked only
+    while one is in transit (i <= s); `phase = None` otherwise. A service
+    completion crossing i=s+1 -> i=s places a new order (phase=0); phase
+    advances at rate `rate` regardless of i; on the last phase's completion,
+    stock jumps straight to S and phase resets to None.
+    """
+
+    def __init__(self, s_max: int, s: int = 0, policy: Policy = "backorder", seed: int | None = None):
+        super().__init__(seed=seed)
+        if not 0 <= s < s_max:
+            raise ValueError(f"reorder point s must satisfy 0 <= s < s_max, got s={s}, s_max={s_max}")
+        self.s_max = s_max
+        self.s = s
+        self.policy: Policy = policy
+        self.l = None
+        self.mu = None
+        self.r = None
+        self.rate = None
+        self.mean_in_system = None
+        self.stockout_prob = None
+        self.stock_distribution = None
+        self.loss_prob = None
+
+    def set_sources(self, l: float):
+        """:param l: arrival rate."""
+        self.l = l
+
+    def set_servers(self, mu: float, r: int, rate: float):
+        """:param mu: service rate; :param r: Erlang phases; :param rate: per-phase rate."""
+        self.mu, self.r, self.rate = mu, r, rate
+
+    def run(self, total_events: int, warmup_fraction: float = 0.05) -> QueueResults:
+        """Run for `total_events` transitions."""
+        start = time.process_time()
+        rng = self.generator
+        t, n, i = 0.0, 0, self.s_max
+        phase = None  # None = no order pending, else 0..r-1
+        warm = int(total_events * warmup_fraction)
+        area_n = 0.0
+        area_stock = [0.0] * (self.s_max + 1)
+        arrivals = lost = 0
+        t0 = 0.0
+
+        for step in range(total_events):
+            b = self.l
+            d = self.mu if (n >= 1 and i >= 1) else 0.0
+            rp = self.rate if phase is not None else 0.0
+            rate = b + d + rp
+            dt = rng.exponential(1 / rate)
+            if step >= warm:
+                area_n += n * dt
+                area_stock[i] += dt
+            else:
+                t0 = t + dt
+            t += dt
+
+            u = rng.random() * rate
+            if u < b:
+                if self.policy == "lost_sales" and i == 0:
+                    if step >= warm:
+                        lost += 1
+                else:
+                    n += 1
+                if step >= warm:
+                    arrivals += 1
+            elif u < b + d:
+                n -= 1
+                i -= 1
+                if i <= self.s and phase is None:
+                    phase = 0  # order placed
+            else:
+                phase += 1
+                if phase == self.r:
+                    i = self.s_max
+                    phase = None
 
         elapsed = t - t0
         self.mean_in_system = area_n / elapsed
@@ -287,6 +374,117 @@ class MMcQueueingInventoryHeterogeneousSim(BaseSimulationCore):
                 if n < c:
                     busy = tuple(k for k in busy_set if k != finished)
                 # else: queue still nonempty, freed server instantly re-occupied -> busy stays implicit full
+            else:
+                i = self.s_max
+
+        elapsed = t - t0
+        self.mean_in_system = area_n / elapsed
+        self.stock_distribution = [x / elapsed for x in area_stock]
+        self.stockout_prob = self.stock_distribution[0]
+        self.loss_prob = (lost / arrivals) if self.policy == "lost_sales" else 0.0
+        return QueueResults(duration=time.process_time() - start)
+
+
+class MMcQueueingInventoryHeterogeneousErlangSim(BaseSimulationCore):
+    """
+    M/Erlang/c queueing-inventory simulator (EPIC-041): each of the c
+    heterogeneous servers has its own Erlang(r, rate) service-time
+    distribution. Tracks each busy server's CURRENT phase always (even deep
+    in the repeating region), since completion depends on reaching the
+    LAST phase specifically -- intermediate phase advances do not consume
+    stock and are never blocked at stock=0, unlike a last-phase completion.
+
+    State: config[k] in {-1, 0, ..., r_k-1} for each server k (-1 = idle).
+    """
+
+    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+        self, c: int, s_max: int, s: int = 0, policy: Policy = "backorder", seed: int | None = None
+    ):
+        super().__init__(seed=seed)
+        if not 0 <= s < s_max:
+            raise ValueError(f"reorder point s must satisfy 0 <= s < s_max, got s={s}, s_max={s_max}")
+        self.c = c
+        self.s_max = s_max
+        self.s = s
+        self.policy: Policy = policy
+        self.l = None
+        self.servers: list[ErlangParams] | None = None
+        self.theta = None
+        self.mean_in_system = None
+        self.stockout_prob = None
+        self.stock_distribution = None
+        self.loss_prob = None
+
+    def set_sources(self, l: float):
+        """:param l: arrival rate."""
+        self.l = l
+
+    def set_servers(self, servers: list[ErlangParams], theta: float):
+        """:param servers: per-server Erlang params, assignment-priority order; :param theta: replenishment rate."""
+        self.servers = list(servers)
+        self.theta = theta
+
+    def run(self, total_events: int, warmup_fraction: float = 0.05) -> QueueResults:  # pylint: disable=too-many-locals
+        """Run for `total_events` transitions."""
+        start = time.process_time()
+        rng = self.generator
+        c, servers = self.c, self.servers
+        t, n, i = 0.0, 0, self.s_max
+        config = [-1] * c
+        warm = int(total_events * warmup_fraction)
+        area_n = 0.0
+        area_stock = [0.0] * (self.s_max + 1)
+        arrivals = lost = 0
+        t0 = 0.0
+
+        def is_last(k: int) -> bool:
+            return config[k] == servers[k].r - 1
+
+        for step in range(total_events):
+            b = self.l
+            # last-phase (departure) rates blocked at i=0; intermediate phase advances never blocked
+            active = [k for k in range(c) if config[k] != -1 and (i >= 1 or not is_last(k))]
+            d = sum(servers[k].mu for k in active)
+            r = self.theta if i <= self.s else 0.0
+            rate = b + d + r
+            dt = rng.exponential(1 / rate)
+            if step >= warm:
+                area_n += n * dt
+                area_stock[i] += dt
+            else:
+                t0 = t + dt
+            t += dt
+
+            u = rng.random() * rate
+            if u < b:
+                if self.policy == "lost_sales" and i == 0:
+                    if step >= warm:
+                        lost += 1
+                else:
+                    if n < c:
+                        slot = min(k for k in range(c) if config[k] == -1)
+                        config[slot] = 0
+                    n += 1
+                if step >= warm:
+                    arrivals += 1
+            elif u < b + d:
+                pick = rng.random() * d
+                cum = 0.0
+                finished = active[-1]
+                for k in active:
+                    cum += servers[k].mu
+                    if pick < cum:
+                        finished = k
+                        break
+                if is_last(finished):
+                    n -= 1
+                    i -= 1
+                    if n < c:
+                        config[finished] = -1
+                    else:
+                        config[finished] = 0
+                else:
+                    config[finished] += 1
             else:
                 i = self.s_max
 

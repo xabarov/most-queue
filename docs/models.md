@@ -32,7 +32,7 @@ add a figure function and regenerate the PNGs.
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
 | [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
 | [Deadline-aware admission control](models/admission-control.md) | Accept/reject at arrival based on own-deadline feasibility (not reordering); exact convergent series for Exp(θ) deadline |
-| [Queueing-inventory systems](models/inventory.md) | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server H2-fitted service) with stock-consuming service, general (s,S) replenishment, backordering or lost sales — exact QBD |
+| [Queueing-inventory systems](models/inventory.md) | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
@@ -101,6 +101,8 @@ add a figure function and regenerate the PNGs.
 | M/M/2 queueing-inventory, heterogeneous | MM2QueueingInventoryHeterogeneousCalc | MM2QueueingInventoryHeterogeneousSim | - | 2 servers with different rates, exact QBD, reduces to identical-server c=2 above |
 | M/M/c queueing-inventory, heterogeneous | MMcQueueingInventoryHeterogeneousCalc | MMcQueueingInventoryHeterogeneousSim | - | General c servers with different rates, exact QBD, reduces to c=2 and identical-server c above |
 | M/H2/c queueing-inventory, heterogeneous | MMcQueueingInventoryHeterogeneousH2Calc | MMcQueueingInventoryHeterogeneousH2Sim | - | Each server has its own H2-fitted (non-exponential) service time, exact QBD, reduces to plain heterogeneous c above |
+| M/Erlang/c queueing-inventory, heterogeneous | MMcQueueingInventoryHeterogeneousErlangCalc | MMcQueueingInventoryHeterogeneousErlangSim | - | Each server has its own Erlang-fitted (non-exponential, CV≤1) service time, exact QBD, reduces to plain heterogeneous c above |
+| M/M/1 queueing-inventory, Erlang replenishment | MM1QueueingInventoryErlangReplenishmentCalc | MM1QueueingInventoryErlangReplenishmentSim | - | Erlang-fitted (non-exponential) replenishment lead time, exact QBD, reduces to Exp(theta) above at r=1 |
 | EDF scheduling | - (no closed form, see docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Deadline-order service discipline, DES-exact, conservation-law check |
 | M/M/1 deadline admission control | MM1DeadlineAdmissionControlCalc | MM1DeadlineAdmissionControlSim | - | Exp(θ) deadline, exact convergent series (level-crossing functional equation) |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |

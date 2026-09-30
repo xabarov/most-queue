@@ -80,6 +80,13 @@
 | [EPIC-037](EPIC-037-bulk-service-auto-dispatch.md) | Единый Erlang/H2 auto-dispatch для bulk-service батча по CV: `fit_bulk_service_calc` | done |
 | [EPIC-038](EPIC-038-queueing-inventory-heterogeneous-servers-general-c.md) | Queueing-inventory с общим числом c гетерогенных серверов: расщепление на подмножества + сложенный граничный суперблок QBD | done |
 | [EPIC-039](EPIC-039-queueing-inventory-heterogeneous-servers-h2-service.md) | Queueing-inventory, c гетерогенных серверов с H2-подогнанным обслуживанием (своё H2 на каждый сервер) | done |
+| [EPIC-040](EPIC-040-queueing-inventory-phase-type-replenishment.md) | Queueing-inventory с фазовым (Erlang) временем пополнения склада | done |
+| [EPIC-041](EPIC-041-queueing-inventory-heterogeneous-erlang-service.md) | Queueing-inventory, c гетерогенных серверов с Erlang-подогнанным обслуживанием (комплемент EPIC-039) | done |
+| [EPIC-042](EPIC-042-bulk-service-batch-size-dependent-phase-params.md) | Bulk-service с batch-size-зависимыми параметрами Erlang/H2 | done |
+| [EPIC-043](EPIC-043-phase-type-exact-moments.md) | Точные моменты (не только среднее) для фазово-расширенных CTMC | done |
+| [EPIC-044](EPIC-044-non-exponential-machine-repair-msj.md) | Неэкспоненциальное время в machine repair / multiserver-job | proposed |
+| [EPIC-045](EPIC-045-batch-arrival-priority-impatience.md) | Композиция batch arrival + priority + impatience | proposed |
+| [EPIC-046](EPIC-046-time-limited-service-discipline.md) | Time-limited (T-policy/таймер) дисциплина обслуживания | proposed |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
@@ -126,4 +133,10 @@ EPIC-037 — по обзору auto-dispatch bulk-service:
 EPIC-038 — по обзору queueing-inventory с общим c гетерогенных серверов:
 [../research/queueing-inventory-heterogeneous-servers-general-c-2026.md](../research/queueing-inventory-heterogeneous-servers-general-c-2026.md);
 EPIC-039 — по обзору H2-подогнанного обслуживания у гетерогенных серверов:
-[../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md](../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md).
+[../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md](../research/queueing-inventory-heterogeneous-servers-h2-service-2026.md);
+EPIC-040 — по обзору фазового пополнения склада:
+[../research/queueing-inventory-phase-type-replenishment-2026.md](../research/queueing-inventory-phase-type-replenishment-2026.md);
+EPIC-041 — по обзору Erlang-обслуживания у гетерогенных серверов:
+[../research/queueing-inventory-heterogeneous-servers-erlang-service-2026.md](../research/queueing-inventory-heterogeneous-servers-erlang-service-2026.md);
+EPIC-042 — по обзору batch-size-зависимых параметров bulk-service:
+[../research/bulk-service-batch-size-dependent-phase-params-2026.md](../research/bulk-service-batch-size-dependent-phase-params-2026.md).
