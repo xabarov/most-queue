@@ -82,4 +82,46 @@ as such. Sojourn-time (`V`) moments beyond the mean are not provided even at `a=
 customer's own eventual batch size depends on arrivals during their own wait, correlated with `W`
 itself, so `V ≠ W + S` by simple convolution (see the research doc's "reserve" section).
 
+### General (Erlang-fitted) batch-service time
+
+**Description:** `BulkServiceMM1Calc` above assumes **exponential** batch-service time. This
+closes that reserve for a **general** distribution — fitted to an Erlang(`k`, `rate`) phase-type
+representation from its raw moments (the same moment-fitting convention used throughout the
+library: `MaxDistribution`, the SLA layer). Erlang naturally represents low-CV (`≤1`) batch-service
+times — a realistic regime for GPU/LLM batching, where per-batch processing time is fairly
+predictable rather than highly variable. The CTMC state gets an extra phase dimension:
+`(batch size i, Erlang phase p, waiting j)`. `k=1` (Erlang collapses to Exponential) reduces
+**exactly** to `BulkServiceMM1Calc` — the primary regression check.
+
+**A units bug caught before shipping:** the phase-transition rate was first set to `k*rate`
+(intending an aggregate rate across `k` phases), which actually gives total mean `1/rate` instead
+of the correct `k/rate` — off by a factor of `k²`. This coincidentally still passed the `k=1`
+regression check (`k*rate=rate` when `k=1`) but diverged sharply from an independent DES at `k=3`
+— caught before committing to the derivation. See
+[`docs/research/bulk-service-general-erlang-2026.md`](../research/bulk-service-general-erlang-2026.md)
+for the full account, including why the classical embedded-chain/PGF method (Neuts 1975,
+Chaudhry-Templeton) was set aside in favor of this lower-risk, phase-type approach.
+
+**Calculator class:** `BulkServiceErlangCalc` (`most_queue.theory.batch.bulk_service_erlang`)
+
+```python
+from most_queue.theory.batch.bulk_service_erlang import BulkServiceErlangCalc
+
+calc = BulkServiceErlangCalc(a=1, b=4, k=3)   # Erlang(3, rate): CV = 1/sqrt(3)
+calc.set_sources(1.0)
+calc.set_servers(rate=1.5)                     # mean batch service = k/rate = 2.0
+res = calc.run()                                # res.v[0], res.w[0] -- mean only (see below)
+
+# or fit (k, rate) from raw moments directly:
+calc2 = BulkServiceErlangCalc(a=1, b=4, k=1)   # k is overwritten by the fit
+calc2.set_sources(1.0)
+calc2.set_servers_from_moments([2.0, 4.5])     # [mean, E[S^2]] of batch-service time
+```
+
+**Accuracy and scope:** exact given the Erlang-fitted family (mean-only — the same starting scope
+EPIC-012 originally shipped for the exponential case, before EPIC-032 added exact moments as a
+separate follow-up epic). Not covered (reserve): H2 fitting for CV`≥1`; exact raw moments beyond
+the mean; batch-size-dependent Erlang parameters (the exponential model above supports a callable
+rate per batch size — not yet ported to this phase-type case).
+
 **See also:** [SLA / deadline-violation probability](sla.md) — turn these moments into a deadline-violation probability or SLO quantile.
