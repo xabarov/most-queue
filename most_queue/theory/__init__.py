@@ -25,6 +25,7 @@ from most_queue.theory.fifo.mmnr import MMnrCalc
 from most_queue.theory.fork_join.m_m_n import ForkJoinMarkovianCalc
 from most_queue.theory.fork_join.split_join import SplitJoinCalc
 from most_queue.theory.impatience.mm1 import MM1Impatience
+from most_queue.theory.msj.ph import MsjPHCalc
 
 # Priority queues
 from most_queue.theory.priority.mgn_invar_approx import MGnInvarApproximation
@@ -55,4 +56,5 @@ __all__ = [
     "ForkJoinMarkovianCalc",
     "SplitJoinCalc",
     "MM1Impatience",
+    "MsjPHCalc",
 ]

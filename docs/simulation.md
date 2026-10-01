@@ -6,6 +6,11 @@ This guide describes how to use the simulation module of the Most-Queue library 
 
 ## Introduction
 
+For jobs holding several servers simultaneously, see the
+[MSJ general-service and EASY guide](models/msj.md). `MsjGeneralSim` supports
+Poisson input generation and immutable trace replay with per-job runtime estimates,
+arrival-cohort warm-up, empirical class quantiles and reservation diagnostics.
+
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 
 ## The QsSim Base Class

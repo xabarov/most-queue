@@ -3,7 +3,7 @@ Structures for queueing systems.
 """
 
 import json
-from dataclasses import asdict, dataclass, is_dataclass
+from dataclasses import asdict, dataclass, field, is_dataclass
 
 
 @dataclass
@@ -28,6 +28,44 @@ class QueueResults:
     utilization: float | None = None  # utilization factor
 
     duration: float = 0.0  # calculation or simulation duration in seconds
+
+
+@dataclass
+class MsjResults(QueueResults):
+    """MSJ means and diagnostics; analytical moments contain only the mean."""
+
+    v_per_class: list[float] = field(default_factory=list)
+    w_per_class: list[float] = field(default_factory=list)
+    throughput: float | None = None
+    offered_load: float | None = None
+    boundary_mass: float | None = None
+    stability_threshold: float | None = None
+    state_count: int | None = None
+    stationary_residual: float | None = None
+
+
+@dataclass
+class MsjSimulationResults(MsjResults):
+    """Trace-cohort statistics; time averages exclude the final draining period.
+
+    Start/completion arrays cover the whole input trace. Samples and class
+    statistics exclude the arrival-index warmup. Backfill/reservation counters
+    cover the whole trace. NaN class means/quantiles mean no measured jobs.
+    """
+
+    start_times: list[float] = field(default_factory=list)
+    completion_times: list[float] = field(default_factory=list)
+    wait_samples: list[float] = field(default_factory=list)
+    sojourn_samples: list[float] = field(default_factory=list)
+    counts_per_class: list[int] = field(default_factory=list)
+    w_quantiles: dict[float, float] = field(default_factory=dict)
+    v_quantiles: dict[float, float] = field(default_factory=dict)
+    v_quantiles_per_class: list[dict[float, float]] = field(default_factory=list)
+    idle_with_queue: float | None = None
+    backfilled: int = 0
+    reservations: int = 0
+    reservation_violations: int = 0
+    observation_time: float = 0.0
 
 
 @dataclass

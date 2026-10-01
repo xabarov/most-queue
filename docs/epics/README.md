@@ -87,6 +87,7 @@
 | [EPIC-044](EPIC-044-non-exponential-machine-repair-msj.md) | Неэкспоненциальное время в machine repair / multiserver-job | proposed |
 | [EPIC-045](EPIC-045-batch-arrival-priority-impatience.md) | Композиция batch arrival + priority + impatience | proposed |
 | [EPIC-046](EPIC-046-time-limited-service-discipline.md) | Time-limited (T-policy/таймер) дисциплина обслуживания | proposed |
+| [EPIC-047](EPIC-047-msj-ph-backfilling.md) | MSJ: PH-обслуживание, насыщенный порог, FCFS/EASY и ошибки прогнозов | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

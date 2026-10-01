@@ -87,7 +87,7 @@
 | MMAP/PH/1 приоритеты | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Да | Коррелированный вход, NP/PR/RS, точная CTMC |
 | M/M/1 retrial + приоритет | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Да | Очередь приоритетных + орбита |
 | M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Да | Точный RS; completion times Гавера для RW |
-| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc | MsjSim | - | Заявка занимает k серверов; порог устойчивости |
+| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | PH-обслуживание, порог FCFS; replay общего обслуживания FCFS/EASY |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |
