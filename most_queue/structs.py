@@ -51,6 +51,8 @@ class MsjSimulationResults(MsjResults):
     Start/completion arrays cover the whole input trace. Samples and class
     statistics exclude the arrival-index warmup. Backfill/reservation counters
     cover the whole trace. NaN class means/quantiles mean no measured jobs.
+    reserved_start_times maps trace IDs to best historical finite promises,
+    not to the initial promise or a complete sequence of calendar revisions.
     """
 
     start_times: list[float] = field(default_factory=list)
@@ -66,6 +68,7 @@ class MsjSimulationResults(MsjResults):
     reservations: int = 0
     reservation_violations: int = 0
     observation_time: float = 0.0
+    reserved_start_times: dict[int, float] = field(default_factory=dict)
 
 
 @dataclass

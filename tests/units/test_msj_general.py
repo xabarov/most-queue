@@ -148,7 +148,7 @@ def test_bad_trace_rejected(trace):
 
 def test_configuration_validation():
     with pytest.raises(ValueError):
-        MsjGeneralSim(2, "conservative")
+        MsjGeneralSim(2, "unknown")
     for k in (0, True, 1.5):
         with pytest.raises(ValueError):
             MsjGeneralSim(k)

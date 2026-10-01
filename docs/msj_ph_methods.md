@@ -1,6 +1,7 @@
-# PH multiserver jobs and general-service EASY simulation
+# PH multiserver jobs and general-service backfilling simulation
 
 [Model/API examples](models/msj.md) · [EPIC-047](epics/EPIC-047-msj-ph-backfilling.md)
+· [EPIC-048](epics/EPIC-048-msj-conservative-controlled-load.md)
 
 ## Scope and state
 
@@ -70,7 +71,7 @@ An overrun makes that running job's release unknown. Do not peek at its schedule
 actual completion: suspend new backfills until no running job is overdue. Normal
 FCFS admission remains allowed whenever the head fits. Jobs are not killed or
 preempted. Count a violation if a head starts after its earliest recorded finite
-reservation. This is an explicit conservative overrun rule, not an implementation
+reservation. This is an explicit cautious overrun rule, not an implementation
 of the adaptive prediction correction from Tsafrir et al. Underestimation can
 already have broken the promise; suspending later backfills cannot undo that.
 
@@ -97,6 +98,36 @@ truncation convergence; and independent Erlang/Cox/H2 CTMC/DES comparisons.
 The experiment module reports Student intervals over independent replications
 and paired EASY-minus-FCFS differences, including per-run p99 differences.
 
+## Conservative reservations
+
+`discipline="conservative"` adds a persistent calendar of half-open intervals
+`[predicted_start, predicted_end)` and resource counts for all waiting jobs.
+First-fit scans the entire requested interval, not just capacity at its start.
+At each scheduling event, existing slots are compressed in planned-start order:
+remove one slot, find its earliest feasible replacement while retaining all other
+slots, and reinsert it. The old position remains feasible, so no reservation is
+postponed when all actual runtimes respect their estimates. Then insert new jobs
+in arrival order. Jobs planned for now start; future reservations create wake-ups.
+Rebuilding from scratch in arrival order after an early completion is not equivalent:
+it can revoke a later job's previously promised future backfill slot.
+
+The calendar helper sees only resource needs and estimates. At a scheduling event
+with any overdue active job, invalidate the current calendar and use a fitting
+FCFS prefix without new backfill. When no active overrun remains, rebuild in arrival
+order. This is an explicit no-kill recovery choice, not the classic enforced-time-limit
+model. Best historical promises are retained and misses counted at actual start.
+No guarantee is asserted under underprediction, even for jobs not directly blocked
+by the overrunning job. Reservation counts differ by policy and miss counts alone
+are not a comparable fairness score. Repeated calendar scans can be expensive for
+large backlogs; no scalable scheduler claim is made.
+
+Validation adds hand-computed schedules, an early-completion counterexample,
+seeded oracle/upper-bound capacity and reservation invariants, overrun timers,
+and the all-resource M/E2/1 reduction against `MG1Calc`.
+The [controlled-load experiment](../examples/msj_conservative_experiment.py)
+sets lambda from the known joint law and reports paired policy and coupling
+contrasts; see its [protocol/results](research/msj-conservative-results-2026-10.md).
+
 ## Sources and novelty boundary
 
 - Anggraito, Olliaro, Marin, Ajmone Marsan, *The Multiserver Job Queuing Model with
@@ -113,7 +144,12 @@ and paired EASY-minus-FCFS differences, including per-run p99 differences.
   [DOI 10.1109/TPDS.2007.70606](https://doi.org/10.1109/TPDS.2007.70606).
   Runtime predictions must be distinguished from enforced kill-time limits.
 
+- Feitelson and Mu'alem Weil, *Utilization and Predictability in Scheduling the
+  IBM SP2 with Backfilling*, IPPS 1998,
+  [DOI 10.1109/IPPS.1998.669970](https://doi.org/10.1109/IPPS.1998.669970),
+  [extended text, section 2.1](https://www.cs.umd.edu/~hollings/cs818z/s99/papers/feitelson.pdf).
+
 This implementation is an engineering and reproducible-experiment contribution,
-not a claim that PH-MSJ or EASY are new theories. Conservative backfilling,
-ServerFilling/MSFQ, large-system approximations and certified tails remain outside
-this epic; see the linked roadmap.
+not a claim that PH-MSJ or backfilling are new theories. Conservative was added
+in EPIC-048. ServerFilling/MSFQ, large-system approximations, real trace calibration
+and certified tails remain separate future work; see the linked roadmap.

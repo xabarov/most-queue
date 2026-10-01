@@ -1,7 +1,9 @@
-"""General-service MSJ trace replay with FCFS or nonpreemptive EASY backfilling.
+"""General-service MSJ replay with FCFS, EASY or conservative backfilling.
 
 EASY protects the predicted start of the first waiting job, not all jobs.
 See Tsafrir, Etsion, Feitelson (2007), doi:10.1109/TPDS.2007.70606.
+Conservative protects all waiting reservations; see Feitelson and Mu'alem Weil
+(1998), doi:10.1109/IPPS.1998.669970, and sim.utils.msj_calendar.
 Underestimated jobs are NOT killed: new backfills are suspended while any
 running job is overdue. Reservations can consequently be violated. Actual
 durations are used by the event engine, never by the reservation calculation.
@@ -16,6 +18,7 @@ import numpy as np
 
 from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base_core import BaseSimulationCore
+from most_queue.sim.utils.msj_calendar import compress_reservations
 from most_queue.structs import MsjSimulationResults
 
 
@@ -44,6 +47,7 @@ class _Replay:
     active: dict = field(default_factory=dict)
     events: list = field(default_factory=list)
     promises: dict = field(default_factory=dict)
+    schedule: dict = field(default_factory=dict)
 
 
 def _integer(value, name, minimum=1):
@@ -53,7 +57,7 @@ def _integer(value, name, minimum=1):
 
 
 class MsjGeneralSim(BaseSimulationCore):
-    """Replay identical input jobs under FCFS or EASY, or generate Poisson input.
+    """Replay identical jobs under FCFS/EASY/conservative, or generate input.
 
     ``set_servers(needs, distributions)`` takes library ``(params, notation)``
     pairs or callables ``sampler(rng)`` (e.g. lognormal/empirical sampling).
@@ -65,8 +69,8 @@ class MsjGeneralSim(BaseSimulationCore):
     def __init__(self, k: int, discipline: str = "fcfs", seed: int | None = None):
         super().__init__(seed=seed)
         self.k = _integer(k, "k")
-        if discipline not in ("fcfs", "easy"):
-            raise ValueError("discipline must be 'fcfs' or 'easy'")
+        if discipline not in ("fcfs", "easy", "conservative"):
+            raise ValueError("discipline must be 'fcfs', 'easy' or 'conservative'")
         self.discipline = discipline
         self.needs = None
         self.rates = None
@@ -158,8 +162,8 @@ class MsjGeneralSim(BaseSimulationCore):
                 raise ValueError("service times must be finite and positive")
             if job.estimate is not None and (not np.isfinite(job.estimate) or job.estimate <= 0):
                 raise ValueError("estimates must be finite and positive")
-            if require_estimates and self.discipline == "easy" and job.estimate is None:
-                raise ValueError("EASY requires explicit estimates; select oracle explicitly if intended")
+            if require_estimates and self.discipline != "fcfs" and job.estimate is None:
+                raise ValueError("backfilling requires explicit estimates; select oracle explicitly if intended")
             last = job.arrival
 
     def _shadow(self, need, active, now):
@@ -196,6 +200,9 @@ class MsjGeneralSim(BaseSimulationCore):
             if idx in promises and now > promises[idx] + 1e-10 * max(1.0, abs(promises[idx])):
                 violations += 1
 
+        if self.discipline == "conservative":
+            backfilled = self._dispatch_conservative(trace, state, now, start)
+            return backfilled, violations
         free = self.k - sum(job.need for job in active.values())
         while waiting and self.needs[trace[waiting[0]].cls] <= free:
             idx = waiting.popleft()
@@ -223,6 +230,32 @@ class MsjGeneralSim(BaseSimulationCore):
                 backfilled += 1
         return backfilled, violations
 
+    def _dispatch_conservative(self, trace, state, now, start):
+        """Keep every waiting reservation; use FCFS recovery on forecast overrun."""
+        if any(job.estimate_end <= now for job in state.active.values()):
+            # The forecast calendar is no longer feasible. Do not guess the
+            # remaining durations or erase historical promises/missed starts.
+            state.schedule.clear()
+            free = self.k - sum(job.need for job in state.active.values())
+            while state.waiting and self.needs[trace[state.waiting[0]].cls] <= free:
+                idx = state.waiting.popleft()
+                start(idx)
+                free -= self.needs[trace[idx].cls]
+            return 0
+        requests = {idx: (self.needs[trace[idx].cls], trace[idx].estimate) for idx in state.waiting}
+        state.schedule = compress_reservations(self.k, state.active.values(), requests, state.schedule, now)
+        backfilled = 0
+        for idx in sorted(state.schedule, key=lambda key: (state.schedule[key].start, key)):
+            planned = state.schedule[idx].start
+            if planned > now or idx in state.promises:
+                state.promises[idx] = min(state.promises.get(idx, planned), planned)
+            if planned == now:
+                backfilled += idx != state.waiting[0]
+                state.waiting.remove(idx)
+                del state.schedule[idx]
+                start(idx)
+        return backfilled
+
     def run_trace(self, trace, warmup_jobs: int = 0) -> MsjSimulationResults:
         """Replay a sorted trace, preserving tie order; completions win time ties.
 
@@ -248,7 +281,8 @@ class MsjGeneralSim(BaseSimulationCore):
         while cursor < len(trace) or events or waiting:
             next_arrival = trace[cursor].arrival if cursor < len(trace) else float("inf")
             next_done = events[0][0] if events else float("inf")
-            nxt = min(next_arrival, next_done)
+            next_reserved = min((slot.start for slot in state.schedule.values()), default=float("inf"))
+            nxt = min(next_arrival, next_done, next_reserved)
             if not np.isfinite(nxt):
                 raise RuntimeError("MSJ scheduler stalled with waiting jobs")
             dt = max(0.0, min(nxt, end) - max(now, begin))
@@ -314,5 +348,6 @@ class MsjGeneralSim(BaseSimulationCore):
             backfilled=backfilled,
             reservations=len(promises),
             reservation_violations=violations,
+            reserved_start_times=dict(promises),
             observation_time=horizon,
         )

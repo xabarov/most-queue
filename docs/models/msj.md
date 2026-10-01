@@ -83,11 +83,13 @@ large server counts, phase counts or truncations can be impractical. PH must be
 real, proper and transient; complex moment fits are rejected. General G is not
 automatically fitted to PH by this calculator.
 
-### General-service simulation and EASY backfilling
+### General-service simulation and backfilling
 
 **In plain words:** EASY allows a later job to use idle resources only when it does
 not delay the **predicted** start of the first waiting job. It protects only that
-head job, not every waiting job. Jobs remain nonpreemptive.
+head job, not every waiting job. Conservative backfilling reserves a start for
+every waiting job; new jobs and calendar compression must respect all existing
+reservations. Jobs remain nonpreemptive.
 
 ```python
 from most_queue.sim.msj_general import MsjGeneralSim
@@ -96,7 +98,7 @@ source = MsjGeneralSim(k=2, seed=47)
 source.set_sources([0.25, 0.15])
 source.set_servers([1, 2], [(service, "PH") for service in services])
 trace = source.make_trace(11000, estimates="oracle")  # explicit perfect information
-for policy in ("fcfs", "easy"):
+for policy in ("fcfs", "easy", "conservative"):
     sim = MsjGeneralSim(k=2, discipline=policy)
     sim.set_servers([1, 2])  # replay does not need a service generator
     measured = sim.run_trace(trace, warmup_jobs=1000)
@@ -112,9 +114,22 @@ be positive. A trace can represent dependent jobs and non-Poisson arrivals.
 
 Actual service is sampled before scheduling and is used only by the completion
 event engine. Forecast overruns do not kill jobs: new backfilling is suspended
-while any running job is overdue. `reservation_violations` counts head jobs that
-start after their best recorded finite reservation. Underestimated durations can
-violate reservations; overestimates and oracle values do not have that problem.
+while any running job is overdue. Conservative invalidates its infeasible current
+calendar and temporarily uses FCFS, rebuilding reservations after overruns end.
+The historical promises are retained. `reservation_violations` counts jobs that
+start after their best recorded finite reservation (head jobs for EASY, all
+reserved waiting jobs for conservative). `reserved_start_times` maps their
+zero-based trace IDs to those best promises, including warm-up jobs. It is not a
+history of all schedule revisions. Underestimated durations can violate promises;
+oracle or upper-bound estimates preserve them. The guarantee concerns promised
+start times, not dominance over FCFS or EASY in response time.
+
+Conservative keeps a resource calendar and compresses one reservation at a time,
+in planned-start order, without moving any other reservation later. It schedules
+explicit wake-ups at reserved starts, even without an arrival/completion then.
+This reference implementation uses repeated scans/sorts of the waiting calendar;
+large backlogs can be expensive. The separate FCFS PH calculator does not provide
+an analytical solution or stability threshold for either backfilling discipline.
 
 `run(num_of_jobs, warmup_fraction=0.05, estimates=...)` generates an extra warm-up
 cohort and measures exactly `num_of_jobs` arrivals. Replay drains all measured jobs.
@@ -128,3 +143,6 @@ cover the whole input, including warm-up. Finite replay does not prove stability
 
 Methods, limitations and validation: [PH-MSJ methods](../msj_ph_methods.md).
 Reproducible comparison: [experiment](../../examples/msj_backfilling_experiment.py).
+Controlled-load FCFS/EASY/conservative comparison:
+[experiment](../../examples/msj_conservative_experiment.py),
+[protocol and results](../research/msj-conservative-results-2026-10.md).

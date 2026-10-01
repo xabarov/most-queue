@@ -87,7 +87,7 @@ add a figure function and regenerate the PNGs.
 | MMAP/PH/1 priority | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Yes | Correlated arrivals, NP/PR/RS, exact CTMC |
 | M/M/1 retrial + priority | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Yes | Priority queue + orbit |
 | M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Yes | Exact RS; Gaver completion times for RW |
-| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | PH service, FCFS stability; general-service FCFS/EASY trace replay |
+| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | PH service, FCFS stability; general-service FCFS/EASY/conservative replay |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |
