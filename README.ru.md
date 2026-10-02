@@ -122,6 +122,12 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 ## Новости
 
+- **2026-10, текущие исходники** — **Выбор модели по ошибкам очереди**:
+  1500 replay, два ранних блока выбора и два поздних блока проверки на источник.
+  Выбор request bins SDSC улучшает точечный uncapped queue-loss против CRPS-выбора,
+  но не против coarse; варианты type Kalos дают одинаковые поздние service ленты.
+  Class coverage, timeout и policy regret проверяются отдельно.
+  [Методика/API](docs/queue_aware_selection.md), [результаты](docs/research/queue-aware-selection-results-2026-10.md).
 - **2026-10, текущие исходники** — **Ресурсные ограничения GPU**:
   заданная заранее sensitivity-матрица общего GPU-пула и эксклюзивных узлов,
   фиксированные targets и явные невыполнимые ячейки. Requested GPU work отделён

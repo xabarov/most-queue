@@ -118,6 +118,12 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Queue-aware service selection**:
+  1500 replays with two early selection and two late evaluation blocks per source.
+  Queue-selected SDSC request bins improve point uncapped queue-loss versus CRPS selection,
+  but not versus fixed coarse; Kalos type candidates coincide on late service tapes.
+  Class coverage, timeout rates and policy regret remain separate checks.
+  [Protocol/API](docs/queue_aware_selection.md), [results](docs/research/queue-aware-selection-results-2026-10.md).
 - **2026-10, current source tree** — **GPU resource envelopes**:
   prescribed GPU-pool versus exclusive-node capacity sensitivity, with fixed
   target IDs and explicit infeasible cells. Requested GPU work and reserved

@@ -361,3 +361,19 @@ resource sensitivity, not quota estimation or reconstructed physical placement.
 [Protocol/API](../gpu_resource_envelope.md),
 [experiment](../../examples/gpu_resource_envelope_experiment.py),
 [results](../research/gpu-resource-envelope-results-2026-10.md).
+
+### Queue-aware service model selection
+
+In plain words: historical jobs are replayed with several service generators.
+Select the generator whose early mean/p99 queue summaries best match the recorded-S
+control, freeze its family, and evaluate later periods. The actual job still follows
+the rigid-job flow above; no dispatch rule or capacity changes.
+
+`queue_log_error` and `select_queue_model` score positive, equally weighted
+validation summaries with exact shape checks and declared tie order. EPIC-061
+compares that choice with CRPS selection and fixed coarse; late queue fit, class
+coverage, success rates and policy regret can disagree. This is retrospective
+temporal evaluation, not an online or independent-origin guarantee.
+[Protocol/API](../queue_aware_selection.md),
+[experiment](../../examples/queue_aware_selection_experiment.py),
+[results](../research/queue-aware-selection-results-2026-10.md).

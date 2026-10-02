@@ -104,13 +104,28 @@ SDSC request_ratio снижает test CRPS на 46.69% и избыток timeou
 эксклюзивность или размещение. Для реальных quotas/placement/variable capacity
 нужны новые наблюдения, а не оптимизация на этой трассе.
 
+## Седьмой этап
+
+[EPIC-061](../epics/EPIC-061-queue-aware-model-selection.md) выполнен 2026-10-02:
+выбор по ошибкам mean/p99 T на двух ранних replay-блоках против CRPS и fixed coarse,
+два поздних блока на источник. 1500 расписаний, полный побайтовый повтор,
+независимый аудит. [Методика](../queue_aware_selection.md),
+[отчёт](../research/queue-aware-selection-results-2026-10.md).
+
+SDSC queue-selected request_bin лучше CRPS-selected request_ratio по точечному
+uncapped test Q в обоих периодах, но хуже coarse; ранняя устойчивость выбора не
+гарантирует перенос. По timeout ratio ближе к observed. На Kalos после refit
+type_exact/type_coarse дают одинаковые поздние ленты; .70 имеет 106/300 pooled
+fallback targets и сильную смену K/context mix. Это не причинное объяснение
+ошибок, не online-валидация и не новый blind holdout. Capacity не подбиралась.
+
 ## Следующие этапы
 
-1. Следующий эпик: queue-aware выбор модели обслуживания на раннем replay
-   с отдельной временной проверкой, coarse baseline и аудитом class coverage/drift.
-   Нужен новый протокол, не замена validation-победителя после просмотра EPIC-059 test.
-   Не выводить latent successful S из killed/failed интервалов.
-2. Совместная генерация приходов/K/признаков; отдельно — новый источник с
+1. Следующий эпик: совместная генерация приходов/K/признаков с отдельными
+   контролями зависимости и временного drift. Сохранить fixed-arrival coarse
+   baseline и отдельную временную проверку; не заменять его автоматически
+   queue-aware выбором. Не выводить latent successful S из killed/failed интервалов.
+2. Отдельно — новый источник с
    наблюдаемыми quotas/placement/доступностью ресурсов. EPIC-060 не восстановил их.
 3. Затем проверять новые адаптивные дисциплины на различающем reference. Прерывания потребуют
    измеренных либо отдельно обозначенных модельных расходов checkpoint/resume.

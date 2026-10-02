@@ -352,3 +352,19 @@ GPU work учитывается отдельно от reserved GPU-equivalent wo
 [Методика/API](../gpu_resource_envelope.md),
 [эксперимент](../../examples/gpu_resource_envelope_experiment.py),
 [результаты](../research/gpu-resource-envelope-results-2026-10.md).
+
+### Выбор генератора по ошибкам очереди
+
+Простыми словами: ранние исторические работы проигрываются с несколькими
+генераторами длительности. Выбирается тот, чьи mean/p99 T ближе к контролю
+с записанным S; тип модели замораживается и проверяется на поздних периодах.
+Схема rigid jobs выше, диспетчер и capacity не меняются.
+
+`queue_log_error` и `select_queue_model` используют положительные validation
+метрики с равными весами, строгими shapes и заданным порядком exact ties.
+EPIC-061 сравнивает этот выбор с CRPS и fixed coarse. Ошибки очереди, покрытие
+классов, успешность и policy regret могут давать разные выводы; временное
+разделение ретроспективного эксперимента не является online-гарантией.
+[Методика/API](../queue_aware_selection.md),
+[эксперимент](../../examples/queue_aware_selection_experiment.py),
+[результаты](../research/queue-aware-selection-results-2026-10.md).

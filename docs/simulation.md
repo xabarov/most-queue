@@ -50,6 +50,10 @@ For context-dependent service generation, see [feature-conditional replay](featu
 completed-history ECDFs with request/type cells and optional S/request ratios,
 exact CRPS and an early-validation selection before late test schedules. Features
 and fallback are audited; no service clipping or test-based model replacement.
+For downstream model selection, see [queue-aware selection](queue_aware_selection.md):
+two early replay blocks select a service family by mean/p99 log error, then two
+late blocks compare the frozen choice with CRPS and fixed coarse. Class support,
+drift, timeout rates and policy regret remain separate; the dispatchers are unchanged.
 
 For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
 end-start execution, exact GPU requests and separate failed/node_failed labels.
