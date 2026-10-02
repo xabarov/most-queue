@@ -28,6 +28,15 @@ For independently right-censored history and active-job residual updates by age,
 see [MSJ age-aware forecasts](msj_age_runtime.md): explicit unavailable tails,
 opt-in `remaining_predictor`, and retained historical reservation promises.
 
+For audited historical workloads, see [real-trace calibration](real_trace_calibration.md):
+strict SWF ingestion, train-only temporal splits and empirical/Exp/PH/lognormal
+service comparisons on common arrivals and exact resource needs. The first study
+uses a selected completed-job cohort, not the original cluster's full workload.
+The follow-up [temporal/dependent replay](real_trace_temporal.md) compares
+expanding/recent histories, mean-only and shape updates, exact K, and circular
+rank blocks on four prespecified origins. It retains matched rank-iid controls
+and fixed historical forecasts; it does not change scheduling semantics.
+
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 
 ## The QsSim Base Class

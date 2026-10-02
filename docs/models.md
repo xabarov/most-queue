@@ -98,6 +98,8 @@ does not establish stability or a stationary tail guarantee.
 | MSJ ServerFilling | - | MsjGeneralSim | - | Power-of-two k and K; zero-cost preemptive-resume, not SRPT; W includes pauses and execution segments are logged |
 | [MSJ checkpoint/resume cost](msj_checkpoint.md) | - | MsjCheckpointSim | - | Power-of-two k and K; explicit gated SF extension, deterministic overhead holds K servers; allocated/productive utilization distinguished, no stability theorem |
 | [MSJ protected useful service](msj_protected_service.md) | - | MsjCheckpointSim | - | Opt-in min_service_time per useful episode, reset after resume; genuine expiry events, independent offline selection; fewer preemptions need not improve delay |
+| [Real-trace MSJ calibration](real_trace_calibration.md) | - | MsjGeneralSim + SWF adapter | - | Historical completed-job subset, train-only empirical/Exp/PH/lognormal fits; exact K and recorded arrivals, not a reconstruction of the original scheduler |
+| [Temporal/dependent service replay](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Rolling completed histories, mean-only/shape/exact-K comparisons and circular rank blocks; matched rank-iid control, conditional MC diagnostics, not a new scheduler |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

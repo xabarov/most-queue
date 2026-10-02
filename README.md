@@ -118,6 +118,23 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Temporal history and dependent service**:
+  four prespecified SDSC SP2 origins, seven workload variants and 1368 replays.
+  Recent coarse-group empirical history reduced aggregate mean-delay error
+  from 94.57% to 44.12%, but helped neither every period nor every finer model.
+  Rank blocks reproduced more serial correlation without a consistent delay
+  or p99-decision advantage. These are selected-cohort diagnostics, not causal
+  production guarantees. [Protocol](docs/real_trace_temporal.md),
+  [results](docs/research/real-trace-temporal-results-2026-10.md).
+- **2026-10, current source tree** — **Real-trace service calibration**:
+  audited, hash-pinned SDSC SP2 ingestion; completed-history temporal holdout;
+  empirical, Exp, PH and lognormal service compared under six existing MSJ
+  disciplines. In 594 replays, all four models preserved the best mean-delay
+  choice but substantially underestimated delays in the first two blocks;
+  p99-based choices differed from observed-duration replay. This is a selected
+  historical completed-job cohort, not a production-cluster reconstruction.
+  [Protocol](docs/real_trace_calibration.md),
+  [results](docs/research/real-trace-calibration-results-2026-10.md).
 - **2026-10, current source tree** — **MSJ beyond exponential service**:
   small-system PH-FCFS analytics and common-trace experiments for backfilling
   and prediction-free packing. Runtime forecasts support historical features,

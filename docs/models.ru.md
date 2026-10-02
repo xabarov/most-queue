@@ -98,6 +98,8 @@
 | MSJ ServerFilling | - | MsjGeneralSim | - | k и K — степени двойки; бесплатный preemptive-resume, не SRPT; W включает паузы, есть журнал исполнения |
 | [MSJ с ценой checkpoint/resume](msj_checkpoint.md) | - | MsjCheckpointSim | - | k и K — степени двойки; gated-расширение SF, детерминированный overhead удерживает K серверов; выделенная и полезная загрузка разделены, теоремы устойчивости нет |
 | [MSJ с защитой полезного интервала](msj_protected_service.md) | - | MsjCheckpointSim | - | Опция min_service_time после каждого полезного старта, сброс после resume; события истечения защиты, независимый offline-подбор; меньше прерываний не означает меньшую задержку |
+| [Калибровка MSJ по реальной трассе](real_trace_calibration.md) | - | MsjGeneralSim + SWF-адаптер | - | Историческая подвыборка завершённых работ; обучение empirical/Exp/PH/lognormal только по прошлому, точные K и времена прихода; не реконструкция исходного кластера |
+| [История и зависимое обслуживание](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Несколько временных границ; отдельно среднее, форма, точный K и циклические блоки рангов с rank-iid-контролем; условные MC-оценки, не новый планировщик |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |

@@ -252,3 +252,40 @@ does not turn a favorable training score into a performance guarantee.
 See [API, exact example and limits](../msj_protected_service.md),
 [experiment](../../examples/msj_protected_service_experiment.py), and
 [EPIC-054 results](../research/msj-protected-service-results-2026-10.md).
+
+### Historical trace calibration
+
+`parse_swf` in `most_queue.sim.utils.workload_trace` audits a completed rigid-job
+cohort; `chronological_split` fits only outcomes available before the cutoff.
+`ServiceCalibration` provides empirical, Exp, PH and moment-lognormal baselines.
+The experiment preserves recorded arrivals and exact K, then compares the same
+six nonpreemptive policies on observed and modelled durations. No new scheduling
+API or stability result is introduced. Historical waiting is never replay input.
+
+In plain words: take past completed jobs to estimate durations, then ask whether
+those estimates reproduce delays and scheduler choices on later jobs. Cancellation
+filtering and missing initial backlog limit what can be inferred about production.
+
+See [contract and reproduction](../real_trace_calibration.md),
+[experiment](../../examples/real_trace_calibration_experiment.py) and
+[results](../research/real-trace-calibration-results-2026-10.md).
+
+### Temporal history and dependent service
+
+`ConditionalEmpirical` in `most_queue.random.trace_resampling` fits exact-K or
+coarse ECDFs with audited fallback and computes tie-aware conditional midranks.
+`circular_block_indices` resamples chronological rank blocks without transferring
+historical arrivals or K. Rank-iid, not uniform-iid, is the matched marginal
+control for this dependent generator. These are workload tools, not schedulers.
+
+In plain words: learn durations from several points in history and test whether
+using more recent jobs, finer resource classes or clusters of long/short jobs
+makes future delay estimates better. All variants share arrival/K sequences and
+a fixed historical forecast; none uses future service to fit or rescale workload.
+
+The 1368-run study favors recent coarse history in aggregate, but not in every
+period. Finer K and closer lag correlation need not improve delay or p99 choices.
+Initial backlog and cancellation remain outside this completed-job experiment.
+See [protocol/API](../real_trace_temporal.md),
+[experiment](../../examples/real_trace_temporal_experiment.py),
+and [EPIC-056 results](../research/real-trace-temporal-results-2026-10.md).

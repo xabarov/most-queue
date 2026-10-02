@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "config": {
+    "fractions": [
+      0.35,
+      0.5,
+      0.65,
+      0.8
+    ],
+    "jobs": 1000,
+    "warmup": 200,
+    "replications": 8,
+    "history_limit": 4000,
+    "minimum": 20,
+    "first_seed": 56000
+  },
+  "capacity": 128,
+  "audit": {
+    "counts": {
+      "records": 59715,
+      "not_completed_status": 16598,
+      "accepted": 43117
+    },
+    "statuses": {
+      "5": 16598,
+      "1": 43117
+    }
+  },
+  "source": {
+    "page": "https://www.cs.huji.ac.il/labs/parallel/workload/l_sdsc_sp2/index.html",
+    "download": "https://raw.githubusercontent.com/DIR-LAB/deep-batch-scheduler/cd433e3d62a01705f255bd48cb55b393862800e7/data/SDSC-SP2-1998-4.2-cln.swf",
+    "sha256": "64bc6c621c97fe10e74cfc6a8c568ba544fddd99c4f810473027dca99efc2ed1",
+    "mirror_commit": "cd433e3d62a01705f255bd48cb55b393862800e7",
+    "attribution": "SDSC / Victor Hazlewood; conversion Dror Feitelson; DIR-LAB mirror",
+    "usage_conditions": "NPACI JOBLOG research/educational/non-profit conditions; data is not MIT-licensed"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.2.5",
+    "scipy": "1.13.0"
+  },
+  "implementation_sha256": {
+    "examples/real_trace_temporal_experiment.py": "e2a30cf4485250f4034bcbc7ed64ea24eabe05ad28072d86e2be8d522f424893",
+    "examples/real_trace_calibration_experiment.py": "0098001fb5102ebbfc26e6a1ef97b9a9ce752dcd8ea372332d80ba7e9748f0e1",
+    "most_queue/random/trace_resampling.py": "bd620ce598718d7e35be7d38a3fbea79e3d9650bd22264eff6addbec683372fa",
+    "most_queue/random/service_calibration.py": "b0ce156294e157a585894be76275783905f9e652e83c8578bdb790d27fb8b27a",
+    "most_queue/sim/utils/workload_trace.py": "d4420c432da3728ae9500e4f8e4e14fe5d4aab36d22a523a2c63d94aea067ed2",
+    "most_queue/sim/msj_general.py": "fd7a3c1bb25515829950ffe0956b05a3103850ee2a1c82a45663e9bfe39005a6",
+    "most_queue/sim/utils/msj_calendar.py": "78ba574a5503d9cc88a0b001e5ea6803a5434dc9d0ae70adc40d0246c062c70f",
+    "most_queue/sim/utils/msj_packing.py": "6772cc87052a00b62e3dd54fb6b2d9f24b6c0e3df297f546de8eadf307ee9159",
+    "most_queue/sim/base_core.py": "82d585446228032a8e26b0c3b67842daf6ad00e905dbadc4cebc85a5ce822aab",
+    "most_queue/structs.py": "40e9c57f9d3b7e4766f721ba74f8c261922b0bba39e11e7a20ac5e308cf3105b"
+  },
+  "artifacts": [
+    {
+      "file": "origin-0.json",
+      "sha256": "cf08d97b3cdfa91c8244e77c499d9b6532c3257c73cc7a40e0f4b479ab176f06"
+    },
+    {
+      "file": "origin-1.json",
+      "sha256": "973f8f7f836736166a2bc2e0ca77540a59bb44dd5b4206c6c28a646474570e31"
+    },
+    {
+      "file": "origin-2.json",
+      "sha256": "91450cc4f57bf646daf481da2d273fe62f8c7a536efa6c8be7a51e47760e98fa"
+    },
+    {
+      "file": "origin-3.json",
+      "sha256": "419e5053910e4ebd26fe55dca15e6990f07f2041595f9d6619cf6ed855c061ee"
+    }
+  ],
+  "scheduler_runs": 1368,
+  "aggregate": [
+    {
+      "variant": "expanding_coarse",
+      "mean_t": {
+        "mape_of_mc_means": 0.9457351343407341,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.7685612181856118,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.043218572127678934,
+        "max_relative_regret": 0.1602725917474348
+      }
+    },
+    {
+      "variant": "recent_mean_only",
+      "mean_t": {
+        "mape_of_mc_means": 0.6070471520081245,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.5811125192602763,
+        "matching_choices": 2,
+        "mean_relative_regret": 0.015448713024616145,
+        "max_relative_regret": 0.04919315533518365
+      }
+    },
+    {
+      "variant": "recent_coarse",
+      "mean_t": {
+        "mape_of_mc_means": 0.4412476815116512,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.38376174557622544,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.0031504241908202335,
+        "max_relative_regret": 0.012601696763280934
+      }
+    },
+    {
+      "variant": "recent_exact",
+      "mean_t": {
+        "mape_of_mc_means": 0.9376175898227319,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.9177886877246152,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.043218572127678934,
+        "max_relative_regret": 0.1602725917474348
+      }
+    },
+    {
+      "variant": "recent_rank_iid",
+      "mean_t": {
+        "mape_of_mc_means": 1.0054848223079682,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 1.0304391651069953,
+        "matching_choices": 2,
+        "mean_relative_regret": 0.043218572127678934,
+        "max_relative_regret": 0.1602725917474348
+      }
+    },
+    {
+      "variant": "recent_block20",
+      "mean_t": {
+        "mape_of_mc_means": 0.8755246892427522,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.8946713460746646,
+        "matching_choices": 2,
+        "mean_relative_regret": 0.09377175633716622,
+        "max_relative_regret": 0.36248532858538396
+      }
+    },
+    {
+      "variant": "recent_block60",
+      "mean_t": {
+        "mape_of_mc_means": 0.926273474284586,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_t": {
+        "mape_of_mc_means": 0.8877967424634173,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.043218572127678934,
+        "max_relative_regret": 0.1602725917474348
+      }
+    }
+  ],
+  "interpretation": "Retrospective selected-cohort workload ablations; conditional MC intervals, not population or causal guarantees. Rank blocks use circular seams and close omitted-history gaps."
+}
