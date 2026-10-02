@@ -1,0 +1,307 @@
+{
+  "sdsc": {
+    "selected": "request_ratio",
+    "criterion": "minimum mean validation CRPS in seconds; ties in candidate order",
+    "candidate_order": [
+      "coarse",
+      "request_bin",
+      "request_ratio"
+    ],
+    "scores": {
+      "coarse": {
+        "count": 400,
+        "crps": 4271.901395961078,
+        "mae_predictive_mean": 7797.340197951321,
+        "p90_coverage": 0.9175,
+        "mean_prediction": 6711.332884585222,
+        "observed_mean": 5804.64,
+        "fallback_counts": {
+          "coarse": 400
+        },
+        "contexts": {
+          "1": {
+            "count": 116,
+            "crps": 1197.7517617082665
+          },
+          "2": {
+            "count": 82,
+            "crps": 1552.577945458649
+          },
+          "3": {
+            "count": 47,
+            "crps": 4261.286189966646
+          },
+          "0": {
+            "count": 69,
+            "crps": 1028.0039400150195
+          },
+          "4": {
+            "count": 86,
+            "crps": 13619.735345455747
+          }
+        },
+        "request_exceedance": {
+          "count": 400,
+          "predicted": 0.23472494073768285,
+          "observed": 0.0,
+          "brier": 0.09622254429876093
+        }
+      },
+      "request_bin": {
+        "count": 400,
+        "crps": 2911.40629769304,
+        "mae_predictive_mean": 4293.035337418387,
+        "p90_coverage": 0.8875,
+        "mean_prediction": 6829.276395099581,
+        "observed_mean": 5804.64,
+        "fallback_counts": {
+          "coarse_context": 398,
+          "coarse": 2
+        },
+        "contexts": {
+          "1": {
+            "count": 116,
+            "crps": 159.26108028785498
+          },
+          "2": {
+            "count": 82,
+            "crps": 642.4535472399598
+          },
+          "3": {
+            "count": 47,
+            "crps": 4493.417342638028
+          },
+          "0": {
+            "count": 69,
+            "crps": 290.5422429684493
+          },
+          "4": {
+            "count": 86,
+            "crps": 10025.221081643467
+          }
+        },
+        "request_exceedance": {
+          "count": 400,
+          "predicted": 0.08421087947369692,
+          "observed": 0.0,
+          "brier": 0.025866939089710054
+        }
+      },
+      "request_ratio": {
+        "count": 400,
+        "crps": 2393.0299067566243,
+        "mae_predictive_mean": 3844.960040118928,
+        "p90_coverage": 0.915,
+        "mean_prediction": 6312.8538455606995,
+        "observed_mean": 5804.64,
+        "fallback_counts": {
+          "coarse_context": 398,
+          "coarse": 2
+        },
+        "contexts": {
+          "1": {
+            "count": 116,
+            "crps": 176.07279110143006
+          },
+          "2": {
+            "count": 82,
+            "crps": 590.0768978058035
+          },
+          "3": {
+            "count": 47,
+            "crps": 3421.2809912222506
+          },
+          "0": {
+            "count": 69,
+            "crps": 22.093305292556146
+          },
+          "4": {
+            "count": 86,
+            "crps": 8442.750798397394
+          }
+        },
+        "request_exceedance": {
+          "count": 400,
+          "predicted": 0.0014303371489713928,
+          "observed": 0.0,
+          "brier": 8.581436255699845e-06
+        }
+      }
+    },
+    "history": {
+      "count": 4000,
+      "first_submit": 38170745.0,
+      "last_submit": 44676821.0,
+      "max_completion": 44676881.0,
+      "input_sha256": "c4e09b5db04d01e3004525c348d80e47f66eb816c02ceb5676439f42353c4d03",
+      "context_counts": {
+        "1": 746,
+        "4": 800,
+        "2": 1084,
+        "None": 3,
+        "3": 878,
+        "0": 489
+      },
+      "need_group_counts": {
+        "0": 597,
+        "1": 1820,
+        "3": 264,
+        "2": 1319
+      }
+    },
+    "validation": {
+      "count": 400,
+      "first_submit": 44677501.0,
+      "last_submit": 45348402.0,
+      "max_completion": 45579532.0,
+      "input_sha256": "39fd8778d28462c7b2e62c9b260b92c4a8d75a8f91ee5ae4de28623301b03f1a",
+      "context_counts": {
+        "1": 116,
+        "2": 82,
+        "3": 47,
+        "0": 69,
+        "4": 86
+      },
+      "need_group_counts": {
+        "1": 166,
+        "0": 87,
+        "2": 126,
+        "3": 21
+      }
+    },
+    "validation_split": {
+      "cutoff": 44677443.8,
+      "training": 34733,
+      "heldout": 8354,
+      "unfinished_at_cutoff_excluded": 30
+    }
+  },
+  "kalos": {
+    "selected": "type_exact",
+    "criterion": "minimum mean validation CRPS in seconds; ties in candidate order",
+    "candidate_order": [
+      "coarse",
+      "type_coarse",
+      "type_exact"
+    ],
+    "scores": {
+      "coarse": {
+        "count": 400,
+        "crps": 442.34781068474825,
+        "mae_predictive_mean": 516.9164733627526,
+        "p90_coverage": 0.5225,
+        "mean_prediction": 245.68359251087242,
+        "observed_mean": 573.67,
+        "fallback_counts": {
+          "coarse": 400
+        },
+        "contexts": {
+          "Pretrain": {
+            "count": 8,
+            "crps": 12641.013408304498
+          },
+          "Debug": {
+            "count": 1,
+            "crps": 600.6714965397923
+          },
+          "Eval": {
+            "count": 391,
+            "crps": 192.3538248361216
+          }
+        }
+      },
+      "type_coarse": {
+        "count": 400,
+        "crps": 420.68393455842516,
+        "mae_predictive_mean": 532.3265877775088,
+        "p90_coverage": 0.525,
+        "mean_prediction": 353.0209054124609,
+        "observed_mean": 573.67,
+        "fallback_counts": {
+          "coarse_context": 400
+        },
+        "contexts": {
+          "Pretrain": {
+            "count": 8,
+            "crps": 11632.833477508651
+          },
+          "Debug": {
+            "count": 1,
+            "crps": 64.5060553633218
+          },
+          "Eval": {
+            "count": 391,
+            "crps": 192.1902811967712
+          }
+        }
+      },
+      "type_exact": {
+        "count": 400,
+        "crps": 419.17136111895263,
+        "mae_predictive_mean": 506.394017445028,
+        "p90_coverage": 0.525,
+        "mean_prediction": 327.08833507997997,
+        "observed_mean": 573.67,
+        "fallback_counts": {
+          "coarse_context": 7,
+          "exact_context": 393
+        },
+        "contexts": {
+          "Pretrain": {
+            "count": 8,
+            "crps": 11557.204805535024
+          },
+          "Debug": {
+            "count": 1,
+            "crps": 64.5060553633218
+          },
+          "Eval": {
+            "count": 391,
+            "crps": 192.1902811967712
+          }
+        }
+      }
+    },
+    "history": {
+      "count": 4000,
+      "first_submit": 1688216738.0,
+      "last_submit": 1689009930.0,
+      "max_completion": 1689010725.0,
+      "input_sha256": "b36706ae699c1e4a348dbed44e34815a1334e3139bf9d20ef3cfbfc3a4b21dd8",
+      "context_counts": {
+        "Eval": 3887,
+        "Pretrain": 34,
+        "Debug": 57,
+        "Other": 22
+      },
+      "need_group_counts": {
+        "0": 3909,
+        "3": 68,
+        "1": 7,
+        "2": 16
+      }
+    },
+    "validation": {
+      "count": 400,
+      "first_submit": 1689055805.0,
+      "last_submit": 1689159376.0,
+      "max_completion": 1689195965.0,
+      "input_sha256": "68db40e33fdbd88b4995cd8edc0128c1f9633aacdeb402ad04e190c4bf958f12",
+      "context_counts": {
+        "Pretrain": 8,
+        "Debug": 1,
+        "Eval": 391
+      },
+      "need_group_counts": {
+        "3": 9,
+        "0": 391
+      }
+    },
+    "validation_split": {
+      "cutoff": 1689047952.4,
+      "training": 8916,
+      "heldout": 1845,
+      "unfinished_at_cutoff_excluded": 1
+    }
+  }
+}

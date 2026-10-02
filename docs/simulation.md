@@ -41,6 +41,11 @@ For explicit initial running/waiting jobs and terminal-outcome accounting, see
 the same nonpreemptive dispatchers while separating completed/cancelled/timeout
 resource release. A start-relative runtime cap does not imply successful completion;
 unobserved waiting-cancellation times are not reconstructed.
+For context-dependent service generation, see [feature-conditional replay](feature_service.md):
+completed-history ECDFs with request/type cells and optional S/request ratios,
+exact CRPS and an early-validation selection before late test schedules. Features
+and fallback are audited; no service clipping or test-based model replacement.
+
 For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
 end-start execution, exact GPU requests and separate failed/node_failed labels.
 Recorded timed_out does not infer a runtime budget. The nominal homogeneous

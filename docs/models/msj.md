@@ -328,3 +328,20 @@ regret cannot validate their ranking. Quotas, placement and effective capacity
 need separate evidence. [Protocol/API](../modern_gpu_trace.md),
 [experiment](../../examples/modern_gpu_trace_experiment.py),
 [results](../research/modern-gpu-trace-results-2026-10.md).
+
+### Feature-conditional empirical service
+
+In plain words: jobs keep their recorded arrival, resource request and context.
+Their service is drawn from completed historical jobs with matching resource/type
+or requested-time group; sparse groups fall back to broader history. Optional
+S/request ratios preserve the relationship with a target's runtime budget without
+clipping excess demand. This changes workload generation, not the dispatcher.
+
+`FeatureConditionalEmpirical` supports exact/coarse context cells, audited fallback
+and full-CDF CRPS. EPIC-059 selects candidates on early validation before late
+replay: SDSC ratio improves distribution scoring and timeout calibration but can
+worsen queue latency and p99 policy choice; Kalos type does not transfer reliably.
+It is a retrospective feature scenario, not an online deployment claim.
+The rigid-job flow shown above is unchanged.
+[Protocol/API](../feature_service.md), [experiment](../../examples/feature_service_experiment.py),
+[results](../research/feature-service-results-2026-10.md).

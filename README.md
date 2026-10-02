@@ -118,6 +118,11 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Feature-conditional service**:
+  450 paired replays with early-validation model selection. Requested-time ratios
+  reduce SDSC test CRPS by 46.69% and excess timeouts, but do not preserve p99
+  policy choice; retrospective Kalos type features degrade on the late holdout.
+  [Protocol/API](docs/feature_service.md), [results](docs/research/feature-service-results-2026-10.md).
 - **2026-10, current source tree** — **Modern GPU-trace validation**:
   hash-pinned Acme/Kalos ingestion recomputes execution from end-start; the
   released `duration` includes waiting. 1224 replays with separate failed/cancelled

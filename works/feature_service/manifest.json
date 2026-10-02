@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "scheduler_runs": 450,
+  "configs": {
+    "sdsc": {
+      "validation_fraction": 0.7,
+      "test_fraction": 0.9,
+      "validation_jobs": 400,
+      "jobs": 1000,
+      "warmup": 200,
+      "history_limit": 4000,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 59000
+    },
+    "kalos": {
+      "validation_fraction": 0.6,
+      "test_fraction": 0.7,
+      "validation_jobs": 400,
+      "jobs": 300,
+      "warmup": 100,
+      "history_limit": 4000,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 59000
+    }
+  },
+  "sources": {
+    "sdsc": {
+      "page": "https://www.cs.huji.ac.il/labs/parallel/workload/l_sdsc_sp2/index.html",
+      "download": "https://raw.githubusercontent.com/DIR-LAB/deep-batch-scheduler/cd433e3d62a01705f255bd48cb55b393862800e7/data/SDSC-SP2-1998-4.2-cln.swf",
+      "sha256": "64bc6c621c97fe10e74cfc6a8c568ba544fddd99c4f810473027dca99efc2ed1",
+      "commit": "cd433e3d62a01705f255bd48cb55b393862800e7",
+      "audit": {
+        "counts": {
+          "records": 59715,
+          "accepted_status_5": 10917,
+          "accepted_status_1": 43117,
+          "unobserved_or_zero_runtime": 5681
+        },
+        "requests": {
+          "status_5_missing": 5,
+          "status_5_exceeded": 4081,
+          "status_1_missing": 30,
+          "status_1_exceeded": 53
+        }
+      },
+      "conditions": "NPACI JOBLOG research/educational/non-profit; not MIT",
+      "attribution": "SDSC / Victor Hazlewood; conversion Dror Feitelson; DIR-LAB mirror"
+    },
+    "kalos": {
+      "page": "https://github.com/InternLM/AcmeTrace/tree/f9fdf591b4876c2875a9e3d28adb1bda8120dfcb",
+      "download": "https://raw.githubusercontent.com/InternLM/AcmeTrace/f9fdf591b4876c2875a9e3d28adb1bda8120dfcb/data/job_trace/trace_kalos.csv",
+      "sha256": "7c5a7845da1d66448fa668342e4ecb622fd9a005118080660ec3ad2788d4c9bf",
+      "commit": "f9fdf591b4876c2875a9e3d28adb1bda8120dfcb",
+      "audit": {
+        "counts": {
+          "records": 62413,
+          "accepted_failed": 7900,
+          "accepted_cancelled": 1240,
+          "accepted_completed": 10762,
+          "cpu_only": 42506,
+          "nonpositive_execution": 2,
+          "nonterminal_state": 3
+        },
+        "states": {
+          "FAILED": 13836,
+          "CANCELLED": 1263,
+          "COMPLETED": 47311,
+          "RUNNING": 3
+        },
+        "derived_fields": {
+          "queue_checked": 62413,
+          "queue_mismatch": 0,
+          "closed_intervals": 62410,
+          "duration_not_execution": 62409,
+          "duration_equals_sojourn": 62410,
+          "gpu_time_checked": 19904,
+          "gpu_time_not_execution_work": 19904
+        },
+        "workload_types": {
+          "Other": 250,
+          "Pretrain": 641,
+          "Debug": 537,
+          "CPU": 42506,
+          "SFT": 8,
+          "Eval": 18471
+        }
+      },
+      "conditions": "CC-BY-4.0",
+      "attribution": "InternLM / AcmeTrace, Kalos 2023"
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.2.5",
+    "scipy": "1.13.0"
+  },
+  "implementation_sha256": {
+    "examples/real_trace_temporal_experiment.py": "e2a30cf4485250f4034bcbc7ed64ea24eabe05ad28072d86e2be8d522f424893",
+    "examples/real_trace_calibration_experiment.py": "0098001fb5102ebbfc26e6a1ef97b9a9ce752dcd8ea372332d80ba7e9748f0e1",
+    "most_queue/random/trace_resampling.py": "bd620ce598718d7e35be7d38a3fbea79e3d9650bd22264eff6addbec683372fa",
+    "most_queue/random/service_calibration.py": "b0ce156294e157a585894be76275783905f9e652e83c8578bdb790d27fb8b27a",
+    "most_queue/sim/utils/workload_trace.py": "d4420c432da3728ae9500e4f8e4e14fe5d4aab36d22a523a2c63d94aea067ed2",
+    "most_queue/sim/msj_general.py": "fd7a3c1bb25515829950ffe0956b05a3103850ee2a1c82a45663e9bfe39005a6",
+    "most_queue/sim/utils/msj_calendar.py": "78ba574a5503d9cc88a0b001e5ea6803a5434dc9d0ae70adc40d0246c062c70f",
+    "most_queue/sim/utils/msj_packing.py": "6772cc87052a00b62e3dd54fb6b2d9f24b6c0e3df297f546de8eadf307ee9159",
+    "most_queue/sim/base_core.py": "82d585446228032a8e26b0c3b67842daf6ad00e905dbadc4cebc85a5ce822aab",
+    "most_queue/structs.py": "40e9c57f9d3b7e4766f721ba74f8c261922b0bba39e11e7a20ac5e308cf3105b",
+    "examples/feature_service_experiment.py": "ba4acf039e8b9a1e8deaf6cdb72883dd9167f6ac12f3b9cce7fe53f0020d7ca5",
+    "examples/modern_gpu_trace_experiment.py": "f0a7a78db51322ea08a5e793abf69026d339490938671607391b3bf2ffa1f960",
+    "examples/real_trace_lifecycle_experiment.py": "779e5fc10619420379dae078825d8702bcbbda3cb7c5543110e7938886a721d3",
+    "most_queue/random/feature_service.py": "a09e2e233ebb84942e70982917824f868dd05a2171163aef689aa37c1712b9a8",
+    "most_queue/sim/msj_lifecycle.py": "f070ca0f3095c7745327544a1848a0bcc0f68bdcffe9482799e7a181f6263706",
+    "most_queue/sim/utils/acme_trace.py": "7ee179651cf3f67fee6708d5152e891d19eb12b4d34273a1a27ed7627a37403f",
+    "most_queue/sim/utils/workload_lifecycle.py": "a057146e2977bcf385fe4adb2c12e28a6a50d5ba49fd0f0e483a9c1050baa527"
+  },
+  "artifacts": [
+    {
+      "file": "selection.json",
+      "sha256": "39e6742de0fcb7afc65f5a50a786dc86c5a9e9ad868fc93a3ce3e3e9fa3a60c7"
+    },
+    {
+      "file": "sdsc.json",
+      "sha256": "6180115927e4083cebe2b02f5e59238e901aca2af0aaec4071cfecaaa0bab407"
+    },
+    {
+      "file": "kalos.json",
+      "sha256": "988d91478cdf6f0ef123e06ae4954695fc7be2ddc5a44839020111fcacf488f7"
+    }
+  ],
+  "interpretation": "Completed-only conditional CDFs, frozen validation selection, retrospective type and partial carry-in. Conditional MC intervals, not population inference or online validation."
+}

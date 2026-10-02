@@ -321,3 +321,18 @@ timed_out; последний не означает известного runtime
 и эффективной ёмкости. [Методика/API](../modern_gpu_trace.md),
 [эксперимент](../../examples/modern_gpu_trace_experiment.py),
 [результаты](../research/modern-gpu-trace-results-2026-10.md).
+
+### Условное эмпирическое обслуживание
+
+Простыми словами: приходы, запрос ресурса и признаки работы сохраняются.
+Длительность берётся из завершённой истории с похожими K/type или requested time;
+при редкой группе используется более широкая история. Отношение S/request
+сохраняет связь длительности с бюджетом цели без обрезания превышений.
+Меняется генератор нагрузки, не диспетчер; схема rigid jobs выше остаётся прежней.
+
+`FeatureConditionalEmpirical` даёт exact/coarse context ECDF, аудит fallback и CRPS.
+EPIC-059 выбирает модель по раннему validation до позднего replay. SDSC ratio
+улучшает CRPS и timeout, но может ухудшить очередь и p99 policy choice;
+type Kalos не переносится на поздний блок. Доступность type online не установлена.
+[Методика/API](../feature_service.md), [эксперимент](../../examples/feature_service_experiment.py),
+[результаты](../research/feature-service-results-2026-10.md).
