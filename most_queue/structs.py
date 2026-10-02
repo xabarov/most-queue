@@ -69,6 +69,9 @@ class MsjSimulationResults(MsjResults):
     reservation_violations: int = 0
     observation_time: float = 0.0
     reserved_start_times: dict[int, float] = field(default_factory=dict)
+    runtime_updates: int = 0
+    unavailable_runtime_updates: int = 0
+    forecast_calendar_resets: int = 0
 
 
 @dataclass

@@ -13,6 +13,9 @@ arrival-cohort warm-up, empirical class quantiles and reservation diagnostics.
 Policies are FCFS, EASY (protect the head) and conservative (reserve all waiting jobs).
 For learned submission-time estimates and pooled or resource-group split-conformal calibration,
 see [MSJ runtime prediction](msj_runtime_prediction.md).
+For independently right-censored history and active-job residual updates by age,
+see [MSJ age-aware forecasts](msj_age_runtime.md): explicit unavailable tails,
+opt-in `remaining_predictor`, and retained historical reservation promises.
 
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 

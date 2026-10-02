@@ -121,7 +121,7 @@ start after their best recorded finite reservation (head jobs for EASY, all
 reserved waiting jobs for conservative). `reserved_start_times` maps their
 zero-based trace IDs to those best promises, including warm-up jobs. It is not a
 history of all schedule revisions. Underestimated durations can violate promises;
-oracle or upper-bound estimates preserve them. The guarantee concerns promised
+static oracle or upper-bound estimates preserve them. The guarantee concerns promised
 start times, not dominance over FCFS or EASY in response time.
 
 Conservative keeps a resource calendar and compresses one reservation at a time,
@@ -170,3 +170,23 @@ thresholds are separate for each observed, submission-time group. Insufficient
 or unseen groups cause an explicit prediction error, never an automatic pooled
 fallback. See the [group API and limits](../msj_runtime_prediction.md#calibration-by-resource-group)
 and [EPIC-050 results](../research/msj-group-calibration-results-2026-10.md).
+
+### Age-aware forecasts and censored history
+
+In plain words: already running for age a changes the distribution of the
+remaining duration. `KaplanMeierRuntimeEstimator` fits `min(S,C)` and a boolean
+completion flag, retaining still-running historical observations as censored.
+It estimates conditional residual quantiles/means and returns `None` for
+unsupported tails; these are plug-in estimates, not conformal coverage bounds.
+
+`run_trace(..., remaining_predictor=lambda cls, age: models[cls].remaining_quantile(age))`
+opts into active-job updates for EASY/conservative; `run` accepts it too.
+Waiting jobs keep explicit initial estimates. Extensions invalidate the current
+calendar, not historical promises. Unknown residuals suspend new backfills but
+allow FCFS starts and full draining. Refresh uses existing events only.
+Rebuilding after an extension may violate an old promise even if the new
+forecast is an upper bound; the static reservation guarantee does not extend
+to this opt-in calendar-reset policy.
+See the [runnable example, timing contract and counters](../msj_age_runtime.md),
+[pilot](../../examples/msj_age_runtime_experiment.py), and
+[EPIC-051 results](../research/msj-age-runtime-results-2026-10.md).

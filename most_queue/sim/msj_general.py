@@ -12,7 +12,9 @@ durations are used by the event engine, never by the reservation calculation.
 import heapq
 import time
 from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from numbers import Real
 
 import numpy as np
 
@@ -20,6 +22,8 @@ from most_queue.random.utils.create import create_distribution
 from most_queue.sim.base_core import BaseSimulationCore
 from most_queue.sim.utils.msj_calendar import compress_reservations
 from most_queue.structs import MsjSimulationResults
+
+RemainingPredictor = Callable[[int, float], float | None]
 
 
 @dataclass(frozen=True)
@@ -48,6 +52,9 @@ class _Replay:
     events: list = field(default_factory=list)
     promises: dict = field(default_factory=dict)
     schedule: dict = field(default_factory=dict)
+    runtime_updates: int = 0
+    unavailable_runtime_updates: int = 0
+    forecast_calendar_resets: int = 0
 
 
 def _integer(value, name, minimum=1):
@@ -136,13 +143,22 @@ class MsjGeneralSim(BaseSimulationCore):
         self._validate_trace(trace, require_estimates=False)
         return tuple(trace)
 
-    def run(self, num_of_jobs: int, warmup_fraction: float = 0.05, estimates=None) -> MsjSimulationResults:
+    def run(
+        self,
+        num_of_jobs: int,
+        warmup_fraction: float = 0.05,
+        estimates=None,
+        *,
+        remaining_predictor: RemainingPredictor | None = None,
+    ) -> MsjSimulationResults:
         """Measure num_of_jobs arrivals after a generated warm-up and drain them."""
         count = _integer(num_of_jobs, "num_of_jobs")
         if not np.isfinite(warmup_fraction) or not 0 <= warmup_fraction < 1:
             raise ValueError("warmup_fraction must be in [0, 1)")
         warmup = int(count * warmup_fraction)
-        return self.run_trace(self.make_trace(count + warmup, estimates), warmup_jobs=warmup)
+        return self.run_trace(
+            self.make_trace(count + warmup, estimates), warmup_jobs=warmup, remaining_predictor=remaining_predictor
+        )
 
     def _validate_trace(self, trace, require_estimates=True):
         if not self.is_servers_set:
@@ -256,16 +272,66 @@ class MsjGeneralSim(BaseSimulationCore):
                 start(idx)
         return backfilled
 
-    def run_trace(self, trace, warmup_jobs: int = 0) -> MsjSimulationResults:
+    def _refresh_running(self, trace, state, now, predictor):
+        """Refresh from class and elapsed service only; retain old promises."""
+        updates = {}
+        unavailable = 0
+        invalidated = False
+        for idx, running in state.active.items():
+            residual = predictor(int(trace[idx].cls), float(now - state.starts[idx]))
+            if residual is None:
+                end = now  # no known release: reuse the overdue/FCFS recovery path
+                unavailable += 1
+            else:
+                if (
+                    isinstance(residual, (bool, np.bool_))
+                    or not isinstance(residual, Real)
+                    or not np.isfinite(residual)
+                    or residual <= 0
+                ):
+                    raise ValueError("remaining_predictor must return a finite positive duration or None")
+                end = float(now) + float(residual)
+                if not np.isfinite(end):
+                    raise ValueError("updated forecast overflows; rescale")
+                if end <= now:
+                    # At a discrete survival atom, subtracting a large start
+                    # timestamp can leave a positive sub-ULP residual. There is
+                    # no representable future release: freeze backfill, do not
+                    # round up and invent a deadline or retry the same timer.
+                    unavailable += 1
+            invalidated |= end <= now or end > running.estimate_end
+            updates[idx] = _Running(idx, running.need, end)
+        if invalidated and state.schedule:
+            state.schedule.clear()
+            state.forecast_calendar_resets += 1
+        state.active.update(updates)
+        state.runtime_updates += len(updates)
+        state.unavailable_runtime_updates += unavailable
+
+    def run_trace(
+        self, trace, warmup_jobs: int = 0, *, remaining_predictor: RemainingPredictor | None = None
+    ) -> MsjSimulationResults:
         """Replay a sorted trace, preserving tie order; completions win time ties.
 
         All simultaneous arrivals are enqueued before scheduling. Time averages
         use [first measured arrival, last arrival]; they are None for a zero
         length interval. All measured jobs are drained for response statistics.
+
+        Optional backfilling-only ``remaining_predictor(cls, age)`` is called
+        for active jobs after observed completions and arrivals, before dispatch,
+        at existing arrival/completion/reservation events. It cannot receive
+        actual service or future completion from this interface. Initial waiting
+        estimates remain explicit. None suspends new backfills; extended forecasts
+        invalidate the conservative calendar but NEVER erase past promises.
+        There is no heartbeat timer, online refit or hard coverage guarantee.
+        A positive residual below timestamp resolution is also unavailable;
+        it suspends backfill without inventing a later release timestamp.
         """
         started = time.process_time()
         trace = tuple(trace)
         self._validate_trace(trace)
+        if remaining_predictor is not None and (not callable(remaining_predictor) or self.discipline == "fcfs"):
+            raise ValueError("remaining_predictor must be callable and is only supported for backfilling")
         warmup = _integer(warmup_jobs, "warmup_jobs", minimum=0)
         if warmup >= len(trace):
             raise ValueError("warmup_jobs must leave at least one measured job")
@@ -298,6 +364,8 @@ class MsjGeneralSim(BaseSimulationCore):
             while cursor < len(trace) and trace[cursor].arrival <= now:
                 waiting.append(cursor)
                 cursor += 1
+            if remaining_predictor is not None:
+                self._refresh_running(trace, state, now, remaining_predictor)
             added, missed = self._dispatch(trace, state, now)
             backfilled += added
             violations += missed
@@ -350,4 +418,7 @@ class MsjGeneralSim(BaseSimulationCore):
             reservation_violations=violations,
             reserved_start_times=dict(promises),
             observation_time=horizon,
+            runtime_updates=state.runtime_updates,
+            unavailable_runtime_updates=state.unavailable_runtime_updates,
+            forecast_calendar_resets=state.forecast_calendar_resets,
         )

@@ -186,7 +186,10 @@ The existing stochastic `ExpNoiseSimPredictor`/`LognormalNoiseSimPredictor` for
 size-based queues sample a prediction conditional on true size. They remain
 unchanged and model noisy-oracle information; this feature-only model is separate.
 EPIC-049 added pooled calibration; EPIC-050 adds resource-group calibration.
-No online age correction, adaptive drift handling or real-trace importer is included.
+These feature models do not include online age correction, adaptive drift handling
+or a real-trace importer. A separate class-conditional censored-history estimator
+and opt-in active-job refresh are available in [EPIC-051](msj_age_runtime.md);
+they do not extend the conformal coverage contract of this API.
 
 ## Validation and experiment
 
