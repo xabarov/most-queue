@@ -211,3 +211,22 @@ make delivered work auditable. Packing has no reservation promises and rejects
 See [exact rules, edge conventions and runnable example](../msj_packing.md),
 [experiment](../../examples/msj_packing_experiment.py), and
 [EPIC-052 results and trade-offs](../research/msj-packing-results-2026-10.md).
+
+### Resource-holding checkpoint and resume
+
+Interrupting work is not free in `MsjCheckpointSim(k, checkpoint_time=c,
+resume_time=r)`, from `most_queue.sim.msj_checkpoint`. It retains the power-of-two
+domain and prediction-free prefix rule, but holds K servers during each
+deterministic overhead phase, with no useful progress. First starts pay no r;
+all completed useful work survives interruption. New preemption batches wait
+until every active overhead finishes; fitting selected jobs can still start.
+This gate is an explicit experimental extension, not the original SF algorithm
+or a Slurm model. Both costs zero delegate exactly to the original SF replay.
+
+The inherited `set_servers`, `set_sources`, `run` and `run_trace` interfaces
+remain available. `MsjCheckpointResults` splits W into queue/checkpoint/resume
+and first-wait/interruption, exposes three interval logs and distinguishes
+allocated from productive utilization. Finite draining does not prove stability.
+See the [runnable example, event rules and accounting](../msj_checkpoint.md),
+[experiment](../../examples/msj_checkpoint_experiment.py), and
+[EPIC-053 results](../research/msj-checkpoint-results-2026-10.md).

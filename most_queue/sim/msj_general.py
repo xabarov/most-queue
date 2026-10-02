@@ -65,6 +65,20 @@ class _Replay:
     segments: list = field(default_factory=list)
 
 
+@dataclass
+class _Observation:
+    """Common replay window and integrals; busy counts allocated resources."""
+
+    begin: float
+    end: float
+    started: float
+    busy_area: float = 0.0
+    idle_area: float = 0.0
+    occupancy: dict = field(default_factory=dict)
+    backfilled: int = 0
+    violations: int = 0
+
+
 def _integer(value, name, minimum=1):
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < minimum:
         raise ValueError(f"{name} must be an integer >= {minimum}")
@@ -412,9 +426,8 @@ class MsjGeneralSim(BaseSimulationCore):
         state = _Replay(starts, completions)
         if self.discipline in PACKING_POLICIES and self.discipline != "server_filling":
             state.packing = NonpreemptivePacking(self.k, self.discipline, self.msfq_threshold)
-        waiting, active, events, promises = state.waiting, state.active, state.events, state.promises
+        waiting, active, events = state.waiting, state.active, state.events
         begin, end = trace[warmup].arrival, trace[-1].arrival
-        horizon = end - begin
         busy_area = idle_area = 0.0
         occupancy = defaultdict(float)
         backfilled = violations = 0
@@ -448,6 +461,13 @@ class MsjGeneralSim(BaseSimulationCore):
             backfilled += added
             violations += missed
         self.ttek = now
+        observation = _Observation(begin, end, started, busy_area, idle_area, occupancy, backfilled, violations)
+        return self._trace_result(trace, warmup, state, observation)
+
+    def _trace_result(self, trace, warmup, state, observation):
+        """Common latency/occupancy accounting for ideal and overhead replay."""
+        starts, completions, promises = state.starts, state.completions, state.promises
+        horizon = observation.end - observation.begin
         self.deadline_n = 0
         self.deadline_hits = dict.fromkeys(self.deadline_thresholds, 0)
         arrivals = np.array([job.arrival for job in trace])
@@ -474,17 +494,21 @@ class MsjGeneralSim(BaseSimulationCore):
             tails.append(quantile_map(sojourns[mask]))
         p = None
         if horizon > 0:
-            p = [occupancy[i] / horizon for i in range(max(occupancy) + 1)]
+            p = [observation.occupancy.get(i, 0.0) / horizon for i in range(max(observation.occupancy) + 1)]
         return MsjSimulationResults(
             w=self.w,
             v=self.v,
             p=p,
             w_per_class=w_class,
             v_per_class=v_class,
-            utilization=busy_area / (self.k * horizon) if horizon else None,
-            idle_with_queue=idle_area / (self.k * horizon) if horizon else None,
-            throughput=float(np.sum((completions > begin) & (completions <= end)) / horizon) if horizon else None,
-            duration=time.process_time() - started,
+            utilization=observation.busy_area / (self.k * horizon) if horizon else None,
+            idle_with_queue=observation.idle_area / (self.k * horizon) if horizon else None,
+            throughput=(
+                float(np.sum((completions > observation.begin) & (completions <= observation.end)) / horizon)
+                if horizon
+                else None
+            ),
+            duration=time.process_time() - observation.started,
             start_times=starts.tolist(),
             completion_times=completions.tolist(),
             wait_samples=waits.tolist(),
@@ -493,9 +517,9 @@ class MsjGeneralSim(BaseSimulationCore):
             w_quantiles=quantile_map(waits),
             v_quantiles=quantile_map(sojourns),
             v_quantiles_per_class=tails,
-            backfilled=backfilled,
+            backfilled=observation.backfilled,
             reservations=len(promises),
-            reservation_violations=violations,
+            reservation_violations=observation.violations,
             reserved_start_times=dict(promises),
             observation_time=horizon,
             runtime_updates=state.runtime_updates,

@@ -136,8 +136,10 @@ model; we do not transfer it to arbitrary G or Adaptive Quickswap. A finite
 drained trace is not evidence of stability, absence of starvation, or a
 stationary tail guarantee. ServerFilling's packing property is verified under
 its resource assumptions; the simulation does not prove new performance bounds.
-Its preemption capability differs from EASY/MSFQ. Real traces, checkpoint cost,
-DivisorFilling, Static Quickswap and ServerFilling-SRPT remain out of scope.
+Its preemption capability differs from EASY/MSFQ. Checkpoint cost is studied in
+the separate [EPIC-053 extension](msj_checkpoint.md), without changing this
+zero-cost model. Real traces, DivisorFilling, Static Quickswap and
+ServerFilling-SRPT remain out of scope.
 
 ## Primary sources
 

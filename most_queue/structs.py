@@ -82,6 +82,30 @@ class MsjSimulationResults(MsjResults):
 
 
 @dataclass
+class MsjCheckpointResults(MsjSimulationResults):
+    """Gated checkpoint/resume diagnostics; samples exclude arrival warmup.
+
+    W = queue_wait + checkpoint + resume; interruption is all nonproductive
+    time after first useful service. Utilization counts allocated resources;
+    the three component utilizations distinguish useful work from overhead.
+    Segment logs and resource-time sums cover the whole trace including drain.
+    """
+
+    first_wait_samples: list[float] = field(default_factory=list)
+    interruption_samples: list[float] = field(default_factory=list)
+    queue_wait_samples: list[float] = field(default_factory=list)
+    checkpoint_samples: list[float] = field(default_factory=list)
+    resume_samples: list[float] = field(default_factory=list)
+    checkpoint_segments: list[tuple[int, float, float]] = field(default_factory=list)
+    resume_segments: list[tuple[int, float, float]] = field(default_factory=list)
+    productive_utilization: float | None = None
+    checkpoint_utilization: float | None = None
+    resume_utilization: float | None = None
+    checkpoint_resource_time: float = 0.0
+    resume_resource_time: float = 0.0
+
+
+@dataclass
 class MulticlassResults:
     """
     Results of queue with multiple classes.

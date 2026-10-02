@@ -20,6 +20,7 @@ from examples.msj_group_calibration_experiment import summarize
 from examples.msj_runtime_prediction_experiment import FEATURE_SLOPE, LOADS, SHAPES, ObservedJobs, fingerprint
 from most_queue.sim.msj_general import MsjGeneralSim, MsjTraceJob
 from most_queue.sim.utils.residual_runtime import KaplanMeierRuntimeEstimator
+from most_queue.structs import MsjSimulationResults
 
 
 @dataclass(frozen=True)
@@ -114,6 +115,11 @@ def replay(workload: Workload, trace: tuple[MsjTraceJob, ...], policy: str, warm
     sim.set_servers(workload.needs)
     predictor = age_predictor(models) if mode == "km_age" else None
     result = sim.run_trace(trace, warmup_jobs=warmup, remaining_predictor=predictor)
+    return packing_metrics(workload, trace, result)
+
+
+def packing_metrics(workload: Workload, trace: tuple[MsjTraceJob, ...], result: MsjSimulationResults) -> dict:
+    """Extract common outcome metrics without rerunning or changing a schedule."""
     if not all(result.counts_per_class):
         raise ValueError("measured cohort must include every resource class")
     weights = np.array(workload.probabilities) * workload.needs * workload.means / workload.mean_work
@@ -138,7 +144,7 @@ def replay(workload: Workload, trace: tuple[MsjTraceJob, ...], policy: str, warm
         "measured_jobs": sum(result.counts_per_class),
         "drained_jobs": len(result.completion_times),
         "schedule_hash": array_digest(np.array(result.start_times), np.array(result.completion_times)),
-        "preemption_capability": discipline == "server_filling",
+        "preemption_capability": bool(result.preemptions_per_job),
     }
     for cls, need in enumerate(workload.needs):
         output[f"mean_t_k{need}"] = result.v_per_class[cls]

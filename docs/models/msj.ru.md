@@ -204,3 +204,22 @@ ServerFilling поддерживает только степени двойки 
 [Точные правила и исполняемый пример EN](../msj_packing.md),
 [эксперимент](../../examples/msj_packing_experiment.py),
 [результаты и компромиссы EPIC-052](../research/msj-packing-results-2026-10.md).
+
+### Цена checkpoint и resume
+
+`MsjCheckpointSim(k, checkpoint_time=c, resume_time=r)` из
+`most_queue.sim.msj_checkpoint` — отдельное расширение SF для степеней двойки.
+Во время детерминированных checkpoint/resume работа удерживает K серверов, но
+не продвигается; полезный прогресс сохраняется. Первый старт не платит r.
+Пока активен хотя бы один overhead, новые прерывания не начинаются; выбранные
+ожидающие работы всё же могут стартовать на свободных ресурсах. Это явное
+модельное соглашение, не исходный SF и не эмуляция Slurm. При c=r=0 используется
+точно прежний zero-cost replay.
+
+Доступны прежние `set_servers`, `set_sources`, `run`, `run_trace`.
+`MsjCheckpointResults` раскладывает W на очередь/checkpoint/resume и первый
+старт/последующие паузы, хранит три интервальных журнала и различает выделенную
+и полезную загрузку. Дренирование конечной трассы не доказывает устойчивость.
+[Пример, правила событий и метрик EN](../msj_checkpoint.md),
+[эксперимент](../../examples/msj_checkpoint_experiment.py),
+[результаты EPIC-053](../research/msj-checkpoint-results-2026-10.md).
