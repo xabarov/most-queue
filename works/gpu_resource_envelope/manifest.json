@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "source": {
+    "page": "https://github.com/InternLM/AcmeTrace/tree/f9fdf591b4876c2875a9e3d28adb1bda8120dfcb",
+    "url": "https://raw.githubusercontent.com/InternLM/AcmeTrace/f9fdf591b4876c2875a9e3d28adb1bda8120dfcb/data/job_trace/trace_kalos.csv",
+    "commit": "f9fdf591b4876c2875a9e3d28adb1bda8120dfcb",
+    "sha256": "7c5a7845da1d66448fa668342e4ecb622fd9a005118080660ec3ad2788d4c9bf",
+    "attribution": "Shanghai AI Laboratory / InternLM, AcmeTrace Kalos 2023",
+    "license": "CC-BY-4.0, not MIT"
+  },
+  "audit": {
+    "counts": {
+      "records": 62413,
+      "accepted_failed": 7900,
+      "accepted_cancelled": 1240,
+      "accepted_completed": 10762,
+      "cpu_only": 42506,
+      "nonpositive_execution": 2,
+      "nonterminal_state": 3
+    },
+    "states": {
+      "FAILED": 13836,
+      "CANCELLED": 1263,
+      "COMPLETED": 47311,
+      "RUNNING": 3
+    },
+    "derived_fields": {
+      "queue_checked": 62413,
+      "queue_mismatch": 0,
+      "closed_intervals": 62410,
+      "duration_not_execution": 62409,
+      "duration_equals_sojourn": 62410,
+      "gpu_time_checked": 19904,
+      "gpu_time_not_execution_work": 19904
+    },
+    "workload_types": {
+      "Other": 250,
+      "Pretrain": 641,
+      "Debug": 537,
+      "CPU": 42506,
+      "SFT": 8,
+      "Eval": 18471
+    }
+  },
+  "configs": [
+    {
+      "fraction": 0.35,
+      "jobs": 1000,
+      "warmup": 200,
+      "history_limit": 4000,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 60000
+    },
+    {
+      "fraction": 0.5,
+      "jobs": 1000,
+      "warmup": 200,
+      "history_limit": 4000,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 60000
+    },
+    {
+      "fraction": 0.7,
+      "jobs": 300,
+      "warmup": 100,
+      "history_limit": 4000,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 60000
+    }
+  ],
+  "nodes": [
+    302,
+    226,
+    151,
+    113
+  ],
+  "allocations": [
+    "gpu_pool",
+    "exclusive_nodes"
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.2.5",
+    "scipy": "1.13.0"
+  },
+  "scheduler_runs": 1080,
+  "implementation_sha256": {
+    "examples/real_trace_temporal_experiment.py": "e2a30cf4485250f4034bcbc7ed64ea24eabe05ad28072d86e2be8d522f424893",
+    "examples/real_trace_calibration_experiment.py": "0098001fb5102ebbfc26e6a1ef97b9a9ce752dcd8ea372332d80ba7e9748f0e1",
+    "most_queue/random/trace_resampling.py": "bd620ce598718d7e35be7d38a3fbea79e3d9650bd22264eff6addbec683372fa",
+    "most_queue/random/service_calibration.py": "b0ce156294e157a585894be76275783905f9e652e83c8578bdb790d27fb8b27a",
+    "most_queue/sim/utils/workload_trace.py": "d4420c432da3728ae9500e4f8e4e14fe5d4aab36d22a523a2c63d94aea067ed2",
+    "most_queue/sim/msj_general.py": "fd7a3c1bb25515829950ffe0956b05a3103850ee2a1c82a45663e9bfe39005a6",
+    "most_queue/sim/utils/msj_calendar.py": "78ba574a5503d9cc88a0b001e5ea6803a5434dc9d0ae70adc40d0246c062c70f",
+    "most_queue/sim/utils/msj_packing.py": "6772cc87052a00b62e3dd54fb6b2d9f24b6c0e3df297f546de8eadf307ee9159",
+    "most_queue/sim/base_core.py": "82d585446228032a8e26b0c3b67842daf6ad00e905dbadc4cebc85a5ce822aab",
+    "most_queue/structs.py": "40e9c57f9d3b7e4766f721ba74f8c261922b0bba39e11e7a20ac5e308cf3105b",
+    "examples/gpu_resource_envelope_experiment.py": "ab78e2a57a3803ebdc07359ea37540c95a23121f3997b3004053f8346e2e402b",
+    "examples/modern_gpu_trace_experiment.py": "f0a7a78db51322ea08a5e793abf69026d339490938671607391b3bf2ffa1f960",
+    "examples/real_trace_lifecycle_experiment.py": "779e5fc10619420379dae078825d8702bcbbda3cb7c5543110e7938886a721d3",
+    "most_queue/sim/utils/resource_envelope.py": "332b90786eb373b8e2afea283d68ff27322e15fa651276d520e3bdd0dcdf9490",
+    "most_queue/sim/utils/acme_trace.py": "7ee179651cf3f67fee6708d5152e891d19eb12b4d34273a1a27ed7627a37403f",
+    "most_queue/sim/msj_lifecycle.py": "f070ca0f3095c7745327544a1848a0bcc0f68bdcffe9482799e7a181f6263706"
+  },
+  "artifacts": [
+    {
+      "file": "envelope.json",
+      "sha256": "fe4e046950e540a664169285c3296c45d50c993c24e0fe2f3c76db8a68f42c14"
+    },
+    {
+      "file": "origin-0.json",
+      "sha256": "2786ef5036edfa8a353dec713e128335b13208af6584b10733450176745abb9f"
+    },
+    {
+      "file": "origin-1.json",
+      "sha256": "738a1c2b591dcf45f18e6b9da10026fbc3df440fcaa91519b6cd471e2f6a8779"
+    },
+    {
+      "file": "origin-2.json",
+      "sha256": "5e01667cc92c97354155ed82fec0197da4f28fc73b07bb16c277028be3e3d842"
+    }
+  ],
+  "interpretation": "Explicit resource sensitivity, not inferred capacity or quotas. Same fixed targets, hypothetical exclusive nodes, observed environment, conditional MC only. Infeasible cells retained."
+}

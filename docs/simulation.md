@@ -41,6 +41,11 @@ For explicit initial running/waiting jobs and terminal-outcome accounting, see
 the same nonpreemptive dispatchers while separating completed/cancelled/timeout
 resource release. A start-relative runtime cap does not imply successful completion;
 unobserved waiting-cancellation times are not reconstructed.
+For GPU/node resource assumptions, see [resource envelopes](gpu_resource_envelope.md):
+prescribed capacity sensitivity, explicit infeasible cells and separate requested-GPU
+versus exclusive-node reservation accounting. No quota or placement reconstruction
+is claimed, and the existing dispatch algorithms remain unchanged.
+
 For context-dependent service generation, see [feature-conditional replay](feature_service.md):
 completed-history ECDFs with request/type cells and optional S/request ratios,
 exact CRPS and an early-validation selection before late test schedules. Features

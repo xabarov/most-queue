@@ -118,6 +118,13 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **GPU resource envelopes**:
+  prescribed GPU-pool versus exclusive-node capacity sensitivity, with fixed
+  target IDs and explicit infeasible cells. Requested GPU work and reserved
+  GPU-equivalent work remain separate; no quota or placement estimation is claimed.
+  1080 replays and a byte-identical repeat; observed p99 ties all six policies
+  in every feasible cell, so zero regret does not validate scheduler choice.
+  [Protocol/API](docs/gpu_resource_envelope.md), [results](docs/research/gpu-resource-envelope-results-2026-10.md).
 - **2026-10, current source tree** — **Feature-conditional service**:
   450 paired replays with early-validation model selection. Requested-time ratios
   reduce SDSC test CRPS by 46.69% and excess timeouts, but do not preserve p99

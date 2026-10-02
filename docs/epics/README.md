@@ -100,6 +100,7 @@
 | [EPIC-057](EPIC-057-real-trace-initial-state-cancellation.md) | Реальная трасса: начальное состояние, отменённая нагрузка и runtime limits | done |
 | [EPIC-058](EPIC-058-modern-gpu-trace-validation.md) | Современная GPU-трасса Acme/Kalos: аудит времени, перенос калибровки и неуспешная нагрузка | done |
 | [EPIC-059](EPIC-059-feature-conditional-service.md) | Условное обслуживание по requested time/type: ранний выбор по CRPS и поздний lifecycle replay | done |
+| [EPIC-060](EPIC-060-gpu-resource-envelope.md) | GPU resource envelope: размер пула, эксклюзивные узлы и явно невыполнимые сценарии | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

@@ -336,3 +336,19 @@ EPIC-059 выбирает модель по раннему validation до по�
 type Kalos не переносится на поздний блок. Доступность type online не установлена.
 [Методика/API](../feature_service.md), [эксперимент](../../examples/feature_service_experiment.py),
 [результаты](../research/feature-service-results-2026-10.md).
+
+### Общий GPU пул и эксклюзивные узлы
+
+Простыми словами: работа резервирует либо requested GPU из общего пула, либо
+все запрошенные узлы целиком. Те же приходы и длительности проверяются при
+заданных размерах пула. Если работа или initial running set не помещаются,
+вся ячейка невыполнима — работы не уменьшаются и не исключаются.
+
+`ResourceRequest`, `assess_envelope`, `observed_occupancy` разделяют проекцию
+ресурса, выполнимость replay и совместимость записанных execution-интервалов.
+Схема rigid jobs выше не меняется, меняются scalar demand/capacity. Requested
+GPU work учитывается отдельно от reserved GPU-equivalent work. Это sensitivity,
+не оценка квот или восстановленного размещения на физических узлах.
+[Методика/API](../gpu_resource_envelope.md),
+[эксперимент](../../examples/gpu_resource_envelope_experiment.py),
+[результаты](../research/gpu-resource-envelope-results-2026-10.md).

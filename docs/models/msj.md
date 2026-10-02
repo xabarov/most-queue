@@ -345,3 +345,19 @@ It is a retrospective feature scenario, not an online deployment claim.
 The rigid-job flow shown above is unchanged.
 [Protocol/API](../feature_service.md), [experiment](../../examples/feature_service_experiment.py),
 [results](../research/feature-service-results-2026-10.md).
+
+### GPU and exclusive-node resource envelopes
+
+In plain words: a job either reserves its requested GPUs from a common pool or
+holds every requested node exclusively. The same arrivals and service tape are
+replayed at prescribed pool sizes. If a job or initial running set cannot fit,
+the whole scenario is reported as infeasible; no job is shrunk or discarded.
+
+`ResourceRequest`, `assess_envelope` and `observed_occupancy` separate demand
+projection, replay feasibility and compatibility with recorded execution intervals.
+The rigid-job flow above is unchanged; only scalar demand/capacity are projected.
+Requested GPU work is kept separate from reserved GPU-equivalent work. This is
+resource sensitivity, not quota estimation or reconstructed physical placement.
+[Protocol/API](../gpu_resource_envelope.md),
+[experiment](../../examples/gpu_resource_envelope_experiment.py),
+[results](../research/gpu-resource-envelope-results-2026-10.md).

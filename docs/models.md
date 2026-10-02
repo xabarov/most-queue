@@ -103,6 +103,7 @@ does not establish stability or a stationary tail guarantee.
 | [MSJ initial state and terminal outcomes](real_trace_lifecycle.md) | - | MsjLifecycleSim | - | Opt-in running/waiting carry-in, occupied service to cancellation and hard runtime budgets; separate success/cancel/timeout accounting, not queue-abandonment reconstruction |
 | [Modern GPU-trace calibration](modern_gpu_trace.md) | - | AcmeTrace + MsjLifecycleSim | - | Audited Kalos timestamps and separate failure labels; empirical history replay on a nominal homogeneous GPU-request pool, not physical utilization or production scheduling |
 | [Feature-conditional service](feature_service.md) | - | FeatureConditionalEmpirical + MsjLifecycleSim | - | History-only context/need ECDFs, optional S/request ratios and exact CRPS; early-validation selection, sparse-cell fallback and separate late replay checks |
+| [GPU resource envelope](gpu_resource_envelope.md) | - | ResourceRequest + MsjLifecycleSim | - | Explicit GPU-pool/exclusive-node capacity sensitivity with fixed cohorts, audited infeasible cells and separate reserved/requested work; not inferred quotas or placement |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

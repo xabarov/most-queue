@@ -1,0 +1,609 @@
+{
+  "source_audit": {
+    "gpu_pool": {
+      "count": 19902,
+      "first_start": 1684321268.0,
+      "last_end": 1692199062.0,
+      "maximum_individual_demand": 1024,
+      "peak_concurrent_demand": 1536,
+      "resource_time": 5192656394.0,
+      "capacities": [
+        {
+          "capacity": 2416,
+          "compatible_with_recorded_intervals": true,
+          "seconds_above_capacity": 0.0,
+          "excess_resource_time": 0.0
+        },
+        {
+          "capacity": 1808,
+          "compatible_with_recorded_intervals": true,
+          "seconds_above_capacity": 0.0,
+          "excess_resource_time": 0.0
+        },
+        {
+          "capacity": 1208,
+          "compatible_with_recorded_intervals": false,
+          "seconds_above_capacity": 122.0,
+          "excess_resource_time": 9648.0
+        },
+        {
+          "capacity": 904,
+          "compatible_with_recorded_intervals": false,
+          "seconds_above_capacity": 3443240.0,
+          "excess_resource_time": 428975492.0
+        }
+      ]
+    },
+    "exclusive_nodes": {
+      "count": 19902,
+      "first_start": 1684321268.0,
+      "last_end": 1692199062.0,
+      "maximum_individual_demand": 128,
+      "peak_concurrent_demand": 268,
+      "resource_time": 653224227.0,
+      "capacities": [
+        {
+          "capacity": 302,
+          "compatible_with_recorded_intervals": true,
+          "seconds_above_capacity": 0.0,
+          "excess_resource_time": 0.0
+        },
+        {
+          "capacity": 226,
+          "compatible_with_recorded_intervals": false,
+          "seconds_above_capacity": 84.0,
+          "excess_resource_time": 2066.0
+        },
+        {
+          "capacity": 151,
+          "compatible_with_recorded_intervals": false,
+          "seconds_above_capacity": 14064.0,
+          "excess_resource_time": 110623.0
+        },
+        {
+          "capacity": 113,
+          "compatible_with_recorded_intervals": false,
+          "seconds_above_capacity": 3443812.0,
+          "excess_resource_time": 54987304.0
+        }
+      ]
+    },
+    "completed_historical_wait": {
+      "count": 10762,
+      "mean": 281.2614755621632,
+      "p99": 3960.679999999993,
+      "positive_fraction": 1.0
+    }
+  },
+  "origins": [
+    {
+      "fraction": 0.35,
+      "cells": [
+        {
+          "allocation": "gpu_pool",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "GPU",
+          "capacity": 2416,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 512,
+          "initial_running_demand": 256
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "GPU",
+          "capacity": 1808,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 512,
+          "initial_running_demand": 256
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "GPU",
+          "capacity": 1208,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 512,
+          "initial_running_demand": 256
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "GPU",
+          "capacity": 904,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 512,
+          "initial_running_demand": 256
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "node",
+          "capacity": 302,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 64,
+          "initial_running_demand": 32
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "node",
+          "capacity": 226,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 64,
+          "initial_running_demand": 32
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "node",
+          "capacity": 151,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 64,
+          "initial_running_demand": 32
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "node",
+          "capacity": 113,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 1,
+            "waiting": 0,
+            "arrivals": 2442
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 64,
+          "initial_running_demand": 32
+        }
+      ]
+    },
+    {
+      "fraction": 0.5,
+      "cells": [
+        {
+          "allocation": "gpu_pool",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "GPU",
+          "capacity": 2416,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 624
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "GPU",
+          "capacity": 1808,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 624
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "GPU",
+          "capacity": 1208,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 624
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "GPU",
+          "capacity": 904,
+          "feasible": false,
+          "reasons": [
+            "individual_demand_exceeds_capacity"
+          ],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 3
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 624
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "node",
+          "capacity": 302,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 78
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "node",
+          "capacity": 226,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 78
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "node",
+          "capacity": 151,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 78
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "node",
+          "capacity": 113,
+          "feasible": false,
+          "reasons": [
+            "individual_demand_exceeds_capacity"
+          ],
+          "counts": {
+            "running": 4,
+            "waiting": 0,
+            "arrivals": 2127
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 3
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 78
+        }
+      ]
+    },
+    {
+      "fraction": 0.7,
+      "cells": [
+        {
+          "allocation": "gpu_pool",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "GPU",
+          "capacity": 2416,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 1016
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "GPU",
+          "capacity": 1808,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 1016
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "GPU",
+          "capacity": 1208,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 1016
+        },
+        {
+          "allocation": "gpu_pool",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "GPU",
+          "capacity": 904,
+          "feasible": false,
+          "reasons": [
+            "individual_demand_exceeds_capacity",
+            "initial_running_exceeds_capacity"
+          ],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 114
+          },
+          "maximum_individual_demand": 1024,
+          "initial_running_demand": 1016
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 302,
+          "gpu_inventory": 2416,
+          "unit": "node",
+          "capacity": 302,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 127
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 226,
+          "gpu_inventory": 1808,
+          "unit": "node",
+          "capacity": 226,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 127
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 151,
+          "gpu_inventory": 1208,
+          "unit": "node",
+          "capacity": 151,
+          "feasible": true,
+          "reasons": [],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 0
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 127
+        },
+        {
+          "allocation": "exclusive_nodes",
+          "nodes": 113,
+          "gpu_inventory": 904,
+          "unit": "node",
+          "capacity": 113,
+          "feasible": false,
+          "reasons": [
+            "individual_demand_exceeds_capacity",
+            "initial_running_exceeds_capacity"
+          ],
+          "counts": {
+            "running": 2,
+            "waiting": 0,
+            "arrivals": 959
+          },
+          "oversized": {
+            "running": 0,
+            "waiting": 0,
+            "arrivals": 114
+          },
+          "maximum_individual_demand": 128,
+          "initial_running_demand": 127
+        }
+      ]
+    }
+  ]
+}
