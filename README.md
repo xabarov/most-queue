@@ -118,6 +118,16 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Initial state and terminal outcomes**:
+  opt-in MSJ replay with running/waiting carry-in, labelled cancelled occupation
+  and start-relative hard runtime budgets. Successful completion, cancellation
+  and timeout are accounted separately; shortened terminal latency is not treated
+  as successful service. The real-trace study keeps a fixed completed target cohort
+  and explicitly excludes cancellations with unobservable resource use.
+  In 1632 replays, adding observed cancelled occupation changed the best mean-delay
+  policy in one period; both service models missed the p99 winner in all four.
+  [Protocol/API](docs/real_trace_lifecycle.md),
+  [results](docs/research/real-trace-lifecycle-results-2026-10.md).
 - **2026-10, current source tree** — **Temporal history and dependent service**:
   four prespecified SDSC SP2 origins, seven workload variants and 1368 replays.
   Recent coarse-group empirical history reduced aggregate mean-delay error

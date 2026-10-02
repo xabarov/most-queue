@@ -289,3 +289,23 @@ Initial backlog and cancellation remain outside this completed-job experiment.
 See [protocol/API](../real_trace_temporal.md),
 [experiment](../../examples/real_trace_temporal_experiment.py),
 and [EPIC-056 results](../research/real-trace-temporal-results-2026-10.md).
+
+### Initial state and labelled resource releases
+
+`MsjLifecycleSim.run_lifecycle` is a separate opt-in API using the same six
+nonpreemptive dispatchers. `MsjCarryIn` seeds running jobs with elapsed age;
+initial waiting jobs retain their supplied order. `MsjLifecycleJob` carries a
+completed/cancelled terminal label and optional runtime limit, measured from
+service start. Ordinary `MsjGeneralSim.run_trace` remains unchanged.
+
+In plain words: start with some resources already occupied, let completed and
+cancelled jobs compete, and report whether each target finished or was stopped.
+A shorter time to termination under a hard limit need not mean better service.
+Running resource-time counts only remaining occupation, not service before replay.
+
+The real-trace experiment supplies a partial retrospective snapshot and recorded
+cancelled occupation; it does not infer latent completion demand, cancellation
+deadlines while waiting, priorities or original scheduler memory. Policy forecasts
+never receive actual residual durations. [Contract and executable example](../real_trace_lifecycle.md),
+[experiment](../../examples/real_trace_lifecycle_experiment.py),
+[EPIC-057 results](../research/real-trace-lifecycle-results-2026-10.md).

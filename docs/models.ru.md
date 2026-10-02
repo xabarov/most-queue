@@ -100,6 +100,7 @@
 | [MSJ с защитой полезного интервала](msj_protected_service.md) | - | MsjCheckpointSim | - | Опция min_service_time после каждого полезного старта, сброс после resume; события истечения защиты, независимый offline-подбор; меньше прерываний не означает меньшую задержку |
 | [Калибровка MSJ по реальной трассе](real_trace_calibration.md) | - | MsjGeneralSim + SWF-адаптер | - | Историческая подвыборка завершённых работ; обучение empirical/Exp/PH/lognormal только по прошлому, точные K и времена прихода; не реконструкция исходного кластера |
 | [История и зависимое обслуживание](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Несколько временных границ; отдельно среднее, форма, точный K и циклические блоки рангов с rank-iid-контролем; условные MC-оценки, не новый планировщик |
+| [MSJ: начальное состояние и исходы](real_trace_lifecycle.md) | - | MsjLifecycleSim | - | Opt-in running/waiting, занятый ресурс до отмены и жёсткий runtime limit; отдельный учёт успеха/отмены/timeout, не реконструкция отмен в очереди |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |

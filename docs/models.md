@@ -100,6 +100,7 @@ does not establish stability or a stationary tail guarantee.
 | [MSJ protected useful service](msj_protected_service.md) | - | MsjCheckpointSim | - | Opt-in min_service_time per useful episode, reset after resume; genuine expiry events, independent offline selection; fewer preemptions need not improve delay |
 | [Real-trace MSJ calibration](real_trace_calibration.md) | - | MsjGeneralSim + SWF adapter | - | Historical completed-job subset, train-only empirical/Exp/PH/lognormal fits; exact K and recorded arrivals, not a reconstruction of the original scheduler |
 | [Temporal/dependent service replay](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Rolling completed histories, mean-only/shape/exact-K comparisons and circular rank blocks; matched rank-iid control, conditional MC diagnostics, not a new scheduler |
+| [MSJ initial state and terminal outcomes](real_trace_lifecycle.md) | - | MsjLifecycleSim | - | Opt-in running/waiting carry-in, occupied service to cancellation and hard runtime budgets; separate success/cancel/timeout accounting, not queue-abandonment reconstruction |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

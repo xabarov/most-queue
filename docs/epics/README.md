@@ -97,6 +97,7 @@
 | [EPIC-054](EPIC-054-msj-protected-service.md) | MSJ: минимальный полезный интервал и независимый выбор длительности защиты | done |
 | [EPIC-055](EPIC-055-real-trace-calibration.md) | Реальная SWF-трасса: аудит, временная калибровка обслуживания и ошибка выбора дисциплины | done |
 | [EPIC-056](EPIC-056-real-trace-temporal-dependence.md) | Реальная трасса: давность истории, точный K и блочная генерация длительностей | done |
+| [EPIC-057](EPIC-057-real-trace-initial-state-cancellation.md) | Реальная трасса: начальное состояние, отменённая нагрузка и runtime limits | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

@@ -36,6 +36,11 @@ The follow-up [temporal/dependent replay](real_trace_temporal.md) compares
 expanding/recent histories, mean-only and shape updates, exact K, and circular
 rank blocks on four prespecified origins. It retains matched rank-iid controls
 and fixed historical forecasts; it does not change scheduling semantics.
+For explicit initial running/waiting jobs and terminal-outcome accounting, see
+[lifecycle replay](real_trace_lifecycle.md). `MsjLifecycleSim.run_lifecycle` reuses
+the same nonpreemptive dispatchers while separating completed/cancelled/timeout
+resource release. A start-relative runtime cap does not imply successful completion;
+unobserved waiting-cancellation times are not reconstructed.
 
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 

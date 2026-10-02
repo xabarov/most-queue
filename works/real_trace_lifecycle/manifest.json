@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "config": {
+    "fractions": [
+      0.35,
+      0.5,
+      0.65,
+      0.8
+    ],
+    "jobs": 1000,
+    "warmup": 200,
+    "replications": 8,
+    "history_limit": 4000,
+    "minimum": 20,
+    "first_seed": 56000
+  },
+  "capacity": 128,
+  "audit": {
+    "counts": {
+      "records": 59715,
+      "accepted_status_5": 10917,
+      "accepted_status_1": 43117,
+      "unobserved_or_zero_runtime": 5681
+    },
+    "requests": {
+      "status_5_missing": 5,
+      "status_5_exceeded": 4081,
+      "status_1_missing": 30,
+      "status_1_exceeded": 53
+    }
+  },
+  "source": {
+    "page": "https://www.cs.huji.ac.il/labs/parallel/workload/l_sdsc_sp2/index.html",
+    "download": "https://raw.githubusercontent.com/DIR-LAB/deep-batch-scheduler/cd433e3d62a01705f255bd48cb55b393862800e7/data/SDSC-SP2-1998-4.2-cln.swf",
+    "sha256": "64bc6c621c97fe10e74cfc6a8c568ba544fddd99c4f810473027dca99efc2ed1",
+    "mirror_commit": "cd433e3d62a01705f255bd48cb55b393862800e7",
+    "attribution": "SDSC / Victor Hazlewood; conversion Dror Feitelson; DIR-LAB mirror",
+    "usage_conditions": "NPACI JOBLOG research/educational/non-profit conditions; not MIT data"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.2.5",
+    "scipy": "1.13.0"
+  },
+  "implementation_sha256": {
+    "examples/real_trace_temporal_experiment.py": "e2a30cf4485250f4034bcbc7ed64ea24eabe05ad28072d86e2be8d522f424893",
+    "examples/real_trace_calibration_experiment.py": "0098001fb5102ebbfc26e6a1ef97b9a9ce752dcd8ea372332d80ba7e9748f0e1",
+    "most_queue/random/trace_resampling.py": "bd620ce598718d7e35be7d38a3fbea79e3d9650bd22264eff6addbec683372fa",
+    "most_queue/random/service_calibration.py": "b0ce156294e157a585894be76275783905f9e652e83c8578bdb790d27fb8b27a",
+    "most_queue/sim/utils/workload_trace.py": "d4420c432da3728ae9500e4f8e4e14fe5d4aab36d22a523a2c63d94aea067ed2",
+    "most_queue/sim/msj_general.py": "fd7a3c1bb25515829950ffe0956b05a3103850ee2a1c82a45663e9bfe39005a6",
+    "most_queue/sim/utils/msj_calendar.py": "78ba574a5503d9cc88a0b001e5ea6803a5434dc9d0ae70adc40d0246c062c70f",
+    "most_queue/sim/utils/msj_packing.py": "6772cc87052a00b62e3dd54fb6b2d9f24b6c0e3df297f546de8eadf307ee9159",
+    "most_queue/sim/base_core.py": "82d585446228032a8e26b0c3b67842daf6ad00e905dbadc4cebc85a5ce822aab",
+    "most_queue/structs.py": "40e9c57f9d3b7e4766f721ba74f8c261922b0bba39e11e7a20ac5e308cf3105b",
+    "examples/real_trace_lifecycle_experiment.py": "779e5fc10619420379dae078825d8702bcbbda3cb7c5543110e7938886a721d3",
+    "most_queue/sim/msj_lifecycle.py": "2f98c94985e1bb0ea97c6902f99ec7c023a023016c0562e5a316462c202cd6e2",
+    "most_queue/sim/utils/workload_lifecycle.py": "a057146e2977bcf385fe4adb2c12e28a6a50d5ba49fd0f0e483a9c1050baa527"
+  },
+  "artifacts": [
+    {
+      "file": "origin-0.json",
+      "sha256": "46c7309e6a67720403f6986378aaba815f61901f2ac2e8a388e2237b6aeb80c2"
+    },
+    {
+      "file": "origin-1.json",
+      "sha256": "5a4ed6775f4e49fe45b86669ad174d96a1bdc5a227be55b1f20eb648750d7076"
+    },
+    {
+      "file": "origin-2.json",
+      "sha256": "5b5144593d601efbfa188cf9f414aa6e191e1293d557d269780ef026689baced"
+    },
+    {
+      "file": "origin-3.json",
+      "sha256": "fee02b7374a5ee6009d6c80bbd54cbfbc289f937bc6944e3b8e241aab5196e69"
+    }
+  ],
+  "scheduler_runs": 1632,
+  "aggregate": [
+    {
+      "scenario": "empty_completed",
+      "model": "expanding_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.9457351343407341,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.7685612181856118,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.043218572127678934,
+        "max_relative_regret": 0.1602725917474348
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "empty_completed",
+      "model": "recent_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.4412476815116512,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.38376174557622544,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.0031504241908202335,
+        "max_relative_regret": 0.012601696763280934
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "carry_completed",
+      "model": "expanding_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 1.0231639104345813,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.05445778295585202,
+        "max_relative_regret": 0.21783113182340808
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.8819655047324945,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.3028127791892645,
+        "max_relative_regret": 0.9786040995183733
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "carry_completed",
+      "model": "recent_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.2544158063230088,
+        "matching_choices": 4,
+        "mean_relative_regret": 0.0,
+        "max_relative_regret": 0.0
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.2650680882646346,
+        "matching_choices": 2,
+        "mean_relative_regret": 0.0782556927671712,
+        "max_relative_regret": 0.23264701723868475
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "carry_cancelled",
+      "model": "expanding_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.9104781323738703,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.0327125112301368,
+        "max_relative_regret": 0.1308500449205472
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.7845771017123374,
+        "matching_choices": 0,
+        "mean_relative_regret": 0.6051412140622932,
+        "max_relative_regret": 0.7206457428172846
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "carry_cancelled",
+      "model": "recent_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.38506161927327726,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.0327125112301368,
+        "max_relative_regret": 0.1308500449205472
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.34241755510289934,
+        "matching_choices": 0,
+        "mean_relative_regret": 0.6051412140622932,
+        "max_relative_regret": 0.7206457428172846
+      },
+      "model_success_rate": 1.0,
+      "observed_success_rate": 1.0
+    },
+    {
+      "scenario": "requested_limit",
+      "model": "expanding_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.8349799660144636,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.03254694502114497,
+        "max_relative_regret": 0.13018778008457987
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.7474649094158144,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.4357703914666913,
+        "max_relative_regret": 0.748927919650576
+      },
+      "model_success_rate": 0.7534374999999999,
+      "observed_success_rate": 0.9974999999999999
+    },
+    {
+      "scenario": "requested_limit",
+      "model": "recent_coarse",
+      "mean_release_t": {
+        "mape_of_mc_means": 0.8560387422813158,
+        "matching_choices": 3,
+        "mean_relative_regret": 0.03254694502114497,
+        "max_relative_regret": 0.13018778008457987
+      },
+      "p99_release_t": {
+        "mape_of_mc_means": 0.7408710501234945,
+        "matching_choices": 1,
+        "mean_relative_regret": 0.4357703914666913,
+        "max_relative_regret": 0.748927919650576
+      },
+      "model_success_rate": 0.8035625000000001,
+      "observed_success_rate": 0.9974999999999999
+    }
+  ],
+  "interpretation": "Retrospective partial carry-in and service-clock cancellation sensitivity. Requested-time caps are hypothetical enforcement; terminal latency is not successful-completion latency. Unknown cancellations and latent completion demand are not imputed."
+}

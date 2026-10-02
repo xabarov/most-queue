@@ -6,7 +6,8 @@
 Линия MSJ развита в EPIC-047–054; первый эксперимент калибровки по реальной
 трассе оформлен в [EPIC-055](../epics/EPIC-055-real-trace-calibration.md).
 См. [результаты EPIC-055](real-trace-calibration-results-2026-10.md),
-[историю и зависимости EPIC-056](real-trace-temporal-results-2026-10.md) и
+[историю и зависимости EPIC-056](real-trace-temporal-results-2026-10.md),
+[начальное состояние и отмены EPIC-057](real-trace-lifecycle-results-2026-10.md) и
 [roadmap трека](../roadmaps/real-trace-calibration.md); первоначальные формулировки
 «пока не проверено» относятся к дате исходного обзора.
 
