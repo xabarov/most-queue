@@ -20,7 +20,7 @@ from examples.msj_packing_experiment import WORKLOADS, Workload, fit_history, ma
 from examples.msj_runtime_prediction_experiment import FEATURE_SLOPE, LOADS, SHAPES, fingerprint
 from most_queue.sim.msj_checkpoint import MsjCheckpointSim
 from most_queue.sim.msj_general import MsjGeneralSim, MsjTraceJob
-from most_queue.structs import MsjCheckpointResults
+from most_queue.structs import MsjCheckpointResults, MsjSimulationResults
 
 REGIMES = ("one_or_all", "powers_of_two")
 OVERHEAD_LEVELS = (0.0, 0.01, 0.05, 0.2, 0.5, 1.0)
@@ -71,6 +71,17 @@ def replay(workload: Workload, trace: tuple[MsjTraceJob, ...], policy: str, warm
         predictor = age_predictor(models) if mode == "km_age" else None
     sim.set_servers(workload.needs)
     result = sim.run_trace(trace, warmup_jobs=warmup, remaining_predictor=predictor)
+    return {
+        "checkpoint_time": checkpoint,
+        "resume_time": resume,
+        **checkpoint_metrics(workload, trace, result, warmup),
+    }
+
+
+def checkpoint_metrics(
+    workload: Workload, trace: tuple[MsjTraceJob, ...], result: MsjSimulationResults, warmup: int
+) -> dict:
+    """Collect phase/queue/resource metrics without replaying a second time."""
     output = packing_metrics(workload, trace, result)
     first = np.array(result.start_times[warmup:]) - np.array([job.arrival for job in trace[warmup:]])
     if isinstance(result, MsjCheckpointResults):
@@ -92,8 +103,6 @@ def replay(workload: Workload, trace: tuple[MsjTraceJob, ...], policy: str, warm
     work = sum(workload.needs[job.cls] * job.service for job in trace)
     output.update(
         {
-            "checkpoint_time": checkpoint,
-            "resume_time": resume,
             "mean_first_wait": float(first.mean()),
             "p99_first_wait": float(np.quantile(first, 0.99)),
             "mean_interruption": float(np.mean(interruptions)),

@@ -25,7 +25,7 @@ add a figure function and regenerate the PNGs.
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
 | [Matrix-analytic models (MAP/PH)](models/map-ph.md) | correlated arrivals: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP variants, MMPP fitting |
-| [Multiserver-job systems (MSJ)](models/msj.md) | PH-FCFS analytics; general-service backfilling, forecasts, FirstFit/MSF/Quickswap, zero-cost ServerFilling and a separate checkpoint/resume-cost extension |
+| [Multiserver-job systems (MSJ)](models/msj.md) | PH-FCFS analytics; general-service backfilling, forecasts, FirstFit/MSF/Quickswap, zero-cost ServerFilling, checkpoint/resume costs and useful-service protection |
 | [Load balancing / dispatching (mean-field)](models/load-balancing.md) | power-of-d / JSQ / JIQ dispatching, mean-field |
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
@@ -97,6 +97,7 @@ does not establish stability or a stationary tail guarantee.
 | MSJ general-service scheduling | - | MsjGeneralSim | - | FCFS/EASY/conservative; prediction-free FirstFit/MSF/MSFQ/Adaptive Quickswap; MSFQ needs K in {1,k} |
 | MSJ ServerFilling | - | MsjGeneralSim | - | Power-of-two k and K; zero-cost preemptive-resume, not SRPT; W includes pauses and execution segments are logged |
 | [MSJ checkpoint/resume cost](msj_checkpoint.md) | - | MsjCheckpointSim | - | Power-of-two k and K; explicit gated SF extension, deterministic overhead holds K servers; allocated/productive utilization distinguished, no stability theorem |
+| [MSJ protected useful service](msj_protected_service.md) | - | MsjCheckpointSim | - | Opt-in min_service_time per useful episode, reset after resume; genuine expiry events, independent offline selection; fewer preemptions need not improve delay |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

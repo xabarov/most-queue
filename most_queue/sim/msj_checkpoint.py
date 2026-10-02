@@ -9,12 +9,13 @@ theorem. Useful work is preserved; no restart, I/O contention or memory model.
 import heapq
 import time
 from collections import defaultdict, deque
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from numbers import Real
 
 import numpy as np
 
-from most_queue.sim.msj_general import MsjGeneralSim, RemainingPredictor, _integer, _Observation, _Replay
+from most_queue.sim.msj_general import MsjGeneralSim, MsjTraceJob, RemainingPredictor, _integer, _Observation, _Replay
 from most_queue.sim.utils.msj_packing import server_filling_selection
 from most_queue.structs import MsjCheckpointResults, MsjSimulationResults
 
@@ -35,6 +36,10 @@ class _CostReplay(_Replay):
     phase_times: dict = field(default_factory=lambda: {name: defaultdict(float) for name in ("checkpoint", "resume")})
     phase_segments: dict = field(default_factory=lambda: {name: [] for name in ("checkpoint", "resume")})
     phase_areas: dict = field(default_factory=lambda: defaultdict(float))
+    protected_until: dict = field(default_factory=dict)
+    review_at: float = float("inf")
+    protected_preemptions: int = 0
+    protection_expirations: int = 0
 
 
 def _cost(value, name):
@@ -64,14 +69,27 @@ class MsjCheckpointSim(MsjGeneralSim):
     prefix rule over all unfinished jobs, without S or predictions. This is a
     stated extension, not a Slurm emulation or a throughput-optimality claim.
 
-    ``checkpoint_time=resume_time=0`` delegates to the exact original replay.
-    See docs/msj_checkpoint.md for accounting, event ties and limitations.
+    Optional min_service_time protects each new useful episode against early
+    preemption. The clock resets AFTER resume, not at first arrival or during
+    overhead. An expiry reconsiders the same prefix, without forcing a switch.
+    Zero protection preserves EPIC-053; all three times zero delegate to the
+    original SF. See docs/msj_checkpoint.md and docs/msj_protected_service.md.
     """
 
-    def __init__(self, k: int, checkpoint_time: float = 0.0, resume_time: float = 0.0, seed: int | None = None) -> None:
+    # Preserve all four existing positional parameters; protection is opt-in.
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        k: int,
+        checkpoint_time: float = 0.0,
+        resume_time: float = 0.0,
+        seed: int | None = None,
+        *,
+        min_service_time: float = 0.0,
+    ) -> None:
         super().__init__(k, "server_filling", seed)
         self.checkpoint_time = _cost(checkpoint_time, "checkpoint_time")
         self.resume_time = _cost(resume_time, "resume_time")
+        self.min_service_time = _cost(min_service_time, "min_service_time")
 
     def _service(self, trace, state, idx, now):
         if idx not in state.begun:
@@ -80,6 +98,8 @@ class MsjCheckpointSim(MsjGeneralSim):
         end = _end(now, state.remaining.get(idx, trace[idx].service))
         state.completions[idx] = end
         state.active[idx] = _Phase(self.needs[trace[idx].cls], "service", now, end)
+        if self.min_service_time:
+            state.protected_until[idx] = _end(now, self.min_service_time)
 
     def _checkpoint(self, state, idx, now):
         running = state.active.pop(idx)
@@ -111,13 +131,26 @@ class MsjCheckpointSim(MsjGeneralSim):
         if all(phase.kind == "service" for phase in state.active.values()):
             for idx in list(state.active):
                 if idx not in chosen:
-                    self._checkpoint(state, idx, now)
+                    if state.protected_until.get(idx, now) > now:
+                        state.protected_preemptions += 1
+                    else:
+                        self._checkpoint(state, idx, now)
         free = self.k - sum(phase.need for phase in state.active.values())
         for idx in selected:
             if idx not in state.active and self.needs[trace[idx].cls] <= free:
                 self._admit(trace, state, idx, now)
                 free -= self.needs[trace[idx].cls]
         state.waiting = deque(sorted(state.waiting))
+        state.review_at = float("inf")
+        if self.min_service_time and all(phase.kind == "service" for phase in state.active.values()):
+            state.review_at = min(
+                (
+                    state.protected_until[idx]
+                    for idx in state.active
+                    if idx not in chosen and state.protected_until[idx] > now
+                ),
+                default=float("inf"),
+            )
 
     def _finish_phases(self, trace, state, now):
         finished = [(idx, phase) for idx, phase in state.active.items() if phase.end <= now]
@@ -190,10 +223,16 @@ class MsjCheckpointSim(MsjGeneralSim):
             resume_utilization=state.phase_areas["resume"] / scale if scale else None,
             checkpoint_resource_time=sum(self.needs[trace[idx].cls] * value for idx, value in checkpoint.items()),
             resume_resource_time=sum(self.needs[trace[idx].cls] * value for idx, value in resume.items()),
+            protected_preemptions=state.protected_preemptions,
+            protection_expirations=state.protection_expirations,
         )
 
     def run_trace(
-        self, trace, warmup_jobs: int = 0, *, remaining_predictor: RemainingPredictor | None = None
+        self,
+        trace: Iterable[MsjTraceJob],
+        warmup_jobs: int = 0,
+        *,
+        remaining_predictor: RemainingPredictor | None = None,
     ) -> MsjCheckpointResults:
         """Drain a common trace; phase endings precede arrivals and dispatch.
 
@@ -210,7 +249,7 @@ class MsjCheckpointSim(MsjGeneralSim):
             raise ValueError("warmup_jobs must leave at least one measured job")
         if remaining_predictor is not None:
             raise ValueError("checkpoint packing does not support remaining_predictor")
-        if self.checkpoint_time == self.resume_time == 0:
+        if self.checkpoint_time == self.resume_time == self.min_service_time == 0:
             return self._zero_result(super().run_trace(trace, warmup_jobs), trace, warmup)
         state = _CostReplay(np.zeros(len(trace)), np.zeros(len(trace)))
         observation = _Observation(trace[warmup].arrival, trace[-1].arrival, started)
@@ -218,10 +257,12 @@ class MsjCheckpointSim(MsjGeneralSim):
         while cursor < len(trace) or state.active or state.waiting:
             arrival = trace[cursor].arrival if cursor < len(trace) else float("inf")
             finish = min((phase.end for phase in state.active.values()), default=float("inf"))
-            nxt = min(arrival, finish)
+            nxt = min(arrival, finish, state.review_at)
             if not np.isfinite(nxt):
                 raise RuntimeError("checkpoint scheduler stalled with waiting jobs")
             self._observe_cost(state, observation, now, nxt)
+            if nxt == state.review_at:
+                state.protection_expirations += 1
             now = nxt
             self._finish_phases(trace, state, now)
             while cursor < len(trace) and trace[cursor].arrival <= now:

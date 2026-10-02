@@ -18,7 +18,10 @@ zero-cost resume; its W includes interruptions and its service log preserves
 every execution segment. It is not an interchangeable nonpreemptive baseline.
 The separate [MsjCheckpointSim extension](msj_checkpoint.md) adds resource-holding
 checkpoint/resume phases with an explicit gate on new preemptions; it reports
-useful and overhead utilization separately, and exactly recovers SF at zero cost.
+useful and overhead utilization separately, and recovers SF when costs and protection are zero.
+Its optional [min_service_time protection](msj_protected_service.md) resets after
+each useful start, with explicit expiry events; q=0 preserves the original cost
+model. Positive q can change the schedule even when checkpoint/resume are free.
 For learned submission-time estimates and pooled or resource-group split-conformal calibration,
 see [MSJ runtime prediction](msj_runtime_prediction.md).
 For independently right-censored history and active-job residual updates by age,

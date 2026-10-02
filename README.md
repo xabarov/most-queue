@@ -79,7 +79,7 @@ See the executable comparison of **9 disciplines** in
 | Multi-server phase-type | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 via complex fit) | Takahashi–Takami |
 | Size-based scheduling | M/G/1 SRPT, SJF, PSJF, SPJF (with size predictors + graceful-degradation curves), FB/LAS, PS, LCFS-PR | exact (Schrage–Miller, Mitzenmacher) |
 | Priorities | M/G/1 PR/NP multi-class, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k & M/PH/k multi-class (exact + RDR-A), per-class response variance; M/M/2 with **heterogeneous servers** (exact non-birth-death CTMC); **accumulating priority** (Kleinrock/APQ), priority Erlang-A (impatience), MMAP/PH/1 priorities (NP/PR/RS), retrial with a priority class, preemptive repeat | exact / RDR / CTMC / invariant approximation |
-| [Multiserver-job (MSJ)](docs/models/msj.md) | FCFS with phase-type service; general-service FCFS/EASY/conservative, FirstFit, MSF and Quickswap; power-of-two ServerFilling, plus a separate checkpoint/resume-cost extension | FCFS CTMC / saturated analysis; trace-driven simulation for scheduling policies |
+| [Multiserver-job (MSJ)](docs/models/msj.md) | FCFS with phase-type service; general-service FCFS/EASY/conservative, FirstFit, MSF and Quickswap; power-of-two ServerFilling, checkpoint/resume costs and optional useful-service protection | FCFS CTMC / saturated analysis; trace-driven simulation for scheduling policies |
 | Load balancing (mean-field) | dispatching over a large pool — power-of-d / JSQ / JIQ / random | mean-field fixed point |
 | Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |
 | Non-stationary Mt/M/c | time-varying arrival rate λ(t) — blocking & waiting probability | PSA & MOL approximations |
@@ -125,10 +125,15 @@ scheduling research (SRPT/LAS with ML size predictions).
   history. MSFQ is one-or-all; ServerFilling is a separate power-of-two,
   zero-cost preemptive-resume model. `MsjCheckpointSim` separately models
   resource-holding checkpoint/resume phases and reports productive utilization.
+  Optional `min_service_time` protects each useful episode; protection can be
+  selected on independent historical replays, without test-set tuning.
   In 832 paired sensitivity runs, overhead could erase the packing advantage;
   the crossover depended on workload, not a universal cost threshold.
+  A further 1920-run protection study found gains over unprotected SF at high
+  overhead; zero protection was the historical choice at both lower cost levels.
   [Methods and API](docs/models/msj.md), [packing results](docs/research/msj-packing-results-2026-10.md),
   [checkpoint-cost results](docs/research/msj-checkpoint-results-2026-10.md),
+  [protected-service results](docs/research/msj-protected-service-results-2026-10.md),
   [roadmap](docs/roadmaps/msj-ph-backfilling.md). Simulation comparisons are not
   new analytical stability or SLO guarantees; PyPI releases may lag this tree.
 - **2026-09** — **Realism wave, part 2: Erlang everywhere, batch-size-dependent params, exact

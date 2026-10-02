@@ -18,9 +18,10 @@ with (Path(__file__).parent / "default_params.yaml").open(encoding="utf-8") as s
 
 
 @pytest.mark.parametrize("need", [1, 4])
-def test_checkpoint_no_preemption_matches_theory(need):
+@pytest.mark.parametrize("protection", [0, 5])
+def test_checkpoint_no_preemption_matches_theory(need, protection):
     """With identical needs no preemption occurs, so configured costs vanish."""
-    sim = MsjCheckpointSim(4, checkpoint_time=3, resume_time=2, seed=8053)
+    sim = MsjCheckpointSim(4, checkpoint_time=3, resume_time=2, seed=8053, min_service_time=protection)
     if need == 4:
         params = ErlangParams(r=2, mu=2)
         calc = MG1Calc()
@@ -47,3 +48,4 @@ def test_checkpoint_no_preemption_matches_theory(need):
     assert actual.preemptions == 0
     assert actual.checkpoint_utilization == actual.resume_utilization == 0
     assert actual.productive_utilization == actual.utilization
+    assert actual.protected_preemptions == actual.protection_expirations == 0

@@ -8,6 +8,9 @@ they are not added to latency after a zero-cost run.
 Use `MsjGeneralSim(..., "server_filling")` for the original zero-cost model.
 Use this separate class when checkpoint and resume consume time on the job's
 allocated servers. Neither model assumes exponential useful service times.
+This page describes the default `min_service_time=0`. Optional
+[useful-service protection](msj_protected_service.md) delays preemption until a
+minimum episode age, without changing the default model or charging extra work.
 
 ## Runnable example
 
@@ -87,7 +90,7 @@ Positive phases that cannot advance the floating-point timestamp raise an
 error: rescale the trace instead of silently losing elapsed time. Zero-length
 useful episodes after restoration are not logged.
 
-For c=r=0 the class delegates to the original ServerFilling replay, preserving
+For c=r=0 and default `min_service_time=0`, the class delegates to the original ServerFilling replay, preserving
 every original result field apart from runtime measurement. This is an exact
 reference case, not a claim about convergence of every positive-cost path.
 

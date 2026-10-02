@@ -25,7 +25,7 @@
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
 | [Матрично-аналитические модели (MAP/PH)](models/map-ph.ru.md) | коррелированные потоки: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP-варианты, фиттинг MMPP |
-| [Multiserver-job системы (MSJ)](models/msj.ru.md) | PH-FCFS аналитика; general-service backfilling, прогнозы, FirstFit/MSF/Quickswap, бесплатный ServerFilling и отдельное расширение с ценой checkpoint/resume |
+| [Multiserver-job системы (MSJ)](models/msj.ru.md) | PH-FCFS аналитика; general-service backfilling, прогнозы, FirstFit/MSF/Quickswap, бесплатный ServerFilling, цена checkpoint/resume и защита полезного интервала |
 | [Балансировка нагрузки / диспетчеризация (mean-field)](models/load-balancing.ru.md) | диспетчеризация power-of-d / JSQ / JIQ, mean-field |
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
@@ -97,6 +97,7 @@
 | MSJ general-service дисциплины | - | MsjGeneralSim | - | FCFS/EASY/conservative; без прогнозов FirstFit/MSF/MSFQ/Adaptive Quickswap; MSFQ требует K из {1,k} |
 | MSJ ServerFilling | - | MsjGeneralSim | - | k и K — степени двойки; бесплатный preemptive-resume, не SRPT; W включает паузы, есть журнал исполнения |
 | [MSJ с ценой checkpoint/resume](msj_checkpoint.md) | - | MsjCheckpointSim | - | k и K — степени двойки; gated-расширение SF, детерминированный overhead удерживает K серверов; выделенная и полезная загрузка разделены, теоремы устойчивости нет |
+| [MSJ с защитой полезного интервала](msj_protected_service.md) | - | MsjCheckpointSim | - | Опция min_service_time после каждого полезного старта, сброс после resume; события истечения защиты, независимый offline-подбор; меньше прерываний не означает меньшую задержку |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |

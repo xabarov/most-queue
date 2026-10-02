@@ -94,6 +94,7 @@
 | [EPIC-051](EPIC-051-msj-age-residual-runtime.md) | MSJ: прогноз остатка по возрасту и цензурированная история | done |
 | [EPIC-052](EPIC-052-msj-packing-baselines.md) | MSJ: prediction-free packing, Quickswap и ServerFilling | done |
 | [EPIC-053](EPIC-053-msj-checkpoint-cost.md) | MSJ: стоимость checkpoint/resume и полезная загрузка | done |
+| [EPIC-054](EPIC-054-msj-protected-service.md) | MSJ: минимальный полезный интервал и независимый выбор длительности защиты | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

@@ -83,7 +83,7 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 | Многоканальные фазовые | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 через complex-fit) | Такахаси–Таками |
 | Size-based дисциплины | M/G/1 SRPT, SJF, PSJF, SPJF (с предикторами + кривые graceful degradation), FB/LAS, PS, LCFS-PR | точный (Schrage–Miller, Mitzenmacher) |
 | Приоритеты | M/G/1 PR/NP мультикласс, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k и M/PH/k мультикласс (точный + RDR-A), дисперсия отклика по классам; M/M/2 с **гетерогенными серверами** (точная не-birth-death CTMC); **накапливаемый приоритет** (Клейнрок/APQ), приоритетный Erlang-A (нетерпение), приоритеты MMAP/PH/1 (NP/PR/RS), retrial с приоритетным классом, preemptive repeat | точный / RDR / CTMC / инвариантная аппроксимация |
-| [Multiserver-job (MSJ)](docs/models/msj.ru.md) | FCFS с фазовым обслуживанием; general-service FCFS/EASY/conservative, FirstFit, MSF и Quickswap; ServerFilling для степеней двойки и отдельное расширение с ценой checkpoint/resume | CTMC для FCFS / анализ насыщенной системы; replay-симуляция дисциплин |
+| [Multiserver-job (MSJ)](docs/models/msj.ru.md) | FCFS с фазовым обслуживанием; general-service FCFS/EASY/conservative, FirstFit, MSF и Quickswap; ServerFilling для степеней двойки, цена checkpoint/resume и опциональная защита полезного интервала | CTMC для FCFS / анализ насыщенной системы; replay-симуляция дисциплин |
 | Балансировка нагрузки (mean-field) | диспетчеризация по большому пулу — power-of-d / JSQ / JIQ / случайно | mean-field неподвижная точка |
 | Polling-системы | один сервер обходит Q очередей со switchover — exhaustive / gated | псевдо-закон сохранения (Boxma–Groenevelt) |
 | Нестационарная Mt/M/c | переменная интенсивность прихода λ(t) — вероятность блокировки и ожидания | приближения PSA и MOL |
@@ -129,10 +129,15 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
   ServerFilling — отдельная модель для степеней двойки с бесплатным
   preemptive-resume. Отдельный `MsjCheckpointSim` учитывает время и занятые
   ресурсы checkpoint/resume, различая выделенную и полезную загрузку.
+  Опция `min_service_time` защищает каждый полезный интервал; её длительность
+  можно выбирать по независимой истории, не подстраивая под тестовые результаты.
   В 832 парных sensitivity-прогонах overhead мог устранить преимущество packing;
   граница зависела от нагрузки, универсального порога стоимости нет.
+  Ещё 1920 прогонов защиты показали выигрыш против SF без защиты при большой цене вытеснения;
+  на обоих меньших уровнях цены исторический подбор оставил защиту выключенной.
   [Методы и API](docs/models/msj.ru.md), [результаты](docs/research/msj-packing-results-2026-10.md),
   [цена checkpoint/resume](docs/research/msj-checkpoint-results-2026-10.md),
+  [результаты защиты полезного интервала](docs/research/msj-protected-service-results-2026-10.md),
   [roadmap](docs/roadmaps/msj-ph-backfilling.md). Симуляционные результаты не
   являются новыми гарантиями устойчивости/SLO; релиз PyPI может отставать от исходников.
 - **2026-09** — **Волна реализма, часть 2: Erlang везде, batch-size-зависимые параметры, точные

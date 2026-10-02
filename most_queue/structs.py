@@ -103,6 +103,8 @@ class MsjCheckpointResults(MsjSimulationResults):
     resume_utilization: float | None = None
     checkpoint_resource_time: float = 0.0
     resume_resource_time: float = 0.0
+    protected_preemptions: int = 0  # rejected job/dispatch attempts, not saved preemptions
+    protection_expirations: int = 0  # fired review times; may coincide with a phase end/arrival
 
 
 @dataclass

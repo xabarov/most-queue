@@ -71,11 +71,13 @@ def tick_reference(k, needs, arrivals, services, costs):
     at actual events. All arrays are per-job; no event heap or actual end-time
     arithmetic is shared with the implementation under test.
     """
-    checkpoint, resume = costs
+    checkpoint, resume = costs[:2]
+    protection = costs[2] if len(costs) > 2 else 0
     count = len(arrivals)
     mode = ["future"] * count
     left = list(services)
     overhead = [0] * count
+    useful_ticks = [0] * count
     starts, ends, waits, preemptions = [-1] * count, [-1] * count, [0] * count, [0] * count
     now = 0
     while any(end < 0 for end in ends):
@@ -84,9 +86,12 @@ def tick_reference(k, needs, arrivals, services, costs):
             if mode[idx] == "service" and left[idx] == 0:
                 mode[idx], ends[idx], event = "done", now, True
             elif mode[idx] in ("checkpoint", "resume") and overhead[idx] == 0:
+                useful_ticks[idx] = 0
                 mode[idx], event = ("queue" if mode[idx] == "checkpoint" else "service"), True
             elif mode[idx] == "future" and arrivals[idx] == now:
                 mode[idx], event = "queue", True
+            elif mode[idx] == "service" and protection and useful_ticks[idx] == protection:
+                event = True
         if event:
             prefix, total = [], 0
             for idx in range(count):
@@ -102,7 +107,7 @@ def tick_reference(k, needs, arrivals, services, costs):
                     free -= needs[idx]
             if not any(value in ("checkpoint", "resume") for value in mode):
                 for idx in range(count):
-                    if mode[idx] == "service" and idx not in chosen:
+                    if mode[idx] == "service" and idx not in chosen and useful_ticks[idx] >= protection:
                         preemptions[idx] += 1
                         mode[idx] = "checkpoint" if checkpoint else "queue"
                         overhead[idx] = checkpoint
@@ -113,10 +118,12 @@ def tick_reference(k, needs, arrivals, services, costs):
                     mode[idx] = "resume" if restored and resume else "service"
                     overhead[idx] = resume if restored else 0
                     starts[idx] = starts[idx] if restored else now
+                    useful_ticks[idx] = 0
                     free -= needs[idx]
         for idx, value in enumerate(mode):
             if value == "service":
                 left[idx] -= 1
+                useful_ticks[idx] += 1
             elif value in ("checkpoint", "resume"):
                 overhead[idx] -= 1
             if value in ("queue", "checkpoint", "resume"):

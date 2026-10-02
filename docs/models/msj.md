@@ -221,7 +221,7 @@ deterministic overhead phase, with no useful progress. First starts pay no r;
 all completed useful work survives interruption. New preemption batches wait
 until every active overhead finishes; fitting selected jobs can still start.
 This gate is an explicit experimental extension, not the original SF algorithm
-or a Slurm model. Both costs zero delegate exactly to the original SF replay.
+or a Slurm model. Both costs zero with default protection delegate exactly to the original SF replay.
 
 The inherited `set_servers`, `set_sources`, `run` and `run_trace` interfaces
 remain available. `MsjCheckpointResults` splits W into queue/checkpoint/resume
@@ -230,3 +230,25 @@ allocated from productive utilization. Finite draining does not prove stability.
 See the [runnable example, event rules and accounting](../msj_checkpoint.md),
 [experiment](../../examples/msj_checkpoint_experiment.py), and
 [EPIC-053 results](../research/msj-checkpoint-results-2026-10.md).
+
+### Minimum useful service before another preemption
+
+In plain words: let a newly started or restored job do useful work for at least
+q time units before it can be interrupted again. This can reduce overhead, but
+another job may wait longer for its servers. A short job can still finish before
+q, and protection expiry does not force a switch.
+
+Use `MsjCheckpointSim(..., min_service_time=q)`, a keyword-only nonnegative
+duration. The episode clock starts after resume finishes; it does not include
+overhead or prior useful episodes. Expiry events reconsider blocked preemption
+even without a new arrival. The original prefix and overhead gate remain;
+zero q preserves EPIC-053. `protected_preemptions` counts rejected job/event
+attempts, not counterfactual saved interruptions; `protection_expirations`
+counts fired review times. All other latency/resource accounting is unchanged.
+
+The experiment selects q=h(c+r) on independent, completed historical traces
+and freezes h before held-out evaluation. It retains every fixed candidate and
+does not turn a favorable training score into a performance guarantee.
+See [API, exact example and limits](../msj_protected_service.md),
+[experiment](../../examples/msj_protected_service_experiment.py), and
+[EPIC-054 results](../research/msj-protected-service-results-2026-10.md).
