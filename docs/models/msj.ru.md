@@ -132,3 +132,30 @@ for policy in ("fcfs", "easy", "conservative"):
 Сравнение FCFS/EASY/conservative при одинаковой ресурсной нагрузке:
 [пример](../../examples/msj_conservative_experiment.py),
 [результаты EPIC-048](../research/msj-conservative-results-2026-10.md).
+
+### Прогноз длительности по признакам
+
+`LogLinearRuntimePredictor` из `most_queue.sim.utils.runtime_prediction` обучает
+log-linear baseline на завершённых исторических работах: `fit(X, S)`.
+`calibrate(X_cal, S_cal, coverage=0.95)` по отдельной выборке задаёт
+односторонний split-conformal прогноз, `predict(X, upper=True)` возвращает его
+без доступа к фактическому S будущей работы. Результат передаётся в
+`MsjTraceJob.estimate`; EASY/conservative не изменены.
+
+Признаки должны быть доступны до запуска, train/calibration/test — разделены.
+Калибровка даёт marginal coverage при обменности наблюдений, а не гарантию каждой
+заявки, каждого класса или p99 очереди. При недостатке calibration API сообщает
+об отсутствии конечной границы, а не обрезает её. Возрастные прогнозы, drift-адаптация
+и реальные трассы остаются отдельными этапами.
+[Методика и пример EN](../msj_runtime_prediction.md),
+[результаты EPIC-049](../research/msj-runtime-prediction-results-2026-10.md).
+
+EPIC-050 добавляет `calibrate_by_group(X_cal, S_cal, groups)` и
+`predict(X, upper=True, groups=groups)`: общая регрессия, отдельный порог для
+каждого ресурсного класса, известного при поступлении. `group_calibrations`
+показывает число наблюдений и доступность конечной границы. Для недостаточно
+представленного или неизвестного класса прогноз явно отвергается, без подмены
+общей оценкой. Покрытие по классу не гарантирует всех резервирований и теряет
+основание при сдвиге закона внутри класса.
+[API и ограничения EN](../msj_runtime_prediction.md#calibration-by-resource-group),
+[результаты EPIC-050](../research/msj-group-calibration-results-2026-10.md).

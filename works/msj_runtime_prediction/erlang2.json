@@ -1,0 +1,6790 @@
+{
+  "protocol": {
+    "shape": "erlang2",
+    "jobs_measured": 4000,
+    "warmup": 400,
+    "replications": 6,
+    "first_seed": 49000,
+    "training_jobs": 1500,
+    "calibration_jobs": 1000,
+    "coverage_target": 0.95,
+    "k": 4,
+    "needs": [
+      1,
+      3,
+      4
+    ],
+    "class_probabilities": [
+      0.5,
+      0.3,
+      0.2
+    ],
+    "service_means": [
+      0.4,
+      2.2,
+      2.2
+    ],
+    "features": [
+      "class=1",
+      "class=2",
+      "log_input_size ~ Normal(0,1)"
+    ],
+    "feature_slope": 0.7,
+    "residual_cv": 0.7071067811865475,
+    "regimes": {
+      "iid": 1.0,
+      "slowdown2": 2.0
+    },
+    "loads": [
+      0.35,
+      0.55
+    ],
+    "policies": [
+      "fcfs",
+      "easy:class_mean",
+      "easy:feature_point",
+      "easy:feature_upper95",
+      "easy:oracle",
+      "conservative:class_mean",
+      "conservative:feature_point",
+      "conservative:feature_upper95",
+      "conservative:oracle"
+    ],
+    "split": "Four independent SeedSequence child streams: train, calibration, test, arrival gaps. Historical cohorts complete before time zero; no online updates or test-label fitting.",
+    "note": "Synthetic finite cohorts; law-based load matching; no stationarity/SLO guarantee. 95% Student intervals over independent seed bundles, not population quantile CIs. No multiplicity adjustment. Prediction coverage excludes warm-up; reservation counts include it. Coverage is marginal under exchangeability, not per-class or simultaneous; slowdown breaks it."
+  },
+  "calibration_runs": [
+    {
+      "seed": 49000,
+      "training_samples": 1500,
+      "class_means": [
+        0.3842370011906859,
+        2.12121713718899,
+        2.4542627928488687
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.9320720564253079
+      },
+      "fingerprints": {
+        "train": "580aa42cd95cd3a3602eb2bf25fb36eb5766bdbf0efa2ced41e9661d268773f8",
+        "calibration": "65f6ec02070a8052c4868bc7e489bb10c308bb06d195fbc76d92bf764b1908bc",
+        "test": "55bbc69c6d65bd4545cc7214f1069daf9545a373222cc613ed5fb79d6f738b08"
+      }
+    },
+    {
+      "seed": 49001,
+      "training_samples": 1500,
+      "class_means": [
+        0.4069122633089145,
+        2.2159572092060014,
+        1.9244453470001124
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.8091562364271029
+      },
+      "fingerprints": {
+        "train": "10a1cf84688ca6448a790b403a02370f02c1eee9736b20e6bd7e1d0802eaec07",
+        "calibration": "33da4d78bc27db6cb12a00373485e7aadbc9280f440120b2809801b19af276b1",
+        "test": "9fb2b1554c918736300bc420b8286e129e2a78b3c4e3c69186c3c409a93b9d5f"
+      }
+    },
+    {
+      "seed": 49002,
+      "training_samples": 1500,
+      "class_means": [
+        0.37814121708375126,
+        2.1129781989717933,
+        2.5809935713222796
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.8256850227126523
+      },
+      "fingerprints": {
+        "train": "b0d1abceb140d46d16de67e30991ffc4db5ca018aa114aa41cfb7a0cc1dc029a",
+        "calibration": "e5ed1eb6dfa4220984cc97d1a33e1e229488d22803cc2101a489e126c0c03d30",
+        "test": "08203d1c49b9a4eec68e09d79487a18b2892aed223455771753fe05eaea67c13"
+      }
+    },
+    {
+      "seed": 49003,
+      "training_samples": 1500,
+      "class_means": [
+        0.3949353815322658,
+        2.1896057107178497,
+        2.1642420610438564
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.837013066642862
+      },
+      "fingerprints": {
+        "train": "05a95a12b9f26a89a607096d5db267b8356168b7e33c33e6ff33b826c7721f52",
+        "calibration": "f89aa857f68f3238f3d30d2735f9ad26401d0c42dc8c57f97989215d03857869",
+        "test": "81b2c84ea7816343d5ee43054f3492708c9a0e00c12eb0a607018f5602c79c09"
+      }
+    },
+    {
+      "seed": 49004,
+      "training_samples": 1500,
+      "class_means": [
+        0.37588852772504555,
+        2.4563985075376884,
+        1.8823556064299904
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.8931884561335627
+      },
+      "fingerprints": {
+        "train": "6afc544b8baf02d379b6760b9ad4677ab9607ff8ccf3d79978a3c978ed160567",
+        "calibration": "95ebe89273d117bc764d263aeef960556335c24392d775001c92422c55239a38",
+        "test": "d5c375548d12e214313a0d41c0632ebea57f029778c8484efac186b613d327bd"
+      }
+    },
+    {
+      "seed": 49005,
+      "training_samples": 1500,
+      "class_means": [
+        0.3672347118386972,
+        2.179729436445621,
+        2.1424979544035887
+      ],
+      "calibration": {
+        "coverage": 0.95,
+        "samples": 1000,
+        "rank": 951,
+        "log_margin": 0.8448357824621466
+      },
+      "fingerprints": {
+        "train": "f326cf618de2b436ba965fdebe7e873a2ee383933c339bc7411346d1eeca29d4",
+        "calibration": "cff5df31e8f1189ae96131aa874581853f3ab078e1c9e15093e6da6c442b4241",
+        "test": "8c50fe1265d7c8d2664482857837351267f06ebf91e51f1e6b3ba29d2ffa36fb"
+      }
+    }
+  ],
+  "prediction_runs": [
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.66375,
+      "coverage_by_class": [
+        0.6708595387840671,
+        0.627435697583788,
+        0.7045735475896168
+      ],
+      "mean_absolute_log_error": 0.912986389436391,
+      "mean_estimate_over_mean_service": 0.9428698927802632,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.58275,
+      "coverage_by_class": [
+        0.5796645702306079,
+        0.5705378020265004,
+        0.6093943139678616
+      ],
+      "mean_absolute_log_error": 0.6502665624698772,
+      "mean_estimate_over_mean_service": 0.9920894280990777,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.95825,
+      "coverage_by_class": [
+        0.950733752620545,
+        0.9532346063912704,
+        0.9839307787391842
+      ],
+      "mean_absolute_log_error": 1.2036896835072577,
+      "mean_estimate_over_mean_service": 2.5196752645810636,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.40375,
+      "coverage_by_class": [
+        0.4009433962264151,
+        0.37178487918939984,
+        0.4610630407911001
+      ],
+      "mean_absolute_log_error": 0.8717721810035696,
+      "mean_estimate_over_mean_service": 0.4714349463901316,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.266,
+      "coverage_by_class": [
+        0.2641509433962264,
+        0.2634450506625097,
+        0.27441285537700866
+      ],
+      "mean_absolute_log_error": 0.7742915201114575,
+      "mean_estimate_over_mean_service": 0.49604471404953887,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.703,
+      "coverage_by_class": [
+        0.6944444444444444,
+        0.6944660950896336,
+        0.7367119901112484
+      ],
+      "mean_absolute_log_error": 0.7190503914365413,
+      "mean_estimate_over_mean_service": 1.2598376322905318,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1908,
+        1283,
+        809
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.6695,
+      "coverage_by_class": [
+        0.6768138001014713,
+        0.685078318219291,
+        0.6286764705882353
+      ],
+      "mean_absolute_log_error": 0.9343956505139425,
+      "mean_estimate_over_mean_service": 0.9691464093810253,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.57825,
+      "coverage_by_class": [
+        0.6037544393708777,
+        0.5746084089035449,
+        0.5220588235294118
+      ],
+      "mean_absolute_log_error": 0.6533646491770101,
+      "mean_estimate_over_mean_service": 0.955273452770023,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.93125,
+      "coverage_by_class": [
+        0.9446981227803145,
+        0.9192085737840066,
+        0.9166666666666666
+      ],
+      "mean_absolute_log_error": 1.1006247692753517,
+      "mean_estimate_over_mean_service": 2.1455557182180227,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.41025,
+      "coverage_by_class": [
+        0.4150177574835109,
+        0.4220939818631492,
+        0.38112745098039214
+      ],
+      "mean_absolute_log_error": 0.8731146941082083,
+      "mean_estimate_over_mean_service": 0.4845732046905126,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.27075,
+      "coverage_by_class": [
+        0.2831050228310502,
+        0.27122835943940643,
+        0.24019607843137256
+      ],
+      "mean_absolute_log_error": 0.7726541465410383,
+      "mean_estimate_over_mean_service": 0.4776367263850115,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.64075,
+      "coverage_by_class": [
+        0.669710806697108,
+        0.6347897774113768,
+        0.5796568627450981
+      ],
+      "mean_absolute_log_error": 0.678837976211881,
+      "mean_estimate_over_mean_service": 1.0727778591090114,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1971,
+        1213,
+        816
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.67725,
+      "coverage_by_class": [
+        0.6599496221662469,
+        0.662751677852349,
+        0.7399756986634265
+      ],
+      "mean_absolute_log_error": 0.9298623582300026,
+      "mean_estimate_over_mean_service": 1.053585923981343,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.599,
+      "coverage_by_class": [
+        0.5667506297229219,
+        0.613255033557047,
+        0.6561360874848117
+      ],
+      "mean_absolute_log_error": 0.6498489086766669,
+      "mean_estimate_over_mean_service": 1.056165830694277,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.9475,
+      "coverage_by_class": [
+        0.9415617128463476,
+        0.9471476510067114,
+        0.9623329283110571
+      ],
+      "mean_absolute_log_error": 1.1392417541483966,
+      "mean_estimate_over_mean_service": 2.411695994869452,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.418,
+      "coverage_by_class": [
+        0.4005037783375315,
+        0.39177852348993286,
+        0.49817739975698666
+      ],
+      "mean_absolute_log_error": 0.8629524833439723,
+      "mean_estimate_over_mean_service": 0.5267929619906715,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.27275,
+      "coverage_by_class": [
+        0.2664987405541562,
+        0.26593959731543626,
+        0.2976913730255164
+      ],
+      "mean_absolute_log_error": 0.749527650806764,
+      "mean_estimate_over_mean_service": 0.5280829153471385,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.666,
+      "coverage_by_class": [
+        0.6347607052896725,
+        0.6837248322147651,
+        0.715674362089915
+      ],
+      "mean_absolute_log_error": 0.685282810840557,
+      "mean_estimate_over_mean_service": 1.205847997434726,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        1985,
+        1192,
+        823
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.66975,
+      "coverage_by_class": [
+        0.6578040374199902,
+        0.6802426343154246,
+        0.6846625766871166
+      ],
+      "mean_absolute_log_error": 0.9095643493234006,
+      "mean_estimate_over_mean_service": 0.9723872480114322,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.60525,
+      "coverage_by_class": [
+        0.6144756277695717,
+        0.58578856152513,
+        0.6098159509202454
+      ],
+      "mean_absolute_log_error": 0.6323026404252432,
+      "mean_estimate_over_mean_service": 1.0110346884552524,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.9505,
+      "coverage_by_class": [
+        0.9453471196454948,
+        0.9558058925476604,
+        0.9558282208588957
+      ],
+      "mean_absolute_log_error": 1.1463724378665363,
+      "mean_estimate_over_mean_service": 2.3349426204281154,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.40625,
+      "coverage_by_class": [
+        0.4057114721811915,
+        0.41074523396880414,
+        0.4012269938650307
+      ],
+      "mean_absolute_log_error": 0.8581325370192227,
+      "mean_estimate_over_mean_service": 0.4861936240057161,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.26725,
+      "coverage_by_class": [
+        0.2722796651895618,
+        0.2582322357019064,
+        0.2674846625766871
+      ],
+      "mean_absolute_log_error": 0.7401433765593465,
+      "mean_estimate_over_mean_service": 0.5055173442276262,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.68775,
+      "coverage_by_class": [
+        0.6922698178237322,
+        0.6793760831889082,
+        0.6883435582822086
+      ],
+      "mean_absolute_log_error": 0.674475446258837,
+      "mean_estimate_over_mean_service": 1.1674713102140577,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2031,
+        1154,
+        815
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.648,
+      "coverage_by_class": [
+        0.6283228612856452,
+        0.702493551160791,
+        0.6184895833333334
+      ],
+      "mean_absolute_log_error": 0.904941142162129,
+      "mean_estimate_over_mean_service": 0.9966440624941436,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.5845,
+      "coverage_by_class": [
+        0.583373610439826,
+        0.5958727429062769,
+        0.5703125
+      ],
+      "mean_absolute_log_error": 0.6309212273631907,
+      "mean_estimate_over_mean_service": 1.0068993174960212,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.95775,
+      "coverage_by_class": [
+        0.9540840985983567,
+        0.9638865004299226,
+        0.9583333333333334
+      ],
+      "mean_absolute_log_error": 1.1622825971033124,
+      "mean_estimate_over_mean_service": 2.459760733098402,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.3945,
+      "coverage_by_class": [
+        0.38279362010633156,
+        0.4350816852966466,
+        0.3645833333333333
+      ],
+      "mean_absolute_log_error": 0.8771049503103943,
+      "mean_estimate_over_mean_service": 0.4983220312470718,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.25575,
+      "coverage_by_class": [
+        0.2513291445142581,
+        0.25709372312983664,
+        0.265625
+      ],
+      "mean_absolute_log_error": 0.7585646908739677,
+      "mean_estimate_over_mean_service": 0.5034496587480106,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.68675,
+      "coverage_by_class": [
+        0.6790720154664089,
+        0.7076526225279449,
+        0.67578125
+      ],
+      "mean_absolute_log_error": 0.6853286541455782,
+      "mean_estimate_over_mean_service": 1.229880366549201,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2069,
+        1163,
+        768
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "mode": "class_mean",
+      "coverage": 0.64575,
+      "coverage_by_class": [
+        0.6337123084527929,
+        0.6533687943262412,
+        0.6643109540636042
+      ],
+      "mean_absolute_log_error": 0.9004825228517018,
+      "mean_estimate_over_mean_service": 0.9526333935503681,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "mode": "feature_point",
+      "coverage": 0.59475,
+      "coverage_by_class": [
+        0.5941670785961444,
+        0.6072695035460993,
+        0.5795053003533569
+      ],
+      "mean_absolute_log_error": 0.623403287371363,
+      "mean_estimate_over_mean_service": 0.9623443151367632,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "coverage": 0.944,
+      "coverage_by_class": [
+        0.9476025704399407,
+        0.9414893617021277,
+        0.9387514723203769
+      ],
+      "mean_absolute_log_error": 1.1121878860240444,
+      "mean_estimate_over_mean_service": 2.239948346609329,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "coverage": 0.387,
+      "coverage_by_class": [
+        0.3816114681166584,
+        0.37943262411347517,
+        0.4098939929328622
+      ],
+      "mean_absolute_log_error": 0.8760506586419452,
+      "mean_estimate_over_mean_service": 0.47631669677518407,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "coverage": 0.2515,
+      "coverage_by_class": [
+        0.25902125556104794,
+        0.23847517730496454,
+        0.2508833922261484
+      ],
+      "mean_absolute_log_error": 0.749959525287042,
+      "mean_estimate_over_mean_service": 0.4811721575683816,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "coverage": 0.67025,
+      "coverage_by_class": [
+        0.6673257538309442,
+        0.6861702127659575,
+        0.6560659599528857
+      ],
+      "mean_absolute_log_error": 0.664134783506408,
+      "mean_estimate_over_mean_service": 1.1199741733046644,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "coverage": 1.0,
+      "coverage_by_class": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "mean_absolute_log_error": 0.0,
+      "mean_estimate_over_mean_service": 1.0,
+      "class_counts": [
+        2023,
+        1128,
+        849
+      ]
+    }
+  ],
+  "prediction_summaries": [
+    {
+      "regime": "iid",
+      "mode": "class_mean",
+      "metrics": {
+        "coverage": {
+          "mean": 0.6623333333333333,
+          "low": 0.6489652092939153,
+          "high": 0.6757014573727513
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.9153720687529279,
+          "low": 0.9009692458492038,
+          "high": 0.929774891656652
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 0.9812111550330959,
+          "low": 0.9392693149362976,
+          "high": 1.023152995129894
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.6545770280350357,
+          "low": 0.6339936897419379,
+          "high": 0.6751603663281335
+        },
+        {
+          "mean": 0.6685617789096474,
+          "low": 0.6407307843536804,
+          "high": 0.6963927734656145
+        },
+        {
+          "mean": 0.6734481384875556,
+          "low": 0.6250626586450351,
+          "high": 0.7218336183300761
+        }
+      ]
+    },
+    {
+      "regime": "iid",
+      "mode": "feature_point",
+      "metrics": {
+        "coverage": {
+          "mean": 0.59075,
+          "low": 0.5797072140587675,
+          "high": 0.6017927859412325
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.6400178792472252,
+          "low": 0.6267588958532389,
+          "high": 0.6532768626412115
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 0.9973011721085691,
+          "low": 0.9587103107976771,
+          "high": 1.035892033419461
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.5903643260216583,
+          "low": 0.5722113797565705,
+          "high": 0.6085172722867461
+        },
+        {
+          "mean": 0.5912220087440998,
+          "low": 0.5730575173217578,
+          "high": 0.6093865001664418
+        },
+        {
+          "mean": 0.591203829375948,
+          "low": 0.5436936212748978,
+          "high": 0.6387140374769981
+        }
+      ]
+    },
+    {
+      "regime": "iid",
+      "mode": "feature_upper95",
+      "metrics": {
+        "coverage": {
+          "mean": 0.9482083333333332,
+          "low": 0.9376833039044127,
+          "high": 0.9587333627622537
+        },
+        "mean_absolute_log_error": {
+          "mean": 1.1440665213208163,
+          "low": 1.1053118542633251,
+          "high": 1.1828211883783075
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 2.351929779634064,
+          "low": 2.2044426452282426,
+          "high": 2.4994169140398856
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.9473378961551665,
+          "low": 0.9426117285435393,
+          "high": 0.9520640637667938
+        },
+        {
+          "mean": 0.9467954309769498,
+          "low": 0.9305101023877458,
+          "high": 0.9630807595661539
+        },
+        {
+          "mean": 0.9526405667049188,
+          "low": 0.9286977143130615,
+          "high": 0.9765834190967762
+        }
+      ]
+    },
+    {
+      "regime": "iid",
+      "mode": "oracle",
+      "metrics": {
+        "coverage": {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        }
+      ]
+    },
+    {
+      "regime": "slowdown2",
+      "mode": "class_mean",
+      "metrics": {
+        "coverage": {
+          "mean": 0.40329166666666666,
+          "low": 0.3916393665219104,
+          "high": 0.4149439668114229
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.8698545840712187,
+          "low": 0.8618580493812272,
+          "high": 0.8778511187612102
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 0.49060557751654793,
+          "low": 0.4696346574681488,
+          "high": 0.511576497564947
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.3977635820752732,
+          "low": 0.38397249664121286,
+          "high": 0.4115546675093335
+        },
+        {
+          "mean": 0.40181948798690126,
+          "low": 0.3756838282921662,
+          "high": 0.42795514768163634
+        },
+        {
+          "mean": 0.41934536860995086,
+          "low": 0.3661814375180042,
+          "high": 0.47250929970189753
+        }
+      ]
+    },
+    {
+      "regime": "slowdown2",
+      "mode": "feature_point",
+      "metrics": {
+        "coverage": {
+          "mean": 0.264,
+          "low": 0.2550828841704901,
+          "high": 0.27291711582950995
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.757523485029936,
+          "low": 0.7431772503538447,
+          "high": 0.7718697197060274
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 0.49865058605428453,
+          "low": 0.47935515539883855,
+          "high": 0.5179460167097305
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.26606412867438345,
+          "low": 0.25457200864012447,
+          "high": 0.27755624870864243
+        },
+        {
+          "mean": 0.25906902392567666,
+          "low": 0.24716903109478752,
+          "high": 0.27096901675656576
+        },
+        {
+          "mean": 0.2660488936061222,
+          "low": 0.2452086555953531,
+          "high": 0.28688913161689134
+        }
+      ]
+    },
+    {
+      "regime": "slowdown2",
+      "mode": "feature_upper95",
+      "metrics": {
+        "coverage": {
+          "mean": 0.67575,
+          "low": 0.6529606889605231,
+          "high": 0.6985393110394769
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.6845183437333006,
+          "low": 0.6649283331217472,
+          "high": 0.704108354344854
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 1.175964889817032,
+          "low": 1.1022213226141213,
+          "high": 1.2497084570199428
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 0.6729305905920517,
+          "low": 0.6500669061450581,
+          "high": 0.6957942750390453
+        },
+        {
+          "mean": 0.6810299371997642,
+          "low": 0.6550519206342578,
+          "high": 0.7070079537652707
+        },
+        {
+          "mean": 0.675372330530226,
+          "low": 0.6177213102037566,
+          "high": 0.7330233508566955
+        }
+      ]
+    },
+    {
+      "regime": "slowdown2",
+      "mode": "oracle",
+      "metrics": {
+        "coverage": {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        "mean_absolute_log_error": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "mean_estimate_over_mean_service": {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        }
+      },
+      "coverage_by_class": [
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        },
+        {
+          "mean": 1.0,
+          "low": 1.0,
+          "high": 1.0
+        }
+      ]
+    }
+  ],
+  "replications": [
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 3.6133309841768386,
+      "p99_t": 29.00051234725905,
+      "p99_wide": 35.593993341485515,
+      "idle_with_queue": 0.03157181188937097,
+      "utilization": 0.3836075382618204,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 3.297287140600011,
+      "p99_t": 26.38273821455746,
+      "p99_wide": 35.75428590052874,
+      "idle_with_queue": 0.03024874654877362,
+      "utilization": 0.38360753826182026,
+      "backfilled": 214,
+      "reservations": 1097,
+      "reservation_violations": 444,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 3.0881522429460815,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.8998855795879,
+      "idle_with_queue": 0.029790388311090064,
+      "utilization": 0.3836075382618204,
+      "backfilled": 241,
+      "reservations": 1126,
+      "reservation_violations": 514,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.9842744900300415,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.8998855795879,
+      "idle_with_queue": 0.029656086734326906,
+      "utilization": 0.3836075382618201,
+      "backfilled": 310,
+      "reservations": 1204,
+      "reservation_violations": 63,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.982521184436175,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.593993341485515,
+      "idle_with_queue": 0.029238222440159972,
+      "utilization": 0.38360753826182026,
+      "backfilled": 307,
+      "reservations": 1210,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 3.294704841492581,
+      "p99_t": 26.38273821455746,
+      "p99_wide": 35.75428590052874,
+      "idle_with_queue": 0.030290392242628385,
+      "utilization": 0.38360753826182054,
+      "backfilled": 219,
+      "reservations": 1282,
+      "reservation_violations": 609,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 3.087445637947896,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.8998855795879,
+      "idle_with_queue": 0.029791049118800383,
+      "utilization": 0.3836075382618201,
+      "backfilled": 243,
+      "reservations": 1313,
+      "reservation_violations": 735,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.982466122798116,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.8998855795879,
+      "idle_with_queue": 0.029673580093422147,
+      "utilization": 0.38360753826182026,
+      "backfilled": 312,
+      "reservations": 1403,
+      "reservation_violations": 84,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.982521184436175,
+      "p99_t": 24.40584833751429,
+      "p99_wide": 35.593993341485515,
+      "idle_with_queue": 0.029238222440159972,
+      "utilization": 0.38360753826182026,
+      "backfilled": 307,
+      "reservations": 1413,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 8.468994252932347,
+      "p99_t": 49.38712702790199,
+      "p99_wide": 50.26143920901156,
+      "idle_with_queue": 0.07505965251798845,
+      "utilization": 0.6028118458400064,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 6.435808720704645,
+      "p99_t": 44.550957979501625,
+      "p99_wide": 47.79401122796089,
+      "idle_with_queue": 0.06870315657008168,
+      "utilization": 0.6028118458400064,
+      "backfilled": 708,
+      "reservations": 1746,
+      "reservation_violations": 668,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 5.9774753957733315,
+      "p99_t": 44.230412427012624,
+      "p99_wide": 47.61756885210861,
+      "idle_with_queue": 0.0668285354987093,
+      "utilization": 0.6028118458400066,
+      "backfilled": 742,
+      "reservations": 1752,
+      "reservation_violations": 765,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 5.705298130031573,
+      "p99_t": 44.18401761813081,
+      "p99_wide": 47.5711740432268,
+      "idle_with_queue": 0.06610055554931882,
+      "utilization": 0.6028118458400054,
+      "backfilled": 829,
+      "reservations": 1784,
+      "reservation_violations": 88,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 5.673327783080524,
+      "p99_t": 44.09578547170301,
+      "p99_wide": 47.482941896799,
+      "idle_with_queue": 0.06487740460977293,
+      "utilization": 0.6028118458400057,
+      "backfilled": 819,
+      "reservations": 1788,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 6.441691365314552,
+      "p99_t": 45.4364693851949,
+      "p99_wide": 48.53707119414778,
+      "idle_with_queue": 0.06949354777954557,
+      "utilization": 0.6028118458400071,
+      "backfilled": 731,
+      "reservations": 2337,
+      "reservation_violations": 1253,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 5.978586470906804,
+      "p99_t": 44.29812892500847,
+      "p99_wide": 47.685510141862046,
+      "idle_with_queue": 0.06721823794633372,
+      "utilization": 0.6028118458400074,
+      "backfilled": 761,
+      "reservations": 2288,
+      "reservation_violations": 1397,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 5.717132811374482,
+      "p99_t": 44.251958907884244,
+      "p99_wide": 47.63911533298023,
+      "idle_with_queue": 0.06667062734534855,
+      "utilization": 0.6028118458400059,
+      "backfilled": 846,
+      "reservations": 2289,
+      "reservation_violations": 140,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 5.672220663827218,
+      "p99_t": 44.09578547170301,
+      "p99_wide": 47.482941896799,
+      "idle_with_queue": 0.064723656986103,
+      "utilization": 0.6028118458400057,
+      "backfilled": 818,
+      "reservations": 2288,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 7.226661968353677,
+      "p99_t": 58.0010246945181,
+      "p99_wide": 71.18798668297103,
+      "idle_with_queue": 0.03157181188937097,
+      "utilization": 0.3836075382618204,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 6.7821078148819485,
+      "p99_t": 56.111513626647856,
+      "p99_wide": 71.50857180105749,
+      "idle_with_queue": 0.030525644833103993,
+      "utilization": 0.3836075382618204,
+      "backfilled": 177,
+      "reservations": 964,
+      "reservation_violations": 596,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 6.387156938936792,
+      "p99_t": 49.66211770181711,
+      "p99_wide": 71.50857180105749,
+      "idle_with_queue": 0.030104270110281266,
+      "utilization": 0.3836075382618204,
+      "backfilled": 189,
+      "reservations": 975,
+      "reservation_violations": 730,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 6.120980654647532,
+      "p99_t": 48.81169667502858,
+      "p99_wide": 71.7997711591758,
+      "idle_with_queue": 0.02968437720472514,
+      "utilization": 0.38360753826182026,
+      "backfilled": 255,
+      "reservations": 1168,
+      "reservation_violations": 386,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 5.96504236887235,
+      "p99_t": 48.81169667502858,
+      "p99_wide": 71.18798668297103,
+      "idle_with_queue": 0.029238222440159972,
+      "utilization": 0.38360753826182026,
+      "backfilled": 307,
+      "reservations": 1210,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 6.779047269576901,
+      "p99_t": 56.111513626647856,
+      "p99_wide": 71.50857180105749,
+      "idle_with_queue": 0.030522831254599713,
+      "utilization": 0.3836075382618207,
+      "backfilled": 179,
+      "reservations": 1127,
+      "reservation_violations": 794,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 6.386330244805589,
+      "p99_t": 49.66211770181711,
+      "p99_wide": 71.50857180105749,
+      "idle_with_queue": 0.03010847966678837,
+      "utilization": 0.38360753826182054,
+      "backfilled": 190,
+      "reservations": 1130,
+      "reservation_violations": 930,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 6.120203763402451,
+      "p99_t": 48.81169667502858,
+      "p99_wide": 71.7997711591758,
+      "idle_with_queue": 0.029711861036320907,
+      "utilization": 0.3836075382618204,
+      "backfilled": 256,
+      "reservations": 1364,
+      "reservation_violations": 572,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 5.96504236887235,
+      "p99_t": 48.81169667502858,
+      "p99_wide": 71.18798668297103,
+      "idle_with_queue": 0.029238222440159972,
+      "utilization": 0.38360753826182026,
+      "backfilled": 307,
+      "reservations": 1413,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.38527605195806525
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 16.937988505864695,
+      "p99_t": 98.77425405580398,
+      "p99_wide": 100.52287841802313,
+      "idle_with_queue": 0.07505965251798845,
+      "utilization": 0.6028118458400064,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 13.48657753499039,
+      "p99_t": 93.29060980860537,
+      "p99_wide": 96.56480603089379,
+      "idle_with_queue": 0.06980635075814845,
+      "utilization": 0.6028118458400061,
+      "backfilled": 646,
+      "reservations": 1650,
+      "reservation_violations": 1020,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 12.685513198843992,
+      "p99_t": 88.83151539865369,
+      "p99_wide": 96.21933676159537,
+      "idle_with_queue": 0.06837882621127189,
+      "utilization": 0.6028118458400064,
+      "backfilled": 635,
+      "reservations": 1655,
+      "reservation_violations": 1213,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 11.803171073231319,
+      "p99_t": 88.36803523626162,
+      "p99_wide": 95.1423480864536,
+      "idle_with_queue": 0.06662518021504805,
+      "utilization": 0.6028118458400057,
+      "backfilled": 761,
+      "reservations": 1779,
+      "reservation_violations": 555,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 11.346655566161049,
+      "p99_t": 88.19157094340602,
+      "p99_wide": 94.965883793598,
+      "idle_with_queue": 0.06487740460977293,
+      "utilization": 0.6028118458400057,
+      "backfilled": 819,
+      "reservations": 1788,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 13.29924586525288,
+      "p99_t": 91.36656196309715,
+      "p99_wide": 96.57518040632579,
+      "idle_with_queue": 0.07036422286589283,
+      "utilization": 0.6028118458400071,
+      "backfilled": 665,
+      "reservations": 2202,
+      "reservation_violations": 1737,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 12.691434622942063,
+      "p99_t": 88.83151539865369,
+      "p99_wide": 96.21933676159537,
+      "idle_with_queue": 0.06861958309883681,
+      "utilization": 0.6028118458400054,
+      "backfilled": 637,
+      "reservations": 2204,
+      "reservation_violations": 1928,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 11.781388586249948,
+      "p99_t": 88.50391781576849,
+      "p99_wide": 95.27823066596046,
+      "idle_with_queue": 0.06707402347140536,
+      "utilization": 0.6028118458400069,
+      "backfilled": 778,
+      "reservations": 2299,
+      "reservation_violations": 1054,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49000,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 11.344441327654437,
+      "p99_t": 88.19157094340602,
+      "p99_wide": 94.965883793598,
+      "idle_with_queue": 0.064723656986103,
+      "utilization": 0.6028118458400057,
+      "backfilled": 818,
+      "reservations": 2288,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.6054337959341026
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 2.6260248154639445,
+      "p99_t": 17.42071159833648,
+      "p99_wide": 17.976823774292914,
+      "idle_with_queue": 0.027532064615163516,
+      "utilization": 0.34513378900747743,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 2.4642525793518053,
+      "p99_t": 16.832100638956312,
+      "p99_wide": 18.0427430118374,
+      "idle_with_queue": 0.026856648561412046,
+      "utilization": 0.3451337890074775,
+      "backfilled": 174,
+      "reservations": 989,
+      "reservation_violations": 431,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 2.4014356921009554,
+      "p99_t": 16.322279811663464,
+      "p99_wide": 18.0427430118374,
+      "idle_with_queue": 0.026445027600013233,
+      "utilization": 0.3451337890074775,
+      "backfilled": 192,
+      "reservations": 1019,
+      "reservation_violations": 527,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.3320924292721967,
+      "p99_t": 16.26624038435107,
+      "p99_wide": 17.960365634721892,
+      "idle_with_queue": 0.02582078040099773,
+      "utilization": 0.3451337890074774,
+      "backfilled": 248,
+      "reservations": 1103,
+      "reservation_violations": 121,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.315085260796829,
+      "p99_t": 16.182943027059263,
+      "p99_wide": 17.957858687270164,
+      "idle_with_queue": 0.025689023506639142,
+      "utilization": 0.3451337890074774,
+      "backfilled": 258,
+      "reservations": 1114,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 2.4605715793020266,
+      "p99_t": 16.832100638956312,
+      "p99_wide": 18.0427430118374,
+      "idle_with_queue": 0.026812725732225314,
+      "utilization": 0.3451337890074774,
+      "backfilled": 177,
+      "reservations": 1126,
+      "reservation_violations": 567,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 2.4005103584835905,
+      "p99_t": 16.32949174283551,
+      "p99_wide": 18.0427430118374,
+      "idle_with_queue": 0.026437543269034112,
+      "utilization": 0.3451337890074776,
+      "backfilled": 197,
+      "reservations": 1169,
+      "reservation_violations": 706,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.3311745325814273,
+      "p99_t": 16.266686433868095,
+      "p99_wide": 18.014987965208995,
+      "idle_with_queue": 0.02583510036966118,
+      "utilization": 0.3451337890074774,
+      "backfilled": 253,
+      "reservations": 1268,
+      "reservation_violations": 168,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.315518946449621,
+      "p99_t": 16.182943027059263,
+      "p99_wide": 17.957858687270164,
+      "idle_with_queue": 0.02570746336926841,
+      "utilization": 0.3451337890074774,
+      "backfilled": 257,
+      "reservations": 1275,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 4.698735655269176,
+      "p99_t": 26.60163367954771,
+      "p99_wide": 26.069659722999923,
+      "idle_with_queue": 0.06498312261604028,
+      "utilization": 0.5423048725678977,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 3.8988678295153116,
+      "p99_t": 24.395239915980916,
+      "p99_wide": 25.665142664180767,
+      "idle_with_queue": 0.059961064558405504,
+      "utilization": 0.5423084148403682,
+      "backfilled": 522,
+      "reservations": 1592,
+      "reservation_violations": 633,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 3.7480832601608034,
+      "p99_t": 24.660450868118517,
+      "p99_wide": 25.66834380713795,
+      "idle_with_queue": 0.05911161272454145,
+      "utilization": 0.5423084148403685,
+      "backfilled": 564,
+      "reservations": 1596,
+      "reservation_violations": 793,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 3.5691848201117153,
+      "p99_t": 24.660450868118517,
+      "p99_wide": 25.66410193100847,
+      "idle_with_queue": 0.05796377888220984,
+      "utilization": 0.5423084148403685,
+      "backfilled": 649,
+      "reservations": 1637,
+      "reservation_violations": 170,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 3.5565579802011142,
+      "p99_t": 24.395243568827517,
+      "p99_wide": 25.66410193100847,
+      "idle_with_queue": 0.05708659703821514,
+      "utilization": 0.5423048725678961,
+      "backfilled": 658,
+      "reservations": 1636,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 3.879205495091277,
+      "p99_t": 24.660450868118517,
+      "p99_wide": 25.697451610964073,
+      "idle_with_queue": 0.060024759553989775,
+      "utilization": 0.5423084148403682,
+      "backfilled": 540,
+      "reservations": 1983,
+      "reservation_violations": 1034,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 3.7436833083893597,
+      "p99_t": 24.660450868118517,
+      "p99_wide": 25.66410193100847,
+      "idle_with_queue": 0.05932975210424616,
+      "utilization": 0.5423084148403678,
+      "backfilled": 577,
+      "reservations": 1988,
+      "reservation_violations": 1251,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 3.5664936643392995,
+      "p99_t": 24.660450868118517,
+      "p99_wide": 25.66410193100847,
+      "idle_with_queue": 0.05809433182909741,
+      "utilization": 0.5423084148403688,
+      "backfilled": 668,
+      "reservations": 2037,
+      "reservation_violations": 262,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 3.5578729917009095,
+      "p99_t": 24.395243568827517,
+      "p99_wide": 25.66410193100847,
+      "idle_with_queue": 0.05706410173041163,
+      "utilization": 0.5423048725678962,
+      "backfilled": 656,
+      "reservations": 2036,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 5.252049630927889,
+      "p99_t": 34.84142319667296,
+      "p99_wide": 35.95364754858583,
+      "idle_with_queue": 0.027532064615163516,
+      "utilization": 0.34513378900747743,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 4.979261223340889,
+      "p99_t": 33.664201277912625,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.027065807120659466,
+      "utilization": 0.3451337890074776,
+      "backfilled": 140,
+      "reservations": 859,
+      "reservation_violations": 580,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 4.927095543142484,
+      "p99_t": 33.12375140687309,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.026748386021734547,
+      "utilization": 0.34513378900747765,
+      "backfilled": 139,
+      "reservations": 881,
+      "reservation_violations": 667,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 4.77299140047334,
+      "p99_t": 32.64455962332693,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.026407923767961652,
+      "utilization": 0.34513378900747743,
+      "backfilled": 207,
+      "reservations": 1034,
+      "reservation_violations": 477,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 4.630170521593658,
+      "p99_t": 32.365886054118526,
+      "p99_wide": 35.91571737454033,
+      "idle_with_queue": 0.025689023506639142,
+      "utilization": 0.3451337890074774,
+      "backfilled": 258,
+      "reservations": 1114,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 4.9716364654334555,
+      "p99_t": 33.664201277912625,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.026996021401969286,
+      "utilization": 0.3451337890074774,
+      "backfilled": 141,
+      "reservations": 976,
+      "reservation_violations": 726,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 4.925569394131788,
+      "p99_t": 33.29757088777681,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.026735343044264913,
+      "utilization": 0.3451337890074775,
+      "backfilled": 142,
+      "reservations": 992,
+      "reservation_violations": 812,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 4.7704819754797265,
+      "p99_t": 32.65898348567102,
+      "p99_wide": 36.0854860236748,
+      "idle_with_queue": 0.026400410014828513,
+      "utilization": 0.3451337890074775,
+      "backfilled": 212,
+      "reservations": 1185,
+      "reservation_violations": 655,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 4.631037892899242,
+      "p99_t": 32.365886054118526,
+      "p99_wide": 35.91571737454033,
+      "idle_with_queue": 0.02570746336926841,
+      "utilization": 0.3451337890074774,
+      "backfilled": 257,
+      "reservations": 1275,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3492987027776597
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 9.397471310538352,
+      "p99_t": 53.20326735909542,
+      "p99_wide": 52.139319445999845,
+      "idle_with_queue": 0.06498312261604028,
+      "utilization": 0.5423048725678977,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 8.023856690477606,
+      "p99_t": 49.326720144592535,
+      "p99_wide": 51.33028532836153,
+      "idle_with_queue": 0.061252373725410265,
+      "utilization": 0.5423084148403685,
+      "backfilled": 451,
+      "reservations": 1467,
+      "reservation_violations": 934,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 7.878752468205115,
+      "p99_t": 49.32090173623703,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.060566154734999135,
+      "utilization": 0.542304872567896,
+      "backfilled": 441,
+      "reservations": 1481,
+      "reservation_violations": 1103,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 7.450059236765708,
+      "p99_t": 49.32090173623703,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.05883737159709998,
+      "utilization": 0.5423084148403685,
+      "backfilled": 579,
+      "reservations": 1617,
+      "reservation_violations": 711,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 7.1131159604022285,
+      "p99_t": 48.790487137655035,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.05708659703821514,
+      "utilization": 0.5423048725678961,
+      "backfilled": 658,
+      "reservations": 1636,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 7.975671697860545,
+      "p99_t": 49.326720144592535,
+      "p99_wide": 51.33028532836153,
+      "idle_with_queue": 0.061255574610556904,
+      "utilization": 0.5423084148403682,
+      "backfilled": 464,
+      "reservations": 1822,
+      "reservation_violations": 1410,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 7.873149307882757,
+      "p99_t": 49.32090173623703,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.060636926091125865,
+      "utilization": 0.5423048725678957,
+      "backfilled": 444,
+      "reservations": 1835,
+      "reservation_violations": 1577,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 7.438689361567655,
+      "p99_t": 49.32090173623703,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.05898402715247583,
+      "utilization": 0.5423084148403687,
+      "backfilled": 597,
+      "reservations": 2012,
+      "reservation_violations": 1125,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49001,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 7.115745983401819,
+      "p99_t": 48.790487137655035,
+      "p99_wide": 51.32820386201694,
+      "idle_with_queue": 0.05706410173041163,
+      "utilization": 0.5423048725678962,
+      "backfilled": 656,
+      "reservations": 2036,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.548897961507751
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 2.6379198768621808,
+      "p99_t": 19.217415795808538,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.02373497886815319,
+      "utilization": 0.3403028935181336,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 2.4728416460909073,
+      "p99_t": 18.750072031547205,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.023028016516102277,
+      "utilization": 0.34030289351813353,
+      "backfilled": 171,
+      "reservations": 1012,
+      "reservation_violations": 406,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 2.425137017957647,
+      "p99_t": 18.55054687648981,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.022566624246249542,
+      "utilization": 0.3403028935181334,
+      "backfilled": 182,
+      "reservations": 1016,
+      "reservation_violations": 464,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.3688926839719024,
+      "p99_t": 18.55054687648981,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.022277351614807293,
+      "utilization": 0.34030289351813336,
+      "backfilled": 227,
+      "reservations": 1098,
+      "reservation_violations": 82,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.3655513852719143,
+      "p99_t": 18.53284165685125,
+      "p99_wide": 21.379247220985523,
+      "idle_with_queue": 0.021924703525469012,
+      "utilization": 0.3403028935181334,
+      "backfilled": 222,
+      "reservations": 1112,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 2.465845916491643,
+      "p99_t": 18.7278629349179,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.023082035832893925,
+      "utilization": 0.3403028935181336,
+      "backfilled": 178,
+      "reservations": 1148,
+      "reservation_violations": 530,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 2.4246569140480214,
+      "p99_t": 18.55054687648981,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.022534529848371843,
+      "utilization": 0.3403028935181337,
+      "backfilled": 184,
+      "reservations": 1163,
+      "reservation_violations": 629,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.3689442699089778,
+      "p99_t": 18.55054687648981,
+      "p99_wide": 22.24612751430727,
+      "idle_with_queue": 0.022316706523717086,
+      "utilization": 0.34030289351813325,
+      "backfilled": 231,
+      "reservations": 1281,
+      "reservation_violations": 116,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.3697308728419983,
+      "p99_t": 18.53284165685125,
+      "p99_wide": 21.379247220985523,
+      "idle_with_queue": 0.021924703525469012,
+      "utilization": 0.3403028935181334,
+      "backfilled": 221,
+      "reservations": 1305,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 4.644448200504194,
+      "p99_t": 30.40869718109103,
+      "p99_wide": 32.12275254970078,
+      "idle_with_queue": 0.055091644597570724,
+      "utilization": 0.5347956370550895,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 3.8752323443243673,
+      "p99_t": 26.0661536327393,
+      "p99_wide": 31.61082749134108,
+      "idle_with_queue": 0.05005666673378481,
+      "utilization": 0.5347956370550888,
+      "backfilled": 530,
+      "reservations": 1559,
+      "reservation_violations": 577,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 3.741035078166773,
+      "p99_t": 25.628208560275173,
+      "p99_wide": 31.46545175869773,
+      "idle_with_queue": 0.049107639824395206,
+      "utilization": 0.5347956370550898,
+      "backfilled": 541,
+      "reservations": 1593,
+      "reservation_violations": 681,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 3.6342416890126334,
+      "p99_t": 25.628208560275173,
+      "p99_wide": 31.46545175869773,
+      "idle_with_queue": 0.048530902555883396,
+      "utilization": 0.5347956370550891,
+      "backfilled": 611,
+      "reservations": 1625,
+      "reservation_violations": 107,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 3.604608892780646,
+      "p99_t": 25.371973589720803,
+      "p99_wide": 31.407087741043526,
+      "idle_with_queue": 0.047178155673511336,
+      "utilization": 0.5347956370550891,
+      "backfilled": 601,
+      "reservations": 1624,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 3.848585746908877,
+      "p99_t": 26.053032898106775,
+      "p99_wide": 31.61082749134108,
+      "idle_with_queue": 0.05042956758323943,
+      "utilization": 0.5347956370550895,
+      "backfilled": 549,
+      "reservations": 1975,
+      "reservation_violations": 941,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 3.7396049475410154,
+      "p99_t": 25.628208560275173,
+      "p99_wide": 31.61082749134108,
+      "idle_with_queue": 0.049372690858239664,
+      "utilization": 0.5347956370550906,
+      "backfilled": 551,
+      "reservations": 2012,
+      "reservation_violations": 1122,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 3.6346605974800217,
+      "p99_t": 25.628208560275173,
+      "p99_wide": 31.531682169160657,
+      "idle_with_queue": 0.048936382779629715,
+      "utilization": 0.5347956370550897,
+      "backfilled": 622,
+      "reservations": 2073,
+      "reservation_violations": 187,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 3.6136556542255334,
+      "p99_t": 25.371973589720803,
+      "p99_wide": 31.407087741043526,
+      "idle_with_queue": 0.04695702715949658,
+      "utilization": 0.534795637055089,
+      "backfilled": 600,
+      "reservations": 2088,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 5.2758397537243615,
+      "p99_t": 38.434831591617076,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.02373497886815319,
+      "utilization": 0.3403028935181336,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 5.011178065746736,
+      "p99_t": 37.850423943880344,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.023163598612366647,
+      "utilization": 0.3403028935181334,
+      "backfilled": 131,
+      "reservations": 869,
+      "reservation_violations": 539,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 4.95763253641548,
+      "p99_t": 37.850423943880344,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.022664640356983994,
+      "utilization": 0.34030289351813353,
+      "backfilled": 138,
+      "reservations": 868,
+      "reservation_violations": 649,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 4.817092319432218,
+      "p99_t": 37.10109375297962,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.022467515613900774,
+      "utilization": 0.34030289351813336,
+      "backfilled": 194,
+      "reservations": 1035,
+      "reservation_violations": 403,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 4.731102770543829,
+      "p99_t": 37.0656833137025,
+      "p99_wide": 42.758494441971045,
+      "idle_with_queue": 0.021924703525469012,
+      "utilization": 0.3403028935181334,
+      "backfilled": 222,
+      "reservations": 1112,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 5.00692549127233,
+      "p99_t": 37.850423943880344,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.023263887616197576,
+      "utilization": 0.3403028935181332,
+      "backfilled": 135,
+      "reservations": 988,
+      "reservation_violations": 692,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 4.957208949692118,
+      "p99_t": 37.850423943880344,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.022664081066794062,
+      "utilization": 0.34030289351813353,
+      "backfilled": 139,
+      "reservations": 979,
+      "reservation_violations": 810,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 4.816781231047803,
+      "p99_t": 37.10109375297962,
+      "p99_wide": 44.49225502861454,
+      "idle_with_queue": 0.02246344317308568,
+      "utilization": 0.3403028935181336,
+      "backfilled": 198,
+      "reservations": 1191,
+      "reservation_violations": 553,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 4.739461745683997,
+      "p99_t": 37.0656833137025,
+      "p99_wide": 42.758494441971045,
+      "idle_with_queue": 0.021924703525469012,
+      "utilization": 0.3403028935181334,
+      "backfilled": 221,
+      "reservations": 1305,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34387313068983033
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 9.288896401008389,
+      "p99_t": 60.81739436218206,
+      "p99_wide": 64.24550509940156,
+      "idle_with_queue": 0.055091644597570724,
+      "utilization": 0.5347956370550895,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 7.925902293609496,
+      "p99_t": 52.8028259472837,
+      "p99_wide": 63.22165498268216,
+      "idle_with_queue": 0.051225444851205365,
+      "utilization": 0.5347956370550893,
+      "backfilled": 461,
+      "reservations": 1444,
+      "reservation_violations": 873,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 7.790751338364155,
+      "p99_t": 51.336544547691076,
+      "p99_wide": 63.240295214722906,
+      "idle_with_queue": 0.05007493846618441,
+      "utilization": 0.5347956370550896,
+      "backfilled": 449,
+      "reservations": 1454,
+      "reservation_violations": 1074,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 7.440151502923836,
+      "p99_t": 51.256417120550346,
+      "p99_wide": 62.93090351739546,
+      "idle_with_queue": 0.04895889244442054,
+      "utilization": 0.5347956370550898,
+      "backfilled": 554,
+      "reservations": 1601,
+      "reservation_violations": 575,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 7.209217785561292,
+      "p99_t": 50.743947179441605,
+      "p99_wide": 62.81417548208705,
+      "idle_with_queue": 0.047178155673511336,
+      "utilization": 0.5347956370550891,
+      "backfilled": 601,
+      "reservations": 1624,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 7.912439704580313,
+      "p99_t": 52.8028259472837,
+      "p99_wide": 63.22165498268216,
+      "idle_with_queue": 0.05161051865586642,
+      "utilization": 0.534795637055088,
+      "backfilled": 478,
+      "reservations": 1815,
+      "reservation_violations": 1324,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 7.7985593113737375,
+      "p99_t": 51.52552939988113,
+      "p99_wide": 63.280488626040416,
+      "idle_with_queue": 0.05008085715550801,
+      "utilization": 0.5347956370550896,
+      "backfilled": 450,
+      "reservations": 1831,
+      "reservation_violations": 1561,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 7.4321643999049884,
+      "p99_t": 51.256417120550346,
+      "p99_wide": 63.22165498268216,
+      "idle_with_queue": 0.049400418892053904,
+      "utilization": 0.5347956370550908,
+      "backfilled": 568,
+      "reservations": 2035,
+      "reservation_violations": 991,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49002,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 7.227311308451067,
+      "p99_t": 50.743947179441605,
+      "p99_wide": 62.81417548208705,
+      "idle_with_queue": 0.04695702715949658,
+      "utilization": 0.534795637055089,
+      "backfilled": 600,
+      "reservations": 2088,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5403720625125906
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 3.041807472024809,
+      "p99_t": 27.97991950276028,
+      "p99_wide": 26.40457488113985,
+      "idle_with_queue": 0.026440894576083472,
+      "utilization": 0.3512816372393072,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 2.8191476049035984,
+      "p99_t": 26.27886534476671,
+      "p99_wide": 26.598246506731215,
+      "idle_with_queue": 0.02543060830167229,
+      "utilization": 0.3512816372393073,
+      "backfilled": 145,
+      "reservations": 991,
+      "reservation_violations": 411,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 2.69988231291739,
+      "p99_t": 25.299889804025455,
+      "p99_wide": 26.660012400598102,
+      "idle_with_queue": 0.024744249269111805,
+      "utilization": 0.35127836770507936,
+      "backfilled": 183,
+      "reservations": 1012,
+      "reservation_violations": 457,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.6173343887919427,
+      "p99_t": 24.056938682135723,
+      "p99_wide": 26.658925646648918,
+      "idle_with_queue": 0.024427802230613534,
+      "utilization": 0.3512783677050793,
+      "backfilled": 221,
+      "reservations": 1073,
+      "reservation_violations": 80,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.617330906570047,
+      "p99_t": 23.858729026627163,
+      "p99_wide": 26.308290851343862,
+      "idle_with_queue": 0.023966227674027733,
+      "utilization": 0.3512783677050795,
+      "backfilled": 217,
+      "reservations": 1087,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 2.8186388347001983,
+      "p99_t": 26.27886534476671,
+      "p99_wide": 26.598246506731215,
+      "idle_with_queue": 0.02543060830167229,
+      "utilization": 0.3512816372393073,
+      "backfilled": 147,
+      "reservations": 1147,
+      "reservation_violations": 560,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 2.698704140922975,
+      "p99_t": 25.299889804025455,
+      "p99_wide": 26.660012400598102,
+      "idle_with_queue": 0.02473945453921929,
+      "utilization": 0.35127836770507953,
+      "backfilled": 186,
+      "reservations": 1172,
+      "reservation_violations": 626,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.616469310867278,
+      "p99_t": 24.206505657867083,
+      "p99_wide": 26.658925646648918,
+      "idle_with_queue": 0.024428815699415147,
+      "utilization": 0.3512783677050793,
+      "backfilled": 225,
+      "reservations": 1262,
+      "reservation_violations": 118,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.617330906570047,
+      "p99_t": 23.858729026627163,
+      "p99_wide": 26.308290851343862,
+      "idle_with_queue": 0.023966227674027733,
+      "utilization": 0.3512783677050795,
+      "backfilled": 217,
+      "reservations": 1274,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 6.6887931946811365,
+      "p99_t": 53.179166562237526,
+      "p99_wide": 51.771277792876745,
+      "idle_with_queue": 0.0619951685451508,
+      "utilization": 0.5522629803979013,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 5.0946061247326,
+      "p99_t": 44.73653125916817,
+      "p99_wide": 51.79055886477688,
+      "idle_with_queue": 0.0565964498872056,
+      "utilization": 0.5522629803979007,
+      "backfilled": 554,
+      "reservations": 1525,
+      "reservation_violations": 582,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 4.7034550959999955,
+      "p99_t": 44.35753613300565,
+      "p99_wide": 51.76805757222204,
+      "idle_with_queue": 0.05401799013076899,
+      "utilization": 0.5522578425583989,
+      "backfilled": 573,
+      "reservations": 1544,
+      "reservation_violations": 678,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 4.514145366569331,
+      "p99_t": 44.14563469099242,
+      "p99_wide": 51.76805757222204,
+      "idle_with_queue": 0.05286543734594985,
+      "utilization": 0.5522578425583988,
+      "backfilled": 659,
+      "reservations": 1580,
+      "reservation_violations": 89,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 4.500064336210177,
+      "p99_t": 43.642211934416956,
+      "p99_wide": 51.60804109648299,
+      "idle_with_queue": 0.05175394122255112,
+      "utilization": 0.5522578425583994,
+      "backfilled": 636,
+      "reservations": 1601,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 5.071967670159979,
+      "p99_t": 44.73653125916817,
+      "p99_wide": 51.93069655744791,
+      "idle_with_queue": 0.05678663016961942,
+      "utilization": 0.5522629803979004,
+      "backfilled": 567,
+      "reservations": 2024,
+      "reservation_violations": 1041,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 4.705710039105263,
+      "p99_t": 44.455475585850095,
+      "p99_wide": 51.80311284908449,
+      "idle_with_queue": 0.054541979691127625,
+      "utilization": 0.552257842558399,
+      "backfilled": 585,
+      "reservations": 2015,
+      "reservation_violations": 1180,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 4.514614746108712,
+      "p99_t": 44.370930219875795,
+      "p99_wide": 51.81766512464022,
+      "idle_with_queue": 0.05300287544343853,
+      "utilization": 0.5522578425583994,
+      "backfilled": 666,
+      "reservations": 2059,
+      "reservation_violations": 167,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 4.502651001856414,
+      "p99_t": 43.642211934416956,
+      "p99_wide": 51.60804109648299,
+      "idle_with_queue": 0.05170027864239208,
+      "utilization": 0.5522578425583997,
+      "backfilled": 633,
+      "reservations": 2076,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 6.083614944049618,
+      "p99_t": 55.95983900552056,
+      "p99_wide": 52.8091497622797,
+      "idle_with_queue": 0.026440894576083472,
+      "utilization": 0.3512816372393072,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 5.685389682863607,
+      "p99_t": 52.560880098462114,
+      "p99_wide": 53.46734218133633,
+      "idle_with_queue": 0.025496310026880194,
+      "utilization": 0.35128163723930733,
+      "backfilled": 124,
+      "reservations": 835,
+      "reservation_violations": 537,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 5.620524606821262,
+      "p99_t": 51.974826369394115,
+      "p99_wide": 53.373196475123954,
+      "idle_with_queue": 0.025368494493108414,
+      "utilization": 0.35127836770507936,
+      "backfilled": 129,
+      "reservations": 858,
+      "reservation_violations": 651,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 5.333104459252729,
+      "p99_t": 49.43059203509559,
+      "p99_wide": 53.320024801196205,
+      "idle_with_queue": 0.024675143627171523,
+      "utilization": 0.35127836770507936,
+      "backfilled": 194,
+      "reservations": 1021,
+      "reservation_violations": 384,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 5.234661813140094,
+      "p99_t": 47.717458053254326,
+      "p99_wide": 52.616581702687725,
+      "idle_with_queue": 0.023966227674027733,
+      "utilization": 0.3512783677050795,
+      "backfilled": 217,
+      "reservations": 1087,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 5.685496453607442,
+      "p99_t": 52.560880098462114,
+      "p99_wide": 53.46734218133633,
+      "idle_with_queue": 0.02549842561236455,
+      "utilization": 0.3512816372393076,
+      "backfilled": 125,
+      "reservations": 972,
+      "reservation_violations": 710,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 5.620999840704097,
+      "p99_t": 51.974826369394115,
+      "p99_wide": 53.373196475123954,
+      "idle_with_queue": 0.025451597942959238,
+      "utilization": 0.35127836770507936,
+      "backfilled": 130,
+      "reservations": 992,
+      "reservation_violations": 832,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 5.331163106366564,
+      "p99_t": 49.43059203509559,
+      "p99_wide": 53.320024801196205,
+      "idle_with_queue": 0.02467034889727901,
+      "utilization": 0.3512783677050795,
+      "backfilled": 197,
+      "reservations": 1187,
+      "reservation_violations": 540,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 5.234661813140094,
+      "p99_t": 47.717458053254326,
+      "p99_wide": 52.616581702687725,
+      "idle_with_queue": 0.023966227674027733,
+      "utilization": 0.3512783677050795,
+      "backfilled": 217,
+      "reservations": 1274,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34558061363426645
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 13.377586389362273,
+      "p99_t": 106.35833312447505,
+      "p99_wide": 103.54255558575349,
+      "idle_with_queue": 0.0619951685451508,
+      "utilization": 0.5522629803979013,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 10.550919549550498,
+      "p99_t": 89.72681504123695,
+      "p99_wide": 103.57953343135307,
+      "idle_with_queue": 0.057186338608298436,
+      "utilization": 0.5522629803979004,
+      "backfilled": 466,
+      "reservations": 1427,
+      "reservation_violations": 897,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 9.990973895738628,
+      "p99_t": 88.2140401605016,
+      "p99_wide": 103.50701059333264,
+      "idle_with_queue": 0.05578413327251356,
+      "utilization": 0.5522578425583996,
+      "backfilled": 481,
+      "reservations": 1447,
+      "reservation_violations": 1080,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 9.302699617883414,
+      "p99_t": 88.68292812246158,
+      "p99_wide": 103.53611514444408,
+      "idle_with_queue": 0.05392648653388212,
+      "utilization": 0.5522578425583988,
+      "backfilled": 591,
+      "reservations": 1557,
+      "reservation_violations": 569,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 9.000128672420354,
+      "p99_t": 87.28442386883391,
+      "p99_wide": 103.21608219296598,
+      "idle_with_queue": 0.05175394122255112,
+      "utilization": 0.5522578425583994,
+      "backfilled": 636,
+      "reservations": 1601,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 10.504580729852147,
+      "p99_t": 89.72681504123695,
+      "p99_wide": 103.65998954433691,
+      "idle_with_queue": 0.05791114117619452,
+      "utilization": 0.5522629803979017,
+      "backfilled": 486,
+      "reservations": 1907,
+      "reservation_violations": 1479,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 9.99127210823927,
+      "p99_t": 88.2140401605016,
+      "p99_wide": 103.50701059333264,
+      "idle_with_queue": 0.05581185913385425,
+      "utilization": 0.5522578425584006,
+      "backfilled": 482,
+      "reservations": 1890,
+      "reservation_violations": 1643,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 9.33154397780551,
+      "p99_t": 89.04364063516452,
+      "p99_wide": 103.61444453926603,
+      "idle_with_queue": 0.05458191415235754,
+      "utilization": 0.5522578425583984,
+      "backfilled": 603,
+      "reservations": 2033,
+      "reservation_violations": 1019,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49003,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 9.005302003712828,
+      "p99_t": 87.28442386883391,
+      "p99_wide": 103.21608219296598,
+      "idle_with_queue": 0.05170027864239208,
+      "utilization": 0.5522578425583997,
+      "backfilled": 633,
+      "reservations": 2076,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5430552499967045
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 2.6008520843959735,
+      "p99_t": 22.802954081487176,
+      "p99_wide": 24.8601687012356,
+      "idle_with_queue": 0.024271013139673742,
+      "utilization": 0.3464521364545263,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 2.400482331597196,
+      "p99_t": 21.465669728673465,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.023520029830775488,
+      "utilization": 0.34641721220592625,
+      "backfilled": 168,
+      "reservations": 945,
+      "reservation_violations": 403,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 2.30209490213271,
+      "p99_t": 20.423836167713453,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.02333481093965153,
+      "utilization": 0.34641721220592614,
+      "backfilled": 193,
+      "reservations": 943,
+      "reservation_violations": 462,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.2272449079728203,
+      "p99_t": 20.36888565948027,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.022968578900986178,
+      "utilization": 0.34641721220592614,
+      "backfilled": 239,
+      "reservations": 1040,
+      "reservation_violations": 69,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.216491389157628,
+      "p99_t": 20.36888565948027,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.02269227330185854,
+      "utilization": 0.34645213645452644,
+      "backfilled": 234,
+      "reservations": 1047,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 2.395159974496627,
+      "p99_t": 21.656619905387327,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.023605584006878275,
+      "utilization": 0.3464172122059266,
+      "backfilled": 182,
+      "reservations": 1070,
+      "reservation_violations": 519,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 2.301656727406338,
+      "p99_t": 20.502890726711268,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.023390011718479393,
+      "utilization": 0.3464172122059263,
+      "backfilled": 194,
+      "reservations": 1077,
+      "reservation_violations": 623,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.227300176730261,
+      "p99_t": 20.36888565948027,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.023021927627438266,
+      "utilization": 0.34641721220592625,
+      "backfilled": 242,
+      "reservations": 1199,
+      "reservation_violations": 91,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.216491389157628,
+      "p99_t": 20.36888565948027,
+      "p99_wide": 24.593813937710447,
+      "idle_with_queue": 0.02269227330185854,
+      "utilization": 0.34645213645452644,
+      "backfilled": 234,
+      "reservations": 1209,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 4.985204477332421,
+      "p99_t": 43.992841032121476,
+      "p99_wide": 48.24195497673362,
+      "idle_with_queue": 0.0613084929346343,
+      "utilization": 0.5436138330364592,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 3.815513624028316,
+      "p99_t": 30.116993832983745,
+      "p99_wide": 44.23437859254708,
+      "idle_with_queue": 0.054648994206325456,
+      "utilization": 0.5435697429790645,
+      "backfilled": 550,
+      "reservations": 1554,
+      "reservation_violations": 624,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 3.609007949479094,
+      "p99_t": 29.558181433055733,
+      "p99_wide": 44.134953584033454,
+      "idle_with_queue": 0.053536015282630856,
+      "utilization": 0.5435697429790646,
+      "backfilled": 577,
+      "reservations": 1546,
+      "reservation_violations": 705,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 3.429895924004424,
+      "p99_t": 29.560413699742792,
+      "p99_wide": 44.81087283798605,
+      "idle_with_queue": 0.05290450731436883,
+      "utilization": 0.5435697429790648,
+      "backfilled": 683,
+      "reservations": 1582,
+      "reservation_violations": 89,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 3.3790972649479682,
+      "p99_t": 28.818879108061484,
+      "p99_wide": 43.73190275754502,
+      "idle_with_queue": 0.05148565325413467,
+      "utilization": 0.5436984698949844,
+      "backfilled": 683,
+      "reservations": 1582,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 3.819103782370168,
+      "p99_t": 30.972231609126865,
+      "p99_wide": 45.58346351195227,
+      "idle_with_queue": 0.05535506329407139,
+      "utilization": 0.5435697429790647,
+      "backfilled": 580,
+      "reservations": 1955,
+      "reservation_violations": 1004,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 3.6182107454397014,
+      "p99_t": 29.618368735857274,
+      "p99_wide": 44.53270950827481,
+      "idle_with_queue": 0.05395245304448965,
+      "utilization": 0.5435697429790652,
+      "backfilled": 586,
+      "reservations": 1949,
+      "reservation_violations": 1148,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 3.4297070945768793,
+      "p99_t": 29.730621184348507,
+      "p99_wide": 44.881717620092616,
+      "idle_with_queue": 0.053307835873642954,
+      "utilization": 0.5435697429790641,
+      "backfilled": 692,
+      "reservations": 1969,
+      "reservation_violations": 132,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 3.3769949309051728,
+      "p99_t": 28.818879108061484,
+      "p99_wide": 43.73190275754502,
+      "idle_with_queue": 0.051556675641734724,
+      "utilization": 0.5436984698949846,
+      "backfilled": 685,
+      "reservations": 1975,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 5.201704168791947,
+      "p99_t": 45.60590816297435,
+      "p99_wide": 49.7203374024712,
+      "idle_with_queue": 0.024271013139673742,
+      "utilization": 0.3464521364545263,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 4.934046614391928,
+      "p99_t": 44.509196232738795,
+      "p99_wide": 49.204714621553265,
+      "idle_with_queue": 0.023929025044405014,
+      "utilization": 0.34641721220592614,
+      "backfilled": 129,
+      "reservations": 786,
+      "reservation_violations": 505,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 4.776741107509381,
+      "p99_t": 41.161343665195346,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.02384406010633265,
+      "utilization": 0.34641721220592614,
+      "backfilled": 141,
+      "reservations": 788,
+      "reservation_violations": 611,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 4.551532625949405,
+      "p99_t": 40.84767233542691,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.023165509669583657,
+      "utilization": 0.34641721220592614,
+      "backfilled": 202,
+      "reservations": 981,
+      "reservation_violations": 381,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 4.432982778315256,
+      "p99_t": 40.73777131896054,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.02269227330185854,
+      "utilization": 0.34645213645452644,
+      "backfilled": 234,
+      "reservations": 1047,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 4.926618797745135,
+      "p99_t": 44.509196232738795,
+      "p99_wide": 49.204714621553265,
+      "idle_with_queue": 0.023927562080241584,
+      "utilization": 0.3464172122059264,
+      "backfilled": 134,
+      "reservations": 885,
+      "reservation_violations": 639,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 4.776072632345751,
+      "p99_t": 41.20616165664347,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.02386415962631037,
+      "utilization": 0.3464172122059261,
+      "backfilled": 141,
+      "reservations": 890,
+      "reservation_violations": 732,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 4.550540922478263,
+      "p99_t": 41.005781453422536,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.023266141628955864,
+      "utilization": 0.34641721220592625,
+      "backfilled": 204,
+      "reservations": 1124,
+      "reservation_violations": 519,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 4.432982778315256,
+      "p99_t": 40.73777131896054,
+      "p99_wide": 49.187627875420894,
+      "idle_with_queue": 0.02269227330185854,
+      "utilization": 0.34645213645452644,
+      "backfilled": 234,
+      "reservations": 1209,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.34018275666332637
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 9.970408954664842,
+      "p99_t": 87.98568206424295,
+      "p99_wide": 96.48390995346725,
+      "idle_with_queue": 0.0613084929346343,
+      "utilization": 0.5436138330364592,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 8.042442302761389,
+      "p99_t": 62.23977159142129,
+      "p99_wide": 88.48792755064045,
+      "idle_with_queue": 0.05609439607781992,
+      "utilization": 0.543569742979065,
+      "backfilled": 469,
+      "reservations": 1437,
+      "reservation_violations": 907,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 7.636858523957829,
+      "p99_t": 59.60144489656621,
+      "p99_wide": 89.86885684453007,
+      "idle_with_queue": 0.05534179378354585,
+      "utilization": 0.5435697429790647,
+      "backfilled": 474,
+      "reservations": 1438,
+      "reservation_violations": 1080,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 7.130417863131647,
+      "p99_t": 58.88637154578486,
+      "p99_wide": 87.89678161548332,
+      "idle_with_queue": 0.05325785517330218,
+      "utilization": 0.5435697429790652,
+      "backfilled": 608,
+      "reservations": 1566,
+      "reservation_violations": 558,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 6.7581945298959365,
+      "p99_t": 57.63775821612297,
+      "p99_wide": 87.46380551509004,
+      "idle_with_queue": 0.05148565325413467,
+      "utilization": 0.5436984698949844,
+      "backfilled": 683,
+      "reservations": 1582,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 7.962854399229053,
+      "p99_t": 61.91688372480832,
+      "p99_wide": 90.46449883892207,
+      "idle_with_queue": 0.056633580739410154,
+      "utilization": 0.5435697429790665,
+      "backfilled": 490,
+      "reservations": 1834,
+      "reservation_violations": 1408,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 7.642752520570195,
+      "p99_t": 60.049599791520635,
+      "p99_wide": 90.3211176492883,
+      "idle_with_queue": 0.055532182764822254,
+      "utilization": 0.5435697429790648,
+      "backfilled": 476,
+      "reservations": 1839,
+      "reservation_violations": 1590,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 7.1375060989649155,
+      "p99_t": 59.460128100166315,
+      "p99_wide": 89.27567408077552,
+      "idle_with_queue": 0.053803249993679074,
+      "utilization": 0.5435697429790654,
+      "backfilled": 621,
+      "reservations": 1973,
+      "reservation_violations": 915,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49004,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 6.7539898618103456,
+      "p99_t": 57.63775821612297,
+      "p99_wide": 87.46380551509004,
+      "idle_with_queue": 0.051556675641734724,
+      "utilization": 0.5436984698949846,
+      "backfilled": 685,
+      "reservations": 1975,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5345729033280844
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 2.9636497981803145,
+      "p99_t": 22.98545716947744,
+      "p99_wide": 28.194409073009805,
+      "idle_with_queue": 0.026955206763640226,
+      "utilization": 0.36058975361725054,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 2.7379153485991448,
+      "p99_t": 22.306841340292518,
+      "p99_wide": 27.385493690016514,
+      "idle_with_queue": 0.02559434017293938,
+      "utilization": 0.36058975361725,
+      "backfilled": 192,
+      "reservations": 998,
+      "reservation_violations": 437,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 2.6684736393613613,
+      "p99_t": 21.389473087886774,
+      "p99_wide": 26.447765752611698,
+      "idle_with_queue": 0.025051698998300044,
+      "utilization": 0.36058975361725015,
+      "backfilled": 194,
+      "reservations": 1046,
+      "reservation_violations": 493,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 2.602694601785831,
+      "p99_t": 20.294262081089823,
+      "p99_wide": 27.415577199995308,
+      "idle_with_queue": 0.02500691849465128,
+      "utilization": 0.36058975361725015,
+      "backfilled": 260,
+      "reservations": 1117,
+      "reservation_violations": 102,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 2.5746830918590042,
+      "p99_t": 20.017664534295317,
+      "p99_wide": 25.905764164751343,
+      "idle_with_queue": 0.024442184625414438,
+      "utilization": 0.36058975361725015,
+      "backfilled": 247,
+      "reservations": 1127,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 2.7358671559271057,
+      "p99_t": 22.306841340292518,
+      "p99_wide": 27.385493690016514,
+      "idle_with_queue": 0.025615560029621762,
+      "utilization": 0.3605897536172498,
+      "backfilled": 194,
+      "reservations": 1168,
+      "reservation_violations": 601,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 2.6726437252931903,
+      "p99_t": 21.56850678729346,
+      "p99_wide": 26.648799136848755,
+      "idle_with_queue": 0.025204833571430378,
+      "utilization": 0.3605897536172504,
+      "backfilled": 196,
+      "reservations": 1216,
+      "reservation_violations": 714,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 2.605568480118107,
+      "p99_t": 20.2960618231547,
+      "p99_wide": 27.415577199995308,
+      "idle_with_queue": 0.0250591762761992,
+      "utilization": 0.36058975361725004,
+      "backfilled": 262,
+      "reservations": 1328,
+      "reservation_violations": 152,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 2.5752175981130585,
+      "p99_t": 20.017664534295317,
+      "p99_wide": 25.905764164751343,
+      "idle_with_queue": 0.02443457451062226,
+      "utilization": 0.36058975361725015,
+      "backfilled": 246,
+      "reservations": 1326,
+      "reservation_violations": 0,
+      "arrival_rate": 0.35532994923857864,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 7.417170902088899,
+      "p99_t": 61.923185461373016,
+      "p99_wide": 62.916832863503295,
+      "idle_with_queue": 0.06423588348036859,
+      "utilization": 0.5666302231153455,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 5.4399133511262505,
+      "p99_t": 55.60321751021564,
+      "p99_wide": 62.085468816244465,
+      "idle_with_queue": 0.059367386095113425,
+      "utilization": 0.5666162448266415,
+      "backfilled": 637,
+      "reservations": 1629,
+      "reservation_violations": 665,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 5.190783740176312,
+      "p99_t": 54.02219972277943,
+      "p99_wide": 60.44966022845805,
+      "idle_with_queue": 0.05669433792338066,
+      "utilization": 0.5666302231153462,
+      "backfilled": 638,
+      "reservations": 1634,
+      "reservation_violations": 736,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 4.9786860714397845,
+      "p99_t": 54.192602043066415,
+      "p99_wide": 60.83620111760543,
+      "idle_with_queue": 0.055712802251108494,
+      "utilization": 0.5666302231153455,
+      "backfilled": 737,
+      "reservations": 1667,
+      "reservation_violations": 131,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 4.947885892299793,
+      "p99_t": 53.83886353676661,
+      "p99_wide": 60.32111484279543,
+      "idle_with_queue": 0.05417353089254397,
+      "utilization": 0.5666302231153463,
+      "backfilled": 725,
+      "reservations": 1684,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 5.426006485558676,
+      "p99_t": 55.68836940287441,
+      "p99_wide": 62.085468816244465,
+      "idle_with_queue": 0.059533243952253054,
+      "utilization": 0.5666162448266429,
+      "backfilled": 668,
+      "reservations": 2157,
+      "reservation_violations": 1201,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 5.193981542536853,
+      "p99_t": 54.022581761236076,
+      "p99_wide": 60.44966022845805,
+      "idle_with_queue": 0.05704497175733019,
+      "utilization": 0.5666302231153466,
+      "backfilled": 649,
+      "reservations": 2145,
+      "reservation_violations": 1357,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 4.985078909410895,
+      "p99_t": 54.192602043066415,
+      "p99_wide": 60.83620111760543,
+      "idle_with_queue": 0.05629844852707509,
+      "utilization": 0.5666302231153458,
+      "backfilled": 756,
+      "reservations": 2160,
+      "reservation_violations": 227,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 4.94344072155934,
+      "p99_t": 53.83886353676661,
+      "p99_wide": 60.32111484279543,
+      "idle_with_queue": 0.05414952420007915,
+      "utilization": 0.5666302231153466,
+      "backfilled": 725,
+      "reservations": 2180,
+      "reservation_violations": 0,
+      "arrival_rate": 0.5583756345177665,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "mean_t": 5.927299596360629,
+      "p99_t": 45.97091433895488,
+      "p99_wide": 56.38881814601961,
+      "idle_with_queue": 0.026955206763640226,
+      "utilization": 0.36058975361725054,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "mean_t": 5.5797430523181895,
+      "p99_t": 45.30590399469507,
+      "p99_wide": 56.01441208477755,
+      "idle_with_queue": 0.026127073140976155,
+      "utilization": 0.36058975361725004,
+      "backfilled": 147,
+      "reservations": 880,
+      "reservation_violations": 589,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "mean_t": 5.485808888447806,
+      "p99_t": 43.981024964853255,
+      "p99_wide": 54.256270195656604,
+      "idle_with_queue": 0.025599370817587636,
+      "utilization": 0.36058975361725015,
+      "backfilled": 143,
+      "reservations": 894,
+      "reservation_violations": 700,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "mean_t": 5.284018080684693,
+      "p99_t": 40.588524162179645,
+      "p99_wide": 52.895531505223396,
+      "idle_with_queue": 0.024974760811587574,
+      "utilization": 0.3605897536172504,
+      "backfilled": 210,
+      "reservations": 1068,
+      "reservation_violations": 424,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "mean_t": 5.1493661837180085,
+      "p99_t": 40.035329068590634,
+      "p99_wide": 51.811528329502686,
+      "idle_with_queue": 0.024442184625414438,
+      "utilization": 0.36058975361725015,
+      "backfilled": 247,
+      "reservations": 1127,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "mean_t": 5.5757574728292,
+      "p99_t": 45.30590399469507,
+      "p99_wide": 56.01441208477755,
+      "idle_with_queue": 0.02614782601225121,
+      "utilization": 0.3605897536172504,
+      "backfilled": 148,
+      "reservations": 1025,
+      "reservation_violations": 780,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "mean_t": 5.486787183555401,
+      "p99_t": 43.981024964853255,
+      "p99_wide": 54.256270195656604,
+      "idle_with_queue": 0.025652489227655072,
+      "utilization": 0.3605897536172504,
+      "backfilled": 144,
+      "reservations": 1032,
+      "reservation_violations": 885,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 5.29118705924138,
+      "p99_t": 40.5921236463094,
+      "p99_wide": 53.29759827369751,
+      "idle_with_queue": 0.025109980730513338,
+      "utilization": 0.3605897536172502,
+      "backfilled": 212,
+      "reservations": 1244,
+      "reservation_violations": 637,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "mean_t": 5.150435196226117,
+      "p99_t": 40.035329068590634,
+      "p99_wide": 51.811528329502686,
+      "idle_with_queue": 0.02443457451062226,
+      "utilization": 0.36058975361725015,
+      "backfilled": 246,
+      "reservations": 1326,
+      "reservation_violations": 0,
+      "arrival_rate": 0.17766497461928932,
+      "sample_offered_load": 0.3547816946462821
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "mean_t": 14.834341804177798,
+      "p99_t": 123.84637092274603,
+      "p99_wide": 125.83366572700659,
+      "idle_with_queue": 0.06423588348036859,
+      "utilization": 0.5666302231153455,
+      "backfilled": 0,
+      "reservations": 0,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "mean_t": 11.208543669999909,
+      "p99_t": 108.827538852573,
+      "p99_wide": 121.68542650193565,
+      "idle_with_queue": 0.05954878071029206,
+      "utilization": 0.566616244826642,
+      "backfilled": 566,
+      "reservations": 1501,
+      "reservation_violations": 987,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "mean_t": 10.906118258391551,
+      "p99_t": 107.83882383560326,
+      "p99_wide": 120.69298077004721,
+      "idle_with_queue": 0.05759960234106165,
+      "utilization": 0.5666302231153466,
+      "backfilled": 534,
+      "reservations": 1517,
+      "reservation_violations": 1160,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "mean_t": 10.30695766059187,
+      "p99_t": 108.04439944555887,
+      "p99_wide": 120.8993204569161,
+      "idle_with_queue": 0.05661642930310403,
+      "utilization": 0.5666302231153459,
+      "backfilled": 656,
+      "reservations": 1643,
+      "reservation_violations": 614,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "mean_t": 9.895771784599585,
+      "p99_t": 107.67772707353322,
+      "p99_wide": 120.64222968559086,
+      "idle_with_queue": 0.05417353089254397,
+      "utilization": 0.5666302231153463,
+      "backfilled": 725,
+      "reservations": 1684,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "mean_t": 11.16731254235654,
+      "p99_t": 109.36600258763015,
+      "p99_wide": 122.2201595220741,
+      "idle_with_queue": 0.05995283721514341,
+      "utilization": 0.5666162448266432,
+      "backfilled": 579,
+      "reservations": 2022,
+      "reservation_violations": 1645,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "mean_t": 10.924648347794093,
+      "p99_t": 108.27674638715982,
+      "p99_wide": 120.69298077004721,
+      "idle_with_queue": 0.0578703145066337,
+      "utilization": 0.5666302231153472,
+      "backfilled": 539,
+      "reservations": 1990,
+      "reservation_violations": 1793,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "mean_t": 10.331327566379725,
+      "p99_t": 108.47889018003009,
+      "p99_wide": 120.8993204569161,
+      "idle_with_queue": 0.05696261246230532,
+      "utilization": 0.5666302231153464,
+      "backfilled": 669,
+      "reservations": 2158,
+      "reservation_violations": 1153,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    },
+    {
+      "seed": 49005,
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "mean_t": 9.88688144311868,
+      "p99_t": 107.67772707353322,
+      "p99_wide": 120.64222968559086,
+      "idle_with_queue": 0.05414952420007915,
+      "utilization": 0.5666302231153466,
+      "backfilled": 725,
+      "reservations": 2180,
+      "reservation_violations": 0,
+      "arrival_rate": 0.27918781725888325,
+      "sample_offered_load": 0.5575140915870148
+    }
+  ],
+  "summaries": [
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "fcfs",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.9139308385173432,
+          "low": 2.5034216604851105,
+          "high": 3.324440016549576
+        },
+        "p99_t": {
+          "mean": 23.23449508252149,
+          "low": 18.40364155473016,
+          "high": 28.06534861031282
+        },
+        "p99_wide": {
+          "mean": 25.87934954757849,
+          "low": 19.640746172278316,
+          "high": 32.117952922878665
+        },
+        "idle_with_queue": {
+          "mean": 0.02675099497534752,
+          "low": 0.023811268429212534,
+          "high": 0.02969072152148251
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "fcfs",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.6986544418571103,
+          "low": 2.344553213129595,
+          "high": 3.0527556705846255
+        },
+        "p99_t": {
+          "mean": 22.00271454979894,
+          "low": 17.93377459973815,
+          "high": 26.071654499859733
+        },
+        "p99_wide": {
+          "mean": 25.770118426855266,
+          "low": 19.53513931253972,
+          "high": 32.00509754117081
+        },
+        "idle_with_queue": {
+          "mean": 0.025779731655279182,
+          "low": 0.02304449528651621,
+          "high": 0.028514968024042152
+        },
+        "reservation_violations": {
+          "mean": 422.0,
+          "low": 403.65437617321345,
+          "high": 440.34562382678655
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.5975293012360243,
+          "low": 2.2964040272954294,
+          "high": 2.8986545751766193
+        },
+        "p99_t": {
+          "mean": 21.065312347548875,
+          "low": 17.477905929416043,
+          "high": 24.65271876568171
+        },
+        "p99_wide": {
+          "mean": 25.648391366108807,
+          "low": 19.39937565804345,
+          "high": 31.897407074174165
+        },
+        "idle_with_queue": {
+          "mean": 0.025322133227402704,
+          "low": 0.022618922299107273,
+          "high": 0.028025344155698136
+        },
+        "reservation_violations": {
+          "mean": 486.1666666666667,
+          "low": 454.98294370433797,
+          "high": 517.3503896289955
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.10112514062108631,
+          "low": -0.16290434095512166,
+          "high": -0.03934594028705097
+        },
+        "p99_t": {
+          "mean": -0.9374022022500709,
+          "low": -1.5707013717470502,
+          "high": -0.3041030327530916
+        },
+        "p99_wide": {
+          "mean": -0.1217270607464614,
+          "low": -0.5455335883466299,
+          "high": 0.30207946685370707
+        },
+        "reservation_violations": {
+          "mean": 64.16666666666667,
+          "low": 45.93646629827056,
+          "high": 82.39686703506278
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.522088916970789,
+          "low": 2.234426673986129,
+          "high": 2.809751159955449
+        },
+        "p99_t": {
+          "mean": 20.657120336843498,
+          "low": 17.353682624167906,
+          "high": 23.96055804951909
+        },
+        "p99_wide": {
+          "mean": 25.795782585495292,
+          "low": 19.483443587282274,
+          "high": 32.10812158370831
+        },
+        "idle_with_queue": {
+          "mean": 0.02502625306273049,
+          "low": 0.02228099550596546,
+          "high": 0.02777151061949552
+        },
+        "reservation_violations": {
+          "mean": 86.16666666666667,
+          "low": 63.411410596903856,
+          "high": 108.92192273642948
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.17656552488632138,
+          "low": -0.2554070388757297,
+          "high": -0.0977240108969131
+        },
+        "p99_t": {
+          "mean": -1.3455942129554472,
+          "low": -2.2354175733787636,
+          "high": -0.4557708525321309
+        },
+        "p99_wide": {
+          "mean": 0.025664158640025175,
+          "low": -0.05373364816232022,
+          "high": 0.10506196544237058
+        },
+        "reservation_violations": {
+          "mean": -335.8333333333333,
+          "low": -360.99718653207515,
+          "high": -310.6694801345915
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.5119438696819327,
+          "low": 2.2211301674044575,
+          "high": 2.802757571959408
+        },
+        "p99_t": {
+          "mean": 20.56115204030459,
+          "low": 17.26683312768909,
+          "high": 23.855470952920093
+        },
+        "p99_wide": {
+          "mean": 25.289828033924476,
+          "low": 19.043661177483223,
+          "high": 31.53599489036573
+        },
+        "idle_with_queue": {
+          "mean": 0.02465877251226147,
+          "low": 0.021926143674679505,
+          "high": 0.02739140134984343
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.1867105721751776,
+          "low": -0.260771418395764,
+          "high": -0.11264972595459119
+        },
+        "p99_t": {
+          "mean": -1.441562509494353,
+          "low": -2.4043473846520893,
+          "high": -0.47877763433661646
+        },
+        "p99_wide": {
+          "mean": -0.48029039293078846,
+          "low": -1.0875104092721393,
+          "high": 0.12692962341056246
+        },
+        "reservation_violations": {
+          "mean": -422.0,
+          "low": -440.34562382678655,
+          "high": -403.65437617321345
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.69513138373503,
+          "low": 2.3395678455614233,
+          "high": 3.0506949219086366
+        },
+        "p99_t": {
+          "mean": 22.030838063146373,
+          "low": 17.96266718199813,
+          "high": 26.099008944294617
+        },
+        "p99_wide": {
+          "mean": 25.770118426855266,
+          "low": 19.53513931253972,
+          "high": 32.00509754117081
+        },
+        "idle_with_queue": {
+          "mean": 0.025806151024319993,
+          "low": 0.023087230848505044,
+          "high": 0.028525071200134942
+        },
+        "reservation_violations": {
+          "mean": 564.3333333333334,
+          "low": 526.2073687921824,
+          "high": 602.4592978744844
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.5976029173503354,
+          "low": 2.2963076184216225,
+          "high": 2.8988982162790484
+        },
+        "p99_t": {
+          "mean": 21.10952904581163,
+          "low": 17.522955929441878,
+          "high": 24.696102162181383
+        },
+        "p99_wide": {
+          "mean": 25.681896930148316,
+          "low": 19.426626477099415,
+          "high": 31.937167383197217
+        },
+        "idle_with_queue": {
+          "mean": 0.02534957034422257,
+          "low": 0.022650747834356166,
+          "high": 0.02804839285408897
+        },
+        "reservation_violations": {
+          "mean": 672.1666666666666,
+          "low": 618.1338082867031,
+          "high": 726.1995250466301
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.09752846638469499,
+          "low": -0.16104115969649563,
+          "high": -0.03401577307289434
+        },
+        "p99_t": {
+          "mean": -0.9213090173347389,
+          "low": -1.5739720136510438,
+          "high": -0.26864602101843393
+        },
+        "p99_wide": {
+          "mean": -0.0882214967069519,
+          "low": -0.4269909474236116,
+          "high": 0.2505479540097078
+        },
+        "reservation_violations": {
+          "mean": 107.83333333333333,
+          "low": 81.40574612952231,
+          "high": 134.26092053714436
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.521987148834028,
+          "low": 2.2347308713217773,
+          "high": 2.8092434263462787
+        },
+        "p99_t": {
+          "mean": 20.682422464729044,
+          "low": 17.344812538406853,
+          "high": 24.020032391051235
+        },
+        "p99_wide": {
+          "mean": 25.80488630724314,
+          "low": 19.50745579293057,
+          "high": 32.10231682155571
+        },
+        "idle_with_queue": {
+          "mean": 0.025055884431642167,
+          "low": 0.022320756664044768,
+          "high": 0.027791012199239566
+        },
+        "reservation_violations": {
+          "mean": 121.5,
+          "low": 86.78445330853532,
+          "high": 156.21554669146468
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.1731442349010023,
+          "low": -0.25413477804711926,
+          "high": -0.09215369175488537
+        },
+        "p99_t": {
+          "mean": -1.3484155984173298,
+          "low": -2.2069089189701354,
+          "high": -0.48992227786452436
+        },
+        "p99_wide": {
+          "mean": 0.03476788038787563,
+          "low": -0.030438736525427383,
+          "high": 0.09997449730117863
+        },
+        "reservation_violations": {
+          "mean": -442.8333333333333,
+          "low": -489.205644849691,
+          "high": -396.46102181697563
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 2.512801816261421,
+          "low": 2.2224860955527586,
+          "high": 2.803117536970084
+        },
+        "p99_t": {
+          "mean": 20.56115204030459,
+          "low": 17.26683312768909,
+          "high": 23.855470952920093
+        },
+        "p99_wide": {
+          "mean": 25.289828033924476,
+          "low": 19.043661177483223,
+          "high": 31.53599489036573
+        },
+        "idle_with_queue": {
+          "mean": 0.024660577470234323,
+          "low": 0.021926269735620386,
+          "high": 0.02739488520484826
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.18232956747360896,
+          "low": -0.2587702784349685,
+          "high": -0.1058888565122494
+        },
+        "p99_t": {
+          "mean": -1.4696860228417794,
+          "low": -2.4273005227210853,
+          "high": -0.5120715229624734
+        },
+        "p99_wide": {
+          "mean": -0.48029039293078846,
+          "low": -1.0875104092721393,
+          "high": 0.12692962341056246
+        },
+        "reservation_violations": {
+          "mean": -564.3333333333334,
+          "low": -602.4592978744844,
+          "high": -526.2073687921824
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "fcfs",
+      "metrics": {
+        "mean_t": {
+          "mean": 6.150557780468028,
+          "low": 4.458175270340439,
+          "high": 7.842940290595617
+        },
+        "p99_t": {
+          "mean": 44.24877515737879,
+          "low": 30.00136393900304,
+          "high": 58.49618637575453
+        },
+        "p99_wide": {
+          "mean": 45.23065285247099,
+          "low": 30.9265856276158,
+          "high": 59.53472007732618
+        },
+        "idle_with_queue": {
+          "mean": 0.06377899411529218,
+          "low": 0.056918744500613024,
+          "high": 0.07063924372997135
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "fcfs",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.759990332405248,
+          "low": 3.629811464446144,
+          "high": 5.890169200364353
+        },
+        "p99_t": {
+          "mean": 37.578182355098235,
+          "low": 24.414146335204762,
+          "high": 50.74221837499171
+        },
+        "p99_wide": {
+          "mean": 43.86339794284186,
+          "low": 29.848240390723074,
+          "high": 57.87855549496064
+        },
+        "idle_with_queue": {
+          "mean": 0.05822228634181942,
+          "low": 0.05164721656058095,
+          "high": 0.06479735612305788
+        },
+        "reservation_violations": {
+          "mean": 624.8333333333334,
+          "low": 583.7392953309575,
+          "high": 665.9273713357093
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.4949734199593845,
+          "low": 3.484390168780357,
+          "high": 5.505556671138412
+        },
+        "p99_t": {
+          "mean": 37.07616485737452,
+          "low": 24.368929590272785,
+          "high": 49.78340012447626
+        },
+        "p99_wide": {
+          "mean": 43.51733930044298,
+          "low": 29.949099855140965,
+          "high": 57.08557874574499
+        },
+        "idle_with_queue": {
+          "mean": 0.05654935523073775,
+          "low": 0.050198493873846534,
+          "high": 0.06290021658762897
+        },
+        "reservation_violations": {
+          "mean": 726.3333333333334,
+          "low": 677.3811632986136,
+          "high": 775.2855033680531
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.26501691244586345,
+          "low": -0.4035422817573428,
+          "high": -0.1264915431343841
+        },
+        "p99_t": {
+          "mean": -0.502017497723711,
+          "low": -1.133125201593701,
+          "high": 0.1290902061462792
+        },
+        "p99_wide": {
+          "mean": -0.34605864239888656,
+          "low": -1.0130900621005616,
+          "high": 0.32097277730278856
+        },
+        "reservation_violations": {
+          "mean": 101.5,
+          "low": 68.88466135006394,
+          "high": 134.11533864993606
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.30524200019491,
+          "low": 3.3416363842298664,
+          "high": 5.268847616159953
+        },
+        "p99_t": {
+          "mean": 37.061887913387686,
+          "low": 24.33675185388775,
+          "high": 49.787023972887624
+        },
+        "p99_wide": {
+          "mean": 43.68597654345775,
+          "low": 30.003496177101646,
+          "high": 57.36845690981385
+        },
+        "idle_with_queue": {
+          "mean": 0.05567966398313987,
+          "low": 0.04937362249363155,
+          "high": 0.061985705472648193
+        },
+        "reservation_violations": {
+          "mean": 112.33333333333333,
+          "low": 77.89862228872516,
+          "high": 146.7680443779415
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.4547483322103381,
+          "low": -0.6413019444710689,
+          "high": -0.2681947199496073
+        },
+        "p99_t": {
+          "mean": -0.5162944417105445,
+          "low": -1.0806907355298545,
+          "high": 0.04810185210876561
+        },
+        "p99_wide": {
+          "mean": -0.17742139938410753,
+          "low": -0.8027729006178453,
+          "high": 0.44793010184963034
+        },
+        "reservation_violations": {
+          "mean": -512.5,
+          "low": -559.8096481101853,
+          "high": -465.19035188981474
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.2769236915867035,
+          "low": 3.3120188215073925,
+          "high": 5.241828561666015
+        },
+        "p99_t": {
+          "mean": 36.69382620158273,
+          "low": 23.940046971136894,
+          "high": 49.44760543202857
+        },
+        "p99_wide": {
+          "mean": 43.369198377612406,
+          "low": 29.857430476786554,
+          "high": 56.88096627843826
+        },
+        "idle_with_queue": {
+          "mean": 0.05442588044845486,
+          "low": 0.04804774318429886,
+          "high": 0.06080401771261086
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.4830666408185446,
+          "low": -0.6694413203270652,
+          "high": -0.29669196131002407
+        },
+        "p99_t": {
+          "mean": -0.8843561535155029,
+          "low": -1.5467711475170316,
+          "high": -0.22194115951397408
+        },
+        "p99_wide": {
+          "mean": -0.49419956522945263,
+          "low": -1.1696996079874098,
+          "high": 0.18130047752850453
+        },
+        "reservation_violations": {
+          "mean": -624.8333333333334,
+          "low": -665.9273713357093,
+          "high": -583.7392953309575
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.747760090900588,
+          "low": 3.611667995009576,
+          "high": 5.8838521867916
+        },
+        "p99_t": {
+          "mean": 37.92451423709827,
+          "low": 24.78694405776171,
+          "high": 51.062084416434836
+        },
+        "p99_wide": {
+          "mean": 44.24082986368293,
+          "low": 30.151794820377063,
+          "high": 58.3298649069888
+        },
+        "idle_with_queue": {
+          "mean": 0.05860380205545312,
+          "low": 0.051931106496173496,
+          "high": 0.06527649761473274
+        },
+        "reservation_violations": {
+          "mean": 1079.0,
+          "low": 951.9376540708579,
+          "high": 1206.062345929142
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.4966295089865,
+          "low": 3.485914055512593,
+          "high": 5.507344962460406
+        },
+        "p99_t": {
+          "mean": 37.11386907272426,
+          "low": 24.393532554343714,
+          "high": 49.83420559110481
+        },
+        "p99_wide": {
+          "mean": 43.62432035833816,
+          "low": 30.069148930195198,
+          "high": 57.17949178648112
+        },
+        "idle_with_queue": {
+          "mean": 0.05691001423362784,
+          "low": 0.050555964026165016,
+          "high": 0.06326406444109066
+        },
+        "reservation_violations": {
+          "mean": 1242.5,
+          "low": 1123.390672955369,
+          "high": 1361.609327044631
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.2511305819140888,
+          "low": -0.3955170956147334,
+          "high": -0.10674406821344423
+        },
+        "p99_t": {
+          "mean": -0.8106451643740039,
+          "low": -1.5099515725859256,
+          "high": -0.11133875616208222
+        },
+        "p99_wide": {
+          "mean": -0.6165095053447699,
+          "low": -1.3192390551910222,
+          "high": 0.08622004450148246
+        },
+        "reservation_violations": {
+          "mean": 163.5,
+          "low": 131.71924898101747,
+          "high": 195.28075101898253
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.307947970548382,
+          "low": 3.3391197196475275,
+          "high": 5.276776221449236
+        },
+        "p99_t": {
+          "mean": 37.139128630594776,
+          "low": 24.399680818200995,
+          "high": 49.87857644298856
+        },
+        "p99_wide": {
+          "mean": 43.72841388258127,
+          "low": 30.046930695507847,
+          "high": 57.4098970696547
+        },
+        "idle_with_queue": {
+          "mean": 0.05605175029970538,
+          "low": 0.04967783538937137,
+          "high": 0.062425665210039394
+        },
+        "reservation_violations": {
+          "mean": 185.83333333333334,
+          "low": 132.63029282250676,
+          "high": 239.03637384415993
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.4398121203522068,
+          "low": -0.6302311916629061,
+          "high": -0.24939304904150747
+        },
+        "p99_t": {
+          "mean": -0.7853856065034961,
+          "low": -1.4141960306093457,
+          "high": -0.15657518239764634
+        },
+        "p99_wide": {
+          "mean": -0.5124159811016581,
+          "low": -1.0483834794745919,
+          "high": 0.02355151727127558
+        },
+        "reservation_violations": {
+          "mean": -893.1666666666666,
+          "low": -1033.7478313960821,
+          "high": -752.5855019372511
+        }
+      }
+    },
+    {
+      "regime": "iid",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 4.277805994012431,
+          "low": 3.3149664476743306,
+          "high": 5.240645540350532
+        },
+        "p99_t": {
+          "mean": 36.69382620158273,
+          "low": 23.940046971136894,
+          "high": 49.44760543202857
+        },
+        "p99_wide": {
+          "mean": 43.369198377612406,
+          "low": 29.857430476786554,
+          "high": 56.88096627843826
+        },
+        "idle_with_queue": {
+          "mean": 0.054358544060036186,
+          "low": 0.047983732746290954,
+          "high": 0.06073335537378142
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.46995409688815687,
+          "low": -0.6678734237679688,
+          "high": -0.272034770008345
+        },
+        "p99_t": {
+          "mean": -1.2306880355155414,
+          "low": -1.9726302056761402,
+          "high": -0.4887458653549427
+        },
+        "p99_wide": {
+          "mean": -0.871631486070522,
+          "low": -1.7165009195943568,
+          "high": -0.026762052546687176
+        },
+        "reservation_violations": {
+          "mean": -1079.0,
+          "low": -1206.062345929142,
+          "high": -951.9376540708579
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "fcfs",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.8278616770346865,
+          "low": 5.006843320970221,
+          "high": 6.648880033099152
+        },
+        "p99_t": {
+          "mean": 46.46899016504298,
+          "low": 36.80728310946032,
+          "high": 56.13069722062564
+        },
+        "p99_wide": {
+          "mean": 51.75869909515698,
+          "low": 39.28149234455663,
+          "high": 64.23590584575733
+        },
+        "idle_with_queue": {
+          "mean": 0.02675099497534752,
+          "low": 0.023811268429212534,
+          "high": 0.02969072152148251
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "fcfs",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.495287742257216,
+          "low": 4.751029274229298,
+          "high": 6.239546210285134
+        },
+        "p99_t": {
+          "mean": 45.0003531957228,
+          "low": 36.08837819158505,
+          "high": 53.91232819986055
+        },
+        "p99_wide": {
+          "mean": 51.795463623502336,
+          "low": 39.236796065997076,
+          "high": 64.3541311810076
+        },
+        "idle_with_queue": {
+          "mean": 0.026051243129731907,
+          "low": 0.023306387605854663,
+          "high": 0.028796098653609152
+        },
+        "reservation_violations": {
+          "mean": 557.6666666666666,
+          "low": 519.8306670241644,
+          "high": 595.5026663091688
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.359159936878868,
+          "low": 4.724577586657619,
+          "high": 5.993742287100116
+        },
+        "p99_t": {
+          "mean": 42.95891467533554,
+          "low": 35.48913411727051,
+          "high": 50.428695233400575
+        },
+        "p99_wide": {
+          "mean": 51.48390123325805,
+          "low": 39.03571812051852,
+          "high": 63.93208434599759
+        },
+        "idle_with_queue": {
+          "mean": 0.025721536984338086,
+          "low": 0.02301440516799947,
+          "high": 0.028428668800676703
+        },
+        "reservation_violations": {
+          "mean": 668.0,
+          "low": 624.0538253248245,
+          "high": 711.9461746751755
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.1361278053783487,
+          "low": -0.27548244868567184,
+          "high": 0.0032268379289744353
+        },
+        "p99_t": {
+          "mean": -2.0414385203872576,
+          "low": -4.620098428024386,
+          "high": 0.537221387249871
+        },
+        "p99_wide": {
+          "mean": -0.31156239024428106,
+          "low": -1.0562612546262737,
+          "high": 0.43313647413771167
+        },
+        "reservation_violations": {
+          "mean": 110.33333333333333,
+          "low": 94.50574700710607,
+          "high": 126.16091965956059
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.146619923406653,
+          "low": 4.551977948901494,
+          "high": 5.741261897911811
+        },
+        "p99_t": {
+          "mean": 41.57068976400621,
+          "low": 34.683469267611414,
+          "high": 48.45791026040101
+        },
+        "p99_wide": {
+          "mean": 51.296782732217615,
+          "low": 38.7987513160869,
+          "high": 63.79481414834833
+        },
+        "idle_with_queue": {
+          "mean": 0.025229205115821718,
+          "low": 0.022512993608975226,
+          "high": 0.02794541662266821
+        },
+        "reservation_violations": {
+          "mean": 409.1666666666667,
+          "low": 370.4004705681688,
+          "high": 447.93286276516454
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.34866781885056347,
+          "low": -0.5278512272843983,
+          "high": -0.16948441041672865
+        },
+        "p99_t": {
+          "mean": -3.429663431716589,
+          "low": -5.9904617774823485,
+          "high": -0.8688650859508296
+        },
+        "p99_wide": {
+          "mean": -0.49868089128472093,
+          "low": -1.854209874175288,
+          "high": 0.8568480916058461
+        },
+        "reservation_violations": {
+          "mean": -148.5,
+          "low": -187.48904100513963,
+          "high": -109.51095899486037
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "easy:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.0238877393638655,
+          "low": 4.442260334808915,
+          "high": 5.605515143918816
+        },
+        "p99_t": {
+          "mean": 41.12230408060918,
+          "low": 34.53366625537818,
+          "high": 47.71094190584019
+        },
+        "p99_wide": {
+          "mean": 50.57965606784895,
+          "low": 38.087322354966446,
+          "high": 63.07198978073146
+        },
+        "idle_with_queue": {
+          "mean": 0.02465877251226147,
+          "low": 0.021926143674679505,
+          "high": 0.02739140134984343
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.47140000289335066,
+          "low": -0.6671918943492485,
+          "high": -0.27560811143745273
+        },
+        "p99_t": {
+          "mean": -3.8780491151136167,
+          "low": -6.483293803262741,
+          "high": -1.2728044269644925
+        },
+        "p99_wide": {
+          "mean": -1.215807555653375,
+          "low": -2.885479850442727,
+          "high": 0.45386473913597714
+        },
+        "reservation_violations": {
+          "mean": -557.6666666666666,
+          "low": -595.5026663091688,
+          "high": -519.8306670241644
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.490913658410744,
+          "low": 4.744902763538295,
+          "high": 6.236924553283192
+        },
+        "p99_t": {
+          "mean": 45.0003531957228,
+          "low": 36.08837819158505,
+          "high": 53.91232819986055
+        },
+        "p99_wide": {
+          "mean": 51.795463623502336,
+          "low": 39.236796065997076,
+          "high": 64.3541311810076
+        },
+        "idle_with_queue": {
+          "mean": 0.026059425662937324,
+          "low": 0.02334377447046936,
+          "high": 0.02877507685540529
+        },
+        "reservation_violations": {
+          "mean": 723.5,
+          "low": 663.2446625144186,
+          "high": 783.7553374855814
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.358828040872457,
+          "low": 4.724030817235031,
+          "high": 5.993625264509884
+        },
+        "p99_t": {
+          "mean": 42.99535425406086,
+          "low": 35.578186637478964,
+          "high": 50.41252187064275
+        },
+        "p99_wide": {
+          "mean": 51.48390123325805,
+          "low": 39.03571812051852,
+          "high": 63.93208434599759
+        },
+        "idle_with_queue": {
+          "mean": 0.025746025095795336,
+          "low": 0.023044059767911303,
+          "high": 0.02844799042367937
+        },
+        "reservation_violations": {
+          "mean": 833.5,
+          "low": 761.8864934791808,
+          "high": 905.1135065208192
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.1320856175382866,
+          "low": -0.2720038314593535,
+          "high": 0.007832596382780277
+        },
+        "p99_t": {
+          "mean": -2.004998941661951,
+          "low": -4.601914400472291,
+          "high": 0.591916517148388
+        },
+        "p99_wide": {
+          "mean": -0.31156239024428106,
+          "low": -1.0562612546262737,
+          "high": 0.43313647413771167
+        },
+        "reservation_violations": {
+          "mean": 110.0,
+          "low": 90.23268810438998,
+          "high": 129.76731189561002
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.1467263430026975,
+          "low": 4.55151872335119,
+          "high": 5.741933962654205
+        },
+        "p99_t": {
+          "mean": 41.60004517475112,
+          "low": 34.720394863006824,
+          "high": 48.47969548649542
+        },
+        "p99_wide": {
+          "mean": 51.36379386029663,
+          "low": 38.85325295419883,
+          "high": 63.87433476639443
+        },
+        "idle_with_queue": {
+          "mean": 0.025270364246830556,
+          "low": 0.022562683926511576,
+          "high": 0.027978044567149536
+        },
+        "reservation_violations": {
+          "mean": 579.3333333333334,
+          "low": 521.8814842562527,
+          "high": 636.785182410414
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.34418731540804615,
+          "low": -0.5246599161528337,
+          "high": -0.1637147146632586
+        },
+        "p99_t": {
+          "mean": -3.400308020971675,
+          "low": -5.961406706461706,
+          "high": -0.8392093354816437
+        },
+        "p99_wide": {
+          "mean": -0.4316697632057019,
+          "low": -1.616169402715258,
+          "high": 0.7528298763038543
+        },
+        "reservation_violations": {
+          "mean": -144.16666666666666,
+          "low": -197.03746611592382,
+          "high": -91.2958672174095
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.35,
+      "policy": "conservative:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 5.025603632522842,
+          "low": 4.444972191105517,
+          "high": 5.606235073940168
+        },
+        "p99_t": {
+          "mean": 41.12230408060918,
+          "low": 34.53366625537818,
+          "high": 47.71094190584019
+        },
+        "p99_wide": {
+          "mean": 50.57965606784895,
+          "low": 38.087322354966446,
+          "high": 63.07198978073146
+        },
+        "idle_with_queue": {
+          "mean": 0.024660577470234323,
+          "low": 0.021926269735620386,
+          "high": 0.02739488520484826
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.46531002588790144,
+          "low": -0.6638143941214579,
+          "high": -0.26680565765434494
+        },
+        "p99_t": {
+          "mean": -3.8780491151136167,
+          "low": -6.483293803262741,
+          "high": -1.2728044269644925
+        },
+        "p99_wide": {
+          "mean": -1.215807555653375,
+          "low": -2.885479850442727,
+          "high": 0.45386473913597714
+        },
+        "reservation_violations": {
+          "mean": -723.5,
+          "low": -783.7553374855814,
+          "high": -663.2446625144186
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "fcfs",
+      "metrics": {
+        "mean_t": {
+          "mean": 12.301115560936056,
+          "low": 8.916350540680877,
+          "high": 15.685880581191235
+        },
+        "p99_t": {
+          "mean": 88.49755031475758,
+          "low": 60.00272787800608,
+          "high": 116.99237275150907
+        },
+        "p99_wide": {
+          "mean": 90.46130570494198,
+          "low": 61.8531712552316,
+          "high": 119.06944015465236
+        },
+        "idle_with_queue": {
+          "mean": 0.06377899411529218,
+          "low": 0.056918744500613024,
+          "high": 0.07063924372997135
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "fcfs",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 9.873040340231547,
+          "low": 7.486287920458864,
+          "high": 12.259792760004231
+        },
+        "p99_t": {
+          "mean": 76.03571356428547,
+          "low": 50.3129909593803,
+          "high": 101.75843616919065
+        },
+        "p99_wide": {
+          "mean": 87.47827230431112,
+          "low": 60.08006230956525,
+          "high": 114.87648229905699
+        },
+        "idle_with_queue": {
+          "mean": 0.059185614121862413,
+          "low": 0.05264668754241687,
+          "high": 0.06572454070130795
+        },
+        "reservation_violations": {
+          "mean": 936.3333333333334,
+          "low": 876.9843689529234,
+          "high": 995.6822977137433
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 9.481494613916878,
+          "low": 7.311169644713058,
+          "high": 11.651819583120698
+        },
+        "p99_t": {
+          "mean": 74.19054509587548,
+          "low": 48.930433335596135,
+          "high": 99.45065685615482
+        },
+        "p99_wide": {
+          "mean": 87.47611400770752,
+          "low": 60.3666690586887,
+          "high": 114.58555895672635
+        },
+        "idle_with_queue": {
+          "mean": 0.05795757480159608,
+          "low": 0.05150141418888666,
+          "high": 0.0644137354143055
+        },
+        "reservation_violations": {
+          "mean": 1118.3333333333333,
+          "low": 1059.2708319807084,
+          "high": 1177.395834685958
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.3915457263146694,
+          "low": -0.661426304254592,
+          "high": -0.12166514837474673
+        },
+        "p99_t": {
+          "mean": -1.8451684684099945,
+          "low": -3.4595587292825147,
+          "high": -0.23077820753747447
+        },
+        "p99_wide": {
+          "mean": -0.0021582966035857964,
+          "low": -0.8173268649683257,
+          "high": 0.8130102717611541
+        },
+        "reservation_violations": {
+          "mean": 182.0,
+          "low": 168.60992500320413,
+          "high": 195.39007499679587
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 8.905576159087966,
+          "low": 6.918020450004825,
+          "high": 10.893131868171107
+        },
+        "p99_t": {
+          "mean": 74.09317553447572,
+          "low": 48.66412179863937,
+          "high": 99.52222927031207
+        },
+        "p99_wide": {
+          "mean": 86.95561211378492,
+          "low": 59.82614516651352,
+          "high": 114.08507906105632
+        },
+        "idle_with_queue": {
+          "mean": 0.05637036921114282,
+          "low": 0.050040643726991206,
+          "high": 0.06270009469529444
+        },
+        "reservation_violations": {
+          "mean": 597.0,
+          "low": 534.3178496462987,
+          "high": 659.6821503537013
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.9674641811435823,
+          "low": -1.433449512041735,
+          "high": -0.5014788502454297
+        },
+        "p99_t": {
+          "mean": -1.942538029809756,
+          "low": -3.873655285067933,
+          "high": -0.01142077455157886
+        },
+        "p99_wide": {
+          "mean": -0.5226601905261935,
+          "low": -1.0854917456902622,
+          "high": 0.040171364637875184
+        },
+        "reservation_violations": {
+          "mean": -339.3333333333333,
+          "low": -423.79736579244235,
+          "high": -254.86930087422428
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "easy:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 8.553847383173407,
+          "low": 6.624037643014785,
+          "high": 10.48365712333203
+        },
+        "p99_t": {
+          "mean": 73.38765240316546,
+          "low": 47.88009394227379,
+          "high": 98.89521086405713
+        },
+        "p99_wide": {
+          "mean": 86.73839675522481,
+          "low": 59.71486095357311,
+          "high": 113.76193255687652
+        },
+        "idle_with_queue": {
+          "mean": 0.05442588044845486,
+          "low": 0.04804774318429886,
+          "high": 0.06080401771261086
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "easy:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -1.3191929570581402,
+          "low": -1.8456595297414093,
+          "high": -0.7927263843748712
+        },
+        "p99_t": {
+          "mean": -2.648061161120013,
+          "low": -4.5785222731991295,
+          "high": -0.7176000490408969
+        },
+        "p99_wide": {
+          "mean": -0.739875549086296,
+          "low": -1.3531058947466403,
+          "high": -0.12664520342595176
+        },
+        "reservation_violations": {
+          "mean": -936.3333333333334,
+          "low": -995.6822977137433,
+          "high": -876.9843689529234
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:class_mean",
+      "metrics": {
+        "mean_t": {
+          "mean": 9.803684156521914,
+          "low": 7.462864885402075,
+          "high": 12.144503427641753
+        },
+        "p99_t": {
+          "mean": 75.7509682347748,
+          "low": 50.10785596549192,
+          "high": 101.39408050405768
+        },
+        "p99_wide": {
+          "mean": 87.9119614371171,
+          "low": 60.32777006353549,
+          "high": 115.4961528106987
+        },
+        "idle_with_queue": {
+          "mean": 0.05962131254384404,
+          "low": 0.053080795706487646,
+          "high": 0.06616182938120044
+        },
+        "reservation_violations": {
+          "mean": 1500.5,
+          "low": 1334.454540281197,
+          "high": 1666.545459718803
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_t": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "p99_wide": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_point",
+      "metrics": {
+        "mean_t": {
+          "mean": 9.48696936980035,
+          "low": 7.313541836987946,
+          "high": 11.660396902612755
+        },
+        "p99_t": {
+          "mean": 74.36972214565897,
+          "low": 49.07479044936841,
+          "high": 99.66465384194953
+        },
+        "p99_wide": {
+          "mean": 87.5581897103868,
+          "low": 60.447193816919516,
+          "high": 114.66918560385409
+        },
+        "idle_with_queue": {
+          "mean": 0.05809195379179682,
+          "low": 0.051567098094186824,
+          "high": 0.06461680948940682
+        },
+        "reservation_violations": {
+          "mean": 1682.0,
+          "low": 1527.4170259531438,
+          "high": 1836.5829740468562
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.31671478672156006,
+          "low": -0.534786108211365,
+          "high": -0.09864346523175521
+        },
+        "p99_t": {
+          "mean": -1.3812460891158171,
+          "low": -2.2683331172047243,
+          "high": -0.49415906102690976
+        },
+        "p99_wide": {
+          "mean": -0.35377172673027957,
+          "low": -0.9755832852204909,
+          "high": 0.26803983175993173
+        },
+        "reservation_violations": {
+          "mean": 181.5,
+          "low": 148.9522649850888,
+          "high": 214.0477350149112
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:feature_upper95",
+      "metrics": {
+        "mean_t": {
+          "mean": 8.90876999847879,
+          "low": 6.9213027794137405,
+          "high": 10.896237217543842
+        },
+        "p99_t": {
+          "mean": 74.34398259798613,
+          "low": 48.79935235960055,
+          "high": 99.8886128363717
+        },
+        "p99_wide": {
+          "mean": 87.26958809793621,
+          "low": 60.160968699347606,
+          "high": 114.37820749652481
+        },
+        "idle_with_queue": {
+          "mean": 0.056801041020712845,
+          "low": 0.05052183365179831,
+          "high": 0.06308024838962738
+        },
+        "reservation_violations": {
+          "mean": 1042.8333333333333,
+          "low": 950.6156630655458,
+          "high": 1135.0510036011206
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -0.8949141580431226,
+          "low": -1.3077475024548417,
+          "high": -0.48208081363140354
+        },
+        "p99_t": {
+          "mean": -1.4069856367886686,
+          "low": -2.5563776464883605,
+          "high": -0.2575936270889767
+        },
+        "p99_wide": {
+          "mean": -0.64237333918089,
+          "low": -1.3643082405145206,
+          "high": 0.07956156215274046
+        },
+        "reservation_violations": {
+          "mean": -457.6666666666667,
+          "low": -605.0093240644763,
+          "high": -310.324009268857
+        }
+      }
+    },
+    {
+      "regime": "slowdown2",
+      "load": 0.55,
+      "policy": "conservative:oracle",
+      "metrics": {
+        "mean_t": {
+          "mean": 8.555611988024863,
+          "low": 6.629932895348661,
+          "high": 10.481291080701064
+        },
+        "p99_t": {
+          "mean": 73.38765240316546,
+          "low": 47.88009394227379,
+          "high": 98.89521086405713
+        },
+        "p99_wide": {
+          "mean": 86.73839675522481,
+          "low": 59.71486095357311,
+          "high": 113.76193255687652
+        },
+        "idle_with_queue": {
+          "mean": 0.054358544060036186,
+          "low": 0.047983732746290954,
+          "high": 0.06073335537378142
+        },
+        "reservation_violations": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "baseline": "conservative:class_mean",
+      "paired_delta": {
+        "mean_t": {
+          "mean": -1.2480721684970502,
+          "low": -1.7250110705569721,
+          "high": -0.7711332664371282
+        },
+        "p99_t": {
+          "mean": -2.3633158316093414,
+          "low": -3.709049937443357,
+          "high": -1.017581725775326
+        },
+        "p99_wide": {
+          "mean": -1.1735646818922791,
+          "low": -2.3406042883607445,
+          "high": -0.006525075423813753
+        },
+        "reservation_violations": {
+          "mean": -1500.5,
+          "low": -1666.545459718803,
+          "high": -1334.454540281197
+        }
+      }
+    }
+  ]
+}

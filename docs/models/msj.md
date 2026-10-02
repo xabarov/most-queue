@@ -146,3 +146,27 @@ Reproducible comparison: [experiment](../../examples/msj_backfilling_experiment.
 Controlled-load FCFS/EASY/conservative comparison:
 [experiment](../../examples/msj_conservative_experiment.py),
 [protocol and results](../research/msj-conservative-results-2026-10.md).
+
+### Runtime estimates from submission features
+
+**In plain words:** learn from already completed historical jobs, predict a new
+job's runtime from features available before service, and calibrate a statistical
+upper estimate on a separate dataset. The scheduler uses that estimate, without
+access to the actual duration. Statistical coverage does not protect every
+reservation or every resource class, especially after a workload change.
+
+`LogLinearRuntimePredictor` (`most_queue.sim.utils.runtime_prediction`) provides
+`fit(X, service)`, `calibrate(X_cal, service_cal, coverage=0.95)` and
+`predict(X, upper=False)`. Feed predictions into `MsjTraceJob.estimate`; the
+existing schedulers do not change. Training, calibration and future evaluation
+must be disjoint; feature provenance remains the caller's responsibility.
+See the [complete example, formulas and limits](../msj_runtime_prediction.md),
+[experiment](../../examples/msj_runtime_prediction_experiment.py), and
+[results](../research/msj-runtime-prediction-results-2026-10.md).
+
+Resource-group calibration is available through `calibrate_by_group(X_cal, S_cal, groups)`
+and `predict(X, upper=True, groups=groups)`. The regression is shared; score
+thresholds are separate for each observed, submission-time group. Insufficient
+or unseen groups cause an explicit prediction error, never an automatic pooled
+fallback. See the [group API and limits](../msj_runtime_prediction.md#calibration-by-resource-group)
+and [EPIC-050 results](../research/msj-group-calibration-results-2026-10.md).

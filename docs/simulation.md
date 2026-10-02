@@ -11,6 +11,8 @@ For jobs holding several servers simultaneously, see the
 Poisson input generation and immutable trace replay with per-job runtime estimates,
 arrival-cohort warm-up, empirical class quantiles and reservation diagnostics.
 Policies are FCFS, EASY (protect the head) and conservative (reserve all waiting jobs).
+For learned submission-time estimates and pooled or resource-group split-conformal calibration,
+see [MSJ runtime prediction](msj_runtime_prediction.md).
 
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 

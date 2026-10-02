@@ -89,6 +89,8 @@
 | [EPIC-046](EPIC-046-time-limited-service-discipline.md) | Time-limited (T-policy/таймер) дисциплина обслуживания | proposed |
 | [EPIC-047](EPIC-047-msj-ph-backfilling.md) | MSJ: PH-обслуживание, насыщенный порог, FCFS/EASY и ошибки прогнозов | done |
 | [EPIC-048](EPIC-048-msj-conservative-controlled-load.md) | MSJ: conservative backfilling и сравнение при одинаковой ресурсной нагрузке | done |
+| [EPIC-049](EPIC-049-msj-runtime-prediction-calibration.md) | MSJ: прогноз длительности по признакам и split-conformal калибровка | done |
+| [EPIC-050](EPIC-050-msj-group-runtime-calibration.md) | MSJ: калибровка прогнозов по ресурсным классам и цена защиты широких заявок | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
