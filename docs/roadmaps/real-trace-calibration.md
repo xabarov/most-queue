@@ -119,14 +119,34 @@ type_exact/type_coarse дают одинаковые поздние ленты; 
 fallback targets и сильную смену K/context mix. Это не причинное объяснение
 ошибок, не online-валидация и не новый blind holdout. Capacity не подбиралась.
 
+## Восьмой этап
+
+[EPIC-062](../epics/EPIC-062-joint-marked-arrivals.md) выполнен 2026-10-02: совместная генерация
+gap/K/context/request, общий coarse S|K и fixed-arrival baseline. 1176 empty-start
+расписаний, побайтовый повтор и независимый аудит.
+[Методика](../joint_marked_arrivals.md),
+[отчёт](../research/joint-marked-arrivals-results-2026-10.md).
+
+Устойчивого выигрыша joint/block нет. На SDSC .90 все новые generators хуже
+fixed coarse по seed-level loss; на Kalos .65 некоторые лучше, но меняют
+ресурсный состав и work. На Kalos .70 recent joint horizon 0.70 дня против
+observed 19.24, K-TV=0.629; полностью разрешённый arrival prefix отстаёт от
+cutoff на 4.63 дня. Контракт ретроспективен, лаг зафиксирован до replay, не
+исправлялся после test. Смена loss от MC means на mean seed-loss может менять
+вывод; обе оценки сохранены. К lifecycle EPIC-061 эти empty-start числа не
+приравниваются. Новый победитель после просмотра test не выбирается.
+
 ## Следующие этапы
 
-1. Следующий эпик: совместная генерация приходов/K/признаков с отдельными
-   контролями зависимости и временного drift. Сохранить fixed-arrival coarse
-   baseline и отдельную временную проверку; не заменять его автоматически
-   queue-aware выбором. Не выводить latent successful S из killed/failed интервалов.
-2. Отдельно — новый источник с
-   наблюдаемыми quotas/placement/доступностью ресурсов. EPIC-060 не восстановил их.
+1. Следующий эпик: аудит нового источника с наблюдаемыми
+   quotas/placement/доступностью ресурсов и submission-time marks. EPIC-060
+   не восстановил ресурсы, EPIC-062 показал ограничения completed-prefix.
+   Сначала закрепить источник/лицензию, проверить полноту и timestamps; если
+   нужных полей нет, составить карту пробелов, а не подгонять capacity по test W.
+2. Отдельная ветка — availability-aware arrival history без устаревающего
+   completed-prefix: известные на submit признаки, независимый учёт цензурированного
+   S, ранний выбор окна и новые периоды проверки. Сохранить fixed-arrival coarse;
+   не выводить latent successful S из killed/failed интервалов.
 3. Затем проверять новые адаптивные дисциплины на различающем reference. Прерывания потребуют
    измеренных либо отдельно обозначенных модельных расходов checkpoint/resume.
 

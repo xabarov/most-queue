@@ -55,6 +55,13 @@ two early replay blocks select a service family by mean/p99 log error, then two
 late blocks compare the frozen choice with CRPS and fixed coarse. Class support,
 drift, timeout rates and policy regret remain separate; the dispatchers are unchanged.
 
+For generated arrival/resource streams, see [joint marked arrivals](joint_marked_arrivals.md):
+`MarkedArrivalBootstrap` preserves zero gaps and gap/K/context/request bundles,
+with iid, circular-block and matched-permutation controls. The study keeps a
+common coarse S|K mechanism and fixed-arrival baseline; all scenarios start empty
+and contain completed jobs only. Prefix staleness, changing target mix and arrival
+horizon are audited, not hidden by time rescaling or copied historical carry-in.
+
 For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
 end-start execution, exact GPU requests and separate failed/node_failed labels.
 Recorded timed_out does not infer a runtime budget. The nominal homogeneous

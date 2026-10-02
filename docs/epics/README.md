@@ -102,6 +102,7 @@
 | [EPIC-059](EPIC-059-feature-conditional-service.md) | Условное обслуживание по requested time/type: ранний выбор по CRPS и поздний lifecycle replay | done |
 | [EPIC-060](EPIC-060-gpu-resource-envelope.md) | GPU resource envelope: размер пула, эксклюзивные узлы и явно невыполнимые сценарии | done |
 | [EPIC-061](EPIC-061-queue-aware-model-selection.md) | Выбор модели по ранним mean/p99 очереди, CRPS comparator и отдельная временная проверка | done |
+| [EPIC-062](EPIC-062-joint-marked-arrivals.md) | Совместные gap/K/context arrivals, matched controls зависимости и аудит устарелости истории | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

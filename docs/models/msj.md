@@ -377,3 +377,20 @@ temporal evaluation, not an online or independent-origin guarantee.
 [Protocol/API](../queue_aware_selection.md),
 [experiment](../../examples/queue_aware_selection_experiment.py),
 [results](../research/queue-aware-selection-results-2026-10.md).
+
+### Joint marked arrivals
+
+In plain words: generate when a job arrives together with its resource demand
+and feature bundle, then draw its service from the common empirical K-group law.
+It still follows the rigid-job flow above; the dispatcher does not change.
+
+`ArrivalMark` and `MarkedArrivalBootstrap` retain adjacent zero/nonzero gaps,
+support iid/circular blocks, and expose anchored permutations for matched controls.
+EPIC-062 keeps fixed-arrival coarse as a baseline and starts every scenario empty,
+without copying historical carry-in onto synthetic time. Context/request are
+diagnostic marks, not inputs to S or runtime caps. Completed-prefix staleness,
+workload mix and horizon differences are explicit; no consistent joint-generator
+gain or production scheduler validation is claimed.
+[Protocol/API](../joint_marked_arrivals.md),
+[experiment](../../examples/joint_marked_arrivals_experiment.py),
+[results](../research/joint-marked-arrivals-results-2026-10.md).

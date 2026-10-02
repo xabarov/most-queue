@@ -118,6 +118,12 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Joint marked arrivals**:
+  empirical gap/K/context/request tuples, circular blocks and matched shuffles,
+  with a common coarse S|K mechanism and fixed-arrival baseline. 1176 empty-start
+  replays and a byte-identical repeat show no consistent joint-generator gain;
+  resolved-prefix staleness and late workload-mix drift remain explicit limitations.
+  [Protocol/API](docs/joint_marked_arrivals.md), [results](docs/research/joint-marked-arrivals-results-2026-10.md).
 - **2026-10, current source tree** — **Queue-aware service selection**:
   1500 replays with two early selection and two late evaluation blocks per source.
   Queue-selected SDSC request bins improve point uncapped queue-loss versus CRPS selection,

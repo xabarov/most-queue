@@ -1,0 +1,472 @@
+{
+  "configs": {
+    "sdsc": {
+      "fractions": [
+        0.85,
+        0.9
+      ],
+      "jobs": 1000,
+      "warmup": 200,
+      "history_limit": 4000,
+      "block_length": 20,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 63000
+    },
+    "kalos": {
+      "fractions": [
+        0.65,
+        0.7
+      ],
+      "jobs": 300,
+      "warmup": 100,
+      "history_limit": 4000,
+      "block_length": 20,
+      "minimum": 20,
+      "replications": 8,
+      "first_seed": 63000
+    }
+  },
+  "variants": [
+    "fixed_coarse",
+    "recent_gap_independent",
+    "recent_joint_iid",
+    "recent_joint_block20",
+    "recent_joint_shuffle20",
+    "expanding_joint_iid"
+  ],
+  "contrasts": [
+    [
+      "recent_joint_iid",
+      "recent_gap_independent"
+    ],
+    [
+      "recent_joint_block20",
+      "recent_joint_shuffle20"
+    ],
+    [
+      "recent_joint_iid",
+      "expanding_joint_iid"
+    ],
+    [
+      "recent_gap_independent",
+      "fixed_coarse"
+    ],
+    [
+      "recent_joint_iid",
+      "fixed_coarse"
+    ],
+    [
+      "recent_joint_block20",
+      "fixed_coarse"
+    ],
+    [
+      "recent_joint_shuffle20",
+      "fixed_coarse"
+    ],
+    [
+      "expanding_joint_iid",
+      "fixed_coarse"
+    ]
+  ],
+  "blocks": {
+    "sdsc": [
+      {
+        "index": 0,
+        "fraction": 0.85,
+        "split": {
+          "cutoff": 54129868.4,
+          "training": 39671,
+          "heldout": 3434,
+          "unfinished_at_cutoff_excluded": 12
+        },
+        "capacity": 128,
+        "history": {
+          "count": 4000,
+          "first_submit": 46403454.0,
+          "last_submit": 54104206.0,
+          "max_completion": 54125367.0,
+          "input_sha256": "101f50d3b6f053a71cd1b23c78aa79dcaf1b89917dacfb0d21477c06252ee9ec",
+          "context_counts": {
+            "2": 1320,
+            "4": 632,
+            "3": 440,
+            "1": 835,
+            "0": 773
+          },
+          "need_group_counts": {
+            "1": 1595,
+            "2": 1037,
+            "3": 475,
+            "0": 893
+          }
+        },
+        "prefix": {
+          "count": 39629,
+          "first_submit": 566290.0,
+          "last_submit": 53868047.0,
+          "max_completion": 54105614.0,
+          "input_sha256": "4abc9635f00533899175a3861a1e2ca509ccf1695803a3d1268ef97d1af30fd9",
+          "context_counts": {
+            "3": 8239,
+            "4": 8023,
+            "5": 1,
+            "2": 8311,
+            "1": 10227,
+            "0": 4798,
+            "None": 30
+          },
+          "need_group_counts": {
+            "0": 10608,
+            "1": 16233,
+            "2": 10140,
+            "3": 2648
+          }
+        },
+        "recent_prefix": {
+          "count": 4001,
+          "first_submit": 46360496.0,
+          "last_submit": 53868047.0,
+          "max_completion": 54105614.0,
+          "input_sha256": "30a29d52f5c216d4807d455260a342f8cd53ce8464ec1ac85823bd65aea0a2ad",
+          "context_counts": {
+            "2": 1340,
+            "3": 432,
+            "4": 630,
+            "0": 761,
+            "1": 838
+          },
+          "need_group_counts": {
+            "1": 1617,
+            "2": 1037,
+            "0": 885,
+            "3": 462
+          }
+        },
+        "cohort": {
+          "count": 1200,
+          "first_submit": 54142047.0,
+          "last_submit": 56500107.0,
+          "max_completion": 57233593.0,
+          "input_sha256": "364c25a4f4c60eac81c8487722cf5693d47eb02a6e4ab2d3bb934790d58be46b",
+          "context_counts": {
+            "4": 333,
+            "2": 253,
+            "3": 260,
+            "0": 126,
+            "1": 228
+          },
+          "need_group_counts": {
+            "2": 390,
+            "1": 561,
+            "3": 123,
+            "0": 126
+          }
+        },
+        "prefix_audit": {
+          "past_arrivals": 39683,
+          "prefix_jobs": 39629,
+          "prefix_donors": 39628,
+          "omitted_suffix": 54,
+          "completed_suffix_omitted": 42,
+          "last_prefix_submit": 53868047.0,
+          "prefix_lag": 261821.3999999985
+        }
+      },
+      {
+        "index": 1,
+        "fraction": 0.9,
+        "split": {
+          "cutoff": 57280676.6,
+          "training": 41093,
+          "heldout": 2006,
+          "unfinished_at_cutoff_excluded": 18
+        },
+        "capacity": 128,
+        "history": {
+          "count": 4000,
+          "first_submit": 48372186.0,
+          "last_submit": 57274711.0,
+          "max_completion": 57279262.0,
+          "input_sha256": "9d0c566c858932c5ca270fc5c3c46bf1495b109bdeaa6b7db57ba5e6b681469e",
+          "context_counts": {
+            "1": 902,
+            "2": 1037,
+            "0": 588,
+            "3": 650,
+            "4": 823
+          },
+          "need_group_counts": {
+            "1": 1558,
+            "2": 1191,
+            "0": 770,
+            "3": 481
+          }
+        },
+        "prefix": {
+          "count": 40902,
+          "first_submit": 566290.0,
+          "last_submit": 56571891.0,
+          "max_completion": 57246178.0,
+          "input_sha256": "3fca951c56b114d95addca28c2dcae026c44e975c1b60d742dc6558d31a10743",
+          "context_counts": {
+            "3": 8512,
+            "4": 8379,
+            "5": 1,
+            "2": 8579,
+            "1": 10461,
+            "0": 4940,
+            "None": 30
+          },
+          "need_group_counts": {
+            "0": 10751,
+            "1": 16808,
+            "2": 10547,
+            "3": 2796
+          }
+        },
+        "recent_prefix": {
+          "count": 4001,
+          "first_submit": 48132848.0,
+          "last_submit": 56571891.0,
+          "max_completion": 57246178.0,
+          "input_sha256": "eba7c8ffce984e5fc19aaaa70e5f731e16951eea855e7abc230b34cd145e412e",
+          "context_counts": {
+            "0": 671,
+            "3": 601,
+            "4": 821,
+            "2": 1006,
+            "1": 902
+          },
+          "need_group_counts": {
+            "1": 1571,
+            "2": 1168,
+            "3": 468,
+            "0": 794
+          }
+        },
+        "cohort": {
+          "count": 1200,
+          "first_submit": 57302857.0,
+          "last_submit": 60704152.0,
+          "max_completion": 63222631.0,
+          "input_sha256": "cd2e9d4399749b8580a5255d1f52a583535c169689afe1baa7d9a67a21aa4c82",
+          "context_counts": {
+            "0": 128,
+            "3": 204,
+            "4": 231,
+            "1": 336,
+            "2": 301
+          },
+          "need_group_counts": {
+            "0": 190,
+            "2": 416,
+            "1": 477,
+            "3": 117
+          }
+        },
+        "prefix_audit": {
+          "past_arrivals": 41111,
+          "prefix_jobs": 40902,
+          "prefix_donors": 40901,
+          "omitted_suffix": 209,
+          "completed_suffix_omitted": 191,
+          "last_prefix_submit": 56571891.0,
+          "prefix_lag": 708785.6000000015
+        }
+      }
+    ],
+    "kalos": [
+      {
+        "index": 0,
+        "fraction": 0.65,
+        "split": {
+          "cutoff": 1689441843.6,
+          "training": 9667,
+          "heldout": 1095,
+          "unfinished_at_cutoff_excluded": 0
+        },
+        "capacity": 2416,
+        "history": {
+          "count": 4000,
+          "first_submit": 1688450572.0,
+          "last_submit": 1689435808.0,
+          "max_completion": 1689436302.0,
+          "input_sha256": "8527ec03709e124d9d44f0c2a4e93d50bda6e3138c42195547e32266f8aef3cd",
+          "context_counts": {
+            "Eval": 3911,
+            "Debug": 39,
+            "Pretrain": 28,
+            "Other": 22
+          },
+          "need_group_counts": {
+            "0": 3933,
+            "3": 52,
+            "2": 9,
+            "1": 6
+          }
+        },
+        "prefix": {
+          "count": 9667,
+          "first_submit": 1684323013.0,
+          "last_submit": 1689435808.0,
+          "max_completion": 1689436302.0,
+          "input_sha256": "d2a9bb085b858f782493b93538201ce0da6ed6f237a1f920ee537202f1d3c30a",
+          "context_counts": {
+            "Other": 95,
+            "Debug": 87,
+            "Pretrain": 127,
+            "SFT": 6,
+            "Eval": 9352
+          },
+          "need_group_counts": {
+            "3": 192,
+            "1": 686,
+            "2": 23,
+            "0": 8766
+          }
+        },
+        "recent_prefix": {
+          "count": 4001,
+          "first_submit": 1688450571.0,
+          "last_submit": 1689435808.0,
+          "max_completion": 1689436302.0,
+          "input_sha256": "64aae138a494df2b105d7fcebd45c1f6af418554b95c12c76f630c7acbd3cc3b",
+          "context_counts": {
+            "Eval": 3912,
+            "Debug": 39,
+            "Pretrain": 28,
+            "Other": 22
+          },
+          "need_group_counts": {
+            "0": 3934,
+            "3": 52,
+            "2": 9,
+            "1": 6
+          }
+        },
+        "cohort": {
+          "count": 400,
+          "first_submit": 1689444557.0,
+          "last_submit": 1689641842.0,
+          "max_completion": 1690070297.0,
+          "input_sha256": "ffd3a2690ad64fc7cc085c25f26c069f95c68ab625d437b12db000a5e70dd47d",
+          "context_counts": {
+            "Pretrain": 1,
+            "Eval": 399
+          },
+          "need_group_counts": {
+            "3": 1,
+            "0": 399
+          }
+        },
+        "prefix_audit": {
+          "past_arrivals": 9667,
+          "prefix_jobs": 9667,
+          "prefix_donors": 9666,
+          "omitted_suffix": 0,
+          "completed_suffix_omitted": 0,
+          "last_prefix_submit": 1689435808.0,
+          "prefix_lag": 6035.599999904633
+        }
+      },
+      {
+        "index": 1,
+        "fraction": 0.7,
+        "split": {
+          "cutoff": 1689835734.8,
+          "training": 10291,
+          "heldout": 470,
+          "unfinished_at_cutoff_excluded": 1
+        },
+        "capacity": 2416,
+        "history": {
+          "count": 4000,
+          "first_submit": 1688472099.0,
+          "last_submit": 1689821302.0,
+          "max_completion": 1689825400.0,
+          "input_sha256": "d6e3b3acbfddbcb24ef31ed8a867f25a5f12c95550980ce740bddad8e6b9f449",
+          "context_counts": {
+            "Eval": 3911,
+            "Debug": 39,
+            "Pretrain": 28,
+            "Other": 22
+          },
+          "need_group_counts": {
+            "0": 3933,
+            "3": 52,
+            "2": 9,
+            "1": 6
+          }
+        },
+        "prefix": {
+          "count": 9667,
+          "first_submit": 1684323013.0,
+          "last_submit": 1689435808.0,
+          "max_completion": 1689436302.0,
+          "input_sha256": "d2a9bb085b858f782493b93538201ce0da6ed6f237a1f920ee537202f1d3c30a",
+          "context_counts": {
+            "Other": 95,
+            "Debug": 87,
+            "Pretrain": 127,
+            "SFT": 6,
+            "Eval": 9352
+          },
+          "need_group_counts": {
+            "3": 192,
+            "1": 686,
+            "2": 23,
+            "0": 8766
+          }
+        },
+        "recent_prefix": {
+          "count": 4001,
+          "first_submit": 1688450571.0,
+          "last_submit": 1689435808.0,
+          "max_completion": 1689436302.0,
+          "input_sha256": "64aae138a494df2b105d7fcebd45c1f6af418554b95c12c76f630c7acbd3cc3b",
+          "context_counts": {
+            "Eval": 3912,
+            "Debug": 39,
+            "Pretrain": 28,
+            "Other": 22
+          },
+          "need_group_counts": {
+            "0": 3934,
+            "3": 52,
+            "2": 9,
+            "1": 6
+          }
+        },
+        "cohort": {
+          "count": 400,
+          "first_submit": 1689844701.0,
+          "last_submit": 1691650103.0,
+          "max_completion": 1691650454.0,
+          "input_sha256": "c714cd243ecdaadfd6733c0a040fd767a195fbe8e9644a9f74282f4b17e78d83",
+          "context_counts": {
+            "Eval": 264,
+            "Other": 32,
+            "Pretrain": 52,
+            "Debug": 52
+          },
+          "need_group_counts": {
+            "0": 201,
+            "1": 79,
+            "3": 89,
+            "2": 31
+          }
+        },
+        "prefix_audit": {
+          "past_arrivals": 10292,
+          "prefix_jobs": 9667,
+          "prefix_donors": 9666,
+          "omitted_suffix": 625,
+          "completed_suffix_omitted": 624,
+          "last_prefix_submit": 1689435808.0,
+          "prefix_lag": 399926.7999999523
+        }
+      }
+    ]
+  }
+}

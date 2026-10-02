@@ -368,3 +368,20 @@ EPIC-061 сравнивает этот выбор с CRPS и fixed coarse. Ош�
 [Методика/API](../queue_aware_selection.md),
 [эксперимент](../../examples/queue_aware_selection_experiment.py),
 [результаты](../research/queue-aware-selection-results-2026-10.md).
+
+### Совместные приходы и ресурсные признаки
+
+Простыми словами: генерируются время прихода вместе с потребностью в ресурсе
+и набором признаков, затем длительность из общей эмпирической K-группы.
+Дальше работа проходит прежнюю схему rigid jobs; диспетчер не меняется.
+
+`ArrivalMark` и `MarkedArrivalBootstrap` сохраняют соседние нулевые/положительные
+интервалы, поддерживают iid/circular blocks и закреплённые перестановки для
+согласованных контролей. EPIC-062 сохраняет fixed-arrival coarse baseline и
+пустое начало всех сценариев, не копируя исторический carry-in на synthetic time.
+Context/request — диагностические marks, не входы S или runtime caps.
+Устарелость completed-prefix, смена состава и горизонта явно аудируются;
+устойчивый выигрыш joint-генератора и production-валидация policies не заявляются.
+[Методика/API](../joint_marked_arrivals.md),
+[эксперимент](../../examples/joint_marked_arrivals_experiment.py),
+[результаты](../research/joint-marked-arrivals-results-2026-10.md).

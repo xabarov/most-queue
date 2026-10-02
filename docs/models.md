@@ -105,6 +105,7 @@ does not establish stability or a stationary tail guarantee.
 | [Feature-conditional service](feature_service.md) | - | FeatureConditionalEmpirical + MsjLifecycleSim | - | History-only context/need ECDFs, optional S/request ratios and exact CRPS; early-validation selection, sparse-cell fallback and separate late replay checks |
 | [GPU resource envelope](gpu_resource_envelope.md) | - | ResourceRequest + MsjLifecycleSim | - | Explicit GPU-pool/exclusive-node capacity sensitivity with fixed cohorts, audited infeasible cells and separate reserved/requested work; not inferred quotas or placement |
 | [Queue-aware service selection](queue_aware_selection.md) | - | select_queue_model + MsjLifecycleSim | - | Validation-only absolute log error of queue summaries versus CRPS; frozen family choices, late refits and class coverage/drift audit, not a new scheduler |
+| [Joint marked arrivals](joint_marked_arrivals.md) | - | MarkedArrivalBootstrap + MsjGeneralSim | - | Empirical gap/K/context/request tuples, circular blocks and matched shuffles; completed-only empty-start replay, fixed-arrival coarse control and explicit prefix staleness, not a full S/context joint law |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |
