@@ -309,3 +309,22 @@ deadlines while waiting, priorities or original scheduler memory. Policy forecas
 never receive actual residual durations. [Contract and executable example](../real_trace_lifecycle.md),
 [experiment](../../examples/real_trace_lifecycle_experiment.py),
 [EPIC-057 results](../research/real-trace-lifecycle-results-2026-10.md).
+
+### Modern GPU workload audit and calibration
+
+`parse_acme_kalos` / `AcmeTrace` validate timezone-aware timestamps, preserve
+integer GPU requests and audit exclusions. Execution is end-start, not the
+released duration column, which includes waiting. `acme_snapshot` supplies
+partial retrospective state. `MsjLifecycleJob` now also preserves failed,
+node_failed and recorded timed_out labels; a timeout label does not infer a budget.
+
+In plain words: replay modern LLM-development jobs while keeping successful
+execution distinct from time spent on cancelled or failed jobs. Missing endings
+and resource limits are not invented; GPU requests are not hardware utilization.
+
+The 1224-run Kalos study found large duration-model errors, but no observed
+target waiting at nominal pool capacity. All six reference policies tie: zero
+regret cannot validate their ranking. Quotas, placement and effective capacity
+need separate evidence. [Protocol/API](../modern_gpu_trace.md),
+[experiment](../../examples/modern_gpu_trace_experiment.py),
+[results](../research/modern-gpu-trace-results-2026-10.md).

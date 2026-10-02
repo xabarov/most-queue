@@ -15,13 +15,15 @@ from most_queue.sim.msj_general import MsjGeneralSim, MsjTraceJob, _Replay, _Run
 from most_queue.sim.utils.msj_packing import NonpreemptivePacking
 
 LIFECYCLE_POLICIES = ("fcfs", "first_fit", "msf", "adaptive_quickswap", "easy", "conservative")
+LIFECYCLE_OUTCOMES = ("completed", "cancelled", "timed_out", "failed", "node_failed")
 
 
 @dataclass(frozen=True)
 class MsjLifecycleJob(MsjTraceJob):
     """Positive service-to-outcome; an optional budget limits occupied runtime.
 
-    outcome is completed/cancelled; service > runtime_limit becomes timed_out.
+    outcome is completed/cancelled/timed_out/failed/node_failed; a recorded
+    timeout does not imply a known budget. service > runtime_limit becomes timed_out.
     Equality preserves the original outcome. Neither label nor budget is sent
     to the dispatcher; the supplied estimate stays unchanged.
     """
@@ -94,8 +96,8 @@ class MsjLifecycleSim(MsjGeneralSim):
                 raise ValueError("initial_running entries must be MsjCarryIn")
         original = tuple(item.job for item in running) + waiting + trace
         for job in original:
-            if not isinstance(job, MsjLifecycleJob) or job.outcome not in ("completed", "cancelled"):
-                raise ValueError("entries must be lifecycle jobs with completed/cancelled outcome")
+            if not isinstance(job, MsjLifecycleJob) or job.outcome not in LIFECYCLE_OUTCOMES:
+                raise ValueError("entries must be lifecycle jobs with a supported terminal outcome")
             if job.runtime_limit is not None and _nonnegative(job.runtime_limit, "runtime_limit") == 0:
                 raise ValueError("runtime_limit must be positive when supplied")
         self._validate_trace(original, require_estimates=False)
@@ -164,6 +166,8 @@ class MsjLifecycleSim(MsjGeneralSim):
         self.ttek = now
         horizon = end - begin
         work = dict.fromkeys(("completed", "cancelled", "timed_out"), 0.0)
+        # Preserve the original result keys when no additional labels occur.
+        work.update({label: 0.0 for label in LIFECYCLE_OUTCOMES[3:] if label in outcomes})
         for job, duration, outcome in zip(original, used, outcomes):
             work[outcome] += self.needs[job.cls] * duration
         return MsjLifecycleResults(

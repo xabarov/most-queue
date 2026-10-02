@@ -101,6 +101,7 @@ does not establish stability or a stationary tail guarantee.
 | [Real-trace MSJ calibration](real_trace_calibration.md) | - | MsjGeneralSim + SWF adapter | - | Historical completed-job subset, train-only empirical/Exp/PH/lognormal fits; exact K and recorded arrivals, not a reconstruction of the original scheduler |
 | [Temporal/dependent service replay](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Rolling completed histories, mean-only/shape/exact-K comparisons and circular rank blocks; matched rank-iid control, conditional MC diagnostics, not a new scheduler |
 | [MSJ initial state and terminal outcomes](real_trace_lifecycle.md) | - | MsjLifecycleSim | - | Opt-in running/waiting carry-in, occupied service to cancellation and hard runtime budgets; separate success/cancel/timeout accounting, not queue-abandonment reconstruction |
+| [Modern GPU-trace calibration](modern_gpu_trace.md) | - | AcmeTrace + MsjLifecycleSim | - | Audited Kalos timestamps and separate failure labels; empirical history replay on a nominal homogeneous GPU-request pool, not physical utilization or production scheduling |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

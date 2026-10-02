@@ -41,6 +41,10 @@ For explicit initial running/waiting jobs and terminal-outcome accounting, see
 the same nonpreemptive dispatchers while separating completed/cancelled/timeout
 resource release. A start-relative runtime cap does not imply successful completion;
 unobserved waiting-cancellation times are not reconstructed.
+For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
+end-start execution, exact GPU requests and separate failed/node_failed labels.
+Recorded timed_out does not infer a runtime budget. The nominal homogeneous
+pool omits quotas/topology; its zero-wait observed ties do not validate policies.
 
 Simulation (discrete-event modeling) makes it possible to model the behavior of queueing systems that have no analytical solutions or that have a complex structure. The Most-Queue library provides the `QsSim` class for simulating various types of queueing systems.
 

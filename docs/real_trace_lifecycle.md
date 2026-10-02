@@ -5,6 +5,12 @@ cancelled resource use, and hard runtime limits. It keeps the same completed
 target cohort and existing six policies. It does not reconstruct the original
 cluster or infer unobserved completion demand from a cancelled job.
 
+EPIC-058 adds [Acme/Kalos ingestion](modern_gpu_trace.md) and optional
+failed/node_failed/recorded timed_out labels to the same lifecycle API. A recorded
+timeout does not imply a known runtime budget. The EPIC-057 protocol and saved
+artifacts remain tied to their original implementation at commit `99b8500`;
+ordinary replay and existing completed/cancelled behavior are unchanged.
+
 ## Source evidence and missing information
 
 The pinned SDSC SP2 file and reuse conditions are unchanged from

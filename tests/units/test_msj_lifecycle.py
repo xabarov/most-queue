@@ -155,7 +155,7 @@ def test_invalid_initial_capacity_and_contract():
         with pytest.raises(ValueError):
             run(trace, initial_waiting=[job])
     with pytest.raises(ValueError):
-        run([MsjLifecycleJob(0, 0, 1, outcome="failed")])
+        run([MsjLifecycleJob(0, 0, 1, outcome="unknown")])
     with pytest.raises(ValueError):
         run([])
     with pytest.raises(ValueError):

@@ -118,6 +118,13 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Modern GPU-trace validation**:
+  hash-pinned Acme/Kalos ingestion recomputes execution from end-start; the
+  released `duration` includes waiting. 1224 replays with separate failed/cancelled
+  occupation and an identical full repeat. At nominal GPU-pool capacity all
+  observed target waits are zero, so tied policy choices do not validate a
+  scheduler. Service-model errors remain large. [Protocol/API](docs/modern_gpu_trace.md),
+  [results](docs/research/modern-gpu-trace-results-2026-10.md).
 - **2026-10, current source tree** — **Initial state and terminal outcomes**:
   opt-in MSJ replay with running/waiting carry-in, labelled cancelled occupation
   and start-relative hard runtime budgets. Successful completion, cancellation
