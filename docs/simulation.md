@@ -10,7 +10,12 @@ For jobs holding several servers simultaneously, see the
 [MSJ general-service and backfilling guide](models/msj.md). `MsjGeneralSim` supports
 Poisson input generation and immutable trace replay with per-job runtime estimates,
 arrival-cohort warm-up, empirical class quantiles and reservation diagnostics.
-Policies are FCFS, EASY (protect the head) and conservative (reserve all waiting jobs).
+Reservation policies are EASY (protect the head) and conservative (reserve all
+waiting jobs), alongside FCFS. Prediction-free FirstFit, MSF, MSFQ and Adaptive
+Quickswap, plus explicitly preemptive ServerFilling, are described in
+[MSJ packing](msj_packing.md). ServerFilling has power-of-two restrictions and
+zero-cost resume; its W includes interruptions and its service log preserves
+every execution segment. It is not an interchangeable nonpreemptive baseline.
 For learned submission-time estimates and pooled or resource-group split-conformal calibration,
 see [MSJ runtime prediction](msj_runtime_prediction.md).
 For independently right-censored history and active-job residual updates by age,

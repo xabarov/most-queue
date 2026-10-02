@@ -25,7 +25,7 @@ add a figure function and regenerate the PNGs.
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
 | [Matrix-analytic models (MAP/PH)](models/map-ph.md) | correlated arrivals: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP variants, MMPP fitting |
-| [Multiserver-job systems (MSJ)](models/msj.md) | multiserver jobs holding k servers at once |
+| [Multiserver-job systems (MSJ)](models/msj.md) | PH-FCFS analytics; general-service backfilling, forecasts, FirstFit/MSF/Quickswap and explicitly preemptive ServerFilling |
 | [Load balancing / dispatching (mean-field)](models/load-balancing.md) | power-of-d / JSQ / JIQ dispatching, mean-field |
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
@@ -38,6 +38,11 @@ add a figure function and regenerate the PNGs.
 | [Queueing networks](models/networks.md) | open/closed networks: decomposition, Jackson, QNA, MVA/Buzen, BCMP, G-networks, blocking, fork-join stations |
 
 ## Model comparison table
+
+For MSJ, analytical FCFS results and simulated scheduling policies have different
+domains. See [packing assumptions](msj_packing.md) and
+[forecast information boundaries](msj_age_runtime.md); a finite drained trace
+does not establish stability or a stationary tail guarantee.
 
 | Model | Calculator class | Simulation | Priorities | Notes |
 |--------|--------------|-----------|------------|-------------|
@@ -87,7 +92,9 @@ add a figure function and regenerate the PNGs.
 | MMAP/PH/1 priority | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Yes | Correlated arrivals, NP/PR/RS, exact CTMC |
 | M/M/1 retrial + priority | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Yes | Priority queue + orbit |
 | M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Yes | Exact RS; Gaver completion times for RW |
-| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | PH service, FCFS stability; general-service FCFS/EASY/conservative replay |
+| Multiserver-job FCFS | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | Exponential/PH CTMC for small systems; saturated stability analysis |
+| MSJ general-service scheduling | - | MsjGeneralSim | - | FCFS/EASY/conservative; prediction-free FirstFit/MSF/MSFQ/Adaptive Quickswap; MSFQ needs K in {1,k} |
+| MSJ ServerFilling | - | MsjGeneralSim | - | Power-of-two k and K; zero-cost preemptive-resume, not SRPT; W includes pauses and execution segments are logged |
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |

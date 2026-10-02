@@ -37,7 +37,7 @@
 pip install most-queue
 ```
 
-Требуется Python ≥ 3.9. Для визуализации сетей может понадобиться системный пакет `graphviz`:
+Требуется Python ≥ 3.10. Для визуализации сетей может понадобиться системный пакет `graphviz`:
 
 ```bash
 sudo apt-get install -y graphviz
@@ -83,7 +83,7 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 | Многоканальные фазовые | M/H₂/c, H₂/M/c, H₂/H₂/c (CV < 1 через complex-fit) | Такахаси–Таками |
 | Size-based дисциплины | M/G/1 SRPT, SJF, PSJF, SPJF (с предикторами + кривые graceful degradation), FB/LAS, PS, LCFS-PR | точный (Schrage–Miller, Mitzenmacher) |
 | Приоритеты | M/G/1 PR/NP мультикласс, M/G/c PR/NP, M/Ph/c PR; **RDR** M/M/k и M/PH/k мультикласс (точный + RDR-A), дисперсия отклика по классам; M/M/2 с **гетерогенными серверами** (точная не-birth-death CTMC); **накапливаемый приоритет** (Клейнрок/APQ), приоритетный Erlang-A (нетерпение), приоритеты MMAP/PH/1 (NP/PR/RS), retrial с приоритетным классом, preemptive repeat | точный / RDR / CTMC / инвариантная аппроксимация |
-| Multiserver-job (MSJ) | заявка занимает несколько серверов сразу — время отклика FCFS, устойчивость/throughput насыщенной системы | точная CTMC / saturated product-form |
+| [Multiserver-job (MSJ)](docs/models/msj.ru.md) | FCFS с фазовым обслуживанием; general-service FCFS/EASY/conservative, FirstFit, MSF и Quickswap; ServerFilling для степеней двойки с бесплатным resume | CTMC для FCFS / анализ насыщенной системы; replay-симуляция дисциплин |
 | Балансировка нагрузки (mean-field) | диспетчеризация по большому пулу — power-of-d / JSQ / JIQ / случайно | mean-field неподвижная точка |
 | Polling-системы | один сервер обходит Q очередей со switchover — exhaustive / gated | псевдо-закон сохранения (Boxma–Groenevelt) |
 | Нестационарная Mt/M/c | переменная интенсивность прихода λ(t) — вероятность блокировки и ожидания | приближения PSA и MOL |
@@ -122,6 +122,16 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 ## Новости
 
+- **2026-10, текущие исходники** — **MSJ с неэкспоненциальным обслуживанием**:
+  PH-FCFS для малых систем и сравнение backfilling/packing на общих трассах.
+  Прогнозы по историческим признакам, калибровка по ресурсным группам и
+  возрастной Kaplan–Meier по цензурированным наблюдениям. MSFQ — one-or-all;
+  ServerFilling — отдельная модель для степеней двойки с бесплатным
+  preemptive-resume. В 896 прогонах packing-пилота улучшение общего среднего
+  не всегда улучшало задержки широких заявок.
+  [Методы и API](docs/models/msj.ru.md), [результаты](docs/research/msj-packing-results-2026-10.md),
+  [roadmap](docs/roadmaps/msj-ph-backfilling.md). Симуляционные результаты не
+  являются новыми гарантиями устойчивости/SLO; релиз PyPI может отставать от исходников.
 - **2026-09** — **Волна реализма, часть 2: Erlang везде, batch-size-зависимые параметры, точные
   моменты**: время поставки в **queueing-inventory** обобщено с `Exp(θ)` на **Erlang-подогнанное**
   (фазовое измерение нужно только там, где заказ может быть в пути — впервые в этом семействе

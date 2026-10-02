@@ -53,6 +53,10 @@ class MsjSimulationResults(MsjResults):
     cover the whole trace. NaN class means/quantiles mean no measured jobs.
     reserved_start_times maps trace IDs to best historical finite promises,
     not to the initial promise or a complete sequence of calendar revisions.
+    ServerFilling alone populates service_segments as (trace ID, start, end)
+    and preemptions_per_job, over the whole input. Its start_times are FIRST
+    starts, while waiting includes every interruption. Other disciplines have
+    empty segment/count arrays and zero preemptions.
     """
 
     start_times: list[float] = field(default_factory=list)
@@ -72,6 +76,9 @@ class MsjSimulationResults(MsjResults):
     runtime_updates: int = 0
     unavailable_runtime_updates: int = 0
     forecast_calendar_resets: int = 0
+    preemptions: int = 0
+    preemptions_per_job: list[int] = field(default_factory=list)
+    service_segments: list[tuple[int, float, float]] = field(default_factory=list)
 
 
 @dataclass

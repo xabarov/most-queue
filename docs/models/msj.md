@@ -190,3 +190,24 @@ to this opt-in calendar-reset policy.
 See the [runnable example, timing contract and counters](../msj_age_runtime.md),
 [pilot](../../examples/msj_age_runtime_experiment.py), and
 [EPIC-051 results](../research/msj-age-runtime-results-2026-10.md).
+
+### Prediction-free packing and explicit preemption
+
+In plain words: FirstFit lets fitting jobs bypass a blocked head; MSF tries wide
+jobs first; Quickswap sometimes pauses new admissions so wide work can start.
+ServerFilling instead repacks a short FCFS prefix, interrupting and later
+resuming work. That last capability is an explicitly different operational model.
+
+`MsjGeneralSim(k, discipline=...)` now also accepts `first_fit`, `msf`,
+`msfq`, `adaptive_quickswap`, and `server_filling`, without runtime estimates.
+MSFQ requires needs in {1,k} and accepts keyword-only `msfq_threshold=0` (ell=0
+is MSF). ServerFilling requires power-of-two k and needs; it models zero-cost
+preemptive-resume, not restart or SRPT. Unsupported domains raise errors.
+
+ServerFilling's `wait_samples`/W moments include interrupted time; `start_times`
+remain first starts. `service_segments`, `preemptions` and `preemptions_per_job`
+make delivered work auditable. Packing has no reservation promises and rejects
+`remaining_predictor`. The original defaults and APIs remain compatible.
+See [exact rules, edge conventions and runnable example](../msj_packing.md),
+[experiment](../../examples/msj_packing_experiment.py), and
+[EPIC-052 results and trade-offs](../research/msj-packing-results-2026-10.md).

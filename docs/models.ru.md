@@ -25,7 +25,7 @@
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
 | [Матрично-аналитические модели (MAP/PH)](models/map-ph.ru.md) | коррелированные потоки: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP-варианты, фиттинг MMPP |
-| [Multiserver-job системы (MSJ)](models/msj.ru.md) | multiserver-job: заявка занимает k серверов сразу |
+| [Multiserver-job системы (MSJ)](models/msj.ru.md) | PH-FCFS аналитика; general-service backfilling, прогнозы, FirstFit/MSF/Quickswap и явно прерывающий ServerFilling |
 | [Балансировка нагрузки / диспетчеризация (mean-field)](models/load-balancing.ru.md) | диспетчеризация power-of-d / JSQ / JIQ, mean-field |
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
@@ -38,6 +38,11 @@
 | [Сети массового обслуживания](models/networks.ru.md) | открытые/закрытые сети: декомпозиция, Джексон, QNA, MVA/Бьюзен, BCMP, G-сети, блокировки, fork-join станции |
 
 ## Сравнительная таблица моделей
+
+Для MSJ аналитические результаты FCFS и симуляционные дисциплины имеют разные
+области применимости. См. [ограничения packing](msj_packing.md) и
+[информационный контракт прогнозов](msj_age_runtime.md); дренирование конечной
+трассы не доказывает устойчивость или стационарную хвостовую гарантию.
 
 | Модель | Класс расчета | Симуляция | Приоритеты | Особенности |
 |--------|--------------|-----------|------------|-------------|
@@ -87,7 +92,9 @@
 | MMAP/PH/1 приоритеты | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Да | Коррелированный вход, NP/PR/RS, точная CTMC |
 | M/M/1 retrial + приоритет | MM1RetrialPriorityCalc | MM1RetrialPrioritySim | Да | Очередь приоритетных + орбита |
 | M/G/1 preemptive repeat (RS) | MG1PreemptiveRepeatCalc | PriorityQueueSimulator("RS") | Да | Точный RS; completion times Гавера для RW |
-| Multiserver-job (MSJ) | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | PH-обслуживание, порог FCFS; replay FCFS/EASY/conservative |
+| Multiserver-job FCFS | MsjExactCalc, MsjSaturatedCalc, MsjPHCalc | MsjSim, MsjGeneralSim | - | Экспоненциальная/PH CTMC малых систем; анализ устойчивости насыщенной системы |
+| MSJ general-service дисциплины | - | MsjGeneralSim | - | FCFS/EASY/conservative; без прогнозов FirstFit/MSF/MSFQ/Adaptive Quickswap; MSFQ требует K из {1,k} |
+| MSJ ServerFilling | - | MsjGeneralSim | - | k и K — степени двойки; бесплатный preemptive-resume, не SRPT; W включает паузы, есть журнал исполнения |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |

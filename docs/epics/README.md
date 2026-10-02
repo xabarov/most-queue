@@ -92,6 +92,7 @@
 | [EPIC-049](EPIC-049-msj-runtime-prediction-calibration.md) | MSJ: прогноз длительности по признакам и split-conformal калибровка | done |
 | [EPIC-050](EPIC-050-msj-group-runtime-calibration.md) | MSJ: калибровка прогнозов по ресурсным классам и цена защиты широких заявок | done |
 | [EPIC-051](EPIC-051-msj-age-residual-runtime.md) | MSJ: прогноз остатка по возрасту и цензурированная история | done |
+| [EPIC-052](EPIC-052-msj-packing-baselines.md) | MSJ: prediction-free packing, Quickswap и ServerFilling | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

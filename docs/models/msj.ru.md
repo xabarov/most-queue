@@ -181,3 +181,26 @@ FCFS и дренирование. Начальные оценки ожидающ
 включают warm-up; недоступность также включает остаток меньше точности timestamp.
 [Пример и контракт EN](../msj_age_runtime.md),
 [результаты и ограничения EPIC-051](../research/msj-age-runtime-results-2026-10.md).
+
+### Упаковка без прогнозов и явное прерывание
+
+FirstFit пропускает блокирующую голову ради помещающихся работ; MSF сначала
+пробует широкие заявки. Quickswap временно закрывает допуск, чтобы освободить
+серверы для широких работ. ServerFilling перепаковывает короткий FCFS-префикс,
+прерывая и затем продолжая часть работ: это другой операционный режим.
+
+`MsjGeneralSim(k, discipline=...)` принимает `first_fit`, `msf`, `msfq`,
+`adaptive_quickswap`, `server_filling` без оценок длительности. Для MSFQ нужны
+K∈{1,k}; keyword-only `msfq_threshold=0` задаёт ell, при нуле получается MSF.
+ServerFilling поддерживает только степени двойки для k и K, preemptive-resume
+с нулевой ценой прерывания. Это не restart и не ServerFilling-SRPT. Несовместимые
+размеры отвергаются, а не округляются.
+
+Для ServerFilling W включает все паузы, `start_times` остаётся первым стартом.
+`service_segments` — интервалы `(id, start, end)`, `preemptions` и
+`preemptions_per_job` — число прерываний всей трассы. У непрерывающих политик
+новые массивы пустые. Packing не обещает резервирований и не принимает
+`remaining_predictor`; прежние backfilling API и defaults сохранены.
+[Точные правила и исполняемый пример EN](../msj_packing.md),
+[эксперимент](../../examples/msj_packing_experiment.py),
+[результаты и компромиссы EPIC-052](../research/msj-packing-results-2026-10.md).
