@@ -118,6 +118,15 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Exact SLA tail for batch-service queues**:
+  `get_tail`/`get_cdf` give the exact (not moment-fitted, not an upper bound)
+  `P(W>D)` for GPU/LLM-style bounded-window batch service with phase-type
+  (Erlang/H2, any CV) processing time, via sparse matrix-exponential-action.
+  Quantified against Inoue (2021)'s closed-form mean-latency bound (a bounded
+  window can push true E[W] up to ~10x above it) and against the library's own
+  moment-fit SLA approximation (which overestimates deep-tail violation
+  probability by orders of magnitude). 19 new tests, DES-validated.
+  [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
 - **2026-10, current source tree** — **Availability-aware arrival history**:
   removes a completed-prefix staleness artifact (prefix lag up to 8.2 days)
   by building arrival-mark donor history from submit<cutoff over the already-

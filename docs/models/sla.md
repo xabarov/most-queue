@@ -34,6 +34,14 @@ falls back to Gamma automatically rather than returning a silently wrong tail.
 `P(W > D) = rho * exp(-mu*(1-rho)*D)` directly (no fitting) — used to validate the fit-based
 approach's accuracy, not a general-purpose entry point.
 
+**Exact, non-anchor path for bounded-window batch service:** `BulkServiceMM1Calc`/
+`BulkServiceErlangCalc`/`BulkServiceH2Calc` (a=1) expose `get_tail(D)`/`get_cdf(D)` — the EXACT
+`P(W>D)` for `M/PH^[a,b]/1`, via matrix-exponential-action on the per-state phase-type
+decomposition already used by `get_w()`, not a moment fit. Quantified against `fit_from_moments`
+on the same raw moments: the fit is fine near the mean, but overestimates `P(W>D)` by orders of
+magnitude in the deep tail relevant to GPU/LLM SLOs (rare-but-not-negligible violation targets) —
+see [batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md).
+
 **Functions:** `deadline_violation_prob`, `slo_quantile`, `fit_from_moments`,
 `mm1_deadline_violation_prob` (`most_queue.theory.utils.sla`)
 

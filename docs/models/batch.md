@@ -71,6 +71,7 @@ calc.set_sources(2.0)
 calc.set_servers(lambda size: 1.0 / (0.3 + 0.08 * size))
 w_moments = calc.get_w(num=4)                 # E[W], E[W^2], E[W^3], E[W^4] -- exact
 n_moments = calc.get_n_moments(num=4)         # E[N], E[N^2], ... -- exact for any a, b
+p_violation = calc.get_tail(3.0)              # P(W > 3.0) -- EXACT, not moment-fitted (EPIC-066)
 ```
 
 **Accuracy boundary:** `get_w()` raises `ValueError` for `a>1` — the derivation assumes a batch of
@@ -134,11 +135,13 @@ phase-augmented case — the remaining service of the batch an arrival finds in 
 convolved); `run()` uses this exact mean for `a=1` and falls back to a busy-time-weighted-average
 approximate mean for `a>1` (same `a>1` restriction as `BulkServiceMM1Calc`, see
 [`docs/research/bulk-service-waiting-moments-2026.md`](../research/bulk-service-waiting-moments-2026.md)
-for why). Not covered (reserve): H2 fitting for CV`≥1` combined with exact moments (EPIC-036's H2
-calculator is still mean-only); batch-size-dependent phase COUNT (`k`) — EPIC-042 ported the
-exponential model's callable-rate convention to this phase-type case, but `k` itself stays fixed
-across batch sizes (a materially harder extension, same class of difficulty as EPIC-041's
-per-server phase counts).
+for why). `get_tail(D)`/`get_cdf(D)` (EPIC-066) give the EXACT SLA-violation probability `P(W>D)`
+at `a=1` too — matrix-exponential-action on the same per-state phase-type decomposition, reducing
+exactly to `BulkServiceMM1Calc.get_tail` at `k=1`; see
+[batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md). Not covered
+(reserve): batch-size-dependent phase COUNT (`k`) — EPIC-042 ported the exponential model's
+callable-rate convention to this phase-type case, but `k` itself stays fixed across batch sizes (a
+materially harder extension, same class of difficulty as EPIC-041's per-server phase counts).
 
 ### General (H2-fitted) batch-service time (CV ≥ 1)
 
@@ -180,9 +183,15 @@ calc3.set_sources(1.0)
 calc3.set_servers(lambda size: 0.3 + 0.1 * size, mu1=1.5, mu2=3.0)
 ```
 
-**Accuracy and scope:** exact given the H2-fitted family (mean-only, same starting scope as the
-Erlang case above). Not covered (reserve): exact raw moments beyond the mean (needs a PASTA
-argument that also tracks which phase an arrival finds the batch in); batch-size-dependent
+**Accuracy and scope:** exact given the H2-fitted family (mean-only via `run()`, same starting
+scope as the Erlang case above). `get_tail(D)`/`get_cdf(D)` (EPIC-066) give the EXACT `P(W>D)` at
+`a=1`: the one place this case is harder than Erlang's — each full batch AHEAD independently
+redraws its own H2 phase (a genuine branch, not Erlang's sequential phase advance), so the
+phase-type sub-generator is built explicitly rather than reusing a simple bidiagonal chain;
+reduces exactly to `BulkServiceMM1Calc.get_tail` at `p1=1`. See
+[batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md). Not covered
+(reserve): exact raw MOMENTS beyond the mean (needs a PASTA argument that also tracks which phase
+an arrival finds the batch in — a different derivation than the tail); batch-size-dependent
 branch COUNT (the two-branch structure itself stays fixed — EPIC-042 only made the per-branch
 probability/rates batch-size-dependent).
 

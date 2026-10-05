@@ -117,9 +117,9 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
-| M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching; exact N/W moments at a=1 |
-| M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above |
-| M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above |
+| M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching; exact N/W moments and exact SLA tail `get_tail`/`get_cdf` at a=1 |
+| M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above; exact `get_tail`/`get_cdf` at a=1 |
+| M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above; exact `get_tail`/`get_cdf` at a=1 |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |

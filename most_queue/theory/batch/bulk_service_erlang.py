@@ -219,6 +219,54 @@ class BulkServiceErlangCalc(BaseQueue):
                     w_moments += prob * np.array(wm)
         return list(w_moments)
 
+    def get_tail(self, t: float) -> float:
+        """
+        Exact P(W > t) -- requires a == 1 (same restriction as ``get_w``).
+
+        Same sequential generalized-Erlang chain as ``get_w``'s per-state
+        decomposition (remaining ``k - p`` phases of the current batch at
+        ``rate_fn(i)``, then ``full_ahead * k`` phases at ``rate_fn(b)``),
+        evaluated via sparse matrix-exponential-action instead of moment
+        convolution (see ``BulkServiceMM1Calc.get_tail`` for why sparse, not
+        dense ``expm``). k=1 reduces exactly to ``BulkServiceMM1Calc.get_tail``.
+        """
+        if self.a != 1:
+            raise ValueError(
+                f"get_tail() is only exact for a=1 (got a={self.a}); see get_w()'s docstring "
+                "for why a>1 needs a different (not-yet-implemented) idle-refill-aware derivation."
+            )
+        if t < 0:
+            raise ValueError("t must be nonnegative")
+        pi = self._solve_pi()
+        b, k, rate_fn = self.b, self.k, self.rate_fn
+        cache: dict[tuple[float, int, int], float] = {}
+        tail = 0.0
+        for i in range(1, b + 1):
+            rate_i = rate_fn(i)
+            for p in range(k):
+                remaining_current = k - p
+                for j in range(self.N + 1):
+                    prob = pi[self._busy_index(i, p, j)]
+                    if prob <= 0:
+                        continue
+                    full_ahead = j // b
+                    key = (rate_i, remaining_current, full_ahead)
+                    cached = cache.get(key)
+                    if cached is None:
+                        ahead_phases = full_ahead * k
+                        m = remaining_current + ahead_phases
+                        rates = np.full(m, rate_fn(b))
+                        rates[:remaining_current] = rate_i
+                        subgen = sp.diags([-rates, rates[:-1]], [0, 1], format="csc")
+                        cached = float(spla.expm_multiply(subgen * t, np.ones(m))[0])
+                        cache[key] = cached
+                    tail += prob * cached
+        return tail
+
+    def get_cdf(self, t: float) -> float:
+        """Exact P(W <= t) -- see ``get_tail`` for scope (a=1 only)."""
+        return 1.0 - self.get_tail(t)
+
     def run(self) -> QueueResults:
         """Solve the CTMC; return waiting/sojourn moments (exact for N and, at a=1, for W)."""
         start = self._measure_time()

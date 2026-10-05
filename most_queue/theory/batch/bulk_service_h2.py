@@ -70,6 +70,7 @@ class BulkServiceH2Calc(BaseQueue):
         self.p1_fn = None
         self.mu1_fn = None
         self.mu2_fn = None
+        self._pi: np.ndarray | None = None
 
     def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """:param l: arrival rate (Poisson)."""
@@ -111,10 +112,11 @@ class BulkServiceH2Calc(BaseQueue):
     def _busy_index(self, i: int, phase: int, j: int) -> int:
         return (self.N + 1) + ((i - 1) * 2 + phase) * (self.N + 1) + j
 
-    def run(self) -> QueueResults:
-        """Build and solve the CTMC; return mean waiting/sojourn moments (means)."""
+    def _solve_pi(self) -> np.ndarray:
+        """Build and solve the CTMC; cache and return the stationary distribution pi."""
+        if self._pi is not None:
+            return self._pi
         self._check_if_servers_and_sources_set()
-        start = self._measure_time()
 
         a, b, N, lam = self.a, self.b, self.N, self.l
         p1_fn, mu1_fn, mu2_fn = self.p1_fn, self.mu1_fn, self.mu2_fn
@@ -131,7 +133,7 @@ class BulkServiceH2Calc(BaseQueue):
             s = self._idle_index(j)
             if j + 1 < a:
                 add(s, self._idle_index(j + 1), lam)
-            else:  # threshold reached -> batch of size a starts, split by phase (new batch's own p1)
+            else:
                 add(s, self._busy_index(a, 0, 0), lam * p1_a)
                 add(s, self._busy_index(a, 1, 0), lam * (1.0 - p1_a))
 
@@ -143,7 +145,7 @@ class BulkServiceH2Calc(BaseQueue):
                         add(s, self._busy_index(i, phase, j + 1), lam)
                     if j >= a:
                         take = min(b, j)
-                        p1_take = p1_fn(take)  # the NEW batch's own p1, not the completing batch's
+                        p1_take = p1_fn(take)
                         add(s, self._busy_index(take, 0, j - take), mu * p1_take)
                         add(s, self._busy_index(take, 1, j - take), mu * (1.0 - p1_take))
                     else:
@@ -160,6 +162,87 @@ class BulkServiceH2Calc(BaseQueue):
         pi = spla.spsolve(mat.tocsr(), rhs)
         pi = np.maximum(np.real(pi), 0.0)
         pi = pi / pi.sum()
+        self._pi = pi
+        return pi
+
+    def get_tail(self, t: float) -> float:
+        """
+        Exact P(W > t) -- requires a == 1 (same restriction as the Erlang/MM1
+        bulk-service tails).
+
+        PASTA: a tagged arrival sees stationary (i, phase, j). If busy
+        (i>=1), its wait decomposes into the OBSERVED current batch's
+        remaining time -- Exp(mu[phase](i)), memoryless, same phase it was
+        already in -- followed by ``j // b`` FULL batches ahead, each
+        independently redrawing its OWN H2 phase (rate mu1(b) w.p. p1(b),
+        else mu2(b)) once it starts. Unlike Erlang's purely sequential
+        chain, this "ahead" part genuinely BRANCHES at every subsequent
+        batch boundary, so the phase-type sub-generator has 2 states per
+        batch layer (not 1): built explicitly and evaluated via sparse
+        matrix-exponential-action, exact, no hand partial fractions.
+        p1=1 (H2 collapses to Exp(mu1)) reduces exactly to
+        ``BulkServiceMM1Calc.get_tail``.
+        """
+        if self.a != 1:
+            raise ValueError(
+                f"get_tail() is only exact for a=1 (got a={self.a}); see BulkServiceMM1Calc.get_w()'s "
+                "docstring for why a>1 needs a different (not-yet-implemented) idle-refill-aware derivation."
+            )
+        if t < 0:
+            raise ValueError("t must be nonnegative")
+        pi = self._solve_pi()
+        b = self.b
+        ahead_params = (self.mu1_fn(b), self.mu2_fn(b), self.p1_fn(b))
+        cache: dict[tuple[float, int], float] = {}
+        tail = 0.0
+        for i in range(1, b + 1):
+            for phase, rate_obs in ((0, self.mu1_fn(i)), (1, self.mu2_fn(i))):
+                for j in range(self.N + 1):
+                    prob = pi[self._busy_index(i, phase, j)]
+                    if prob <= 0:
+                        continue
+                    full_ahead = j // b
+                    key = (rate_obs, full_ahead)
+                    cached = cache.get(key)
+                    if cached is None:
+                        cached = self._tagged_wait_tail(rate_obs, full_ahead, ahead_params, t)
+                        cache[key] = cached
+                    tail += prob * cached
+        return tail
+
+    @staticmethod
+    def _tagged_wait_tail(rate_obs, full_ahead, ahead_params, t) -> float:
+        """Tail of [Exp(rate_obs)] + [full_ahead independent fresh-phase H2(b) batches]."""
+        mu1_b, mu2_b, p1_b = ahead_params
+        m = 1 + 2 * full_ahead
+        rows, cols, vals = [0], [0], [-rate_obs]
+        if full_ahead > 0:
+            rows += [0, 0]
+            cols += [1, 2]
+            vals += [rate_obs * p1_b, rate_obs * (1.0 - p1_b)]
+        for k in range(1, full_ahead + 1):
+            idx0, idx1 = 1 + (k - 1) * 2, 1 + (k - 1) * 2 + 1
+            rows += [idx0, idx1]
+            cols += [idx0, idx1]
+            vals += [-mu1_b, -mu2_b]
+            if k < full_ahead:
+                nxt0, nxt1 = 1 + k * 2, 1 + k * 2 + 1
+                rows += [idx0, idx0, idx1, idx1]
+                cols += [nxt0, nxt1, nxt0, nxt1]
+                vals += [mu1_b * p1_b, mu1_b * (1.0 - p1_b), mu2_b * p1_b, mu2_b * (1.0 - p1_b)]
+        subgen = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsc()
+        return float(spla.expm_multiply(subgen * t, np.ones(m))[0])
+
+    def get_cdf(self, t: float) -> float:
+        """Exact P(W <= t) -- see ``get_tail`` for scope (a=1 only)."""
+        return 1.0 - self.get_tail(t)
+
+    def run(self) -> QueueResults:
+        """Solve the CTMC; return mean waiting/sojourn moments (means)."""
+        start = self._measure_time()
+        pi = self._solve_pi()
+        b, N, lam = self.b, self.N, self.l
+        p1_fn, mu1_fn, mu2_fn = self.p1_fn, self.mu1_fn, self.mu2_fn
 
         e_n = 0.0
         p_busy_size = np.zeros(b + 1)  # P(batch size = i | server busy), i=1..b
