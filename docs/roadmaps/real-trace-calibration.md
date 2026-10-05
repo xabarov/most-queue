@@ -136,13 +136,27 @@ cutoff на 4.63 дня. Контракт ретроспективен, лаг �
 вывод; обе оценки сохранены. К lifecycle EPIC-061 эти empty-start числа не
 приравниваются. Новый победитель после просмотра test не выбирается.
 
+## Девятый этап
+
+[EPIC-063](../epics/EPIC-063-resource-observability-audit.md): сопоставлены шесть
+источников, полностью проверены 3 362 981 записи Helios и 724 daily configuration
+rows, закреплены source/license/hashes. [Методика](../resource_observability.md),
+[отчёт](../research/resource-observability-results-2026-10.md).
+
+Helios выбран для bounded daily-capacity/VC сценариев, не production reconstruction.
+17 459 GPU-записей стартуют при нулевом same-day VC-count. Общий пул не превышен
+в пределах известных дат, но отдельные VC превышены. Реальные hard quotas,
+intraday changes и borrowing не определены; данные не подгонялись к W.
+Philly/PAI/Alibaba/Google остаются отдельными ветками для attempts, placement,
+sharing и resource events, а не взаимозаменяемыми scalar-S трассами.
+
 ## Следующие этапы
 
-1. Следующий эпик: аудит нового источника с наблюдаемыми
-   quotas/placement/доступностью ресурсов и submission-time marks. EPIC-060
-   не восстановил ресурсы, EPIC-062 показал ограничения completed-prefix.
-   Сначала закрепить источник/лицензию, проверить полноту и timestamps; если
-   нужных полей нет, составить карту пробелов, а не подгонять capacity по test W.
+1. [EPIC-064](../epics/EPIC-064-msj-capacity-calendar.md): opt-in MSJ capacity
+   calendar, shrink/growth без обязательного arrival, явные grandfathering,
+   infeasible demands и horizon. Затем предписанные Helios aggregate/VC сценарии
+   с fixed-pool control. Daily effective time — гипотеза; никаких production
+   quota claims или выбора capacity/boundary по historical W.
 2. Отдельная ветка — availability-aware arrival history без устаревающего
    completed-prefix: известные на submit признаки, независимый учёт цензурированного
    S, ранний выбор окна и новые периоды проверки. Сохранить fixed-arrival coarse;

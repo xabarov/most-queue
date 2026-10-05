@@ -234,8 +234,14 @@ gap/K/context/request arrivals с отдельными контролями за
 1176 completed-only empty-start replay и побайтовый повтор. Устойчивого выигрыша
 над fixed-arrival coarse нет; measured horizon и K-mix Kalos сильно расходятся
 с observed, completed-prefix может устареть на несколько дней. S остаётся coarse
-по K, не полной joint S/context моделью. Следующий этап реальных трасс — аудит
-нового источника с наблюдаемыми квотами, размещением, переменной доступностью и
-submission-time marks; без них нельзя заявлять восстановленный production replay.
+по K, не полной joint S/context моделью.
+В [EPIC-063](../epics/EPIC-063-resource-observability-audit.md) сопоставлены шесть
+источников и полностью проверен Helios: 3 362 981 row, дневные VC-counts,
+независимая сверка и побайтовый повтор. Дневная конфигурация не идентифицирует
+hard quota; 17 459 GPU-записей стартуют при нулевом count своего VC.
+Следующий [EPIC-064](../epics/EPIC-064-msj-capacity-calendar.md) — opt-in capacity
+calendar и bounded Helios sensitivity с явными shrink/horizon/VC допущениями.
+Без intraday quotas, borrowing, placement и submission-time provenance нельзя
+заявлять восстановленный production replay.
 Для каждого следующего шага нужен свой
 эпик и проверка отличий от публикаций, а не заявление новизны фазового расширения.

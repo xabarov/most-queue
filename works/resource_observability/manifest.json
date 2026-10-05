@@ -1,0 +1,13 @@
+{
+  "source_url": "https://raw.githubusercontent.com/S-Lab-System-Group/HeliosData/159f0caeec16600b9b6017862952a36aae01c43f/data.zip",
+  "source_commit": "159f0caeec16600b9b6017862952a36aae01c43f",
+  "archive_sha256": "3d22a5f6c0ae669e2fcbfe4200fa9c48664507bc397c677bad8f085222c032ac",
+  "attribution": "SenseTime / S-Lab-System-Group; Hu et al., SC 2021, doi:10.1145/3458817.3476223",
+  "source_license": "CC-BY-4.0, not the project's MIT license",
+  "implementation": "examples/resource_observability_audit.py",
+  "implementation_sha256": "3112256e01461b5e2a6b575df1fa2a2deaa384c280264f60985a4efdcb3d86e4",
+  "numpy": "2.2.5",
+  "output": "helios-audit.json",
+  "output_sha256": "01dc702f58bb846d58bcbb3cf81e83ec60acafde25bbeb4c6f71f9acfbba8f5f",
+  "scheduler_runs": 0
+}

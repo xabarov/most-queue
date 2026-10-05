@@ -62,6 +62,12 @@ common coarse S|K mechanism and fixed-arrival baseline; all scenarios start empt
 and contain completed jobs only. Prefix staleness, changing target mix and arrival
 horizon are audited, not hidden by time rescaling or copied historical carry-in.
 
+Before adding quota or availability assumptions, see the
+[resource observability audit](resource_observability.md). It checks full Helios
+jobs/daily VC counts and compares five other schemas without running a scheduler.
+Daily counts are not verified intraday hard caps; constant-pool replay remains
+distinct from the proposed, not yet implemented capacity-calendar extension.
+
 For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
 end-start execution, exact GPU requests and separate failed/node_failed labels.
 Recorded timed_out does not infer a runtime budget. The nominal homogeneous

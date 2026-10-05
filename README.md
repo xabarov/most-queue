@@ -118,6 +118,12 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Resource observability audit**:
+  six source schemas compared; all 3,362,981 Helios records audited with pinned
+  inputs, a byte-identical repeat and independent accounting checks. Daily VC
+  GPU counts support bounded capacity scenarios, not reconstructed hard quotas:
+  17,459 GPU records start with a zero same-day VC count. No scheduler replay claimed.
+  [Method](docs/resource_observability.md), [results](docs/research/resource-observability-results-2026-10.md).
 - **2026-10, current source tree** — **Joint marked arrivals**:
   empirical gap/K/context/request tuples, circular blocks and matched shuffles,
   with a common coarse S|K mechanism and fixed-arrival baseline. 1176 empty-start

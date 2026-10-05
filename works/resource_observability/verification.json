@@ -1,0 +1,40 @@
+{
+  "clusters": {
+    "Earth": {
+      "duplicate_id_exact_rows": 0,
+      "duplicate_id_gpu_rows": 0,
+      "duplicate_id_rows": 0,
+      "gpu_rows_verified": 427148,
+      "rows_verified": 872886,
+      "unknown_vc_gpu_rows": 0
+    },
+    "Saturn": {
+      "duplicate_id_exact_rows": 0,
+      "duplicate_id_gpu_rows": 0,
+      "duplicate_id_rows": 2,
+      "gpu_rows_verified": 698896,
+      "rows_verified": 1753078,
+      "unknown_vc_gpu_rows": 0
+    },
+    "Uranus": {
+      "duplicate_id_exact_rows": 0,
+      "duplicate_id_gpu_rows": 0,
+      "duplicate_id_rows": 0,
+      "gpu_rows_verified": 329117,
+      "rows_verified": 490309,
+      "unknown_vc_gpu_rows": 0
+    },
+    "Venus": {
+      "duplicate_id_exact_rows": 0,
+      "duplicate_id_gpu_rows": 0,
+      "duplicate_id_rows": 0,
+      "gpu_rows_verified": 125303,
+      "rows_verified": 246708,
+      "unknown_vc_gpu_rows": 0
+    }
+  },
+  "pandas": "2.2.3",
+  "primary_output_sha256": "01dc702f58bb846d58bcbb3cf81e83ec60acafde25bbeb4c6f71f9acfbba8f5f",
+  "scope": "Independent pandas parsing, raw counts, clocks, daily counts, work and occupancy integrals; no replay.",
+  "verification_sha256": "2a556da4a156c8ac8d8ff88f12221fa147246bb18c6897b95786f22771f72700"
+}

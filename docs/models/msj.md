@@ -394,3 +394,16 @@ gain or production scheduler validation is claimed.
 [Protocol/API](../joint_marked_arrivals.md),
 [experiment](../../examples/joint_marked_arrivals_experiment.py),
 [results](../research/joint-marked-arrivals-results-2026-10.md).
+
+### Resource observability before capacity modeling
+
+In plain words: check what resource limits the trace actually records before
+turning them into admission rules. EPIC-063 audits Helios jobs and daily VC
+GPU counts and compares five other source schemas. It does not change the
+rigid-job flow or implement a new simulator. A zero same-day VC count can coexist
+with recorded starts; daily counts are not verified intraday hard quotas.
+[Method](../resource_observability.md),
+[audit CLI](../../examples/resource_observability_audit.py),
+[results](../research/resource-observability-results-2026-10.md).
+An opt-in calendar with explicit shrink/horizon semantics is
+[proposed, not implemented](../epics/EPIC-064-msj-capacity-calendar.md).

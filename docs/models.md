@@ -45,6 +45,11 @@ domains. See [packing assumptions](msj_packing.md),
 [forecast information boundaries](msj_age_runtime.md); a finite drained trace
 does not establish stability or a stationary tail guarantee.
 
+Before modeling real quotas or time-varying capacity, consult the
+[resource observability audit](resource_observability.md): six source schemas
+and full Helios raw checks. This is an audit tool, not an additional queue model;
+daily VC GPU counts do not establish intraday hard quotas or actual placement.
+
 | Model | Calculator class | Simulation | Priorities | Notes |
 |--------|--------------|-----------|------------|-------------|
 | M/M/c | MMnrCalc | QsSim | - | Basic model |

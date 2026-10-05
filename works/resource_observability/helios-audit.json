@@ -1,0 +1,443 @@
+{
+  "archive_sha256": "3d22a5f6c0ae669e2fcbfe4200fa9c48664507bc397c677bad8f085222c032ac",
+  "clusters": {
+    "Earth": {
+      "closed_terminal_occupancy": {
+        "compared_seconds": 15638400,
+        "covered_gpu_seconds": 11292501629,
+        "excess_gpu_seconds": 0,
+        "excess_seconds": 0,
+        "full_gpu_seconds": 11439202755,
+        "peak_requested_gpu": 1100,
+        "vc_covered_gpu_seconds": 11292501629,
+        "vc_excess_gpu_seconds": 86158112,
+        "vc_excess_seconds_sum": 2123911,
+        "vcs_with_excess": 16,
+        "vcs_with_intervals": 25
+      },
+      "completed_gpu_descriptive": {
+        "count": 313953,
+        "mean_recorded_w": 247.37048220593528,
+        "mean_s": 3571.2345287351927,
+        "p99_s": 62668.87999999942,
+        "positive_recorded_waits": 70084
+      },
+      "configuration": {
+        "days": 181,
+        "first_date": "2020-04-01",
+        "last_date": "2020-09-28",
+        "missing_days": 0,
+        "sum_vc_not_total_days": 0,
+        "total_changes": 12,
+        "total_max": 1232,
+        "total_min": 784,
+        "vc_columns": 25,
+        "vc_day_changes": 63,
+        "zero_vc_days": 1428
+      },
+      "counts": {
+        "closed_timestamps": 872886,
+        "cpu_only": 445738,
+        "duplicate_job_ids": 0,
+        "empty_job_id": 0,
+        "empty_user": 0,
+        "gpu_closed_terminal": 427148,
+        "gpu_completed_positive": 313953,
+        "gpu_jobs": 427148,
+        "gpu_start_compared": 427112,
+        "gpu_start_missing_date": 36,
+        "gpu_start_need_above_daily_count": 6789,
+        "gpu_start_zero_count": 6727,
+        "gpu_submit_compared": 427107,
+        "gpu_submit_missing_date": 41,
+        "gpu_submit_need_above_daily_count": 6780,
+        "gpu_submit_zero_count": 6718,
+        "invalid_cpu": 0,
+        "invalid_duration": 0,
+        "invalid_end": 0,
+        "invalid_gpu": 0,
+        "invalid_node": 0,
+        "invalid_queue": 0,
+        "invalid_start": 0,
+        "invalid_submit": 0,
+        "negative_execution": 0,
+        "negative_wait": 0,
+        "observed_vcs": 25,
+        "rows": 872886,
+        "unique_job_ids": 872886,
+        "unknown_vcs": 0,
+        "zero_execution": 0
+      },
+      "derived_fields": {
+        "duration_checked": 872886,
+        "duration_equals_sojourn": 781338,
+        "duration_not_execution": 0,
+        "queue_checked": 872886,
+        "queue_not_wait": 0
+      },
+      "gpu_states": {
+        "CANCELLED": 58259,
+        "COMPLETED": 313953,
+        "FAILED": 54331,
+        "NODE_FAIL": 459,
+        "TIMEOUT": 146
+      },
+      "source_clock_bounds": {
+        "first_end": "2020-04-01 00:00:07",
+        "first_start": "2020-03-20 16:06:15",
+        "first_submit": "2020-03-20 16:06:15",
+        "last_end": "2020-10-10 13:41:51",
+        "last_start": "2020-09-28 17:22:15",
+        "last_submit": "2020-09-27 23:59:45"
+      },
+      "states": {
+        "CANCELLED": 60330,
+        "COMPLETED": 708616,
+        "FAILED": 103297,
+        "NODE_FAIL": 470,
+        "TIMEOUT": 173
+      }
+    },
+    "Saturn": {
+      "closed_terminal_occupancy": {
+        "compared_seconds": 15638400,
+        "covered_gpu_seconds": 27323001256,
+        "excess_gpu_seconds": 0,
+        "excess_seconds": 0,
+        "full_gpu_seconds": 27652361263,
+        "peak_requested_gpu": 2072,
+        "vc_covered_gpu_seconds": 27323001256,
+        "vc_excess_gpu_seconds": 134120362,
+        "vc_excess_seconds_sum": 1393431,
+        "vcs_with_excess": 19,
+        "vcs_with_intervals": 28
+      },
+      "completed_gpu_descriptive": {
+        "count": 406982,
+        "mean_recorded_w": 574.3725594743748,
+        "mean_s": 4334.953727683288,
+        "p99_s": 95519.57,
+        "positive_recorded_waits": 84492
+      },
+      "configuration": {
+        "days": 181,
+        "first_date": "2020-04-01",
+        "last_date": "2020-09-28",
+        "missing_days": 0,
+        "sum_vc_not_total_days": 0,
+        "total_changes": 7,
+        "total_max": 2104,
+        "total_min": 2056,
+        "vc_columns": 28,
+        "vc_day_changes": 48,
+        "zero_vc_days": 1182
+      },
+      "counts": {
+        "closed_timestamps": 1753078,
+        "cpu_only": 1054182,
+        "duplicate_job_ids": 1,
+        "empty_job_id": 0,
+        "empty_user": 0,
+        "gpu_closed_terminal": 698896,
+        "gpu_completed_positive": 406982,
+        "gpu_jobs": 698896,
+        "gpu_start_compared": 698643,
+        "gpu_start_missing_date": 253,
+        "gpu_start_need_above_daily_count": 3420,
+        "gpu_start_zero_count": 3420,
+        "gpu_submit_compared": 698662,
+        "gpu_submit_missing_date": 234,
+        "gpu_submit_need_above_daily_count": 3418,
+        "gpu_submit_zero_count": 3418,
+        "invalid_cpu": 0,
+        "invalid_duration": 0,
+        "invalid_end": 0,
+        "invalid_gpu": 0,
+        "invalid_node": 0,
+        "invalid_queue": 0,
+        "invalid_start": 0,
+        "invalid_submit": 0,
+        "negative_execution": 0,
+        "negative_wait": 0,
+        "observed_vcs": 28,
+        "rows": 1753078,
+        "unique_job_ids": 1753077,
+        "unknown_vcs": 0,
+        "zero_execution": 0
+      },
+      "derived_fields": {
+        "duration_checked": 1753078,
+        "duration_equals_sojourn": 1589743,
+        "duration_not_execution": 0,
+        "queue_checked": 1753078,
+        "queue_not_wait": 0
+      },
+      "gpu_states": {
+        "CANCELLED": 190421,
+        "COMPLETED": 406982,
+        "FAILED": 98802,
+        "NODE_FAIL": 1629,
+        "TIMEOUT": 1062
+      },
+      "source_clock_bounds": {
+        "first_end": "2020-04-01 00:01:40",
+        "first_start": "2020-03-18 14:21:22",
+        "first_submit": "2020-03-18 14:21:22",
+        "last_end": "2020-10-09 20:06:41",
+        "last_start": "2020-09-29 12:31:00",
+        "last_submit": "2020-09-27 23:59:53"
+      },
+      "states": {
+        "CANCELLED": 210673,
+        "COMPLETED": 1401406,
+        "FAILED": 137690,
+        "NODE_FAIL": 1925,
+        "TIMEOUT": 1384
+      }
+    },
+    "Uranus": {
+      "closed_terminal_occupancy": {
+        "compared_seconds": 15638400,
+        "covered_gpu_seconds": 26033077864,
+        "excess_gpu_seconds": 0,
+        "excess_seconds": 0,
+        "full_gpu_seconds": 26543219559,
+        "peak_requested_gpu": 2038,
+        "vc_covered_gpu_seconds": 26033077864,
+        "vc_excess_gpu_seconds": 263557525,
+        "vc_excess_seconds_sum": 2067820,
+        "vcs_with_excess": 11,
+        "vcs_with_intervals": 25
+      },
+      "completed_gpu_descriptive": {
+        "count": 199930,
+        "mean_recorded_w": 2427.176131646076,
+        "mean_s": 7685.490441654579,
+        "p99_s": 148302.48999999903,
+        "positive_recorded_waits": 54466
+      },
+      "configuration": {
+        "days": 181,
+        "first_date": "2020-04-01",
+        "last_date": "2020-09-28",
+        "missing_days": 0,
+        "sum_vc_not_total_days": 0,
+        "total_changes": 8,
+        "total_max": 2256,
+        "total_min": 2072,
+        "vc_columns": 25,
+        "vc_day_changes": 28,
+        "zero_vc_days": 1442
+      },
+      "counts": {
+        "closed_timestamps": 490309,
+        "cpu_only": 161192,
+        "duplicate_job_ids": 0,
+        "empty_job_id": 0,
+        "empty_user": 0,
+        "gpu_closed_terminal": 329063,
+        "gpu_completed_positive": 199930,
+        "gpu_excluded_from_occupancy": 54,
+        "gpu_jobs": 329117,
+        "gpu_start_compared": 328919,
+        "gpu_start_missing_date": 198,
+        "gpu_start_need_above_daily_count": 2918,
+        "gpu_start_zero_count": 2918,
+        "gpu_submit_compared": 328891,
+        "gpu_submit_missing_date": 226,
+        "gpu_submit_need_above_daily_count": 2918,
+        "gpu_submit_zero_count": 2918,
+        "invalid_cpu": 0,
+        "invalid_duration": 0,
+        "invalid_end": 0,
+        "invalid_gpu": 0,
+        "invalid_node": 0,
+        "invalid_queue": 0,
+        "invalid_start": 0,
+        "invalid_submit": 0,
+        "negative_execution": 0,
+        "negative_wait": 0,
+        "observed_vcs": 25,
+        "rows": 490309,
+        "unique_job_ids": 490309,
+        "unknown_vcs": 0,
+        "zero_execution": 0
+      },
+      "derived_fields": {
+        "duration_checked": 490309,
+        "duration_equals_sojourn": 387449,
+        "duration_not_execution": 0,
+        "queue_checked": 490309,
+        "queue_not_wait": 0
+      },
+      "gpu_states": {
+        "CANCELLED": 66063,
+        "COMPLETED": 199930,
+        "FAILED": 61285,
+        "NODE_FAIL": 1183,
+        "RUNNING": 1,
+        "SUSPENDED": 53,
+        "TIMEOUT": 602
+      },
+      "source_clock_bounds": {
+        "first_end": "2020-04-01 00:00:01",
+        "first_start": "2020-03-22 10:38:56",
+        "first_submit": "2020-03-22 10:38:56",
+        "last_end": "2020-10-09 23:36:44",
+        "last_start": "2020-09-29 09:53:13",
+        "last_submit": "2020-09-27 23:58:35"
+      },
+      "states": {
+        "CANCELLED": 84840,
+        "COMPLETED": 327440,
+        "FAILED": 75330,
+        "NODE_FAIL": 1968,
+        "RUNNING": 2,
+        "SUSPENDED": 76,
+        "TIMEOUT": 653
+      }
+    },
+    "Venus": {
+      "closed_terminal_occupancy": {
+        "compared_seconds": 15638400,
+        "covered_gpu_seconds": 12135923931,
+        "excess_gpu_seconds": 0,
+        "excess_seconds": 0,
+        "full_gpu_seconds": 12345612608,
+        "peak_requested_gpu": 1053,
+        "vc_covered_gpu_seconds": 12135923931,
+        "vc_excess_gpu_seconds": 282188402,
+        "vc_excess_seconds_sum": 5066804,
+        "vcs_with_excess": 13,
+        "vcs_with_intervals": 25
+      },
+      "completed_gpu_descriptive": {
+        "count": 65912,
+        "mean_recorded_w": 1601.142857142857,
+        "mean_s": 11942.441907391674,
+        "p99_s": 230354.81999999986,
+        "positive_recorded_waits": 10073
+      },
+      "configuration": {
+        "days": 181,
+        "first_date": "2020-04-01",
+        "last_date": "2020-09-28",
+        "missing_days": 0,
+        "sum_vc_not_total_days": 0,
+        "total_changes": 5,
+        "total_max": 1264,
+        "total_min": 968,
+        "vc_columns": 25,
+        "vc_day_changes": 27,
+        "zero_vc_days": 1390
+      },
+      "counts": {
+        "closed_timestamps": 246708,
+        "cpu_only": 121405,
+        "duplicate_job_ids": 0,
+        "empty_job_id": 0,
+        "empty_user": 0,
+        "gpu_closed_terminal": 125303,
+        "gpu_completed_positive": 65912,
+        "gpu_jobs": 125303,
+        "gpu_start_compared": 125219,
+        "gpu_start_missing_date": 84,
+        "gpu_start_need_above_daily_count": 4398,
+        "gpu_start_zero_count": 4394,
+        "gpu_submit_compared": 125214,
+        "gpu_submit_missing_date": 89,
+        "gpu_submit_need_above_daily_count": 4413,
+        "gpu_submit_zero_count": 4409,
+        "invalid_cpu": 0,
+        "invalid_duration": 0,
+        "invalid_end": 0,
+        "invalid_gpu": 0,
+        "invalid_node": 0,
+        "invalid_queue": 0,
+        "invalid_start": 0,
+        "invalid_submit": 0,
+        "negative_execution": 0,
+        "negative_wait": 0,
+        "observed_vcs": 27,
+        "rows": 246708,
+        "unique_job_ids": 246708,
+        "unknown_vcs": 2,
+        "zero_execution": 0
+      },
+      "derived_fields": {
+        "duration_checked": 246708,
+        "duration_equals_sojourn": 189619,
+        "duration_not_execution": 0,
+        "queue_checked": 246708,
+        "queue_not_wait": 0
+      },
+      "gpu_states": {
+        "CANCELLED": 34130,
+        "COMPLETED": 65912,
+        "FAILED": 24904,
+        "NODE_FAIL": 318,
+        "TIMEOUT": 39
+      },
+      "source_clock_bounds": {
+        "first_end": "2020-04-01 00:02:31",
+        "first_start": "2020-03-18 04:01:39",
+        "first_submit": "2020-03-18 04:01:39",
+        "last_end": "2020-10-09 19:43:49",
+        "last_start": "2020-09-29 15:51:18",
+        "last_submit": "2020-09-27 23:59:30"
+      },
+      "states": {
+        "CANCELLED": 45883,
+        "COMPLETED": 170320,
+        "FAILED": 30103,
+        "NODE_FAIL": 338,
+        "TIMEOUT": 64
+      }
+    }
+  },
+  "inputs": [
+    {
+      "bytes": 15230,
+      "file": "data/Earth/cluster_gpu_number.csv",
+      "sha256": "cd85b21f9b2651a64ed7ecb86f2c5dea771a3bd55d41537eea976b61aa00642f"
+    },
+    {
+      "bytes": 88725405,
+      "file": "data/Earth/cluster_log.csv",
+      "sha256": "bb62d7842ee50a093c1f872afa293a8e27500f38dfc5cd1dab3b10c53746b3db"
+    },
+    {
+      "bytes": 18547,
+      "file": "data/Saturn/cluster_gpu_number.csv",
+      "sha256": "d8760e0e69a43ef2c86eb4316436cdebdf513fc5c2742d43875ddcf546bfae5a"
+    },
+    {
+      "bytes": 178699369,
+      "file": "data/Saturn/cluster_log.csv",
+      "sha256": "f991918de22dd88fd87ed4f4d8b3b8beb34a19a57007037298c08e48d56c2377"
+    },
+    {
+      "bytes": 16474,
+      "file": "data/Uranus/cluster_gpu_number.csv",
+      "sha256": "b824e9d839423571f7570a72b3712b0a547926f70ab3d73b9d18b0df3be17e49"
+    },
+    {
+      "bytes": 50470507,
+      "file": "data/Uranus/cluster_log.csv",
+      "sha256": "785e4154cefb45dba55bdfb8c3d313f101cd75dbe78b158a09f387ef8f4418af"
+    },
+    {
+      "bytes": 15086,
+      "file": "data/Venus/cluster_gpu_number.csv",
+      "sha256": "08c05fc4d2ac94aceb43f2bfd28d731a089df8e9bb7c3412d2bd211cab2ed57c"
+    },
+    {
+      "bytes": 25108746,
+      "file": "data/Venus/cluster_log.csv",
+      "sha256": "41153105b5a1beedfc9f3d5151126d8a2b446ba5699a60a41522a6795e726cac"
+    }
+  ],
+  "interpretation": "Full raw audit, not replay. Naive source clock; daily counts are diagnostic assumptions, not measured intraday hard quotas. Occupancy is requested GPU over valid closed terminal intervals.",
+  "schema_version": 1,
+  "source_commit": "159f0caeec16600b9b6017862952a36aae01c43f"
+}

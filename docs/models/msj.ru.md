@@ -385,3 +385,16 @@ Context/request — диагностические marks, не входы S ил
 [Методика/API](../joint_marked_arrivals.md),
 [эксперимент](../../examples/joint_marked_arrivals_experiment.py),
 [результаты](../research/joint-marked-arrivals-results-2026-10.md).
+
+### Наблюдаемость ресурсов до моделирования ёмкости
+
+Простыми словами: прежде чем вводить правило допуска, проверить, какие лимиты
+на самом деле записаны в трассе. EPIC-063 проверяет все работы Helios и дневные
+GPU-counts VC, сопоставляя ещё пять схем источников. Это аудит, не новый
+симулятор; схема rigid jobs не меняется. При нулевом дневном count встречаются
+старты работ, поэтому точная hard quota внутри дня не подтверждена.
+[Методика](../resource_observability.md),
+[аудитор](../../examples/resource_observability_audit.py),
+[результаты](../research/resource-observability-results-2026-10.md).
+Opt-in календарь с явной семантикой shrink/horizon
+[предложен, ещё не реализован](../epics/EPIC-064-msj-capacity-calendar.md).
