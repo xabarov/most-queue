@@ -175,17 +175,38 @@ QuickSwap в этом окне. Это проверка корректности
 реальных данных, не ranking дисциплин и не подтверждение/опровержение EPIC-063
 daily-VC-гипотезы.
 
+## Одиннадцатый этап
+
+[EPIC-065](../epics/EPIC-065-availability-aware-arrival-history.md) выполнен
+2026-10-05: `availability_prefix` строит arrival-mark donor-пул из
+submit<cutoff поверх уже распарсенной популяции completed+cancelled (SDSC) /
+completed+cancelled+failed+timeout+node_failed (Kalos), не останавливаясь на
+первом незавершённом к cutoff задании. Те же четыре origin, split, cohort,
+policies и replications, что в EPIC-062. 792 расписания, побайтовый повтор,
+независимый аудит prefix_lag/donor-pool-size из сырых источников.
+[Методика](../availability_aware_arrivals.md),
+[отчёт](../research/availability-aware-arrivals-results-2026-10.md).
+
+Prefix lag падает на порядки (SDSC .90: 8.2 дня → 12.7 минут; Kalos .70: 4.6
+дня → 4 часа), donor-пул примерно удваивается на каждом origin. Это **не**
+равномерное улучшение: Q заметно хуже на SDSC, заметно лучше на Kalos .70, в
+пределах шума на Kalos .65. Выбор дисциплины по mean T не меняется ни на одном
+origin. Правдоподобный (не доказанный) механизм — сдвиг среднего gap донор-пула
+относительно observed в разные стороны на разных источниках. Failed-статус SWF
+и genuinely unresolved-at-export Acme-записи остаются вне scope (резерв).
+
 ## Следующие этапы
 
-1. Отдельная ветка — availability-aware arrival history без устаревающего
-   completed-prefix: известные на submit признаки, независимый учёт цензурированного
-   S, ранний выбор окна и новые периоды проверки. Сохранить fixed-arrival coarse;
-   не выводить latent successful S из killed/failed интервалов.
-2. Затем проверять новые адаптивные дисциплины на различающем reference. Прерывания потребуют
-   измеренных либо отдельно обозначенных модельных расходов checkpoint/resume.
-3. Отдельный будущий прогон EPIC-064 на окне с реальным intra-window изменением
+1. Проверять новые адаптивные дисциплины на различающем reference. Прерывания
+   потребуют измеренных либо отдельно обозначенных модельных расходов
+   checkpoint/resume.
+2. Отдельный будущий прогон EPIC-064 на окне с реальным intra-window изменением
    total/VC (например, вокруг 98-го дня трассы Venus) — предписанным заранее,
    не выбранным по итогу первого прогона.
+3. Расширение availability-aware ingestion на failed-статус SWF и genuinely
+   unresolved-at-export Acme-записи (EPIC-065, резерв) — отдельный эпик, не
+   попытка задним числом улучшить уже полученный результат.
 
 Каждый пункт — отдельный будущий эпик. Выполненные этапы не доказывают универсальное
-преимущество PH, lognormal, recent-history или какого-либо планировщика.
+преимущество PH, lognormal, recent-history, availability-aware истории или
+какого-либо планировщика.

@@ -118,6 +118,15 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **Availability-aware arrival history**:
+  removes a completed-prefix staleness artifact (prefix lag up to 8.2 days)
+  by building arrival-mark donor history from submit<cutoff over the already-
+  parsed completed+cancelled(+failed/timeout/node_failed) population, not
+  stalling at the first job unresolved at cutoff. Lag drops to minutes/hours
+  and the donor pool roughly doubles, but this is not a uniform accuracy win:
+  queue-error effects go in opposite directions on SDSC versus Kalos. 16 unit
+  tests, 792 schedules, byte-identical repeat, independent audit.
+  [Method](docs/availability_aware_arrivals.md), [results](docs/research/availability-aware-arrivals-results-2026-10.md).
 - **2026-10, current source tree** — **MSJ capacity calendar**: opt-in
   time-varying capacity (`CapacityCalendar`/`run_capacity_calendar`) over MSJ
   replay, with automatic grandfathering, explicit infeasible/unresolved

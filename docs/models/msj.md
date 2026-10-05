@@ -395,6 +395,25 @@ gain or production scheduler validation is claimed.
 [experiment](../../examples/joint_marked_arrivals_experiment.py),
 [results](../research/joint-marked-arrivals-results-2026-10.md).
 
+### Availability-aware arrival history
+
+In plain words: stop waiting for a job to finish before using its arrival
+time, resource need and context for the history that fits future arrivals,
+since those marks were already known the moment it was submitted. Service
+fitting is untouched: duration still requires completion.
+
+EPIC-065 replaces the completed-prefix donor history (which stalled at the
+first job unresolved at cutoff, up to 8.2 days of lag) with
+`availability_prefix` over the already-parsed completed+cancelled/
+completed+cancelled+failed+timeout+node_failed population, filtered only by
+submit<cutoff. Prefix lag drops to minutes/hours and the donor pool roughly
+doubles on every origin, but this is not a uniform accuracy win: queue-error Q
+gets markedly worse on SDSC and markedly better on Kalos .70, while discipline
+choice by mean T is unchanged everywhere tested.
+[Method](../availability_aware_arrivals.md),
+[experiment](../../examples/availability_aware_arrivals_experiment.py),
+[results](../research/availability-aware-arrivals-results-2026-10.md).
+
 ### Resource observability before capacity modeling
 
 In plain words: check what resource limits the trace actually records before

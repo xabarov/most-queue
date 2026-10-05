@@ -4,7 +4,13 @@ from dataclasses import replace
 
 import pytest
 
-from most_queue.sim.utils.workload_trace import SwfJob, SwfTrace, chronological_split, parse_swf
+from most_queue.sim.utils.workload_trace import (
+    SwfJob,
+    SwfTrace,
+    availability_prefix,
+    chronological_split,
+    parse_swf,
+)
 
 
 def record(job_id=1, submit=0, wait=0, runtime=2, need=1, **changes):
@@ -101,3 +107,37 @@ def test_cutoff_excludes_future_completions_and_exact_ties():
 def test_invalid_fraction(fraction):
     with pytest.raises(ValueError):
         chronological_split(parse_swf([record(), record(2, submit=10)], 4), fraction)
+
+
+def test_availability_prefix_includes_jobs_unresolved_at_cutoff():
+    # job 2 (submit=1) is not yet completed at cutoff=5 (completed_at=6), but
+    # its submit/need marks are still available; job 3 arrives after cutoff.
+    jobs = (
+        SwfJob(1, 0, 0, 2, 1),  # completed_at=2
+        SwfJob(2, 1, 0, 5, 1),  # completed_at=6, unresolved at cutoff=5
+        SwfJob(3, 6, 0, 1, 1),  # submit after cutoff, excluded
+    )
+    prefix, audit = availability_prefix(jobs, cutoff=5)
+    assert prefix == jobs[:2]
+    assert audit == {"cutoff": 5.0, "prefix_jobs": 2, "unresolved_at_cutoff": 1, "last_submit": 1.0, "prefix_lag": 4.0}
+
+
+def test_availability_prefix_lag_is_near_zero_unlike_completed_prefix_stall():
+    # A long-running early job would stall a completed-prefix construction for
+    # a long time; availability_prefix still reaches the last pre-cutoff submit.
+    jobs = (SwfJob(1, 0, 0, 1000, 1),) + tuple(SwfJob(i, float(i), 0, 1, 1) for i in range(1, 50))
+    prefix, audit = availability_prefix(jobs, cutoff=40)
+    assert audit["prefix_lag"] <= 1.0  # bounded by the 1-second inter-arrival gap, not the 1000-second runtime
+    assert audit["unresolved_at_cutoff"] == 2  # job 1 (completed_at=1000) and the last included job (completed_at=40)
+    assert len(prefix) == 40
+
+
+def test_availability_prefix_rejects_short_or_unordered_or_bad_cutoff():
+    jobs = (SwfJob(1, 0, 0, 1, 1), SwfJob(2, 1, 0, 1, 1))
+    with pytest.raises(ValueError):
+        availability_prefix(jobs, cutoff=0.5)  # only job 1 qualifies, need >= 2
+    with pytest.raises(ValueError):
+        availability_prefix((jobs[1], jobs[0]), cutoff=5)  # not chronological
+    for bad in (float("nan"), float("inf"), True):
+        with pytest.raises(ValueError):
+            availability_prefix(jobs, cutoff=bad)

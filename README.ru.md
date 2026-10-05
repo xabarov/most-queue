@@ -122,6 +122,15 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 ## Новости
 
+- **2026-10, текущие исходники** — **Availability-aware история приходов**:
+  устраняет артефакт completed-prefix staleness (лаг до 8.2 дня), строя
+  donor-историю приходов из submit<cutoff поверх уже распарсенной популяции
+  completed+cancelled(+failed/timeout/node_failed), не останавливаясь на
+  первом незавершённом к cutoff задании. Lag падает до минут/часов, donor-пул
+  примерно удваивается, но это не равномерное улучшение точности: эффект на
+  ошибку очереди противоположен на SDSC и Kalos. 16 юнит-тестов, 792
+  расписания, побайтовый повтор, независимый аудит.
+  [Методика](docs/availability_aware_arrivals.md), [результаты](docs/research/availability-aware-arrivals-results-2026-10.md).
 - **2026-10, текущие исходники** — **Календарь меняющейся ёмкости MSJ**: opt-in
   время-переменная ёмкость (`CapacityCalendar`/`run_capacity_calendar`) поверх
   MSJ-реплея с автоматическим grandfathering, явными infeasible/unresolved

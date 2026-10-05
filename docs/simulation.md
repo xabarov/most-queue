@@ -62,6 +62,15 @@ common coarse S|K mechanism and fixed-arrival baseline; all scenarios start empt
 and contain completed jobs only. Prefix staleness, changing target mix and arrival
 horizon are audited, not hidden by time rescaling or copied historical carry-in.
 
+For that completed-prefix staleness itself, see
+[availability-aware arrival history](availability_aware_arrivals.md):
+`availability_prefix` builds the arrival-mark donor pool from submit<cutoff
+over the already-parsed completed+cancelled/+failed+timeout+node_failed
+population, instead of stalling at the first job unresolved at cutoff. Lag
+drops from days to minutes/hours and the donor pool roughly doubles, but this
+is not a uniform accuracy win: queue-error effects go in opposite directions
+on SDSC versus Kalos .70, while discipline choice is unaffected.
+
 Before adding quota or availability assumptions, see the
 [resource observability audit](resource_observability.md). It checks full Helios
 jobs/daily VC counts and compares five other schemas without running a scheduler.

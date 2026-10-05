@@ -142,3 +142,31 @@ def chronological_split(trace: SwfTrace, fraction=0.6):
         "unfinished_at_cutoff_excluded": len(trace.jobs) - len(training) - len(heldout),
     }
     return training, heldout, audit
+
+
+def availability_prefix(jobs, cutoff):
+    """Every submission-time-known record before cutoff; no completed-prefix stall.
+
+    Unlike ``chronological_split``'s training cohort, this does not require
+    ``job.completed_at < cutoff``: submission marks (submit/need/context/
+    requested_time) are available immediately, unlike service duration, so a
+    job still unresolved at cutoff does not stop the usable donor history.
+    ``jobs`` must already be chronological by submit and carry a
+    ``completed_at`` attribute (``SwfJob``/``SwfLifecycleJob``/``AcmeJob`` all
+    qualify); this function itself never reads runtime/wait/outcome fields.
+    """
+    if isinstance(cutoff, bool) or not np.isfinite(cutoff):
+        raise ValueError("cutoff must be a finite, non-boolean number")
+    prefix = tuple(job for job in jobs if job.submit < cutoff)
+    if len(prefix) < 2:
+        raise ValueError("availability-aware prefix needs at least two jobs")
+    if any(b.submit < a.submit for a, b in zip(prefix, prefix[1:])):
+        raise ValueError("jobs must be submitted in chronological order")
+    audit = {
+        "cutoff": float(cutoff),
+        "prefix_jobs": len(prefix),
+        "unresolved_at_cutoff": sum(1 for job in prefix if job.completed_at >= cutoff),
+        "last_submit": prefix[-1].submit,
+        "prefix_lag": float(cutoff) - prefix[-1].submit,
+    }
+    return prefix, audit
