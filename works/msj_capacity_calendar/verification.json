@@ -1,0 +1,83 @@
+{
+  "cluster": "Venus",
+  "isolated_vc": "vcWoR",
+  "pandas": "2.2.3",
+  "primary_output_sha256": "26ba07a76723a9a673267b0286f8df0c8d76fd906a34c6ccd08041da63ffdd2e",
+  "scenarios": {
+    "daily_aggregate": {
+      "capacities": [
+        968,
+        968,
+        968,
+        968,
+        968,
+        968,
+        968
+      ],
+      "job_count": 3794,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        12,
+        16,
+        24,
+        32,
+        40,
+        80
+      ]
+    },
+    "fixed_aggregate": {
+      "capacities": [
+        968
+      ],
+      "job_count": 3794,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        12,
+        16,
+        24,
+        32,
+        40,
+        80
+      ]
+    },
+    "isolated_vc": {
+      "capacities": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "job_count": 990,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8
+      ]
+    }
+  },
+  "scope": "Independent pandas re-derivation of scenario job sets and calendar capacities; no replay.",
+  "verification_sha256": "dc3f747579f6b39c36f43ab581a24af5220a41cdeec9e12082908756f1e154bd",
+  "window_days": [
+    737516,
+    737522
+  ]
+}

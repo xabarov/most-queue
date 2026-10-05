@@ -1,0 +1,31 @@
+{
+  "archive_sha256": "3d22a5f6c0ae669e2fcbfe4200fa9c48664507bc397c677bad8f085222c032ac",
+  "inputs": [
+    {
+      "file": "data/Venus/cluster_gpu_number.csv",
+      "bytes": 15086,
+      "sha256": "08c05fc4d2ac94aceb43f2bfd28d731a089df8e9bb7c3412d2bd211cab2ed57c"
+    },
+    {
+      "file": "data/Venus/cluster_log.csv",
+      "bytes": 25108746,
+      "sha256": "41153105b5a1beedfc9f3d5151126d8a2b446ba5699a60a41522a6795e726cac"
+    }
+  ],
+  "attribution": "SenseTime / S-Lab-System-Group; Hu et al., SC 2021, doi:10.1145/3458817.3476223",
+  "source_license": "CC-BY-4.0, not the project's MIT license",
+  "implementation_sha256": {
+    "examples/msj_capacity_calendar_experiment.py": "a7d619423b92342b0d8280b75fcbb5c5c20b8dfa832252046324aeb1c82ad209",
+    "examples/resource_observability_audit.py": "3112256e01461b5e2a6b575df1fa2a2deaa384c280264f60985a4efdcb3d86e4",
+    "most_queue/sim/msj_lifecycle.py": "03a321753f5d8560972ce0c238f6df13a7b60e3303453afc793241df7e1a2077",
+    "most_queue/sim/utils/msj_capacity_calendar.py": "783da81e6ac66e8a8871582270e71704c96a9cc3e2afe35ecd18a94899964715"
+  },
+  "numpy": "2.2.5",
+  "environment": {
+    "python": "3.12.3"
+  },
+  "output": "capacity-calendar-helios.json",
+  "output_sha256": "26ba07a76723a9a673267b0286f8df0c8d76fd906a34c6ccd08041da63ffdd2e",
+  "scheduler_runs": 18,
+  "interpretation": "Bounded capacity-calendar sensitivity, not production reconstruction. Oracle estimates; no intraday quota, borrowing, placement or real initial-state observation. Daily VC counts are a modeled scenario assumption per EPIC-063, not a confirmed production quota."
+}

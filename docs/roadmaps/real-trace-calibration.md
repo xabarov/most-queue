@@ -150,19 +150,42 @@ intraday changes и borrowing не определены; данные не по�
 Philly/PAI/Alibaba/Google остаются отдельными ветками для attempts, placement,
 sharing и resource events, а не взаимозаменяемыми scalar-S трассами.
 
+## Десятый этап
+
+[EPIC-064](../epics/EPIC-064-msj-capacity-calendar.md) выполнен 2026-10-05:
+opt-in `CapacityCalendar`/`MsjLifecycleSim.run_capacity_calendar`, shrink/growth
+без обязательного arrival, автоматический grandfathering, явные
+infeasible/unresolved результаты на границе домена календаря и обнаружение
+(не молчаливое поглощение) Conservative reservation/calendar mismatch. 23
+юнит-теста фиксируют механику на синтетике; три предписанных сценария
+(fixed/daily/isolated-VC pool) на одном предписанном 7-дневном окне Helios
+Venus — 18 расписаний, побайтовый повтор и независимая pandas-сверка.
+[Методика](../msj_capacity_calendar.md),
+[отчёт](../research/msj-capacity-calendar-results-2026-10.md).
+
+В выбранном окне общий пул Venus не менялся ни разу (первое изменение total —
+только на 98-й день всей 181-дневной трассы), поэтому fixed/daily-сценарии
+совпали; shrink/growth-механику на реальных данных это окно не демонстрирует
+намеренно — окно выбрано предписанным правилом («первые семь дней»), а не по
+результату, чтобы не настраивать его под желаемую находку. Ни одного infeasible
+job и ни одного reservation mismatch не возникло ни у одной из шести дисциплин;
+EASY/Conservative реально backfill'ят (до 155/990 заданий у isolated VC), не
+меняя итоговые completed/running counts относительно FCFS/First-Fit/MSF/Adaptive
+QuickSwap в этом окне. Это проверка корректности и безопасности календаря на
+реальных данных, не ranking дисциплин и не подтверждение/опровержение EPIC-063
+daily-VC-гипотезы.
+
 ## Следующие этапы
 
-1. [EPIC-064](../epics/EPIC-064-msj-capacity-calendar.md): opt-in MSJ capacity
-   calendar, shrink/growth без обязательного arrival, явные grandfathering,
-   infeasible demands и horizon. Затем предписанные Helios aggregate/VC сценарии
-   с fixed-pool control. Daily effective time — гипотеза; никаких production
-   quota claims или выбора capacity/boundary по historical W.
-2. Отдельная ветка — availability-aware arrival history без устаревающего
+1. Отдельная ветка — availability-aware arrival history без устаревающего
    completed-prefix: известные на submit признаки, независимый учёт цензурированного
    S, ранний выбор окна и новые периоды проверки. Сохранить fixed-arrival coarse;
    не выводить latent successful S из killed/failed интервалов.
-3. Затем проверять новые адаптивные дисциплины на различающем reference. Прерывания потребуют
+2. Затем проверять новые адаптивные дисциплины на различающем reference. Прерывания потребуют
    измеренных либо отдельно обозначенных модельных расходов checkpoint/resume.
+3. Отдельный будущий прогон EPIC-064 на окне с реальным intra-window изменением
+   total/VC (например, вокруг 98-го дня трассы Venus) — предписанным заранее,
+   не выбранным по итогу первого прогона.
 
 Каждый пункт — отдельный будущий эпик. Выполненные этапы не доказывают универсальное
 преимущество PH, lognormal, recent-history или какого-либо планировщика.

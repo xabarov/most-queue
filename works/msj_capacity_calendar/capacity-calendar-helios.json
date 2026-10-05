@@ -1,0 +1,595 @@
+{
+  "cluster": "Venus",
+  "isolated_vc": "vcWoR",
+  "scenarios": {
+    "daily_aggregate": {
+      "calendar": {
+        "capacities": [
+          968,
+          968,
+          968,
+          968,
+          968,
+          968,
+          968
+        ],
+        "domain_end": 63721987200.0,
+        "times": [
+          63721382400.0,
+          63721468800.0,
+          63721555200.0,
+          63721641600.0,
+          63721728000.0,
+          63721814400.0,
+          63721900800.0
+        ]
+      },
+      "job_count": 3794,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        12,
+        16,
+        24,
+        32,
+        40,
+        80
+      ],
+      "policies": {
+        "adaptive_quickswap": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "conservative": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "easy": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "fcfs": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "first_fit": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "msf": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        }
+      }
+    },
+    "fixed_aggregate": {
+      "calendar": {
+        "capacities": [
+          968
+        ],
+        "domain_end": 63721987200.0,
+        "times": [
+          63721382400.0
+        ]
+      },
+      "job_count": 3794,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        12,
+        16,
+        24,
+        32,
+        40,
+        80
+      ],
+      "policies": {
+        "adaptive_quickswap": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "conservative": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "easy": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "fcfs": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "first_fit": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        },
+        "msf": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 1109,
+            "completed": 2005,
+            "failed": 677,
+            "node_failed": 1,
+            "timed_out": 2
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0,
+          "infeasible_count": 0,
+          "observation_time": 604402.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 229288083.0,
+            "infeasible": 0.0,
+            "running": 48060394.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 3688,
+            "running": 106
+          },
+          "utilization": 0.4737776446665225
+        }
+      }
+    },
+    "isolated_vc": {
+      "calendar": {
+        "capacities": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "domain_end": 63721987200.0,
+        "times": [
+          63721382400.0,
+          63721468800.0,
+          63721555200.0,
+          63721641600.0,
+          63721728000.0,
+          63721814400.0,
+          63721900800.0
+        ]
+      },
+      "job_count": 990,
+      "needs": [
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        8
+      ],
+      "policies": {
+        "adaptive_quickswap": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0016788404724289486,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        },
+        "conservative": {
+          "backfilled": 151,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.003546622301931911,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        },
+        "easy": {
+          "backfilled": 155,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.004064024572002027,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        },
+        "fcfs": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.005732514929006488,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        },
+        "first_fit": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.004039779426620166,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        },
+        "msf": {
+          "backfilled": 0,
+          "control_outcome_counts": {
+            "cancelled": 258,
+            "completed": 596,
+            "failed": 136
+          },
+          "horizon_end": 63721987200.0,
+          "idle_with_queue": 0.0016788404724289486,
+          "infeasible_count": 0,
+          "observation_time": 603858.0,
+          "reservation_mismatch_time": null,
+          "reservation_violations": 0,
+          "resource_time_by_status": {
+            "completed": 26976097.0,
+            "infeasible": 0.0,
+            "running": 3124493.0,
+            "waiting": 0.0
+          },
+          "status_counts": {
+            "completed": 978,
+            "running": 12
+          },
+          "utilization": 0.7783568839859702
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "window_days": [
+    737516,
+    737522
+  ],
+  "window_job_count": 3794,
+  "window_seconds": [
+    63721382400.0,
+    63721987200.0
+  ]
+}

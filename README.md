@@ -118,6 +118,14 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10, current source tree** — **MSJ capacity calendar**: opt-in
+  time-varying capacity (`CapacityCalendar`/`run_capacity_calendar`) over MSJ
+  replay, with automatic grandfathering, explicit infeasible/unresolved
+  outcomes bounded by the calendar's own horizon, and detected (not silently
+  absorbed) reservation/calendar mismatches. 23 unit tests, plus three
+  prescribed Helios scenarios (fixed/daily/isolated-VC pool) over one
+  prescribed window, byte-identical repeat and an independent check.
+  [Method](docs/msj_capacity_calendar.md), [results](docs/research/msj-capacity-calendar-results-2026-10.md).
 - **2026-10, current source tree** — **Resource observability audit**:
   six source schemas compared; all 3,362,981 Helios records audited with pinned
   inputs, a byte-identical repeat and independent accounting checks. Daily VC

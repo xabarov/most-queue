@@ -104,7 +104,7 @@
 | [EPIC-061](EPIC-061-queue-aware-model-selection.md) | Выбор модели по ранним mean/p99 очереди, CRPS comparator и отдельная временная проверка | done |
 | [EPIC-062](EPIC-062-joint-marked-arrivals.md) | Совместные gap/K/context arrivals, matched controls зависимости и аудит устарелости истории | done |
 | [EPIC-063](EPIC-063-resource-observability-audit.md) | Наблюдаемость ресурсов: шесть источников, полный аудит Helios и границы трактовки дневных VC-counts | done |
-| [EPIC-064](EPIC-064-msj-capacity-calendar.md) | Opt-in календарь MSJ capacity и явно модельные Helios VC-сценарии | proposed |
+| [EPIC-064](EPIC-064-msj-capacity-calendar.md) | Opt-in календарь MSJ capacity и явно модельные Helios VC-сценарии | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

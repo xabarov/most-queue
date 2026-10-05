@@ -65,8 +65,17 @@ horizon are audited, not hidden by time rescaling or copied historical carry-in.
 Before adding quota or availability assumptions, see the
 [resource observability audit](resource_observability.md). It checks full Helios
 jobs/daily VC counts and compares five other schemas without running a scheduler.
-Daily counts are not verified intraday hard caps; constant-pool replay remains
-distinct from the proposed, not yet implemented capacity-calendar extension.
+Daily counts are not verified intraday hard caps.
+
+For a time-varying resource pool, see the
+[MSJ capacity calendar](msj_capacity_calendar.md): an opt-in
+`CapacityCalendar`/`run_capacity_calendar` extension of `MsjLifecycleSim` with
+automatic grandfathering, explicit infeasible/unresolved outcomes bounded by
+the calendar's own known horizon, and detected (not silently absorbed)
+Conservative reservation/calendar mismatches. Constant-capacity replay is
+unchanged; three prescribed Helios scenarios (fixed/daily/isolated-VC pool)
+exercise it on real data, with the shrink/growth mechanics themselves locked
+down by dedicated synthetic unit tests.
 
 For modern Acme/Kalos data, see [GPU-trace replay](modern_gpu_trace.md): audited
 end-start execution, exact GPU requests and separate failed/node_failed labels.

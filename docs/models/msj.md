@@ -405,5 +405,26 @@ with recorded starts; daily counts are not verified intraday hard quotas.
 [Method](../resource_observability.md),
 [audit CLI](../../examples/resource_observability_audit.py),
 [results](../research/resource-observability-results-2026-10.md).
-An opt-in calendar with explicit shrink/horizon semantics is
-[proposed, not implemented](../epics/EPIC-064-msj-capacity-calendar.md).
+
+### Capacity calendar
+
+In plain words: let the resource pool itself change size over time, on a
+pinned schedule, instead of staying fixed for the whole replay. It still uses
+the rigid-job flow and dispatchers above; no new discipline is added.
+
+`MsjLifecycleSim.run_capacity_calendar(trace, calendar)` takes an opt-in
+`CapacityCalendar` (piecewise-constant, explicit domain, no forward/backfill)
+and replays to the earlier of a full drain and the calendar's own horizon.
+Active jobs are never preempted by a capacity drop (grandfathering); a job
+needing more than the calendar ever provides is excluded from dispatch as
+`infeasible` rather than head-of-line blocking FCFS forever; a capacity drop
+that invalidates an existing Conservative reservation is caught as an explicit,
+timestamped mismatch, not silently reinterpreted. EPIC-064 locks this down with
+23 unit tests and replays three prescribed, non-tuned scenarios (fixed
+aggregate pool, daily aggregate pool, isolated VC) over one prescribed Helios
+Venus window; the window happens to have a constant total pool, so the
+shrink/growth mechanics are exercised by the synthetic unit tests, not that
+particular real-data run.
+[Method](../msj_capacity_calendar.md),
+[experiment](../../examples/msj_capacity_calendar_experiment.py),
+[results](../research/msj-capacity-calendar-results-2026-10.md).
