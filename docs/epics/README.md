@@ -108,7 +108,8 @@
 | [EPIC-065](EPIC-065-availability-aware-arrival-history.md) | Availability-aware arrival history без completed-prefix staleness | done |
 | [EPIC-066](EPIC-066-batch-service-sla-exact-tail.md) | Точная вероятность нарушения SLA (хвост W) для batch-service очередей, статья | done |
 | [EPIC-067](EPIC-067-bulk-service-idle-refill.md) | Idle-refill: точные W-моменты и хвост bulk-service при `a > 1` | done |
-| [EPIC-068](EPIC-068-bulk-service-impatience.md) | Нетерпеливые заявки (impatience/reneging) в batch-service | proposed |
+| [EPIC-068](EPIC-068-bulk-service-impatience.md) | Нетерпеливые заявки (impatience/reneging) в batch-service | done |
+| [EPIC-069](EPIC-069-bulk-service-multiserver.md) | Bulk-service с `c>1` независимыми серверами (общая очередь, несколько GPU-реплик) | proposed |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);
