@@ -51,9 +51,17 @@ each Erlang(k, rate(b)), convolved via conv_moments. Validated against an
 independent DES tracking each customer's own wait (not sojourn -- an
 earlier validation attempt accidentally compared against sojourn time
 instead of wait time, which looked like a bug until the DES was fixed to
-record batch-START time rather than batch-COMPLETION time). Same a=1-only
-restriction as EPIC-032 (see that module's docstring for why a>1 breaks
-the decomposition).
+record batch-START time rather than batch-COMPLETION time).
+
+EPIC-067 generalizes to any ``1 <= a <= b``, porting
+``BulkServiceMM1Calc``'s idle-refill race-aware decomposition: when the
+remainder after the full batches ahead (plus the tagged customer) is below
+the threshold ``a``, the wait is a RACE between new Poisson(lambda) arrivals
+and the remaining ``(k - p) + full_ahead * k`` service phases (NOT a naive
+"service phases, then a separate Erlang(need, lambda) refill" split -- see
+``most_queue.theory.batch._idle_refill`` and
+docs/epics/EPIC-067-bulk-service-idle-refill.md for why that is wrong and
+what the correct 2-D construction is).
 """
 
 import math
@@ -66,6 +74,7 @@ from most_queue.random.distributions import ErlangDistribution
 from most_queue.random.utils.params import ErlangParams
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.batch._idle_refill import race_subgen
 from most_queue.theory.utils.conv import conv_moments
 
 
@@ -180,31 +189,48 @@ class BulkServiceErlangCalc(BaseQueue):
 
     def get_w(self, num: int = 4) -> list[float]:
         """
-        Exact raw moments of W (waiting time) -- requires a == 1 (same
-        restriction as BulkServiceMM1Calc.get_w(), see that module's
-        docstring for why a > 1 breaks this decomposition).
+        Exact raw moments of W (waiting time), any ``1 <= a <= b`` (see
+        module docstring for the idle-refill decomposition).
         """
-        if self.a != 1:
-            raise ValueError(
-                f"get_w() is only exact for a=1 (got a={self.a}); see "
-                "docs/research/bulk-service-waiting-moments-2026.md for why a>1 needs a "
-                "different (not-yet-implemented) idle-refill-aware derivation."
-            )
         pi = self._solve_pi()
-        b, k, rate_fn = self.b, self.k, self.rate_fn
+        a, b, k, lam, rate_fn = self.a, self.b, self.k, self.l, self.rate_fn
 
         def exp_moments(rate: float) -> list[float]:
             return [math.factorial(n) / rate**n for n in range(1, num + 1)]
 
         def erlang_moments(n_terms: int, rate: float) -> list[float]:
-            if n_terms == 0:
+            if n_terms <= 0:
                 return [0.0] * num
             acc = exp_moments(rate)
             for _ in range(n_terms - 1):
                 acc = list(conv_moments(acc, exp_moments(rate), num))
             return acc
 
+        moment_cache: dict[tuple, list[float]] = {}
+
+        def race_moments(service_rates: np.ndarray, need: int) -> list[float]:
+            key = (tuple(service_rates), need)
+            cached = moment_cache.get(key)
+            if cached is not None:
+                return cached
+            subgen, m, start = race_subgen(service_rates, lam, need)
+            alpha = np.zeros(m)
+            alpha[start] = 1.0
+            neg_a = (-subgen).tocsc()
+            x = np.ones(m)
+            moments = []
+            for n in range(1, num + 1):
+                x = spla.spsolve(neg_a, x)
+                moments.append(math.factorial(n) * float(alpha @ x))
+            moment_cache[key] = moments
+            return moments
+
         w_moments = np.zeros(num)
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            if prob > 0:
+                w_moments += prob * np.array(erlang_moments(a - j - 1, lam))
+
         for i in range(1, b + 1):
             rate_i = rate_fn(i)
             for p in range(k):
@@ -212,35 +238,53 @@ class BulkServiceErlangCalc(BaseQueue):
                     prob = pi[self._busy_index(i, p, j)]
                     if prob <= 0:
                         continue
-                    wm = erlang_moments(k - p, rate_i)  # remaining phases of the current batch
                     full_ahead = j // b
-                    if full_ahead > 0:  # each full batch ahead is always exactly size b
-                        wm = list(conv_moments(wm, erlang_moments(full_ahead * k, rate_fn(b)), num))
+                    remainder = j - full_ahead * b
+                    need = a - remainder - 1
+                    if need > 0:
+                        service_rates = np.full(k - p + full_ahead * k, rate_fn(b))
+                        service_rates[: k - p] = rate_i
+                        wm = race_moments(service_rates, need)
+                    else:
+                        wm = erlang_moments(k - p, rate_i)  # remaining phases of current batch
+                        if full_ahead > 0:  # each full batch ahead is always exactly size b
+                            wm = list(conv_moments(wm, erlang_moments(full_ahead * k, rate_fn(b)), num))
                     w_moments += prob * np.array(wm)
         return list(w_moments)
 
     def get_tail(self, t: float) -> float:
         """
-        Exact P(W > t) -- requires a == 1 (same restriction as ``get_w``).
+        Exact P(W > t), any ``1 <= a <= b``.
 
-        Same sequential generalized-Erlang chain as ``get_w``'s per-state
-        decomposition (remaining ``k - p`` phases of the current batch at
-        ``rate_fn(i)``, then ``full_ahead * k`` phases at ``rate_fn(b)``),
-        evaluated via sparse matrix-exponential-action instead of moment
-        convolution (see ``BulkServiceMM1Calc.get_tail`` for why sparse, not
-        dense ``expm``). k=1 reduces exactly to ``BulkServiceMM1Calc.get_tail``.
+        Same decomposition as ``get_w`` (remaining ``k - p`` phases of the
+        current batch at ``rate_fn(i)``, then ``full_ahead * k`` phases at
+        ``rate_fn(b)``, then an idle-refill race if the remainder is still
+        short of the threshold ``a`` -- see module/``_idle_refill``
+        docstrings), evaluated via sparse matrix-exponential-action instead
+        of moment convolution (see ``BulkServiceMM1Calc.get_tail`` for why
+        sparse, not dense ``expm``). k=1 reduces exactly to
+        ``BulkServiceMM1Calc.get_tail``.
         """
-        if self.a != 1:
-            raise ValueError(
-                f"get_tail() is only exact for a=1 (got a={self.a}); see get_w()'s docstring "
-                "for why a>1 needs a different (not-yet-implemented) idle-refill-aware derivation."
-            )
         if t < 0:
             raise ValueError("t must be nonnegative")
         pi = self._solve_pi()
-        b, k, rate_fn = self.b, self.k, self.rate_fn
-        cache: dict[tuple[float, int, int], float] = {}
+        a, b, k, lam, rate_fn = self.a, self.b, self.k, self.l, self.rate_fn
+        cache: dict[tuple, float] = {}
+
         tail = 0.0
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            need = a - j - 1
+            if prob > 0 and need > 0:
+                key = ("idle", need)
+                cached = cache.get(key)
+                if cached is None:
+                    rates = np.full(need, lam)
+                    subgen = sp.diags([-rates, rates[:-1]], [0, 1], format="csc")
+                    cached = float(spla.expm_multiply(subgen * t, np.ones(need))[0])
+                    cache[key] = cached
+                tail += prob * cached
+
         for i in range(1, b + 1):
             rate_i = rate_fn(i)
             for p in range(k):
@@ -250,15 +294,21 @@ class BulkServiceErlangCalc(BaseQueue):
                     if prob <= 0:
                         continue
                     full_ahead = j // b
-                    key = (rate_i, remaining_current, full_ahead)
+                    remainder = j - full_ahead * b
+                    need = a - remainder - 1
+                    key = (rate_i, remaining_current, full_ahead, max(need, 0))
                     cached = cache.get(key)
                     if cached is None:
                         ahead_phases = full_ahead * k
                         m = remaining_current + ahead_phases
                         rates = np.full(m, rate_fn(b))
                         rates[:remaining_current] = rate_i
-                        subgen = sp.diags([-rates, rates[:-1]], [0, 1], format="csc")
-                        cached = float(spla.expm_multiply(subgen * t, np.ones(m))[0])
+                        if need > 0:
+                            subgen, m, start = race_subgen(rates, lam, need)
+                            cached = float(spla.expm_multiply(subgen * t, np.ones(m))[start])
+                        else:
+                            subgen = sp.diags([-rates, rates[:-1]], [0, 1], format="csc")
+                            cached = float(spla.expm_multiply(subgen * t, np.ones(m))[0])
                         cache[key] = cached
                     tail += prob * cached
         return tail
@@ -268,13 +318,12 @@ class BulkServiceErlangCalc(BaseQueue):
         return 1.0 - self.get_tail(t)
 
     def run(self) -> QueueResults:
-        """Solve the CTMC; return waiting/sojourn moments (exact for N and, at a=1, for W)."""
+        """Solve the CTMC; return waiting/sojourn moments (exact, any 1 <= a <= b)."""
         start = self._measure_time()
         pi = self._solve_pi()
-        a, b, k, N, lam, rate_fn = self.a, self.b, self.k, self.N, self.l, self.rate_fn
+        b, k, N, lam = self.b, self.k, self.N, self.l
 
         e_n = 0.0
-        p_busy_size = np.zeros(b + 1)  # P(batch size = i | server busy), i=1..b
         for j in range(N + 1):
             e_n += pi[self._idle_index(j)] * j
         for i in range(1, b + 1):
@@ -282,21 +331,9 @@ class BulkServiceErlangCalc(BaseQueue):
                 for j in range(N + 1):
                     prob = pi[self._busy_index(i, p, j)]
                     e_n += prob * (i + j)
-                    p_busy_size[i] += prob
 
         e_t = e_n / lam
-
-        if a == 1:
-            w = self.get_w()
-            e_w = w[0]
-        else:
-            p_busy_total = p_busy_size.sum()
-            if p_busy_total > 0:
-                mean_batch_service = sum((k / rate_fn(i)) * p_busy_size[i] for i in range(1, b + 1)) / p_busy_total
-            else:
-                mean_batch_service = k / rate_fn(b)
-            e_w = e_t - mean_batch_service
-            w = [e_w, 0, 0, 0]
+        w = self.get_w()
 
         res = QueueResults(
             v=[e_t, 0, 0, 0],

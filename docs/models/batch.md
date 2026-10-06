@@ -58,15 +58,16 @@ inaccurate whenever the batch size actually varies, i.e. whenever `a<b`). `get_w
 **exact** raw moments of the waiting time instead, via PASTA: an arriving customer sees the
 stationary `(batch-in-service, waiting)` state; if the server is busy, their wait is the remaining
 current batch (`Exp(mu(i))`, memoryless) plus however many *full* batches of size `b` are ahead —
-a hypoexponential distribution. `run()` now uses this exact result automatically whenever `a=1`
-(the common case for GPU/LLM dynamic batching, which has no minimum batch threshold — see
-[`docs/research/bulk-service-waiting-moments-2026.md`](../research/bulk-service-waiting-moments-2026.md)
-for the GPU-inference literature this targets). `get_n_moments(num=4)` gives exact raw moments of
-the number in system for **any** `a`, `b` — trivial, direct summation over the already-solved
-stationary distribution.
+a hypoexponential distribution (or, when the remainder falls below the threshold `a`, an
+idle-refill RACE between new arrivals and the remaining service, see below). `run()` uses this
+exact result automatically for any `1<=a<=b` (EPIC-067 closed the earlier `a=1`-only
+restriction — see
+[`docs/epics/EPIC-067-bulk-service-idle-refill.md`](../epics/EPIC-067-bulk-service-idle-refill.md)).
+`get_n_moments(num=4)` gives exact raw moments of the number in system for **any** `a`, `b` —
+trivial, direct summation over the already-solved stationary distribution.
 
 ```python
-calc = BulkServiceMM1Calc(a=1, b=8)          # a=1 required for exact W moments
+calc = BulkServiceMM1Calc(a=1, b=8)          # any 1 <= a <= b works (EPIC-067)
 calc.set_sources(2.0)
 calc.set_servers(lambda size: 1.0 / (0.3 + 0.08 * size))
 w_moments = calc.get_w(num=4)                 # E[W], E[W^2], E[W^3], E[W^4] -- exact
@@ -74,14 +75,16 @@ n_moments = calc.get_n_moments(num=4)         # E[N], E[N^2], ... -- exact for a
 p_violation = calc.get_tail(3.0)              # P(W > 3.0) -- EXACT, not moment-fitted (EPIC-066)
 ```
 
-**Accuracy boundary:** `get_w()` raises `ValueError` for `a>1` — the derivation assumes a batch of
-`min(b, remaining)` forms immediately once the server frees up, which only holds at `a=1`; for
-`a>1` the server can go idle waiting for the threshold to refill after a partial remainder,
-breaking the simple decomposition (confirmed numerically: ~18% error at `a=2` before this
-restriction was added). `run()` keeps the old approximate mean for `a>1`, now clearly documented
-as such. Sojourn-time (`V`) moments beyond the mean are not provided even at `a=1` — a tagged
-customer's own eventual batch size depends on arrivals during their own wait, correlated with `W`
-itself, so `V ≠ W + S` by simple convolution (see the research doc's "reserve" section).
+**Accuracy boundary:** for `a>1`, if the remainder after the full batches ahead is below the
+threshold `a`, the tagged customer's own batch cannot start the instant the batches ahead of it
+clear. A naive fix (one more sequential Erlang refill phase, assuming no new arrivals occur
+while the batches ahead are still in service) was confirmed numerically WRONG (~18% error at
+`a=2`) before `get_w()`/`get_tail()` were restricted to `a=1` only. EPIC-067 derives and
+validates the correct construction — a RACE between new Poisson arrivals and the remaining
+service-phase sequence — closing the restriction entirely; `get_w()`/`get_tail()`/`run()` are now
+exact for any `1<=a<=b`. Sojourn-time (`V`) moments beyond the mean are still not provided — a
+tagged customer's own eventual batch size depends on arrivals during their own wait, correlated
+with `W` itself, so `V ≠ W + S` by simple convolution (see the research doc's "reserve" section).
 
 ### General (Erlang-fitted) batch-service time
 
@@ -111,9 +114,9 @@ from most_queue.theory.batch.bulk_service_erlang import BulkServiceErlangCalc
 calc = BulkServiceErlangCalc(a=1, b=4, k=3)   # Erlang(3, rate): CV = 1/sqrt(3)
 calc.set_sources(1.0)
 calc.set_servers(rate=1.5)                     # mean batch service = k/rate = 2.0
-res = calc.run()                                # res.v[0] mean; res.w -- exact moments at a=1 (see below)
+res = calc.run()                                # res.v[0] mean; res.w -- exact moments, any a (see below)
 
-# exact raw moments of W (not just the mean), a=1 only:
+# exact raw moments of W (not just the mean), any 1 <= a <= b:
 w_moments = calc.get_w(num=4)                   # [E[W], E[W^2], E[W^3], E[W^4]]
 
 # or fit (k, rate) from raw moments directly:
@@ -128,15 +131,14 @@ calc3.set_sources(1.0)
 calc3.set_servers(lambda size: 3.0 + 0.2 * size)  # bigger batches slower per phase (LLM/GPU-style)
 ```
 
-**Accuracy and scope:** exact given the Erlang-fitted family. `get_w()` gives EXACT raw moments of
-`W` at `a=1` (EPIC-043, porting EPIC-032's PASTA/hypoexponential-decomposition technique to this
-phase-augmented case — the remaining service of the batch an arrival finds in progress is
-`Erlang(k-p, rate)`, `p` = the phase found, plus `j//b` full batches ahead each `Erlang(k, rate(b))`,
-convolved); `run()` uses this exact mean for `a=1` and falls back to a busy-time-weighted-average
-approximate mean for `a>1` (same `a>1` restriction as `BulkServiceMM1Calc`, see
-[`docs/research/bulk-service-waiting-moments-2026.md`](../research/bulk-service-waiting-moments-2026.md)
-for why). `get_tail(D)`/`get_cdf(D)` (EPIC-066) give the EXACT SLA-violation probability `P(W>D)`
-at `a=1` too — matrix-exponential-action on the same per-state phase-type decomposition, reducing
+**Accuracy and scope:** exact given the Erlang-fitted family, for any `1<=a<=b` (EPIC-067).
+`get_w()` gives EXACT raw moments of `W` (EPIC-043, porting EPIC-032's
+PASTA/hypoexponential-decomposition technique to this phase-augmented case — the remaining
+service of the batch an arrival finds in progress is `Erlang(k-p, rate)`, `p` = the phase found,
+plus `j//b` full batches ahead each `Erlang(k, rate(b))`, convolved, plus an idle-refill race
+phase when the remainder is short of the threshold `a`); `run()` uses this exact mean for any
+`a`. `get_tail(D)`/`get_cdf(D)` (EPIC-066) give the EXACT SLA-violation probability `P(W>D)` for
+any `a` too — matrix-exponential-action on the same per-state phase-type decomposition, reducing
 exactly to `BulkServiceMM1Calc.get_tail` at `k=1`; see
 [batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md). Not covered
 (reserve): batch-size-dependent phase COUNT (`k`) — EPIC-042 ported the exponential model's
@@ -183,12 +185,14 @@ calc3.set_sources(1.0)
 calc3.set_servers(lambda size: 0.3 + 0.1 * size, mu1=1.5, mu2=3.0)
 ```
 
-**Accuracy and scope:** exact given the H2-fitted family (mean-only via `run()`, same starting
-scope as the Erlang case above). `get_tail(D)`/`get_cdf(D)` (EPIC-066) give the EXACT `P(W>D)` at
-`a=1`: the one place this case is harder than Erlang's — each full batch AHEAD independently
-redraws its own H2 phase (a genuine branch, not Erlang's sequential phase advance), so the
-phase-type sub-generator is built explicitly rather than reusing a simple bidiagonal chain;
-reduces exactly to `BulkServiceMM1Calc.get_tail` at `p1=1`. See
+**Accuracy and scope:** exact given the H2-fitted family (mean-only via `run()`; no exact `get_w()`
+for H2, unlike Erlang/MM1 -- a reserve item, independent of `a`). `get_tail(D)`/`get_cdf(D)`
+(EPIC-066, generalized to any `1<=a<=b` by EPIC-067) give the EXACT `P(W>D)`: the one place this
+case is harder than Erlang's — each full batch AHEAD independently redraws its own H2 phase (a
+genuine branch, not Erlang's sequential phase advance), so the phase-type sub-generator is built
+explicitly rather than reusing a simple bidiagonal chain (and the idle-refill race, when needed,
+only branches at the LAST layer before the tagged customer's own batch); reduces exactly to
+`BulkServiceMM1Calc.get_tail` at `p1=1`. See
 [batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md). Not covered
 (reserve): exact raw MOMENTS beyond the mean (needs a PASTA argument that also tracks which phase
 an arrival finds the batch in — a different derivation than the tail); batch-size-dependent

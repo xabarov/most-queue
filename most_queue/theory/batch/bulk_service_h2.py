@@ -37,6 +37,19 @@ i -> take (take = min(b, j)), the outflow rate uses the completing batch's
 own (i, phase) rate, but the p1/p2 weights splitting into the new batch's
 two phases must be p1(take), not p1(i). Getting this backwards would
 silently use the wrong batch's H2 parameters whenever p1 varies with size.
+
+EPIC-067 generalizes ``get_tail`` to any ``1 <= a <= b``, porting
+``BulkServiceMM1Calc``/``BulkServiceErlangCalc``'s idle-refill race-aware
+decomposition: when the remainder after the full batches ahead is below the
+threshold ``a``, the wait is a RACE between new Poisson(lambda) arrivals and
+the LAST branching layer's completion, not a naive sequential
+"service phases, then a separate refill phase" split (confirmed wrong for
+the exponential/Erlang cases -- see
+``most_queue.theory.batch._idle_refill`` and
+docs/epics/EPIC-067-bulk-service-idle-refill.md). The race only attaches to
+the FINAL layer; earlier layers always have enough ahead to proceed without
+a refill check, so only that one layer needs its 2 (branching) states
+crossed with the arrival count.
 """
 
 import numpy as np
@@ -47,6 +60,7 @@ from most_queue.random.distributions import H2Distribution
 from most_queue.random.utils.params import H2Params
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
+from most_queue.theory.batch._idle_refill import race_subgen
 
 
 class BulkServiceH2Calc(BaseQueue):
@@ -167,34 +181,54 @@ class BulkServiceH2Calc(BaseQueue):
 
     def get_tail(self, t: float) -> float:
         """
-        Exact P(W > t) -- requires a == 1 (same restriction as the Erlang/MM1
-        bulk-service tails).
+        Exact P(W > t), any ``1 <= a <= b``.
 
-        PASTA: a tagged arrival sees stationary (i, phase, j). If busy
-        (i>=1), its wait decomposes into the OBSERVED current batch's
-        remaining time -- Exp(mu[phase](i)), memoryless, same phase it was
-        already in -- followed by ``j // b`` FULL batches ahead, each
-        independently redrawing its OWN H2 phase (rate mu1(b) w.p. p1(b),
-        else mu2(b)) once it starts. Unlike Erlang's purely sequential
-        chain, this "ahead" part genuinely BRANCHES at every subsequent
-        batch boundary, so the phase-type sub-generator has 2 states per
-        batch layer (not 1): built explicitly and evaluated via sparse
-        matrix-exponential-action, exact, no hand partial fractions.
-        p1=1 (H2 collapses to Exp(mu1)) reduces exactly to
+        PASTA: a tagged arrival sees stationary (i, phase, j) [or, if idle,
+        (0, j)]. If busy (i>=1), its wait decomposes into the OBSERVED
+        current batch's remaining time -- Exp(mu[phase](i)), memoryless,
+        same phase it was already in -- followed by ``j // b`` FULL batches
+        ahead, each independently redrawing its OWN H2 phase (rate mu1(b)
+        w.p. p1(b), else mu2(b)) once it starts. Unlike Erlang's purely
+        sequential chain, this "ahead" part genuinely BRANCHES at every
+        subsequent batch boundary.
+
+        EPIC-067 adds the idle-refill case: if the remainder after the full
+        batches ahead (plus the tagged customer) is below the threshold
+        ``a``, the wait is a RACE between new Poisson(lambda) arrivals and
+        the LAST branching layer's completion (the earlier layers always
+        have enough ahead to proceed without a refill check, same argument
+        as ``BulkServiceMM1Calc``/``BulkServiceErlangCalc`` -- see
+        ``most_queue.theory.batch._idle_refill`` and
+        docs/epics/EPIC-067-bulk-service-idle-refill.md). The branching only
+        matters for the layer the race attaches to; earlier layers and the
+        idle-state refill are non-branching (the arrival-counting race
+        doesn't care which H2 phase an EARLIER, already-resolved batch was
+        in). p1=1 (H2 collapses to Exp(mu1)) reduces exactly to
         ``BulkServiceMM1Calc.get_tail``.
         """
-        if self.a != 1:
-            raise ValueError(
-                f"get_tail() is only exact for a=1 (got a={self.a}); see BulkServiceMM1Calc.get_w()'s "
-                "docstring for why a>1 needs a different (not-yet-implemented) idle-refill-aware derivation."
-            )
         if t < 0:
             raise ValueError("t must be nonnegative")
         pi = self._solve_pi()
-        b = self.b
+        a, b = self.a, self.b
+        lam = self.l
         ahead_params = (self.mu1_fn(b), self.mu2_fn(b), self.p1_fn(b))
-        cache: dict[tuple[float, int], float] = {}
+        cache: dict[tuple, float] = {}
+
         tail = 0.0
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            need = a - j - 1
+            if prob > 0 and need > 0:
+                key = ("idle", need)
+                cached = cache.get(key)
+                if cached is None:
+                    # pure Poisson(lam) refill, no service phase: a trivial 1-rate-repeated chain
+                    rates = np.full(need, lam)
+                    subgen = sp.diags([-rates, rates[:-1]], [0, 1], format="csc")
+                    cached = float(spla.expm_multiply(subgen * t, np.ones(need))[0])
+                    cache[key] = cached
+                tail += prob * cached
+
         for i in range(1, b + 1):
             for phase, rate_obs in ((0, self.mu1_fn(i)), (1, self.mu2_fn(i))):
                 for j in range(self.N + 1):
@@ -202,10 +236,17 @@ class BulkServiceH2Calc(BaseQueue):
                     if prob <= 0:
                         continue
                     full_ahead = j // b
-                    key = (rate_obs, full_ahead)
+                    remainder = j - full_ahead * b
+                    need = a - remainder - 1
+                    key = (rate_obs, full_ahead, max(need, 0))
                     cached = cache.get(key)
                     if cached is None:
-                        cached = self._tagged_wait_tail(rate_obs, full_ahead, ahead_params, t)
+                        if need > 0:
+                            cached = self._tagged_wait_tail_with_refill(
+                                rate_obs, full_ahead, ahead_params, lam, need, t
+                            )
+                        else:
+                            cached = self._tagged_wait_tail(rate_obs, full_ahead, ahead_params, t)
                         cache[key] = cached
                     tail += prob * cached
         return tail
@@ -231,6 +272,88 @@ class BulkServiceH2Calc(BaseQueue):
                 cols += [nxt0, nxt1, nxt0, nxt1]
                 vals += [mu1_b * p1_b, mu1_b * (1.0 - p1_b), mu2_b * p1_b, mu2_b * (1.0 - p1_b)]
         subgen = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsc()
+        return float(spla.expm_multiply(subgen * t, np.ones(m))[0])
+
+    @staticmethod
+    def _tagged_wait_tail_with_refill(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+        rate_obs, full_ahead, ahead_params, lam, need, t
+    ) -> float:
+        """Tail of [Exp(rate_obs)] + [full_ahead H2(b) batches] + [idle-refill race], need > 0.
+
+        New arrivals can occur during ANY of the (1 + full_ahead) service
+        phases ahead of the tagged customer -- not just the last one -- so
+        the arrival-count dimension (0..need) is crossed with EVERY layer
+        (layer 0: 1 phase-state; layers 1..full_ahead: 2 branching
+        phase-states each), exactly like ``_idle_refill.race_subgen``'s
+        sequential-chain construction, just with a per-layer branching
+        factor. An earlier version only crossed the LAST layer with the
+        count dimension (silently dropping arrivals during earlier phases)
+        -- confirmed wrong against an independent simulation (~20% error on
+        specific states) before this fix; see
+        docs/epics/EPIC-067-bulk-service-idle-refill.md.
+        """
+        mu1_b, mu2_b, p1_b = ahead_params
+        if full_ahead == 0:
+            subgen, m, start = race_subgen(np.array([rate_obs]), lam, need)
+            return float(spla.expm_multiply(subgen * t, np.ones(m))[start])
+
+        width = need + 1
+        n_grid = width + full_ahead * 2 * width  # layer 0 (1 phase) + layers 1..full_ahead (2 phases)
+        m = n_grid + need  # + refill tail
+
+        def idx(layer, phase, count):  # layer 0 ignores phase (always 0)
+            if layer == 0:
+                return count
+            return width + (layer - 1) * 2 * width + phase * width + count
+
+        def refill_idx(remaining):  # remaining in 1..need
+            return n_grid + (remaining - 1)
+
+        rows, cols, vals = [], [], []
+        out_rate = np.zeros(m)
+
+        def add(s, d, r):
+            rows.append(s)
+            cols.append(d)
+            vals.append(r)
+            out_rate[s] += r
+
+        for count in range(width):
+            s = idx(0, 0, count)
+            if count < need:
+                add(s, idx(0, 0, count + 1), lam)
+            if full_ahead == 0:
+                if count == need:
+                    out_rate[s] += rate_obs
+                else:
+                    add(s, refill_idx(need - count), rate_obs)
+            else:
+                add(s, idx(1, 0, count), rate_obs * p1_b)
+                add(s, idx(1, 1, count), rate_obs * (1.0 - p1_b))
+
+        for layer in range(1, full_ahead + 1):
+            for phase, r in ((0, mu1_b), (1, mu2_b)):
+                for count in range(width):
+                    s = idx(layer, phase, count)
+                    if count < need:
+                        add(s, idx(layer, phase, count + 1), lam)
+                    if layer == full_ahead:
+                        if count == need:
+                            out_rate[s] += r  # enough already accumulated -> absorbs directly
+                        else:
+                            add(s, refill_idx(need - count), r)
+                    else:
+                        add(s, idx(layer + 1, 0, count), r * p1_b)
+                        add(s, idx(layer + 1, 1, count), r * (1.0 - p1_b))
+
+        for remaining in range(1, need + 1):
+            s = refill_idx(remaining)
+            if remaining > 1:
+                add(s, refill_idx(remaining - 1), lam)
+            out_rate[s] += lam  # remaining==1 absorbs directly
+
+        q = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsr()
+        subgen = (q - sp.diags(out_rate)).tocsc()
         return float(spla.expm_multiply(subgen * t, np.ones(m))[0])
 
     def get_cdf(self, t: float) -> float:

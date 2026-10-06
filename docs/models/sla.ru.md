@@ -34,7 +34,7 @@ H2-достижимости (известный краевой случай — 
 fit-подхода, а не как основная точка входа.
 
 **Точный путь для batch-service с ограниченным окном:** `BulkServiceMM1Calc`/
-`BulkServiceErlangCalc`/`BulkServiceH2Calc` (a=1) дают `get_tail(D)`/`get_cdf(D)` — ТОЧНУЮ
+`BulkServiceErlangCalc`/`BulkServiceH2Calc` (любое `1<=a<=b`, EPIC-067) дают `get_tail(D)`/`get_cdf(D)` — ТОЧНУЮ
 `P(W>D)` для `M/PH^[a,b]/1` через матричную экспоненту phase-type разложения `get_w()`, не
 подгонку. Количественное сравнение с `fit_from_moments` на тех же моментах: подгонка нормально
 работает у среднего, но завышает `P(W>D)` на порядки в глубоком хвосте, релевантном GPU/LLM SLA —

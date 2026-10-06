@@ -72,12 +72,22 @@ def test_get_w_matches_independent_monte_carlo_at_a1():
     assert np.isclose(theory[3], mc[3], rtol=0.12)
 
 
-def test_get_w_rejects_a_greater_than_one():
-    calc = BulkServiceMM1Calc(a=2, b=4, queue_truncation=100)
-    calc.set_sources(1.0)
-    calc.set_servers(lambda size: 1.0 / (0.2 + 0.07 * size))
-    with pytest.raises(ValueError):
-        calc.get_w()
+@pytest.mark.parametrize("a,b", [(2, 4), (3, 5), (2, 2), (4, 6)])
+def test_get_w_matches_independent_monte_carlo_at_a_gt_1(a, b):
+    """EPIC-067: idle-refill race-aware moments, any 1 <= a <= b."""
+    lam = 0.6
+    mu = lambda size: 1.0 / (0.2 + 0.07 * size)  # noqa: E731
+
+    calc = BulkServiceMM1Calc(a=a, b=b, queue_truncation=300)
+    calc.set_sources(lam)
+    calc.set_servers(mu)
+    theory = calc.get_w(num=4)
+
+    mc = _monte_carlo_w_moments(a, b, lam, mu, total_served=1_200_000)
+    assert np.isclose(theory[0], mc[0], rtol=0.03)
+    assert np.isclose(theory[1], mc[1], rtol=0.06)
+    assert np.isclose(theory[2], mc[2], rtol=0.10)
+    assert np.isclose(theory[3], mc[3], rtol=0.15)
 
 
 def test_b1_get_w_reduces_exactly_to_mm1():
@@ -96,9 +106,10 @@ def test_b1_get_w_reduces_exactly_to_mm1():
     assert np.allclose(w, ref, rtol=1e-6)
 
 
-def test_run_uses_exact_w_at_a1():
-    """run()'s res.w must equal get_w() exactly when a=1."""
-    calc = BulkServiceMM1Calc(a=1, b=4, queue_truncation=150)
+@pytest.mark.parametrize("a,b", [(1, 4), (2, 4), (3, 5)])
+def test_run_uses_exact_w(a, b):
+    """run()'s res.w must equal get_w() exactly, any 1 <= a <= b (EPIC-067)."""
+    calc = BulkServiceMM1Calc(a=a, b=b, queue_truncation=150)
     calc.set_sources(1.0)
     calc.set_servers(lambda size: 1.0 / (0.2 + 0.07 * size))
     res = calc.run()
@@ -126,8 +137,8 @@ def test_get_n_moments_variance_is_nonnegative_and_monotone_in_second_moment():
 
 if __name__ == "__main__":
     test_get_w_matches_independent_monte_carlo_at_a1()
-    test_get_w_rejects_a_greater_than_one()
+    test_get_w_matches_independent_monte_carlo_at_a_gt_1(2, 4)
     test_b1_get_w_reduces_exactly_to_mm1()
-    test_run_uses_exact_w_at_a1()
+    test_run_uses_exact_w(2, 4)
     test_get_n_moments_variance_is_nonnegative_and_monotone_in_second_moment()
     print("all bulk-service moment tests passed")

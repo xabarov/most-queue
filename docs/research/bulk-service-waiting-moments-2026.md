@@ -66,11 +66,16 @@ GPU is otherwise idle.
    decomposition via PASTA (see derivation above), reusing `conv_moments`. For `a>1`, `run()` keeps
    the existing mean-only (approximate) behavior unchanged, with the inaccuracy now documented
    rather than silent.
-3. **Reserve, not in this epic:** exact `W` moments for `a>1` (needs an augmented
-   absorbing-CTMC/first-passage argument tracking "customers still ahead of a tagged arrival" through
-   idle-refill sub-phases — a real, solvable, but more involved extension); exact moments of `V`
+3. **Resolved by EPIC-067 (2026-10-06):** exact `W` moments and tail for `a>1`, via an augmented
+   absorbing CTMC tracking a RACE between new Poisson arrivals and the remaining service-phase
+   sequence (not a naive sequential "service, then refill" split — that version is the ~18% error
+   this scope decision originally flagged, confirmed wrong again independently during EPIC-067 before
+   the correct 2-D race construction was found). See
+   [../epics/EPIC-067-bulk-service-idle-refill.md](../epics/EPIC-067-bulk-service-idle-refill.md) and
+   `most_queue/theory/batch/_idle_refill.py`. Still a reserve, not attempted: exact moments of `V`
    (sojourn time) even at `a=1` (the tagged customer's own eventual batch size depends on arrivals
    during their own wait, correlated with `W` itself, so `V ≠ W + S` by simple convolution — needs a
-   joint argument, not attempted here).
+   joint argument, not attempted here); exact `get_w` (moments, not just tail) for
+   `BulkServiceH2Calc` (never implemented even at `a=1`, independent of the idle-refill question).
 
 Full derivation: `docs/roadmaps/bulk_service_waiting_moments_roadmap.md`.

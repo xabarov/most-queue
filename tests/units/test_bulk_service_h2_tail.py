@@ -116,12 +116,30 @@ def test_get_tail_is_monotone_decreasing():
     assert all(a >= b for a, b in zip(values, values[1:]))
 
 
-def test_get_tail_rejects_a_greater_than_one():
-    calc = BulkServiceH2Calc(a=2, b=4, queue_truncation=100)
-    calc.set_sources(1.0)
-    calc.set_servers(p1=0.4, mu1=1.0, mu2=4.0)
-    with pytest.raises(ValueError):
-        calc.get_tail(1.0)
+@pytest.mark.parametrize("a,b", [(2, 3), (2, 4), (3, 5), (2, 2)])
+def test_get_tail_matches_independent_monte_carlo_at_a_gt_1(a, b):
+    """EPIC-067: idle-refill race-aware branching tail, any 1 <= a <= b."""
+    lam = 0.5
+
+    def p1_fn(size):
+        return 0.3 + 0.05 * size
+
+    def mu1_fn(size):
+        return 0.5 + 0.1 * size
+
+    def mu2_fn(size):
+        return 3.0 + 0.2 * size
+
+    calc = BulkServiceH2Calc(a=a, b=b, queue_truncation=300)
+    calc.set_sources(lam)
+    calc.set_servers(p1=p1_fn, mu1=mu1_fn, mu2=mu2_fn)
+
+    points = (0.2, 0.6, 1.5, 3.5)
+    mc, n = _monte_carlo_tail(a, b, lam, p1_fn, mu1_fn, mu2_fn, points)
+    for t in points:
+        exact = calc.get_tail(t)
+        se = (mc[t] * (1 - mc[t]) / n) ** 0.5
+        assert abs(exact - mc[t]) < 5 * se + 1e-4
 
 
 def test_get_tail_rejects_negative_t():

@@ -107,6 +107,7 @@
 | [EPIC-064](EPIC-064-msj-capacity-calendar.md) | Opt-in календарь MSJ capacity и явно модельные Helios VC-сценарии | done |
 | [EPIC-065](EPIC-065-availability-aware-arrival-history.md) | Availability-aware arrival history без completed-prefix staleness | done |
 | [EPIC-066](EPIC-066-batch-service-sla-exact-tail.md) | Точная вероятность нарушения SLA (хвост W) для batch-service очередей, статья | done |
+| [EPIC-067](EPIC-067-bulk-service-idle-refill.md) | Idle-refill: точные W-моменты и хвост bulk-service при `a > 1` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

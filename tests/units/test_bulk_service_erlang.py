@@ -247,12 +247,20 @@ def test_exact_w_moments_match_independent_des(k):
     assert np.allclose(w[:3], w_des, rtol=0.05)
 
 
-def test_get_w_rejects_a_greater_than_one():
-    calc = BulkServiceErlangCalc(a=2, b=4, k=2, queue_truncation=250)
-    calc.set_sources(1.0)
-    calc.set_servers(1.5)
-    with pytest.raises(ValueError):
-        calc.get_w()
+@pytest.mark.parametrize(
+    "a,b,k,lam",
+    [(2, 4, 2, 1.0), (3, 5, 2, 1.0), (2, 2, 3, 0.5)],  # (2,2,3) at rate=1.5 saturates at lam=1.0
+)
+def test_get_w_matches_independent_des_at_a_gt_1(a, b, k, lam):
+    """EPIC-067: idle-refill race-aware moments, any 1 <= a <= b."""
+    rate = 1.5
+    calc = BulkServiceErlangCalc(a=a, b=b, k=k, queue_truncation=250)
+    calc.set_sources(lam)
+    calc.set_servers(rate)
+    w = calc.get_w(num=3)
+
+    w_des = _independent_des_w_moments(a, b, k, rate, lam, total_served=900_000)
+    assert np.allclose(w[:3], w_des, rtol=0.06)
 
 
 def test_set_servers_from_moments_fits_erlang():
@@ -286,7 +294,7 @@ if __name__ == "__main__":
     test_k1_exact_w_moments_match_bulk_service_mm1()
     for k_val in (2, 3):
         test_exact_w_moments_match_independent_des(k_val)
-    test_get_w_rejects_a_greater_than_one()
+    test_get_w_matches_independent_des_at_a_gt_1(2, 4, 2, 1.0)
     test_set_servers_from_moments_fits_erlang()
     test_invalid_params_rejected()
     print("all bulk-service Erlang tests passed")

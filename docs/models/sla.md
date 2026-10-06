@@ -35,7 +35,7 @@ falls back to Gamma automatically rather than returning a silently wrong tail.
 approach's accuracy, not a general-purpose entry point.
 
 **Exact, non-anchor path for bounded-window batch service:** `BulkServiceMM1Calc`/
-`BulkServiceErlangCalc`/`BulkServiceH2Calc` (a=1) expose `get_tail(D)`/`get_cdf(D)` — the EXACT
+`BulkServiceErlangCalc`/`BulkServiceH2Calc` (any `1<=a<=b`, EPIC-067) expose `get_tail(D)`/`get_cdf(D)` — the EXACT
 `P(W>D)` for `M/PH^[a,b]/1`, via matrix-exponential-action on the per-state phase-type
 decomposition already used by `get_w()`, not a moment fit. Quantified against `fit_from_moments`
 on the same raw moments: the fit is fine near the mean, but overestimates `P(W>D)` by orders of

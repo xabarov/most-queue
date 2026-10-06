@@ -48,6 +48,23 @@ def test_bulk_service_vs_sim(b, lam):
     assert np.isclose(r.w[0], rs.w[0], rtol=RTOL + 0.02)
 
 
+@pytest.mark.parametrize("a, b, lam", [(2, 4, 1.0), (3, 5, 1.2), (2, 2, 0.8)])
+def test_a_gt_1_w_vs_sim(a, b, lam):
+    """EPIC-067: idle-refill exact W (not just N/V via Little's law) vs simulation, a>1."""
+    calc = BulkServiceMM1Calc(a=a, b=b, queue_truncation=400)
+    calc.set_sources(lam)
+    calc.set_servers(1.0)
+    r = calc.run()
+    assert calc.boundary_mass < 1e-3
+
+    sim = BulkServiceSim(a=a, b=b, seed=1234)
+    sim.set_sources(lam, "M")
+    sim.set_servers(1.0)
+    rs = sim.run(NUM_JOBS)
+
+    assert np.isclose(r.w[0], rs.w[0], rtol=RTOL + 0.02)
+
+
 def test_fixed_batch_size_vs_sim():
     """a = b (serve exactly b at a time) vs simulation."""
     calc = BulkServiceMM1Calc(a=3, b=3)

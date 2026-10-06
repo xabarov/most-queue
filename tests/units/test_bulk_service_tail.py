@@ -110,12 +110,24 @@ def test_get_tail_at_zero_equals_busy_probability():
     assert calc.get_tail(0.0) == pytest.approx(busy_prob)
 
 
-def test_get_tail_rejects_a_greater_than_one():
-    calc = BulkServiceMM1Calc(a=2, b=4, queue_truncation=100)
-    calc.set_sources(1.0)
-    calc.set_servers(lambda size: 1.0 / (0.2 + 0.07 * size))
-    with pytest.raises(ValueError):
-        calc.get_tail(1.0)
+@pytest.mark.parametrize("a,b", [(2, 4), (3, 5), (2, 2), (4, 6)])
+def test_get_tail_matches_independent_monte_carlo_at_a_gt_1(a, b):
+    """EPIC-067: idle-refill race-aware tail, any 1 <= a <= b."""
+    lam = 0.6
+
+    def mu(size):
+        return 1.0 + 0.3 * size
+
+    calc = BulkServiceMM1Calc(a=a, b=b, queue_truncation=300)
+    calc.set_sources(lam)
+    calc.set_servers(mu)
+
+    points = (0.2, 0.5, 1.0, 2.0, 4.0)
+    mc, n = _monte_carlo_tail(a, b, lam, mu, points)
+    for t in points:
+        exact = calc.get_tail(t)
+        se = (mc[t] * (1 - mc[t]) / n) ** 0.5
+        assert abs(exact - mc[t]) < 5 * se + 1e-4
 
 
 def test_get_tail_rejects_negative_t():
@@ -129,6 +141,7 @@ def test_get_tail_rejects_negative_t():
 if __name__ == "__main__":
     test_b1_get_tail_reduces_exactly_to_mm1()
     test_get_tail_matches_independent_monte_carlo_at_a1()
+    test_get_tail_matches_independent_monte_carlo_at_a_gt_1(2, 4)
     test_get_cdf_is_one_minus_tail()
     test_get_tail_is_monotone_decreasing()
     test_get_tail_at_zero_equals_busy_probability()
