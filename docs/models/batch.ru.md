@@ -243,6 +243,41 @@ p_abandon = calc.get_abandonment_prob()   # точная вероятность 
 w_given_served = calc.get_w(num=1)[0]     # E[W | дождался]
 ```
 
+### M/M^[a,b]/c — несколько независимых серверов с общей очередью
+
+**Описание:** `c` ИДЕНТИЧНЫХ серверов обслуживают батчи из ОДНОЙ общей FCFS-очереди — прямая модель
+пула из нескольких GPU-реплик (каждая со своим continuous-batching движком) за одним
+роутером запросов. Когда хотя бы один сервер свободен, батч стартует мгновенно, как только
+очередь дотягивает до `a`; когда все `c` заняты, очередь может вырасти, и освободившийся сервер
+забирает до `b`.
+
+**Класс расчёта:** `BulkServiceMultiserverCalc` (`most_queue.theory.batch.bulk_service_multiserver`)
+
+```python
+from most_queue.theory.batch.bulk_service_multiserver import BulkServiceMultiserverCalc
+
+calc = BulkServiceMultiserverCalc(a=2, b=4, c=3)   # 3 сервера, общая очередь
+calc.set_sources(1.0)
+calc.set_servers(1.2)                               # на сервер; может быть callable(size)
+res = calc.run()                                    # res.v[0], res.w[0]
+
+n_moments = calc.get_n_moments(num=4)   # точно, любые a<=b, c, включая batch-size-зависимый mu
+w_moments = calc.get_w(num=4)           # точно -- ТОЛЬКО batch-size-НЕЗАВИСИМый mu
+p_violation = calc.get_tail(3.0)        # P(W > 3.0) -- точно, та же оговорка
+```
+
+**Точность и охват:** `get_n_moments()` — точно при ЛЮБЫХ `a<=b`, `c>=1`, включая batch-size-
+зависимый `mu(size)`. `get_w()`/`get_tail()` — точно, но ТОЛЬКО при batch-size-НЕЗАВИСИМОМ `mu`
+(иначе `NotImplementedError`): ключевая находка — при постоянном `mu` агрегированная ставка
+«следующее освобождение» среди всех `c` занятых серверов всегда ровно `c·mu`, НЕЗАВИСИМО от того,
+какие размеры батчей они сейчас обслуживают, поэтому ожидание помеченного клиента не требует
+отслеживать вектор занятости — конструкция переиспользует «ahead»-сегмент цепи из
+[EPIC-068](../epics/EPIC-068-bulk-service-impatience.md) при нулевом терпении. При
+batch-size-ЗАВИСИМОМ `mu` агрегированная ставка ДЕЙСТВИТЕЛЬНО зависит от полного вектора
+занятости — настоящий взрыв размерности состояния, резерв (не реализовано). `c=1` — точная
+регрессия к `BulkServiceMM1Calc`. См.
+[EPIC-069](../epics/EPIC-069-bulk-service-multiserver.md) для полного вывода.
+
 ### Auto-dispatch (не считать CV вручную)
 
 **Описание:** `fit_bulk_service_calc(a, b, moments, family="auto")`

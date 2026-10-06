@@ -207,6 +207,20 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
     for s in range(m):
         out_rate[s] += gamma  # tagged customer's own patience: universal competing exit
 
+    # Idle/refill states are only ever used (as source or destination) when the
+    # idle-refill regime is actually reachable (total = r_val+1+k_val < a somewhere);
+    # e.g. at a=1 it never is, since any single arrival already meets the threshold.
+    # Such states get zero out_rate at gamma==0 (no competing exit to fall back on,
+    # unlike gamma>0 where the universal patience exit above keeps every row
+    # non-degenerate) -- a fully isolated all-zero row, which makes (-A) exactly
+    # singular for the moment formula's repeated spsolve (expm_multiply tolerates it,
+    # which is why this stayed hidden: EPIC-068 only ever called this with gamma>0,
+    # the first gamma==0 caller -- EPIC-069's constant-mu multiserver reuse -- hit it).
+    # These rows are provably unreachable (nothing transitions into or out of them),
+    # so pinning their out_rate to an arbitrary positive value changes nothing for any
+    # reachable state's moments/tail/absorption probability.
+    out_rate[out_rate == 0] = 1.0
+
     q = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsr()
     subgen = (q - sp.diags(out_rate)).tocsc()
     start = idx_idle(j, 0) if start_idle else idx_first(0, j, 0)

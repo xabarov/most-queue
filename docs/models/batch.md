@@ -242,6 +242,41 @@ p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning befo
 w_given_served = calc.get_w(num=1)[0]     # E[W | served]
 ```
 
+### M/M^[a,b]/c -- multiple independent servers sharing one queue
+
+**Description:** `c` IDENTICAL servers serve batches from ONE shared FCFS queue -- a direct model
+for a multi-GPU replica pool (each with its own continuous-batching engine) behind one shared
+request router. Whenever at least one server is idle, a batch is dispatched the instant the
+queue reaches `a`; once all `c` servers are busy, the queue can build up and a newly-freed server
+picks up to `b`.
+
+**Class:** `BulkServiceMultiserverCalc` (`most_queue.theory.batch.bulk_service_multiserver`)
+
+```python
+from most_queue.theory.batch.bulk_service_multiserver import BulkServiceMultiserverCalc
+
+calc = BulkServiceMultiserverCalc(a=2, b=4, c=3)   # 3 servers, shared queue
+calc.set_sources(1.0)
+calc.set_servers(1.2)                               # per server; can be callable(size)
+res = calc.run()                                    # res.v[0], res.w[0]
+
+n_moments = calc.get_n_moments(num=4)   # exact, any a<=b, c, including batch-size-dependent mu
+w_moments = calc.get_w(num=4)           # exact -- batch-size-INDEPENDENT mu ONLY
+p_violation = calc.get_tail(3.0)        # P(W > 3.0) -- exact, same caveat
+```
+
+**Accuracy and scope:** `get_n_moments()` is exact for ANY `a<=b`, `c>=1`, including
+batch-size-dependent `mu(size)`. `get_w()`/`get_tail()` are exact but ONLY for batch-size-
+INDEPENDENT `mu` (raises `NotImplementedError` otherwise) -- the key finding: with constant
+`mu`, the aggregate "next completion" rate among all `c` busy servers is always exactly `c*mu`,
+regardless of which sizes they're currently serving, so a tagged customer's wait needs no
+occupancy-vector tracking at all -- the construction reuses
+[EPIC-068](../epics/EPIC-068-bulk-service-impatience.md)'s "ahead" chain segment at zero
+patience. With batch-size-dependent `mu` the aggregate rate genuinely depends on the full
+occupancy vector -- a real state-space blowup, left as a reserve (not implemented). `c=1` is an
+exact regression to `BulkServiceMM1Calc`. See
+[EPIC-069](../epics/EPIC-069-bulk-service-multiserver.md) for the full derivation.
+
 ### Auto-dispatch (don't compute CV by hand)
 
 **Description:** `fit_bulk_service_calc(a, b, moments, family="auto")`
