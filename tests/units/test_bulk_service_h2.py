@@ -195,6 +195,91 @@ def test_invalid_params_rejected():
         calc.set_servers(p1=0.5, mu1=0.0, mu2=1.0)
 
 
+def test_invalid_gamma_rejected():
+    with pytest.raises(ValueError):
+        BulkServiceH2Calc(a=1, b=4, gamma=-0.1)
+
+
+def test_gamma_abandonment_pi_level_only_matches_independent_des():
+    """EPIC-068: H2 only gets gamma support at the _solve_pi level (no gamma-aware
+    get_abandonment_prob/get_w/get_tail -- see module docstring for why); cross-check
+    E[N] against an independent DES with per-customer abandonment, mirroring EPIC-068's
+    pi-validation discipline for the other two calculators."""
+    a, b, p1, mu1, mu2, lam, gamma = 2, 4, 0.5, 1.0, 3.0, 0.6, 0.5
+    calc = BulkServiceH2Calc(a=a, b=b, queue_truncation=150, gamma=gamma)
+    calc.set_sources(lam)
+    calc.set_servers(p1=p1, mu1=mu1, mu2=mu2)
+    pi = calc._solve_pi()  # pylint: disable=protected-access
+
+    e_n_theory = 0.0
+    for j in range(calc.N + 1):
+        e_n_theory += pi[calc._idle_index(j)] * j  # pylint: disable=protected-access
+    for i in range(1, b + 1):
+        for phase in (0, 1):
+            for j in range(calc.N + 1):
+                e_n_theory += pi[calc._busy_index(i, phase, j)] * (i + j)  # pylint: disable=protected-access
+
+    e_n_des = _independent_des_mean_n_with_abandonment(a, b, p1, mu1, mu2, lam, gamma)
+    assert np.isclose(e_n_theory, e_n_des, rtol=0.05)
+
+
+def _independent_des_mean_n_with_abandonment(
+    a, b, p1, mu1, mu2, lam, gamma, total_time=400_000.0, warmup=5_000.0, seed=3
+):
+    """Independent from-scratch DES: time-average E[N] with per-customer abandonment."""
+    rng = np.random.default_rng(seed)
+    inf = float("inf")
+    t = 0.0
+    next_arrival = rng.exponential(1 / lam)
+    queue: list[float] = []
+    server_busy = False
+    server_done = inf
+    batch_size = 0
+    area = 0.0
+    last_t = 0.0
+
+    def sample_h2():
+        rate = mu1 if rng.random() < p1 else mu2
+        return rng.exponential(1 / rate)
+
+    def maybe_start():
+        nonlocal server_busy, server_done, batch_size
+        if not server_busy and len(queue) >= a:
+            take = min(b, len(queue))
+            del queue[:take]
+            server_busy = True
+            batch_size = take
+            server_done = t + sample_h2()
+
+    while t < total_time:
+        next_abandon_t, next_abandon_idx = inf, None
+        for idx_c, aband in enumerate(queue):
+            if aband < next_abandon_t:
+                next_abandon_t, next_abandon_idx = aband, idx_c
+        t = min(next_arrival, server_done, next_abandon_t)
+        if t > last_t and last_t >= warmup:
+            n_in_system = len(queue) + batch_size
+            area += n_in_system * (t - last_t)
+        elif t > warmup > last_t:
+            n_in_system = len(queue) + batch_size
+            area += n_in_system * (t - warmup)
+        last_t = t
+        if t == next_arrival:
+            aband_t = t + rng.exponential(1.0 / gamma) if gamma > 0 else inf
+            queue.append(aband_t)
+            next_arrival = t + rng.exponential(1 / lam)
+            maybe_start()
+        elif t == server_done:
+            server_busy = False
+            server_done = inf
+            batch_size = 0
+            maybe_start()
+        else:
+            queue.pop(next_abandon_idx)
+
+    return area / (total_time - warmup)
+
+
 if __name__ == "__main__":
     test_p1_1_reduces_exactly_to_exponential_bulk_service()
     for params in [(0.5, 1.0, 3.0), (0.3, 0.8, 4.0), (0.7, 2.0, 2.5)]:
@@ -203,4 +288,6 @@ if __name__ == "__main__":
     test_batch_size_dependent_params_reduce_to_scalar_when_constant()
     test_set_servers_from_moments_fits_h2()
     test_invalid_params_rejected()
+    test_invalid_gamma_rejected()
+    test_gamma_abandonment_pi_level_only_matches_independent_des()
     print("all bulk-service H2 tests passed")

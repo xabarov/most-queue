@@ -199,6 +199,49 @@ an arrival finds the batch in — a different derivation than the tail); batch-s
 branch COUNT (the two-branch structure itself stays fixed — EPIC-042 only made the per-branch
 probability/rates batch-size-dependent).
 
+### Impatient customers (abandonment / reneging)
+
+**Description:** Markovian (memoryless) patience -- each of the `j` currently-waiting
+customers independently reneges at rate `gamma` (same convention as
+`most_queue.theory.impatience.mm1.MM1Impatience`). Passed as the `gamma` constructor
+parameter on `BulkServiceMM1Calc`/`BulkServiceErlangCalc`/`BulkServiceH2Calc`
+(`gamma=0.0` by default -- no behavior change). At `gamma>0`:
+
+- `get_abandonment_prob()` (MM1, Erlang) -- exact probability that a PASTA-arriving
+  tagged customer abandons before their own batch starts.
+- `get_w()`/`get_tail()` (MM1, Erlang) switch to the variant CONDITIONAL on "served"
+  (normalized by `1 - get_abandonment_prob()`); use both together for the full
+  unconditional picture.
+- `BulkServiceH2Calc` only supports `gamma` at the stationary-distribution (`pi`)
+  level (affects `E[N]`/`run()`); `get_abandonment_prob()` and gamma-aware
+  `get_w()`/`get_tail()` are NOT implemented for H2 -- a reserve item (H2 branches
+  rather than progressing through a sequential phase chain, so porting the
+  construction would need to cross every ahead layer's branch choice with the
+  (R,K) state, noticeably harder than for MM1/Erlang).
+
+**Why the naive hypothesis failed:** the count of customers ahead of the tagged one
+(`R`) becomes a genuine death process under abandonment (each of the `R` survivors
+reneges independently) running CONCURRENTLY with batch formation, not a fixed
+quantity as in EPIC-067's pure race construction without abandonment. The simple
+hypothesis ("EPIC-067's race chain + a standalone competing gamma exit") was off by
+17-38% on different states. The correct construction
+(`most_queue.theory.batch._idle_refill.abandonment_chain`) adds `R` and `K` (new
+arrivals behind the tagged customer) as explicit state dimensions; see
+[EPIC-068](../epics/EPIC-068-bulk-service-impatience.md) for the full derivation,
+including a real bug (a missing `(-A)^-1` application in the moment formula) caught
+by a DES test before shipping.
+
+```python
+from most_queue.theory.batch.bulk_service import BulkServiceMM1Calc
+
+calc = BulkServiceMM1Calc(a=2, b=4, gamma=0.4)   # patience rate
+calc.set_sources(0.6)
+calc.set_servers(1.5)
+
+p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning before batch starts
+w_given_served = calc.get_w(num=1)[0]     # E[W | served]
+```
+
 ### Auto-dispatch (don't compute CV by hand)
 
 **Description:** `fit_bulk_service_calc(a, b, moments, family="auto")`

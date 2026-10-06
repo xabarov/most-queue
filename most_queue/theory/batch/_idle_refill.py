@@ -80,3 +80,134 @@ def race_subgen(service_rates: np.ndarray, lam: float, need: int):
     q = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsr()
     subgen = (q - sp.diags(out_rate)).tocsc()
     return subgen, m, grid(0, 0)
+
+
+def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    rate_first: float,
+    n_first: int,
+    rate_ahead: float,
+    k: int,
+    j: int,
+    a: int,
+    b: int,
+    lam: float,
+    gamma: float,
+    start_idle: bool = False,
+):
+    """
+    EPIC-068: race-aware absorbing chain for a tagged customer's wait when
+    EVERY waiting customer (including those ahead of the tagged one) may
+    independently abandon at rate ``gamma`` (Markovian/memoryless patience,
+    the same convention as ``most_queue.theory.impatience.mm1.MM1Impatience``).
+
+    A naive "ignore the ahead customers' abandonment, just add a standalone
+    competing gamma-exit to the EPIC-067 chain" hypothesis was confirmed
+    numerically wrong (independent per-state simulation): the ahead-of-tagged
+    count is NOT the deterministic ``j`` of EPIC-067 anymore -- it is itself a
+    pure-death process (each of the ``R`` originally-ahead survivors abandons
+    independently) running CONCURRENTLY with batch formation, so it must be
+    tracked as an explicit state dimension, not folded into a fixed
+    "full_ahead/remainder" split.
+
+    Key structural fact (proved, not just assumed) that keeps this tractable:
+    whenever a batch forms ahead of the tagged customer WITHOUT including it,
+    that batch's size is always EXACTLY ``b`` (if it were less than ``b`` and
+    still excluded the tagged customer, the tagged customer plus the survivors
+    would already be <= the batch cap, contradiction). So -- exactly as in
+    EPIC-067 -- every such "ahead" batch uses ``rate_ahead`` (``rate_fn(b)``);
+    only the VERY FIRST segment (the batch the tagged customer actually
+    observed on arrival, part-way through) uses ``rate_first``
+    (``rate_fn(i_observed)``) for its remaining ``n_first = k - p_observed``
+    phases. No other batch-size-dependent rate bookkeeping is needed.
+
+    State: (segment in {first, ahead}, phase within that segment's k-cycle,
+    R = surviving originally-ahead count 0..j, K = new arrivals behind the
+    tagged customer accumulated so far, capped at ``a-1``), plus idle/refill
+    states (R, K) with no phase. R decreases via abandonment (rate R*gamma)
+    and via being swept into a full ``b``-sized batch; K increases via new
+    arrivals (rate lam) and resets implicitly whenever consumed into a batch
+    that reaches the tagged customer (irrelevant once absorbed).
+
+    :return: ``(subgen, m, start, serve_rate)`` -- the sparse subgenerator
+        (its diagonal already includes the universal ``-gamma`` competing
+        exit), its size, the index of the starting state, and a length-``m``
+        array giving the "tagged customer gets served" absorption RATE out of
+        each state (0 for non-absorbing states). ``gamma * alpha @ (-A)^-1 @
+        1`` gives ``P(abandon)``; ``n! * alpha @ (-A)^-(n+1) @ serve_rate``
+        gives the raw moments of ``W`` restricted to the "served" outcome
+        (divide by ``P(served) = 1 - P(abandon)`` for the conditional
+        moments).
+    """
+    n_states_per_phase = (j + 1) * a
+
+    def idx_first(phase, r_val, k_val):
+        return phase * n_states_per_phase + r_val * a + k_val
+
+    base_ahead = n_first * n_states_per_phase
+
+    def idx_ahead(phase, r_val, k_val):
+        return base_ahead + phase * n_states_per_phase + r_val * a + k_val
+
+    base_idle = base_ahead + k * n_states_per_phase
+
+    def idx_idle(r_val, k_val):
+        return base_idle + r_val * a + k_val
+
+    m = base_idle + n_states_per_phase
+    rows, cols, vals = [], [], []
+    out_rate = np.zeros(m)
+    serve_rate = np.zeros(m)
+
+    def add(src, dst, rate):
+        rows.append(src)
+        cols.append(dst)
+        vals.append(rate)
+        out_rate[src] += rate
+
+    def build_segment(idx_fn, n_phases, rate, next_idx_fn):
+        for phase in range(n_phases):  # pylint: disable=too-many-nested-blocks
+            for r_val in range(j + 1):
+                for k_val in range(a):
+                    s = idx_fn(phase, r_val, k_val)
+                    if phase < n_phases - 1:
+                        add(s, idx_fn(phase + 1, r_val, k_val), rate)
+                    else:
+                        total = r_val + 1 + k_val
+                        if total >= a:
+                            take = min(b, total)
+                            if take >= r_val + 1:
+                                out_rate[s] += rate
+                                serve_rate[s] += rate
+                            else:
+                                add(s, next_idx_fn(0, r_val - take, k_val), rate)  # take == b, proved above
+                        else:
+                            add(s, idx_idle(r_val, k_val), rate)
+                    if r_val >= 1:
+                        add(s, idx_fn(phase, r_val - 1, k_val), r_val * gamma)
+                    if k_val < a - 1:
+                        add(s, idx_fn(phase, r_val, k_val + 1), lam)
+
+    build_segment(idx_first, n_first, rate_first, idx_ahead)
+    build_segment(idx_ahead, k, rate_ahead, idx_ahead)
+
+    for r_val in range(j + 1):
+        for k_val in range(a):
+            s = idx_idle(r_val, k_val)
+            total = r_val + 1 + k_val
+            if total < a:
+                if r_val >= 1:
+                    add(s, idx_idle(r_val - 1, k_val), r_val * gamma)
+                if k_val < a - 1:
+                    if r_val + 1 + (k_val + 1) >= a:
+                        out_rate[s] += lam
+                        serve_rate[s] += lam
+                    else:
+                        add(s, idx_idle(r_val, k_val + 1), lam)
+
+    for s in range(m):
+        out_rate[s] += gamma  # tagged customer's own patience: universal competing exit
+
+    q = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsr()
+    subgen = (q - sp.diags(out_rate)).tocsc()
+    start = idx_idle(j, 0) if start_idle else idx_first(0, j, 0)
+    return subgen, m, start, serve_rate

@@ -50,6 +50,18 @@ docs/epics/EPIC-067-bulk-service-idle-refill.md). The race only attaches to
 the FINAL layer; earlier layers always have enough ahead to proceed without
 a refill check, so only that one layer needs its 2 (branching) states
 crossed with the arrival count.
+
+EPIC-068 adds Markovian abandonment (rate ``gamma``) ONLY at the ``_solve_pi``
+(stationary-distribution) level -- ``get_abandonment_prob``/a gamma-aware
+``get_w``/``get_tail`` are explicitly OUT OF SCOPE for this class and remain
+a reserve item: ``BulkServiceMM1Calc``/``BulkServiceErlangCalc``'s shared
+``most_queue.theory.batch._idle_refill.abandonment_chain`` assumes a single
+SEQUENTIAL chain of service phases ahead of the tagged customer, but H2's
+"ahead" batches each independently re-choose their own branch (mu1 w.p. p1,
+else mu2) -- the race-aware (R, K) construction would need to cross EVERY
+layer's branch choice with the (R, K) dimensions, not just the final layer
+(as the gamma==0 ``get_tail`` already does for the arrival-count dimension),
+a materially harder state space than porting ``abandonment_chain`` as-is.
 """
 
 import numpy as np
@@ -73,13 +85,16 @@ class BulkServiceH2Calc(BaseQueue):
     :param queue_truncation: cap on the number waiting (state-space bound).
     """
 
-    def __init__(self, a: int, b: int, queue_truncation: int = 300):
+    def __init__(self, a: int, b: int, queue_truncation: int = 300, gamma: float = 0.0):
         super().__init__(n=1)
         if not 1 <= a <= b:
             raise ValueError("require 1 <= a <= b")
+        if gamma < 0:
+            raise ValueError(f"gamma must be >= 0, got {gamma}")
         self.a = a
         self.b = b
         self.N = queue_truncation
+        self.gamma = gamma
         self.l = None
         self.p1_fn = None
         self.mu1_fn = None
@@ -133,6 +148,7 @@ class BulkServiceH2Calc(BaseQueue):
         self._check_if_servers_and_sources_set()
 
         a, b, N, lam = self.a, self.b, self.N, self.l
+        gamma = self.gamma
         p1_fn, mu1_fn, mu2_fn = self.p1_fn, self.mu1_fn, self.mu2_fn
         n_states = (N + 1) + b * 2 * (N + 1)
         rows, cols, vals = [], [], []
@@ -150,6 +166,8 @@ class BulkServiceH2Calc(BaseQueue):
             else:
                 add(s, self._busy_index(a, 0, 0), lam * p1_a)
                 add(s, self._busy_index(a, 1, 0), lam * (1.0 - p1_a))
+            if j >= 1 and gamma > 0:
+                add(s, self._idle_index(j - 1), j * gamma)
 
         for i in range(1, b + 1):
             for phase, mu in ((0, mu1_fn(i)), (1, mu2_fn(i))):
@@ -164,6 +182,8 @@ class BulkServiceH2Calc(BaseQueue):
                         add(s, self._busy_index(take, 1, j - take), mu * (1.0 - p1_take))
                     else:
                         add(s, self._idle_index(j), mu)
+                    if j >= 1 and gamma > 0:
+                        add(s, self._busy_index(i, phase, j - 1), j * gamma)
 
         q = sp.coo_matrix((vals, (rows, cols)), shape=(n_states, n_states)).tocsr()
         out = np.asarray(q.sum(axis=1)).ravel()
