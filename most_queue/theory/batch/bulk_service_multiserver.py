@@ -58,6 +58,18 @@ reimplemented. This does NOT generalize to batch-size-dependent `mu`: there, the
 aggregate rate genuinely depends on the full occupancy vector, which must then be
 tracked inside the absorbing chain -- a real state-space blowup, deferred as a
 documented reserve (`_require_constant_mu`), not silently dropped.
+
+EPIC-070 adds Markovian abandonment (rate `gamma`, `MM1Impatience` convention) on
+top of the batch-size-independent case -- the first of three "combination" reserve
+items flagged after EPIC-068/069 (the other two, both genuinely harder, stay
+reserved: H2 service for `c>1`, and batch-size-dependent `mu` for `c>1`). This
+combination turned out to need NO new construction: the `c*mu`-aggregate-rate
+simplification above already reduces the busy-state tagged-wait problem to
+`abandonment_chain`'s own "ahead" segment, and that function already supports
+`gamma>0` natively (EPIC-068 built it with a competing patience exit from the
+start) -- passing the real `gamma` through instead of fixing it at 0.0 is the
+entire extension. `_solve_pi()` gets the same `j*gamma` reneging term
+`BulkServiceMM1Calc`/`BulkServiceErlangCalc` already have.
 """
 
 import math
@@ -102,17 +114,20 @@ class BulkServiceMultiserverCalc(BaseQueue):
     """
 
     def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
-        self, a: int = 1, b: int = 1, c: int = 1, queue_truncation: int = 300
+        self, a: int = 1, b: int = 1, c: int = 1, queue_truncation: int = 300, gamma: float = 0.0
     ):
         super().__init__(n=c)
         if not 1 <= a <= b:
             raise ValueError("require 1 <= a <= b")
         if c < 1:
             raise ValueError(f"c must be >= 1, got {c}")
+        if gamma < 0:
+            raise ValueError(f"gamma must be >= 0, got {gamma}")
         self.a = a
         self.b = b
         self.c = c
         self.N = queue_truncation
+        self.gamma = gamma
         self.l = None
         self.mu_fn: Callable[[int], float] | None = None
         self._is_constant_mu: bool = False
@@ -210,6 +225,9 @@ class BulkServiceMultiserverCalc(BaseQueue):
                     new_j = j
                 dst_oi = occ_index[tuple(new_occ)]
                 add(s_idx, state_index[(dst_oi, new_j)], rate)
+            # abandonment: each of the j waiting customers independently reneges
+            if j >= 1 and self.gamma > 0:
+                add(s_idx, state_index[(oi, j - 1)], j * self.gamma)
 
         q = sp.coo_matrix((vals, (rows, cols)), shape=(n_states, n_states)).tocsr()
         out = np.asarray(q.sum(axis=1)).ravel()
@@ -270,6 +288,88 @@ class BulkServiceMultiserverCalc(BaseQueue):
         cache[j] = moments
         return moments
 
+    def _abandon_chain_for_state(self, j: int, start_idle: bool = False):
+        """EPIC-070: build the abandonment_chain for a given observed state (R=j ahead of
+        tagged), reusing the same `c*mu` aggregate-rate simplification as
+        `_busy_state_moments`/`get_tail` -- gamma>0 is natively supported by
+        `abandonment_chain` (built for EPIC-068), no new construction needed here."""
+        rate = self.c * self.mu_fn(1)
+        if start_idle:
+            return abandonment_chain(0.0, 0, rate, 0, j, self.a, self.b, self.l, self.gamma, start_idle=True)
+        return abandonment_chain(rate, 1, rate, 1, j, self.a, self.b, self.l, self.gamma, start_idle=False)
+
+    def get_abandonment_prob(self) -> float:
+        """
+        EPIC-070: exact probability that a PASTA-arriving (tagged) customer abandons
+        (Markovian patience, rate `gamma`) before their own batch starts service. 0.0
+        when `gamma == 0`. ONLY for batch-size-independent mu (see
+        `_require_constant_mu`) -- see module docstring for why this combination needed
+        no new construction beyond threading `gamma` through the already-`gamma`-aware
+        `abandonment_chain`.
+        """
+        if self.gamma <= 0:
+            return 0.0
+        self._require_constant_mu("get_abandonment_prob")
+        pi = self._solve_pi()
+        a = self.a
+        cache: dict = {}
+        p_abandon = 0.0
+        for oi, j in self._states:
+            p = pi[self._state_index[(oi, j)]]
+            if p <= 0:
+                continue
+            idle = self.c - sum(self._occ_list[oi])
+            if idle >= 1 and j == a - 1:
+                continue  # W=0 deterministically, can't abandon
+            key = ("idle", j) if idle >= 1 else ("busy", j)
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, _ = self._abandon_chain_for_state(j, start_idle=idle >= 1)
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                x = spla.spsolve((-subgen).tocsc(), np.ones(m))
+                cached = self.gamma * float(alpha @ x)
+                cache[key] = cached
+            p_abandon += p * cached
+        return p_abandon
+
+    def _get_w_with_abandonment(self, num: int = 4) -> list[float]:
+        """EPIC-070: exact raw moments of W conditional on being served, gamma > 0."""
+        pi = self._solve_pi()
+        a = self.a
+        cache: dict = {}
+        numerator = np.zeros(num)
+        p_served_total = 0.0
+        for oi, j in self._states:
+            p = pi[self._state_index[(oi, j)]]
+            if p <= 0:
+                continue
+            idle = self.c - sum(self._occ_list[oi])
+            if idle >= 1 and j == a - 1:
+                p_served_total += p
+                continue
+            key = ("idle", j) if idle >= 1 else ("busy", j)
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, serve_rate = self._abandon_chain_for_state(j, start_idle=idle >= 1)
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                neg_a = (-subgen).tocsc()
+                x = spla.spsolve(neg_a, serve_rate)
+                moments = []
+                for n in range(1, num + 1):
+                    x = spla.spsolve(neg_a, x)
+                    moments.append(math.factorial(n) * float(alpha @ x))
+                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
+                cached = (moments, p_served_state)
+                cache[key] = cached
+            moments, p_served_state = cached
+            numerator += p * np.array(moments)
+            p_served_total += p * p_served_state
+        if p_served_total <= 0:
+            return [0.0] * num
+        return list(numerator / p_served_total)
+
     def get_w(self, num: int = 4) -> list[float]:
         """
         Exact raw moments of W (waiting time), any `1 <= a <= b`, `c >= 1` -- ONLY for
@@ -278,9 +378,13 @@ class BulkServiceMultiserverCalc(BaseQueue):
         space's own invariant), the wait is a pure Poisson(lambda) refill race, IDENTICAL
         in form to `BulkServiceMM1Calc`'s own idle branch (idle-dispatch only depends on
         the queue reaching `a`, not on how many servers are idle or what any busy server is
-        doing). If all `c` servers are busy, see `_busy_state_moments`.
+        doing). If all `c` servers are busy, see `_busy_state_moments`. At `gamma > 0`
+        (EPIC-070) these are conditional on being served -- see
+        `BulkServiceMM1Calc.get_w` for what that means and why.
         """
         self._require_constant_mu("get_w")
+        if self.gamma > 0:
+            return self._get_w_with_abandonment(num)
         pi = self._solve_pi()
         a, lam = self.a, self.l
 
@@ -306,13 +410,49 @@ class BulkServiceMultiserverCalc(BaseQueue):
             w_moments += p * np.array(wm)
         return list(w_moments)
 
+    def _get_tail_with_abandonment(self, t: float) -> float:
+        """EPIC-070: exact P(W > t AND served) / P(served), gamma > 0."""
+        pi = self._solve_pi()
+        a = self.a
+        cache: dict = {}
+        numerator = 0.0
+        p_served_total = 0.0
+        for oi, j in self._states:
+            p = pi[self._state_index[(oi, j)]]
+            if p <= 0:
+                continue
+            idle = self.c - sum(self._occ_list[oi])
+            if idle >= 1 and j == a - 1:
+                p_served_total += p
+                continue
+            key = ("idle", j) if idle >= 1 else ("busy", j)
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, serve_rate = self._abandon_chain_for_state(j, start_idle=idle >= 1)
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                neg_a = (-subgen).tocsc()
+                v = spla.spsolve(neg_a, serve_rate)
+                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
+                cached = (subgen, v, start, p_served_state)
+                cache[key] = cached
+            subgen, v, start, p_served_state = cached
+            numerator += p * float(spla.expm_multiply(subgen * t, v)[start])
+            p_served_total += p * p_served_state
+        if p_served_total <= 0:
+            return 0.0
+        return numerator / p_served_total
+
     def get_tail(self, t: float) -> float:
         """Exact P(W > t), any `1 <= a <= b`, `c >= 1` -- ONLY for batch-size-independent mu
         (see `_require_constant_mu`); same decomposition as `get_w`, via sparse
-        matrix-exponential-action instead of moment convolution."""
+        matrix-exponential-action instead of moment convolution. At `gamma > 0` (EPIC-070)
+        this is P(W > t | served) -- see `BulkServiceMM1Calc.get_tail`."""
         if t < 0:
             raise ValueError("t must be nonnegative")
         self._require_constant_mu("get_tail")
+        if self.gamma > 0:
+            return self._get_tail_with_abandonment(t)
         pi = self._solve_pi()
         a, lam = self.a, self.l
         cache: dict = {}

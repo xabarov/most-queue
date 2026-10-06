@@ -110,6 +110,9 @@
 | [EPIC-067](EPIC-067-bulk-service-idle-refill.md) | Idle-refill: точные W-моменты и хвост bulk-service при `a > 1` | done |
 | [EPIC-068](EPIC-068-bulk-service-impatience.md) | Нетерпеливые заявки (impatience/reneging) в batch-service | done |
 | [EPIC-069](EPIC-069-bulk-service-multiserver.md) | Bulk-service с `c>1` независимыми серверами (общая очередь, несколько GPU-реплик) | done |
+| [EPIC-070](EPIC-070-bulk-service-multiserver-impatience.md) | Нетерпеливые заявки в многоканальном bulk-service (EPIC-068 × EPIC-069) | done |
+| [EPIC-071](EPIC-071-bulk-service-h2-impatience.md) | Нетерпеливые заявки для H2-обслуживания (EPIC-036/042 × EPIC-068) | proposed |
+| [EPIC-072](EPIC-072-bulk-service-multiserver-phase-type.md) | Многоканальный bulk-service с фазовым/batch-size-зависимым обслуживанием | proposed |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

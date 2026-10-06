@@ -277,6 +277,20 @@ occupancy vector -- a real state-space blowup, left as a reserve (not implemente
 exact regression to `BulkServiceMM1Calc`. See
 [EPIC-069](../epics/EPIC-069-bulk-service-multiserver.md) for the full derivation.
 
+**Impatient customers ([EPIC-070](../epics/EPIC-070-bulk-service-multiserver-impatience.md)):**
+the `gamma` parameter (patience rate, `MM1Impatience` convention) gives `get_abandonment_prob()`
+and served-conditional `get_w()`/`get_tail()` -- batch-size-independent `mu` only. This
+combination needed no new construction: the same "aggregate rate `c*mu`" finding reduces the
+problem to EPIC-068's own `abandonment_chain`, which already supports `gamma>0` natively.
+
+```python
+calc = BulkServiceMultiserverCalc(a=2, b=4, c=3, gamma=0.3)
+calc.set_sources(1.0)
+calc.set_servers(0.5)
+p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning before batch starts
+w_given_served = calc.get_w(num=1)[0]     # E[W | served]
+```
+
 ### Auto-dispatch (don't compute CV by hand)
 
 **Description:** `fit_bulk_service_calc(a, b, moments, family="auto")`
