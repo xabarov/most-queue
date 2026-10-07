@@ -92,7 +92,7 @@ See the executable comparison of **9 disciplines** in
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
-| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV and batch-size-dependent parameters; exact W moments for the Erlang-fitted case | exact |
+| Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments and tail for any a≤b; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV and batch-size-dependent parameters; Markovian abandonment (MM1/Erlang/H2); `c` independent servers sharing one queue, incl. batch-size-dependent service | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
@@ -127,6 +127,16 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Idle-refill, impatience, and multiserver bulk-service**:
+  three further generalizations of the bounded-window batch-service model — exact W
+  moments/tail for any idle-refill race `a<=b` (not just `a=1`); Markovian abandonment
+  (`gamma`-rate reneging) for MM1/Erlang and H2-branching service, each via a dedicated
+  absorbing chain tracking surviving-ahead-count and new-arrivals-behind as explicit
+  state; and `c` independent servers sharing one FCFS queue, including batch-size-dependent
+  `mu` at `gamma==0` and abandonment at constant `mu`. All DES-validated independently of
+  the production code; dependent-`mu` combined with abandonment remains an explicit
+  reserve. See the [epic registry](docs/epics/README.md) for the full breakdown
+  (EPIC-067 through EPIC-072).
 - **2026-10, current source tree** — **Availability-aware arrival history**:
   removes a completed-prefix staleness artifact (prefix lag up to 8.2 days)
   by building arrival-mark donor history from submit<cutoff over the already-
