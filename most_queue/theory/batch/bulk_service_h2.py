@@ -51,18 +51,34 @@ the FINAL layer; earlier layers always have enough ahead to proceed without
 a refill check, so only that one layer needs its 2 (branching) states
 crossed with the arrival count.
 
-EPIC-068 adds Markovian abandonment (rate ``gamma``) ONLY at the ``_solve_pi``
-(stationary-distribution) level -- ``get_abandonment_prob``/a gamma-aware
-``get_w``/``get_tail`` are explicitly OUT OF SCOPE for this class and remain
-a reserve item: ``BulkServiceMM1Calc``/``BulkServiceErlangCalc``'s shared
+EPIC-068 added Markovian abandonment (rate ``gamma``) at the ``_solve_pi``
+(stationary-distribution) level only; a gamma-aware ``get_abandonment_prob``/
+``get_w``/``get_tail`` were explicitly out of scope, since
+``BulkServiceMM1Calc``/``BulkServiceErlangCalc``'s shared
 ``most_queue.theory.batch._idle_refill.abandonment_chain`` assumes a single
-SEQUENTIAL chain of service phases ahead of the tagged customer, but H2's
+SEQUENTIAL chain of service phases ahead of the tagged customer, while H2's
 "ahead" batches each independently re-choose their own branch (mu1 w.p. p1,
-else mu2) -- the race-aware (R, K) construction would need to cross EVERY
-layer's branch choice with the (R, K) dimensions, not just the final layer
-(as the gamma==0 ``get_tail`` already does for the arrival-count dimension),
-a materially harder state space than porting ``abandonment_chain`` as-is.
+else mu2).
+
+EPIC-071 closes that reserve with a dedicated H2 construction,
+``_h2_abandonment_chain`` (below): instead of crossing every sequential
+phase with (R, K) like ``abandonment_chain`` does, H2 needs only 3 "segments"
+per (R, K) pair -- "first" (the batch the tagged customer actually observed
+on arrival, already resolved to ONE definite memoryless phase by PASTA, so
+no branch choice left to make) and "ahead" phase 0 / phase 1 (each of the
+subsequent, not-yet-formed batches, which DOES re-choose a branch at the
+moment it starts) -- rather than Erlang's n_first-then-k_ahead sequential
+phase count. Every transition that moves from one batch to the next (first
+-> ahead, or ahead -> ahead) SPLITS into the two branch weights (p1_b,
+1-p1_b); the within-segment abandonment (R*gamma) and new-arrival (lam)
+transitions never change phase, exactly like the sequential case. The
+idle-refill (R, K) race carries over unchanged -- it never depended on which
+H2 branch a batch chose. p1=1 (H2 collapses to Exp(mu1)) must reduce exactly
+to ``BulkServiceMM1Calc``'s gamma>0 construction -- the primary regression
+test, alongside gamma=0 collapsing exactly to the EPIC-067 ``get_tail``.
 """
+
+import math
 
 import numpy as np
 import scipy.sparse as sp
@@ -73,6 +89,119 @@ from most_queue.random.utils.params import H2Params
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.batch._idle_refill import race_subgen
+
+
+def _h2_abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
+    rate_obs: float,
+    mu1_b: float,
+    mu2_b: float,
+    p1_b: float,
+    j: int,
+    a: int,
+    b: int,
+    lam: float,
+    gamma: float,
+    start_idle: bool = False,
+):
+    """
+    EPIC-071: H2-branching analogue of
+    ``most_queue.theory.batch._idle_refill.abandonment_chain`` (EPIC-068).
+
+    State: (segment in {first, ahead}, phase in {0, 1} -- meaningful only for
+    "ahead" -- R = surviving originally-ahead count 0..j, K = new arrivals
+    behind the tagged customer accumulated so far, capped at a-1), plus
+    idle/refill states (R, K) with no phase, identical to
+    ``abandonment_chain``'s idle-refill race. "first" is a single state per
+    (R, K): the batch the tagged customer observed on arrival is already
+    resolved to one definite memoryless phase (rate ``rate_obs``), so there
+    is no branch choice left there. Every service completion that excludes
+    the tagged customer (always a batch of size exactly ``b`` -- same proved
+    fact as ``abandonment_chain``) starts a NEW "ahead" batch, which
+    re-chooses its branch: phase 0 at ``mu1_b`` w.p. ``p1_b``, else phase 1
+    at ``mu2_b``. R-abandonment and new-K-arrival transitions never change
+    phase or segment.
+
+    :return: ``(subgen, m, start, serve_rate)`` -- same contract as
+        ``abandonment_chain``.
+    """
+    n_rk = (j + 1) * a
+
+    def idx_first(r_val, k_val):
+        return r_val * a + k_val
+
+    base_ahead = 0 if start_idle else n_rk
+
+    def idx_ahead(phase, r_val, k_val):
+        return base_ahead + phase * n_rk + r_val * a + k_val
+
+    base_idle = base_ahead + (0 if start_idle else 2 * n_rk)
+
+    def idx_idle(r_val, k_val):
+        return base_idle + r_val * a + k_val
+
+    m = base_idle + n_rk
+    rows, cols, vals = [], [], []
+    out_rate = np.zeros(m)
+    serve_rate = np.zeros(m)
+
+    def add(src, dst, rate):
+        rows.append(src)
+        cols.append(dst)
+        vals.append(rate)
+        out_rate[src] += rate
+
+    def build_segment(idx_fn, rate):
+        for r_val in range(j + 1):
+            for k_val in range(a):
+                s = idx_fn(r_val, k_val)
+                total = r_val + 1 + k_val
+                if total >= a:
+                    take = min(b, total)
+                    if take >= r_val + 1:
+                        out_rate[s] += rate
+                        serve_rate[s] += rate
+                    else:  # take == b (proved in abandonment_chain), excludes tagged
+                        nr = r_val - take
+                        add(s, idx_ahead(0, nr, k_val), rate * p1_b)
+                        add(s, idx_ahead(1, nr, k_val), rate * (1.0 - p1_b))
+                else:
+                    add(s, idx_idle(r_val, k_val), rate)
+                if r_val >= 1:
+                    add(s, idx_fn(r_val - 1, k_val), r_val * gamma)
+                if k_val < a - 1:
+                    add(s, idx_fn(r_val, k_val + 1), lam)
+
+    if not start_idle:
+        build_segment(idx_first, rate_obs)
+        build_segment(lambda r, k: idx_ahead(0, r, k), mu1_b)
+        build_segment(lambda r, k: idx_ahead(1, r, k), mu2_b)
+
+    for r_val in range(j + 1):
+        for k_val in range(a):
+            s = idx_idle(r_val, k_val)
+            total = r_val + 1 + k_val
+            if total < a:
+                if r_val >= 1:
+                    add(s, idx_idle(r_val - 1, k_val), r_val * gamma)
+                if k_val < a - 1:
+                    if r_val + 1 + (k_val + 1) >= a:
+                        out_rate[s] += lam
+                        serve_rate[s] += lam
+                    else:
+                        add(s, idx_idle(r_val, k_val + 1), lam)
+
+    for s in range(m):
+        out_rate[s] += gamma  # tagged customer's own patience: universal competing exit
+
+    # See abandonment_chain's identical comment: idle/refill states are only
+    # reachable when the idle-refill regime is actually reachable; unreachable
+    # rows get a harmless positive out_rate pin so (-A) stays invertible.
+    out_rate[out_rate == 0] = 1.0
+
+    q = sp.coo_matrix((vals, (rows, cols)), shape=(m, m)).tocsr()
+    subgen = (q - sp.diags(out_rate)).tocsc()
+    start = idx_idle(j, 0) if start_idle else idx_first(j, 0)
+    return subgen, m, start, serve_rate
 
 
 class BulkServiceH2Calc(BaseQueue):
@@ -199,6 +328,126 @@ class BulkServiceH2Calc(BaseQueue):
         self._pi = pi
         return pi
 
+    def _abandon_chain_for_state(self, rate_obs: float, j: int, start_idle: bool = False):
+        """EPIC-071: build the H2 abandonment chain for a given observed state."""
+        b, lam, gamma = self.b, self.l, self.gamma
+        mu1_b, mu2_b, p1_b = self.mu1_fn(b), self.mu2_fn(b), self.p1_fn(b)
+        return _h2_abandonment_chain(rate_obs, mu1_b, mu2_b, p1_b, j, self.a, b, lam, gamma, start_idle=start_idle)
+
+    def get_abandonment_prob(self) -> float:
+        """
+        EPIC-071: exact probability that a PASTA-arriving (tagged) customer
+        abandons (Markovian patience, rate ``gamma``) before their own batch
+        starts service. 0.0 when ``gamma == 0``. See
+        ``BulkServiceErlangCalc.get_abandonment_prob``/module docstring for
+        the H2-branching generalization of the EPIC-068 construction.
+        """
+        if self.gamma <= 0:
+            return 0.0
+        pi = self._solve_pi()
+        a, b = self.a, self.b
+        cache: dict[tuple, float] = {}
+        p_abandon = 0.0
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            if prob <= 0 or j == a - 1:
+                continue
+            key = ("idle", j)
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, _ = self._abandon_chain_for_state(0.0, j, start_idle=True)
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                x = spla.spsolve((-subgen).tocsc(), np.ones(m))
+                cached = self.gamma * float(alpha @ x)
+                cache[key] = cached
+            p_abandon += prob * cached
+
+        for i in range(1, b + 1):
+            for phase, rate_obs in ((0, self.mu1_fn(i)), (1, self.mu2_fn(i))):
+                for j in range(self.N + 1):
+                    prob = pi[self._busy_index(i, phase, j)]
+                    if prob <= 0:
+                        continue
+                    key = ("busy", rate_obs, j)
+                    cached = cache.get(key)
+                    if cached is None:
+                        subgen, m, start, _ = self._abandon_chain_for_state(rate_obs, j)
+                        alpha = np.zeros(m)
+                        alpha[start] = 1.0
+                        x = spla.spsolve((-subgen).tocsc(), np.ones(m))
+                        cached = self.gamma * float(alpha @ x)
+                        cache[key] = cached
+                    p_abandon += prob * cached
+        return p_abandon
+
+    def get_w(self, num: int = 4) -> list[float]:
+        """
+        Exact raw moments of W conditional on being served, ``gamma > 0``
+        (EPIC-071). At ``gamma == 0`` exact moments beyond the mean (via
+        ``run()``'s Little's-law ``E[W]``) remain a separate, unimplemented
+        reserve item -- see the module docstring.
+        """
+        if self.gamma <= 0:
+            raise NotImplementedError(
+                "get_w() is only implemented for gamma > 0 (EPIC-071 Markovian abandonment). "
+                "Exact W moments at gamma == 0 beyond the mean (via run()) remain a separate, "
+                "unimplemented reserve item -- see the module docstring."
+            )
+        return self._get_w_with_abandonment(num)
+
+    def _get_w_with_abandonment(self, num: int = 4) -> list[float]:
+        """EPIC-071: exact raw moments of W conditional on being served, gamma > 0."""
+        pi = self._solve_pi()
+        a, b = self.a, self.b
+        cache: dict[tuple, tuple] = {}
+        numerator = np.zeros(num)
+        p_served_total = 0.0
+
+        def accumulate(prob, key, builder):
+            nonlocal p_served_total, numerator
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, serve_rate = builder()
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                neg_a = (-subgen).tocsc()
+                x = spla.spsolve(neg_a, serve_rate)
+                moments = []
+                for n in range(1, num + 1):
+                    x = spla.spsolve(neg_a, x)
+                    moments.append(math.factorial(n) * float(alpha @ x))
+                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
+                cached = (moments, p_served_state)
+                cache[key] = cached
+            moments, p_served_state = cached
+            numerator += prob * np.array(moments)
+            p_served_total += prob * p_served_state
+
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            if prob <= 0:
+                continue
+            if j == a - 1:
+                p_served_total += prob
+                continue
+            accumulate(prob, ("idle", j), lambda j=j: self._abandon_chain_for_state(0.0, j, start_idle=True))
+
+        for i in range(1, b + 1):
+            for phase, rate_obs in ((0, self.mu1_fn(i)), (1, self.mu2_fn(i))):
+                for j in range(self.N + 1):
+                    prob = pi[self._busy_index(i, phase, j)]
+                    if prob <= 0:
+                        continue
+                    accumulate(
+                        prob,
+                        ("busy", rate_obs, j),
+                        lambda rate_obs=rate_obs, j=j: self._abandon_chain_for_state(rate_obs, j),
+                    )
+        if p_served_total <= 0:
+            return [0.0] * num
+        return list(numerator / p_served_total)
+
     def get_tail(self, t: float) -> float:
         """
         Exact P(W > t), any ``1 <= a <= b``.
@@ -225,9 +474,15 @@ class BulkServiceH2Calc(BaseQueue):
         doesn't care which H2 phase an EARLIER, already-resolved batch was
         in). p1=1 (H2 collapses to Exp(mu1)) reduces exactly to
         ``BulkServiceMM1Calc.get_tail``.
+
+        At ``gamma > 0`` (EPIC-071), returns the conditional
+        ``P(W > t AND served) / P(served)`` instead -- see
+        ``_get_tail_with_abandonment``.
         """
         if t < 0:
             raise ValueError("t must be nonnegative")
+        if self.gamma > 0:
+            return self._get_tail_with_abandonment(t)
         pi = self._solve_pi()
         a, b = self.a, self.b
         lam = self.l
@@ -376,6 +631,54 @@ class BulkServiceH2Calc(BaseQueue):
         subgen = (q - sp.diags(out_rate)).tocsc()
         return float(spla.expm_multiply(subgen * t, np.ones(m))[0])
 
+    def _get_tail_with_abandonment(self, t: float) -> float:
+        """EPIC-071: exact P(W > t AND served) / P(served), gamma > 0."""
+        pi = self._solve_pi()
+        a, b = self.a, self.b
+        cache: dict[tuple, tuple] = {}
+        numerator = 0.0
+        p_served_total = 0.0
+
+        def accumulate(prob, key, builder):
+            nonlocal p_served_total, numerator
+            cached = cache.get(key)
+            if cached is None:
+                subgen, m, start, serve_rate = builder()
+                alpha = np.zeros(m)
+                alpha[start] = 1.0
+                neg_a = (-subgen).tocsc()
+                v = spla.spsolve(neg_a, serve_rate)
+                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
+                cached = (subgen, v, start, p_served_state)
+                cache[key] = cached
+            subgen, v, start, p_served_state = cached
+            numerator += prob * float(spla.expm_multiply(subgen * t, v)[start])
+            p_served_total += prob * p_served_state
+
+        for j in range(self.N + 1):
+            prob = pi[self._idle_index(j)]
+            if prob <= 0:
+                continue
+            if j == a - 1:
+                p_served_total += prob
+                continue
+            accumulate(prob, ("idle", j), lambda j=j: self._abandon_chain_for_state(0.0, j, start_idle=True))
+
+        for i in range(1, b + 1):
+            for phase, rate_obs in ((0, self.mu1_fn(i)), (1, self.mu2_fn(i))):
+                for j in range(self.N + 1):
+                    prob = pi[self._busy_index(i, phase, j)]
+                    if prob <= 0:
+                        continue
+                    accumulate(
+                        prob,
+                        ("busy", rate_obs, j),
+                        lambda rate_obs=rate_obs, j=j: self._abandon_chain_for_state(rate_obs, j),
+                    )
+        if p_served_total <= 0:
+            return 0.0
+        return numerator / p_served_total
+
     def get_cdf(self, t: float) -> float:
         """Exact P(W <= t) -- see ``get_tail`` for scope (a=1 only)."""
         return 1.0 - self.get_tail(t)
@@ -400,16 +703,23 @@ class BulkServiceH2Calc(BaseQueue):
 
         e_t = e_n / lam
 
-        def mean_service_of(size):
-            p1_val = p1_fn(size)
-            return p1_val / mu1_fn(size) + (1.0 - p1_val) / mu2_fn(size)
-
-        p_busy_total = p_busy_size.sum()
-        if p_busy_total > 0:
-            mean_batch_service = sum(mean_service_of(i) * p_busy_size[i] for i in range(1, b + 1)) / p_busy_total
+        if self.gamma > 0:
+            # EPIC-071: Little's-law e_t counts abandoning customers too (same
+            # convention as BulkServiceMM1Calc/BulkServiceErlangCalc at gamma>0);
+            # w switches to the exact conditional-on-served value instead.
+            e_w = self.get_w(num=1)[0]
         else:
-            mean_batch_service = mean_service_of(b)
-        e_w = e_t - mean_batch_service
+
+            def mean_service_of(size):
+                p1_val = p1_fn(size)
+                return p1_val / mu1_fn(size) + (1.0 - p1_val) / mu2_fn(size)
+
+            p_busy_total = p_busy_size.sum()
+            if p_busy_total > 0:
+                mean_batch_service = sum(mean_service_of(i) * p_busy_size[i] for i in range(1, b + 1)) / p_busy_total
+            else:
+                mean_batch_service = mean_service_of(b)
+            e_w = e_t - mean_batch_service
 
         res = QueueResults(
             v=[e_t, 0, 0, 0],

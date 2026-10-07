@@ -212,12 +212,17 @@ parameter on `BulkServiceMM1Calc`/`BulkServiceErlangCalc`/`BulkServiceH2Calc`
 - `get_w()`/`get_tail()` (MM1, Erlang) switch to the variant CONDITIONAL on "served"
   (normalized by `1 - get_abandonment_prob()`); use both together for the full
   unconditional picture.
-- `BulkServiceH2Calc` only supports `gamma` at the stationary-distribution (`pi`)
-  level (affects `E[N]`/`run()`); `get_abandonment_prob()` and gamma-aware
-  `get_w()`/`get_tail()` are NOT implemented for H2 -- a reserve item (H2 branches
-  rather than progressing through a sequential phase chain, so porting the
-  construction would need to cross every ahead layer's branch choice with the
-  (R,K) state, noticeably harder than for MM1/Erlang).
+- `BulkServiceH2Calc` ([EPIC-071](../epics/EPIC-071-bulk-service-h2-impatience.md))
+  also supports `get_abandonment_prob()` and served-conditional `get_w()`/`get_tail()`
+  at `gamma>0`, via a dedicated H2-branching construction
+  (`_h2_abandonment_chain`): unlike MM1/Erlang's sequential phase chain, each batch
+  ahead of the tagged customer independently RE-CHOOSES its branch when it starts,
+  so the chain carries 3 segments per `(R,K)` pair ("first" -- the batch already
+  observed, resolved to one definite phase by PASTA -- and "ahead" phase 0/phase 1,
+  each looping back into itself) instead of a phase count that grows with the
+  number of batches ahead. At `gamma==0`, `get_w()` still raises
+  `NotImplementedError` -- exact moments for the no-abandonment case remain a
+  separate, unrelated reserve (see the "General (Erlang/H₂)" section above).
 
 **Why the naive hypothesis failed:** the count of customers ahead of the tagged one
 (`R`) becomes a genuine death process under abandonment (each of the `R` survivors
@@ -240,6 +245,19 @@ calc.set_servers(1.5)
 
 p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning before batch starts
 w_given_served = calc.get_w(num=1)[0]     # E[W | served]
+```
+
+H2 works the same way (p1=1 reduces exactly to the MM1 result above):
+
+```python
+from most_queue.theory.batch.bulk_service_h2 import BulkServiceH2Calc
+
+calc = BulkServiceH2Calc(a=2, b=4, gamma=0.4)
+calc.set_sources(0.6)
+calc.set_servers(p1=0.3, mu1=0.9, mu2=2.5)
+
+p_abandon = calc.get_abandonment_prob()
+w_given_served = calc.get_w(num=1)[0]
 ```
 
 ### M/M^[a,b]/c -- multiple independent servers sharing one queue
