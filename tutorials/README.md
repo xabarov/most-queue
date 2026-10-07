@@ -15,6 +15,13 @@ you size systems, schedule work, or reason about latency.
 | [littles_law.ipynb](littles_law.ipynb) | `L = λW` holds for **any** system, discipline and distribution — turn the metric you can't measure into the two you can (latency from concurrency). |
 | [heavy_traffic.ipynb](heavy_traffic.ipynb) | Near saturation the waiting time becomes **exponential for any service distribution** — the queue "forgets" the shape; only the first two moments matter. |
 
+### SLA & deadlines
+
+| Notebook | The insight |
+|---|---|
+| [llm_serving_slo.ipynb](llm_serving_slo.ipynb) | An SLA is a statement about the **tail**, not the mean — turn the moments you already have into `P(W > D)` or an SLO quantile, and see how scheduling **priority** (not extra capacity) protects a premium tier. |
+| [batch_service_sla.ipynb](batch_service_sla.ipynb) | For a **bounded** batch window (GPU/LLM continuous batching), a moment-fit SLA estimate and the **exact** phase-type tail start from the identical moments but can disagree by **orders of magnitude** deep in the tail — same mean and variance, different tail *shape*. |
+
 ### Scheduling
 
 | Notebook | The insight |
