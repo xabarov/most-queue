@@ -279,27 +279,38 @@ calc.set_servers(1.2)                               # per server; can be callabl
 res = calc.run()                                    # res.v[0], res.w[0]
 
 n_moments = calc.get_n_moments(num=4)   # exact, any a<=b, c, including batch-size-dependent mu
-w_moments = calc.get_w(num=4)           # exact -- batch-size-INDEPENDENT mu ONLY
+w_moments = calc.get_w(num=4)           # exact -- any mu, PROVIDED gamma == 0
 p_violation = calc.get_tail(3.0)        # P(W > 3.0) -- exact, same caveat
 ```
 
 **Accuracy and scope:** `get_n_moments()` is exact for ANY `a<=b`, `c>=1`, including
-batch-size-dependent `mu(size)`. `get_w()`/`get_tail()` are exact but ONLY for batch-size-
-INDEPENDENT `mu` (raises `NotImplementedError` otherwise) -- the key finding: with constant
-`mu`, the aggregate "next completion" rate among all `c` busy servers is always exactly `c*mu`,
-regardless of which sizes they're currently serving, so a tagged customer's wait needs no
-occupancy-vector tracking at all -- the construction reuses
+batch-size-dependent `mu(size)`. `get_w()`/`get_tail()` are exact for batch-size-INDEPENDENT
+`mu` unconditionally, and for batch-size-DEPENDENT `mu`
+([EPIC-072](../epics/EPIC-072-bulk-service-multiserver-phase-type.md)) PROVIDED `gamma == 0`
+(raises `NotImplementedError` for dependent `mu` combined with `gamma>0` -- that combination
+remains a reserve). With constant `mu`, the aggregate "next completion" rate among all `c` busy
+servers is always exactly `c*mu` regardless of which sizes they're currently serving, so a
+tagged customer's wait needs no occupancy-vector tracking at all -- the construction reuses
 [EPIC-068](../epics/EPIC-068-bulk-service-impatience.md)'s "ahead" chain segment at zero
 patience. With batch-size-dependent `mu` the aggregate rate genuinely depends on the full
-occupancy vector -- a real state-space blowup, left as a reserve (not implemented). `c=1` is an
-exact regression to `BulkServiceMM1Calc`. See
-[EPIC-069](../epics/EPIC-069-bulk-service-multiserver.md) for the full derivation.
+occupancy vector, so EPIC-072 tracks it explicitly inside the tagged-customer's absorbing chain
+(`_occupancy_busy_chain`) -- but ONLY while all `c` servers stay busy: the moment a freed slot
+can't immediately redispatch (too few customers waiting) it goes idle, and from then on further
+completions among the remaining busy servers can't change the queue content, so the existing
+occupancy-free idle/refill race is reused unchanged from there. This keeps the actual state
+space far smaller than the full occupancy space `_solve_pi()` needs (only vectors with
+`sum(occ) == c`, not `<= c`). `c=1` is an exact regression to `BulkServiceMM1Calc`/
+`BulkServiceErlangCalc`-style dependent-rate exponential service. See
+[EPIC-069](../epics/EPIC-069-bulk-service-multiserver.md) for the constant-`mu` derivation and
+[EPIC-072](../epics/EPIC-072-bulk-service-multiserver-phase-type.md) for the dependent-`mu` one.
 
 **Impatient customers ([EPIC-070](../epics/EPIC-070-bulk-service-multiserver-impatience.md)):**
 the `gamma` parameter (patience rate, `MM1Impatience` convention) gives `get_abandonment_prob()`
-and served-conditional `get_w()`/`get_tail()` -- batch-size-independent `mu` only. This
-combination needed no new construction: the same "aggregate rate `c*mu`" finding reduces the
-problem to EPIC-068's own `abandonment_chain`, which already supports `gamma>0` natively.
+and served-conditional `get_w()`/`get_tail()` -- batch-size-independent `mu` only (combining
+abandonment with batch-size-dependent `mu` remains a reserve: EPIC-072's occupancy chain has no
+R-abandonment transitions). This combination needed no new construction: the same "aggregate
+rate `c*mu`" finding reduces the problem to EPIC-068's own `abandonment_chain`, which already
+supports `gamma>0` natively.
 
 ```python
 calc = BulkServiceMultiserverCalc(a=2, b=4, c=3, gamma=0.3)
@@ -307,6 +318,17 @@ calc.set_sources(1.0)
 calc.set_servers(0.5)
 p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning before batch starts
 w_given_served = calc.get_w(num=1)[0]     # E[W | served]
+```
+
+Batch-size-dependent `mu` works the same way as `BulkServiceMM1Calc` (callable instead of
+scalar), as long as `gamma == 0`:
+
+```python
+calc = BulkServiceMultiserverCalc(a=2, b=4, c=3)
+calc.set_sources(1.0)
+calc.set_servers(lambda size: 1.0 / (0.3 + 0.25 * size))   # larger batches take longer
+e_w = calc.get_w(num=1)[0]
+p_violation = calc.get_tail(3.0)
 ```
 
 ### Auto-dispatch (don't compute CV by hand)

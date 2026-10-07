@@ -126,7 +126,9 @@ def test_get_n_moments_matches_independent_des(a, b, c):
 
 
 def test_get_n_moments_supports_batch_size_dependent_mu():
-    """pi/get_n_moments support batch-size-dependent mu even though get_w/get_tail don't yet."""
+    """pi/get_n_moments support batch-size-dependent mu directly (always have); since
+    EPIC-072, get_w/get_tail do too (at gamma == 0) -- see test_get_w_and_get_tail_
+    support_batch_size_dependent_mu and test_bulk_service_multiserver_dependent_mu.py."""
     a, b, c, lam = 1, 4, 2, 0.8
 
     def mu_fn(size):
@@ -177,14 +179,24 @@ def test_get_cdf_is_one_minus_tail():
         assert calc.get_cdf(t) == pytest.approx(1.0 - calc.get_tail(t))
 
 
-def test_get_w_and_get_tail_reject_batch_size_dependent_mu():
+def test_get_w_and_get_tail_support_batch_size_dependent_mu():
+    """EPIC-072 closed this reserve (gamma == 0 only; see
+    test_bulk_service_multiserver_dependent_mu.py for the full validation suite
+    -- DES cross-checks, exact regression to scalar mu, etc.). Batch-size-dependent
+    mu combined with gamma > 0 abandonment REMAINS unimplemented."""
     calc = BulkServiceMultiserverCalc(a=1, b=4, c=2, queue_truncation=100)
     calc.set_sources(0.8)
     calc.set_servers(lambda size: 1.0 / (0.3 + 0.1 * size))
+    assert calc.get_w()[0] > 0
+    assert 0.0 < calc.get_tail(1.0) < 1.0
+
+    calc_gamma = BulkServiceMultiserverCalc(a=1, b=4, c=2, queue_truncation=100, gamma=0.2)
+    calc_gamma.set_sources(0.8)
+    calc_gamma.set_servers(lambda size: 1.0 / (0.3 + 0.1 * size))
     with pytest.raises(NotImplementedError):
-        calc.get_w()
+        calc_gamma.get_w()
     with pytest.raises(NotImplementedError):
-        calc.get_tail(1.0)
+        calc_gamma.get_tail(1.0)
 
 
 def test_run_uses_exact_w_for_constant_mu():
@@ -221,7 +233,7 @@ if __name__ == "__main__":
         test_get_w_matches_independent_des(*params)
         test_get_tail_matches_independent_des(*params)
     test_get_cdf_is_one_minus_tail()
-    test_get_w_and_get_tail_reject_batch_size_dependent_mu()
+    test_get_w_and_get_tail_support_batch_size_dependent_mu()
     test_run_uses_exact_w_for_constant_mu()
     test_more_servers_reduces_mean_wait()
     print("all bulk-service multiserver tests passed")
