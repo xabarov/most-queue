@@ -114,7 +114,7 @@
 | Occupancy-зависимый continuous batching | OccupancyDependentQueueCalc | - | - | Continuous batching LLM-инференса; occupancy-зависимая интенсивность, жёсткий потолок занятости; точные моменты и хвост W, точная регрессия к M/M/k/N |
 | Occupancy-модулированное двухветвевое | OccupancyDependentH2QueueCalc | - | - | Неоднородные длины вывода; точные уровневое распределение и среднее ожидание; сводится к строке выше при p1=1 или mu1=mu2 |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
-| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
+| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD; точные моменты И хвост времени ожидания `get_w_moments`/`get_tail` (при нулевом запасе заявка ждёт даже с пустой очередью) |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |
 | M/M/2 queueing-inventory, гетерогенные | MM2QueueingInventoryHeterogeneousCalc | MM2QueueingInventoryHeterogeneousSim | - | 2 сервера с разной скоростью, точный QBD, сводится к одинаковым c=2 выше |
 | M/M/c queueing-inventory, гетерогенные | MMcQueueingInventoryHeterogeneousCalc | MMcQueueingInventoryHeterogeneousSim | - | Общее c серверов с разной скоростью, точный QBD, сводится к c=2 и одинаковым серверам выше |

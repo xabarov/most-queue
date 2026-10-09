@@ -125,7 +125,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Occupancy-dependent continuous batching | OccupancyDependentQueueCalc | - | - | LLM-serving continuous batching; occupancy-dependent rate, hard concurrency cap; exact W moments/tail, exact regression to M/M/k/N |
 | Occupancy-modulated two-branch batching | OccupancyDependentH2QueueCalc | - | - | Heterogeneous output lengths; exact level distribution and mean wait; reduces to the row above at p1=1 or mu1=mu2 |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
-| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
+| M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD; exact waiting-time moments AND tail `get_w_moments`/`get_tail` (stockout makes a customer wait even with an empty queue) |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |
 | M/M/2 queueing-inventory, heterogeneous | MM2QueueingInventoryHeterogeneousCalc | MM2QueueingInventoryHeterogeneousSim | - | 2 servers with different rates, exact QBD, reduces to identical-server c=2 above |
 | M/M/c queueing-inventory, heterogeneous | MMcQueueingInventoryHeterogeneousCalc | MMcQueueingInventoryHeterogeneousSim | - | General c servers with different rates, exact QBD, reduces to c=2 and identical-server c above |

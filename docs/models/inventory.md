@@ -43,6 +43,42 @@ res = calc.run()
 # res.stock_distribution[i] = P(stock level == i)
 ```
 
+### Waiting-time distribution (not just the mean)
+
+**Description:** `MM1QueueingInventoryCalc` also gives the exact **distribution** of the waiting
+time, not only `E[W]`. The quantity that makes this model different from an ordinary M/M/1 is that
+a customer may wait *even with an empty queue* — if the stock is out, service cannot start until a
+replenishment arrives. The tail `P(W > t)` captures exactly that risk.
+
+```python
+calc = MM1QueueingInventoryCalc(s_max=5, s=1)
+calc.set_sources(l=0.6)
+calc.set_servers(mu=1.0, theta=0.8)
+
+moments = calc.get_w_moments(4)   # exact raw moments of W
+p_wait = calc.get_tail(0.0)       # P(W > 0) -- probability of any wait at all
+p_late = calc.get_tail(10.0)      # P(W > 10) -- deadline-violation probability
+```
+
+**Attribution.** That the waiting-time distribution is obtainable for queueing-inventory systems is
+established theory, not a result of this library: Jeganathan K. et al., *Electronics* 10(5):576,
+2021 ([doi:10.3390/electronics10050576](https://doi.org/10.3390/electronics10050576)) derive its
+LST via the matrix-geometric technique; Keerthana M., Sangeetha N., Sivakumar B., *Annals of
+Operations Research* 331(2):739–762, 2023 treat arbitrary service times. Surveys:
+Krishnamoorthy A. et al., *OPSEARCH* 48:153–169, 2011; Krishnamoorthy A., Shajin D.,
+Narayanan V.C., "Inventory with Positive Service Time: a Survey", in *Queueing Theory 2*, Wiley,
+2021, pp. 201–237. Our implementation takes a different computational route to the same quantity —
+a tagged-customer absorbing chain solved by matrix-exponential action, as used throughout this
+library's batch-service family — rather than numerical Laplace inversion.
+
+**Cross-checks.** The first moment from the absorbing chain agrees with `get_w()` to machine
+precision, which is a strong test because `get_w()` goes through a completely independent path
+(Little's law on the matrix-geometric stationary distribution); `∫P(W>t)dt` matches `E[W]`; and the
+tail is validated against an independent from-scratch discrete-event simulation.
+
+**Scope:** currently `MM1QueueingInventoryCalc` only — the multi-server and heterogeneous-server
+classes still report means only.
+
 ### Lost-sales variant
 
 **Description:** Set `policy="lost_sales"`: an arrival that finds the stock empty (`i = 0`) is

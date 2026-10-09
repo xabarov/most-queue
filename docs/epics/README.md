@@ -115,6 +115,7 @@
 | [EPIC-072](EPIC-072-bulk-service-multiserver-phase-type.md) | Многоканальный bulk-service с batch-size-зависимым обслуживанием | done |
 | [EPIC-073](EPIC-073-occupancy-dependent-continuous-batching.md) | Occupancy-dependent обслуживание с потолком занятости (ядро continuous batching LLM-serving) | done |
 | [EPIC-074](EPIC-074-occupancy-dependent-two-branch-service.md) | Occupancy-модулированное двухветвевое обслуживание с потолком занятости (неоднородные длины вывода) | done |
+| [EPIC-075](EPIC-075-queueing-inventory-waiting-distribution.md) | Распределение (моменты и хвост) времени ожидания в M/M/1 queueing-inventory — Р1 серии догоняющих работ | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

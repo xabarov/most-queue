@@ -40,6 +40,8 @@ to the original (0,S) formulas.
 from typing import Literal
 
 import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
 
 from most_queue.structs import QueueingInventoryResults
 from most_queue.theory.base_queue import BaseQueue
@@ -201,6 +203,144 @@ class MM1QueueingInventoryCalc(BaseQueue):
     def get_stock_distribution(self) -> list[float]:
         """P(stock level = i), i = 0..S, exact (summed over all queue lengths)."""
         return [float(x) for x in self._phase_marginal()]
+
+    # ------------------------------- waiting-time DISTRIBUTION (EPIC-075)
+    def _wait_phase_type(self, level_truncation: int | None = None):
+        """
+        Phase-type representation ``(alpha, T, p_zero)`` of the waiting time W
+        of a customer that actually enters the system.
+
+        Literature note. That the waiting-time DISTRIBUTION (not only its
+        mean) is obtainable for queueing-inventory systems is an established
+        result -- see Jeganathan K. et al., Electronics 10(5):576, 2021
+        (doi:10.3390/electronics10050576), which derives the LST of the
+        unconditional waiting time via the matrix-geometric technique, and
+        Keerthana M., Sangeetha N., Sivakumar B., Annals of Operations
+        Research 331(2):739-762, 2023, for arbitrary service times; surveys:
+        Krishnamoorthy A. et al., OPSEARCH 48:153-169, 2011, and
+        Krishnamoorthy A., Shajin D., Narayanan V.C., "Inventory with
+        Positive Service Time: a Survey", in Queueing Theory 2, Wiley, 2021,
+        pp. 201-237. The construction below is a different computational
+        route to the same quantity (a tagged-customer absorbing chain solved
+        by matrix-exponential action, as used throughout this library's
+        batch-service family) rather than numerical Laplace inversion; it is
+        an implementation of known theory, not a new result.
+
+        Construction. A tagged arrival that finds ``n`` customers in system
+        and stock ``i`` starts service only once BOTH the ``n`` ahead are
+        served AND stock is positive -- a stockout keeps it waiting even with
+        an empty queue, which is what distinguishes this from an ordinary
+        M/M/1 wait. Transient state is ``(r, i)``: ``r`` = customers still
+        ahead, ``i`` = current stock. Arrivals behind the tagged customer are
+        irrelevant under FCFS and are not tracked.
+
+        :return: ``(alpha, T, p_zero)`` -- initial vector over transient
+            states, sparse sub-generator, and the probability of zero wait.
+        """
+        self._check_if_servers_and_sources_set()
+        solver = self._build_solver()
+        # lambda is deliberately absent: arrivals BEHIND the tagged customer
+        # never affect its wait under FCFS, so the chain does not track them.
+        mu, theta = self.mu, self.theta
+        s_max, s = self.s_max, self.s
+        m = s_max + 1
+
+        n_max = level_truncation or self.calc_params.p_num
+        levels = solver.level_probs(n_max + 1)  # levels[n][i] = pi(n, i)
+
+        # transient states: (r, i) for r = 1..n_max, any i; plus the single
+        # "queue empty but stocked out" state, indexed last.
+        def idx(r, i):
+            return (r - 1) * m + i
+
+        stuck = n_max * m  # state (r=0, i=0)
+        size = stuck + 1
+
+        rows, cols, vals = [], [], []
+        out = np.zeros(size)
+
+        def add(src, dst, rate):
+            rows.append(src)
+            cols.append(dst)
+            vals.append(rate)
+            out[src] += rate
+
+        for r in range(1, n_max + 1):
+            for i in range(m):
+                src = idx(r, i)
+                if i >= 1:  # service of the customer in front proceeds
+                    if r - 1 >= 1:
+                        add(src, idx(r - 1, i - 1), mu)
+                    elif i - 1 >= 1:
+                        out[src] += mu  # absorbed: tagged starts service
+                    else:
+                        add(src, stuck, mu)  # queue cleared but stock just hit 0
+                if i <= s:  # an order is in transit
+                    add(src, idx(r, s_max), theta)
+        # from the stocked-out empty-queue state only replenishment helps,
+        # and it absorbs immediately (stock becomes S >= 1)
+        out[stuck] += theta
+
+        q = sp.coo_matrix((vals, (rows, cols)), shape=(size, size)).tocsr()
+        t_mat = (q - sp.diags(out)).tocsc()
+
+        alpha = np.zeros(size)
+        p_zero = 0.0
+        accepted = 0.0
+        for n in range(n_max + 1):
+            for i in range(m):
+                prob = float(levels[n][i])
+                if prob <= 0:
+                    continue
+                if self.policy == "lost_sales" and i == 0:
+                    continue  # such an arrival is turned away, never waits
+                accepted += prob
+                if n == 0:
+                    if i >= 1:
+                        p_zero += prob  # served at once
+                    else:
+                        alpha[stuck] += prob
+                else:
+                    alpha[idx(n, i)] += prob
+        if accepted <= 0:
+            raise ValueError("no accepted-arrival probability mass; check parameters")
+        alpha /= accepted
+        p_zero /= accepted
+        return alpha, t_mat, p_zero
+
+    def get_w_moments(self, num: int = 4, level_truncation: int | None = None) -> list[float]:
+        """
+        Exact raw moments of the waiting time W, via the phase-type
+        representation (see ``_wait_phase_type`` for the literature context).
+
+        The first moment must agree with :meth:`get_w` -- that is a strong
+        cross-check, since ``get_w`` goes through Little's law on the
+        stationary distribution while this goes through a tagged-customer
+        absorbing chain.
+        """
+        alpha, t_mat, _ = self._wait_phase_type(level_truncation)
+        moments = []
+        vec = np.ones(t_mat.shape[0])
+        factorial = 1.0
+        for k in range(1, num + 1):
+            vec = spla.spsolve((-t_mat).tocsc(), vec)
+            factorial *= k
+            moments.append(float(factorial * (alpha @ vec)))
+        return moments
+
+    def get_tail(self, t: float, level_truncation: int | None = None) -> float:
+        """Exact P(W > t) -- deadline-violation probability for the wait."""
+        if t < 0:
+            raise ValueError(f"t must be non-negative, got {t}")
+        alpha, t_mat, _ = self._wait_phase_type(level_truncation)
+        if t == 0:
+            return float(alpha.sum())
+        vec = spla.expm_multiply(t_mat.T.tocsc() * t, alpha)
+        return float(np.sum(vec))
+
+    def get_cdf(self, t: float, level_truncation: int | None = None) -> float:
+        """Exact P(W <= t)."""
+        return 1.0 - self.get_tail(t, level_truncation)
 
     def run(self, num_levels: int | None = None) -> QueueingInventoryResults:
         """Solve the QBD and report queue + inventory metrics."""
