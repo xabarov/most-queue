@@ -494,6 +494,89 @@ def fig_batch():
     return fig
 
 
+def fig_continuous_batching():
+    """Occupancy-dependent continuous batching (LLM-serving KV-cache cap)."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
+    _clean_axes(ax, (-0.4, 11.6), (-2.0, 1.7))
+
+    # waiting room (FCFS, beyond the cap)
+    draw_arrow(ax, 0.2, 0, 0.95, 0)
+    draw_queue(ax, 1.15, 0, n_slots=3, occupied=2, occ_color=INK2)
+    draw_arrow(ax, 2.45, 0, 3.15, 0)
+
+    # occupancy-capped active pool: k slots, some occupied -- rate depends on occupancy
+    pool_x, pool_w, pool_h = 3.35, 3.9, 1.5
+    ax.add_patch(
+        FancyBboxPatch(
+            (pool_x, -pool_h / 2),
+            pool_w,
+            pool_h,
+            boxstyle="round,pad=0.03",
+            fc="white",
+            ec=AQUA,
+            lw=1.6,
+            zorder=2,
+        )
+    )
+    slot_positions = [(pool_x + 0.55 + i * 0.95, 0.32) for i in range(4)]
+    for i, (sx, sy) in enumerate(slot_positions):
+        draw_customer(ax, sx, sy, color=BLUE if i < 3 else "white", r=0.22)
+        if i >= 3:
+            ax.add_patch(Circle((sx, sy), 0.22, fc="none", ec=MUTED, lw=1.2, zorder=3))
+    ax.text(
+        pool_x + pool_w / 2,
+        -0.42,
+        t("k = 4 slots (KV-cache cap)", "k = 4 места (потолок KV-cache)"),
+        fontsize=8.5,
+        color=INK2,
+        ha="center",
+    )
+    ax.text(
+        pool_x + pool_w / 2,
+        -0.75,
+        t("rate = μ(occupancy) = μ(3)", "ставка = μ(occupancy) = μ(3)"),
+        fontsize=8.5,
+        color=INK2,
+        ha="center",
+        fontweight="bold",
+    )
+
+    draw_arrow(ax, pool_x + pool_w + 0.2, 0, pool_x + pool_w + 0.95, 0)
+    draw_customer(ax, pool_x + pool_w + 1.25, 0, color=GREEN, r=0.16)
+
+    ax.text(
+        1.3,
+        0.95,
+        t(
+            "beyond the cap: FCFS wait",
+            "сверх потолка: ожидание по FCFS",
+        ),
+        fontsize=9,
+        color=INK2,
+        ha="left",
+    )
+    ax.text(
+        pool_x + pool_w / 2,
+        1.3,
+        t(
+            "active pool: requests join/leave independently,\none iteration at a time",
+            "активный пул: заявки входят/выходят независимо,\nпо одной итерации за раз",
+        ),
+        fontsize=9,
+        color=INK2,
+        ha="center",
+    )
+    _title(
+        ax,
+        t(
+            "Occupancy-dependent continuous batching: rate depends on current occupancy, hard cap k",
+            "Occupancy-зависимый continuous batching: ставка зависит от занятости, жёсткий потолок k",
+        ),
+        x=0.5,
+    )
+    return fig
+
+
 def fig_impatience():
     """Impatient customers."""
     fig, ax = plt.subplots(figsize=(8.2, 2.8), dpi=150)
@@ -1794,6 +1877,7 @@ FIGURES = {
     "negative": fig_negative,
     "fork_join": fig_fork_join,
     "batch": fig_batch,
+    "continuous_batching": fig_continuous_batching,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,

@@ -127,6 +127,16 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Occupancy-dependent continuous batching**: exact
+  waiting-time distribution (moments and tail, not just the mean) for the Markovian core
+  of LLM-serving "continuous batching" — up to `k` requests served concurrently with a
+  per-request rate that depends on current occupancy, capped by accelerator memory
+  (KV-cache). Occupancy is pinned at the cap whenever anyone waits, so `W` is an exact,
+  closed-form mixture of Erlang distributions — no sparse solve needed. Regresses exactly
+  to the classical `M/M/k/N` queue at a constant rate; DES-validated. A simple
+  approximation that ignores the occupancy dependence is shown to overstate
+  deadline-violation risk by 1-2 orders of magnitude at moderate occupancy and several
+  orders of magnitude at a large concurrency cap. [Model](docs/models/continuous-batching.md).
 - **2026-10, current source tree** — **Idle-refill, impatience, and multiserver bulk-service**:
   three further generalizations of the bounded-window batch-service model — exact W
   moments/tail for any idle-refill race `a<=b` (not just `a=1`); Markovian abandonment

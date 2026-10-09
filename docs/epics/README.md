@@ -113,6 +113,7 @@
 | [EPIC-070](EPIC-070-bulk-service-multiserver-impatience.md) | Нетерпеливые заявки в многоканальном bulk-service (EPIC-068 × EPIC-069) | done |
 | [EPIC-071](EPIC-071-bulk-service-h2-impatience.md) | Нетерпеливые заявки для H2-обслуживания (EPIC-036/042 × EPIC-068) | done |
 | [EPIC-072](EPIC-072-bulk-service-multiserver-phase-type.md) | Многоканальный bulk-service с batch-size-зависимым обслуживанием | done |
+| [EPIC-073](EPIC-073-occupancy-dependent-continuous-batching.md) | Occupancy-dependent обслуживание с потолком занятости (ядро continuous batching LLM-serving) | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

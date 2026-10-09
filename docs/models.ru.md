@@ -22,6 +22,7 @@
 | [Системы с отрицательными заявками](models/negative.ru.md) | отрицательные заявки: RCS и disasters, одно- и многоканальные |
 | [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач; гетерогенные ветви, series-parallel DAG задач, (n,k)-join |
 | [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 (или общее Erlang/H2-подогнанное обслуживание батча) |
+| [Occupancy-зависимый continuous batching](models/continuous-batching.ru.md) | continuous batching LLM-инференса: occupancy-зависимая интенсивность обслуживания, жёсткий потолок занятости, точные моменты и хвост времени ожидания |
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
 | [Матрично-аналитические модели (MAP/PH)](models/map-ph.ru.md) | коррелированные потоки: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP-варианты, фиттинг MMPP |
