@@ -59,6 +59,7 @@
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | По предсказанию Y |
 | M/G/1 FB/LAS | MG1FbCalc | FBSim | - | Blind, по attained service |
 | M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Равное разделение, slowdown 1/(1−ρ) |
+| M/G/n PS | MGnPSCalc | - | - | Равное разделение между n серверами; при n=1 сводится к M/G/1 PS; число заявок совпадает с M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Время пребывания = период занятости |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, только w1 |
@@ -110,6 +111,8 @@
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM; точные моменты N/W при a=1 |
 | M/Erlang(k)^[a,b]/1 групповое обслуживание | BulkServiceErlangCalc | - | - | Общее (Erlang-подогнанное, CV≤1) время обслуживания батча; сводится к k=1 выше |
 | M/H2^[a,b]/1 групповое обслуживание | BulkServiceH2Calc | - | - | Общее (H2-подогнанное, CV≥1) время обслуживания батча; сводится к p1=1 выше |
+| Occupancy-зависимый continuous batching | OccupancyDependentQueueCalc | - | - | Continuous batching LLM-инференса; occupancy-зависимая интенсивность, жёсткий потолок занятости; точные моменты и хвост W, точная регрессия к M/M/k/N |
+| Occupancy-модулированное двухветвевое | OccupancyDependentH2QueueCalc | - | - | Неоднородные длины вывода; точные уровневое распределение и среднее ожидание; сводится к строке выше при p1=1 или mu1=mu2 |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |

@@ -153,6 +153,30 @@ slowdown = calc.get_mean_slowdown()          # 1/(1-rho)
 t_x = calc.get_conditional_sojourn_mean(2.0)  # x/(1-rho)
 ```
 
+### M/G/n PS (Processor Sharing, n servers)
+
+**Description:** Generalizes M/G/1 PS to `n` identical servers — while at most `n` jobs are
+present each gets a dedicated server; once the count exceeds `n`, the combined capacity is
+shared equally among everyone present. Same BCMP/Kelly insensitivity to the service-time
+distribution shape (only the mean enters); the queue-length distribution is identical to the
+classical M/M/n (Erlang-C) one — PS and FCFS differ in how individual jobs are served, not in
+the aggregate occupancy process. `n=1` reduces exactly to `MG1PSCalc` above.
+
+**Calculator class:** `MGnPSCalc` (`most_queue.theory.fifo.mgn_ps`)
+
+```python
+from most_queue.theory.fifo.mgn_ps import MGnPSCalc
+
+calc = MGnPSCalc(n=4)
+calc.set_sources(l=2.5)
+calc.set_servers([1.0])  # service time moments
+results = calc.run()      # results.v[0] -- mean sojourn, via Little's law
+```
+
+**Accuracy and scope:** exact queue-length distribution and mean sojourn/waiting for any `n`;
+job-size-conditional sojourn time and higher moments (an open point even for `n=1`) require the
+Yashkov/Ott transform machinery and are left for a follow-up.
+
 ### M/G/1 LCFS-PR
 
 ![LCFS-PR diagram](../figures/lcfs_pr.png)

@@ -14,6 +14,7 @@ from most_queue.theory.fifo.m_g_inf import MGInfCalc
 from most_queue.theory.fifo.mg1 import MG1Calc
 from most_queue.theory.fifo.mg1_lcfs_pr import MG1LcfsPrCalc
 from most_queue.theory.fifo.mg1_ps import MG1PSCalc
+from most_queue.theory.fifo.mgn_ps import MGnPSCalc
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc
 from most_queue.theory.fifo.mmnr import MMnrCalc
 
@@ -33,5 +34,6 @@ __all__ = [
     "MG1LcfsPrCalc",
     "MG1PSCalc",
     "MGnCalc",
+    "MGnPSCalc",
     "MMnrCalc",
 ]

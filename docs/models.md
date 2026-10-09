@@ -64,6 +64,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | By prediction Y |
 | M/G/1 FB/LAS | MG1FbCalc | FBSim | - | Blind, by attained service |
 | M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Equal sharing, slowdown 1/(1−ρ) |
+| M/G/n PS | MGnPSCalc | - | - | n-server egalitarian sharing; reduces to M/G/1 PS at n=1; queue length matches M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Sojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | General arrivals |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, w1 only |
@@ -122,6 +123,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above; exact `get_tail`/`get_cdf` at a=1 |
 | M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above; exact `get_tail`/`get_cdf` at a=1 |
 | Occupancy-dependent continuous batching | OccupancyDependentQueueCalc | - | - | LLM-serving continuous batching; occupancy-dependent rate, hard concurrency cap; exact W moments/tail, exact regression to M/M/k/N |
+| Occupancy-modulated two-branch batching | OccupancyDependentH2QueueCalc | - | - | Heterogeneous output lengths; exact level distribution and mean wait; reduces to the row above at p1=1 or mu1=mu2 |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |

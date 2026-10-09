@@ -8,5 +8,6 @@ CURRENT occupancy of that pool (shared-compute/memory-bandwidth slowdown).
 """
 
 from most_queue.theory.continuous_batching.occupancy_dependent import OccupancyDependentQueueCalc
+from most_queue.theory.continuous_batching.occupancy_dependent_h2 import OccupancyDependentH2QueueCalc
 
-__all__ = ["OccupancyDependentQueueCalc"]
+__all__ = ["OccupancyDependentQueueCalc", "OccupancyDependentH2QueueCalc"]
