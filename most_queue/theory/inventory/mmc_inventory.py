@@ -32,6 +32,11 @@ import numpy as np
 from most_queue.structs import QueueingInventoryResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+from most_queue.theory.inventory._wait_phase import (
+    build_wait_phase_type,
+    phase_type_moments,
+    phase_type_tail,
+)
 from most_queue.theory.matrix.qbd import QBDSolver
 
 Policy = Literal["backorder", "lost_sales"]
@@ -222,14 +227,103 @@ class MMcQueueingInventoryCalc(BaseQueue):
         return self.v
 
     def get_w(self) -> list[float]:
-        """Mean waiting time: E[W] = E[V] - E[service] (V = W + S for FCFS, always exact)."""
-        v = self.v if self.v is not None else self.get_v()
-        self.w = [v[0] - 1.0 / self.mu]
+        """
+        Mean waiting time, exact -- from the tagged-customer phase-type
+        representation (:meth:`get_w_moments`).
+
+        NOTE (bug fixed in EPIC-075). This used to be computed as
+        ``E[V] - 1/mu``, which is WRONG for ``c > 1`` whenever stockouts
+        actually occur. With several servers running, one of them can consume
+        the last stock unit while another customer is still mid-service; that
+        customer is then BLOCKED until a replenishment arrives, so its time in
+        service is not Exp(mu) and ``E[S] > 1/mu``. Subtracting ``1/mu``
+        therefore overstates the wait. Measured example (c=2, S=6, s=0,
+        lam=mu=1, theta=20): independent simulation gives E[S] = 1.0058 and
+        E[W] = 0.3485 +- 0.0015, the old formula gave 0.3527 (+2.85 sigma),
+        the phase-type value gives 0.3472 (-0.93 sigma).
+
+        The single-server model is unaffected -- with one server the stock
+        cannot drop while that service is running, so ``E[S] = 1/mu`` exactly
+        there.
+        """
+        self.w = [self.get_w_moments(1)[0]]
         return self.w
+
+    def get_service_time_mean(self) -> float:
+        """
+        Mean time actually spent in service, ``E[S] = E[V] - E[W]``.
+
+        Exceeds ``1/mu`` when ``c > 1`` and stockouts occur, because a service
+        in progress is suspended while stock is out (see :meth:`get_w`).
+        """
+        v = self.v if self.v is not None else self.get_v()
+        w = self.w if self.w is not None else self.get_w()
+        return v[0] - w[0]
 
     def get_stock_distribution(self) -> list[float]:
         """P(stock level = i), i = 0..S, exact (summed over all queue lengths)."""
         return [float(x) for x in self._phase_marginal()]
+
+    # ------------------------------- waiting-time DISTRIBUTION (EPIC-075)
+    def _wait_phase_type(self, level_truncation: int | None = None):
+        """
+        Phase-type representation ``(alpha, T, p_zero)`` of the waiting time.
+
+        Shares the construction with the single-server model -- see
+        :mod:`most_queue.theory.inventory._wait_phase` for the full literature
+        attribution and the derivation. With ``c`` servers the tagged customer
+        needs fewer than ``c`` customers still ahead of it (so that a server is
+        free) AND positive stock; the completion rate while it waits is
+        ``min(r, c) * mu``, matching the ``min(n, c)`` busy-server count this
+        model is built on.
+        """
+        self._check_if_servers_and_sources_set()
+        solver = self._build_solver()
+        n_max = level_truncation or self.calc_params.p_num
+        pi0_blocks = self._pi0_blocks()
+
+        repeating: list[np.ndarray] = []
+        if n_max >= self.c:
+            vec = solver.pi1.copy()
+            for _ in range(n_max - self.c + 1):
+                repeating.append(vec)
+                vec = vec @ solver.r
+
+        def level_phase_probs(n: int) -> np.ndarray:
+            if n < self.c:
+                return pi0_blocks[n]
+            return repeating[n - self.c]
+
+        return build_wait_phase_type(
+            level_phase_probs=level_phase_probs,
+            c=self.c,
+            s_max=self.s_max,
+            s=self.s,
+            mu=self.mu,
+            theta=self.theta,
+            n_max=n_max,
+            lost_sales=self.policy == "lost_sales",
+        )
+
+    def get_w_moments(self, num: int = 4, level_truncation: int | None = None) -> list[float]:
+        """
+        Exact raw moments of the waiting time W.
+
+        The first moment must agree with :meth:`get_w`, which reaches the same
+        quantity through an entirely independent path (Little's law on the
+        matrix-geometric stationary distribution) -- a strong cross-check.
+        """
+        alpha, t_mat, _ = self._wait_phase_type(level_truncation)
+        return phase_type_moments(alpha, t_mat, num)
+
+    def get_tail(self, t: float, level_truncation: int | None = None) -> float:
+        """Exact P(W > t) -- deadline-violation probability for the wait."""
+        alpha, t_mat, _ = self._wait_phase_type(level_truncation)
+        return phase_type_tail(alpha, t_mat, t)
+
+    def get_cdf(self, t: float, level_truncation: int | None = None) -> float:
+        """Exact P(W <= t)."""
+        return 1.0 - self.get_tail(t, level_truncation)
 
     def run(self, num_levels: int | None = None) -> QueueingInventoryResults:
         """Solve the QBD and report queue + inventory metrics."""

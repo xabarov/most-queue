@@ -312,7 +312,26 @@ class MMcQueueingInventoryHeterogeneousCalc(BaseQueue):
         return self.v
 
     def get_w(self) -> list[float]:
-        """Mean waiting time: E[W] = E[V] - E[service] (V = W + S for FCFS, always exact)."""
+        """
+        Mean waiting time: ``E[W] = E[V] - E[service]``.
+
+        .. warning::
+
+           Known defect, queued for fix (see EPIC-075 and
+           docs/roadmaps/literature_catchup_roadmap.md). This uses
+           ``E[V] - 1/mu``, which OVERSTATES the wait whenever ``c > 1`` and
+           stockouts actually occur: with several servers running, one can
+           consume the last stock unit while another customer is still
+           mid-service, suspending that service until a replenishment, so the
+           real ``E[S]`` exceeds the nominal mean service time. The error
+           vanishes when stock never binds and grows with the stockout
+           probability (measured ~2% in a c=2 example). ``E[V]`` and the stock
+           metrics are exact and unaffected. The exact wait is already
+           available in ``MMcQueueingInventoryCalc`` via its phase-type
+           construction; the heterogeneous classes need their own (the tagged
+           customer's wait depends on WHICH servers are busy), which is the
+           next item on the catchup roadmap.
+        """
         v = self.v if self.v is not None else self.get_v()
         self.w = [v[0] - self._mean_service_time()]
         return self.w

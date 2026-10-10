@@ -76,8 +76,11 @@ precision, which is a strong test because `get_w()` goes through a completely in
 (Little's law on the matrix-geometric stationary distribution); `∫P(W>t)dt` matches `E[W]`; and the
 tail is validated against an independent from-scratch discrete-event simulation.
 
-**Scope:** currently `MM1QueueingInventoryCalc` only — the multi-server and heterogeneous-server
-classes still report means only.
+**Scope:** `MM1QueueingInventoryCalc` and `MMcQueueingInventoryCalc`. The heterogeneous-server
+classes still report means only, and their mean wait carries a documented defect for `c > 1` (see
+the warning in their `get_w` docstrings): it uses `E[V] - 1/mu`, which overstates the wait because
+a service in progress is suspended while stock is out, so `E[S] > 1/mu`. `MMcQueueingInventoryCalc`
+also exposes `get_service_time_mean()` for that actual `E[S]`.
 
 ### Lost-sales variant
 

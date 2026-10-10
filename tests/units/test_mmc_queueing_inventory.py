@@ -69,12 +69,35 @@ def test_distributions_are_valid_probability_vectors():
     assert np.isclose(res.fill_rate, 1.0 - res.stockout_prob)
 
 
-def test_sojourn_equals_wait_plus_service():
+def test_sojourn_equals_wait_plus_actual_service():
+    """V = W + S must hold with the ACTUAL mean service time, which exceeds
+    1/mu once c > 1 and stockouts occur.
+
+    This test previously asserted ``v == w + 1/mu`` and was tautological:
+    ``get_w()`` was itself defined as ``v - 1/mu``, so it could never fail --
+    which is exactly why the modelling error it was meant to guard went
+    unnoticed until EPIC-075. With several servers one of them can take the
+    last stock unit while another customer is still mid-service, suspending
+    that service until a replenishment arrives.
+    """
     calc = MMcQueueingInventoryCalc(c=2, s_max=4, s=1, policy="backorder")
     calc.set_sources(1.0)
     calc.set_servers(mu=1.0, theta=0.5)
     res = calc.run()
-    assert np.isclose(res.v[0], res.w[0] + 1.0 / calc.mu, atol=1e-9)
+    assert np.isclose(res.v[0], res.w[0] + calc.get_service_time_mean(), atol=1e-9)
+    # and the blocking really is there: service takes longer than 1/mu
+    assert calc.get_service_time_mean() > 1.0 / calc.mu
+
+
+def test_single_server_service_time_is_exactly_one_over_mu():
+    """With one server the stock cannot drop during that service, so no
+    blocking is possible and E[S] = 1/mu exactly -- the boundary case that
+    makes the c>1 discrepancy above meaningful rather than a numerical fluke."""
+    calc = MMcQueueingInventoryCalc(c=1, s_max=4, s=1, policy="backorder")
+    calc.set_sources(0.6)
+    calc.set_servers(mu=1.0, theta=0.5)
+    calc.run()
+    assert np.isclose(calc.get_service_time_mean(), 1.0 / calc.mu, atol=1e-9)
 
 
 def test_lost_sales_loss_prob_equals_stockout_prob():

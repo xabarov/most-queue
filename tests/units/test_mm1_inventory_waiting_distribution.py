@@ -167,3 +167,116 @@ def test_rejects_negative_time():
     calc.set_servers(mu=1.0, theta=1.0)
     with pytest.raises(ValueError):
         calc.get_tail(-1.0)
+
+
+# ---------------------------------------------------------------- multi-server (EPIC-075)
+
+
+def _independent_des_mmc(c, s_max, s, lam, mu, theta, total=1_500_000, warmfrac=0.1, seed=1):
+    """From-scratch DES for the M/M/c queueing-inventory system. Returns
+    (waits, service_durations): service is SUSPENDED while stock is out, which
+    is why the two must be measured separately."""
+    rng = np.random.default_rng(seed)
+    inf = float("inf")
+    t = 0.0
+    stock = s_max
+    order_out = False
+    queue: deque = deque()
+    in_svc: list[tuple[float, float]] = []
+    next_arr = rng.exponential(1 / lam)
+    next_repl = inf
+    n_acc = 0
+    waits: list[float] = []
+    svcs: list[float] = []
+
+    def maybe_order():
+        nonlocal order_out, next_repl
+        if not order_out and stock <= s:
+            order_out = True
+            next_repl = t + rng.exponential(1 / theta)
+
+    def maybe_start():
+        while len(in_svc) < c and queue and stock > 0:
+            in_svc.append((queue.popleft(), t))
+
+    maybe_order()
+    while n_acc < total:
+        rate = len(in_svc) * mu if (in_svc and stock > 0) else 0.0
+        next_dep = t + rng.exponential(1 / rate) if rate > 0 else inf
+        tnext = min(next_arr, next_dep, next_repl)
+        t = tnext
+        if tnext == next_arr:
+            n_acc += 1
+            queue.append(t)
+            next_arr = t + rng.exponential(1 / lam)
+            maybe_start()
+        elif tnext == next_dep:
+            arr, start = in_svc.pop(int(rng.integers(len(in_svc))))
+            stock -= 1
+            waits.append(start - arr)
+            svcs.append(t - start)
+            maybe_order()
+            maybe_start()
+        else:
+            stock = s_max
+            order_out = False
+            next_repl = inf
+            maybe_order()
+            maybe_start()
+    cut = int(len(waits) * warmfrac)
+    return np.array(waits[cut:]), np.array(svcs[cut:])
+
+
+def test_mmc_c_one_matches_single_server_class():
+    """c=1 of the multi-server class must reproduce the single-server class
+    exactly, moments and tail alike."""
+    from most_queue.theory.inventory.mmc_inventory import MMcQueueingInventoryCalc
+
+    kw = dict(s_max=4, s=1)
+    multi = MMcQueueingInventoryCalc(c=1, **kw)
+    multi.set_sources(0.5)
+    multi.set_servers(mu=1.0, theta=0.8)
+    single = MM1QueueingInventoryCalc(**kw)
+    single.set_sources(0.5)
+    single.set_servers(mu=1.0, theta=0.8)
+
+    assert multi.get_w_moments(1)[0] == pytest.approx(single.get_w_moments(1)[0], rel=1e-12)
+    for t in (0.0, 1.0, 3.0):
+        assert multi.get_tail(t) == pytest.approx(single.get_tail(t), rel=1e-12)
+
+
+def test_mmc_waiting_distribution_matches_independent_des():
+    """Multi-server wait against an independent DES. This is the check that
+    exposed the pre-EPIC-075 `E[V] - 1/mu` formula as biased."""
+    from most_queue.theory.inventory.mmc_inventory import MMcQueueingInventoryCalc
+
+    c, s_max, s, lam, mu, theta = 2, 6, 0, 1.0, 1.0, 20.0
+    calc = MMcQueueingInventoryCalc(c=c, s_max=s_max, s=s)
+    calc.set_sources(lam)
+    calc.set_servers(mu=mu, theta=theta)
+
+    w, svc = _independent_des_mmc(c, s_max, s, lam, mu, theta, total=1_500_000, seed=3)
+    assert w.mean() == pytest.approx(calc.get_w_moments(1)[0], rel=0.03)
+    # the blocking effect itself must be reproduced, not just the wait
+    assert svc.mean() == pytest.approx(calc.get_service_time_mean(), rel=0.01)
+    assert svc.mean() > 1.0 / mu
+
+
+def test_mmc_stock_non_binding_reduces_to_ordinary_mmc():
+    """With plentiful stock and fast replenishment the model must collapse onto
+    the ordinary M/M/c queue -- an independent anchor outside the inventory family."""
+    from most_queue.theory.fifo.mmnr import MMnrCalc
+    from most_queue.theory.inventory.mmc_inventory import MMcQueueingInventoryCalc
+
+    # c=2 only: at c=1 with this large a theta the QBD solver itself overflows
+    # in its logarithmic reduction (a PRE-EXISTING fragility -- `get_v()` fails
+    # identically, with no EPIC-075 code involved; recorded in the catchup
+    # roadmap). The c=1 reduction is covered by
+    # `test_mmc_c_one_matches_single_server_class` at mild rates instead.
+    calc = MMcQueueingInventoryCalc(c=2, s_max=6, s=3)
+    calc.set_sources(1.0)
+    calc.set_servers(mu=1.0, theta=20.0)
+    ref = MMnrCalc(n=2, r=300)
+    ref.set_sources(1.0)
+    ref.set_servers(1.0)
+    assert calc.get_w_moments(1)[0] == pytest.approx(ref.get_w(1)[0], rel=1e-3)
