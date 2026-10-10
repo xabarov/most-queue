@@ -580,7 +580,7 @@ network.set_sources(
 #### Индивидуальные отрицательные заявки для каждого узла
 
 ```python
-# ВАЖНО: set_nodes() должен быть вызван ПЕРЕД set_sources() для per_node типа
+# Важно: set_nodes() должен быть вызван до set_sources() для типа per_node
 network.set_nodes(...)  # см. ниже
 
 # Настройка источников с индивидуальными отрицательными заявками
@@ -721,29 +721,60 @@ results = network.run(50000)
 
 ## Оптимизация сетей
 
-Библиотека также предоставляет методы оптимизации матрицы переходов сети для минимизации времени пребывания заявок.
+В библиотеке есть и методы оптимизации матрицы переходов сети для минимизации среднего времени
+пребывания. Оптимизатор работает балансировкой нагрузки: он многократно находит наиболее
+загруженный узел и перераспределяет часть его исходящего потока на менее загруженных потомков,
+каждый раз пересчитывая сеть, пока перераспределение не перестанет давать выигрыш. Подход следует
+книге Рыжиков Ю.И., *Численные методы теории очередей*, Лань, 2019.
+
+**Классы** (`most_queue.theory.networks.opt`):
+
+| Класс | Модуль | Что добавляет |
+|---|---|---|
+| `NetworkOptimizer` | `transition` | Базовый поиск балансировкой нагрузки |
+| `NetworkOptimizerPlus` | `transition_plus` | Несколько стратегий отбора кандидатов и поиск по top-k вместо одного жадного шага |
+| `NetworkOptimizerWithApprox` | `transition_approx` | Полиномиальная аппроксимация шага балансировки — меньше полных пересчётов сети |
+| `OptimizerDynamic` | `transition` | Состояние на каждом шаге (загрузки, среднее время пребывания) для отслеживания или построения графиков |
 
 ### Пример оптимизации
 
 ```python
-from most_queue.theory.networks.opt.transition import TransitionOptimization
+import numpy as np
+from most_queue.random.distributions import ExpDistribution
+from most_queue.theory.networks.open_network import OpenNetworkCalc
+from most_queue.theory.networks.opt.transition import NetworkOptimizer
 
-# Создание оптимизатора
-optimizer = TransitionOptimization()
+num_channels = [1, 3, 2, 1, 3, 2]
+R = np.matrix([
+    [0.2, 0.7, 0.1, 0,   0,   0,   0  ],
+    [0,   0.3, 0,   0.3, 0.4, 0,   0  ],
+    [0,   0,   0.5, 0.2, 0.3, 0,   0  ],
+    [0,   0,   0,   0,   0.7, 0.3, 0  ],
+    [0.2, 0,   0,   0,   0.4, 0.2, 0.2],
+    [0,   0,   0,   0,   0,   0.4, 0.6],
+    [0,   0,   0,   0,   0,   0,   1  ],
+])
+b = [ExpDistribution.calc_theory_moments(1.0) for _ in range(len(num_channels))]
 
-# Начальная матрица переходов
-R0 = np.matrix([...])
+network = OpenNetworkCalc()
+network.set_sources(R=R, arrival_rate=3.8)
+network.set_nodes(b=b, n=num_channels)
 
-# Оптимизация
-R_opt = optimizer.optimize(
-    R0=R0,
-    arrival_rate=2.0,
-    b=b,
-    n=num_channels
+optimizer = NetworkOptimizer(
+    network=network,
+    # верхняя граница вероятности ухода из сети для каждого узла;
+    # не даёт оптимизатору просто направить весь поток сразу на выход
+    maximum_rates_to_end=[0, 0, 0, 0, 0.3, 0.6, 1.0],
+    is_service_markovian=True,
+    verbose=True,
 )
-
-print(f"Оптимизированная матрица:\n{R_opt}")
+best_R, v1 = optimizer.run()
+print(f"Лучшее среднее время пребывания: {v1:.2f}")
 ```
+
+`maximum_rates_to_end` — то самое ограничение, которое делает задачу содержательной: без
+ограничения на долю потока, уходящую из каждого узла наружу, минимум достигается простым
+«выбрасыванием» сети.
 
 ## Структура результатов
 

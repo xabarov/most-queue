@@ -68,11 +68,23 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/G/n PS | MGnPSCalc | - | - | n-server egalitarian sharing; reduces to M/G/1 PS at n=1; queue length matches M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Sojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | General arrivals |
+| GI/M/c | GiMn | QsSim | - | General arrivals, c servers; embedded chain at arrival epochs |
+| M/D/n | MDn | QsSim | - | Deterministic service, n servers |
+| Ek/D/n | EkDn | QsSim | - | Erlang arrivals, deterministic service |
+| M/H2/n (Takahashi-Takami) | MGnCalc | QsSim | - | General service via an H2 fit; numerical matrix-geometric iteration |
+| H2/M/n (Takahashi-Takami) | H2MnCalc | QsSim | - | H2 arrivals, exponential service |
+| Hk/Hk/n (Takahashi-Takami) | HkHkNCalc | QsSim | - | Hyperexponential arrivals AND service |
 | GI/M/2, busy-server-dependent rate | GiM2StateDependentCalc | - | - | A lone busy server may work at a different rate (helped by the idle one, or slowed down); exact state, arrival-observed and waiting-time distributions (Bhat 1966) |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, w1 only |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Yes | Preemptive priority |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Yes | Non-preemptive priority |
+| M/G/1 preemptive priority | MG1PreemptiveCalc | PriorityQueueSimulator | Yes | Exact, single server |
+| M/G/1 non-preemptive priority | MG1NonPreemptiveCalc | PriorityQueueSimulator | Yes | Exact, single server |
 | M/G/1 multiple vacations | MG1MultipleVacationsCalc | VacationQueueingSystemSimulator | - | Fuhrmann–Cooper |
+| M/G/1 with warm-up | MG1WarmCalc | VacationQueueingSystemSimulator | - | The server needs warming up after an idle period |
+| M/H2/n with H2 warm-up | MH2nH2Warm | QsSim | - | Multi-server warm-up, Takahashi-Takami |
+| M/M/n with H2 cooling and warm-up | MMnHyperExpWarmAndCold | QsSim | - | Both cooling down and warming up |
+| M/H2/n, cooling + warm-up + delay | MGnH2ServingColdWarmDelay | QsSim | - | Cooling, warm-up and a cooling-start delay |
 | M/G/1 N-policy | MG1NPolicyCalc | NPolicyQueueSim | - | Activation threshold N |
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Breakdowns+repairs, completion time |
 | M/M/c breakdowns & repairs | MMcBreakdownsCalc | MMcBreakdownsSim | - | Independent failures, availability, R repairmen |
@@ -80,11 +92,17 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Machine repair, 2 heterogeneous repairmen | MachineRepairHeterogeneousCalc | MachineRepairHeterogeneousSim | - | Different repair rates, exact non-birth-death CTMC (Krishnamoorthi 1963) |
 | M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Degraded rate during repair (Kalidass-Kasturi) |
 | M/M/1 disasters + repair | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Queue flush, repair phase, P(down)=δ/(δ+η) |
+| M/G/1 with negative customers (RCS) | MG1NegativeCalcRCS | NegativeServiceQueueSim | - | A negative arrival removes the customer in service |
+| M/G/1 with disasters | MG1Disasters | NegativeServiceQueueSim | - | A negative arrival flushes the whole queue |
+| M/G/n with negative customers (RCS) | MGnNegativeRCSCalc | NegativeServiceQueueSim | - | Multi-server, via an H2 fit |
+| M/G/n with disasters | MGnNegativeDisasterCalc | NegativeServiceQueueSim | - | Multi-server queue flush |
 | M/M/1 retrial unreliable | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Active breakdowns, orbit, availability |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Parallel service |
 | Fork-Join, series-parallel DAG | ForkJoinDAGCalc | - | - | Heterogeneous branches, nested series/parallel task graph |
+| Split-Join | SplitJoinCalc | ForkJoinSim | - | A new batch starts only after the previous one fully completes |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Batch arrivals |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Abandonment, staffing helper |
+| M/M/1+M (impatience) | MM1Impatience | ImpatientQueueSim | - | Exponential patience, single server |
 | M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Orbit, exact truncated chain |
 | M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Falin–Templeton closed form |
 | MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Correlated arrivals, QBD |
@@ -97,6 +115,9 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/M/k, m classes (exact) | MMkPriorityExact | PriorityQueueSimulator | Yes | Exact CTMC + per-class response variance |
 | M/M/2, 2 classes, heterogeneous servers | MM2PriorityHeterogeneousCalc | MM2PriorityHeterogeneousSim | Yes | Exact CTMC, non-birth-death (Krishnamoorthi 1963 technique) |
 | M/PH/k, m classes | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Yes | Phase-type service (RDR §2.3) |
+| M/Ph/n, priorities (busy-period approx) | MPhNPrty | PriorityQueueSimulator | Yes | Busy-period approximation |
+| M/M/2, 3 classes (busy-period approx) | MM2BusyApprox3Classes | PriorityQueueSimulator | Yes | Three priority classes, two servers |
+| M/M/n, 2 classes preemptive (approx) | MMnPR2ClsBusyApprox | PriorityQueueSimulator | Yes | Busy-period approximation |
 | M/G/1 accumulating priority | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Yes | Kleinrock/APQ, FIFO <-> strict priority spectrum |
 | M/M/n+M priority + impatience | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Yes | Priority Erlang-A, per-class abandonment |
 | MMAP/PH/1 priority | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Yes | Correlated arrivals, NP/PR/RS, exact CTMC |
@@ -124,6 +145,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching; exact N/W moments and exact SLA tail `get_tail`/`get_cdf` at a=1 |
 | M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above; exact `get_tail`/`get_cdf` at a=1 |
 | M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above; exact `get_tail`/`get_cdf` at a=1 |
+| Multiserver bulk service | BulkServiceMultiserverCalc | BulkServiceSim | - | c independent servers sharing one queue, batch-size-dependent rate |
 | Occupancy-dependent continuous batching | OccupancyDependentQueueCalc | - | - | LLM-serving continuous batching; occupancy-dependent rate, hard concurrency cap; exact W moments/tail, exact regression to M/M/k/N |
 | Occupancy-modulated two-branch batching | OccupancyDependentH2QueueCalc | - | - | Heterogeneous output lengths; exact level distribution and mean wait; reduces to the row above at p1=1 or mu1=mu2 |
 | M/M/c, delay-dependent service rate | MMcDelayDependentServiceCalc | MMcDelayDependentServiceSim | - | Service rate switches at a threshold on the customer's OWN experienced delay (slowdown/speedup); exact VQT distribution, density and mean; reduces exactly to Erlang-C at mu1=mu2 (D'Auria, Adan, Bekker & Kulkarni, EJOR 2022) |
@@ -142,7 +164,13 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |
 | Closed network | ClosedNetworkCalc | ClosedNetworkSim | - | Exact MVA / Buzen convolution / Schweitzer, delay stations |
 | G-network (Gelenbe) | GNetworkCalc | NegativeNetwork | - | Negative customers/signals, exact product form |
+| Multi-class G-network | GNetworkMulticlassCalc | NegativeNetwork | - | Several customer classes with signals |
+| Network with negative customers | NegativeNetworkCalc | NegativeNetwork | - | Negative arrivals at the nodes (RCS/disasters) |
+| Non-stationary network | TimeVaryingNetworkCalc | - | - | Time-varying arrival rates across the nodes (PSA/MOL) |
+| Routing optimization | NetworkOptimizer, NetworkOptimizerPlus, NetworkOptimizerWithApprox, OptimizerDynamic | - | - | Pick the routing matrix that minimises sojourn time; exact, extended, approximate and dynamic variants |
 | BCMP multi-class network | BCMPOpenNetworkCalc, BCMPClosedNetworkCalc | - | - | FCFS/PS/LCFS-PR/IS, multi-chain MVA |
+| Open network with blocking | TandemBlockingCalc | NetworkSimulator | - | Tandem with finite buffers, blocking-after-service |
+| Network with Fork-Join stations | OpenNetworkCalcForkJoin | NetworkSimulator | - | A node may fork a job into parallel subtasks |
 
 ## Choosing a model
 

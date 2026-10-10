@@ -720,29 +720,59 @@ results = network.run(50000)
 
 ## Network Optimization
 
-The library also provides methods for optimizing the network transition matrix to minimize the sojourn time of jobs.
+The library also provides methods for optimizing the network transition matrix to minimize the
+mean sojourn time. The optimizer works by load balancing: it repeatedly finds the most heavily
+loaded node and shifts part of its outgoing flow to its less loaded successors, re-solving the
+network at each step, until no reallocation helps. The approach follows Ryzhikov Yu.I.,
+*Numerical methods of queueing theory*, Lan, 2019.
+
+**Classes** (`most_queue.theory.networks.opt`):
+
+| Class | Module | What it adds |
+|---|---|---|
+| `NetworkOptimizer` | `transition` | The base load-balancing search |
+| `NetworkOptimizerPlus` | `transition_plus` | Several candidate-selection strategies and a top-k search instead of a single greedy move |
+| `NetworkOptimizerWithApprox` | `transition_approx` | A polynomial approximation of the load-balance step, for fewer full network solves |
+| `OptimizerDynamic` | `transition` | Per-step state (loads, mean sojourn) for tracking or plotting the search |
 
 ### Optimization Example
 
 ```python
-from most_queue.theory.networks.opt.transition import TransitionOptimization
+import numpy as np
+from most_queue.random.distributions import ExpDistribution
+from most_queue.theory.networks.open_network import OpenNetworkCalc
+from most_queue.theory.networks.opt.transition import NetworkOptimizer
 
-# Create the optimizer
-optimizer = TransitionOptimization()
+num_channels = [1, 3, 2, 1, 3, 2]
+R = np.matrix([
+    [0.2, 0.7, 0.1, 0,   0,   0,   0  ],
+    [0,   0.3, 0,   0.3, 0.4, 0,   0  ],
+    [0,   0,   0.5, 0.2, 0.3, 0,   0  ],
+    [0,   0,   0,   0,   0.7, 0.3, 0  ],
+    [0.2, 0,   0,   0,   0.4, 0.2, 0.2],
+    [0,   0,   0,   0,   0,   0.4, 0.6],
+    [0,   0,   0,   0,   0,   0,   1  ],
+])
+b = [ExpDistribution.calc_theory_moments(1.0) for _ in range(len(num_channels))]
 
-# Initial transition matrix
-R0 = np.matrix([...])
+network = OpenNetworkCalc()
+network.set_sources(R=R, arrival_rate=3.8)
+network.set_nodes(b=b, n=num_channels)
 
-# Optimization
-R_opt = optimizer.optimize(
-    R0=R0,
-    arrival_rate=2.0,
-    b=b,
-    n=num_channels
+optimizer = NetworkOptimizer(
+    network=network,
+    # upper bound on the probability of leaving the network from each node;
+    # keeps the optimizer from simply routing everything straight to the exit
+    maximum_rates_to_end=[0, 0, 0, 0, 0.3, 0.6, 1.0],
+    is_service_markovian=True,
+    verbose=True,
 )
-
-print(f"Optimized matrix:\n{R_opt}")
+best_R, v1 = optimizer.run()
+print(f"Best mean sojourn time: {v1:.2f}")
 ```
+
+`maximum_rates_to_end` is the constraint that makes the problem non-trivial: without a cap on
+how much flow each node may send to the exit, the minimum is reached by discarding the network.
 
 ## Result Structures
 

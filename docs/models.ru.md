@@ -63,11 +63,23 @@
 | M/G/n PS | MGnPSCalc | - | - | Равное разделение между n серверами; при n=1 сводится к M/G/1 PS; число заявок совпадает с M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Время пребывания = период занятости |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
+| GI/M/c | GiMn | QsSim | - | Произвольный входящий поток, c приборов; вложенная цепь по моментам приходов |
+| M/D/n | MDn | QsSim | - | Детерминированное обслуживание, n приборов |
+| Ek/D/n | EkDn | QsSim | - | Erlang-поток, детерминированное обслуживание |
+| M/H2/n (Такахаси-Таками) | MGnCalc | QsSim | - | Обслуживание общего вида через H2-подгонку; численная матрично-геометрическая итерация |
+| H2/M/n (Такахаси-Таками) | H2MnCalc | QsSim | - | H2-поток, экспоненциальное обслуживание |
+| Hk/Hk/n (Такахаси-Таками) | HkHkNCalc | QsSim | - | Гиперэкспоненциальные и поток, и обслуживание |
 | GI/M/2 с интенсивностью от числа занятых приборов | GiM2StateDependentCalc | - | - | Одинокий занятый прибор может работать с другой интенсивностью (помощь свободного или замедление); точные распределение состояний, наблюдаемое заявкой распределение и время ожидания (Bhat 1966) |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, только w1 |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Да | Прерываемый приоритет |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Да | Непрерываемый приоритет |
+| M/G/1 с абсолютным приоритетом | MG1PreemptiveCalc | PriorityQueueSimulator | Да | Точно, один прибор |
+| M/G/1 с относительным приоритетом | MG1NonPreemptiveCalc | PriorityQueueSimulator | Да | Точно, один прибор |
 | M/G/1 multiple vacations | MG1MultipleVacationsCalc | VacationQueueingSystemSimulator | - | Fuhrmann–Cooper |
+| M/G/1 с разогревом | MG1WarmCalc | VacationQueueingSystemSimulator | - | Прибору нужен разогрев после простоя |
+| M/H2/n с H2-разогревом | MH2nH2Warm | QsSim | - | Многоканальный разогрев, Такахаси-Таками |
+| M/M/n с H2-охлаждением и разогревом | MMnHyperExpWarmAndCold | QsSim | - | И охлаждение, и разогрев |
+| M/H2/n, охлаждение + разогрев + задержка | MGnH2ServingColdWarmDelay | QsSim | - | Охлаждение, разогрев и задержка начала охлаждения |
 | M/G/1 N-policy | MG1NPolicyCalc | NPolicyQueueSim | - | Порог включения N |
 | M/G/1 unreliable | MG1UnreliableCalc | UnreliableQueueSim | - | Отказы+ремонты, completion time |
 | M/M/c отказы и ремонты | MMcBreakdownsCalc | MMcBreakdownsSim | - | Независимые отказы, доступность, R ремонтников |
@@ -75,11 +87,17 @@
 | Machine repair, 2 гетерогенных ремонтника | MachineRepairHeterogeneousCalc | MachineRepairHeterogeneousSim | - | Разные скорости ремонта, точная не-birth-death CTMC (Krishnamoorthi 1963) |
 | M/M/1 working breakdowns | MM1WorkingBreakdownsCalc | MM1WorkingBreakdownsSim | - | Пониженная скорость во время ремонта (Kalidass-Kasturi) |
 | M/M/1 катастрофы + ремонт | MM1DisasterRepairCalc | MM1DisasterRepairSim | - | Сброс очереди, фаза ремонта, P(down)=δ/(δ+η) |
+| M/G/1 с отрицательными заявками (RCS) | MG1NegativeCalcRCS | NegativeServiceQueueSim | - | Отрицательный приход удаляет заявку, стоящую на обслуживании |
+| M/G/1 с катастрофами | MG1Disasters | NegativeServiceQueueSim | - | Отрицательный приход очищает всю очередь |
+| M/G/n с отрицательными заявками (RCS) | MGnNegativeRCSCalc | NegativeServiceQueueSim | - | Многоканальная, через H2-подгонку |
+| M/G/n с катастрофами | MGnNegativeDisasterCalc | NegativeServiceQueueSim | - | Очистка очереди в многоканальной системе |
 | M/M/1 retrial ненадёжный | MM1RetrialUnreliableCalc | MM1RetrialUnreliableSim | - | Активные отказы, орбита, доступность |
 | Fork-Join | ForkJoinMarkovianCalc | ForkJoinSim | - | Параллельное обслуживание |
 | Fork-Join, series-parallel DAG | ForkJoinDAGCalc | - | - | Гетерогенные ветви, вложенный series/parallel граф задач |
+| Split-Join | SplitJoinCalc | ForkJoinSim | - | Новая партия начинается только после полного завершения предыдущей |
 | Mˣ/M/1 | BatchMM1 | QueueingSystemBatchSim | - | Пакетное поступление |
 | Erlang-A (M/M/n+M) | MMnImpatienceCalc | ImpatientQueueSim | - | Уходы, staffing-помощник |
+| M/M/1+M (нетерпение) | MM1Impatience | ImpatientQueueSim | - | Экспоненциальное терпение, один прибор |
 | M/M/1 retrial | MM1RetrialCalc | RetrialQueueSim | - | Орбита, точное усечение цепи |
 | M/G/1 retrial | MG1RetrialCalc | RetrialQueueSim | - | Формула Falin–Templeton |
 | MAP/PH/1 | MapPh1Calc | QsSim("MAP", "PH") | - | Коррелированный вход, QBD |
@@ -92,6 +110,9 @@
 | M/M/k, m классов (точно) | MMkPriorityExact | PriorityQueueSimulator | Да | Точная CTMC + дисперсия отклика по классам |
 | M/M/2, 2 класса, гетерогенные серверы | MM2PriorityHeterogeneousCalc | MM2PriorityHeterogeneousSim | Да | Точная не-birth-death CTMC (техника Krishnamoorthi 1963) |
 | M/PH/k, m классов | RDRAPriorityPH, MPhPhK2Class | PriorityQueueSimulator | Да | Фазовое обслуживание (RDR §2.3) |
+| M/Ph/n с приоритетами (аппроксимация) | MPhNPrty | PriorityQueueSimulator | Да | Аппроксимация через период занятости |
+| M/M/2, 3 класса (аппроксимация) | MM2BusyApprox3Classes | PriorityQueueSimulator | Да | Три класса приоритета, два прибора |
+| M/M/n, 2 класса, абсолютный (аппроксимация) | MMnPR2ClsBusyApprox | PriorityQueueSimulator | Да | Аппроксимация через период занятости |
 | M/G/1 накапливаемый приоритет | MG1AccumulatingPriorityCalc | AccumulatingPrioritySim | Да | Клейнрок/APQ, спектр FIFO <-> строгие приоритеты |
 | M/M/n+M приоритет + нетерпение | MMnPriorityImpatienceCalc | MMnPriorityImpatienceSim | Да | Приоритетный Erlang-A, уходы по классам |
 | MMAP/PH/1 приоритеты | MapPh1PriorityCalc | PriorityQueueSimulator("MAP") | Да | Коррелированный вход, NP/PR/RS, точная CTMC |
@@ -106,6 +127,12 @@
 | [История и зависимое обслуживание](real_trace_temporal.md) | - | ConditionalEmpirical + MsjGeneralSim | - | Несколько временных границ; отдельно среднее, форма, точный K и циклические блоки рангов с rank-iid-контролем; условные MC-оценки, не новый планировщик |
 | [MSJ: начальное состояние и исходы](real_trace_lifecycle.md) | - | MsjLifecycleSim | - | Opt-in running/waiting, занятый ресурс до отмены и жёсткий runtime limit; отдельный учёт успеха/отмены/timeout, не реконструкция отмен в очереди |
 | [Калибровка по современной GPU-трассе](modern_gpu_trace.md) | - | AcmeTrace + MsjLifecycleSim | - | Аудит timestamp Kalos и раздельные метки отказов; empirical replay номинального однородного GPU-пула, не аппаратная загрузка и не исторический планировщик |
+| [Обслуживание, обусловленное признаками](feature_service.md) | - | FeatureConditionalEmpirical + MsjLifecycleSim | - | Эмпирические распределения контекста/потребности только по истории, опционально отношения S/запрос и точный CRPS; отбор по ранней валидации, запасной вариант для разреженных ячеек и отдельные проверки на поздней трассе |
+| [Ресурсная оболочка GPU](gpu_resource_envelope.md) | - | ResourceRequest + MsjLifecycleSim | - | Явная чувствительность к ёмкости пула GPU и выделенных узлов при фиксированных когортах, проверяемые неосуществимые ячейки и раздельный учёт зарезервированной и запрошенной работы; не вывод квот и не размещение |
+| [Выбор модели обслуживания по очереди](queue_aware_selection.md) | - | select_queue_model + MsjLifecycleSim | - | Абсолютная логарифмическая ошибка сводных показателей очереди против CRPS, только на валидации; зафиксированный выбор семейства, поздние перенастройки и аудит покрытия классов и дрейфа — не новый планировщик |
+| [Совместные маркированные приходы](joint_marked_arrivals.md) | - | MarkedArrivalBootstrap + MsjGeneralSim | - | Эмпирические кортежи интервал/K/контекст/запрос, круговые блоки и согласованные перестановки; воспроизведение с пустого старта только по завершённым, грубый контроль с фиксированными приходами и явная оценка устаревания префикса — не полный совместный закон S и контекста |
+| [История приходов с учётом доступности](availability_aware_arrivals.md) | - | availability_prefix + MarkedArrivalBootstrap | - | История доноров меток прихода из submit<cutoff по уже разобранной популяции завершённых и отменённых, устраняет устаревание префикса завершённых; выигрыш в точности не универсален, подгонка обслуживания остаётся только по завершённым |
+| [Календарь ёмкости MSJ](msj_capacity_calendar.md) | - | CapacityCalendar + MsjLifecycleSim | - | Подключаемый по желанию переменный во времени пул с автоматическим сохранением прав, явные неосуществимые и неразрешённые исходы в пределах горизонта самого календаря, обнаруживаемые (а не поглощаемые молча) расхождения резерва и календаря |
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |
@@ -113,6 +140,7 @@
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM; точные моменты N/W при a=1 |
 | M/Erlang(k)^[a,b]/1 групповое обслуживание | BulkServiceErlangCalc | - | - | Общее (Erlang-подогнанное, CV≤1) время обслуживания батча; сводится к k=1 выше |
 | M/H2^[a,b]/1 групповое обслуживание | BulkServiceH2Calc | - | - | Общее (H2-подогнанное, CV≥1) время обслуживания батча; сводится к p1=1 выше |
+| Многоканальное групповое обслуживание | BulkServiceMultiserverCalc | BulkServiceSim | - | c независимых приборов на одну очередь, интенсивность зависит от размера партии |
 | Occupancy-зависимый continuous batching | OccupancyDependentQueueCalc | - | - | Continuous batching LLM-инференса; occupancy-зависимая интенсивность, жёсткий потолок занятости; точные моменты и хвост W, точная регрессия к M/M/k/N |
 | Occupancy-модулированное двухветвевое | OccupancyDependentH2QueueCalc | - | - | Неоднородные длины вывода; точные уровневое распределение и среднее ожидание; сводится к строке выше при p1=1 или mu1=mu2 |
 | M/M/c с интенсивностью, зависящей от ожидания | MMcDelayDependentServiceCalc | MMcDelayDependentServiceSim | - | Интенсивность обслуживания переключается по порогу на собственном испытанном ожидании заявки (замедление/ускорение); точные распределение, плотность и среднее виртуального времени ожидания; при mu1=mu2 точно сводится к формуле Эрланга-C (D'Auria, Adan, Bekker, Kulkarni, EJOR 2022) |
@@ -131,7 +159,13 @@
 | Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |
 | Закрытая сеть | ClosedNetworkCalc | ClosedNetworkSim | - | Точный MVA / свёртка Бьюзена / Швейцер, delay-станции |
 | G-сеть (Геленбе) | GNetworkCalc | NegativeNetwork | - | Отрицательные заявки/сигналы, точный product-form |
+| Мультиклассовая G-сеть | GNetworkMulticlassCalc | NegativeNetwork | - | Несколько классов заявок с сигналами |
+| Сеть с отрицательными заявками | NegativeNetworkCalc | NegativeNetwork | - | Отрицательные приходы в узлах (RCS/катастрофы) |
+| Нестационарная сеть | TimeVaryingNetworkCalc | - | - | Переменные во времени интенсивности прихода по узлам (PSA/MOL) |
+| Оптимизация маршрутизации | NetworkOptimizer, NetworkOptimizerPlus, NetworkOptimizerWithApprox, OptimizerDynamic | - | - | Подбор матрицы переходов, минимизирующей время пребывания; точный, расширенный, приближённый и динамический варианты |
 | BCMP мультиклассовая сеть | BCMPOpenNetworkCalc, BCMPClosedNetworkCalc | - | - | FCFS/PS/LCFS-PR/IS, мультичейн-MVA |
+| Открытая сеть с блокировками | TandemBlockingCalc | NetworkSimulator | - | Тандем с конечными накопителями, блокировка после обслуживания |
+| Сеть с Fork-Join станциями | OpenNetworkCalcForkJoin | NetworkSimulator | - | Узел может разветвлять заявку на параллельные подзадачи |
 
 ## Рекомендации по выбору модели
 
