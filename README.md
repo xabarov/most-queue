@@ -100,6 +100,7 @@ See the executable comparison of **9 disciplines** in
 | Imprecise computation | Mandatory + optional parts under deadlines: answer quality becomes the control variable, not timeliness or admission — exact offline optimum plus online policies scored against it | exact (LP / min-cost flow) |
 | Value-based scheduling under overload | Which jobs are worth running when deadlines cannot all be met: 4 priority rules x 3 guarantee mechanisms (12 algorithms), Hit Value Ratio; exact clairvoyant optimum turns it into a true competitive ratio | DES + exact offline optimum (Horn's condition + MILP) |
 | Service rate control with decaying value | Job value decays *during service*; the controller picks how fast to run, trading the cost of speed against the reward still collectable — exact optimal policy, plus monotonicity conditions checkable without computing it | exact DP (Master & Bambos 2015) |
+| Bulk service, correlated input, finite buffer | MAP/PH^(a,b)/1/N: bursty non-renewal arrivals and real blocking; exact waiting- and sojourn-time distributions from a tagged-customer phase-type chain, with no transform to invert | exact (matrix-analytic) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -133,6 +134,22 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Bulk service with correlated arrivals and a finite
+  buffer: MAP/PH^(a,b)/1/N** (catching up with the literature, item R9; **this closes the whole
+  R1-R9 series**): the model of Banik, Chaudhry, Barik & Singh, JISPS 26 (2025) 585-630, whose own
+  title calls its procedures heuristic. Both that paper and its open-access Poisson predecessor
+  (Chaudhry et al., *Mathematics* 11(5):1142, 2023) reach the waiting time through a transform and
+  then invert it with a Pade approximation; the transform is exact, so the approximation lives
+  entirely in the inversion. This implementation never forms one: it follows a tagged customer
+  through an absorbing chain and reads the waiting time off as a phase-type distribution. A
+  compression keeps that chain at O(N*a) rather than O(N^2) -- the position falls by exactly b per
+  batch, and the count of customers *behind* the tagged one only ever matters up to a-1. The
+  published CDF tables reproduce to the six digits they are printed to; where they do not, each
+  disagreement gets an arbiter. The paper's second moment (2.093599) is 0.55% from the exact
+  2.105153, which is Medhi's published value and which this library's independent infinite-buffer
+  solver confirms to seven digits -- their Pade fit is constrained to reproduce the mass and the
+  mean and nothing else. Separately: assuming PASTA under a MAP costs +45% on E(W), a modelling
+  error rather than an approximation. [Model](docs/models/bulk-map-finite.md).
 - **2026-10, current source tree** — **Service rate control for jobs with decaying value**
   (catching up with the literature, item R8; this closes the adjacent-communities sub-series):
   implementation of Master N. & Bambos N., *Service rate control for jobs with decaying value*,

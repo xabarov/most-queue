@@ -22,6 +22,7 @@ add a figure function and regenerate the PNGs.
 | [Systems with negative customers](models/negative.md) | negative customers: RCS and disasters, single- and multi-server |
 | [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join |
 | [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 (or general Erlang/H2-fitted batch service) |
+| [Bulk service with correlated arrivals, finite buffer](models/bulk-map-finite.md) | MAP/PH^(a,b)/1/N: bursty (non-renewal) input, blocking, exact waiting- and sojourn-time distribution by a tagged-customer phase-type chain -- no transform inversion |
 | [Occupancy-dependent continuous batching](models/continuous-batching.md) | LLM-serving continuous batching: occupancy-dependent service rate, hard concurrency cap, exact waiting-time moments and tail |
 | [Delay-dependent service rates](models/delay-dependent.md) | M/M/c where the service rate depends on the delay that customer experienced (slowdown/speedup past a threshold); exact waiting-time distribution, density and mean |
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
