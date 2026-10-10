@@ -34,6 +34,7 @@ add a figure function and regenerate the PNGs.
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
 | [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
 | [Deadline-aware admission control](models/admission-control.md) | Accept/reject at arrival based on own-deadline feasibility (not reordering); exact convergent series for Exp(θ) deadline |
+| [Imprecise computation / controllable processing times](models/imprecise.md) | quality as a control variable: a mandatory part that must finish plus an optional part that may be truncated; exact offline optimum and online policies scored against it |
 | [Queueing-inventory systems](models/inventory.md) | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
@@ -160,6 +161,8 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/M/1 queueing-inventory, Erlang replenishment | MM1QueueingInventoryErlangReplenishmentCalc | MM1QueueingInventoryErlangReplenishmentSim | - | Erlang-fitted (non-exponential) replenishment lead time, exact QBD, reduces to Exp(theta) above at r=1 |
 | EDF scheduling | - (no closed form, see docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Deadline-order service discipline, DES-exact, conservation-law check |
 | M/M/1 deadline admission control | MM1DeadlineAdmissionControlCalc | MM1DeadlineAdmissionControlSim | - | Exp(θ) deadline, exact convergent series (level-crossing functional equation) |
+| Imprecise computation (offline, exact) | ImpreciseComputationScheduler | - | - | Mandatory + optional parts, release times and deadlines; exact minimum total / maximum / lexicographic weighted error via LP, with the schedule emitted (Shih, Liu, Chung & Gillies 1989) |
+| Imprecise computation (online) | - | ImpreciseComputationSim | - | Poisson arrivals, online policies scored against the exact offline optimum on the same jobs |
 | Open network (decomposition) | OpenNetworkCalc | NetworkSimulator | Yes (OpenNetworkCalcPriorities) | M/G/n nodes, approximate |
 | Jackson network | JacksonNetworkCalc | NetworkSimulator | - | Exact product form, M/M/n nodes |
 | Open network QNA (Whitt) | OpenNetworkCalcQNA | NetworkSimulator | - | Two-moment internal flows, KLB correction |

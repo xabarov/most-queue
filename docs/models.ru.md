@@ -34,6 +34,7 @@
 | [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
 | [EDF-планирование](models/edf.ru.md) | Earliest-Deadline-First как реальная дисциплина обслуживания (не post-hoc SLA); точна по построению (DES), точной теории нет (открытая задача) |
 | [Admission control по дедлайну](models/admission-control.ru.md) | Приём/отклонение при приходе по осуществимости дедлайна (не переупорядочивание); точный сходящийся ряд для Exp(θ) |
+| [Imprecise computation / управляемая длительность обработки](models/imprecise.ru.md) | качество как управляемая переменная: обязательная часть, которая должна быть выполнена, плюс необязательная, которую можно урезать; точный офлайн-оптимум и онлайн-политики, сопоставленные с ним |
 | [Queueing-inventory системы](models/inventory.ru.md) | M/M/1, M/M/c, или c гетерогенных серверов (одинаковых, экспоненциальных или с Erlang-/H2-подгонкой на сервер) с расходуемым при обслуживании запасом, общая политика (s,S) (экспоненциальное или Erlang-подогнанное время поставки), backorder или lost sales — точный QBD |
 | [Закрытые системы](models/closed.ru.md) | системы с конечным числом источников (Engset) |
 | [Надёжность: ненадёжные приборы](models/reliability.ru.md) | отказы и ремонты (M/G/1, M/M/c), machine repair problem (включая 2 гетерогенных ремонтника), working breakdowns, катастрофы с ремонтом, retrial + отказы |
@@ -155,6 +156,8 @@
 | M/M/1 queueing-inventory, Erlang-пополнение | MM1QueueingInventoryErlangReplenishmentCalc | MM1QueueingInventoryErlangReplenishmentSim | - | Erlang-подогнанное (неэкспоненциальное) время пополнения склада, точный QBD, сводится к Exp(theta) выше при r=1 |
 | EDF-планирование | - (точной теории нет, см. docs/research/edf-scheduling-2026.md) | EDFQueueSim | - | Дисциплина обслуживания по дедлайну, точна по построению (DES), проверка законом сохранения работы |
 | M/M/1 admission control по дедлайну | MM1DeadlineAdmissionControlCalc | MM1DeadlineAdmissionControlSim | - | Дедлайн Exp(θ), точный сходящийся ряд (level-crossing функциональное уравнение) |
+| Imprecise computation (офлайн, точно) | ImpreciseComputationScheduler | - | - | Обязательная и необязательная части, моменты готовности и директивные сроки; точный минимум суммарной / максимальной / лексикографической взвешенной ошибки через ЛП, с выдачей расписания (Shih, Liu, Chung, Gillies 1989) |
+| Imprecise computation (онлайн) | - | ImpreciseComputationSim | - | Пуассоновский поток, онлайн-политики, сопоставленные с точным офлайн-оптимумом на тех же заявках |
 | Открытая сеть (декомпозиция) | OpenNetworkCalc | NetworkSimulator | Да (OpenNetworkCalcPriorities) | Узлы M/G/n, приближённо |
 | Сеть Джексона | JacksonNetworkCalc | NetworkSimulator | - | Точный product-form, узлы M/M/n |
 | Открытая сеть QNA (Уитт) | OpenNetworkCalcQNA | NetworkSimulator | - | Двухмоментные внутренние потоки, поправка KLB |
