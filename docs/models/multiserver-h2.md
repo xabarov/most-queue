@@ -80,7 +80,7 @@ calc = MGnCalc(n=5)
 
 calc.set_sources(l=2.0)
 
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2, is_clx=True)
+h2_params = H2Distribution.get_params_by_mean_and_cv(f1=2.0, cv=1.2, is_clx=True)
 calc.set_servers(h2_params)
 
 results = calc.run()

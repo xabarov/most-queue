@@ -187,11 +187,11 @@ h2_params = H2Distribution.get_params_by_mean_and_cv(2.0, 0.8, is_clx=True)  # m
 b_h2 = H2Distribution.calc_theory_moments(h2_params, num=5)
 
 # Гамма-распределение
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.6)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.6)
 b_gamma = GammaDistribution.calc_theory_moments(gamma_params, num=5)
 
 # Распределение Эрланга
-erlang_params = ErlangDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.5)
+erlang_params = ErlangDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.5)
 b_erlang = ErlangDistribution.calc_theory_moments(erlang_params, num=5)
 ```
 

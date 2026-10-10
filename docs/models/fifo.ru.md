@@ -151,7 +151,7 @@ from most_queue.random.distributions import H2Distribution
 calc = MG1Calc()
 calc.set_sources(l=0.5)
 
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=0.8)
+h2_params = H2Distribution.get_params_by_mean_and_cv(f1=2.0, cv=1.3)
 b = H2Distribution.calc_theory_moments(h2_params, 5)
 calc.set_servers(b)
 
@@ -176,7 +176,7 @@ from most_queue.random.distributions import GammaDistribution
 
 calc = GIM1Calc()
 
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.6)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.6)
 a = GammaDistribution.calc_theory_moments(gamma_params)
 calc.set_sources(a)
 
@@ -198,7 +198,7 @@ from most_queue.random.distributions import GammaDistribution
 
 calc = GiMn(n=3)  # 3 канала
 
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.6)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.6)
 a = GammaDistribution.calc_theory_moments(gamma_params)
 calc.set_sources(a)
 

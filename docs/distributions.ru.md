@@ -97,7 +97,7 @@ from most_queue.random.distributions import H2Distribution, H2Params
 qs = QsSim(num_of_channels=1)
 
 # Создание параметров
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2)
+h2_params = H2Distribution.get_params_by_mean_and_cv(f1=2.0, cv=1.2)
 
 # Использование в симуляции
 qs.set_sources(0.5, "M")
@@ -144,7 +144,7 @@ from most_queue.random.distributions import GammaDistribution
 qs = QsSim(num_of_channels=1)
 
 # Создание параметров
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.7)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.7)
 
 # Симуляция
 qs.set_sources(0.5, "M")
@@ -190,7 +190,7 @@ from most_queue.random.distributions import ErlangDistribution
 
 qs = QsSim(num_of_channels=1)
 
-erlang_params = ErlangDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.6)
+erlang_params = ErlangDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.6)
 qs.set_sources(0.5, "M")
 qs.set_servers(erlang_params, "E")
 ```
@@ -505,16 +505,16 @@ from most_queue.random.distributions import (
 )
 
 # H2-распределение
-h2_params = H2Distribution.get_params_by_mean_and_cv(mean=2.0, cv=1.2)
+h2_params = H2Distribution.get_params_by_mean_and_cv(f1=2.0, cv=1.2)
 b = H2Distribution.calc_theory_moments(h2_params, num=5)
 # b[0] - среднее, b[1] - второй момент, b[2] - третий момент, и т.д.
 
 # Гамма-распределение
-gamma_params = GammaDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.7)
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.7)
 b = GammaDistribution.calc_theory_moments(gamma_params, num=5)
 
 # Распределение Эрланга
-erlang_params = ErlangDistribution.get_params_by_mean_and_cv(mean=2.0, cv=0.5)
+erlang_params = ErlangDistribution.get_params_by_mean_and_cv(f1=2.0, cv=0.5)
 b = ErlangDistribution.calc_theory_moments(erlang_params, num=5)
 ```
 

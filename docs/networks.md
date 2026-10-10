@@ -121,7 +121,7 @@ serv_params = []
 num_channels = [2, 3, 2]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     serv_params.append({"type": "H", "params": h2_params})
 
 network.set_nodes(serv_params=serv_params, n=num_channels)
@@ -166,7 +166,7 @@ b = []
 num_channels = [2, 3, 2]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     b.append(H2Distribution.calc_theory_moments(h2_params, 4))
 
 # Configure the nodes
@@ -491,7 +491,7 @@ negative_types = [
 ]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     b.append(H2Distribution.calc_theory_moments(h2_params, 4))
 
 # Configure the nodes
@@ -600,7 +600,7 @@ serv_params = []
 num_channels = [2, 3, 2]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     serv_params.append({"type": "H", "params": h2_params})
 
 # Negative customer types for each node
@@ -650,7 +650,7 @@ serv_params = []
 num_channels = [2, 3, 2]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     serv_params.append({"type": "H", "params": h2_params})
 
 # All nodes use DISASTER by default
@@ -675,7 +675,7 @@ serv_params = []
 num_channels = [2, 3, 2]
 
 for i in range(3):
-    h2_params = H2Distribution.get_params_by_mean_and_cv(mean=1.5, cv=0.7)
+    h2_params = H2Distribution.get_params_by_mean_and_cv(f1=1.5, cv=1.3)
     serv_params.append({"type": "H", "params": h2_params})
 
 negative_types = [
