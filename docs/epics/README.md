@@ -117,6 +117,7 @@
 | [EPIC-074](EPIC-074-occupancy-dependent-two-branch-service.md) | Occupancy-модулированное двухветвевое обслуживание с потолком занятости (неоднородные длины вывода) | done |
 | [EPIC-075](EPIC-075-queueing-inventory-waiting-distribution.md) | Распределение (моменты и хвост) времени ожидания во всех 7 queueing-inventory классах — Р1 серии догоняющих работ; попутно найден и исправлен реальный дефект `E[W]` при `c > 1` | done |
 | [EPIC-076](EPIC-076-mmc-delay-dependent-service.md) | M/M/c с интенсивностью обслуживания, зависящей от испытанного ожидания (D'Auria и др., EJOR 2022) — Р2 серии догоняющих работ | done |
+| [EPIC-077](EPIC-077-mg1-ps-sojourn-moments.md) | Старшие моменты условного времени пребывания в M/G/1-PS (Яшков, arXiv:math/0512281) — Р3 серии догоняющих работ; закрыт собственный задокументированный пробел `MG1PSCalc` | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

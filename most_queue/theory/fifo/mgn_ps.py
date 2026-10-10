@@ -14,10 +14,14 @@ queue-length distribution is therefore IDENTICAL to the classical M/M/n
 (Erlang-C) one -- PS and FCFS differ in how individual jobs experience the
 system, not in the aggregate occupancy process.
 
-Only the queue-length distribution and mean sojourn/waiting are exact here:
-job-size-conditional sojourn time and higher moments (an open point even for
-n=1, see MG1PSCalc's own docstring) require the Yashkov/Ott transform
-machinery and are left for a follow-up, same scope limitation as MG1PSCalc.
+Only the queue-length distribution and mean sojourn/waiting are exact here.
+Job-size-conditional higher sojourn moments are NOT available for n > 1 and are
+not a follow-up away: Yashkov's recursion, which `MG1PSCalc` now implements, is
+specific to the single-server case -- it is built on the M/G/1-FCFS waiting-time
+distribution, and the multi-server PS sojourn time has no such representation.
+The insensitivity that makes the queue length here identical to M/M/n does not
+extend to the conditional sojourn time, so the n=1 result cannot simply be
+rescaled.
 
 References:
     Kleinrock L. Time-shared Systems: A Theoretical Treatment. JACM, 14(2),
@@ -27,7 +31,8 @@ References:
         1975. doi:10.1145/321879.321887 (load-dependent service centers,
         insensitivity).
     Yashkov S.F. Processor-Sharing Queues: Some Progress in Analysis. Queueing
-        Systems, 2, 1987. doi:10.1007/bf01182931 (higher moments, not implemented).
+        Systems, 2, 1987. doi:10.1007/bf01182931 (higher moments; implemented
+        for n=1 in most_queue.theory.fifo.mg1_ps, not available for n>1).
 """
 
 import numpy as np

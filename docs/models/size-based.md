@@ -135,7 +135,7 @@ results = calc.run()
 **In plain words:** a model of a CPU, a web server, a shared channel: nobody waits "in a queue",
 but everyone is slowed down by the same factor 1/(1−ρ). A perfectly fair discipline — the
 baseline for comparison with SRPT/SJF (which are faster on average, but at the expense of long
-jobs). Only the means are computed for now (higher moments — Yashkov/Ott methods — are deferred).
+jobs).
 
 **Calculator class:** `MG1PSCalc` (`most_queue.theory.fifo.mg1_ps`)
 **Simulation:** `ProcessorSharingSim` (`most_queue.sim.single_server_disciplines`)
@@ -152,6 +152,62 @@ results = calc.run()
 slowdown = calc.get_mean_slowdown()          # 1/(1-rho)
 t_x = calc.get_conditional_sojourn_mean(2.0)  # x/(1-rho)
 ```
+
+#### Higher sojourn moments — where the insensitivity stops
+
+The mean is insensitive; **nothing above it is**. Two workloads with the same mean service time
+give the same `E[V(x)]` and the same queue length, but different variance — so a capacity or SLO
+decision taken on the mean alone has no information about risk at all. Those higher moments are
+available:
+
+```python
+calc = MG1PSCalc()
+calc.set_sources(l=0.6)
+calc.set_servers_from_moments([1.0, 5.0, 60.0])   # fits a shape (cv<=1 Erlang, cv>1 H2)
+
+calc.get_conditional_sojourn_moments(x=2.0, num=4)  # exact raw moments of V(2.0)
+calc.get_conditional_sojourn_var(2.0)               # exact variance
+calc.get_conditional_sojourn_cv(2.0)                # its coefficient of variation
+calc.get_v(3)                                       # unconditional raw moments
+calc.get_conditional_sojourn_moments(2.0, 2, permanent_jobs=2)   # 2 permanent jobs sharing the CPU
+```
+
+Concretely, at `ρ = 0.6` and a job of size 2 (so `E[V] = 5` in all three cases):
+
+| service time (mean 1) | `Var[V(2)]` | `CV[V(2)]` |
+|---|---|---|
+| Erlang(3), cv = 0.58 | 10.84 | 0.659 |
+| exponential, cv = 1 | 11.69 | 0.684 |
+| H2, cv = 2 | 12.38 | 0.704 |
+
+Feed the moments to the [SLA layer](sla.md) to turn them into a deadline-violation probability.
+
+**Method.** Implementation of Yashkov S.F., *Explicit formulas for the moments of the sojourn
+time in the M/G/1 processor sharing queue with permanent jobs*,
+[arXiv:math/0512281](https://arxiv.org/abs/math/0512281) (2005), building on his 1983 and 1987
+papers. **The result is his**; this library contributes the implementation. The reciprocal of the
+conditional sojourn-time transform has a clean power series in the M/G/1-FCFS waiting-time
+distribution, and matching it against the transform itself gives a recursion for the moments.
+
+Yashkov's own conclusion is that the exact expressions "involve an integration term, making an
+exact computation difficult from a practical point of view", and the literature answered with
+bounds and approximations. That difficulty is an artefact of the general-`B` formulation: once
+the service time is phase-type — which is how this library represents a general service time
+fitted from moments — every object in the chain stays phase-type, and the moments come out of a
+few small matrix exponentials with no quadrature at all. The one numerical step left is the outer
+integration over the service-time distribution in `get_v`/`get_v_moments`, and its accuracy is
+self-checking: the first moment has to come back as the exact `b1/(1−ρ)`.
+
+**Caveat worth stating plainly:** the variance depends on the *shape* of the service time, so
+when you supply only moments and let `set_servers_from_moments` fit one, the answer is exact for
+the **fitted** law, not for every law with those moments. The mean and the queue length are
+insensitive and so are unaffected by the fit.
+
+**Validation:** the insensitive `E[V(x)] = x/(1−ρ)` reproduced to machine precision through the
+full recursion (which is never told it); the M/M/1-PS variance against a closed form; Yashkov's
+small-job asymptotic `Var ~ x²ρ/(1−ρ)²`; his equation (3.10) by independent quadrature; and
+paired comparison against simulation. See
+[EPIC-077](../epics/EPIC-077-mg1-ps-sojourn-moments.md).
 
 ### M/G/n PS (Processor Sharing, n servers)
 
@@ -173,9 +229,12 @@ calc.set_servers([1.0])  # service time moments
 results = calc.run()      # results.v[0] -- mean sojourn, via Little's law
 ```
 
-**Accuracy and scope:** exact queue-length distribution and mean sojourn/waiting for any `n`;
-job-size-conditional sojourn time and higher moments (an open point even for `n=1`) require the
-Yashkov/Ott transform machinery and are left for a follow-up.
+**Accuracy and scope:** exact queue-length distribution and mean sojourn/waiting for any `n`.
+Higher conditional sojourn moments are **not** available for `n > 1`, and not for want of effort:
+Yashkov's recursion (implemented for `n = 1` above) is built on the M/G/1-FCFS waiting-time
+distribution and is specific to the single-server case. The insensitivity that makes the queue
+length here identical to M/M/n does not extend to the conditional sojourn time, so the `n = 1`
+result cannot simply be rescaled.
 
 ### M/G/1 LCFS-PR
 

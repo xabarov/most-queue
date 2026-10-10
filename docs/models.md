@@ -64,7 +64,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/G/1 PSJF | MG1PsjfCalc | SizeBasedQsSim | - | Preemptive by original size |
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | By prediction Y |
 | M/G/1 FB/LAS | MG1FbCalc | FBSim | - | Blind, by attained service |
-| M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Equal sharing, slowdown 1/(1−ρ) |
+| M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Equal sharing, slowdown 1/(1−ρ); exact HIGHER conditional sojourn moments and variance (Yashkov), which unlike the mean are not insensitive |
 | M/G/n PS | MGnPSCalc | - | - | n-server egalitarian sharing; reduces to M/G/1 PS at n=1; queue length matches M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Sojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | General arrivals |

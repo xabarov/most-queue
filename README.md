@@ -128,6 +128,19 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Higher sojourn moments in M/G/1 processor sharing**
+  (catching up with the literature, item R3): implementation of Yashkov's recursion
+  ([arXiv:math/0512281](https://arxiv.org/abs/math/0512281), 2005), closing a gap this library's
+  own `MG1PSCalc` had been documenting. The mean conditional sojourn time `x/(1-rho)` is famously
+  insensitive to the service-time distribution; **nothing above it is**, so a capacity or SLO
+  decision taken on the mean alone carries no information about risk. Exact conditional moments,
+  variance and CV, unconditional moments, and `K` permanent jobs sharing the processor. Yashkov
+  concluded the exact expressions were impractical to compute and the literature answered with
+  bounds — that difficulty disappears for phase-type service, where the whole chain stays
+  phase-type and the moments come out of a few small matrix exponentials with no quadrature.
+  Validated against the insensitivity theorem (machine precision, through a recursion never told
+  it), an M/M/1-PS closed form, Yashkov's own small-job asymptotic, his equation (3.10) by
+  independent quadrature, and simulation. [Model](docs/models/size-based.md#m-g-1-ps-processor-sharing).
 - **2026-10, current source tree** — **Delay-dependent service rates** (catching up with the
   literature, item R2): implementation of D'Auria, Adan, Bekker & Kulkarni, *An M/M/c queue with
   queueing-time dependent service rates*, EJOR 299(2):566-579, 2022 — the service rate a customer

@@ -59,7 +59,7 @@
 | M/G/1 PSJF | MG1PsjfCalc | SizeBasedQsSim | - | Preemptive по исходному размеру |
 | M/G/1 SPJF | MG1SpjfCalc | SizeBasedQsSim | - | По предсказанию Y |
 | M/G/1 FB/LAS | MG1FbCalc | FBSim | - | Blind, по attained service |
-| M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Равное разделение, slowdown 1/(1−ρ) |
+| M/G/1 PS | MG1PSCalc | ProcessorSharingSim | - | Равное разделение, slowdown 1/(1−ρ); точные старшие условные моменты и дисперсия времени пребывания (Яшков) — в отличие от среднего они не нечувствительны |
 | M/G/n PS | MGnPSCalc | - | - | Равное разделение между n серверами; при n=1 сводится к M/G/1 PS; число заявок совпадает с M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Время пребывания = период занятости |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
