@@ -202,3 +202,6 @@ works/experiments/rabbitmq_prefetch/
 works/reviews/
 # RDR paper PDF (external, not redistributed) — keep only COVERAGE.md audit
 works/articles/multichannel-pr/*.pdf
+
+# works/papers (downloaded source PDFs -- not ours to redistribute)
+works/papers/

@@ -94,6 +94,7 @@ See the executable comparison of **9 disciplines** in
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments and tail for any a≤b; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV and batch-size-dependent parameters; Markovian abandonment (MM1/Erlang/H2); `c` independent servers sharing one queue, incl. batch-size-dependent service | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
+| Delay-dependent service rates | M/M/c whose service rate switches at a threshold on the customer's own experienced delay (slowdown/speedup) — exact waiting-time distribution, density and mean | exact (mixture of matrix exponentials) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -127,6 +128,16 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Delay-dependent service rates** (catching up with the
+  literature, item R2): implementation of D'Auria, Adan, Bekker & Kulkarni, *An M/M/c queue with
+  queueing-time dependent service rates*, EJOR 299(2):566-579, 2022 — the service rate a customer
+  gets depends on the delay **that customer** experienced, which is the empirically observed
+  "slowdown" effect in health care, call centres and retail. Exact waiting-time distribution,
+  density and mean, as a mixture of matrix exponentials. The model and solution are the authors';
+  ours is the implementation, validated against the Erlang-C reduction (`1e-16`), their own `c=1`
+  closed form (`3e-16`), their published `c=2` numbers (every printed digit) and independent
+  simulation. Two numerical properties of the method that the paper does not state are documented
+  and handled. [Model](docs/models/delay-dependent.md).
 - **2026-10, current source tree** — **Occupancy-dependent continuous batching**: exact
   waiting-time distribution (moments and tail, not just the mean) for the Markovian core
   of LLM-serving "continuous batching" — up to `k` requests served concurrently with a

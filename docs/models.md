@@ -23,6 +23,7 @@ add a figure function and regenerate the PNGs.
 | [Fork-Join systems](models/fork-join.md) | fork-join and split-join parallel service; exact heavy-tailed (Pareto) max-of-n; heterogeneous branches, series-parallel task DAGs, (n,k)-join |
 | [Systems with batch arrivals](models/batch.md) | batch arrivals Mˣ/M/1 and bulk service M/M^[a,b]/1 (or general Erlang/H2-fitted batch service) |
 | [Occupancy-dependent continuous batching](models/continuous-batching.md) | LLM-serving continuous batching: occupancy-dependent service rate, hard concurrency cap, exact waiting-time moments and tail |
+| [Delay-dependent service rates](models/delay-dependent.md) | M/M/c where the service rate depends on the delay that customer experienced (slowdown/speedup past a threshold); exact waiting-time distribution, density and mean |
 | [Systems with impatient jobs](models/impatience.md) | impatient jobs: M/M/1/D and Erlang-A with staffing |
 | [Retrial queues](models/retrial.md) | retrial queues with orbit (M/M/1, M/G/1) |
 | [Matrix-analytic models (MAP/PH)](models/map-ph.md) | correlated arrivals: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP variants, MMPP fitting |
@@ -124,6 +125,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/H2^[a,b]/1 bulk service | BulkServiceH2Calc | - | - | General (H2-fitted, CV≥1) batch-service time; reduces to p1=1 above; exact `get_tail`/`get_cdf` at a=1 |
 | Occupancy-dependent continuous batching | OccupancyDependentQueueCalc | - | - | LLM-serving continuous batching; occupancy-dependent rate, hard concurrency cap; exact W moments/tail, exact regression to M/M/k/N |
 | Occupancy-modulated two-branch batching | OccupancyDependentH2QueueCalc | - | - | Heterogeneous output lengths; exact level distribution and mean wait; reduces to the row above at p1=1 or mu1=mu2 |
+| M/M/c, delay-dependent service rate | MMcDelayDependentServiceCalc | MMcDelayDependentServiceSim | - | Service rate switches at a threshold on the customer's OWN experienced delay (slowdown/speedup); exact VQT distribution, density and mean; reduces exactly to Erlang-C at mu1=mu2 (D'Auria, Adan, Bekker & Kulkarni, EJOR 2022) |
 | Engset | Engset | QueueingFiniteSourceSim | - | Finite number of sources |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backordering or lost sales, exact QBD; exact waiting-time moments AND tail `get_w_moments`/`get_tail` (stockout makes a customer wait even with an empty queue) |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c identical servers, exact QBD, reduces to c=1 above |

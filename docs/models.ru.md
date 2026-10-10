@@ -23,6 +23,7 @@
 | [Fork-Join системы](models/fork-join.ru.md) | параллельное обслуживание fork-join и split-join; точный тяжёлохвостый (Pareto) максимум n подзадач; гетерогенные ветви, series-parallel DAG задач, (n,k)-join |
 | [Системы с пакетным поступлением](models/batch.ru.md) | пакетное поступление Mˣ/M/1 и групповое обслуживание M/M^[a,b]/1 (или общее Erlang/H2-подогнанное обслуживание батча) |
 | [Occupancy-зависимый continuous batching](models/continuous-batching.ru.md) | continuous batching LLM-инференса: occupancy-зависимая интенсивность обслуживания, жёсткий потолок занятости, точные моменты и хвост времени ожидания |
+| [Интенсивность обслуживания, зависящая от ожидания](models/delay-dependent.ru.md) | M/M/c, где интенсивность обслуживания зависит от испытанного заявкой ожидания (замедление/ускорение за порогом); точные распределение, плотность и среднее времени ожидания |
 | [Системы с нетерпеливыми заявками](models/impatience.ru.md) | нетерпеливые заявки: M/M/1/D и Erlang-A со staffing |
 | [Retrial-очереди (повторные попытки)](models/retrial.ru.md) | retrial-очереди с орбитой (M/M/1, M/G/1) |
 | [Матрично-аналитические модели (MAP/PH)](models/map-ph.ru.md) | коррелированные потоки: MAP/PH/1, MAP/M/c, MAP/PH/c, BMAP-варианты, фиттинг MMPP |
@@ -113,6 +114,7 @@
 | M/H2^[a,b]/1 групповое обслуживание | BulkServiceH2Calc | - | - | Общее (H2-подогнанное, CV≥1) время обслуживания батча; сводится к p1=1 выше |
 | Occupancy-зависимый continuous batching | OccupancyDependentQueueCalc | - | - | Continuous batching LLM-инференса; occupancy-зависимая интенсивность, жёсткий потолок занятости; точные моменты и хвост W, точная регрессия к M/M/k/N |
 | Occupancy-модулированное двухветвевое | OccupancyDependentH2QueueCalc | - | - | Неоднородные длины вывода; точные уровневое распределение и среднее ожидание; сводится к строке выше при p1=1 или mu1=mu2 |
+| M/M/c с интенсивностью, зависящей от ожидания | MMcDelayDependentServiceCalc | MMcDelayDependentServiceSim | - | Интенсивность обслуживания переключается по порогу на собственном испытанном ожидании заявки (замедление/ускорение); точные распределение, плотность и среднее виртуального времени ожидания; при mu1=mu2 точно сводится к формуле Эрланга-C (D'Auria, Adan, Bekker, Kulkarni, EJOR 2022) |
 | Engset | Engset | QueueingFiniteSourceSim | - | Конечное число источников |
 | M/M/1 queueing-inventory (s,S) | MM1QueueingInventoryCalc | MM1QueueingInventorySim | - | Backorder или lost sales, точный QBD; точные моменты И хвост времени ожидания `get_w_moments`/`get_tail` (при нулевом запасе заявка ждёт даже с пустой очередью) |
 | M/M/c queueing-inventory (s,S) | MMcQueueingInventoryCalc | MMcQueueingInventorySim | - | c одинаковых серверов, точный QBD, сводится к c=1 выше |
