@@ -98,6 +98,7 @@ See the executable comparison of **9 disciplines** in
 | Busy-server-dependent service rate | GI/M/2 where a lone busy server works at a different rate than when both are busy (helped by the idle one, or slowed down) — exact state, arrival-observed and waiting-time distributions | exact (Bhat 1966) |
 | Threshold-controlled service rate | M/M/1 whose rate switches at a threshold on the number in system — exact sojourn and waiting moments, not elementary because arrivals behind a customer change its own service rate | exact (Morrison 1989) |
 | Imprecise computation | Mandatory + optional parts under deadlines: answer quality becomes the control variable, not timeliness or admission — exact offline optimum plus online policies scored against it | exact (LP / min-cost flow) |
+| Value-based scheduling under overload | Which jobs are worth running when deadlines cannot all be met: 4 priority rules x 3 guarantee mechanisms (12 algorithms), Hit Value Ratio; exact clairvoyant optimum turns it into a true competitive ratio | DES + exact offline optimum (Horn's condition + MILP) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -131,6 +132,20 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Value vs. deadline scheduling under overload** (catching
+  up with the literature, item R7): implementation of Buttazzo G.C., Spuri M. & Sensini F., *Value
+  vs. deadline scheduling in overload conditions*, RTSS 1995. Once the load passes one, EDF does
+  not merely lose optimality -- it collapses, serving the most urgent job while it and several
+  behind it are already doomed. Each job carries an importance value, banked in full only if it
+  meets its deadline. All twelve of the paper's algorithms (EDF/HVF/HDF/MIX priority x
+  plain/guaranteed/robust guarantee), its task-set generator, and all four of its published
+  observations reproduced as tests -- including the crossover where RHDF overtakes REDF past
+  nominal load 3. Added on top, and **not** in the paper: the exact clairvoyant optimum, via
+  Horn's feasibility condition turned into an integer program, which fixes the paper's
+  denominator and shows REDF banking 94% of the achievable value at nominal load 3 where its raw
+  Hit Value Ratio of 0.864 looks far more modest. Validated against exhaustive search whose
+  feasibility test is a preemptive-EDF run rather than Horn's condition, so the reference is
+  independent of the formulation under test. [Model](docs/models/value-scheduling.md).
 - **2026-10, current source tree** — **Imprecise computation / controllable processing times**
   (catching up with the literature, item R6; the first of the adjacent-community items):
   implementation of Shih, Liu, Chung & Gillies 1989 and the algorithms of Shih, Liu & Chung 1991

@@ -35,6 +35,7 @@ add a figure function and regenerate the PNGs.
 | [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
 | [Deadline-aware admission control](models/admission-control.md) | Accept/reject at arrival based on own-deadline feasibility (not reordering); exact convergent series for Exp(θ) deadline |
 | [Imprecise computation / controllable processing times](models/imprecise.md) | quality as a control variable: a mandatory part that must finish plus an optional part that may be truncated; exact offline optimum and online policies scored against it |
+| [Value-based scheduling under overload](models/value-scheduling.md) | which jobs are worth running when deadlines cannot all be met: 4 priority rules (EDF/HVF/HDF/MIX) x 3 guarantee mechanisms (plain/guaranteed/robust), Hit Value Ratio; exact clairvoyant optimum via Horn's condition for a true competitive ratio |
 | [Queueing-inventory systems](models/inventory.md) | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales — exact QBD |
 | [Closed systems](models/closed.md) | finite-source systems (Engset) |
 | [Reliability: unreliable servers](models/reliability.md) | breakdowns & repairs (M/G/1, M/M/c), machine repair problem (incl. 2 heterogeneous repairmen), working breakdowns, disasters with repair, retrial + failures |
