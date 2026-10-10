@@ -42,12 +42,13 @@ import numpy as np
 from most_queue.structs import QueueingInventoryResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+from most_queue.theory.inventory._wait_phase import WaitPhaseTypeMixin
 from most_queue.theory.matrix.qbd import QBDSolver
 
 Policy = Literal["backorder", "lost_sales"]
 
 
-class MM2QueueingInventoryHeterogeneousCalc(BaseQueue):
+class MM2QueueingInventoryHeterogeneousCalc(WaitPhaseTypeMixin, BaseQueue):
     """
     M/M/2 queueing-inventory system with two heterogeneous servers and an
     (s, S) replenishment policy.
@@ -66,6 +67,7 @@ class MM2QueueingInventoryHeterogeneousCalc(BaseQueue):
             raise ValueError(f"reorder point s must satisfy 0 <= s < s_max, got s={s}, s_max={s_max}")
         if policy not in ("backorder", "lost_sales"):
             raise ValueError(f"policy must be 'backorder' or 'lost_sales', got {policy!r}")
+        self.c = 2  # fixed by this class; named for WaitPhaseTypeMixin
         self.s_max = int(s_max)
         self.s = int(s)
         self.policy: Policy = policy
@@ -253,30 +255,14 @@ class MM2QueueingInventoryHeterogeneousCalc(BaseQueue):
 
         return (p_busy1 + p_busy2) / self._effective_arrival_rate()
 
-    def get_w(self) -> list[float]:
-        """
-        Mean waiting time: ``E[W] = E[V] - E[service]``.
-
-        .. warning::
-
-           Known defect, queued for fix (see EPIC-075 and
-           docs/roadmaps/literature_catchup_roadmap.md). This uses
-           ``E[V] - 1/mu``, which OVERSTATES the wait whenever ``c > 1`` and
-           stockouts actually occur: with several servers running, one can
-           consume the last stock unit while another customer is still
-           mid-service, suspending that service until a replenishment, so the
-           real ``E[S]`` exceeds the nominal mean service time. The error
-           vanishes when stock never binds and grows with the stockout
-           probability (measured ~2% in a c=2 example). ``E[V]`` and the stock
-           metrics are exact and unaffected. The exact wait is already
-           available in ``MMcQueueingInventoryCalc`` via its phase-type
-           construction; the heterogeneous classes need their own (the tagged
-           customer's wait depends on WHICH servers are busy), which is the
-           next item on the catchup roadmap.
-        """
-        v = self.v if self.v is not None else self.get_v()
-        self.w = [v[0] - self._mean_service_time()]
-        return self.w
+    # ------------------------------- waiting-time DISTRIBUTION (EPIC-075)
+    def _boundary_stock_probs(self, n: int):
+        """Stock distribution at boundary level n < 2, summed over configurations."""
+        m = self.s_max + 1
+        n0_block, n1_block = self._pi0_level_blocks()
+        if n == 0:
+            return n0_block
+        return n1_block[:m] + n1_block[m:]
 
     def get_stock_distribution(self) -> list[float]:
         """P(stock level = i), i = 0..S, exact (summed over all queue lengths)."""

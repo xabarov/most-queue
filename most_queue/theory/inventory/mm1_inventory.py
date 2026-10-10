@@ -228,7 +228,7 @@ class MM1QueueingInventoryCalc(BaseQueue):
             c=1,
             s_max=self.s_max,
             s=self.s,
-            mu=self.mu,
+            full_rate=self.mu,
             theta=self.theta,
             n_max=n_max,
             lost_sales=self.policy == "lost_sales",

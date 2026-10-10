@@ -45,6 +45,7 @@ from most_queue.random.utils.params import ErlangParams
 from most_queue.structs import QueueingInventoryResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.calc_params import CalcParams
+from most_queue.theory.inventory._wait_phase import WaitPhaseTypeMixin
 from most_queue.theory.matrix.qbd import QBDSolver
 
 Policy = Literal["backorder", "lost_sales"]
@@ -74,7 +75,7 @@ def _with(config: Config, k: int, value: int) -> Config:
     return tuple(updated)
 
 
-class MMcQueueingInventoryHeterogeneousErlangCalc(BaseQueue):
+class MMcQueueingInventoryHeterogeneousErlangCalc(WaitPhaseTypeMixin, BaseQueue):
     """
     M/Erlang/c queueing-inventory system: c heterogeneous servers, each with
     its own Erlang(r, rate) service-time distribution, and an (s, S)
@@ -362,30 +363,11 @@ class MMcQueueingInventoryHeterogeneousErlangCalc(BaseQueue):
         self.v = [self._mean_in_system() / self._effective_arrival_rate()]
         return self.v
 
-    def get_w(self) -> list[float]:
-        """
-        Mean waiting time: ``E[W] = E[V] - E[service]``.
-
-        .. warning::
-
-           Known defect, queued for fix (see EPIC-075 and
-           docs/roadmaps/literature_catchup_roadmap.md). This uses
-           ``E[V] - 1/mu``, which OVERSTATES the wait whenever ``c > 1`` and
-           stockouts actually occur: with several servers running, one can
-           consume the last stock unit while another customer is still
-           mid-service, suspending that service until a replenishment, so the
-           real ``E[S]`` exceeds the nominal mean service time. The error
-           vanishes when stock never binds and grows with the stockout
-           probability (measured ~2% in a c=2 example). ``E[V]`` and the stock
-           metrics are exact and unaffected. The exact wait is already
-           available in ``MMcQueueingInventoryCalc`` via its phase-type
-           construction; the heterogeneous classes need their own (the tagged
-           customer's wait depends on WHICH servers are busy), which is the
-           next item on the catchup roadmap.
-        """
-        v = self.v if self.v is not None else self.get_v()
-        self.w = [v[0] - self._mean_service_time()]
-        return self.w
+    # ------------------------------- waiting-time DISTRIBUTION (EPIC-075)
+    def _boundary_stock_probs(self, n: int):
+        """Stock distribution at boundary level n < c, summed over configurations."""
+        m = self.s_max + 1
+        return self._n_block(n).reshape(self._n_sizes[n], m).sum(axis=0)
 
     def get_stock_distribution(self) -> list[float]:
         """P(stock level = i), i = 0..S, exact (summed over all queue lengths)."""

@@ -299,7 +299,7 @@ class MMcQueueingInventoryCalc(BaseQueue):
             c=self.c,
             s_max=self.s_max,
             s=self.s,
-            mu=self.mu,
+            full_rate=self.c * self.mu,
             theta=self.theta,
             n_max=n_max,
             lost_sales=self.policy == "lost_sales",

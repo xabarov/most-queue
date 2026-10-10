@@ -76,11 +76,30 @@ precision, which is a strong test because `get_w()` goes through a completely in
 (Little's law on the matrix-geometric stationary distribution); `∫P(W>t)dt` matches `E[W]`; and the
 tail is validated against an independent from-scratch discrete-event simulation.
 
-**Scope:** `MM1QueueingInventoryCalc` and `MMcQueueingInventoryCalc`. The heterogeneous-server
-classes still report means only, and their mean wait carries a documented defect for `c > 1` (see
-the warning in their `get_w` docstrings): it uses `E[V] - 1/mu`, which overstates the wait because
-a service in progress is suspended while stock is out, so `E[S] > 1/mu`. `MMcQueueingInventoryCalc`
-also exposes `get_service_time_mean()` for that actual `E[S]`.
+**Scope:** all seven calculators of the family — `MM1QueueingInventoryCalc`,
+`MMcQueueingInventoryCalc`, and the four heterogeneous-server classes
+(`MM2QueueingInventoryHeterogeneousCalc`, `MMcQueueingInventoryHeterogeneousCalc`, and the
+per-server Erlang and H2 service variants). Each exposes `get_w_moments`, `get_tail`, `get_cdf`,
+and `get_service_time_mean()` (the mean time a customer *occupies* a server, which exceeds the
+actively-served time when `c > 1` and stockouts bind).
+
+**Heterogeneous servers need no extra machinery**, which is worth stating because it is not
+obvious. While the tagged customer waits there are always at least `c` customers ahead of it, so
+*every* server is busy — which server is doing what never enters the calculation. The busy-subset
+dimension that the stationary solution needs for `n < c` is irrelevant to the wait. For the Erlang
+and H2 variants the completion rate does depend on the service phases, and those are read straight
+off the QBD blocks `A0`/`A1`/`A2` of the repeating part (arrivals *behind* the tagged customer keep
+its level unchanged, so the within-level generator is `A0 + A1`), which is why one construction
+serves all four classes.
+
+**This replaced a real defect.** Until EPIC-075 every multi-server class computed
+`E[W] = E[V] - E[S_active]`. That overstates the wait: with `c > 1`, one server can take the last
+stock unit while another customer is mid-service, suspending that service until a replenishment
+arrives — the suspension belongs to the sojourn, not to the wait. Independent simulation
+(8 seeds × 900 000 customers, `c = 2`, `mu = (0.8, 1.5)`, `S = 4`, `s = 1`, `theta = 1`) put the
+exact value at −0.07σ from the measured `E[W]` and the old formula at **+23σ**, an 8.9 % error. The
+single-server model was never affected: with one server the stock cannot drop while that service
+runs.
 
 ### Lost-sales variant
 

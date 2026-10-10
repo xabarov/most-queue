@@ -27,13 +27,11 @@ def test_equal_rates_reduces_exactly_to_mmc_c2(policy, s):
     res_c2 = c2.run(num_levels=100)
 
     assert np.isclose(res_het.v[0], res_c2.v[0], atol=1e-6)
-    # NOTE: W is deliberately NOT compared here. EPIC-075 fixed the mean wait in
-    # MMcQueueingInventoryCalc (it used E[V] - 1/mu, which overstates the wait when
-    # c > 1 and stockouts block a service in progress); the heterogeneous classes
-    # still use the old formula pending their own phase-type construction, so the
-    # two no longer agree. E[V] and the stockout probability are exact in both and
-    # remain compared. Previously both sides shared the same error, so this
-    # assertion passed while both were wrong.
+    # W is compared again now that both sides compute it exactly (EPIC-075). Note
+    # this assertion also passed while BOTH sides shared the same E[V] - 1/mu
+    # error -- a sibling-class regression cannot detect an error common to both,
+    # which is why the fix had to come from an independent simulation.
+    assert np.isclose(res_het.w[0], res_c2.w[0], atol=1e-6)
     assert np.isclose(res_het.stockout_prob, res_c2.stockout_prob, atol=1e-9)
     assert np.allclose(res_het.p, res_c2.p, atol=1e-9)
 
