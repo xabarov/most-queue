@@ -207,6 +207,88 @@ calc.set_servers(mu=0.6)
 results = calc.run()
 ```
 
+### GI/M/2 with a busy-server-dependent service rate
+
+**Description:** two servers sharing one FCFS queue, general (renewal) arrivals, exponential
+service — but the rate depends on how many servers are busy. While both are busy each works at
+`μ`; while only one is busy it works at `μ_single`, which need not equal `μ`. Bhat's motivating
+picture is two repairmen who help each other when one is free (`μ_single > μ`), and the opposite
+case where a lone operator slows down.
+
+**In plain words:** real servers are not independent. A lone worker may be helped by an idle
+colleague, or may slack off; a lone GPU process may get the whole memory bandwidth instead of
+half. The ordinary GI/M/2 cannot express any of that, because it fixes one rate per server
+regardless of what the other is doing.
+
+**Calculator class:** `GiM2StateDependentCalc` (`most_queue.theory.fifo.gi_m2_state_dependent`)
+
+```python
+from most_queue.theory.fifo.gi_m2_state_dependent import GiM2StateDependentCalc
+from most_queue.random.distributions import GammaDistribution
+
+calc = GiM2StateDependentCalc()
+gamma_params = GammaDistribution.get_params_by_mean_and_cv(f1=0.83, cv=0.5)
+calc.set_sources(GammaDistribution.calc_theory_moments(gamma_params))
+calc.set_servers(mu=1.0, mu_single=1.6)   # a lone server is helped by the idle one
+
+calc.get_p()            # time-stationary number in system
+calc.get_pi()           # what an ARRIVING customer sees -- different, no PASTA here
+calc.get_w(4)           # exact raw moments of the waiting time
+calc.get_w_tail(2.0)    # exact P(W > 2)
+calc.get_wait_prob()    # P(W > 0)
+calc.get_q()            # mean number in system
+calc.get_v()[0]         # mean sojourn, by Little
+```
+
+**Method.** Implementation of Bhat U.N., *The queue GI/M/2 with service rate depending on the
+number of busy servers*, Annals of the Institute of Statistical Mathematics 18:211–221, 1966,
+[doi:10.1007/BF02869531](https://doi.org/10.1007/BF02869531). **The model and the solution are
+his.** He works out the time-dependent behaviour in double transforms; what is implemented here
+is the steady state, obtained as his section 5 prescribes — `P_j = lim_{θ→0} θ·φ₀ⱼ(θ)` applied to
+his equations (45)–(47). He carries that limit out himself only for Poisson arrivals at three
+particular rate ratios (his table (56)), and those are among the references this is checked
+against.
+
+**Two things worth knowing, neither of them in the paper.**
+
+*The state dependence changes how often you wait, not how long.* The root `γ` of
+`z = ψ(2μ(1−z))` mentions only the both-busy rate, so it does not depend on `μ_single` at all.
+The waiting time therefore comes out as an atom at zero plus `Exp(2μ(1−γ))` — the same
+exponential as in an ordinary GI/M/2. All the `μ_single` dependence sits in the size of the atom.
+That is convenient for capacity work: helping the lone server reduces the *probability* of
+queueing without touching the tail decay, so it cannot fix a heavy tail.
+
+*Stability is decided by `μ` alone*, `arrival rate < 2μ`. However fast the lone server is, a long
+enough queue keeps both servers busy and the drain rate is `2μ` regardless.
+
+**What helping the lone server actually buys** (`μ = 1`, Gamma arrivals with mean 0.83, cv 0.5):
+
+| `μ_single` | `P(W>0)` | `E[W]` | `P(W>2)` | `E[Q]` |
+|---|---|---|---|---|
+| 0.6 (slowdown) | 0.3399 | 0.2954 | 0.034036 | 1.721 |
+| 1.0 (ordinary GI/M/2) | 0.2868 | 0.2492 | 0.028713 | 1.505 |
+| 1.4 | 0.2392 | 0.2079 | 0.023953 | 1.305 |
+| 1.8 | 0.1983 | 0.1723 | 0.019855 | 1.127 |
+
+Note that `P(W>0)`, `E[W]` and `P(W>2)` all fall by the *same* factor (−42% across the range):
+only the atom moves, the exponential behind it does not. That is the structural point above made
+numerical — and it says plainly that this lever rescales the whole waiting-time curve rather than
+reshaping its tail.
+
+**Two degenerate ratios, both used as regression targets:**
+
+- `μ_single = μ` is the ordinary GI/M/2 and reproduces `GiMn(n=2)` — states and waiting times.
+- `μ_single = 2μ` keeps the total drain rate at `2μ` in every state, so the *occupancy process* is
+  exactly a GI/M/1 of rate `2μ`. The *waiting times* are deliberately **not** the same: there are
+  still two servers, so a customer finding one job in system goes straight to the free one
+  instead of queueing. Same occupancy, different per-customer experience.
+
+**Validation:** Bhat's published table (56); the elementary M/M/2 birth-death chain at arbitrary
+ratio, including the `μ_single > 2μ` region his table does not cover; an **exact CTMC** (Erlang
+interarrivals make the system a finite-phase Markov chain), matching both the time-stationary and
+the arrival-observed distributions to `1e-12`; the library's own `GiMn` at the two degenerate
+ratios; and simulation. See [EPIC-078](../epics/EPIC-078-gi-m2-state-dependent-rate.md).
+
 ### GI/G/1 and GI/G/m (two-moment approximations)
 
 **Description:** Approximate computation of the mean waiting time from the first two moments of the arrival and service processes: Kingman (upper bound), Krämer–Langenbach-Belz for GI/G/1 (exact for M/G/1), Allen–Cunneen for GI/G/m (exact for M/M/m).

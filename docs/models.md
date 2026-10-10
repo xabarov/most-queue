@@ -68,6 +68,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | M/G/n PS | MGnPSCalc | - | - | n-server egalitarian sharing; reduces to M/G/1 PS at n=1; queue length matches M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Sojourn = busy period |
 | GI/M/1 | GIM1Calc | QsSim | - | General arrivals |
+| GI/M/2, busy-server-dependent rate | GiM2StateDependentCalc | - | - | A lone busy server may work at a different rate (helped by the idle one, or slowed down); exact state, arrival-observed and waiting-time distributions (Bhat 1966) |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, w1 only |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Yes | Preemptive priority |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Yes | Non-preemptive priority |

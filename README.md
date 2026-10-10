@@ -95,6 +95,7 @@ See the executable comparison of **9 disciplines** in
 | Batch arrivals & bulk service | Mˣ/M/1 batch arrivals; M/M^[a,b]/1 bulk (batch) service — LLM inference batching, exact N/W moments and tail for any a≤b; general (Erlang- or H2-fitted, CV≤1 or CV≥1) batch-service time with auto-dispatch by CV and batch-size-dependent parameters; Markovian abandonment (MM1/Erlang/H2); `c` independent servers sharing one queue, incl. batch-size-dependent service | exact |
 | Impatience & closed | M/M/1+M, Engset | exact |
 | Delay-dependent service rates | M/M/c whose service rate switches at a threshold on the customer's own experienced delay (slowdown/speedup) — exact waiting-time distribution, density and mean | exact (mixture of matrix exponentials) |
+| Busy-server-dependent service rate | GI/M/2 where a lone busy server works at a different rate than when both are busy (helped by the idle one, or slowed down) — exact state, arrival-observed and waiting-time distributions | exact (Bhat 1966) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -128,6 +129,17 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **GI/M/2 with a busy-server-dependent service rate**
+  (catching up with the literature, item R4): implementation of Bhat U.N., *The queue GI/M/2 with
+  service rate depending on the number of busy servers*, AISM 18:211-221, 1966. Real servers are
+  not independent — a lone worker may be helped by an idle colleague or may slow down — and an
+  ordinary GI/M/2 cannot express that. Exact queue-length distribution, the (different)
+  arrival-observed distribution since PASTA does not hold for renewal input, and the full waiting
+  time. Two things not in the paper fall out of the derivation: the state dependence changes how
+  OFTEN a customer waits but not how long once it does (the decay rate `2mu(1-gamma)` never
+  mentions the lone-server rate), and stability is decided by the both-busy rate alone. Checked
+  against the paper's published table, the elementary birth-death chain at arbitrary rate ratio,
+  an exact CTMC, and simulation. [Model](docs/models/fifo.md#gim2-with-a-busy-server-dependent-service-rate).
 - **2026-10, current source tree** — **Higher sojourn moments in M/G/1 processor sharing**
   (catching up with the literature, item R3): implementation of Yashkov's recursion
   ([arXiv:math/0512281](https://arxiv.org/abs/math/0512281), 2005), closing a gap this library's

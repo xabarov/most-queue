@@ -63,6 +63,7 @@
 | M/G/n PS | MGnPSCalc | - | - | Равное разделение между n серверами; при n=1 сводится к M/G/1 PS; число заявок совпадает с M/M/n |
 | M/G/1 LCFS-PR | MG1LcfsPrCalc | LcfsPRSim | - | Время пребывания = период занятости |
 | GI/M/1 | GIM1Calc | QsSim | - | Общий поток |
+| GI/M/2 с интенсивностью от числа занятых приборов | GiM2StateDependentCalc | - | - | Одинокий занятый прибор может работать с другой интенсивностью (помощь свободного или замедление); точные распределение состояний, наблюдаемое заявкой распределение и время ожидания (Bhat 1966) |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, только w1 |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Да | Прерываемый приоритет |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Да | Непрерываемый приоритет |
