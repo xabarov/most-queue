@@ -96,6 +96,7 @@ See the executable comparison of **9 disciplines** in
 | Impatience & closed | M/M/1+M, Engset | exact |
 | Delay-dependent service rates | M/M/c whose service rate switches at a threshold on the customer's own experienced delay (slowdown/speedup) — exact waiting-time distribution, density and mean | exact (mixture of matrix exponentials) |
 | Busy-server-dependent service rate | GI/M/2 where a lone busy server works at a different rate than when both are busy (helped by the idle one, or slowed down) — exact state, arrival-observed and waiting-time distributions | exact (Bhat 1966) |
+| Threshold-controlled service rate | M/M/1 whose rate switches at a threshold on the number in system — exact sojourn and waiting moments, not elementary because arrivals behind a customer change its own service rate | exact (Morrison 1989) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -129,6 +130,19 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **M/M/1 with a threshold-controlled service rate** (catching
+  up with the literature, item R5, and completing that sub-series): implementation of Morrison
+  J.A., *Sojourn and waiting times in a single-server system with state-dependent mean service
+  rate*, Queueing Systems 4:213-235, 1989. The server runs at a low rate until the backlog crosses
+  a threshold `K` and at a high rate above it. The queue length is an elementary birth-death
+  chain; the sojourn time is not, because the rate depends on the total in system **including
+  arrivals behind the tagged customer**, so its own service can speed up for reasons that affect
+  it in no other way -- which is exactly why Little's distributional law fails here. Exact sojourn
+  and waiting moments, conditional and unconditional. This also closes a limitation our own
+  EPIC-073 and EPIC-078 had stated explicitly. Validated against the M/M/1 reductions, the
+  published stationary distribution, Little's law, and an explicit matrix solve of the same
+  absorbing chain with no boundary condition at all.
+  [Model](docs/models/fifo.md#mm1-with-a-threshold-controlled-service-rate).
 - **2026-10, current source tree** — **GI/M/2 with a busy-server-dependent service rate**
   (catching up with the literature, item R4): implementation of Bhat U.N., *The queue GI/M/2 with
   service rate depending on the number of busy servers*, AISM 18:211-221, 1966. Real servers are

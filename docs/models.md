@@ -75,6 +75,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | H2/M/n (Takahashi-Takami) | H2MnCalc | QsSim | - | H2 arrivals, exponential service |
 | Hk/Hk/n (Takahashi-Takami) | HkHkNCalc | QsSim | - | Hyperexponential arrivals AND service |
 | GI/M/2, busy-server-dependent rate | GiM2StateDependentCalc | - | - | A lone busy server may work at a different rate (helped by the idle one, or slowed down); exact state, arrival-observed and waiting-time distributions (Bhat 1966) |
+| M/M/1, threshold-controlled rate | MM1ThresholdRateCalc | - | - | Rate switches at a threshold K on the number in system; exact sojourn and waiting moments, which are NOT elementary because arrivals behind a customer change its own service rate (Morrison 1989) |
 | GI/G/1, GI/G/m (approx) | GIG1ApproxCalc, GIGmApproxCalc | QsSim | - | Kingman/KLB/Allen–Cunneen, w1 only |
 | M/G/c/PR | MGnInvarApproximation | PriorityQueueSimulator | Yes | Preemptive priority |
 | M/G/c/NP | MGnInvarApproximation | PriorityQueueSimulator | Yes | Non-preemptive priority |

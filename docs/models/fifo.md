@@ -289,6 +289,82 @@ interarrivals make the system a finite-phase Markov chain), matching both the ti
 the arrival-observed distributions to `1e-12`; the library's own `GiMn` at the two degenerate
 ratios; and simulation. See [EPIC-078](../epics/EPIC-078-gi-m2-state-dependent-rate.md).
 
+### M/M/1 with a threshold-controlled service rate
+
+**Description:** a single server that works at `μ_low` while at most `K` customers are present
+and at `μ_high` above that. The threshold `K` is the control: it says how long the server is
+allowed to stay in the cheap/slow mode before it must speed up.
+
+**In plain words:** running flat out all the time is wasteful, so you let the server idle along
+until the backlog crosses a line and only then switch it to high gear. The question this model
+answers is what that line costs you.
+
+**Calculator class:** `MM1ThresholdRateCalc` (`most_queue.theory.fifo.mm1_threshold_rate`)
+
+```python
+from most_queue.theory.fifo.mm1_threshold_rate import MM1ThresholdRateCalc
+
+calc = MM1ThresholdRateCalc(threshold=4)
+calc.set_sources(l=0.8)
+calc.set_servers(mu_low=0.5, mu_high=1.5)   # mu_low may even be below lam
+
+calc.get_v(4)          # exact raw moments of the sojourn time
+calc.get_w(4)          # exact raw moments of the waiting time
+calc.get_p()           # stationary number in system
+calc.get_n_mean()      # mean number in system
+calc.get_wait_prob()   # P(W > 0)
+calc.get_conditional_sojourn_moments(n=3, num=4)   # given the arrival finds n in system
+```
+
+**Why this is not elementary.** The number in system is an ordinary birth–death chain, so its
+distribution is a one-liner. The sojourn time is not, because the rate depends on the *total* in
+system — **including customers who arrive behind the tagged one**. A customer's own service can
+therefore speed up because of an arrival that affects it in no other way. That is precisely why
+Little's *distributional* law does not apply here and why the problem needed a paper.
+
+**Method.** Implementation of Morrison J.A., *Sojourn and waiting times in a single-server system
+with state-dependent mean service rate*, Queueing Systems 4:213–235, 1989,
+[doi:10.1007/BF02100267](https://doi.org/10.1007/BF02100267). **The model and the exact result are
+his.** Morrison's paper is paywalled and was not read; the derivation used here was done from
+scratch and then checked against the open modern treatment of the same model — Adan I., D'Auria B.,
+*Sojourn time in a single server queue with threshold service rate control*, SIAM J. Appl. Math.
+76(1):197–216, 2016, [arXiv:1509.04111](https://arxiv.org/abs/1509.04111) — whose equations (4)
+and (6) it reproduces, boundary condition included. Their random-inspection extension (the rate
+changes only at Poisson inspection epochs) is a different model and is not implemented.
+
+The tagged customer is tracked as `(r, N)` — `r` still ahead, `N` in system — and the standard
+absorbing-chain moment recursion applies. What keeps it **finite** is this: from `(r, N)` the
+customer leaves after exactly `r+1` departures, so the system never drops below `N − r` before it
+goes. If `N − r > K` the rate is `μ_high` for the whole sojourn no matter how many customers
+arrive, and the sojourn is exactly `Erlang(r+1, μ_high)`. Each level `r` therefore needs only `K`
+states, closed by that boundary — **there is no truncation error in `N` at all**.
+
+**Stability is governed by `μ_high` alone**, `λ < μ_high`. `μ_low` may be *below* `λ`: the queue
+simply grows until it crosses the threshold and is then drained faster. (Same structural remark as
+in the [GI/M/2 model above](#gim2-with-a-busy-server-dependent-service-rate).)
+
+**What the threshold costs** (`λ = 0.8`, `μ_low = 0.5` — below the arrival rate — `μ_high = 1.5`):
+
+| `K` | `E[V]` | `E[W]` | `CV[V]` | `E[N]` | `P(W>0)` |
+|---|---|---|---|---|---|
+| 0 | 1.429 | 0.762 | 1.000 | 1.143 | 0.533 |
+| 1 | 2.074 | 1.106 | 0.737 | 1.659 | 0.774 |
+| 2 | 2.913 | 1.817 | 0.591 | 2.330 | 0.876 |
+| 4 | 4.894 | 3.698 | 0.446 | 3.916 | 0.957 |
+| 8 | 9.476 | 8.233 | 0.317 | 7.581 | 0.994 |
+| 16 | 19.351 | 18.101 | 0.219 | 15.481 | 1.000 |
+
+Mean delay grows roughly linearly in `K`, which is expected. The less obvious half is that the
+*coefficient of variation falls*: a large threshold pins the queue near `K`, so the delay gets
+worse but also far more predictable. If the thing being bought is a percentile rather than a mean,
+that trade is not one-sided — which is exactly the sort of statement a mean-only model cannot make.
+
+**Validation:** the ordinary M/M/1 at equal rates and at `K = 0` (`1e-12`); the published
+stationary distribution of Adan & D'Auria, equations (1)–(2); **Little's law** tying the moments
+to the stationary distribution through a separate route (`1e-9`); the same absorbing chain solved
+as an explicit sparse linear system with no boundary condition at all (`1e-16`); and simulation.
+See [EPIC-079](../epics/EPIC-079-mm1-threshold-service-rate.md).
+
 ### GI/G/1 and GI/G/m (two-moment approximations)
 
 **Description:** Approximate computation of the mean waiting time from the first two moments of the arrival and service processes: Kingman (upper bound), Krämer–Langenbach-Belz for GI/G/1 (exact for M/G/1), Allen–Cunneen for GI/G/m (exact for M/M/m).
