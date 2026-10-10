@@ -99,6 +99,7 @@ See the executable comparison of **9 disciplines** in
 | Threshold-controlled service rate | M/M/1 whose rate switches at a threshold on the number in system — exact sojourn and waiting moments, not elementary because arrivals behind a customer change its own service rate | exact (Morrison 1989) |
 | Imprecise computation | Mandatory + optional parts under deadlines: answer quality becomes the control variable, not timeliness or admission — exact offline optimum plus online policies scored against it | exact (LP / min-cost flow) |
 | Value-based scheduling under overload | Which jobs are worth running when deadlines cannot all be met: 4 priority rules x 3 guarantee mechanisms (12 algorithms), Hit Value Ratio; exact clairvoyant optimum turns it into a true competitive ratio | DES + exact offline optimum (Horn's condition + MILP) |
+| Service rate control with decaying value | Job value decays *during service*; the controller picks how fast to run, trading the cost of speed against the reward still collectable — exact optimal policy, plus monotonicity conditions checkable without computing it | exact DP (Master & Bambos 2015) |
 | Queueing-inventory | M/M/1, M/M/c, or c heterogeneous servers (identical, exponential, or per-server Erlang-/H2-fitted service) with stock-consuming service, general (s,S) replenishment (exponential or Erlang-fitted lead time), backordering or lost sales | exact QBD |
 | EDF scheduling | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA) | DES-exact, no closed form (open problem) |
 | Deadline-aware admission control | Accept/reject at arrival based on own-deadline feasibility (not reordering), Exp(θ) deadline — LLM-serving SLO | exact convergent series (level-crossing functional equation) |
@@ -132,6 +133,21 @@ scheduling research (SRPT/LAS with ML size predictions).
   moment-fit SLA approximation (which overestimates deep-tail violation
   probability by orders of magnitude). 19 new tests, DES-validated.
   [Method](docs/research/batch-service-sla-exact-tail-2026.md), [results](docs/research/batch-service-sla-exact-tail-results-2026.md).
+- **2026-10, current source tree** — **Service rate control for jobs with decaying value**
+  (catching up with the literature, item R8; this closes the adjacent-communities sub-series):
+  implementation of Master N. & Bambos N., *Service rate control for jobs with decaying value*,
+  ACC 2015. The library's first model where the answer is a **control policy** rather than a
+  performance measure: a server works through a fixed batch, the head-of-line job loses value with
+  every slot it fails to complete and is thrown away once that value runs out, and the only lever
+  is how fast to run. The dynamic program collapses -- the optimal rate depends on the state
+  through a single scalar -- so it solves in O(B*V*|S|). All four panels of the paper's figure 1
+  and its three monotonicity theorems are reproduced as tests, including conditions that decide
+  how the policy behaves **without computing it**. Validated against a value iteration that does
+  not assume the state space is acyclic, against a slot-by-slot simulation, and against
+  hand-computed closed forms. Found along the way: a myopic rule can cost more than not adapting
+  at all (461.9 against 279.8 optimal, losing to a fixed rate at 291.4), because it drops the
+  look-ahead term that dominates the signal and grows with the backlog.
+  [Model](docs/models/decaying-value.md).
 - **2026-10, current source tree** — **Value vs. deadline scheduling under overload** (catching
   up with the literature, item R7): implementation of Buttazzo G.C., Spuri M. & Sensini F., *Value
   vs. deadline scheduling in overload conditions*, RTSS 1995. Once the load passes one, EDF does
