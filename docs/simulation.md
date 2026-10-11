@@ -529,6 +529,17 @@ General non-affine durations can also use
 
 ## Mixed prefill and decode at iteration boundaries
 
+`KvCacheStabilitySim` is a separate [KV-memory model](models/kv-cache-stability.md):
+constant slots, finite joint input/output lengths, growing KV footprints,
+ongoing-first maximal next-stage packing with free CPU offload. Its
+`run(num_of_slots, warmup_slots=..., arrivals_by_slot=..., record_trace=...)`
+observes a fixed horizon without draining. Arrival/completion/resource-work
+counters include warmup; throughput, busy and memory fractions exclude it.
+It does not report censored completed-only w/v or a stationary PMF. Conservation,
+finite packing LP, saturated cycles and stochastic flow checks are detailed in
+the [L4 method report](research/kv-cache-stability-validation-2026.md).
+This is not a hard-resident/paid-eviction or physical GPU simulator.
+
 [`PrefillDecodeSim`](models/prefill-decode.md) explicitly tracks individual
 prompt/output tokens, with no exponential service approximation. At each
 boundary it admits FCFS to the active cap, schedules one token per decoder,

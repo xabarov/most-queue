@@ -1959,6 +1959,40 @@ def fig_prefill_decode():
     return fig
 
 
+def fig_kv_cache_stability():
+    """Independent hand trace: two requests, s=2/o=2/chunk=2, M=4."""
+    fig, axes = plt.subplots(2, 1, figsize=(11, 4.3), sharex=True, gridspec_kw={"height_ratios": [2, 1]})
+    schedule = [(0, 0, 2, BLUE), (0, 1, 2, BLUE), (1, 0, 3, AQUA), (2, 0, 4, AQUA), (3, 1, 3, AQUA), (4, 1, 4, AQUA)]
+    for slot, row, charge, color in schedule:
+        axes[0].broken_barh([(slot, 1)], (row - 0.24, 0.48), facecolors=color, edgecolors=SURFACE)
+        axes[0].text(slot + 0.5, row, f"KV={charge}", color="white", ha="center", va="center", fontsize=11)
+    for slot in (1, 2):
+        axes[0].broken_barh([(slot, 1)], (0.76, 0.48), facecolors=YELLOW, edgecolors=SURFACE)
+        axes[0].text(slot + 0.5, 1, "CPU", color=INK, ha="center", va="center", fontsize=11)
+    axes[0].set_yticks([0, 1], labels=[t("Request A", "Заявка A"), t("Request B", "Заявка B")])
+    axes[0].set_ylim(-0.5, 1.5)
+    axes[0].set_title(
+        t("Growing KV · maximal packing · free offload", "Растущий KV · максимальная упаковка · бесплатная выгрузка")
+    )
+    axes[1].bar([i + 0.5 for i in range(6)], [4, 3, 4, 3, 4, 0], width=0.8, color=VIOLET)
+    axes[1].axhline(4, color=RED, linestyle="--", label="M=4")
+    axes[1].set_ylabel(t("KV fulfilled", "KV выполнено"))
+    axes[1].set_ylim(0, 5)
+    axes[1].set_xticks(range(7))
+    axes[1].set_xlim(0, 6)
+    axes[1].set_xlabel(
+        t(
+            "Slot boundaries · one stage per selected request · total area 18",
+            "Границы слотов · одна стадия выбранной заявки · общая работа 18",
+        )
+    )
+    axes[1].legend(loc="upper right")
+    for ax in axes:
+        ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -1994,6 +2028,7 @@ FIGURES = {
     "token_batching": fig_token_batching,
     "continuous_batching": fig_continuous_batching,
     "prefill_decode": fig_prefill_decode,
+    "kv_cache_stability": fig_kv_cache_stability,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,

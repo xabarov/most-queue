@@ -31,6 +31,48 @@ class QueueResults:
 
 
 @dataclass
+class KvCacheStabilityResults(QueueResults):
+    """Conditional stability bounds, not exact capacity or a stationary PMF.
+
+    utilization is offered KV token-slot load, not observed GPU busy fraction.
+    Replica bounds assume identical workers and equal per-worker arrival rate.
+    """
+
+    status: str = "inconclusive"
+    mean_memory_area: float = 0.0
+    peak_tokens: int = 0
+    delta: float = 0.0
+    capacity_upper: float = 0.0
+    capacity_lower: float | None = None
+    expected_drift_upper: float | None = None
+    length_covariance: float = 0.0
+    necessary_replicas: int = 0
+    sufficient_replicas: int | None = None
+    diagnostics: list[str] = field(default_factory=list)
+
+
+@dataclass
+class KvCacheSimResults(QueueResults):
+    """Fixed-horizon slot simulation; no draining or censored latency averages.
+
+    throughput excludes warmup, but arrival/completion/work counters are total.
+    p/pi/w/v are deliberately unset: no stationary or complete-cohort claim.
+    """
+
+    arrived: int = 0
+    completed: int = 0
+    unfinished: int = 0
+    input_memory_area: int = 0
+    fulfilled_memory_area: int = 0
+    outstanding_memory_area: int = 0
+    throughput: float = 0.0
+    memory_fraction: float = 0.0
+    swapped_request_slots: int = 0
+    observation_time: float = 0.0
+    slot_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
 class PrefillDecodeResults(QueueResults):
     """Mean-field iteration-cost results; exact occupancy of the CTMC surrogate.
 

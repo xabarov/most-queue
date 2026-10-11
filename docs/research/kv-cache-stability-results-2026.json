@@ -1,0 +1,4786 @@
+{
+  "schema_version": 1,
+  "source": "https://arxiv.org/html/2605.04595v1",
+  "scope": "Synthetic constant-slot, maximal/free-swap model, not GPU replication or a recurrence proof.",
+  "slots": 2000,
+  "warmup_slots": 400,
+  "replications": 4,
+  "rows": [
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 1.0523809523809524,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.5525,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 1.9047619047619047,
+        "capacity_lower": 1.619047619047619,
+        "expected_drift_upper": -11.899999999999999,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2151,
+          "completed": 2143,
+          "unfinished": 8,
+          "input_memory_area": 45171,
+          "fulfilled_memory_area": 45064,
+          "outstanding_memory_area": 107,
+          "throughput": 1.0675,
+          "memory_fraction": 0.56,
+          "swapped_request_slots": 115,
+          "observation_time": 1600.0,
+          "seed": 2000
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.996875,
+          "arrived": 2182,
+          "completed": 2175,
+          "unfinished": 7,
+          "input_memory_area": 45822,
+          "fulfilled_memory_area": 45715,
+          "outstanding_memory_area": 107,
+          "throughput": 1.061875,
+          "memory_fraction": 0.557453125,
+          "swapped_request_slots": 220,
+          "observation_time": 1600.0,
+          "seed": 2001
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.999375,
+          "arrived": 2139,
+          "completed": 2137,
+          "unfinished": 2,
+          "input_memory_area": 44919,
+          "fulfilled_memory_area": 44893,
+          "outstanding_memory_area": 26,
+          "throughput": 1.0675,
+          "memory_fraction": 0.560390625,
+          "swapped_request_slots": 122,
+          "observation_time": 1600.0,
+          "seed": 2002
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.998125,
+          "arrived": 2204,
+          "completed": 2200,
+          "unfinished": 4,
+          "input_memory_area": 46284,
+          "fulfilled_memory_area": 46236,
+          "outstanding_memory_area": 48,
+          "throughput": 1.088125,
+          "memory_fraction": 0.571296875,
+          "swapped_request_slots": 185,
+          "observation_time": 1600.0,
+          "seed": 2003
+        }
+      ],
+      "throughput_mean": 1.0712499999999998,
+      "throughput_se": 0.005779138127783442
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 1.7619047619047619,
+      "regime": "gap",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.925,
+        "status": "inconclusive",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 1.9047619047619047,
+        "capacity_lower": 1.619047619047619,
+        "expected_drift_upper": 3.0,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3484,
+          "completed": 3471,
+          "unfinished": 13,
+          "input_memory_area": 73164,
+          "fulfilled_memory_area": 72956,
+          "outstanding_memory_area": 208,
+          "throughput": 1.765625,
+          "memory_fraction": 0.927015625,
+          "swapped_request_slots": 4408,
+          "observation_time": 1600.0,
+          "seed": 2010
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3579,
+          "completed": 3563,
+          "unfinished": 16,
+          "input_memory_area": 75159,
+          "fulfilled_memory_area": 74876,
+          "outstanding_memory_area": 283,
+          "throughput": 1.81375,
+          "memory_fraction": 0.95209375,
+          "swapped_request_slots": 5360,
+          "observation_time": 1600.0,
+          "seed": 2011
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3571,
+          "completed": 3558,
+          "unfinished": 13,
+          "input_memory_area": 74991,
+          "fulfilled_memory_area": 74782,
+          "outstanding_memory_area": 209,
+          "throughput": 1.7825,
+          "memory_fraction": 0.9355,
+          "swapped_request_slots": 5465,
+          "observation_time": 1600.0,
+          "seed": 2012
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3538,
+          "completed": 3504,
+          "unfinished": 34,
+          "input_memory_area": 74298,
+          "fulfilled_memory_area": 73650,
+          "outstanding_memory_area": 648,
+          "throughput": 1.728125,
+          "memory_fraction": 0.90671875,
+          "swapped_request_slots": 5049,
+          "observation_time": 1600.0,
+          "seed": 2013
+        }
+      ],
+      "throughput_mean": 1.7725,
+      "throughput_se": 0.017837153991037934
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 2.2857142857142856,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 1.9047619047619047,
+        "capacity_lower": 1.619047619047619,
+        "expected_drift_upper": 14.0,
+        "length_covariance": 0.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4702,
+          "completed": 3801,
+          "unfinished": 901,
+          "input_memory_area": 98742,
+          "fulfilled_memory_area": 79925,
+          "outstanding_memory_area": 18817,
+          "throughput": 1.904375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 9636,
+          "observation_time": 1600.0,
+          "seed": 2020
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4580,
+          "completed": 3801,
+          "unfinished": 779,
+          "input_memory_area": 96180,
+          "fulfilled_memory_area": 79909,
+          "outstanding_memory_area": 16271,
+          "throughput": 1.90375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 12713,
+          "observation_time": 1600.0,
+          "seed": 2021
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4599,
+          "completed": 3793,
+          "unfinished": 806,
+          "input_memory_area": 96579,
+          "fulfilled_memory_area": 79743,
+          "outstanding_memory_area": 16836,
+          "throughput": 1.904375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 12706,
+          "observation_time": 1600.0,
+          "seed": 2022
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4602,
+          "completed": 3799,
+          "unfinished": 803,
+          "input_memory_area": 96642,
+          "fulfilled_memory_area": 79847,
+          "outstanding_memory_area": 16795,
+          "throughput": 1.90375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 12682,
+          "observation_time": 1600.0,
+          "seed": 2023
+        }
+      ],
+      "throughput_mean": 1.9040625000000002,
+      "throughput_se": 0.00018042195912172215
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 1.3,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.5525,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 2.3529411764705883,
+        "capacity_lower": 2.0,
+        "expected_drift_upper": -11.899999999999999,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.99375,
+          "arrived": 2609,
+          "completed": 2606,
+          "unfinished": 3,
+          "input_memory_area": 44353,
+          "fulfilled_memory_area": 44312,
+          "outstanding_memory_area": 41,
+          "throughput": 1.32,
+          "memory_fraction": 0.560421875,
+          "swapped_request_slots": 68,
+          "observation_time": 1600.0,
+          "seed": 2030
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.993125,
+          "arrived": 2548,
+          "completed": 2544,
+          "unfinished": 4,
+          "input_memory_area": 43316,
+          "fulfilled_memory_area": 43264,
+          "outstanding_memory_area": 52,
+          "throughput": 1.284375,
+          "memory_fraction": 0.54590625,
+          "swapped_request_slots": 74,
+          "observation_time": 1600.0,
+          "seed": 2031
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.99625,
+          "arrived": 2620,
+          "completed": 2616,
+          "unfinished": 4,
+          "input_memory_area": 44540,
+          "fulfilled_memory_area": 44502,
+          "outstanding_memory_area": 38,
+          "throughput": 1.290625,
+          "memory_fraction": 0.548421875,
+          "swapped_request_slots": 76,
+          "observation_time": 1600.0,
+          "seed": 2032
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.995,
+          "arrived": 2589,
+          "completed": 2589,
+          "unfinished": 0,
+          "input_memory_area": 44013,
+          "fulfilled_memory_area": 44013,
+          "outstanding_memory_area": 0,
+          "throughput": 1.293125,
+          "memory_fraction": 0.549125,
+          "swapped_request_slots": 65,
+          "observation_time": 1600.0,
+          "seed": 2033
+        }
+      ],
+      "throughput_mean": 1.29703125,
+      "throughput_se": 0.007874235247258419
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 2.1764705882352944,
+      "regime": "gap",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.9250000000000002,
+        "status": "inconclusive",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 2.3529411764705883,
+        "capacity_lower": 2.0,
+        "expected_drift_upper": 3.000000000000007,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4358,
+          "completed": 4351,
+          "unfinished": 7,
+          "input_memory_area": 74086,
+          "fulfilled_memory_area": 73984,
+          "outstanding_memory_area": 102,
+          "throughput": 2.19,
+          "memory_fraction": 0.9306875,
+          "swapped_request_slots": 2058,
+          "observation_time": 1600.0,
+          "seed": 2040
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4361,
+          "completed": 4356,
+          "unfinished": 5,
+          "input_memory_area": 74137,
+          "fulfilled_memory_area": 74079,
+          "outstanding_memory_area": 58,
+          "throughput": 2.163125,
+          "memory_fraction": 0.919078125,
+          "swapped_request_slots": 2301,
+          "observation_time": 1600.0,
+          "seed": 2041
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4478,
+          "completed": 4461,
+          "unfinished": 17,
+          "input_memory_area": 76126,
+          "fulfilled_memory_area": 75887,
+          "outstanding_memory_area": 239,
+          "throughput": 2.221875,
+          "memory_fraction": 0.94440625,
+          "swapped_request_slots": 2632,
+          "observation_time": 1600.0,
+          "seed": 2042
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 4368,
+          "completed": 4339,
+          "unfinished": 29,
+          "input_memory_area": 74256,
+          "fulfilled_memory_area": 73797,
+          "outstanding_memory_area": 459,
+          "throughput": 2.1875,
+          "memory_fraction": 0.929625,
+          "swapped_request_slots": 2154,
+          "observation_time": 1600.0,
+          "seed": 2043
+        }
+      ],
+      "throughput_mean": 2.190625,
+      "throughput_se": 0.012051862753671426
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 2.823529411764706,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.15,
+        "capacity_upper": 2.3529411764705883,
+        "capacity_lower": 2.0,
+        "expected_drift_upper": 14.0,
+        "length_covariance": 0.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5657,
+          "completed": 4657,
+          "unfinished": 1000,
+          "input_memory_area": 96169,
+          "fulfilled_memory_area": 79245,
+          "outstanding_memory_area": 16924,
+          "throughput": 2.33375,
+          "memory_fraction": 0.9916875,
+          "swapped_request_slots": 2997,
+          "observation_time": 1600.0,
+          "seed": 2050
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5696,
+          "completed": 4632,
+          "unfinished": 1064,
+          "input_memory_area": 96832,
+          "fulfilled_memory_area": 78804,
+          "outstanding_memory_area": 18028,
+          "throughput": 2.32,
+          "memory_fraction": 0.986,
+          "swapped_request_slots": 3344,
+          "observation_time": 1600.0,
+          "seed": 2051
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5671,
+          "completed": 4630,
+          "unfinished": 1041,
+          "input_memory_area": 96407,
+          "fulfilled_memory_area": 78772,
+          "outstanding_memory_area": 17635,
+          "throughput": 2.32,
+          "memory_fraction": 0.986,
+          "swapped_request_slots": 3330,
+          "observation_time": 1600.0,
+          "seed": 2052
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5763,
+          "completed": 4662,
+          "unfinished": 1101,
+          "input_memory_area": 97971,
+          "fulfilled_memory_area": 79295,
+          "outstanding_memory_area": 18676,
+          "throughput": 2.334375,
+          "memory_fraction": 0.99165625,
+          "swapped_request_slots": 2674,
+          "observation_time": 1600.0,
+          "seed": 2053
+        }
+      ],
+      "throughput_mean": 2.32703125,
+      "throughput_se": 0.0040614982739338185
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 6.004761904761905,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.6305,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 9.523809523809524,
+        "capacity_lower": 9.238095238095237,
+        "expected_drift_upper": -67.9,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 11871,
+          "completed": 11848,
+          "unfinished": 23,
+          "input_memory_area": 249291,
+          "fulfilled_memory_area": 248937,
+          "outstanding_memory_area": 354,
+          "throughput": 5.94875,
+          "memory_fraction": 0.624390625,
+          "swapped_request_slots": 2,
+          "observation_time": 1600.0,
+          "seed": 2060
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12057,
+          "completed": 12027,
+          "unfinished": 30,
+          "input_memory_area": 253197,
+          "fulfilled_memory_area": 252748,
+          "outstanding_memory_area": 449,
+          "throughput": 6.011875,
+          "memory_fraction": 0.631284375,
+          "swapped_request_slots": 0,
+          "observation_time": 1600.0,
+          "seed": 2061
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 11907,
+          "completed": 11876,
+          "unfinished": 31,
+          "input_memory_area": 250047,
+          "fulfilled_memory_area": 249629,
+          "outstanding_memory_area": 418,
+          "throughput": 5.935625,
+          "memory_fraction": 0.623121875,
+          "swapped_request_slots": 8,
+          "observation_time": 1600.0,
+          "seed": 2062
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12081,
+          "completed": 12037,
+          "unfinished": 44,
+          "input_memory_area": 253701,
+          "fulfilled_memory_area": 253073,
+          "outstanding_memory_area": 628,
+          "throughput": 6.013125,
+          "memory_fraction": 0.631509375,
+          "swapped_request_slots": 21,
+          "observation_time": 1600.0,
+          "seed": 2063
+        }
+      ],
+      "throughput_mean": 5.97734375,
+      "throughput_se": 0.020475110334969186
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 9.38095238095238,
+      "regime": "gap",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.9849999999999999,
+        "status": "inconclusive",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 9.523809523809524,
+        "capacity_lower": 9.238095238095237,
+        "expected_drift_upper": 2.9999999999999716,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 18631,
+          "completed": 18532,
+          "unfinished": 99,
+          "input_memory_area": 391251,
+          "fulfilled_memory_area": 389589,
+          "outstanding_memory_area": 1662,
+          "throughput": 9.30125,
+          "memory_fraction": 0.97645625,
+          "swapped_request_slots": 42068,
+          "observation_time": 1600.0,
+          "seed": 2070
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 18734,
+          "completed": 18652,
+          "unfinished": 82,
+          "input_memory_area": 393414,
+          "fulfilled_memory_area": 391953,
+          "outstanding_memory_area": 1461,
+          "throughput": 9.3475,
+          "memory_fraction": 0.98086875,
+          "swapped_request_slots": 44890,
+          "observation_time": 1600.0,
+          "seed": 2071
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 18770,
+          "completed": 18669,
+          "unfinished": 101,
+          "input_memory_area": 394170,
+          "fulfilled_memory_area": 392545,
+          "outstanding_memory_area": 1625,
+          "throughput": 9.360625,
+          "memory_fraction": 0.982740625,
+          "swapped_request_slots": 45388,
+          "observation_time": 1600.0,
+          "seed": 2072
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 18533,
+          "completed": 18446,
+          "unfinished": 87,
+          "input_memory_area": 389193,
+          "fulfilled_memory_area": 387966,
+          "outstanding_memory_area": 1227,
+          "throughput": 9.331875,
+          "memory_fraction": 0.979409375,
+          "swapped_request_slots": 37496,
+          "observation_time": 1600.0,
+          "seed": 2073
+        }
+      ],
+      "throughput_mean": 9.3353125,
+      "throughput_se": 0.012784522299119042
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 11.428571428571429,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "4,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 21.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 9.523809523809524,
+        "capacity_lower": 9.238095238095237,
+        "expected_drift_upper": 46.0,
+        "length_covariance": 0.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 22285,
+          "completed": 18982,
+          "unfinished": 3303,
+          "input_memory_area": 467985,
+          "fulfilled_memory_area": 399029,
+          "outstanding_memory_area": 68956,
+          "throughput": 9.520625,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 63756,
+          "observation_time": 1600.0,
+          "seed": 2080
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 22914,
+          "completed": 18998,
+          "unfinished": 3916,
+          "input_memory_area": 481194,
+          "fulfilled_memory_area": 399395,
+          "outstanding_memory_area": 81799,
+          "throughput": 9.523125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 66905,
+          "observation_time": 1600.0,
+          "seed": 2081
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 22588,
+          "completed": 18996,
+          "unfinished": 3592,
+          "input_memory_area": 474348,
+          "fulfilled_memory_area": 399250,
+          "outstanding_memory_area": 75098,
+          "throughput": 9.525,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 62082,
+          "observation_time": 1600.0,
+          "seed": 2082
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 22873,
+          "completed": 18984,
+          "unfinished": 3889,
+          "input_memory_area": 480333,
+          "fulfilled_memory_area": 399264,
+          "outstanding_memory_area": 81069,
+          "throughput": 9.5125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 63848,
+          "observation_time": 1600.0,
+          "seed": 2083
+        }
+      ],
+      "throughput_mean": 9.5203125,
+      "throughput_se": 0.002754021680500726
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 7.41764705882353,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.6305000000000001,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 11.764705882352942,
+        "capacity_lower": 11.411764705882353,
+        "expected_drift_upper": -67.89999999999999,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 14832,
+          "completed": 14807,
+          "unfinished": 25,
+          "input_memory_area": 252144,
+          "fulfilled_memory_area": 251904,
+          "outstanding_memory_area": 240,
+          "throughput": 7.401875,
+          "memory_fraction": 0.6295,
+          "swapped_request_slots": 5,
+          "observation_time": 1600.0,
+          "seed": 2090
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 14834,
+          "completed": 14815,
+          "unfinished": 19,
+          "input_memory_area": 252178,
+          "fulfilled_memory_area": 251989,
+          "outstanding_memory_area": 189,
+          "throughput": 7.456875,
+          "memory_fraction": 0.6338625,
+          "swapped_request_slots": 6,
+          "observation_time": 1600.0,
+          "seed": 2091
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 14822,
+          "completed": 14801,
+          "unfinished": 21,
+          "input_memory_area": 251974,
+          "fulfilled_memory_area": 251753,
+          "outstanding_memory_area": 221,
+          "throughput": 7.439375,
+          "memory_fraction": 0.632421875,
+          "swapped_request_slots": 0,
+          "observation_time": 1600.0,
+          "seed": 2092
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 14723,
+          "completed": 14707,
+          "unfinished": 16,
+          "input_memory_area": 250291,
+          "fulfilled_memory_area": 250099,
+          "outstanding_memory_area": 192,
+          "throughput": 7.35125,
+          "memory_fraction": 0.624625,
+          "swapped_request_slots": 0,
+          "observation_time": 1600.0,
+          "seed": 2093
+        }
+      ],
+      "throughput_mean": 7.41234375,
+      "throughput_se": 0.02337334970778681
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 11.588235294117649,
+      "regime": "gap",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.9850000000000001,
+        "status": "inconclusive",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 11.764705882352942,
+        "capacity_lower": 11.411764705882353,
+        "expected_drift_upper": 3.0000000000000284,
+        "length_covariance": 0.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 23111,
+          "completed": 23065,
+          "unfinished": 46,
+          "input_memory_area": 392887,
+          "fulfilled_memory_area": 392209,
+          "outstanding_memory_area": 678,
+          "throughput": 11.54875,
+          "memory_fraction": 0.981215625,
+          "swapped_request_slots": 19597,
+          "observation_time": 1600.0,
+          "seed": 2100
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 23422,
+          "completed": 23352,
+          "unfinished": 70,
+          "input_memory_area": 398174,
+          "fulfilled_memory_area": 397142,
+          "outstanding_memory_area": 1032,
+          "throughput": 11.7125,
+          "memory_fraction": 0.995221875,
+          "swapped_request_slots": 20031,
+          "observation_time": 1600.0,
+          "seed": 2101
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 23258,
+          "completed": 23193,
+          "unfinished": 65,
+          "input_memory_area": 395386,
+          "fulfilled_memory_area": 394579,
+          "outstanding_memory_area": 807,
+          "throughput": 11.62375,
+          "memory_fraction": 0.987665625,
+          "swapped_request_slots": 19265,
+          "observation_time": 1600.0,
+          "seed": 2102
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 23071,
+          "completed": 23003,
+          "unfinished": 68,
+          "input_memory_area": 392207,
+          "fulfilled_memory_area": 391224,
+          "outstanding_memory_area": 983,
+          "throughput": 11.521875,
+          "memory_fraction": 0.97949375,
+          "swapped_request_slots": 19417,
+          "observation_time": 1600.0,
+          "seed": 2103
+        }
+      ],
+      "throughput_mean": 11.60171875,
+      "throughput_se": 0.042757625264146455
+    },
+    {
+      "workload": "fixed",
+      "joint_pmf": [
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 14.11764705882353,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "4,2": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2000000000000002,
+        "status": "overloaded",
+        "mean_memory_area": 17.0,
+        "peak_tokens": 6,
+        "delta": 0.03,
+        "capacity_upper": 11.764705882352942,
+        "capacity_lower": 11.411764705882353,
+        "expected_drift_upper": 46.00000000000003,
+        "length_covariance": 0.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 28420,
+          "completed": 23438,
+          "unfinished": 4982,
+          "input_memory_area": 483140,
+          "fulfilled_memory_area": 398612,
+          "outstanding_memory_area": 84528,
+          "throughput": 11.73875,
+          "memory_fraction": 0.99751875,
+          "swapped_request_slots": 17539,
+          "observation_time": 1600.0,
+          "seed": 2110
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 28201,
+          "completed": 23434,
+          "unfinished": 4767,
+          "input_memory_area": 479417,
+          "fulfilled_memory_area": 398657,
+          "outstanding_memory_area": 80760,
+          "throughput": 11.729375,
+          "memory_fraction": 0.99754375,
+          "swapped_request_slots": 17925,
+          "observation_time": 1600.0,
+          "seed": 2111
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 28144,
+          "completed": 23427,
+          "unfinished": 4717,
+          "input_memory_area": 478448,
+          "fulfilled_memory_area": 398444,
+          "outstanding_memory_area": 80004,
+          "throughput": 11.738125,
+          "memory_fraction": 0.997671875,
+          "swapped_request_slots": 28593,
+          "observation_time": 1600.0,
+          "seed": 2112
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 28004,
+          "completed": 23431,
+          "unfinished": 4573,
+          "input_memory_area": 476068,
+          "fulfilled_memory_area": 398533,
+          "outstanding_memory_area": 77535,
+          "throughput": 11.734375,
+          "memory_fraction": 0.99753125,
+          "swapped_request_slots": 17881,
+          "observation_time": 1600.0,
+          "seed": 2113
+        }
+      ],
+      "throughput_mean": 11.73515625,
+      "throughput_se": 0.0021556460506850146
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 0.41363636363636364,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.45499999999999996,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 0.9090909090909091,
+        "capacity_lower": 0.6363636363636364,
+        "expected_drift_upper": -9.8,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.95625,
+          "arrived": 782,
+          "completed": 776,
+          "unfinished": 6,
+          "input_memory_area": 36516,
+          "fulfilled_memory_area": 36223,
+          "outstanding_memory_area": 293,
+          "throughput": 0.38875,
+          "memory_fraction": 0.454671875,
+          "swapped_request_slots": 125,
+          "observation_time": 1600.0,
+          "seed": 2120
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.971875,
+          "arrived": 794,
+          "completed": 792,
+          "unfinished": 2,
+          "input_memory_area": 36364,
+          "fulfilled_memory_area": 36280,
+          "outstanding_memory_area": 84,
+          "throughput": 0.396875,
+          "memory_fraction": 0.45609375,
+          "swapped_request_slots": 234,
+          "observation_time": 1600.0,
+          "seed": 2121
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.955625,
+          "arrived": 768,
+          "completed": 764,
+          "unfinished": 4,
+          "input_memory_area": 33316,
+          "fulfilled_memory_area": 33164,
+          "outstanding_memory_area": 152,
+          "throughput": 0.378125,
+          "memory_fraction": 0.41259375,
+          "swapped_request_slots": 116,
+          "observation_time": 1600.0,
+          "seed": 2122
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.94625,
+          "arrived": 769,
+          "completed": 767,
+          "unfinished": 2,
+          "input_memory_area": 34006,
+          "fulfilled_memory_area": 33915,
+          "outstanding_memory_area": 91,
+          "throughput": 0.379375,
+          "memory_fraction": 0.411421875,
+          "swapped_request_slots": 132,
+          "observation_time": 1600.0,
+          "seed": 2123
+        }
+      ],
+      "throughput_mean": 0.38578125,
+      "throughput_se": 0.00439263558650536
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 0.7727272727272727,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.85,
+        "status": "inconclusive",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 0.9090909090909091,
+        "capacity_lower": 0.6363636363636364,
+        "expected_drift_upper": 6.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.998125,
+          "arrived": 1551,
+          "completed": 1545,
+          "unfinished": 6,
+          "input_memory_area": 68618,
+          "fulfilled_memory_area": 68277,
+          "outstanding_memory_area": 341,
+          "throughput": 0.77625,
+          "memory_fraction": 0.851296875,
+          "swapped_request_slots": 3458,
+          "observation_time": 1600.0,
+          "seed": 2130
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 1539,
+          "completed": 1533,
+          "unfinished": 6,
+          "input_memory_area": 68498,
+          "fulfilled_memory_area": 68263,
+          "outstanding_memory_area": 235,
+          "throughput": 0.77375,
+          "memory_fraction": 0.8651875,
+          "swapped_request_slots": 3056,
+          "observation_time": 1600.0,
+          "seed": 2131
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.99875,
+          "arrived": 1554,
+          "completed": 1547,
+          "unfinished": 7,
+          "input_memory_area": 67764,
+          "fulfilled_memory_area": 67562,
+          "outstanding_memory_area": 202,
+          "throughput": 0.794375,
+          "memory_fraction": 0.8678125,
+          "swapped_request_slots": 3218,
+          "observation_time": 1600.0,
+          "seed": 2132
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.998125,
+          "arrived": 1493,
+          "completed": 1485,
+          "unfinished": 8,
+          "input_memory_area": 64774,
+          "fulfilled_memory_area": 64392,
+          "outstanding_memory_area": 382,
+          "throughput": 0.754375,
+          "memory_fraction": 0.80603125,
+          "swapped_request_slots": 2318,
+          "observation_time": 1600.0,
+          "seed": 2133
+        }
+      ],
+      "throughput_mean": 0.7746875000000001,
+      "throughput_se": 0.008182886741038689
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 1.0909090909090908,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 0.9090909090909091,
+        "capacity_lower": 0.6363636363636364,
+        "expected_drift_upper": 20.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2161,
+          "completed": 1815,
+          "unfinished": 346,
+          "input_memory_area": 94302,
+          "fulfilled_memory_area": 79570,
+          "outstanding_memory_area": 14732,
+          "throughput": 0.91125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 10428,
+          "observation_time": 1600.0,
+          "seed": 2140
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2171,
+          "completed": 1850,
+          "unfinished": 321,
+          "input_memory_area": 94198,
+          "fulfilled_memory_area": 79302,
+          "outstanding_memory_area": 14896,
+          "throughput": 0.92875,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 9476,
+          "observation_time": 1600.0,
+          "seed": 2141
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2150,
+          "completed": 1802,
+          "unfinished": 348,
+          "input_memory_area": 94668,
+          "fulfilled_memory_area": 79673,
+          "outstanding_memory_area": 14995,
+          "throughput": 0.899375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 10704,
+          "observation_time": 1600.0,
+          "seed": 2142
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2162,
+          "completed": 1879,
+          "unfinished": 283,
+          "input_memory_area": 91048,
+          "fulfilled_memory_area": 79595,
+          "outstanding_memory_area": 11453,
+          "throughput": 0.946875,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 10163,
+          "observation_time": 1600.0,
+          "seed": 2143
+        }
+      ],
+      "throughput_mean": 0.9215625,
+      "throughput_se": 0.010372301355854764
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 0.4666666666666667,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.45499999999999996,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 1.0256410256410255,
+        "capacity_lower": 0.717948717948718,
+        "expected_drift_upper": -9.8,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.950625,
+          "arrived": 946,
+          "completed": 943,
+          "unfinished": 3,
+          "input_memory_area": 37314,
+          "fulfilled_memory_area": 37207,
+          "outstanding_memory_area": 107,
+          "throughput": 0.466875,
+          "memory_fraction": 0.468453125,
+          "swapped_request_slots": 100,
+          "observation_time": 1600.0,
+          "seed": 2150
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.96375,
+          "arrived": 953,
+          "completed": 952,
+          "unfinished": 1,
+          "input_memory_area": 38457,
+          "fulfilled_memory_area": 38390,
+          "outstanding_memory_area": 67,
+          "throughput": 0.474375,
+          "memory_fraction": 0.479890625,
+          "swapped_request_slots": 163,
+          "observation_time": 1600.0,
+          "seed": 2151
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.939375,
+          "arrived": 923,
+          "completed": 921,
+          "unfinished": 2,
+          "input_memory_area": 35487,
+          "fulfilled_memory_area": 35447,
+          "outstanding_memory_area": 40,
+          "throughput": 0.45875,
+          "memory_fraction": 0.435125,
+          "swapped_request_slots": 136,
+          "observation_time": 1600.0,
+          "seed": 2152
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.95,
+          "arrived": 936,
+          "completed": 934,
+          "unfinished": 2,
+          "input_memory_area": 37224,
+          "fulfilled_memory_area": 37170,
+          "outstanding_memory_area": 54,
+          "throughput": 0.46875,
+          "memory_fraction": 0.4699375,
+          "swapped_request_slots": 122,
+          "observation_time": 1600.0,
+          "seed": 2153
+        }
+      ],
+      "throughput_mean": 0.4671875,
+      "throughput_se": 0.0032325251352464377
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 0.8717948717948718,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.85,
+        "status": "inconclusive",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 1.0256410256410255,
+        "capacity_lower": 0.717948717948718,
+        "expected_drift_upper": 6.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.999375,
+          "arrived": 1822,
+          "completed": 1815,
+          "unfinished": 7,
+          "input_memory_area": 72378,
+          "fulfilled_memory_area": 72083,
+          "outstanding_memory_area": 295,
+          "throughput": 0.91625,
+          "memory_fraction": 0.906546875,
+          "swapped_request_slots": 2224,
+          "observation_time": 1600.0,
+          "seed": 2160
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.999375,
+          "arrived": 1788,
+          "completed": 1778,
+          "unfinished": 10,
+          "input_memory_area": 67572,
+          "fulfilled_memory_area": 67252,
+          "outstanding_memory_area": 320,
+          "throughput": 0.89625,
+          "memory_fraction": 0.847859375,
+          "swapped_request_slots": 1864,
+          "observation_time": 1600.0,
+          "seed": 2161
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.995625,
+          "arrived": 1712,
+          "completed": 1708,
+          "unfinished": 4,
+          "input_memory_area": 66288,
+          "fulfilled_memory_area": 66146,
+          "outstanding_memory_area": 142,
+          "throughput": 0.841875,
+          "memory_fraction": 0.821421875,
+          "swapped_request_slots": 1587,
+          "observation_time": 1600.0,
+          "seed": 2162
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.998125,
+          "arrived": 1733,
+          "completed": 1729,
+          "unfinished": 4,
+          "input_memory_area": 67077,
+          "fulfilled_memory_area": 66901,
+          "outstanding_memory_area": 176,
+          "throughput": 0.865625,
+          "memory_fraction": 0.82796875,
+          "swapped_request_slots": 1663,
+          "observation_time": 1600.0,
+          "seed": 2163
+        }
+      ],
+      "throughput_mean": 0.88,
+      "throughput_se": 0.01642731782225367
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 1.2307692307692306,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.1999999999999997,
+        "status": "overloaded",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.3,
+        "capacity_upper": 1.0256410256410255,
+        "capacity_lower": 0.717948717948718,
+        "expected_drift_upper": 19.999999999999993,
+        "length_covariance": 4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2409,
+          "completed": 2033,
+          "unfinished": 376,
+          "input_memory_area": 93201,
+          "fulfilled_memory_area": 78938,
+          "outstanding_memory_area": 14263,
+          "throughput": 1.005,
+          "memory_fraction": 0.989953125,
+          "swapped_request_slots": 4440,
+          "observation_time": 1600.0,
+          "seed": 2170
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2471,
+          "completed": 2056,
+          "unfinished": 415,
+          "input_memory_area": 95979,
+          "fulfilled_memory_area": 78835,
+          "outstanding_memory_area": 17144,
+          "throughput": 1.026875,
+          "memory_fraction": 0.990078125,
+          "swapped_request_slots": 4323,
+          "observation_time": 1600.0,
+          "seed": 2171
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2433,
+          "completed": 2002,
+          "unfinished": 431,
+          "input_memory_area": 95877,
+          "fulfilled_memory_area": 78991,
+          "outstanding_memory_area": 16886,
+          "throughput": 0.9975,
+          "memory_fraction": 0.990890625,
+          "swapped_request_slots": 4451,
+          "observation_time": 1600.0,
+          "seed": 2172
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2459,
+          "completed": 1973,
+          "unfinished": 486,
+          "input_memory_area": 98331,
+          "fulfilled_memory_area": 79117,
+          "outstanding_memory_area": 19214,
+          "throughput": 0.974375,
+          "memory_fraction": 0.990078125,
+          "swapped_request_slots": 4404,
+          "observation_time": 1600.0,
+          "seed": 2173
+        }
+      ],
+      "throughput_mean": 1.0009375,
+      "throughput_se": 0.010826820959235133
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 2.7772727272727273,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.611,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 4.545454545454546,
+        "capacity_lower": 4.2727272727272725,
+        "expected_drift_upper": -65.8,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5692,
+          "completed": 5676,
+          "unfinished": 16,
+          "input_memory_area": 252488,
+          "fulfilled_memory_area": 251777,
+          "outstanding_memory_area": 711,
+          "throughput": 2.8825,
+          "memory_fraction": 0.642971875,
+          "swapped_request_slots": 74,
+          "observation_time": 1600.0,
+          "seed": 2180
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5534,
+          "completed": 5507,
+          "unfinished": 27,
+          "input_memory_area": 241796,
+          "fulfilled_memory_area": 240906,
+          "outstanding_memory_area": 890,
+          "throughput": 2.755,
+          "memory_fraction": 0.601571875,
+          "swapped_request_slots": 36,
+          "observation_time": 1600.0,
+          "seed": 2181
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5589,
+          "completed": 5569,
+          "unfinished": 20,
+          "input_memory_area": 249554,
+          "fulfilled_memory_area": 248709,
+          "outstanding_memory_area": 845,
+          "throughput": 2.813125,
+          "memory_fraction": 0.623225,
+          "swapped_request_slots": 79,
+          "observation_time": 1600.0,
+          "seed": 2182
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 5536,
+          "completed": 5521,
+          "unfinished": 15,
+          "input_memory_area": 239436,
+          "fulfilled_memory_area": 238713,
+          "outstanding_memory_area": 723,
+          "throughput": 2.789375,
+          "memory_fraction": 0.60365625,
+          "swapped_request_slots": 88,
+          "observation_time": 1600.0,
+          "seed": 2183
+        }
+      ],
+      "throughput_mean": 2.8099999999999996,
+      "throughput_se": 0.02695120011242539
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 4.409090909090909,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.97,
+        "status": "inconclusive",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 4.545454545454546,
+        "capacity_lower": 4.2727272727272725,
+        "expected_drift_upper": 6.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8759,
+          "completed": 8726,
+          "unfinished": 33,
+          "input_memory_area": 386450,
+          "fulfilled_memory_area": 385196,
+          "outstanding_memory_area": 1254,
+          "throughput": 4.4175,
+          "memory_fraction": 0.975115625,
+          "swapped_request_slots": 26271,
+          "observation_time": 1600.0,
+          "seed": 2190
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8875,
+          "completed": 8838,
+          "unfinished": 37,
+          "input_memory_area": 388970,
+          "fulfilled_memory_area": 387137,
+          "outstanding_memory_area": 1833,
+          "throughput": 4.453125,
+          "memory_fraction": 0.9775875,
+          "swapped_request_slots": 31670,
+          "observation_time": 1600.0,
+          "seed": 2191
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8853,
+          "completed": 8805,
+          "unfinished": 48,
+          "input_memory_area": 388070,
+          "fulfilled_memory_area": 386114,
+          "outstanding_memory_area": 1956,
+          "throughput": 4.435625,
+          "memory_fraction": 0.972559375,
+          "swapped_request_slots": 25025,
+          "observation_time": 1600.0,
+          "seed": 2192
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8789,
+          "completed": 8677,
+          "unfinished": 112,
+          "input_memory_area": 389402,
+          "fulfilled_memory_area": 383717,
+          "outstanding_memory_area": 5685,
+          "throughput": 4.346875,
+          "memory_fraction": 0.96683125,
+          "swapped_request_slots": 30380,
+          "observation_time": 1600.0,
+          "seed": 2193
+        }
+      ],
+      "throughput_mean": 4.41328125,
+      "throughput_se": 0.023299419643612772
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 5.454545454545455,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,2": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2000000000000002,
+        "status": "overloaded",
+        "mean_memory_area": 44.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 4.545454545454546,
+        "capacity_lower": 4.2727272727272725,
+        "expected_drift_upper": 52.00000000000003,
+        "length_covariance": 4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10923,
+          "completed": 9009,
+          "unfinished": 1914,
+          "input_memory_area": 483638,
+          "fulfilled_memory_area": 398056,
+          "outstanding_memory_area": 85582,
+          "throughput": 4.53125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 60034,
+          "observation_time": 1600.0,
+          "seed": 2200
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10759,
+          "completed": 9024,
+          "unfinished": 1735,
+          "input_memory_area": 476014,
+          "fulfilled_memory_area": 398584,
+          "outstanding_memory_area": 77430,
+          "throughput": 4.544375,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 59471,
+          "observation_time": 1600.0,
+          "seed": 2201
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10881,
+          "completed": 9048,
+          "unfinished": 1833,
+          "input_memory_area": 480498,
+          "fulfilled_memory_area": 398703,
+          "outstanding_memory_area": 81795,
+          "throughput": 4.5,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 61523,
+          "observation_time": 1600.0,
+          "seed": 2202
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10820,
+          "completed": 9040,
+          "unfinished": 1780,
+          "input_memory_area": 479208,
+          "fulfilled_memory_area": 398797,
+          "outstanding_memory_area": 80411,
+          "throughput": 4.5625,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 55626,
+          "observation_time": 1600.0,
+          "seed": 2203
+        }
+      ],
+      "throughput_mean": 4.53453125,
+      "throughput_se": 0.013172965430348856
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 3.1333333333333333,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.611,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 5.128205128205129,
+        "capacity_lower": 4.82051282051282,
+        "expected_drift_upper": -65.8,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6190,
+          "completed": 6183,
+          "unfinished": 7,
+          "input_memory_area": 243750,
+          "fulfilled_memory_area": 243481,
+          "outstanding_memory_area": 269,
+          "throughput": 3.090625,
+          "memory_fraction": 0.610646875,
+          "swapped_request_slots": 23,
+          "observation_time": 1600.0,
+          "seed": 2210
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6298,
+          "completed": 6284,
+          "unfinished": 14,
+          "input_memory_area": 246702,
+          "fulfilled_memory_area": 246077,
+          "outstanding_memory_area": 625,
+          "throughput": 3.1225,
+          "memory_fraction": 0.6114875,
+          "swapped_request_slots": 24,
+          "observation_time": 1600.0,
+          "seed": 2211
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6256,
+          "completed": 6238,
+          "unfinished": 18,
+          "input_memory_area": 246504,
+          "fulfilled_memory_area": 245799,
+          "outstanding_memory_area": 705,
+          "throughput": 3.110625,
+          "memory_fraction": 0.60844375,
+          "swapped_request_slots": 22,
+          "observation_time": 1600.0,
+          "seed": 2212
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6197,
+          "completed": 6183,
+          "unfinished": 14,
+          "input_memory_area": 242313,
+          "fulfilled_memory_area": 241820,
+          "outstanding_memory_area": 493,
+          "throughput": 3.10125,
+          "memory_fraction": 0.607440625,
+          "swapped_request_slots": 26,
+          "observation_time": 1600.0,
+          "seed": 2213
+        }
+      ],
+      "throughput_mean": 3.10625,
+      "throughput_se": 0.00678444145330574
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 4.9743589743589745,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.97,
+        "status": "inconclusive",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 5.128205128205129,
+        "capacity_lower": 4.82051282051282,
+        "expected_drift_upper": 6.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10125,
+          "completed": 10069,
+          "unfinished": 56,
+          "input_memory_area": 392205,
+          "fulfilled_memory_area": 390134,
+          "outstanding_memory_area": 2071,
+          "throughput": 5.081875,
+          "memory_fraction": 0.975403125,
+          "swapped_request_slots": 14125,
+          "observation_time": 1600.0,
+          "seed": 2220
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 9872,
+          "completed": 9836,
+          "unfinished": 36,
+          "input_memory_area": 381408,
+          "fulfilled_memory_area": 380045,
+          "outstanding_memory_area": 1363,
+          "throughput": 4.930625,
+          "memory_fraction": 0.950934375,
+          "swapped_request_slots": 9335,
+          "observation_time": 1600.0,
+          "seed": 2221
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10064,
+          "completed": 10002,
+          "unfinished": 62,
+          "input_memory_area": 393816,
+          "fulfilled_memory_area": 391662,
+          "outstanding_memory_area": 2154,
+          "throughput": 5.005,
+          "memory_fraction": 0.983525,
+          "swapped_request_slots": 16018,
+          "observation_time": 1600.0,
+          "seed": 2222
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 9896,
+          "completed": 9818,
+          "unfinished": 78,
+          "input_memory_area": 389004,
+          "fulfilled_memory_area": 385968,
+          "outstanding_memory_area": 3036,
+          "throughput": 4.925,
+          "memory_fraction": 0.970225,
+          "swapped_request_slots": 13605,
+          "observation_time": 1600.0,
+          "seed": 2223
+        }
+      ],
+      "throughput_mean": 4.985625,
+      "throughput_se": 0.036900591402216534
+    },
+    {
+      "workload": "positive_correlation",
+      "joint_pmf": [
+        [
+          2,
+          2,
+          0.5
+        ],
+        [
+          6,
+          6,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 6.153846153846154,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,2": [
+          2,
+          3,
+          4
+        ],
+        "6,6": [
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 39.0,
+        "peak_tokens": 12,
+        "delta": 0.06,
+        "capacity_upper": 5.128205128205129,
+        "capacity_lower": 4.82051282051282,
+        "expected_drift_upper": 52.0,
+        "length_covariance": 4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12368,
+          "completed": 10278,
+          "unfinished": 2090,
+          "input_memory_area": 477912,
+          "fulfilled_memory_area": 398601,
+          "outstanding_memory_area": 79311,
+          "throughput": 5.18375,
+          "memory_fraction": 0.998221875,
+          "swapped_request_slots": 22880,
+          "observation_time": 1600.0,
+          "seed": 2230
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12438,
+          "completed": 10176,
+          "unfinished": 2262,
+          "input_memory_area": 485982,
+          "fulfilled_memory_area": 398381,
+          "outstanding_memory_area": 87601,
+          "throughput": 5.116875,
+          "memory_fraction": 0.998278125,
+          "swapped_request_slots": 24224,
+          "observation_time": 1600.0,
+          "seed": 2231
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12188,
+          "completed": 10168,
+          "unfinished": 2020,
+          "input_memory_area": 478452,
+          "fulfilled_memory_area": 398485,
+          "outstanding_memory_area": 79967,
+          "throughput": 5.0775,
+          "memory_fraction": 0.99838125,
+          "swapped_request_slots": 23858,
+          "observation_time": 1600.0,
+          "seed": 2232
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12398,
+          "completed": 10169,
+          "unfinished": 2229,
+          "input_memory_area": 485562,
+          "fulfilled_memory_area": 397772,
+          "outstanding_memory_area": 87790,
+          "throughput": 5.078125,
+          "memory_fraction": 0.998278125,
+          "swapped_request_slots": 22103,
+          "observation_time": 1600.0,
+          "seed": 2233
+        }
+      ],
+      "throughput_mean": 5.1140625,
+      "throughput_se": 0.02498762714658331
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 0.5777777777777777,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.5199999999999999,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.1111111111111112,
+        "capacity_lower": 0.8888888888888888,
+        "expected_drift_upper": -11.200000000000003,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.991875,
+          "arrived": 1159,
+          "completed": 1158,
+          "unfinished": 1,
+          "input_memory_area": 41724,
+          "fulfilled_memory_area": 41698,
+          "outstanding_memory_area": 26,
+          "throughput": 0.583125,
+          "memory_fraction": 0.523296875,
+          "swapped_request_slots": 137,
+          "observation_time": 1600.0,
+          "seed": 2240
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.985625,
+          "arrived": 1115,
+          "completed": 1112,
+          "unfinished": 3,
+          "input_memory_area": 40140,
+          "fulfilled_memory_area": 40063,
+          "outstanding_memory_area": 77,
+          "throughput": 0.54625,
+          "memory_fraction": 0.4915,
+          "swapped_request_slots": 140,
+          "observation_time": 1600.0,
+          "seed": 2241
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.995,
+          "arrived": 1144,
+          "completed": 1141,
+          "unfinished": 3,
+          "input_memory_area": 41184,
+          "fulfilled_memory_area": 41115,
+          "outstanding_memory_area": 69,
+          "throughput": 0.570625,
+          "memory_fraction": 0.514109375,
+          "swapped_request_slots": 174,
+          "observation_time": 1600.0,
+          "seed": 2242
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.9975,
+          "arrived": 1165,
+          "completed": 1158,
+          "unfinished": 7,
+          "input_memory_area": 41940,
+          "fulfilled_memory_area": 41781,
+          "outstanding_memory_area": 159,
+          "throughput": 0.580625,
+          "memory_fraction": 0.523640625,
+          "swapped_request_slots": 135,
+          "observation_time": 1600.0,
+          "seed": 2243
+        }
+      ],
+      "throughput_mean": 0.57015625,
+      "throughput_se": 0.008413836415640997
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 1.0,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.9,
+        "status": "inconclusive",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.1111111111111112,
+        "capacity_lower": 0.8888888888888888,
+        "expected_drift_upper": 4.0,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2016,
+          "completed": 1997,
+          "unfinished": 19,
+          "input_memory_area": 72576,
+          "fulfilled_memory_area": 72032,
+          "outstanding_memory_area": 544,
+          "throughput": 1.00375,
+          "memory_fraction": 0.9035,
+          "swapped_request_slots": 4429,
+          "observation_time": 1600.0,
+          "seed": 2250
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2005,
+          "completed": 1991,
+          "unfinished": 14,
+          "input_memory_area": 72180,
+          "fulfilled_memory_area": 71783,
+          "outstanding_memory_area": 397,
+          "throughput": 0.995625,
+          "memory_fraction": 0.896421875,
+          "swapped_request_slots": 3992,
+          "observation_time": 1600.0,
+          "seed": 2251
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2069,
+          "completed": 2062,
+          "unfinished": 7,
+          "input_memory_area": 74484,
+          "fulfilled_memory_area": 74326,
+          "outstanding_memory_area": 158,
+          "throughput": 1.0375,
+          "memory_fraction": 0.933328125,
+          "swapped_request_slots": 4589,
+          "observation_time": 1600.0,
+          "seed": 2252
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 1953,
+          "completed": 1949,
+          "unfinished": 4,
+          "input_memory_area": 70308,
+          "fulfilled_memory_area": 70188,
+          "outstanding_memory_area": 120,
+          "throughput": 0.97375,
+          "memory_fraction": 0.874703125,
+          "swapped_request_slots": 3779,
+          "observation_time": 1600.0,
+          "seed": 2253
+        }
+      ],
+      "throughput_mean": 1.00265625,
+      "throughput_se": 0.013229679287968416
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 1.3333333333333333,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.1111111111111112,
+        "capacity_lower": 0.8888888888888888,
+        "expected_drift_upper": 16.0,
+        "length_covariance": -4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2725,
+          "completed": 2213,
+          "unfinished": 512,
+          "input_memory_area": 98100,
+          "fulfilled_memory_area": 79800,
+          "outstanding_memory_area": 18300,
+          "throughput": 1.110625,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 11095,
+          "observation_time": 1600.0,
+          "seed": 2260
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2703,
+          "completed": 2214,
+          "unfinished": 489,
+          "input_memory_area": 97308,
+          "fulfilled_memory_area": 79780,
+          "outstanding_memory_area": 17528,
+          "throughput": 1.111875,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 9323,
+          "observation_time": 1600.0,
+          "seed": 2261
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2660,
+          "completed": 2213,
+          "unfinished": 447,
+          "input_memory_area": 95760,
+          "fulfilled_memory_area": 79798,
+          "outstanding_memory_area": 15962,
+          "throughput": 1.110625,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 11542,
+          "observation_time": 1600.0,
+          "seed": 2262
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2601,
+          "completed": 2214,
+          "unfinished": 387,
+          "input_memory_area": 93636,
+          "fulfilled_memory_area": 79765,
+          "outstanding_memory_area": 13871,
+          "throughput": 1.11125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 12903,
+          "observation_time": 1600.0,
+          "seed": 2263
+        }
+      ],
+      "throughput_mean": 1.11109375,
+      "throughput_se": 0.00029919597117385416
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 0.6709677419354839,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.52,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.2903225806451613,
+        "capacity_lower": 1.032258064516129,
+        "expected_drift_upper": -11.2,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.9825,
+          "arrived": 1258,
+          "completed": 1254,
+          "unfinished": 4,
+          "input_memory_area": 39142,
+          "fulfilled_memory_area": 39089,
+          "outstanding_memory_area": 53,
+          "throughput": 0.62875,
+          "memory_fraction": 0.489703125,
+          "swapped_request_slots": 84,
+          "observation_time": 1600.0,
+          "seed": 2270
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.989375,
+          "arrived": 1397,
+          "completed": 1395,
+          "unfinished": 2,
+          "input_memory_area": 43351,
+          "fulfilled_memory_area": 43303,
+          "outstanding_memory_area": 48,
+          "throughput": 0.691875,
+          "memory_fraction": 0.537171875,
+          "swapped_request_slots": 159,
+          "observation_time": 1600.0,
+          "seed": 2271
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.971875,
+          "arrived": 1256,
+          "completed": 1254,
+          "unfinished": 2,
+          "input_memory_area": 38688,
+          "fulfilled_memory_area": 38642,
+          "outstanding_memory_area": 46,
+          "throughput": 0.6225,
+          "memory_fraction": 0.478875,
+          "swapped_request_slots": 120,
+          "observation_time": 1600.0,
+          "seed": 2272
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 0.991875,
+          "arrived": 1380,
+          "completed": 1377,
+          "unfinished": 3,
+          "input_memory_area": 42548,
+          "fulfilled_memory_area": 42489,
+          "outstanding_memory_area": 59,
+          "throughput": 0.691875,
+          "memory_fraction": 0.534421875,
+          "swapped_request_slots": 166,
+          "observation_time": 1600.0,
+          "seed": 2273
+        }
+      ],
+      "throughput_mean": 0.6587500000000001,
+      "throughput_se": 0.01916723278149456
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 1.161290322580645,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.8999999999999998,
+        "status": "inconclusive",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.2903225806451613,
+        "capacity_lower": 1.032258064516129,
+        "expected_drift_upper": 3.999999999999993,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2296,
+          "completed": 2286,
+          "unfinished": 10,
+          "input_memory_area": 71088,
+          "fulfilled_memory_area": 70852,
+          "outstanding_memory_area": 236,
+          "throughput": 1.154375,
+          "memory_fraction": 0.892140625,
+          "swapped_request_slots": 2037,
+          "observation_time": 1600.0,
+          "seed": 2280
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2265,
+          "completed": 2259,
+          "unfinished": 6,
+          "input_memory_area": 70379,
+          "fulfilled_memory_area": 70283,
+          "outstanding_memory_area": 96,
+          "throughput": 1.124375,
+          "memory_fraction": 0.87471875,
+          "swapped_request_slots": 1554,
+          "observation_time": 1600.0,
+          "seed": 2281
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2327,
+          "completed": 2321,
+          "unfinished": 6,
+          "input_memory_area": 72269,
+          "fulfilled_memory_area": 72100,
+          "outstanding_memory_area": 169,
+          "throughput": 1.1525,
+          "memory_fraction": 0.89459375,
+          "swapped_request_slots": 2201,
+          "observation_time": 1600.0,
+          "seed": 2282
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 2345,
+          "completed": 2339,
+          "unfinished": 6,
+          "input_memory_area": 72859,
+          "fulfilled_memory_area": 72722,
+          "outstanding_memory_area": 137,
+          "throughput": 1.1625,
+          "memory_fraction": 0.902,
+          "swapped_request_slots": 2567,
+          "observation_time": 1600.0,
+          "seed": 2283
+        }
+      ],
+      "throughput_mean": 1.1484375,
+      "throughput_se": 0.008309209875192743
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 40,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 1.5483870967741935,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.2,
+        "capacity_upper": 1.2903225806451613,
+        "capacity_lower": 1.032258064516129,
+        "expected_drift_upper": 16.0,
+        "length_covariance": -4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3111,
+          "completed": 2548,
+          "unfinished": 563,
+          "input_memory_area": 96453,
+          "fulfilled_memory_area": 79074,
+          "outstanding_memory_area": 17379,
+          "throughput": 1.278125,
+          "memory_fraction": 0.990109375,
+          "swapped_request_slots": 4651,
+          "observation_time": 1600.0,
+          "seed": 2290
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3124,
+          "completed": 2535,
+          "unfinished": 589,
+          "input_memory_area": 97268,
+          "fulfilled_memory_area": 79040,
+          "outstanding_memory_area": 18228,
+          "throughput": 1.27125,
+          "memory_fraction": 0.990859375,
+          "swapped_request_slots": 4449,
+          "observation_time": 1600.0,
+          "seed": 2291
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3112,
+          "completed": 2547,
+          "unfinished": 565,
+          "input_memory_area": 96464,
+          "fulfilled_memory_area": 79055,
+          "outstanding_memory_area": 17409,
+          "throughput": 1.274375,
+          "memory_fraction": 0.990203125,
+          "swapped_request_slots": 4450,
+          "observation_time": 1600.0,
+          "seed": 2292
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 3151,
+          "completed": 2545,
+          "unfinished": 606,
+          "input_memory_area": 97861,
+          "fulfilled_memory_area": 79065,
+          "outstanding_memory_area": 18796,
+          "throughput": 1.2775,
+          "memory_fraction": 0.990328125,
+          "swapped_request_slots": 4626,
+          "observation_time": 1600.0,
+          "seed": 2293
+        }
+      ],
+      "throughput_mean": 1.2753125,
+      "throughput_se": 0.001583196265996947
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 3.466666666666667,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.6240000000000001,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 5.555555555555555,
+        "capacity_lower": 5.333333333333333,
+        "expected_drift_upper": -67.19999999999999,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6920,
+          "completed": 6893,
+          "unfinished": 27,
+          "input_memory_area": 249120,
+          "fulfilled_memory_area": 248531,
+          "outstanding_memory_area": 589,
+          "throughput": 3.4725,
+          "memory_fraction": 0.6253,
+          "swapped_request_slots": 25,
+          "observation_time": 1600.0,
+          "seed": 2300
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 7010,
+          "completed": 6985,
+          "unfinished": 25,
+          "input_memory_area": 252360,
+          "fulfilled_memory_area": 251709,
+          "outstanding_memory_area": 651,
+          "throughput": 3.498125,
+          "memory_fraction": 0.629278125,
+          "swapped_request_slots": 38,
+          "observation_time": 1600.0,
+          "seed": 2301
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6826,
+          "completed": 6805,
+          "unfinished": 21,
+          "input_memory_area": 245736,
+          "fulfilled_memory_area": 245266,
+          "outstanding_memory_area": 470,
+          "throughput": 3.38375,
+          "memory_fraction": 0.609278125,
+          "swapped_request_slots": 25,
+          "observation_time": 1600.0,
+          "seed": 2302
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 6760,
+          "completed": 6740,
+          "unfinished": 20,
+          "input_memory_area": 243360,
+          "fulfilled_memory_area": 242855,
+          "outstanding_memory_area": 505,
+          "throughput": 3.404375,
+          "memory_fraction": 0.6124,
+          "swapped_request_slots": 24,
+          "observation_time": 1600.0,
+          "seed": 2303
+        }
+      ],
+      "throughput_mean": 3.4396875000000002,
+      "throughput_se": 0.02718390780866504
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 5.444444444444445,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.98,
+        "status": "inconclusive",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 5.555555555555555,
+        "capacity_lower": 5.333333333333333,
+        "expected_drift_upper": 4.0,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10808,
+          "completed": 10686,
+          "unfinished": 122,
+          "input_memory_area": 389088,
+          "fulfilled_memory_area": 385428,
+          "outstanding_memory_area": 3660,
+          "throughput": 5.40125,
+          "memory_fraction": 0.972578125,
+          "swapped_request_slots": 37302,
+          "observation_time": 1600.0,
+          "seed": 2310
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10915,
+          "completed": 10843,
+          "unfinished": 72,
+          "input_memory_area": 392940,
+          "fulfilled_memory_area": 390805,
+          "outstanding_memory_area": 2135,
+          "throughput": 5.474375,
+          "memory_fraction": 0.985390625,
+          "swapped_request_slots": 43241,
+          "observation_time": 1600.0,
+          "seed": 2311
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10637,
+          "completed": 10573,
+          "unfinished": 64,
+          "input_memory_area": 382932,
+          "fulfilled_memory_area": 381250,
+          "outstanding_memory_area": 1682,
+          "throughput": 5.305,
+          "memory_fraction": 0.956046875,
+          "swapped_request_slots": 27926,
+          "observation_time": 1600.0,
+          "seed": 2312
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 10781,
+          "completed": 10691,
+          "unfinished": 90,
+          "input_memory_area": 388116,
+          "fulfilled_memory_area": 385417,
+          "outstanding_memory_area": 2699,
+          "throughput": 5.379375,
+          "memory_fraction": 0.967609375,
+          "swapped_request_slots": 34285,
+          "observation_time": 1600.0,
+          "seed": 2313
+        }
+      ],
+      "throughput_mean": 5.39,
+      "throughput_se": 0.03486114569498075
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 1,
+      "slot_time": 1,
+      "arrival_rate": 6.666666666666666,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,6": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 36.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 5.555555555555555,
+        "capacity_lower": 5.333333333333333,
+        "expected_drift_upper": 47.99999999999997,
+        "length_covariance": -4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 13427,
+          "completed": 11060,
+          "unfinished": 2367,
+          "input_memory_area": 483372,
+          "fulfilled_memory_area": 398974,
+          "outstanding_memory_area": 84398,
+          "throughput": 5.553125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 69541,
+          "observation_time": 1600.0,
+          "seed": 2320
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 13247,
+          "completed": 11070,
+          "unfinished": 2177,
+          "input_memory_area": 476892,
+          "fulfilled_memory_area": 398883,
+          "outstanding_memory_area": 78009,
+          "throughput": 5.558125,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 68715,
+          "observation_time": 1600.0,
+          "seed": 2321
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 13367,
+          "completed": 11065,
+          "unfinished": 2302,
+          "input_memory_area": 481212,
+          "fulfilled_memory_area": 398956,
+          "outstanding_memory_area": 82256,
+          "throughput": 5.54875,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 71217,
+          "observation_time": 1600.0,
+          "seed": 2322
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 13530,
+          "completed": 11061,
+          "unfinished": 2469,
+          "input_memory_area": 487080,
+          "fulfilled_memory_area": 398791,
+          "outstanding_memory_area": 88289,
+          "throughput": 5.561875,
+          "memory_fraction": 1.0,
+          "swapped_request_slots": 66028,
+          "observation_time": 1600.0,
+          "seed": 2323
+        }
+      ],
+      "throughput_mean": 5.55546875,
+      "throughput_se": 0.002868368711044643
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 4.025806451612903,
+      "regime": "below_lower",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.6239999999999999,
+        "status": "stable_under_assumptions",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 6.451612903225806,
+        "capacity_lower": 6.193548387096774,
+        "expected_drift_upper": -67.20000000000002,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 1,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8029,
+          "completed": 8004,
+          "unfinished": 25,
+          "input_memory_area": 248655,
+          "fulfilled_memory_area": 248132,
+          "outstanding_memory_area": 523,
+          "throughput": 4.05875,
+          "memory_fraction": 0.629146875,
+          "swapped_request_slots": 18,
+          "observation_time": 1600.0,
+          "seed": 2330
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8124,
+          "completed": 8098,
+          "unfinished": 26,
+          "input_memory_area": 251564,
+          "fulfilled_memory_area": 251058,
+          "outstanding_memory_area": 506,
+          "throughput": 4.015625,
+          "memory_fraction": 0.62210625,
+          "swapped_request_slots": 1,
+          "observation_time": 1600.0,
+          "seed": 2331
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 7965,
+          "completed": 7948,
+          "unfinished": 17,
+          "input_memory_area": 247183,
+          "fulfilled_memory_area": 246865,
+          "outstanding_memory_area": 318,
+          "throughput": 3.94375,
+          "memory_fraction": 0.61255,
+          "swapped_request_slots": 1,
+          "observation_time": 1600.0,
+          "seed": 2332
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 8146,
+          "completed": 8130,
+          "unfinished": 16,
+          "input_memory_area": 251774,
+          "fulfilled_memory_area": 251486,
+          "outstanding_memory_area": 288,
+          "throughput": 4.115625,
+          "memory_fraction": 0.634990625,
+          "swapped_request_slots": 7,
+          "observation_time": 1600.0,
+          "seed": 2333
+        }
+      ],
+      "throughput_mean": 4.0334375,
+      "throughput_se": 0.036236078504946694
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 6.32258064516129,
+      "regime": "gap",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 0.98,
+        "status": "inconclusive",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 6.451612903225806,
+        "capacity_lower": 6.193548387096774,
+        "expected_drift_upper": 4.0,
+        "length_covariance": -4.0,
+        "necessary_replicas": 1,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12837,
+          "completed": 12761,
+          "unfinished": 76,
+          "input_memory_area": 397447,
+          "fulfilled_memory_area": 395516,
+          "outstanding_memory_area": 1931,
+          "throughput": 6.415625,
+          "memory_fraction": 0.9931125,
+          "swapped_request_slots": 11406,
+          "observation_time": 1600.0,
+          "seed": 2340
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12408,
+          "completed": 12377,
+          "unfinished": 31,
+          "input_memory_area": 385408,
+          "fulfilled_memory_area": 384749,
+          "outstanding_memory_area": 659,
+          "throughput": 6.208125,
+          "memory_fraction": 0.963471875,
+          "swapped_request_slots": 6134,
+          "observation_time": 1600.0,
+          "seed": 2341
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12582,
+          "completed": 12522,
+          "unfinished": 60,
+          "input_memory_area": 390490,
+          "fulfilled_memory_area": 389037,
+          "outstanding_memory_area": 1453,
+          "throughput": 6.283125,
+          "memory_fraction": 0.974790625,
+          "swapped_request_slots": 7990,
+          "observation_time": 1600.0,
+          "seed": 2342
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 12646,
+          "completed": 12585,
+          "unfinished": 61,
+          "input_memory_area": 392194,
+          "fulfilled_memory_area": 390771,
+          "outstanding_memory_area": 1423,
+          "throughput": 6.318125,
+          "memory_fraction": 0.98105625,
+          "swapped_request_slots": 9036,
+          "observation_time": 1600.0,
+          "seed": 2343
+        }
+      ],
+      "throughput_mean": 6.30625,
+      "throughput_se": 0.04307666373262142
+    },
+    {
+      "workload": "negative_correlation",
+      "joint_pmf": [
+        [
+          2,
+          6,
+          0.5
+        ],
+        [
+          6,
+          2,
+          0.5
+        ]
+      ],
+      "memory_tokens": 200,
+      "chunk_size": 2,
+      "slot_time": 1,
+      "arrival_rate": 7.741935483870967,
+      "regime": "above_upper",
+      "stage_footprints": {
+        "2,6": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "6,2": [
+          2,
+          4,
+          6,
+          7,
+          8
+        ]
+      },
+      "analytic": {
+        "v": null,
+        "w": null,
+        "p": null,
+        "pi": null,
+        "utilization": 1.2,
+        "status": "overloaded",
+        "mean_memory_area": 31.0,
+        "peak_tokens": 8,
+        "delta": 0.04,
+        "capacity_upper": 6.451612903225806,
+        "capacity_lower": 6.193548387096774,
+        "expected_drift_upper": 47.99999999999997,
+        "length_covariance": -4.0,
+        "necessary_replicas": 2,
+        "sufficient_replicas": 2,
+        "diagnostics": [
+          "Constant slot duration; iid arrivals/lengths; infinite queue.",
+          "Lower certificate requires maximal next-stage packing and free swapping.",
+          "delta quantifies the large-memory regime; no universal small-delta cutoff is claimed."
+        ]
+      },
+      "samples": [
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 15358,
+          "completed": 12865,
+          "unfinished": 2493,
+          "input_memory_area": 475626,
+          "fulfilled_memory_area": 398648,
+          "outstanding_memory_area": 76978,
+          "throughput": 6.445,
+          "memory_fraction": 0.99813125,
+          "swapped_request_slots": 13246,
+          "observation_time": 1600.0,
+          "seed": 2350
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 15593,
+          "completed": 12849,
+          "unfinished": 2744,
+          "input_memory_area": 483675,
+          "fulfilled_memory_area": 398683,
+          "outstanding_memory_area": 84992,
+          "throughput": 6.436875,
+          "memory_fraction": 0.99805625,
+          "swapped_request_slots": 13240,
+          "observation_time": 1600.0,
+          "seed": 2351
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 15506,
+          "completed": 12840,
+          "unfinished": 2666,
+          "input_memory_area": 480902,
+          "fulfilled_memory_area": 398769,
+          "outstanding_memory_area": 82133,
+          "throughput": 6.4375,
+          "memory_fraction": 0.99811875,
+          "swapped_request_slots": 12515,
+          "observation_time": 1600.0,
+          "seed": 2352
+        },
+        {
+          "v": null,
+          "w": null,
+          "p": null,
+          "pi": null,
+          "utilization": 1.0,
+          "arrived": 15438,
+          "completed": 12838,
+          "unfinished": 2600,
+          "input_memory_area": 478754,
+          "fulfilled_memory_area": 398722,
+          "outstanding_memory_area": 80032,
+          "throughput": 6.43125,
+          "memory_fraction": 0.998109375,
+          "swapped_request_slots": 12880,
+          "observation_time": 1600.0,
+          "seed": 2353
+        }
+      ],
+      "throughput_mean": 6.43765625,
+      "throughput_se": 0.0028226091468415075
+    }
+  ]
+}

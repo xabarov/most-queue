@@ -25,6 +25,12 @@ token_batching:
   jobs_per_replication: 20000
   standard_errors: 4.5
   relative_floor: 0.005
+kv_cache_stability:
+  replications: 6
+  slots_per_replication: 3000
+  warmup_slots: 500
+  standard_errors: 4.5
+  absolute_floor: 0.04
 prefill_decode:
   replications: 6
   jobs_per_replication: 12000

@@ -483,6 +483,16 @@ res = sim.run(50_000)
 
 ## Prefill и decode на границах итераций
 
+`KvCacheStabilitySim` — отдельная [модель KV-памяти](models/kv-cache-stability.ru.md):
+постоянные слоты, joint lengths, растущий footprint, ongoing-first максимальная
+упаковка и бесплатная выгрузка на CPU. `run(num_of_slots, warmup_slots=...,
+arrivals_by_slot=..., record_trace=...)` наблюдает горизонт **без drain**.
+Счётчики включают warmup; throughput, доля занятости и memory_fraction — после
+него. Смещённые w/v только завершённых заявок и стационарный PMF не выдаются.
+Сохранение работы, packing LP, насыщенные циклы и flow-проверки:
+[отчёт Л4](research/kv-cache-stability-validation-2026.md).
+Это не hard-resident/paid-eviction дисциплина и не физический GPU-симулятор.
+
 [`PrefillDecodeSim`](models/prefill-decode.ru.md) обслуживает индивидуальные
 целые токены, без экспоненциальной подмены обслуживания. На boundary допускает
 FCFS до cap, выдаёт по токену каждому decoder и расходует оставшийся бюджет

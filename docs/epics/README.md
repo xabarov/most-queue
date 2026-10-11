@@ -127,6 +127,7 @@
 | [EPIC-084](EPIC-084-dynamic-batching-unbounded.md) | Неограниченный динамический батчинг Inoue — Л1; пять законов, численные средние, диагностики усечения, независимый DES и сравнение с опубликованными границами | done |
 | [EPIC-085](EPIC-085-variable-token-batching.md) | Переменная длина вывода — Л2; clipping, dynamic/fixed/elastic, общие callback-законы и независимые эталоны | done |
 | [EPIC-086](EPIC-086-prefill-decode-iteration-cost.md) | Стоимость итераций prefill/decode — Л3; точное решение surrogate, приближённые TTFT/ITL и независимый токеновый DES | done |
+| [EPIC-087](EPIC-087-kv-cache-stability.md) | Устойчивость при ограничении KV-памяти — Л4; совместные длины, необходимые/достаточные границы, независимая максимальная упаковка | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

@@ -23,7 +23,7 @@ inference SLO`, `server allocation multi-tenant GPU inference`.
 Transactions on Cloud Computing 2026. Вокруг неё — 5–6 работ 2023–2026 гг. разных
 групп.
 
-**Покрытие рассмотренных работ.** Для Inoue, Yang/Jiao/Xu и Ramani/Tantawi прочитаны полные тексты;
+**Покрытие рассмотренных работ.** Для Inoue, Yang/Jiao/Xu, Ramani/Tantawi и Nie/Si/Zhou прочитаны полные тексты;
 остальные записи требуют проверки при выполнении соответствующих пунктов:
 
 | работа | что даёт | чего НЕ даёт |
@@ -31,7 +31,7 @@ Transactions on Cloud Computing 2026. Вокруг неё — 5–6 работ 2
 | Inoue 2021, Performance Evaluation 147 | точные тождества для среднего пребывания и замкнутые оценки **сверху** | явного аналитического распределения и хвоста задержки |
 | Yang, Jiao, Xu 2024, arXiv:2407.05347 | clipping, три пакетные стратегии, оценки средних; fixed использует deterministic-mean surrogate, буквальная (25) не равна полному клиентскому ожиданию | распределения задержек; истинное continuous admission |
 | Ramani, Tantawi 2026, arXiv:2609.20957 | **средние** TTFT/ITL через Markovian/mean-occupancy approximation; полный текст проверен в [Л3](prefill-decode-validation-2026.md), опубликованная точность fit не переносится на произвольный DES | распределения TTFT/ITL; token-level и length-mixture approximation |
-| Nie, Si, Zhou 2026 (ICML), arXiv:2605.04595 | **условия устойчивости** при совместном ограничении «вычисления + память» | стационарного распределения |
+| Nie, Si, Zhou 2026 (ICML), arXiv:2605.04595 | **необходимая верхняя и достаточная нижняя границы** для constant-slot/maximal/free-swap модели, joint lengths; полный текст и индексация проверены в [Л4](kv-cache-stability-validation-2026.md) | точного общего порога, распределения задержки и гарантии при платном swap |
 | Ao, Dong, Luo, Simchi-Levi 2026, arXiv:2606.15555 | детерминированную флюидную динамику, предельные циклы | стохастики вообще |
 
 Обзор не устанавливает наличие точного распределения ожидания для этих постановок.
