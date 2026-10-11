@@ -7,6 +7,11 @@ TTFT и ITL по длинам входа/вывода, интенсивност�
 
 [English](prefill-decode.md) · [Каталог моделей](../models.ru.md)
 
+Отдельный [стадийный mean TTFT calculator](stage-aware-ttft.ru.md) учитывает
+достигнутые токены и остатки итераций. Он не меняет literal Л3: B=1 — PK,
+B>1 — finite-loss либо отдельный infinite calculator с analytic truncation
+bounds при достаточном условии (floating evaluation, не verified rounding).
+
 ## Простыми словами
 
 Не более B заявок делят активный пул. Каждая сначала обрабатывает prompt,
@@ -106,6 +111,10 @@ W/V эмпирические, порядков 1–3. Занятость и util
 работы, не размер очереди и не критерий устойчивости.
 
 ## Ограничения и воспроизведение
+
+Проверенный saturated drift и infinite phase-aware means:
+[стадийное расширение](stage-aware-ttft.ru.md). Exact drift не проверяет всю
+арифметику mean bounds.
 
 При B=1 и постоянных длинах DES — M/D/1, surrogate — M/M/1: ожидание
 surrogate вдвое выше при том же среднем обслуживании. Также различаются

@@ -13,16 +13,26 @@ The congestion calculator uses a saturated deterministic stage map and a
 finite-input spectrum; it does not certify stochastic open-queue recurrence.
 """
 
+from most_queue.theory.continuous_batching.infinite_stage_aware_ttft import InfiniteStageAwareTtftCalc
 from most_queue.theory.continuous_batching.kv_cache_congestion import KvCacheCongestionCalc
 from most_queue.theory.continuous_batching.kv_cache_stability import KvCacheStabilityCalc
 from most_queue.theory.continuous_batching.occupancy_dependent import OccupancyDependentQueueCalc
 from most_queue.theory.continuous_batching.occupancy_dependent_h2 import OccupancyDependentH2QueueCalc
+from most_queue.theory.continuous_batching.phase_aware_stability import PhaseAwareStabilityCalc
+from most_queue.theory.continuous_batching.phase_aware_ttft import PhaseAwareTtftCalc
 from most_queue.theory.continuous_batching.prefill_decode import PrefillDecodeCalc
+from most_queue.theory.continuous_batching.reduced_stage_aware_ttft import ReducedStageAwareTtftCalc
+from most_queue.theory.continuous_batching.stage_aware_ttft import StageAwareTtftCalc
 
 __all__ = [
     "OccupancyDependentQueueCalc",
     "OccupancyDependentH2QueueCalc",
     "PrefillDecodeCalc",
+    "StageAwareTtftCalc",
+    "ReducedStageAwareTtftCalc",
+    "InfiniteStageAwareTtftCalc",
+    "PhaseAwareStabilityCalc",
+    "PhaseAwareTtftCalc",
     "KvCacheStabilityCalc",
     "KvCacheCongestionCalc",
 ]

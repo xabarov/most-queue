@@ -130,6 +130,13 @@
 | [EPIC-087](EPIC-087-kv-cache-stability.md) | Устойчивость при ограничении KV-памяти — Л4; совместные длины, необходимые/достаточные границы, независимая максимальная упаковка | done |
 | [EPIC-088](EPIC-088-kv-cache-congestion.md) | Service-induced KV congestion — Л5; непрерывные стадии/циклы, конечный спектр, cap, независимый integer LPF/restart | done |
 | [EPIC-089](EPIC-089-smdp-batching.md) | SMDP batch launch — Л6; finite overflow RVI, occupation LP, unbounded DES и явная tail-drift проверка | done |
+| [EPIC-090](EPIC-090-multitenant-server-allocation.md) | Multi-tenant server allocation — Л7; библиография и доступ проверены, полный источник не получен, реализация не начата | waiting_source |
+| [EPIC-091](EPIC-091-heterogeneous-bulk-service.md) | Heterogeneous bulk service — Л8; exact infinite BP/finite FP, PH W/V, physical tagged CTMC и независимый DES | done |
+| [EPIC-092](EPIC-092-llm-mark-order.md) | ГЛ2: audited BurstGPT joint-pair controls, frozen SLO configuration pilot; rank reversal not confirmed | done (research pilot) |
+| [EPIC-093](EPIC-093-stage-aware-ttft.md) | ГЛ3: stage-resolved mean TTFT, PK/finite-loss boundaries, independent oracles and frozen48 grid; compactness not established | done (research pilot) |
+| [EPIC-094](EPIC-094-stage-aware-ttft-reduction.md) | Продолжение ГЛ3: exact iid waiting-count reduction и decoder symmetry; mixed13x меньше states,18–27x быстрее full, finite limits сохранены | done (research pilot) |
+| [EPIC-095](EPIC-095-infinite-stage-aware-ttft.md) | Infinite count kernel, service-credit domination и analytic truncation bounds;45/48 grid,3 conservative refusals; rounding not verified | done (research pilot) |
+| [EPIC-096](EPIC-096-phase-aware-stability.md) | Reachable saturated classes, rational drift и phase-aware full-cycle continuation;48/48, все3 отказа сняты; critical unresolved | done (research pilot) |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

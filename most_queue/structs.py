@@ -31,6 +31,62 @@ class QueueResults:
 
 
 @dataclass
+class HeterogeneousBulkResults(QueueResults):
+    """Unbounded heterogeneous batch queue; p/pi deliberately remain unset."""
+
+    alpha: float = 0.0
+    busy_period_probability: float = 0.0
+    free_probabilities: list[float] = field(default_factory=list)
+    mean_queue: float = 0.0
+    mean_population: float = 0.0
+    zero_wait_probability: float = 0.0
+    served_probabilities: list[float] = field(default_factory=list)
+    customer_throughputs: list[float] = field(default_factory=list)
+    batch_throughputs: list[float] = field(default_factory=list)
+    mean_busy_servers: list[float] = field(default_factory=list)
+    mean_busy_period: float = 0.0
+    mean_free_period: float = 0.0
+    root_residual: float = 0.0
+    balance_residual: float = 0.0
+    little_residual: float = 0.0
+    flow_residual: float = 0.0
+    class_residual: float = 0.0
+    free_state_count: int = 0
+    waiting_phase_count: int = 0
+
+
+@dataclass
+class HeterogeneousBulkSimResults(QueueResults):
+    """Finite-horizon exposures and completely observed admission-cohort tails."""
+
+    arrived: int = 0
+    completed: int = 0
+    unfinished: int = 0
+    started: int = 0
+    observation_time: float = 0.0
+    queue_area: float = 0.0
+    population_area: float = 0.0
+    total_queue_area: float = 0.0
+    total_population_area: float = 0.0
+    started_wait_exposure: float = 0.0
+    unfinished_wait_exposure: float = 0.0
+    completed_residence: float = 0.0
+    unfinished_residence: float = 0.0
+    waiting_proxy: float = 0.0
+    response_proxy: float = 0.0
+    busy_fractions: list[float] = field(default_factory=list)
+    customer_throughputs: list[float] = field(default_factory=list)
+    batch_throughputs: list[float] = field(default_factory=list)
+    cohort_size: int = 0
+    cohort_unstarted: int = 0
+    cohort_unfinished: int = 0
+    tail_times: list[float] = field(default_factory=list)
+    waiting_tails: list[float] = field(default_factory=list)
+    response_tails: list[float] = field(default_factory=list)
+    iteration_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
 class BatchSmdpResults(QueueResults):
     """Finite SMDP rewards and diagnostics; NOT infinite-queue moments/PMF."""
 

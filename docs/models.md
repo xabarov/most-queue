@@ -13,10 +13,12 @@ add a figure function and regenerate the PNGs.
 | Family | What's inside |
 |---|---|
 | [SMDP batching control](models/smdp-batching.md) | Deterministic size-dependent time/energy, finite overflow RVI, explicit real-tail drift, unbounded FCFS DES |
+| [Heterogeneous bulk service](models/heterogeneous-bulk-service.md) | Shared FCFS with type-specific counts/rates/thresholds/capacities; exact W/V PH, infinite geometric queue tail |
 | [KV-cache congestion](models/kv-cache-congestion.md) | Continuous stage-memory dynamics, homogeneous cycles, finite spectrum, proportional caps; independent integer LPF/restart FCFS |
 | [KV-cache stability](models/kv-cache-stability.md) | Joint length PMFs, growing memory, necessary upper / conditional sufficient lower bounds, fixed-horizon maximal/free-swap simulator |
 | [Variable token length batching](models/token-batching.md) | Clipped output PMFs; dynamic/fixed/gated elastic service; early completion, conditional maximum/sum costs, M/G/1 clipping, generic callback laws |
 | [Mixed prefill and decode](models/prefill-decode.md) | Three iteration costs, effective chunked prefill, exact surrogate occupancy and approximate TTFT/ITL, independent token-level DES |
+| [Stage-resolved mean TTFT](models/stage-aware-ttft.md) | StageAware / Reduced / InfiniteStageAware / PhaseAwareTtftCalc: iid stages, B1 PK, finite loss or infinite mean bounds; PhaseAwareStabilityCalc verifies saturated drift, not full mean arithmetic |
 | [Unbounded dynamic batching](models/dynamic-batching.md) | Inoue's all-waiting batch rule, five affine-mean service laws, numerical delay means with truncation diagnostics, deterministic latency bounds and independent DES |
 | [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G approximations |
 | [Size-based scheduling](models/size-based.md) | SRPT/SJF/PSJF/SPJF (with predictions), FB/LAS, PS, LCFS-PR |
@@ -65,6 +67,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Model | Calculator class | Simulation | Priorities | Notes |
 |--------|--------------|-----------|------------|-------------|
 | [SMDP batching control](models/smdp-batching.md) | BatchSmdpCalc | BatchSmdpSim | FCFS within batches | Finite approximation only; overflow label != capacity; stationary reward ratios != latency distribution |
+| [Heterogeneous bulk service](models/heterogeneous-bulk-service.md) | BulkServiceHeterogeneousCalc | BulkServiceHeterogeneousSim | Shared FCFS; threshold/input-type dispatch | Exact exponential size-independent batches; W/V moments/tails/LST, not general service or continuous batching |
 | [KV-cache congestion](models/kv-cache-congestion.md) | KvCacheCongestionCalc | KvCacheCongestionSim | LPF eviction | Per iteration; continuous proportional != integer FCFS; no stochastic stability/latency certificate |
 | [KV-cache stability](models/kv-cache-stability.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Constant slots; finite joint lengths with correlation; explicit free-swap/maximal assumptions; no analytic delay/PMF |
 | [Variable-token batching](models/token-batching.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Numerical means for random duration; fixed surrogate explicit; physical dynamic cap in DES only; no analytic tails |

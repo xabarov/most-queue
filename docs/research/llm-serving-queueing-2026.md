@@ -28,6 +28,13 @@ Transactions on Cloud Computing 2026. Вокруг неё — 5–6 работ 2
 не все 101 страницы доказательств. Xu–Sun–Zhou–Niu v3 прочитан целиком в
 [Л6](smdp-batching-validation-2026.md); остальные записи требуют проверки при выполнении соответствующих пунктов:
 
+Классический тыл **Л8** прочитан полностью:
+[van Ommeren et al. (2020)](https://doi.org/10.1007/s11134-020-09654-y) даёт
+точные PH ожидания и пребывания для **экспоненциальных size-independent**
+пакетов на гетерогенных приборах. Это исключает широкую заявку «распределений
+батчинга на разных приборах нет». Не решает токены/KV/G-service.
+[Реализация, источник и независимые проверки](heterogeneous-bulk-service-validation-2026.md).
+
 | работа | что даёт | чего НЕ даёт |
 |---|---|---|
 | Inoue 2021, Performance Evaluation 147 | точные тождества для среднего пребывания и замкнутые оценки **сверху** | явного аналитического распределения и хвоста задержки |
@@ -110,6 +117,22 @@ Evaluation 147).
 
 ## Состав предлагаемого блока
 
+После серии Л выполнены ГЛ2/ГЛ3 и выбранное продолжение ГЛ3:
+[exact iid state reduction](stage-aware-ttft-reduction-validation-2026.md).
+Waiting-count integration сохраняет finite-loss rewards, но не разрешает
+serial dependence, infinite error certificate или empirical phase explosion.
+Это применение классических принципов, не новая общая aggregation theorem.
+Далее выбран и выполнен [infinite/error этап](infinite-stage-aware-ttft-validation-2026.md):
+killed regenerative kernel, service-credit domination и analytic mean/tail
+bounds,45/48 cases и3 sufficient-stability refusals. Floating evaluation,
+не verified rounding, exact threshold или publication novelty. Real-support,
+correlated marks и GPU/SLO ограничения остаются.
+
+Затем автор выбрал [фазозависимую устойчивость EPIC-096](phase-aware-stability-validation-2026.md):
+all reachable closed classes, exact rational drift, full-cycle potentials.
+48/48 original bounds, все3 conservative refusals сняты; critical cases
+unresolved. Exact phase drift не означает verified arithmetic mean bounds.
+
 Оформлен отдельным roadmap:
 [llm_serving_catchup_roadmap.md](../roadmaps/llm_serving_catchup_roadmap.md), пункты
 Л1–Л8.
@@ -126,7 +149,7 @@ Evaluation 147).
 | Л4 Nie, Si, Zhou 2026 | **открыт** (arXiv:2605.04595) |
 | Л5 Ao и др. 2026 | **открыт** (arXiv:2606.15555) |
 | Л6 Xu, Sun, Zhou, Niu, ICC 2023 | **открыт** (arXiv:2301.12865) |
-| Л7 Okuyama, Inoue, IEEE TCC 2026 | **закрыт**, препринт не найден — риск как в Р9 |
+| Л7 Okuyama, Inoue, IEEE TCC 2026 | **полный текст не получен**, Crossref metadata проверены; [аудит доступа Л7](multitenant-server-allocation-access-2026.md), реализация waiting_source |
 | Л8 Queueing Systems 2020 (гетерогенные приборы) | **открыт** (hybrid OA) |
 
 ## Что проверено и НЕ подошло

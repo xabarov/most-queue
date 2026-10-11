@@ -93,6 +93,7 @@ See the executable comparison of **9 disciplines** in
 | [Variable-token batching](docs/models/token-batching.md) | Output length/max-token clipping; dynamic, fixed and gated elastic service with non-exponential durations; general service callbacks | numerical means; M/G/1 clipping means exact |
 | [Mixed prefill/decode](docs/models/prefill-decode.md) | Three iteration costs, occupancy-dependent effective chunking, continuous boundary admission, independent token-level DES | exact surrogate occupancy; approximate mean TTFT/ITL |
 | [SMDP batching control](docs/models/smdp-batching.md) | Wait-next-arrival / launch-size actions; deterministic time/energy; independent unbounded DES | finite overflow optimum, not infinite-queue optimality |
+| [Heterogeneous bulk service](docs/models/heterogeneous-bulk-service.md) | Type-specific rates, thresholds and capacities; shared FCFS; exact PH W/V | exponential, batch-size-independent service only |
 | [KV-cache congestion](docs/models/kv-cache-congestion.md) | Deterministic stage dynamics, LPF eviction/restart, finite spectrum and admission cap; independent integer FCFS | fluid linear stability is not open-queue recurrence |
 | [KV-cache stability](docs/models/kv-cache-stability.md) | Joint prompt/output lengths, growing KV footprints, constant slots; independent maximal/free-swap simulation | necessary upper and conditional sufficient lower bounds, not an exact threshold |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
@@ -131,11 +132,43 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10 — Phase-aware stability (EPIC-096)**: `PhaseAwareStabilityCalc`
+  checks every reachable saturated class with exact rational row drift;
+  `PhaseAwareTtftCalc` adds floating infinite mean bounds. 48/48 original cases
+  bounded, recovering all 3 prior refusals; critical cases remain unresolved.
+  [Proof, frozen grids and independent DES](docs/research/phase-aware-stability-validation-2026.md).
+
+- **2026-10, current source tree — Infinite stage-aware TTFT (EPIC-095)**:
+  killed regenerative count kernel with analytic mean/truncation and waiting-tail
+  bounds, evaluated in floating point (not verified rounding).45/48 frozen cases
+  solved;3 sufficient-stability refusals retained. No GPU/SLO claim.
+  [Derivation and results](docs/research/infinite-stage-aware-ttft-validation-2026.md).
+
+- **2026-10, current source tree — Exact iid TTFT state reduction (EPIC-094)**:
+  waiting-count integration and decoder symmetry preserve finite-loss means;
+  all48 previous cases agree, larger-law full-model budget refusals are reported.
+  Mixed-law cases use13x fewer states and run18–27x faster than the full solver.
+  This does not remove finite/infinite bias or support correlated marks.
+  [Method and evidence](docs/research/stage-aware-ttft-reduction-validation-2026.md).
+
+- **2026-10, current source tree** — **Joint-mark replay and stage-aware TTFT (EPIC-092/093)**:
+  audited BurstGPT API cohorts with exact pair-permutation controls (no confirmed
+  rank reversal on the frozen pair); stage-resolved small-law semi-Markov mean
+  TTFT, exact B=1 PK and explicit finite-loss B>1 limits. Includes independent
+  token oracles and a 48-point grid; not a GPU benchmark or a scalable predictor.
+  [Replay results](docs/research/llm-mark-order-validation-2026.md) ·
+  [Calculator and limits](docs/models/stage-aware-ttft.md).
+
 - **2026-10, current source tree** — **SMDP batching control (L6 / EPIC-089)**:
   deterministic batch times/energies, finite overflow RVI, independent occupation
   LP and unbounded FCFS DES. Tail drift is checked separately: a small overflow
   contribution does not certify real-queue stability.
   [Model and limits](docs/models/smdp-batching.md).
+- **2026-10, current source tree** — **Heterogeneous bulk service (L8 / EPIC-091)**:
+  exact unbounded geometric/free-period decomposition, waiting/response PH,
+  moments/tails/LST, type flows and independent request-level DES.
+  Published diagonal priority discrepancies are recorded with physical CTMC
+  arbiters. [Model and limits](docs/models/heterogeneous-bulk-service.md).
 
 - **2026-10, current source tree** — **KV-cache congestion (L5 / EPIC-088)**:
   continuous eviction/restart trajectories, homogeneous cycles, finite-input

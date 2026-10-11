@@ -1,0 +1,5156 @@
+{
+  "schema_version": 1,
+  "jobs_per_seed": 12000,
+  "seeds": [
+    93000,
+    93001,
+    93002
+  ],
+  "rows": [
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2457002457002457,
+      "reference": {
+        "ttft": 0.2980405990580411,
+        "ci95": [
+          0.2940493688220497,
+          0.3020318292940325
+        ],
+        "seed_means": [
+          0.2966358533189587,
+          0.2997924757108558,
+          0.2976934681443089
+        ],
+        "mean_cpu_seconds": 0.10978209066666651,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 1.4737997844349593e-05,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.3056722222222222,
+        "engineering_clamp": 0.32172222222222224,
+        "constant_speed_lps": 0.29761111111111116,
+        "stage_aware": 0.29761111111111116
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0076316231641810894,
+        "engineering_clamp": 0.023681623164181154,
+        "constant_speed_lps": 0.00042948794692992953,
+        "stage_aware": 0.00042948794692992953
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.2285012285012284,
+      "reference": {
+        "ttft": 0.4736592900907213,
+        "ci95": [
+          0.4564255068177929,
+          0.4908930733636496
+        ],
+        "seed_means": [
+          0.4660871123341564,
+          0.4797094316101884,
+          0.47518132632781906
+        ],
+        "mean_cpu_seconds": 0.10941060066666679,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.939001079648733e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.674583333333333,
+        "engineering_clamp": 0.6834999999999997,
+        "constant_speed_lps": 0.47850000000000004,
+        "stage_aware": 0.47850000000000004
+      },
+      "absolute_errors": {
+        "literal_l3": 0.2009240432426117,
+        "engineering_clamp": 0.2098407099092784,
+        "constant_speed_lps": 0.004840709909278762,
+        "stage_aware": 0.004840709909278762
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 1.9656019656019657,
+      "reference": {
+        "ttft": 1.0612827225308008,
+        "ci95": [
+          0.9572896968198007,
+          1.165275748241801
+        ],
+        "seed_means": [
+          1.013554979093295,
+          1.0917830926985561,
+          1.078510095800551
+        ],
+        "mean_cpu_seconds": 0.10223641733333337,
+        "backlog_at_last_arrival": [
+          2,
+          4,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 7.1780013968236744e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.9009333333333327,
+        "engineering_clamp": 1.9044999999999996,
+        "constant_speed_lps": 1.0890000000000004,
+        "stage_aware": 1.0890000000000004
+      },
+      "absolute_errors": {
+        "literal_l3": 0.8396506108025319,
+        "engineering_clamp": 0.8432172774691988,
+        "constant_speed_lps": 0.027717277469199608,
+        "stage_aware": 0.027717277469199608
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.26666666666666666,
+      "reference": {
+        "ttft": 0.27622905318408336,
+        "ci95": [
+          0.2725516297479299,
+          0.2799064766202368
+        ],
+        "seed_means": [
+          0.2749347542844172,
+          0.27784319014922404,
+          0.2759092151186087
+        ],
+        "mean_cpu_seconds": 0.10583956366666669,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.1399987316690385e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.27441666666666664,
+        "engineering_clamp": 0.2991666666666667,
+        "constant_speed_lps": 0.2758333333333333,
+        "stage_aware": 0.2758333333333333
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0018123865174167197,
+        "engineering_clamp": 0.02293761348258333,
+        "constant_speed_lps": 0.00039571985075004257,
+        "stage_aware": 0.00039571985075004257
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.3333333333333333,
+      "reference": {
+        "ttft": 0.43803988644690955,
+        "ci95": [
+          0.4221610935047019,
+          0.45391867938911723
+        ],
+        "seed_means": [
+          0.4310630641894867,
+          0.44361434116396603,
+          0.439442253987276
+        ],
+        "mean_cpu_seconds": 0.10677933266666646,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.152004400268197e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.6187499999999999,
+        "engineering_clamp": 0.6324999999999998,
+        "constant_speed_lps": 0.4425,
+        "stage_aware": 0.4425
+      },
+      "absolute_errors": {
+        "literal_l3": 0.18071011355309036,
+        "engineering_clamp": 0.19446011355309029,
+        "constant_speed_lps": 0.00446011355309045,
+        "stage_aware": 0.00446011355309045
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.1333333333333333,
+      "reference": {
+        "ttft": 0.9794619679349887,
+        "ci95": [
+          0.8836452980532438,
+          1.0752786378167336
+        ],
+        "seed_means": [
+          0.9354867743499363,
+          1.007564274601519,
+          0.9953348548535109
+        ],
+        "mean_cpu_seconds": 0.10054299633333308,
+        "backlog_at_last_arrival": [
+          2,
+          4,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 7.081995136104524e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.7520000000000007,
+        "engineering_clamp": 1.7575000000000005,
+        "constant_speed_lps": 1.0050000000000003,
+        "stage_aware": 1.0050000000000001
+      },
+      "absolute_errors": {
+        "literal_l3": 0.7725380320650119,
+        "engineering_clamp": 0.7780380320650118,
+        "constant_speed_lps": 0.025538032065011596,
+        "stage_aware": 0.025538032065011373
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2730748225013654,
+      "reference": {
+        "ttft": 0.33530454021813577,
+        "ci95": [
+          0.3295841329138722,
+          0.34102494752239937
+        ],
+        "seed_means": [
+          0.33404325894422904,
+          0.3379624066584046,
+          0.3339079550517736
+        ],
+        "mean_cpu_seconds": 0.1010395243333333,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.38967020450270046
+          ],
+          "w": [
+            0.02347020450270041
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 8.469003660138696e-06,
+          "ttft_mean": 0.33567020450270046,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2730748225013654,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.292539574202613,
+        "engineering_clamp": 0.30144311377245514,
+        "constant_speed_lps": 0.33567020450270046,
+        "stage_aware": 0.33567020450270046
+      },
+      "absolute_errors": {
+        "literal_l3": 0.042764966015522765,
+        "engineering_clamp": 0.03386142644568063,
+        "constant_speed_lps": 0.0003656642845646929,
+        "stage_aware": 0.0003656642845646929
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.3653741125068268,
+      "reference": {
+        "ttft": 0.5179020743488524,
+        "ci95": [
+          0.49797950154278187,
+          0.537824647154923
+        ],
+        "seed_means": [
+          0.5087244095009233,
+          0.5235618336593378,
+          0.5214199798862958
+        ],
+        "mean_cpu_seconds": 0.10275156233333356,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5774318405243037
+          ],
+          "w": [
+            0.2112318405243037
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.3359988164156675e-06,
+          "ttft_mean": 0.5234318405243037,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3653741125068268,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.5175712467344707,
+        "engineering_clamp": 0.5230413255360624,
+        "constant_speed_lps": 0.5234318405243037,
+        "stage_aware": 0.5234318405243037
+      },
+      "absolute_errors": {
+        "literal_l3": 0.00033082761438163466,
+        "engineering_clamp": 0.005139251187210037,
+        "constant_speed_lps": 0.005529766175451312,
+        "stage_aware": 0.005529766175451312
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 2.184598580010923,
+      "reference": {
+        "ttft": 1.1487134348096137,
+        "ci95": [
+          0.975536159723974,
+          1.3218907098952535
+        ],
+        "seed_means": [
+          1.078351270419627,
+          1.217759092089991,
+          1.1500299419192228
+        ],
+        "mean_cpu_seconds": 0.09694278300000055,
+        "backlog_at_last_arrival": [
+          3,
+          8,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.211127362097215
+          ],
+          "w": [
+            0.844927362097215
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 8.390001312363893e-06,
+          "ttft_mean": 1.157127362097215,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.184598580010923,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.031291388781963,
+        "engineering_clamp": 1.0341863720073667,
+        "constant_speed_lps": 1.157127362097215,
+        "stage_aware": 1.157127362097215
+      },
+      "absolute_errors": {
+        "literal_l3": 0.11742204602765072,
+        "engineering_clamp": 0.114527062802247,
+        "constant_speed_lps": 0.008413927287601153,
+        "stage_aware": 0.008413927287601153
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.303951367781155,
+      "reference": {
+        "ttft": 0.3001732052987709,
+        "ci95": [
+          0.2947077073525197,
+          0.30563870324502207
+        ],
+        "seed_means": [
+          0.29898944500527763,
+          0.3027118091818239,
+          0.2988183617092112
+        ],
+        "mean_cpu_seconds": 0.106146298333333,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.3505695710908477
+          ],
+          "w": [
+            0.02156957109084769
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 8.087001333478838e-06,
+          "ttft_mean": 0.3005695710908477,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.303951367781155,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.26319089282163455,
+        "engineering_clamp": 0.2768504672897197,
+        "constant_speed_lps": 0.3005695710908477,
+        "stage_aware": 0.3005695710908477
+      },
+      "absolute_errors": {
+        "literal_l3": 0.03698231247713635,
+        "engineering_clamp": 0.023322738009051214,
+        "constant_speed_lps": 0.00039636579207680267,
+        "stage_aware": 0.00039636579207680267
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.519756838905775,
+      "reference": {
+        "ttft": 0.46795062339958776,
+        "ci95": [
+          0.44974244548769693,
+          0.4861588013114786
+        ],
+        "seed_means": [
+          0.4595446680419782,
+          0.473008341511881,
+          0.47129886064490395
+        ],
+        "mean_cpu_seconds": 0.10111616933333334,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5231261398176292
+          ],
+          "w": [
+            0.1941261398176292
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.453003490809351e-06,
+          "ttft_mean": 0.4731261398176292,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.519756838905775,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.47716366612111305,
+        "engineering_clamp": 0.48546153846153856,
+        "constant_speed_lps": 0.4731261398176292,
+        "stage_aware": 0.4731261398176292
+      },
+      "absolute_errors": {
+        "literal_l3": 0.009213042721525289,
+        "engineering_clamp": 0.017510915061950794,
+        "constant_speed_lps": 0.005175516418041426,
+        "stage_aware": 0.005175516418041426
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.43161094224924,
+      "reference": {
+        "ttft": 1.048975769419341,
+        "ci95": [
+          0.883625368200589,
+          1.2143261706380928
+        ],
+        "seed_means": [
+          0.9831257126802208,
+          1.1162285287265923,
+          1.0475730668512095
+        ],
+        "mean_cpu_seconds": 0.09822427533333311,
+        "backlog_at_last_arrival": [
+          3,
+          9,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.105504559270517
+          ],
+          "w": [
+            0.776504559270517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 8.007002179510891e-06,
+          "ttft_mean": 1.055504559270517,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.43161094224924,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.9809174341060661,
+        "engineering_clamp": 0.9851940298507469,
+        "constant_speed_lps": 1.055504559270517,
+        "stage_aware": 1.055504559270517
+      },
+      "absolute_errors": {
+        "literal_l3": 0.06805833531327476,
+        "engineering_clamp": 0.06378173956859401,
+        "constant_speed_lps": 0.006528789851176109,
+        "stage_aware": 0.006528789851176109
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2457002457002457,
+      "reference": {
+        "ttft": 0.2980405990580411,
+        "ci95": [
+          0.2940493688220497,
+          0.3020318292940325
+        ],
+        "seed_means": [
+          0.2966358533189587,
+          0.2997924757108558,
+          0.2976934681443089
+        ],
+        "mean_cpu_seconds": 0.10978143666666658,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.956004654057324e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.3056722222222222,
+        "engineering_clamp": 0.32172222222222224,
+        "constant_speed_lps": 0.29761111111111116,
+        "stage_aware": 0.29761111111111116
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0076316231641810894,
+        "engineering_clamp": 0.023681623164181154,
+        "constant_speed_lps": 0.00042948794692992953,
+        "stage_aware": 0.00042948794692992953
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.2285012285012284,
+      "reference": {
+        "ttft": 0.4736592900907213,
+        "ci95": [
+          0.4564255068177929,
+          0.4908930733636496
+        ],
+        "seed_means": [
+          0.4660871123341564,
+          0.4797094316101884,
+          0.47518132632781906
+        ],
+        "mean_cpu_seconds": 0.10242155333333347,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 6.326001312118024e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.674583333333333,
+        "engineering_clamp": 0.6834999999999997,
+        "constant_speed_lps": 0.47850000000000004,
+        "stage_aware": 0.47850000000000004
+      },
+      "absolute_errors": {
+        "literal_l3": 0.2009240432426117,
+        "engineering_clamp": 0.2098407099092784,
+        "constant_speed_lps": 0.004840709909278762,
+        "stage_aware": 0.004840709909278762
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 1.9656019656019657,
+      "reference": {
+        "ttft": 1.0612827225308008,
+        "ci95": [
+          0.9572896968198007,
+          1.165275748241801
+        ],
+        "seed_means": [
+          1.013554979093295,
+          1.0917830926985561,
+          1.078510095800551
+        ],
+        "mean_cpu_seconds": 0.10333406233333342,
+        "backlog_at_last_arrival": [
+          2,
+          4,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 6.5069980337284505e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.9009333333333327,
+        "engineering_clamp": 1.9044999999999996,
+        "constant_speed_lps": 1.0890000000000004,
+        "stage_aware": 1.0890000000000004
+      },
+      "absolute_errors": {
+        "literal_l3": 0.8396506108025319,
+        "engineering_clamp": 0.8432172774691988,
+        "constant_speed_lps": 0.027717277469199608,
+        "stage_aware": 0.027717277469199608
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.26666666666666666,
+      "reference": {
+        "ttft": 0.27622905318408336,
+        "ci95": [
+          0.2725516297479299,
+          0.2799064766202368
+        ],
+        "seed_means": [
+          0.2749347542844172,
+          0.27784319014922404,
+          0.2759092151186087
+        ],
+        "mean_cpu_seconds": 0.1129819043333331,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.633999873884022e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.27441666666666664,
+        "engineering_clamp": 0.2991666666666667,
+        "constant_speed_lps": 0.2758333333333333,
+        "stage_aware": 0.2758333333333333
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0018123865174167197,
+        "engineering_clamp": 0.02293761348258333,
+        "constant_speed_lps": 0.00039571985075004257,
+        "stage_aware": 0.00039571985075004257
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.3333333333333333,
+      "reference": {
+        "ttft": 0.43803988644690955,
+        "ci95": [
+          0.4221610935047019,
+          0.45391867938911723
+        ],
+        "seed_means": [
+          0.4310630641894867,
+          0.44361434116396603,
+          0.439442253987276
+        ],
+        "mean_cpu_seconds": 0.10370029766666693,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.695998647250235e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.6187499999999999,
+        "engineering_clamp": 0.6324999999999998,
+        "constant_speed_lps": 0.4425,
+        "stage_aware": 0.4425
+      },
+      "absolute_errors": {
+        "literal_l3": 0.18071011355309036,
+        "engineering_clamp": 0.19446011355309029,
+        "constant_speed_lps": 0.00446011355309045,
+        "stage_aware": 0.00446011355309045
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.1333333333333333,
+      "reference": {
+        "ttft": 0.9794619679349887,
+        "ci95": [
+          0.8836452980532438,
+          1.0752786378167336
+        ],
+        "seed_means": [
+          0.9354867743499363,
+          1.007564274601519,
+          0.9953348548535109
+        ],
+        "mean_cpu_seconds": 0.10503499100000013,
+        "backlog_at_last_arrival": [
+          2,
+          4,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.825997504871339e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.7520000000000007,
+        "engineering_clamp": 1.7575000000000005,
+        "constant_speed_lps": 1.0050000000000003,
+        "stage_aware": 1.0050000000000001
+      },
+      "absolute_errors": {
+        "literal_l3": 0.7725380320650119,
+        "engineering_clamp": 0.7780380320650118,
+        "constant_speed_lps": 0.025538032065011596,
+        "stage_aware": 0.025538032065011373
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.3088326127239036,
+      "reference": {
+        "ttft": 0.2891482555859363,
+        "ci95": [
+          0.2854764798138828,
+          0.29282003135798984
+        ],
+        "seed_means": [
+          0.28815389835338684,
+          0.29084676111277785,
+          0.2884441072916442
+        ],
+        "mean_cpu_seconds": 0.08846028733333355,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.34322883124013454
+          ],
+          "w": [
+            0.019428831240134517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 7.638001989107579e-06,
+          "ttft_mean": 0.28922883124013454,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.3088326127239036,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.2971657863817588,
+        "engineering_clamp": 0.3059569272976681,
+        "constant_speed_lps": 0.28922883124013454,
+        "stage_aware": 0.28922883124013454
+      },
+      "absolute_errors": {
+        "literal_l3": 0.008017530795822458,
+        "engineering_clamp": 0.016808671711731782,
+        "constant_speed_lps": 8.057565419822277e-05,
+        "stage_aware": 8.057565419822277e-05
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.544163063619518,
+      "reference": {
+        "ttft": 0.44045986292191347,
+        "ci95": [
+          0.4240474758709204,
+          0.45687224997290654
+        ],
+        "seed_means": [
+          0.4329551398118403,
+          0.4453997193136864,
+          0.4430247296402138
+        ],
+        "mean_cpu_seconds": 0.08642800866666651,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.4986594811612107
+          ],
+          "w": [
+            0.17485948116121067
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 7.3929986683651805e-06,
+          "ttft_mean": 0.4446594811612107,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.544163063619518,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.5839317179078762,
+        "engineering_clamp": 0.5888398034398036,
+        "constant_speed_lps": 0.4446594811612107,
+        "stage_aware": 0.4446594811612107
+      },
+      "absolute_errors": {
+        "literal_l3": 0.14347185498596277,
+        "engineering_clamp": 0.1483799405178901,
+        "constant_speed_lps": 0.004199618239297209,
+        "stage_aware": 0.004199618239297209
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 2.470660901791229,
+      "reference": {
+        "ttft": 0.9594700123628552,
+        "ci95": [
+          0.8343875054182461,
+          1.0845525193074643
+        ],
+        "seed_means": [
+          0.9060232405265691,
+          1.0060164829052325,
+          0.9663703136567642
+        ],
+        "mean_cpu_seconds": 0.08792561999999944,
+        "backlog_at_last_arrival": [
+          2,
+          5,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            1.0232379246448429
+          ],
+          "w": [
+            0.6994379246448428
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 7.5690040830522776e-06,
+          "ttft_mean": 0.9692379246448428,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.470660901791229,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.521383057969805,
+        "engineering_clamp": 1.523378851963746,
+        "constant_speed_lps": 0.9692379246448428,
+        "stage_aware": 0.9692379246448428
+      },
+      "absolute_errors": {
+        "literal_l3": 0.5619130456069499,
+        "engineering_clamp": 0.5639088396008907,
+        "constant_speed_lps": 0.00976791228198759,
+        "stage_aware": 0.00976791228198759
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.33670033670033667,
+      "reference": {
+        "ttft": 0.2652025990931364,
+        "ci95": [
+          0.2613453143769382,
+          0.26905988380933465
+        ],
+        "seed_means": [
+          0.2642476630955205,
+          0.2669942799186098,
+          0.264365854265279
+        ],
+        "mean_cpu_seconds": 0.08950310066666607,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.3153866442199776
+          ],
+          "w": [
+            0.018386644219977554
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 7.221999112516642e-06,
+          "ttft_mean": 0.26538664421997754,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.33670033670033667,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.2667852969153418,
+        "engineering_clamp": 0.28030044843049334,
+        "constant_speed_lps": 0.26538664421997754,
+        "stage_aware": 0.26538664421997754
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0015826978222053811,
+        "engineering_clamp": 0.015097849337356917,
+        "constant_speed_lps": 0.00018404512684111474,
+        "stage_aware": 0.00018404512684111474
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.6835016835016832,
+      "reference": {
+        "ttft": 0.4083098222800552,
+        "ci95": [
+          0.39273638169434383,
+          0.42388326286576655
+        ],
+        "seed_means": [
+          0.40115072351971603,
+          0.41281822261073653,
+          0.4109605207097129
+        ],
+        "mean_cpu_seconds": 0.09395682233333424,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.462479797979798
+          ],
+          "w": [
+            0.16547979797979795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.49999999999999994,
+          "duration": 7.6060023275204e-06,
+          "ttft_mean": 0.41247979797979795,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.6835016835016832,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.49999999999999994,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.5285442424242427,
+        "engineering_clamp": 0.5361200000000002,
+        "constant_speed_lps": 0.41247979797979795,
+        "stage_aware": 0.41247979797979795
+      },
+      "absolute_errors": {
+        "literal_l3": 0.1202344201441875,
+        "engineering_clamp": 0.12781017771994496,
+        "constant_speed_lps": 0.004169975699742756,
+        "stage_aware": 0.004169975699742756
+      }
+    },
+    {
+      "batch_cap": 1,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.6936026936026933,
+      "reference": {
+        "ttft": 0.9009420108053577,
+        "ci95": [
+          0.773821197587869,
+          1.0280628240228464
+        ],
+        "seed_means": [
+          0.8477767909656034,
+          0.9498578220917655,
+          0.9051914193587044
+        ],
+        "mean_cpu_seconds": 0.08610896866666688,
+        "backlog_at_last_arrival": [
+          3,
+          7,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.9589191919191921
+          ],
+          "w": [
+            0.661919191919192
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 7.190996257122606e-06,
+          "ttft_mean": 0.908919191919192,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.6936026936026933,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 1.3637914092380121,
+        "engineering_clamp": 1.3669126213592242,
+        "constant_speed_lps": 0.908919191919192,
+        "stage_aware": 0.908919191919192
+      },
+      "absolute_errors": {
+        "literal_l3": 0.4628493984326544,
+        "engineering_clamp": 0.46597061055386646,
+        "constant_speed_lps": 0.007977181113834275,
+        "stage_aware": 0.007977181113834275
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2457002457002457,
+      "reference": {
+        "ttft": 0.29430809586831036,
+        "ci95": [
+          0.29112500023931154,
+          0.2974911914973092
+        ],
+        "seed_means": [
+          0.29310337675743087,
+          0.29565435994746697,
+          0.29416655090003324
+        ],
+        "mean_cpu_seconds": 0.10817502366666609,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4276197625310721
+          ],
+          "w": [
+            0.007353117142453802
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904666021287083,
+          "duration": 0.0026031779998447746,
+          "ttft_mean": 0.2939029118750345,
+          "blocking_probability": 2.3434761909357782e-05,
+          "accepted_rate": 0.24569448777348665,
+          "states": 22,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.42764068769079877
+          ],
+          "w": [
+            0.007369161278766438
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904848950167658,
+          "duration": 0.004493491993343923,
+          "ttft_mean": 0.2939232299263471,
+          "blocking_probability": 5.334826802538828e-09,
+          "accepted_rate": 0.24570024438947743,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.4276406963091129
+          ],
+          "w": [
+            0.007369168768709142
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904848990965445,
+          "duration": 0.0077413250037352555,
+          "ttft_mean": 0.2939232384056532,
+          "blocking_probability": 1.9557688801796758e-12,
+          "accepted_rate": 0.24570024569976517,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.27343960015113666,
+        "engineering_clamp": 0.2789963556107001,
+        "constant_speed_lps": 0.3047611111111111,
+        "stage_aware": 0.2939232384056532
+      },
+      "absolute_errors": {
+        "literal_l3": 0.020868495717173696,
+        "engineering_clamp": 0.015311740257610285,
+        "constant_speed_lps": 0.010453015242800734,
+        "stage_aware": 0.00038485746265715104
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.2285012285012284,
+      "reference": {
+        "ttft": 0.40185336468339505,
+        "ci95": [
+          0.38994740797576694,
+          0.41375932139102317
+        ],
+        "seed_means": [
+          0.3973808028320478,
+          0.4069124107874161,
+          0.4012668804307213
+        ],
+        "mean_cpu_seconds": 0.11171673166666629,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5361199869494976
+          ],
+          "w": [
+            0.0550056969519488
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4644746021753233,
+          "duration": 0.002231195001513697,
+          "ttft_mean": 0.39487120753512994,
+          "blocking_probability": 0.006393173915303141,
+          "accepted_rate": 1.2206472064922567,
+          "states": 22,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5445072991211015
+          ],
+          "w": [
+            0.06201987522014549
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.46654098576758296,
+          "duration": 0.004600495005433913,
+          "ttft_mean": 0.4030916535938555,
+          "blocking_probability": 0.0002061269673685473,
+          "accepted_rate": 1.228248001268589,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5449785829739783
+          ],
+          "w": [
+            0.06244704353747425
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4666067445568481,
+          "duration": 0.00735669799905736,
+          "ttft_mean": 0.4035576025684618,
+          "blocking_probability": 6.972310821584671e-06,
+          "accepted_rate": 1.2284926630088187,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.40243439095360056,
+        "engineering_clamp": 0.3616861289704319,
+        "constant_speed_lps": 0.5142500000000001,
+        "stage_aware": 0.4035576025684618
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0005810262702055091,
+        "engineering_clamp": 0.040167235712963156,
+        "constant_speed_lps": 0.11239663531660504,
+        "stage_aware": 0.0017042378850667395
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 1.9656019656019657,
+      "reference": {
+        "ttft": 0.5648707536761807,
+        "ci95": [
+          0.5563918496724894,
+          0.5733496576798719
+        ],
+        "seed_means": [
+          0.5609329461582854,
+          0.5669821787333679,
+          0.5666971361368889
+        ],
+        "mean_cpu_seconds": 0.1086661573333328,
+        "backlog_at_last_arrival": [
+          2,
+          3,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.6406589711731314
+          ],
+          "w": [
+            0.11454620299230417
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6838909828424695,
+          "duration": 0.0021978320000926033,
+          "ttft_mean": 0.4939839795861157,
+          "blocking_probability": 0.035200014134832536,
+          "accepted_rate": 1.8964127486293219,
+          "states": 22,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.6994404458925756
+          ],
+          "w": [
+            0.16649165833576454
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6980223800401181,
+          "duration": 0.0043605800019577146,
+          "ttft_mean": 0.5519370879038967,
+          "blocking_probability": 0.005299156661766502,
+          "accepted_rate": 1.9551859328515646,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.7149787197077302
+          ],
+          "w": [
+            0.1810430233941836
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.700112260599305,
+          "duration": 0.007567609995021485,
+          "ttft_mean": 0.5673562457602882,
+          "blocking_probability": 0.0008356097020231212,
+          "accepted_rate": 1.9639594895291927,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.7266683188105599,
+        "engineering_clamp": 0.7110833002385419,
+        "constant_speed_lps": 1.1462000000000003,
+        "stage_aware": 0.5673562457602882
+      },
+      "absolute_errors": {
+        "literal_l3": 0.16179756513437926,
+        "engineering_clamp": 0.14621254656236127,
+        "constant_speed_lps": 0.5813292463238197,
+        "stage_aware": 0.0024854920841075323
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.26666666666666666,
+      "reference": {
+        "ttft": 0.2745672787230817,
+        "ci95": [
+          0.27130844524530745,
+          0.2778261122008559
+        ],
+        "seed_means": [
+          0.27335525601953464,
+          0.27596019511771963,
+          0.27438638503199075
+        ],
+        "mean_cpu_seconds": 0.11002116333333294,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.3968173512633463
+          ],
+          "w": [
+            0.006945246840707802
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09929821089770122,
+          "duration": 0.002131864006514661,
+          "ttft_mean": 0.2741555414394469,
+          "blocking_probability": 2.5387758719186415e-05,
+          "accepted_rate": 0.2666598965976749,
+          "states": 22,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.39684112556199946
+          ],
+          "w": [
+            0.006962921290052892
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09930033190847751,
+          "duration": 0.004295819002436474,
+          "ttft_mean": 0.2741782967976282,
+          "blocking_probability": 7.625778453146381e-09,
+          "accepted_rate": 0.2666666646331257,
+          "states": 36,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.39684113826126105
+          ],
+          "w": [
+            0.006962932127103799
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09930033253854514,
+          "duration": 0.007341033000557218,
+          "ttft_mean": 0.2741783091892847,
+          "blocking_probability": 3.5333957981720232e-12,
+          "accepted_rate": 0.2666666666657244,
+          "states": 50,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.24771389710140504,
+        "engineering_clamp": 0.2602460071931482,
+        "constant_speed_lps": 0.28258333333333335,
+        "stage_aware": 0.2741783091892847
+      },
+      "absolute_errors": {
+        "literal_l3": 0.026853381621676636,
+        "engineering_clamp": 0.014321271529933455,
+        "constant_speed_lps": 0.008016054610251677,
+        "stage_aware": 0.00038896953379696786
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.3333333333333333,
+      "reference": {
+        "ttft": 0.3924018201804942,
+        "ci95": [
+          0.37949762667419334,
+          0.40530601368679503
+        ],
+        "seed_means": [
+          0.38745346419940435,
+          0.3978119107529805,
+          0.39194008558909776
+        ],
+        "mean_cpu_seconds": 0.11536158133333352,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5173471332365777
+          ],
+          "w": [
+            0.05670704508472039
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47174089099511785,
+          "duration": 0.002247668002382852,
+          "ttft_mean": 0.38276889786136964,
+          "blocking_probability": 0.007868576299500996,
+          "accepted_rate": 1.3228418982673318,
+          "states": 22,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5284986984119633
+          ],
+          "w": [
+            0.06584383546972729
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47455932976444687,
+          "duration": 0.0046591380014433526,
+          "ttft_mean": 0.3935960196506693,
+          "blocking_probability": 0.00033398086681102335,
+          "accepted_rate": 1.3328880255109186,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5293097193259281
+          ],
+          "w": [
+            0.06656952517901739
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47467795112652517,
+          "duration": 0.008258041001681704,
+          "ttft_mean": 0.3943933865490252,
+          "blocking_probability": 1.4619344686495062e-05,
+          "accepted_rate": 1.3333138408737513,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.40474344673731166,
+        "engineering_clamp": 0.357994980479643,
+        "constant_speed_lps": 0.47625,
+        "stage_aware": 0.3943933865490252
+      },
+      "absolute_errors": {
+        "literal_l3": 0.012341626556817475,
+        "engineering_clamp": 0.03440683970085118,
+        "constant_speed_lps": 0.08384817981950582,
+        "stage_aware": 0.001991566368531039
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.1333333333333333,
+      "reference": {
+        "ttft": 0.6024135669024161,
+        "ci95": [
+          0.5897701837388691,
+          0.6150569500659631
+        ],
+        "seed_means": [
+          0.5967069113006087,
+          0.604050315759895,
+          0.6064834736467447
+        ],
+        "mean_cpu_seconds": 0.10798887266666608,
+        "backlog_at_last_arrival": [
+          2,
+          4,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.6370732087613262
+          ],
+          "w": [
+            0.12264232969681707
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6986565379136629,
+          "duration": 0.002196934998210054,
+          "ttft_mean": 0.4937944554539796,
+          "blocking_probability": 0.04395883124460187,
+          "accepted_rate": 2.0395544933448493,
+          "states": 22,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.7168139913005922
+          ],
+          "w": [
+            0.19221305153959115
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7179012229090485,
+          "duration": 0.004501615003391635,
+          "ttft_mean": 0.5719155454358471,
+          "blocking_probability": 0.008681334222942927,
+          "accepted_rate": 2.114813153657722,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.744111703457788
+          ],
+          "w": [
+            0.21760627153455656
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7216266414020494,
+          "duration": 0.00747955399856437,
+          "ttft_mean": 0.5989114631310544,
+          "blocking_probability": 0.0018123132552805288,
+          "accepted_rate": 2.1294670650554015,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.8134796234487082,
+        "engineering_clamp": 0.7791271644323148,
+        "constant_speed_lps": 1.0590000000000002,
+        "stage_aware": 0.5989114631310544
+      },
+      "absolute_errors": {
+        "literal_l3": 0.21106605654629207,
+        "engineering_clamp": 0.17671359752989868,
+        "constant_speed_lps": 0.45658643309758407,
+        "stage_aware": 0.003502103771361731
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2730748225013654,
+      "reference": {
+        "ttft": 0.3251953720737368,
+        "ci95": [
+          0.3210341624631641,
+          0.3293565816843095
+        ],
+        "seed_means": [
+          0.324419927940653,
+          0.3271177002724651,
+          0.3240484880080921
+        ],
+        "mean_cpu_seconds": 0.10585860599999937,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.38028904048575085
+          ],
+          "w": [
+            0.007080262167670802
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.0975662357296383,
+          "duration": 0.0072225690018967725,
+          "ttft_mean": 0.32540209022779903,
+          "blocking_probability": 2.8243101066971477e-05,
+          "accepted_rate": 0.27306711002155465,
+          "states": 107,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.3803079942341152
+          ],
+          "w": [
+            0.007095813082389721
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09756811102523599,
+          "duration": 0.03794423999352148,
+          "ttft_mean": 0.32542075709797263,
+          "blocking_probability": 1.0044254650232176e-08,
+          "accepted_rate": 0.27307481975853237,
+          "states": 467,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.38030800676579324
+          ],
+          "w": [
+            0.007095824309285795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09756811167566344,
+          "duration": 0.17816053400019882,
+          "ttft_mean": 0.32542076952828874,
+          "blocking_probability": 5.728750807065808e-12,
+          "accepted_rate": 0.27307482249980103,
+          "states": 1907,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.27474116141676347,
+        "engineering_clamp": 0.2720439025426636,
+        "constant_speed_lps": 0.34576702045027,
+        "stage_aware": 0.32542076952828874
+      },
+      "absolute_errors": {
+        "literal_l3": 0.05045421065697331,
+        "engineering_clamp": 0.05315146953107319,
+        "constant_speed_lps": 0.020571648376533247,
+        "stage_aware": 0.0002253974545519677
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.3653741125068268,
+      "reference": {
+        "ttft": 0.3984916024220871,
+        "ci95": [
+          0.3892110229855944,
+          0.4077721818585798
+        ],
+        "seed_means": [
+          0.39494835154383423,
+          0.4023942481560105,
+          0.3981322075664166
+        ],
+        "mean_cpu_seconds": 0.09805401033333361,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4518392605971874
+          ],
+          "w": [
+            0.048433078614333755
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.438224803387628,
+          "duration": 0.007505966001190245,
+          "ttft_mean": 0.3935831049687607,
+          "blocking_probability": 0.006743329461013303,
+          "accepted_rate": 1.3561669450286544,
+          "states": 107,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.4582248682558724
+          ],
+          "w": [
+            0.05396855149103529
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4400866856366601,
+          "duration": 0.03770140400592936,
+          "ttft_mean": 0.399908929656098,
+          "blocking_probability": 0.00023866864169619362,
+          "accepted_rate": 1.3650482405219877,
+          "states": 467,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.45862391194171015
+          ],
+          "w": [
+            0.0543370089483157
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4401519346319971,
+          "duration": 0.17552337700180942,
+          "ttft_mean": 0.4003059059369215,
+          "blocking_probability": 9.053938228587022e-06,
+          "accepted_rate": 1.3653617504939533,
+          "states": 1907,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.37451373766976903,
+        "engineering_clamp": 0.3250803674467731,
+        "constant_speed_lps": 0.5739159202621519,
+        "stage_aware": 0.4003059059369215
+      },
+      "absolute_errors": {
+        "literal_l3": 0.023977864752318057,
+        "engineering_clamp": 0.07341123497531399,
+        "constant_speed_lps": 0.1754243178400648,
+        "stage_aware": 0.0018143035148344144
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 2.184598580010923,
+      "reference": {
+        "ttft": 0.5005999842783807,
+        "ci95": [
+          0.48776457760360253,
+          0.5134353909531588
+        ],
+        "seed_means": [
+          0.4946493484760714,
+          0.5032014220156039,
+          0.5039491823434668
+        ],
+        "mean_cpu_seconds": 0.09927849233333319,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5176140448822472
+          ],
+          "w": [
+            0.09232912125476804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6363468693170607,
+          "duration": 0.0076279650020296685,
+          "ttft_mean": 0.45732259219833393,
+          "blocking_probability": 0.0331217377589621,
+          "accepted_rate": 2.1122408787352,
+          "states": 107,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5557163166026852
+          ],
+          "w": [
+            0.12648603350276102
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6480736766456083,
+          "duration": 0.040400965001026634,
+          "ttft_mean": 0.49518363993809644,
+          "blocking_probability": 0.004619824875916612,
+          "accepted_rate": 2.1745061171470965,
+          "states": 467,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5650571067209329
+          ],
+          "w": [
+            0.13528702675491244
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6496848600185158,
+          "duration": 0.18944563499826472,
+          "ttft_mean": 0.5044925305726518,
+          "blocking_probability": 0.000677325305835641,
+          "accepted_rate": 2.183118896109589,
+          "states": 1907,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.5479813122208614,
+        "engineering_clamp": 0.46633413546923386,
+        "constant_speed_lps": 1.237901889677772,
+        "stage_aware": 0.5044925305726518
+      },
+      "absolute_errors": {
+        "literal_l3": 0.04738132794248073,
+        "engineering_clamp": 0.03426584880914685,
+        "constant_speed_lps": 0.7373019053993913,
+        "stage_aware": 0.0038925462942710487
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.303951367781155,
+      "reference": {
+        "ttft": 0.29393564135491873,
+        "ci95": [
+          0.2895296733958588,
+          0.2983416093139787
+        ],
+        "seed_means": [
+          0.2931153131053112,
+          0.2959709509512197,
+          0.2927206600082253
+        ],
+        "mean_cpu_seconds": 0.1029469169999994,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.3455678531504649
+          ],
+          "w": [
+            0.006618359072834791
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09806791922969692,
+          "duration": 0.0076481409996631555,
+          "ttft_mean": 0.2941744788213314,
+          "blocking_probability": 3.222553291093444e-05,
+          "accepted_rate": 0.30394157278634926,
+          "states": 107,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.3455911671749964
+          ],
+          "w": [
+            0.006636618909142348
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09807028668845398,
+          "duration": 0.03756505800265586,
+          "ttft_mean": 0.29419728615029234,
+          "blocking_probability": 1.718195652422594e-08,
+          "accepted_rate": 0.30395136255867583,
+          "states": 467,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.3455911895351064
+          ],
+          "w": [
+            0.006636638410764478
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09807028793151562,
+          "duration": 0.17709054199804086,
+          "ttft_mean": 0.29419730824235496,
+          "blocking_probability": 1.342737032672403e-11,
+          "accepted_rate": 0.3039513677770737,
+          "states": 1907,
+          "stationary_residual": 2.220446049250313e-16,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.24913846171852025,
+        "engineering_clamp": 0.24980514752742317,
+        "constant_speed_lps": 0.30905695710908476,
+        "stage_aware": 0.29419730824235496
+      },
+      "absolute_errors": {
+        "literal_l3": 0.04479717963639848,
+        "engineering_clamp": 0.044130493827495565,
+        "constant_speed_lps": 0.015121315754166031,
+        "stage_aware": 0.00026166688743622935
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.519756838905775,
+      "reference": {
+        "ttft": 0.3823673583754803,
+        "ci95": [
+          0.3713910069389944,
+          0.3933437098119662
+        ],
+        "seed_means": [
+          0.37801743874404325,
+          0.3868515310109512,
+          0.3822331053714466
+        ],
+        "mean_cpu_seconds": 0.10055538000000001,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.43170447821536956
+          ],
+          "w": [
+            0.050317558803928464
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4485818632210039,
+          "duration": 0.007231468996906187,
+          "ttft_mean": 0.3749046378448193,
+          "blocking_probability": 0.008867544213467804,
+          "accepted_rate": 1.5062803279430579,
+          "states": 107,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.4408832751123441
+          ],
+          "w": [
+            0.05806399199594303
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45134351915757737,
+          "duration": 0.03775052900164155,
+          "ttft_mean": 0.3839612885291075,
+          "blocking_probability": 0.0004441921698352669,
+          "accepted_rate": 1.5190817748178793,
+          "states": 467,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.4416735158814347
+          ],
+          "w": [
+            0.0587818954408208
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4514809762332411,
+          "duration": 0.1780700740055181,
+          "ttft_mean": 0.38474555926546583,
+          "blocking_probability": 2.3164445416168356e-05,
+          "accepted_rate": 1.5197216345814344,
+          "states": 1907,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.36671398485966655,
+        "engineering_clamp": 0.31177493738484263,
+        "constant_speed_lps": 0.5155630699088146,
+        "stage_aware": 0.38474555926546583
+      },
+      "absolute_errors": {
+        "literal_l3": 0.01565337351581375,
+        "engineering_clamp": 0.07059242099063767,
+        "constant_speed_lps": 0.13319571153333432,
+        "stage_aware": 0.0023782008899855267
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.43161094224924,
+      "reference": {
+        "ttft": 0.5243322314167346,
+        "ci95": [
+          0.5063070396375348,
+          0.5423574231959344
+        ],
+        "seed_means": [
+          0.5164245671461368,
+          0.5258875523512067,
+          0.5306845747528602
+        ],
+        "mean_cpu_seconds": 0.09476496199999929,
+        "backlog_at_last_arrival": [
+          1,
+          3,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5107973968026301
+          ],
+          "w": [
+            0.09943465888734117
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6553120807824282,
+          "duration": 0.007345161997363903,
+          "ttft_mean": 0.4507421330892841,
+          "blocking_probability": 0.043734336276592733,
+          "accepted_rate": 2.325266051607069,
+          "states": 107,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5654442862150552
+          ],
+          "w": [
+            0.14760580079971794
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.672322943103351,
+          "duration": 0.037052805004350375,
+          "ttft_mean": 0.504906772745616,
+          "blocking_probability": 0.008400635081318941,
+          "accepted_rate": 2.4111838660636624,
+          "states": 467,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5835086235087636
+          ],
+          "w": [
+            0.1644721710048879
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.675535748787457,
+          "duration": 0.17598943899793085,
+          "ttft_mean": 0.5228844486625699,
+          "blocking_probability": 0.001697725895785429,
+          "accepted_rate": 2.4274827333841085,
+          "states": 1907,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.5912726830428683,
+        "engineering_clamp": 0.5000942654240262,
+        "constant_speed_lps": 1.1234036474164135,
+        "stage_aware": 0.5228844486625699
+      },
+      "absolute_errors": {
+        "literal_l3": 0.06694045162613371,
+        "engineering_clamp": 0.024237965992708332,
+        "constant_speed_lps": 0.599071415999679,
+        "stage_aware": 0.0014477827541646837
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.2457002457002457,
+      "reference": {
+        "ttft": 0.28735180594217596,
+        "ci95": [
+          0.28510181797645795,
+          0.289601793907894
+        ],
+        "seed_means": [
+          0.28645541066201263,
+          0.28826661399196835,
+          0.2873333931725468
+        ],
+        "mean_cpu_seconds": 0.11261665100000091,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.42164451801501784
+          ],
+          "w": [
+            0.0072837977881382255
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745672375512242,
+          "duration": 0.0019616229983512312,
+          "ttft_mean": 0.2871161808526843,
+          "blocking_probability": 2.347937601643313e-05,
+          "accepted_rate": 0.24569447681178957,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.42166048831124636
+          ],
+          "w": [
+            0.007297759664773776
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745832370528748,
+          "duration": 0.0038257109990809113,
+          "ttft_mean": 0.2871314222946777,
+          "blocking_probability": 4.902691475017207e-09,
+          "accepted_rate": 0.2457002444956532,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.421660494391849
+          ],
+          "w": [
+            0.007297765297347985
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745832403230509,
+          "duration": 0.006599975000426639,
+          "ttft_mean": 0.2871314281895983,
+          "blocking_probability": 1.2849721287011562e-12,
+          "accepted_rate": 0.24570024569993,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.2673256856656511,
+        "engineering_clamp": 0.27817063432283917,
+        "constant_speed_lps": 0.3047611111111111,
+        "stage_aware": 0.2871314281895983
+      },
+      "absolute_errors": {
+        "literal_l3": 0.02002612027652484,
+        "engineering_clamp": 0.009181171619336792,
+        "constant_speed_lps": 0.01740930516893513,
+        "stage_aware": 0.00022037775257766068
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.2285012285012284,
+      "reference": {
+        "ttft": 0.3495073968155668,
+        "ci95": [
+          0.342091494715886,
+          0.3569232989152476
+        ],
+        "seed_means": [
+          0.3465490826411831,
+          0.35251897451661157,
+          0.3494541332889057
+        ],
+        "mean_cpu_seconds": 0.09965086166666737,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4904824342082039
+          ],
+          "w": [
+            0.04736089859235192
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4356451632229091,
+          "duration": 0.0019079229969065636,
+          "ttft_mean": 0.3458530794700928,
+          "blocking_probability": 0.00499921913191359,
+          "accepted_rate": 1.222359681656126,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.49503613073979785
+          ],
+          "w": [
+            0.05144296994351506
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43698577266133537,
+          "duration": 0.003786594999837689,
+          "ttft_mean": 0.3502350802984188,
+          "blocking_probability": 9.574940821277522e-05,
+          "accepted_rate": 1.228383600235611,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.4951932630351394
+          ],
+          "w": [
+            0.05159067857136564
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4370106460941996,
+          "duration": 0.006799253998906352,
+          "ttft_mean": 0.3503888846468523,
+          "blocking_probability": 1.8215773448515549e-06,
+          "accepted_rate": 1.2284989906912225,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.34122503405047283,
+        "engineering_clamp": 0.3265643321140967,
+        "constant_speed_lps": 0.5142500000000001,
+        "stage_aware": 0.3503888846468523
+      },
+      "absolute_errors": {
+        "literal_l3": 0.008282362765093976,
+        "engineering_clamp": 0.022943064701470117,
+        "constant_speed_lps": 0.1647426031844333,
+        "stage_aware": 0.000881487831285499
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 1.9656019656019657,
+      "reference": {
+        "ttft": 0.42713764168813456,
+        "ci95": [
+          0.4180860848944374,
+          0.43618919848183174
+        ],
+        "seed_means": [
+          0.423286691612987,
+          0.4305309358728626,
+          0.42759529757855413
+        ],
+        "mean_cpu_seconds": 0.09592835000000004,
+        "backlog_at_last_arrival": [
+          2,
+          2,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5507858229072358
+          ],
+          "w": [
+            0.08846418536783576
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6319838018055273,
+          "duration": 0.0020279110030969605,
+          "ttft_mean": 0.3994077298752277,
+          "blocking_probability": 0.024342354205637573,
+          "accepted_rate": 1.9177545863279852,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5781351253991192
+          ],
+          "w": [
+            0.1136176635333572
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6404278401531037,
+          "duration": 0.004243092997057829,
+          "ttft_mean": 0.42598226311549897,
+          "blocking_probability": 0.002017528803693436,
+          "accepted_rate": 1.9616363070197673,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5822514998569094
+          ],
+          "w": [
+            0.11755113911675946
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411099244267023,
+          "duration": 0.007247918998473324,
+          "ttft_mean": 0.43003617371400105,
+          "blocking_probability": 0.00016922131992580525,
+          "accepted_rate": 1.9652693438428976,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.47040026792842266,
+        "engineering_clamp": 0.4385953469923063,
+        "constant_speed_lps": 1.1462000000000003,
+        "stage_aware": 0.43003617371400105
+      },
+      "absolute_errors": {
+        "literal_l3": 0.04326262624028809,
+        "engineering_clamp": 0.011457705304171728,
+        "constant_speed_lps": 0.7190623583118658,
+        "stage_aware": 0.002898532025866485
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.26666666666666666,
+      "reference": {
+        "ttft": 0.26995127979907774,
+        "ci95": [
+          0.267346412219318,
+          0.2725561473788375
+        ],
+        "seed_means": [
+          0.26897433832137435,
+          0.2710592274352808,
+          0.26982027364057803
+        ],
+        "mean_cpu_seconds": 0.1121783263333344,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.3935826131652958
+          ],
+          "w": [
+            0.006983504238481378
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802153466736935,
+          "duration": 0.0018772680050460622,
+          "ttft_mean": 0.2696725787764217,
+          "blocking_probability": 2.656457204419649e-05,
+          "accepted_rate": 0.2666595827807882,
+          "states": 18,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.39360311621909005
+          ],
+          "w": [
+            0.0070003527252426815
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802352127334106,
+          "duration": 0.00383867000346072,
+          "ttft_mean": 0.26969175882224766,
+          "blocking_probability": 8.111486815565172e-09,
+          "accepted_rate": 0.26666666450360355,
+          "states": 30,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.39360312730441227
+          ],
+          "w": [
+            0.007000362638171932
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802352187371775,
+          "duration": 0.006464236001193058,
+          "ttft_mean": 0.26969176942625084,
+          "blocking_probability": 2.9490854203118033e-12,
+          "accepted_rate": 0.26666666666588024,
+          "states": 42,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.24293076613444248,
+        "engineering_clamp": 0.2595377700254931,
+        "constant_speed_lps": 0.28258333333333335,
+        "stage_aware": 0.26969176942625084
+      },
+      "absolute_errors": {
+        "literal_l3": 0.02702051366463526,
+        "engineering_clamp": 0.010413509773584628,
+        "constant_speed_lps": 0.012632053534255616,
+        "stage_aware": 0.0002595103728268988
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.3333333333333333,
+      "reference": {
+        "ttft": 0.3500692462838526,
+        "ci95": [
+          0.3394285867846668,
+          0.3607099057830384
+        ],
+        "seed_means": [
+          0.34595933930820794,
+          0.3545073432399692,
+          0.34974105630338065
+        ],
+        "mean_cpu_seconds": 0.09885829599999951,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4842829928516276
+          ],
+          "w": [
+            0.05108168602208045
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44758884585616604,
+          "duration": 0.0018122629990102723,
+          "ttft_mean": 0.34416346273827575,
+          "blocking_probability": 0.006700819837322625,
+          "accepted_rate": 1.3243989068835695,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.4914878999138212
+          ],
+          "w": [
+            0.05726423073288347
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.449659540730751,
+          "duration": 0.0036812219987041317,
+          "ttft_mean": 0.35099882628860696,
+          "blocking_probability": 0.00019311389460330286,
+          "accepted_rate": 1.333075848140529,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.49185216363511275
+          ],
+          "w": [
+            0.057598045715084804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44971816382883895,
+          "duration": 0.006414531999325845,
+          "ttft_mean": 0.35135241937709105,
+          "blocking_probability": 5.472374402404334e-06,
+          "accepted_rate": 1.33332603683413,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.3491995614035087,
+        "engineering_clamp": 0.32411184210526317,
+        "constant_speed_lps": 0.47625,
+        "stage_aware": 0.35135241937709105
+      },
+      "absolute_errors": {
+        "literal_l3": 0.0008696848803438906,
+        "engineering_clamp": 0.02595740417858944,
+        "constant_speed_lps": 0.1261807537161474,
+        "stage_aware": 0.0012831730932384433
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.1333333333333333,
+      "reference": {
+        "ttft": 0.46477450550921756,
+        "ci95": [
+          0.4540447307832812,
+          0.4755042802351539
+        ],
+        "seed_means": [
+          0.459860510575834,
+          0.4679704058399412,
+          0.4664926001118774
+        ],
+        "mean_cpu_seconds": 0.09349911566666691,
+        "backlog_at_last_arrival": [
+          2,
+          3,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5656414105739621
+          ],
+          "w": [
+            0.10070852984851804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6551296866614519,
+          "duration": 0.0018565179998404346,
+          "ttft_mean": 0.41442718038853843,
+          "blocking_probability": 0.033706321359355695,
+          "accepted_rate": 2.0614265144333745,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.6110777100449698
+          ],
+          "w": [
+            0.1412814891212032
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6685268037922912,
+          "duration": 0.0037131040007807314,
+          "ttft_mean": 0.4581564210595083,
+          "blocking_probability": 0.004278392829778044,
+          "accepted_rate": 2.1242060952964734,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.6213319830152482
+          ],
+          "w": [
+            0.15092622977786246
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6701985580714014,
+          "duration": 0.007148438002332114,
+          "ttft_mean": 0.46820254465956224,
+          "blocking_probability": 0.0005564680690149926,
+          "accepted_rate": 2.1321462014527683,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.551981995313849,
+        "engineering_clamp": 0.5005408188432607,
+        "constant_speed_lps": 1.0590000000000002,
+        "stage_aware": 0.46820254465956224
+      },
+      "absolute_errors": {
+        "literal_l3": 0.08720748980463139,
+        "engineering_clamp": 0.035766313334043176,
+        "constant_speed_lps": 0.5942254944907825,
+        "stage_aware": 0.003428039150344675
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.1,
+      "arrival_rate": 0.3088326127239036,
+      "reference": {
+        "ttft": 0.2814549205201468,
+        "ci95": [
+          0.27899420270999975,
+          0.2839156383302939
+        ],
+        "seed_means": [
+          0.28084210148880134,
+          0.28259773481280037,
+          0.2809249252588387
+        ],
+        "mean_cpu_seconds": 0.0903877813333338,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.33670283905959414
+          ],
+          "w": [
+            0.007252324603548637
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09750197537480018,
+          "duration": 0.005397532993811183,
+          "ttft_mean": 0.281461151286271,
+          "blocking_probability": 3.6298916770483025e-05,
+          "accepted_rate": 0.3088214024345983,
+          "states": 70,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.3367227507824903
+          ],
+          "w": [
+            0.007269303924925029
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09750429502462907,
+          "duration": 0.02816788700147299,
+          "ttft_mean": 0.2814804859799485,
+          "blocking_probability": 1.1282021206149295e-08,
+          "accepted_rate": 0.30883260923964756,
+          "states": 310,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.33672276196806544
+          ],
+          "w": [
+            0.007269314194850415
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09750429573742511,
+          "duration": 0.14080815900524613,
+          "ttft_mean": 0.2814804970020071,
+          "blocking_probability": 4.629407968081978e-12,
+          "accepted_rate": 0.30883261272247386,
+          "states": 1270,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.26853777498792286,
+        "engineering_clamp": 0.27168877217680076,
+        "constant_speed_lps": 0.2987228831240135,
+        "stage_aware": 0.2814804970020071
+      },
+      "absolute_errors": {
+        "literal_l3": 0.01291714553222395,
+        "engineering_clamp": 0.009766148343346048,
+        "constant_speed_lps": 0.017267962603866704,
+        "stage_aware": 2.5576481860301037e-05
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.5,
+      "arrival_rate": 1.544163063619518,
+      "reference": {
+        "ttft": 0.3409169388447637,
+        "ci95": [
+          0.3339599353554802,
+          0.3478739423340472
+        ],
+        "seed_means": [
+          0.33821933193542025,
+          0.3438102112750274,
+          0.34072127332384344
+        ],
+        "mean_cpu_seconds": 0.08416421966666594,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.396549725651094
+          ],
+          "w": [
+            0.044814707372676704
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43610331084947707,
+          "duration": 0.0054753420045017265,
+          "ttft_mean": 0.3369363501237525,
+          "blocking_probability": 0.006801645732522399,
+          "accepted_rate": 1.5336602135075315,
+          "states": 70,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.4014882709923109
+          ],
+          "w": [
+            0.049212885169697476
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4378933752850365,
+          "duration": 0.02984314999775961,
+          "ttft_mean": 0.34178546972300994,
+          "blocking_probability": 0.0001718220453161834,
+          "accepted_rate": 1.543897742363625,
+          "states": 310,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.4017128341868695
+          ],
+          "w": [
+            0.04942338702197875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4379374526522444,
+          "duration": 0.13279483799851732,
+          "ttft_mean": 0.3420079850937292,
+          "blocking_probability": 4.424797164781502e-06,
+          "accepted_rate": 1.5441562310111723,
+          "states": 1270,
+          "stationary_residual": 1.6653345369377348e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.32899354032307726,
+        "engineering_clamp": 0.3088130208825475,
+        "constant_speed_lps": 0.4921297405806054,
+        "stage_aware": 0.3420079850937292
+      },
+      "absolute_errors": {
+        "literal_l3": 0.011923398521686446,
+        "engineering_clamp": 0.03210391796221623,
+        "constant_speed_lps": 0.15121280173584167,
+        "stage_aware": 0.0010910462489654993
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "cost_set": "development",
+      "load": 0.8,
+      "arrival_rate": 2.470660901791229,
+      "reference": {
+        "ttft": 0.413739038401076,
+        "ci95": [
+          0.4033864847168223,
+          0.4240915920853297
+        ],
+        "seed_means": [
+          0.40894256823578323,
+          0.41647366458185886,
+          0.41580088238558605
+        ],
+        "mean_cpu_seconds": 0.08290029900000088,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4469603463302734
+          ],
+          "w": [
+            0.08021633954804055
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6313362584545775,
+          "duration": 0.005351733001589309,
+          "ttft_mean": 0.38480018107283603,
+          "blocking_probability": 0.030668982794093136,
+          "accepted_rate": 2.394888245104155,
+          "states": 70,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.47395025115375133
+          ],
+          "w": [
+            0.10490498304223375
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6417298451280903,
+          "duration": 0.02713022500392981,
+          "ttft_mean": 0.41145403599860875,
+          "blocking_probability": 0.003106106099685757,
+          "accepted_rate": 2.4629867668939203,
+          "states": 310,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.47890312500325993
+          ],
+          "w": [
+            0.10962571247498426
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6427564876531948,
+          "duration": 0.1292596879939083,
+          "ttft_mean": 0.41637630988398455,
+          "blocking_probability": 0.0003243227622138356,
+          "accepted_rate": 2.4698596102230663,
+          "states": 1270,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.4290525422128749,
+        "engineering_clamp": 0.3938938415274962,
+        "constant_speed_lps": 1.0451903397158742,
+        "stage_aware": 0.41637630988398455
+      },
+      "absolute_errors": {
+        "literal_l3": 0.015313503811798912,
+        "engineering_clamp": 0.01984519687357983,
+        "constant_speed_lps": 0.6314513013147982,
+        "stage_aware": 0.002637271482908543
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.1,
+      "arrival_rate": 0.33670033670033667,
+      "reference": {
+        "ttft": 0.26104371903888673,
+        "ci95": [
+          0.2576667992322186,
+          0.2644206388455549
+        ],
+        "seed_means": [
+          0.2602697975964913,
+          0.2626133605946248,
+          0.2602479989255439
+        ],
+        "mean_cpu_seconds": 0.11465778066666606,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.3131624550875994
+          ],
+          "w": [
+            0.007065988141485076
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800620058152819,
+          "duration": 0.005320071999449283,
+          "ttft_mean": 0.26114246793856594,
+          "blocking_probability": 4.349278214932362e-05,
+          "accepted_rate": 0.33668569266594295,
+          "states": 70,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.3131899044666003
+          ],
+          "w": [
+            0.0070878753390738085
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800929648636883,
+          "duration": 0.027658291000989266,
+          "ttft_mean": 0.2611688994215262,
+          "blocking_probability": 2.2131294574734284e-08,
+          "accepted_rate": 0.33670032924872234,
+          "states": 310,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.31318992873137647
+          ],
+          "w": [
+            0.007087896837048166
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800929806636935,
+          "duration": 0.1304579069983447,
+          "ttft_mean": 0.26116892319856977,
+          "blocking_probability": 1.3885226302079445e-11,
+          "accepted_rate": 0.3367003366956615,
+          "states": 1270,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.2447483388596826,
+        "engineering_clamp": 0.24953818228410357,
+        "constant_speed_lps": 0.27353866442199776,
+        "stage_aware": 0.26116892319856977
+      },
+      "absolute_errors": {
+        "literal_l3": 0.016295380179204122,
+        "engineering_clamp": 0.011505536754783163,
+        "constant_speed_lps": 0.012494945383111022,
+        "stage_aware": 0.00012520415968303444
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.5,
+      "arrival_rate": 1.6835016835016832,
+      "reference": {
+        "ttft": 0.3384421780418614,
+        "ci95": [
+          0.32911580510167765,
+          0.3477685509820451
+        ],
+        "seed_means": [
+          0.3347511833832414,
+          0.3422568669455919,
+          0.338318483796751
+        ],
+        "mean_cpu_seconds": 0.11467065300000101,
+        "backlog_at_last_arrival": [
+          1,
+          1,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.39076100310957634
+          ],
+          "w": [
+            0.048678492131291023
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4468488378089136,
+          "duration": 0.006015127997670788,
+          "ttft_mean": 0.33157271414466144,
+          "blocking_probability": 0.009399366730998393,
+          "accepted_rate": 1.6676778337861977,
+          "states": 70,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.3988056715116681
+          ],
+          "w": [
+            0.05555995968758166
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4496975841810008,
+          "duration": 0.03010551400075201,
+          "ttft_mean": 0.33943273459620654,
+          "blocking_probability": 0.00037794286902381735,
+          "accepted_rate": 1.6828654160454142,
+          "states": 310,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.39936921320143043
+          ],
+          "w": [
+            0.05607581716594683
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4498105796038885,
+          "duration": 0.19301918899873272,
+          "ttft_mean": 0.33998941303118496,
+          "blocking_probability": 1.5200002126847245e-05,
+          "accepted_rate": 1.6834760942725133,
+          "states": 1270,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.3306300197774202,
+        "engineering_clamp": 0.2977995022123894,
+        "constant_speed_lps": 0.45323989898989897,
+        "stage_aware": 0.33998941303118496
+      },
+      "absolute_errors": {
+        "literal_l3": 0.007812158264441205,
+        "engineering_clamp": 0.04064267582947201,
+        "constant_speed_lps": 0.11479772094803758,
+        "stage_aware": 0.001547234989323576
+      }
+    },
+    {
+      "batch_cap": 2,
+      "token_budget": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "cost_set": "heldout",
+      "load": 0.8,
+      "arrival_rate": 2.6936026936026933,
+      "reference": {
+        "ttft": 0.4476822232827901,
+        "ci95": [
+          0.4353340105775511,
+          0.4600304359880291
+        ],
+        "seed_means": [
+          0.44211682247257705,
+          0.4492488513207752,
+          0.4516809960550182
+        ],
+        "mean_cpu_seconds": 0.10831948199999886,
+        "backlog_at_last_arrival": [
+          1,
+          2,
+          1
+        ]
+      },
+      "finite_refinements": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.4569866004064921
+          ],
+          "w": [
+            0.09080737550064835
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.651379438524215,
+          "duration": 0.00591803299903404,
+          "ttft_mean": 0.3936866072056707,
+          "blocking_probability": 0.04279449178787387,
+          "accepted_rate": 2.578331335251518,
+          "states": 70,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5014116450269415
+          ],
+          "w": [
+            0.13033451999611415
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6677783410308765,
+          "duration": 0.03142484000272816,
+          "ttft_mean": 0.43742737790801106,
+          "blocking_probability": 0.006743121951693465,
+          "accepted_rate": 2.6754394021503205,
+          "states": 310,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5137338309146883
+          ],
+          "w": [
+            0.14190477905457097
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6703123466037217,
+          "duration": 0.14517176899971673,
+          "ttft_mean": 0.449652269003231,
+          "blocking_probability": 0.0011053306080101022,
+          "accepted_rate": 2.690625372099636,
+          "states": 1270,
+          "stationary_residual": 1.1102230246251565e-16,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        }
+      ],
+      "predictions": {
+        "literal_l3": 0.48290692333859264,
+        "engineering_clamp": 0.42578396392568263,
+        "constant_speed_lps": 0.9741353535353536,
+        "stage_aware": 0.449652269003231
+      },
+      "absolute_errors": {
+        "literal_l3": 0.03522470005580253,
+        "engineering_clamp": 0.021898259357107486,
+        "constant_speed_lps": 0.5264531302525635,
+        "stage_aware": 0.001970045720440905
+      }
+    }
+  ],
+  "summary": {
+    "all": {
+      "median_absolute_errors": {
+        "literal_l3": 0.03610350626646944,
+        "engineering_clamp": 0.03433634425499901,
+        "constant_speed_lps": 0.013876684644210824,
+        "stage_aware": 0.001980806044485972
+      },
+      "reduction_vs_literal": 0.9451353552791737,
+      "target_25pct_passed": true
+    },
+    "B_gt_1": {
+      "median_absolute_errors": {
+        "literal_l3": 0.022423180234745876,
+        "engineering_clamp": 0.029030661070402836,
+        "constant_speed_lps": 0.12968823262474086,
+        "stage_aware": 0.0014975088717441298
+      },
+      "reduction_vs_literal": 0.9332160355459453,
+      "target_25pct_passed": true
+    },
+    "heldout_costs": {
+      "median_absolute_errors": {
+        "literal_l3": 0.03610350626646944,
+        "engineering_clamp": 0.03508657651744718,
+        "constant_speed_lps": 0.01256349945868332,
+        "stage_aware": 0.001980806044485972
+      },
+      "reduction_vs_literal": 0.9451353552791737,
+      "target_25pct_passed": true
+    },
+    "B1": {
+      "median_absolute_errors": {
+        "literal_l3": 0.11882823308591911,
+        "engineering_clamp": 0.12116862026109598,
+        "constant_speed_lps": 0.004650411731184606,
+        "stage_aware": 0.004650411731184606
+      },
+      "reduction_vs_literal": 0.9608644207658789,
+      "target_25pct_passed": true
+    }
+  },
+  "choices": [
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "budget": 2,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "budget": 4,
+      "true_best_cap": 2,
+      "chosen_caps": {
+        "literal_l3": 2,
+        "engineering_clamp": 2,
+        "constant_speed_lps": 1,
+        "stage_aware": 2
+      }
+    }
+  ],
+  "scope": "Mean TTFT only; finite-loss approximation for B>1; known methods; no GPU validation"
+}

@@ -1,0 +1,3751 @@
+{
+  "schema_version": 1,
+  "source_sha256": "4bb3783693d0a435686fbfc885615d2349bd067239079fa4b749f2e679e12122",
+  "audit": {
+    "records": 1429737,
+    "not_api": 103111,
+    "other_model": 219628,
+    "eligible": 1091749,
+    "zero_output": 15249
+  },
+  "cohorts": [
+    {
+      "day": 32,
+      "serialized_work_per_slot_exposure": [
+        0.0044237753725674,
+        0.001095478478028008
+      ],
+      "measured_span": 52485.0
+    },
+    {
+      "day": 36,
+      "serialized_work_per_slot_exposure": [
+        0.00552244217190389,
+        0.0013714136163195782
+      ],
+      "measured_span": 41536.0
+    },
+    {
+      "day": 40,
+      "serialized_work_per_slot_exposure": [
+        0.04570164375383977,
+        0.011163667498360317
+      ],
+      "measured_span": 2409.0
+    },
+    {
+      "day": 44,
+      "serialized_work_per_slot_exposure": [
+        0.010170275175470945,
+        0.002538541611182365
+      ],
+      "measured_span": 4990.0
+    },
+    {
+      "day": 48,
+      "serialized_work_per_slot_exposure": [
+        0.03739853664102128,
+        0.00888650458476596
+      ],
+      "measured_span": 1175.0
+    },
+    {
+      "day": 52,
+      "serialized_work_per_slot_exposure": [
+        0.004706255085269461,
+        0.00108886915
+      ],
+      "measured_span": 1670.0
+    },
+    {
+      "day": 56,
+      "serialized_work_per_slot_exposure": [
+        0.011685344575000001,
+        0.0029183426454642857
+      ],
+      "measured_span": 1400.0
+    },
+    {
+      "day": 60,
+      "serialized_work_per_slot_exposure": [
+        0.032763961952106437,
+        0.008190990488026609
+      ],
+      "measured_span": 451.0
+    }
+  ],
+  "python": "3.12.3",
+  "numpy": "2.2.5",
+  "protocol": {
+    "days": [
+      32,
+      36,
+      40,
+      44,
+      48,
+      52,
+      56,
+      60
+    ],
+    "configs": [
+      [
+        4,
+        256
+      ],
+      [
+        16,
+        2048
+      ]
+    ],
+    "costs": [
+      0.00668,
+      2.01e-05,
+      5.52e-08
+    ],
+    "slo": 1,
+    "cohort": 1152,
+    "permutation_population": "measured suffix only; warmup fixed",
+    "warmup": 128,
+    "seeds": [
+      92000,
+      92001,
+      92002
+    ]
+  },
+  "rows": [
+    {
+      "day": 32,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03854861027946627,
+          "ttft_p99": 0.08165342580801153,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016757467088498092,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02757553336059515,
+          "ttft_p99": 0.0520223295999358,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01659468206417364,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.45804809404562913,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.990234375,
+          "ttft_mean": 0.06808549525866409,
+          "ttft_p99": 0.7570113517288762,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.012969146042273397,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027680806961677185,
+          "ttft_p99": 0.04591395841559801,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.012848012551711916,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.02465653839395491,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03855904736824317,
+          "ttft_p99": 0.0783223975362955,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.013814411730696273,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027810523570096446,
+          "ttft_p99": 0.048525287999950706,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.013700662597736203,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.0017247044034775325,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.04060997418407791,
+          "ttft_p99": 0.0830673243691285,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.013192241007704934,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.028047239573890548,
+          "ttft_p99": 0.049914885511676055,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.013086505996635042,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.020850649104902773,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03884397000942824,
+          "ttft_p99": 0.08182541631200127,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01500704176987417,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.028095645310771022,
+          "ttft_p99": 0.0553126246240356,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.014861078812296117,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.4058024279790493,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0387727135985253,
+          "ttft_p99": 0.08178822917600985,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01463616478631088,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027990029503296876,
+          "ttft_p99": 0.05186064639997312,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.014491218788626898,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.4422969884717188,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03874365289660325,
+          "ttft_p99": 0.08193062953585231,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.014861189701013591,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02798884727955203,
+          "ttft_p99": 0.05493854411205802,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.014716367784737205,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.3814249874014601,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.99609375,
+          "ttft_mean": 0.057639506385442796,
+          "ttft_p99": 0.08180217435200336,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.011971168794689539,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027540426065697843,
+          "ttft_p99": 0.043534016799981146,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.011830680894815948,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.44966683125726653,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.958984375,
+          "ttft_mean": 0.18395104732562972,
+          "ttft_p99": 4.685074657120347,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.012467033685310389,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027518625457472523,
+          "ttft_p99": 0.04946706960083702,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.012262652516527877,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.45090009613992416,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.966796875,
+          "ttft_mean": 0.11950639988808992,
+          "ttft_p99": 2.772662415571445,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.011263000062064328,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027555796432765456,
+          "ttft_p99": 0.04474734319228446,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.011071981805980773,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.460661970674497,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.9912109375,
+          "ttft_mean": 0.06657292584133317,
+          "ttft_p99": 0.7387812791368185,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.011608920232670942,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027298820674825308,
+          "ttft_p99": 0.043493595999962054,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.01146919454920335,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.45800763794665256,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.921875,
+          "ttft_mean": 0.9715879445815432,
+          "ttft_p99": 15.359103532929353,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.010636634472513408,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02692736403210072,
+          "ttft_p99": 0.042996218051193864,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.010376517731919813,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.45780261528378463,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 32,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.9833984375,
+          "ttft_mean": 0.09957407117676786,
+          "ttft_p99": 2.7833835105791476,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.011624091230205956,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02721096543235796,
+          "ttft_p99": 0.043554227200047535,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01148359569898799,
+          "observation_time": 52485.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.4575743533875709,
+      "joint_mean": [
+        499.76649305555554,
+        122.33333333333333
+      ],
+      "mean_so": 56276.12934027778,
+      "arrival_span": 52954.0
+    },
+    {
+      "day": 36,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 0.5517578125,
+          "ttft_mean": 1.4869362117327576,
+          "ttft_p99": 6.802076120681594,
+          "backlog_at_last_arrival": 9,
+          "busy_exposure": 0.006905632678847755,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 0.99609375,
+          "ttft_mean": 0.10409097759884878,
+          "ttft_p99": 0.5360699692882188,
+          "backlog_at_last_arrival": 7,
+          "busy_exposure": 0.004715878392085455,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.44472491542644,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.5107421875,
+          "ttft_mean": 1.5172832012362063,
+          "ttft_p99": 6.169258447645189,
+          "backlog_at_last_arrival": 11,
+          "busy_exposure": 0.007264032013699048,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.10122800603809479,
+          "ttft_p99": 0.37465314999586546,
+          "backlog_at_last_arrival": 10,
+          "busy_exposure": 0.005886128043606308,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.02996354037454728,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.5068359375,
+          "ttft_mean": 1.9774625443212472,
+          "ttft_p99": 8.742993585751755,
+          "backlog_at_last_arrival": 8,
+          "busy_exposure": 0.007264596213603463,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.1028099123456192,
+          "ttft_p99": 0.390880908753097,
+          "backlog_at_last_arrival": 7,
+          "busy_exposure": 0.005888778788365038,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.01958455440224233,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.486328125,
+          "ttft_mean": 1.477355667649344,
+          "ttft_p99": 7.85742241136264,
+          "backlog_at_last_arrival": 12,
+          "busy_exposure": 0.007133550314490875,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.10304883847189217,
+          "ttft_p99": 0.351270518952806,
+          "backlog_at_last_arrival": 10,
+          "busy_exposure": 0.005719622157551775,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0035409694731681875,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.6171875,
+          "ttft_mean": 1.1034284761536295,
+          "ttft_p99": 4.857889429656934,
+          "backlog_at_last_arrival": 9,
+          "busy_exposure": 0.007331371148222422,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.09657830229261899,
+          "ttft_p99": 0.4062801303696322,
+          "backlog_at_last_arrival": 8,
+          "busy_exposure": 0.0056713719580204795,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.11345769129052817,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.603515625,
+          "ttft_mean": 1.212151902243543,
+          "ttft_p99": 7.981894768309429,
+          "backlog_at_last_arrival": 11,
+          "busy_exposure": 0.007025500601743419,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.09853957000256441,
+          "ttft_p99": 0.43477698560309364,
+          "backlog_at_last_arrival": 10,
+          "busy_exposure": 0.005364373319415945,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.14225407686754102,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.607421875,
+          "ttft_mean": 1.1909676694287832,
+          "ttft_p99": 5.307928123673482,
+          "backlog_at_last_arrival": 8,
+          "busy_exposure": 0.0072649987649401875,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.09781735714501627,
+          "ttft_p99": 0.41297722405193776,
+          "backlog_at_last_arrival": 6,
+          "busy_exposure": 0.005625745129836297,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.14381948966807334,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.5,
+          "ttft_mean": 2.731170626412849,
+          "ttft_p99": 14.106289401422105,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.006615624337258198,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 0.9990234375,
+          "ttft_mean": 0.10169822546856455,
+          "ttft_p99": 0.38834146688132004,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.004780984257091735,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.44209640396629446,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.529296875,
+          "ttft_mean": 1.4721120622507575,
+          "ttft_p99": 7.0941590964068695,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.007006750831113816,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.10240600871701222,
+          "ttft_p99": 0.4330156528012594,
+          "backlog_at_last_arrival": 4,
+          "busy_exposure": 0.004991984132732729,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.43218922573622354,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.4970703125,
+          "ttft_mean": 2.8429640974559516,
+          "ttft_p99": 12.801356349523553,
+          "backlog_at_last_arrival": 9,
+          "busy_exposure": 0.007016507903006541,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 0.998046875,
+          "ttft_mean": 0.1054752760892419,
+          "ttft_p99": 0.49931217320765353,
+          "backlog_at_last_arrival": 6,
+          "busy_exposure": 0.005108558635035407,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.43891014097487435,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 0.5302734375,
+          "ttft_mean": 1.532407966648961,
+          "ttft_p99": 7.2043459750182945,
+          "backlog_at_last_arrival": 10,
+          "busy_exposure": 0.006959151856632955,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 0.9990234375,
+          "ttft_mean": 0.10215926724410673,
+          "ttft_p99": 0.4575032526655558,
+          "backlog_at_last_arrival": 9,
+          "busy_exposure": 0.004972700028185455,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.44406418902718264,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 0.4580078125,
+          "ttft_mean": 2.670438232230578,
+          "ttft_p99": 12.771797429525684,
+          "backlog_at_last_arrival": 13,
+          "busy_exposure": 0.0071033740592612435,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.09702607847866451,
+          "ttft_p99": 0.3837046173942508,
+          "backlog_at_last_arrival": 12,
+          "busy_exposure": 0.005231588659941112,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.445643452950295,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 36,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 0.5908203125,
+          "ttft_mean": 1.284127252392194,
+          "ttft_p99": 6.291324742561482,
+          "backlog_at_last_arrival": 11,
+          "busy_exposure": 0.00710952518405058,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 0.9990234375,
+          "ttft_mean": 0.09997683907350652,
+          "ttft_p99": 0.4553297423917684,
+          "backlog_at_last_arrival": 11,
+          "busy_exposure": 0.005341629274997714,
+          "observation_time": 41536.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.4438036013483715,
+      "joint_mean": [
+        489.7013888888889,
+        127.17274305555556
+      ],
+      "mean_so": 71074.60416666667,
+      "arrival_span": 43778.0
+    },
+    {
+      "day": 40,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03424243125265214,
+          "ttft_p99": 0.061454854150742894,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17911990032748487,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.024112049227332122,
+          "ttft_p99": 0.03623806239920668,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17500409391539376,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09447949668625724,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03439949939249409,
+          "ttft_p99": 0.060381961103230325,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17699755408689194,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.024226228455457743,
+          "ttft_p99": 0.03668269120134937,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17295109315755489,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.053546941727736136,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03435051236123776,
+          "ttft_p99": 0.05997780667834362,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17642646319307473,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0242225773679543,
+          "ttft_p99": 0.03801657760050148,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17238835527893973,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.056764037472758926,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034455853727651586,
+          "ttft_p99": 0.06217151493525307,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1759447208667963,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02425029027809522,
+          "ttft_p99": 0.0370262679989537,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17189261583518353,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.08004304319032057,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03438355664798287,
+          "ttft_p99": 0.06254641785579224,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17535812159574057,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.024245935367183336,
+          "ttft_p99": 0.0381782608001231,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17132002502406238,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.008840213669795087,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034406174665939204,
+          "ttft_p99": 0.06210623534308979,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1770457515152006,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02424256614450826,
+          "ttft_p99": 0.03718795120039431,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17300203496975902,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.017292989985020497,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03445665714794721,
+          "ttft_p99": 0.0630187349035259,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17654543149826862,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.024238157932796156,
+          "ttft_p99": 0.03779426320033963,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17249333434909728,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.067996698385198,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0343953978768905,
+          "ttft_p99": 0.06225215443155321,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1768797925954951,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02422125126012986,
+          "ttft_p99": 0.038360154399924795,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17283330808758607,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09451488398859226,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034381842041726784,
+          "ttft_p99": 0.06307471771062409,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17657472810665473,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02425946624839881,
+          "ttft_p99": 0.038360154399924795,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1725726522137716,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09506901002669342,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03444004769407627,
+          "ttft_p99": 0.0645068266554881,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1764132895924339,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.024275276546076086,
+          "ttft_p99": 0.039673830400715815,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17242223834643874,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09455220725574812,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034450934520645404,
+          "ttft_p99": 0.06294557325487403,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17642361881717752,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02426691645153234,
+          "ttft_p99": 0.03718795120039431,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17240490229065644,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09151485511097555,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03450074872535147,
+          "ttft_p99": 0.06653355323354844,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17732804184747525,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02433846864684064,
+          "ttft_p99": 0.0423251119973429,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1733037552082078,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09364583745544555,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 40,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03442379488858549,
+          "ttft_p99": 0.06239726510428226,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.176415964734308,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02423317782106693,
+          "ttft_p99": 0.038521837599546416,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.17237225625461428,
+          "observation_time": 2409.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09360023787275702,
+      "joint_mean": [
+        498.7673611111111,
+        61.20225694444444
+      ],
+      "mean_so": 28554.506944444445,
+      "arrival_span": 12272.0
+    },
+    {
+      "day": 44,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 0.9990234375,
+          "ttft_mean": 0.02617131917714488,
+          "ttft_p99": 0.16987520624883462,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03720053521867307,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.020420222726016846,
+          "ttft_p99": 0.0807525023992639,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0369084995255152,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8542286775867052,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034022111458334336,
+          "ttft_p99": 0.43322649873254687,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03579088642766223,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01761354533823578,
+          "ttft_p99": 0.04066369839711115,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.035073166015110714,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.44183904360107723,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.034193910268442096,
+          "ttft_p99": 0.44367787950817705,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.035465609768090836,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01738059284711113,
+          "ttft_p99": 0.03496436560089933,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03473314398176803,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.47530330071441207,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03522008260213738,
+          "ttft_p99": 0.4402741609761141,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03552939268225374,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01734725752890398,
+          "ttft_p99": 0.04167421840247698,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.034764801980166744,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.4445412355855062,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025855508045275144,
+          "ttft_p99": 0.16636078169438404,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03731962760008931,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02049916390816975,
+          "ttft_p99": 0.07510824425284222,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03716548584055569,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8138249420880743,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025687980070188132,
+          "ttft_p99": 0.17168408678218833,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03728485142422293,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.020468424250161377,
+          "ttft_p99": 0.07766736159828724,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03712000598708312,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.818408808920148,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02563027258188555,
+          "ttft_p99": 0.16282471160491693,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03735449340512535,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02048757178549465,
+          "ttft_p99": 0.07926791760110063,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03720168891806665,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8128240771791158,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.036077669930151046,
+          "ttft_p99": 0.44913741247408323,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.035096109109785,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01703166739606843,
+          "ttft_p99": 0.029406505600491073,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03428201287698796,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8440634196777933,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.036033102046374665,
+          "ttft_p99": 0.4350986332999309,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03505327352516858,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.017371448491289243,
+          "ttft_p99": 0.041552955997758545,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03427264437004104,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8442433977540562,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.036072052605142346,
+          "ttft_p99": 0.4459772237204742,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03488848193863338,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.017011437259426998,
+          "ttft_p99": 0.028901245597808156,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03404894383374685,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8493600224398997,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03591685904429198,
+          "ttft_p99": 0.44016614174972335,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03497693901601911,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.017011792520328584,
+          "ttft_p99": 0.028921455996169243,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03414275815378064,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8546559264146919,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.036159703124646114,
+          "ttft_p99": 0.4480705555708846,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03508809841239012,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.017013983296095603,
+          "ttft_p99": 0.028678931201284286,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03424588838431313,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8544714812995163,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 44,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03584319540220804,
+          "ttft_p99": 0.44729030457994656,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.03499433732895614,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0170222924548753,
+          "ttft_p99": 0.02882040399708785,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.034118654990808996,
+          "observation_time": 4990.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.8546913351456437,
+      "joint_mean": [
+        122.90364583333333,
+        60.24305555555556
+      ],
+      "mean_so": 20559.269097222223,
+      "arrival_span": 41207.0
+    },
+    {
+      "day": 48,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03545478341562429,
+          "ttft_p99": 0.06578149658400177,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13453458525681855,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025398382110935536,
+          "ttft_p99": 0.03953235759991003,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1270954802096639,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6017534775286221,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03559032811406497,
+          "ttft_p99": 0.06408220615192732,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13506218561021124,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02555444171484396,
+          "ttft_p99": 0.0400099293519824,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12785621300425418,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.0761393113446524,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03568620431875193,
+          "ttft_p99": 0.06510808605586732,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13551691345293393,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025546212434376714,
+          "ttft_p99": 0.039350463999994645,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12835081279114344,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.08893491226240208,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035615199513282,
+          "ttft_p99": 0.06364062160798539,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1349192662488465,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025484217100780956,
+          "ttft_p99": 0.037571948799950405,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1276338000571845,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09578214677301301,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035414098664062435,
+          "ttft_p99": 0.06385200969595416,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13484575412559194,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025406355745311554,
+          "ttft_p99": 0.037875104799923065,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12747494937324486,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09253133567712901,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035482496092188245,
+          "ttft_p99": 0.06411010919984846,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13487671971947496,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025430158228123695,
+          "ttft_p99": 0.03900688719994605,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12765358891096107,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09431690544477908,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0354774285835906,
+          "ttft_p99": 0.06373399365577995,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1349317860922324,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02541308596640414,
+          "ttft_p99": 0.03787510480000833,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12777142592474178,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.0914742885774465,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035664212714848834,
+          "ttft_p99": 0.07333248442378248,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13337959696678536,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02556679783202967,
+          "ttft_p99": 0.04090242061598416,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12601449296473657,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.593434904309407,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035640301316410036,
+          "ttft_p99": 0.07320495680001216,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13261221908561335,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025508473528126796,
+          "ttft_p99": 0.039875934400001256,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12521857807113937,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.5925611497071712,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035637154118753095,
+          "ttft_p99": 0.07320030840795198,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13261724900017366,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025522901069529702,
+          "ttft_p99": 0.03987593440001547,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12508145965548562,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.5898944283041494,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.035564211249218394,
+          "ttft_p99": 0.06610304404802037,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1321280926270413,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02550642090937276,
+          "ttft_p99": 0.03984642721585715,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12483127571878176,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6024567715614488,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03577860126718897,
+          "ttft_p99": 0.07399316240002918,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1327594502611057,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025682396102344032,
+          "ttft_p99": 0.04199802640005146,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.12541126228629304,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.5991502878276231,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 48,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.03559660644452785,
+          "ttft_p99": 0.07006824002396575,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.13283189517477323,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.025482756583594085,
+          "ttft_p99": 0.03989614479996817,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.1254440035335843,
+          "observation_time": 1175.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6024275304361217,
+      "joint_mean": [
+        462.5260416666667,
+        21.177083333333332
+      ],
+      "mean_so": 10231.362847222223,
+      "arrival_span": 1264.0
+    },
+    {
+      "day": 52,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022140510615631076,
+          "ttft_p99": 0.04036873289598702,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018198520570060234,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019447018707810376,
+          "ttft_p99": 0.030013259200018183,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01666337562442895,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.31521388784547005,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022103666996887372,
+          "ttft_p99": 0.03967693140803931,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01817393306156102,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01944636739609315,
+          "ttft_p99": 0.02750716959997135,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01666279991616501,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.029225255517345974,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022158197514856676,
+          "ttft_p99": 0.0403038728240233,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018226340703718685,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019457498905466414,
+          "ttft_p99": 0.028436848000069403,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01667113226155545,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.08071309881331766,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02218095815158036,
+          "ttft_p99": 0.04013691960806568,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018188680183961154,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01946176203671937,
+          "ttft_p99": 0.027567800800170517,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016661477394011838,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.09367029885614386,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02213323376719256,
+          "ttft_p99": 0.03925236559996392,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0181825435094598,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019432670113279454,
+          "ttft_p99": 0.028921897600071134,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016651375624427915,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.12030091083758614,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02212107664609883,
+          "ttft_p99": 0.0392244752479769,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01819901238179517,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.01942286096405993,
+          "ttft_p99": 0.028598531199918398,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016655850182033017,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.0929373503136971,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022128341732819773,
+          "ttft_p99": 0.041819233304003084,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018222425547305736,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019438610865623873,
+          "ttft_p99": 0.028962318400033382,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016671302615567256,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.06180314761450368,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02219135607267378,
+          "ttft_p99": 0.045669154567924475,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01818618897198422,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019461643616409896,
+          "ttft_p99": 0.03009410079994268,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01663500621269556,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.30055721828036286,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02221093526251175,
+          "ttft_p99": 0.04958332619198472,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018166213993778574,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019483886898440023,
+          "ttft_p99": 0.031185462400117103,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016619006212695367,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.287008750314829,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022167686972665274,
+          "ttft_p99": 0.041905127503943033,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01815291946539079,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019463913339060307,
+          "ttft_p99": 0.030195152800047254,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016613769429456252,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.289518891158616,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02215793302188468,
+          "ttft_p99": 0.039485753215972176,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018226167420841752,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019445380560159264,
+          "ttft_p99": 0.029285684800015588,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.016663006212695546,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.3162657459638936,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022155592185960193,
+          "ttft_p99": 0.039224475248090585,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01821841278707862,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019434150367186487,
+          "ttft_p99": 0.02979094479997002,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.01662721250922104,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.3162657459638943,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 52,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022132016192195764,
+          "ttft_p99": 0.03894168924796872,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.018210784677846592,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.019423453065625124,
+          "ttft_p99": 0.02896231839997654,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0166435886970052,
+          "observation_time": 1670.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.31626574596389423,
+      "joint_mean": [
+        282.51215277777777,
+        2.4105902777777777
+      ],
+      "mean_so": 676.8776041666666,
+      "arrival_span": 1918.0
+    },
+    {
+      "day": 56,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026079091619512274,
+          "ttft_p99": 0.03966737681603945,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.029726156734298,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0223293907046892,
+          "ttft_p99": 0.02636138682402361,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027291347532011352,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.751467104022603,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026140212443724775,
+          "ttft_p99": 0.0397373047999281,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02954968640172199,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022385509967967177,
+          "ttft_p99": 0.026456173599854083,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027138705835438127,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.5133870048166806,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026162948010118203,
+          "ttft_p99": 0.03975913203187702,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.029582913061719295,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022393817479689382,
+          "ttft_p99": 0.02677954000000682,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027181501966865897,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.49998169436572876,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02618699440934258,
+          "ttft_p99": 0.039770045647974255,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02959731904457645,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02238431685390363,
+          "ttft_p99": 0.02655722559984497,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027181575329725385,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.49998169436572876,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026119784574192173,
+          "ttft_p99": 0.039631604407948086,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02975021927771325,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02233967353515587,
+          "ttft_p99": 0.026254069600099683,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.0272915089302962,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.7419959249957718,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026109466256227454,
+          "ttft_p99": 0.039631604408000384,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02972177538285986,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022343443248445616,
+          "ttft_p99": 0.026355121599863196,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02729171434630075,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.7500085215656129,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026078973522627114,
+          "ttft_p99": 0.039611394008170465,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.029730658294860258,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022326390723438005,
+          "ttft_p99": 0.02636300365579245,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027291068753155432,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.7454016743844492,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026183601778908328,
+          "ttft_p99": 0.03966737681603945,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.0275838465537214,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022410020039080436,
+          "ttft_p99": 0.026516804799939564,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.025206277264015448,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6956799863315485,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02631040813669072,
+          "ttft_p99": 0.03983067684788466,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027240320217149394,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02238483998282148,
+          "ttft_p99": 0.02647638400003416,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.024829334406865574,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.695679986331547,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026161830383564344,
+          "ttft_p99": 0.039768428816030335,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02857151709315141,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022386563589850028,
+          "ttft_p99": 0.026375332000043272,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.026170120508013334,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6956799863315487,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026177852107805655,
+          "ttft_p99": 0.0397373047999281,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027874747040010722,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.022386962399236432,
+          "ttft_p99": 0.02653701520011964,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02548765949658218,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6956799863315486,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02617213654605477,
+          "ttft_p99": 0.03971709440015047,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027884866863994457,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02238228843594281,
+          "ttft_p99": 0.026468704047999832,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.02549301782800699,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6956799863315486,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 56,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.026120818724183592,
+          "ttft_p99": 0.03959118360799039,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.027918053857140582,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.0223841360726712,
+          "ttft_p99": 0.02631470079995779,
+          "backlog_at_last_arrival": 2,
+          "busy_exposure": 0.025502296578872576,
+          "observation_time": 1400.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": 0.6956799863315486,
+      "joint_mean": [
+        197.57465277777777,
+        9.3984375
+      ],
+      "mean_so": 1767.314236111111,
+      "arrival_span": 2383.0
+    },
+    {
+      "day": 60,
+      "mode": "observed",
+      "seed": null,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02759058525468633,
+          "ttft_p99": 0.03952125562399658,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07142956083370973,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023159602248439937,
+          "ttft_p99": 0.026213648800023748,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292290120799632,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941645,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "global",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02759105764218492,
+          "ttft_p99": 0.03955076280798863,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07142993340843136,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023157095685158467,
+          "ttft_p99": 0.026274279999995542,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292326558227612,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941658,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "global",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02759109700780956,
+          "ttft_p99": 0.03945435920001529,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07142919376674554,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023157154895315044,
+          "ttft_p99": 0.026355121600033726,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292253683371701,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941638,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "global",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590762399997262,
+          "ttft_p99": 0.03945435920001856,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07141456099690087,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023152891764063828,
+          "ttft_p99": 0.026254069599985996,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292271902085382,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941593,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "local",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02758934523749835,
+          "ttft_p99": 0.03944971080801963,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07142933016231118,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023153661496096906,
+          "ttft_p99": 0.02611259680003286,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292267347407056,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941647,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "local",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590742717183883,
+          "ttft_p99": 0.03949013160798188,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07141380311840217,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023155082539844614,
+          "ttft_p99": 0.026274279999995542,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292199027228963,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941655,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "local",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590998593747536,
+          "ttft_p99": 0.039591183608001186,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0714147138093173,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023163431171876754,
+          "ttft_p99": 0.026314700800000423,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292290120799464,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941673,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "blocks",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590191598436065,
+          "ttft_p99": 0.03944971080801963,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0714447099334867,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023157352262502533,
+          "ttft_p99": 0.026213648799995326,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292326558227353,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941677,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "blocks",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590919862497253,
+          "ttft_p99": 0.039413938400002735,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07142995886652209,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02315350360234615,
+          "ttft_p99": 0.02615301759999511,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0629232655822724,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941649,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "blocks",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590624620311074,
+          "ttft_p99": 0.03945435920001529,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0714297517108701,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02315449043828262,
+          "ttft_p99": 0.026274279999995542,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292308339513338,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941601,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "shift",
+      "seed": 92000,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027591175739060836,
+          "ttft_p99": 0.039505693615989226,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07144451942350825,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023157016738283014,
+          "ttft_p99": 0.02619343839995736,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.0629230833951341,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941645,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "shift",
+      "seed": 92001,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590447474997858,
+          "ttft_p99": 0.03939372799999319,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07141497140754426,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.023152773343752056,
+          "ttft_p99": 0.02615301759999511,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292312894192018,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.0017406440382941645,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    },
+    {
+      "day": 60,
+      "mode": "shift",
+      "seed": 92002,
+      "configs": [
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.027590447474997663,
+          "ttft_p99": 0.039469921207985405,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.07141484775698839,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        },
+        {
+          "slo_fraction": 1.0,
+          "ttft_mean": 0.02315626674297052,
+          "ttft_p99": 0.026254069599985996,
+          "backlog_at_last_arrival": 1,
+          "busy_exposure": 0.06292303784834825,
+          "observation_time": 451.0,
+          "requests": 1024,
+          "unobserved_first_tokens": 0
+        }
+      ],
+      "log_output_lag1": -0.001740644038294165,
+      "joint_mean": [
+        200.82638888888889,
+        7.001736111111111
+      ],
+      "mean_so": 1406.1371527777778,
+      "arrival_span": 511.0
+    }
+  ],
+  "day_differences": {
+    "observed": [
+      0.0,
+      0.4443359375,
+      0.0,
+      0.0009765625,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "global": [
+      0.0032552083333333335,
+      0.4986979166666667,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "local": [
+      0.0,
+      0.390625,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "blocks": [
+      0.026041666666666668,
+      0.490234375,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "shift": [
+      0.034505208333333336,
+      0.4729817708333333,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "summaries": {
+    "observed": {
+      "mean": 0.0556640625,
+      "ci95": [
+        0.0,
+        0.166748046875
+      ]
+    },
+    "global": {
+      "mean": 0.062744140625,
+      "ci95": [
+        0.0,
+        0.18741861979166669
+      ]
+    },
+    "local": {
+      "mean": 0.048828125,
+      "ci95": [
+        0.0,
+        0.146484375
+      ]
+    },
+    "blocks": {
+      "mean": 0.06453450520833333,
+      "ci95": [
+        0.0,
+        0.18709309895833334
+      ]
+    },
+    "shift": {
+      "mean": 0.06343587239583333,
+      "ci95": [
+        0.0,
+        0.18168131510416666
+      ]
+    },
+    "global_minus_observed": {
+      "mean": 0.007080078125000003,
+      "ci95": [
+        -0.000244140625,
+        0.020792643229166675
+      ]
+    }
+  },
+  "rank_reversal_confirmed": false,
+  "scope": "One BurstGPT successful API model; synthetic costs; no GPU or tail certificate"
+}

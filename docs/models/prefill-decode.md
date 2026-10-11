@@ -8,6 +8,12 @@ actual token-level execution.
 
 [Русская версия](prefill-decode.ru.md) · [Model catalog](../models.md)
 
+For an explicit attained-token state reference, see the
+[stage-aware mean TTFT calculator](stage-aware-ttft.md). It does not change the
+literal L3 implementation: B=1 uses exact PK; B>1 offers finite loss or the
+separate infinite calculator with analytic truncation bounds under a sufficient
+stability condition (floating evaluation, not verified rounding).
+
 ## In plain words
 
 Requests share an active pool of at most B slots. Each first processes its
@@ -115,6 +121,10 @@ does not prove stationary stability. `max_iterations` is an explicit runtime
 guard, not a queue capacity or a stability criterion.
 
 ## Limits and reproduction
+
+For verified saturated drift and phase-aware infinite means see
+[the stage-aware extension](stage-aware-ttft.md#phase-aware-infinite-queue-epic-096).
+Exact phase drift does not verify all mean-bound arithmetic.
 
 At B=1 with constant lengths the DES is M/D/1, whereas the surrogate is M/M/1:
 its mean wait is twice the M/D/1 wait at equal service mean. Model differences

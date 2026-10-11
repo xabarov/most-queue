@@ -483,12 +483,30 @@ res = sim.run(50_000)
 
 ## Prefill и decode на границах итераций
 
+[ГЛ2 replay](research/llm-mark-order-validation-2026.md) использует audited
+successful API cohorts BurstGPT, сохраняет whole pairs отдельно в measured
+suffix и закрепляет warmup. Не восстанавливает исходный GPU TTFT.
+Независимый [finite-loss oracle](../examples/stage_aware_ttft_oracle.py)
+дополнительно сверяет mid-iteration потери и accepted-arrival rewards
+[стадийного калькулятора](models/stage-aware-ttft.ru.md).
+
 `KvCacheCongestionSim` — независимая [LPF/restart модель](models/kv-cache-congestion.ru.md):
 целые запросы, класс и decode-возраст, Poisson/replay, фиксированный горизонт
 без drain. Cap целый; дробная флюидная скорость не округляется автоматически.
 FCFS-допуск с блокировкой головы не равен пропорциональной карте. Сохраняются
 unfinished jobs, потерянная работа и точные балансы, не censored latency.
 [Независимые проверки Л5](research/kv-cache-congestion-validation-2026.md).
+
+### Гетерогенное групповое обслуживание
+
+См. также [гетерогенное групповое обслуживание](models/heterogeneous-bulk-service.ru.md):
+`BulkServiceHeterogeneousSim` хранит индивидуальные экспоненциальные приборы,
+общую FCFS очередь, threshold/input приоритет и раздельные RNG.
+Horizon без drain; площади учитывают незавершённых, cohort tails — все
+приходы когорты с достаточным follow-up, не только завершённых.
+Есть request/area identities и arrival/service replay.
+[Проверки Л8](research/heterogeneous-bulk-service-validation-2026.md) сопоставляют
+DES с независимой физической CTMC и точным PH-калькулятором.
 
 ### SMDP-управление батчингом
 
@@ -529,6 +547,23 @@ Warmup исключается по индексу прихода; time occupancy
 [независимые M/D/1 и trace-проверки](research/prefill-decode-validation-2026.md).
 
 **См. также:**
+
+Независимый `examples.stage_aware_ttft_oracle.replay_loss` проверяет и
+`ReducedStageAwareTtftCalc`: реальные потери внутри итерации, cohort timestamps
+первого токена/завершения, без импорта аналитических rewards.
+[Отчёт о сокращении](research/stage-aware-ttft-reduction-validation-2026.md)
+отделяет finite-loss арбитр от infinite token DES.
+
+`PhaseAwareTtftCalc`: fresh50000-job three-seed token DES, saturated loads.6/.85,
+M2/M4;12 средних внутри replicate t95 intervals. Finite-cohort drain не proof
+устойчивости. [Проверка](research/phase-aware-stability-validation-2026.md).
+
+`InfiniteStageAwareTtftCalc` сверяется с независимым бесконечным
+`PrefillDecodeSim.replay` при iid Poisson/mark inputs. Аналитический model
+interval и DES replicate confidence interval описывают разные ошибки;
+случайное выборочное среднее не обязано попасть в узкий model interval.
+[Infinite проверка](research/infinite-stage-aware-ttft-validation-2026.md)
+отделяет fresh30000-job репликации от исторических reused references.
 
 - [Численные методы](calculation.ru.md) — аналитические расчеты
 - [Распределения](distributions.ru.md) — справочник по распределениям

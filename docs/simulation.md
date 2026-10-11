@@ -529,6 +529,14 @@ General non-affine durations can also use
 
 ## Mixed prefill and decode at iteration boundaries
 
+The [joint-mark order pilot](research/llm-mark-order-validation-2026.md)
+replays this contract on audited successful BurstGPT API requests. Permutations
+preserve whole pairs and the measured cohort's joint law, keeping warmup fixed;
+the raw trace is not a measured GPU TTFT benchmark. The independent
+[stage-aware finite-loss oracle](../examples/stage_aware_ttft_oracle.py) additionally
+checks mid-iteration rejection and accepted-arrival means for a finite buffer.
+[Stage-aware calculator and limits](models/stage-aware-ttft.md).
+
 `KvCacheStabilitySim` is a separate [KV-memory model](models/kv-cache-stability.md):
 constant slots, finite joint input/output lengths, growing KV footprints,
 ongoing-first maximal next-stage packing with free CPU offload. Its
@@ -566,6 +574,17 @@ not the proportional continuous map. Results include unfinished jobs, discarded
 work and exact request/work conservation, not censored latency estimates.
 See the [L5 independent checks](research/kv-cache-congestion-validation-2026.md).
 
+### Heterogeneous bulk service
+
+See also [heterogeneous bulk service](models/heterogeneous-bulk-service.md):
+`BulkServiceHeterogeneousSim` uses individual type-specific exponential servers,
+shared FCFS, threshold/input priority and separate seeded streams. Fixed-horizon
+queue/population exposure includes unfinished requests; cohort tails include
+every cohort arrival with sufficient follow-up, not just completed jobs.
+Full-run request/area identities and arrival/service replay are supported.
+The [L8 validation report](research/heterogeneous-bulk-service-validation-2026.md)
+compares against an independent physical CTMC and exact PH calculator.
+
 ### SMDP-controlled batching
 
 `BatchSmdpSim` independently simulates the [L6 launch control](models/smdp-batching.md)
@@ -578,6 +597,24 @@ proxy, not a completed-only latency mean. The [report](research/smdp-batching-va
 separates finite optimum, tail-drift stability and short-run observations.
 
 **See also:**
+
+The independent `examples.stage_aware_ttft_oracle.replay_loss` also validates
+`ReducedStageAwareTtftCalc` with actual mid-iteration arrival losses and cohort
+first-token/completion timestamps; it imports no analytical reward formulas.
+The [exact-reduction report](research/stage-aware-ttft-reduction-validation-2026.md)
+distinguishes this finite-loss arbiter from infinite-buffer token DES.
+
+`PhaseAwareTtftCalc` additionally has fresh50000-job three-seed token DES checks
+at saturated loads.6/.85,M2/M4. All12 mean predictions fall inside replicate
+t95 intervals; finite-cohort drain is not a stability proof.
+[Phase-aware validation](research/phase-aware-stability-validation-2026.md).
+
+`InfiniteStageAwareTtftCalc` is checked against the independent infinite
+`PrefillDecodeSim.replay`, with iid Poisson/mark inputs. Its analytic model
+interval and a DES replicate confidence interval measure different errors;
+do not demand that a random sample mean lies in a very narrow model interval.
+[Infinite validation](research/infinite-stage-aware-ttft-validation-2026.md)
+records fresh30000-job replicates separately from reused historical references.
 
 - [Numerical Methods](calculation.md) — analytical calculations
 - [Distributions](distributions.md) — distribution reference

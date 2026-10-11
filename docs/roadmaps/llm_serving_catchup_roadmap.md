@@ -30,8 +30,8 @@
 | Л4 | **Совместное ограничение «вычисления + память KV-cache»**: условия устойчивости | Nie C., Si N., Zhou Z., ICML 2026, arXiv:2605.04595 | открыт | **done**, [EPIC-087](../epics/EPIC-087-kv-cache-stability.md) |
 | Л5 | **Флюидная (детерминированная) модель вытеснения KV-cache**: предельные циклы, потеря throughput | Ao R., Dong J., Luo G., Simchi-Levi D., arXiv:2606.15555, 2026 | открыт | **done**, [EPIC-088](../epics/EPIC-088-kv-cache-congestion.md) |
 | Л6 | **Оптимальный момент запуска пакета как SMDP** | Xu Y., Sun J., Zhou S., Niu Z., ICC 2023, arXiv:2301.12865v3 | открыт | **done**, [EPIC-089](../epics/EPIC-089-smdp-batching.md) |
-| Л7 | **Распределение приборов между арендаторами** (слой С) | Okuyama R., Inoue Y., IEEE Trans. Cloud Computing 14, 2026, doi:10.1109/tcc.2026.3696613 | **закрыт**, препринта нет | не начато; риск как в Р9 |
-| Л8 | **Групповое обслуживание гетерогенными приборами** | Queueing Systems, 2020, doi:10.1007/s11134-020-09654-y | открыт (hybrid) | не начато |
+| Л7 | **Распределение приборов между арендаторами** (слой С) | Okuyama R., Inoue Y., IEEE Trans. Cloud Computing 14(3), 2017–2032, 2026, doi:10.1109/tcc.2026.3696613 | полный текст не получен; нужный препринт не найден в проверенных запросах | **waiting_source**, [EPIC-090](../epics/EPIC-090-multitenant-server-allocation.md); реализация не начата |
+| Л8 | **Групповое обслуживание гетерогенными приборами** | van Ommeren, Baer, Mishra, Roy, Queueing Systems 95:251–269, 2020, doi:10.1007/s11134-020-09654-y | полный CC-BY PDF прочитан и сохранён | **done**, [EPIC-091](../epics/EPIC-091-heterogeneous-bulk-service.md) |
 
 **Группировка.** Л1–Л3 — аналитическое ядро инференс-сервера. Л4–Л5 — ресурсные
 ограничения (KV-cache). Л6–Л7 — управление и синтез. Л8 — классический тыл,
@@ -144,5 +144,32 @@ fast 3061 passed; 10 trajectories, 48 spectra, 24 DES-settings×4seeds,
 зафиксирован без утверждения ошибки автора. EN/RU README/models/simulation,
 отчёт, эпик и приватная диссертационная память/архив обновлены.
 [Арбитры и ограничения](../research/smdp-batching-validation-2026.md).
-Следующий пункт — **Л7**, не начат: прежде проверить доступ к закрытому
-первоисточнику; не восстанавливать формулы по abstract вместо полного чтения.
+Л6 сохранён и отправлен в origin/main: `11959d6`.
+**Л7 ожидает источник**: Crossref-библиография подтверждена; IEEE PDF/HTML
+не получены, проверенные arXiv/авторские пути не дали полного текста.
+[Проверка доступа и варианты](../research/multitenant-server-allocation-access-2026.md).
+Реализация не начата. Нужен полный текст от пользователя/авторская версия
+либо явный выбор перехода к Л8/резерву; блокер не считается завершением Л7.
+Пользователь явно выбрал переход к **Л8**. Его контракт — экспоненциальные,
+size-independent длительности пакетов; точная бесконечная очередь и PH W/V,
+не nonexponential extension и не token/KV модель. Л7 остаётся waiting_source.
+[Отчёт и независимые арбитры Л8](../research/heterogeneous-bulk-service-validation-2026.md).
+**Л8 закрыт**: exact infinite BP/finite FP, PH W/V moments/tails/LST, typed
+flows/occupancy и independent physical/tagged CTMC + request-level DES.
+68targeted, slow3, full3213passed, fast3199passed;50source rows,
+9 CTMC refinements,10DES×4seeds. Table2 diagonal priority-label discrepancies
+и printed formula typos сохранены с арбитрами, Table3 согласована.
+EN/RU README/models/simulation, эпик, отчёт/JSON, private cards/lemmas/synthesis/
+plan/hypotheses/append-only journal и95 archive snapshots/SHA обновлены.
+Л8 не заявляет G-service или новую PH теорию; Л7 всё ещё waiting_source.
+Далее — источник Л7 либо отдельный выбор калибровки/синтеза/ГЛ-review;
+автоматически нового эпика в этом блоке нет.
+
+После отдельного выбора автора выполнена [исследовательская ветка ГЛ2/ГЛ3](llm_research_pilots_roadmap.md),
+exact iid reduction EPIC-094 и infinite/error пилот EPIC-095. Это не Л9:
+последний даёт analytic truncation bounds при conservative sufficient condition,
+не verified rounding, точную stability boundary или новую публикационную заявку.
+
+Следующий явно выбранный EPIC-096 дал phase-aware certificate для всех48
+original cases, включая3 прежних отказа; critical unresolved. Это отдельная
+ветка после Л, не новый пункт серии. [Вывод](../research/phase-aware-stability-validation-2026.md).

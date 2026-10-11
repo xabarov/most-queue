@@ -14,8 +14,10 @@
 |---|---|
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | Clipping PMF; dynamic/fixed/закрытый elastic; ранний выход, стоимость через максимум/сумму, M/G/1 и общие callback-законы |
 | [Совместные prefill и decode](models/prefill-decode.ru.md) | Три стоимости итерации, effective chunked prefill, точная занятость surrogate и приближённые TTFT/ITL, независимый токеновый DES |
+| [Стадийный средний TTFT](models/stage-aware-ttft.ru.md) | StageAware / Reduced / InfiniteStageAware / PhaseAwareTtftCalc: iid стадии, B1 PK, finite loss либо infinite mean bounds; PhaseAwareStabilityCalc точно проверяет saturated drift, не всю арифметику средних |
 | [KV-вытеснение и congestion](models/kv-cache-congestion.ru.md) | Непрерывные стадии, однородные циклы, конечный спектр, пропорциональный cap; отдельная целая LPF/restart FCFS-имитация |
 | [SMDP запуска пакета](models/smdp-batching.ru.md) | Зависимые от размера фиксированные время/энергия, конечный overflow RVI, явный дрейф хвоста, unbounded FCFS DES |
+| [Гетерогенное групповое обслуживание](models/heterogeneous-bulk-service.ru.md) | Общая FCFS, параметры приборов по типам, точные PH W/V и бесконечный геометрический хвост очереди |
 | [KV-память и устойчивость](models/kv-cache-stability.ru.md) | Совместные длины, растущая память, необходимые/достаточные границы, конечный горизонт и maximal/free-swap имитация |
 | [Неограниченный динамический батчинг](models/dynamic-batching.ru.md) | Правило Inoue «забрать всех», пять законов с аффинным средним, численные средние задержек с диагностикой усечения, оценки при детерминированном времени и независимый DES |
 | [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G-аппроксимации |
@@ -60,6 +62,7 @@
 | Модель | Класс расчета | Симуляция | Приоритеты | Особенности |
 |--------|--------------|-----------|------------|-------------|
 | [SMDP запуска пакета](models/smdp-batching.ru.md) | BatchSmdpCalc | BatchSmdpSim | FCFS внутри пакетов | Конечная аппроксимация; overflow-метка != ёмкость; reward-ratios != распределение задержки |
+| [Гетерогенное групповое обслуживание](models/heterogeneous-bulk-service.ru.md) | BulkServiceHeterogeneousCalc | BulkServiceHeterogeneousSim | Общая FCFS; dispatch по порогу/порядку типов | Точное экспоненциальное size-independent обслуживание; W/V moments/tails/ПЛС, не G-service/continuous batching |
 | [KV-вытеснение и congestion](models/kv-cache-congestion.ru.md) | KvCacheCongestionCalc | KvCacheCongestionSim | LPF eviction | Итерационные единицы; непрерывные пропорции != целый FCFS; нет stochastic stability/latency сертификата |
 | [KV-память и устойчивость](models/kv-cache-stability.ru.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Постоянный слот; корреляция длин; явные maximal/free-swap допущения; без задержек и стационарного PMF |
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Численные средние при случайном времени; fixed-подмена средним явно; физический cap dynamic только в DES; без аналитических хвостов |

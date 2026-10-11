@@ -99,7 +99,9 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 | [Неограниченный динамический батчинг](docs/models/dynamic-batching.ru.md) | Запуск всех ожидающих; детерминированный/экспоненциальный/Erlang/gamma/H2 закон с аффинным средним; независимый симулятор | численные средние с диагностикой усечения |
 | [Батчинг с переменной длиной вывода](docs/models/token-batching.ru.md) | Max-token clipping; dynamic/fixed/elastic с неэкспоненциальным временем; общие callback-законы | численные средние; clipping M/G/1 точно |
 | [Совместные prefill/decode](docs/models/prefill-decode.ru.md) | Три стоимости итерации, effective chunking по занятости, допуск на границах, независимый токеновый DES | занятость surrogate точно; средние TTFT/ITL приближённо |
+| [Стадийный mean TTFT](docs/models/stage-aware-ttft.ru.md) | Остаток iteration, FIFO стадии, joint marks, iid count reduction | B1 PK; finite loss либо infinite mean bounds при достаточном условии, без GPU/SLO |
 | [SMDP запуска пакета](docs/models/smdp-batching.ru.md) | Ждать приход / запустить пакет; фиксированные время/энергия; unbounded DES | конечный overflow optimum, не infinite optimum |
+| [Гетерогенное групповое обслуживание](docs/models/heterogeneous-bulk-service.ru.md) | Скорости, пороги и ёмкости по типам; общая FCFS; точные PH W/V | только экспоненциальное size-independent обслуживание |
 | [KV-вытеснение и congestion](docs/models/kv-cache-congestion.ru.md) | Детерминированные стадии, LPF/restart, конечный спектр, cap; отдельная целая FCFS-очередь | флюидная линейная устойчивость не равна возвратности открытой очереди |
 | [KV-память и устойчивость](docs/models/kv-cache-stability.ru.md) | Совместные длины, растущий KV, постоянные слоты, независимая максимальная упаковка/free swap | необходимая верхняя и условная достаточная нижняя границы, не точный порог |
 | Пакетный вход и групповое обслуживание | Mˣ/M/1 (пакетный приход); M/M^[a,b]/1 групповое обслуживание — батчинг LLM-инференса, точные моменты N/W и хвост при любом a≤b; общее (Erlang- или H2-подогнанное, CV≤1 или CV≥1) время обслуживания батча с авто-выбором по CV и batch-size-зависимыми параметрами; марковское нетерпение (MM1/Erlang/H2); `c` независимых серверов с общей очередью, включая batch-size-зависимое обслуживание | точный |
@@ -135,11 +137,43 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 ## Новости
 
+- **2026-10 — Фазозависимая устойчивость (EPIC-096)**: `PhaseAwareStabilityCalc`
+  проверяет все достижимые замкнутые классы и точный рациональный drift;
+  `PhaseAwareTtftCalc` даёт floating bounds бесконечных средних. 48/48 исходных
+  случаев, все 3 прежних отказа сняты; критические случаи — unresolved.
+  [Доказательство и independent DES](docs/research/phase-aware-stability-validation-2026.md).
+
+- **2026-10, текущие исходники — Бесконечный стадийный TTFT (EPIC-095)**:
+  killed regenerative count kernel и аналитические оценки ошибки усечения,
+  средних и waiting tail.45/48 frozen случаев;3 отказа достаточного условия
+  сохранены. Floating-point evaluation, не проверенное округление или GPU/SLO.
+  [Вывод и результаты](docs/research/infinite-stage-aware-ttft-validation-2026.md).
+
+- **2026-10, текущие исходники — Точное iid сокращение TTFT (EPIC-094)**:
+  waiting-count integration и decoder symmetry сохраняют finite-loss средние;
+  все48 прежних случаев совпали, отказы полного expanded расчёта сохранены.
+  На mixed laws примерно13x меньше states и18–27x быстрее full solver.
+  Infinite bias и correlated marks этим не решаются.
+  [Метод и результаты](docs/research/stage-aware-ttft-reduction-validation-2026.md).
+
+- **2026-10, текущие исходники — ГЛ2/ГЛ3 (EPIC-092/093):** audited BurstGPT
+  replay с сохранением пар длин не подтвердил смену ранга frozen конфигураций.
+  Новый стадийный mean TTFT calculator прошёл независимые PK/token проверки
+  и48-case grid, но пока ограничен короткими finite-support laws; B>1 — finite
+  loss, без GPU/tail validation и без доказанного выигрыша выбора конфигурации.
+  [Результаты replay](docs/research/llm-mark-order-validation-2026.md) ·
+  [Модель и ограничения](docs/models/stage-aware-ttft.ru.md).
+
 - **2026-10, текущие исходники** — **SMDP запуска пакета (Л6 / EPIC-089)**:
   детерминированные время/энергия, конечный overflow RVI, независимые occupation
   LP и неограниченный FCFS DES. Дрейф хвостовой политики проверяется отдельно:
   малый overflow-вклад не гарантирует устойчивости реальной очереди.
   [Модель и ограничения](docs/models/smdp-batching.ru.md).
+- **2026-10, текущие исходники** — **Гетерогенное групповое обслуживание (Л8 / EPIC-091)**:
+  точная декомпозиция бесконечной очереди, PH ожидания/пребывания,
+  моменты/хвосты/ПЛС, потоки по типам и независимый DES заявок.
+  Расхождения приоритетов в таблице проверены физической CTMC.
+  [Модель и ограничения](docs/models/heterogeneous-bulk-service.ru.md).
 
 - **2026-10, текущие исходники** — **KV-вытеснение и congestion (Л5 / EPIC-088)**:
   непрерывные LPF/restart траектории, однородные циклы, конечный спектр и cap;

@@ -1,0 +1,6725 @@
+{
+  "frozen": [
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 1.3756005500908941e-05,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.868001946713775e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.627000064123422e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.45500370208174e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.155998223926872e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.158995918463916e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.145004251971841e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.922003427054733e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.5289998524822295e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.08499942952767e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.6240020310506225e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.912995791528374e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.049994797445834e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.8290021368302405e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.408997483551502e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.170004442334175e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.009002052247524e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.727000487037003e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.38967020450270046
+          ],
+          "w": [
+            0.02347020450270041
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.231006409507245e-06,
+          "ttft_mean": 0.33567020450270046,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2730748225013654,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.38967020450270046
+          ],
+          "w": [
+            0.02347020450270041
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.6729986681602895e-06,
+          "ttft_mean": 0.33567020450270046,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2730748225013654,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.38967020450270046
+          ],
+          "w": [
+            0.02347020450270041
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.307003448251635e-06,
+          "ttft_mean": 0.33567020450270046,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2730748225013654,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5774318405243037
+          ],
+          "w": [
+            0.2112318405243037
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 6.727997970301658e-06,
+          "ttft_mean": 0.5234318405243037,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3653741125068268,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.5774318405243037
+          ],
+          "w": [
+            0.2112318405243037
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 9.329996828455478e-06,
+          "ttft_mean": 0.5234318405243037,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3653741125068268,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.5774318405243037
+          ],
+          "w": [
+            0.2112318405243037
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.647998477797955e-06,
+          "ttft_mean": 0.5234318405243037,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3653741125068268,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.211127362097215
+          ],
+          "w": [
+            0.844927362097215
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.95299934502691e-06,
+          "ttft_mean": 1.157127362097215,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.184598580010923,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.211127362097215
+          ],
+          "w": [
+            0.844927362097215
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.5199998314492404e-06,
+          "ttft_mean": 1.157127362097215,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.184598580010923,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.211127362097215
+          ],
+          "w": [
+            0.844927362097215
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.645997589454055e-06,
+          "ttft_mean": 1.157127362097215,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.184598580010923,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.3505695710908477
+          ],
+          "w": [
+            0.02156957109084769
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.8060031733475626e-06,
+          "ttft_mean": 0.3005695710908477,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.303951367781155,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.3505695710908477
+          ],
+          "w": [
+            0.02156957109084769
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.0349993873387575e-06,
+          "ttft_mean": 0.3005695710908477,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.303951367781155,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.3505695710908477
+          ],
+          "w": [
+            0.02156957109084769
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.854002665728331e-06,
+          "ttft_mean": 0.3005695710908477,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.303951367781155,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5231261398176292
+          ],
+          "w": [
+            0.1941261398176292
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.750000127591193e-06,
+          "ttft_mean": 0.4731261398176292,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.519756838905775,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.5231261398176292
+          ],
+          "w": [
+            0.1941261398176292
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.241003236733377e-06,
+          "ttft_mean": 0.4731261398176292,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.519756838905775,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.5231261398176292
+          ],
+          "w": [
+            0.1941261398176292
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.164998583495617e-06,
+          "ttft_mean": 0.4731261398176292,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.519756838905775,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.105504559270517
+          ],
+          "w": [
+            0.776504559270517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 6.074005796108395e-06,
+          "ttft_mean": 1.055504559270517,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.43161094224924,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.105504559270517
+          ],
+          "w": [
+            0.776504559270517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.145004251971841e-06,
+          "ttft_mean": 1.055504559270517,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.43161094224924,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.105504559270517
+          ],
+          "w": [
+            0.776504559270517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.175003025215119e-06,
+          "ttft_mean": 1.055504559270517,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.43161094224924,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.3480034694075584e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.618996172212064e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.42961111111111117
+          ],
+          "w": [
+            0.022611111111111113
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.426998202688992e-06,
+          "ttft_mean": 0.29761111111111116,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.2457002457002457,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.074994987808168e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.6050045057199895e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.6105
+          ],
+          "w": [
+            0.20350000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.286004696041346e-06,
+          "ttft_mean": 0.47850000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.2285012285012284,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.312002031132579e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.847999662160873e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.2210000000000003
+          ],
+          "w": [
+            0.8140000000000003
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.5339984353631735e-06,
+          "ttft_mean": 1.0890000000000004,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.9656019656019657,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.094996595289558e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.433000867720693e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.3958333333333333
+          ],
+          "w": [
+            0.020833333333333332
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 4.221998096909374e-06,
+          "ttft_mean": 0.2758333333333333,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.26666666666666666,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.37899904884398e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.8389993025921285e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.5625
+          ],
+          "w": [
+            0.1875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.501001967582852e-06,
+          "ttft_mean": 0.4425,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.3333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.451998731587082e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.769004590343684e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.125
+          ],
+          "w": [
+            0.7500000000000001
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 4.592002369463444e-06,
+          "ttft_mean": 1.0050000000000001,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.1333333333333333,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.34322883124013454
+          ],
+          "w": [
+            0.019428831240134517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 6.818001565989107e-06,
+          "ttft_mean": 0.28922883124013454,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.3088326127239036,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.34322883124013454
+          ],
+          "w": [
+            0.019428831240134517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.6630015023984015e-06,
+          "ttft_mean": 0.28922883124013454,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.3088326127239036,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.34322883124013454
+          ],
+          "w": [
+            0.019428831240134517
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.463996785692871e-06,
+          "ttft_mean": 0.28922883124013454,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.3088326127239036,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.4986594811612107
+          ],
+          "w": [
+            0.17485948116121067
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 6.334004865493625e-06,
+          "ttft_mean": 0.4446594811612107,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.544163063619518,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.4986594811612107
+          ],
+          "w": [
+            0.17485948116121067
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 5.389993020799011e-06,
+          "ttft_mean": 0.4446594811612107,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.544163063619518,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.4986594811612107
+          ],
+          "w": [
+            0.17485948116121067
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.5,
+          "duration": 4.956003976985812e-06,
+          "ttft_mean": 0.4446594811612107,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.544163063619518,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.5,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            1.0232379246448429
+          ],
+          "w": [
+            0.6994379246448428
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 6.022004527039826e-06,
+          "ttft_mean": 0.9692379246448428,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.470660901791229,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            1.0232379246448429
+          ],
+          "w": [
+            0.6994379246448428
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.230998795013875e-06,
+          "ttft_mean": 0.9692379246448428,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.470660901791229,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            1.0232379246448429
+          ],
+          "w": [
+            0.6994379246448428
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.109002813696861e-06,
+          "ttft_mean": 0.9692379246448428,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.470660901791229,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.3153866442199776
+          ],
+          "w": [
+            0.018386644219977554
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 7.309005013667047e-06,
+          "ttft_mean": 0.26538664421997754,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.33670033670033667,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.3153866442199776
+          ],
+          "w": [
+            0.018386644219977554
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.4580013966187835e-06,
+          "ttft_mean": 0.26538664421997754,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.33670033670033667,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.3153866442199776
+          ],
+          "w": [
+            0.018386644219977554
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.1,
+          "duration": 5.00200258102268e-06,
+          "ttft_mean": 0.26538664421997754,
+          "blocking_probability": 0.0,
+          "accepted_rate": 0.33670033670033667,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.1,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.462479797979798
+          ],
+          "w": [
+            0.16547979797979795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.49999999999999994,
+          "duration": 5.902002158109099e-06,
+          "ttft_mean": 0.41247979797979795,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.6835016835016832,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.49999999999999994,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.462479797979798
+          ],
+          "w": [
+            0.16547979797979795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.49999999999999994,
+          "duration": 5.195994162932038e-06,
+          "ttft_mean": 0.41247979797979795,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.6835016835016832,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.49999999999999994,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.462479797979798
+          ],
+          "w": [
+            0.16547979797979795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.49999999999999994,
+          "duration": 5.021000106353313e-06,
+          "ttft_mean": 0.41247979797979795,
+          "blocking_probability": 0.0,
+          "accepted_rate": 1.6835016835016832,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.49999999999999994,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 1,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.9589191919191921
+          ],
+          "w": [
+            0.661919191919192
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.992005753796548e-06,
+          "ttft_mean": 0.908919191919192,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.6936026936026933,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS"
+        },
+        "queue_only": {
+          "v": [
+            0.9589191919191921
+          ],
+          "w": [
+            0.661919191919192
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.280999175738543e-06,
+          "ttft_mean": 0.908919191919192,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.6936026936026933,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        },
+        "reduced": {
+          "v": [
+            0.9589191919191921
+          ],
+          "w": [
+            0.661919191919192
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.8,
+          "duration": 5.003996193408966e-06,
+          "ttft_mean": 0.908919191919192,
+          "blocking_probability": 0.0,
+          "accepted_rate": 2.6936026936026933,
+          "states": 0,
+          "stationary_residual": 0.0,
+          "conservative_load": 0.8,
+          "model": "infinite B=1 M/G/1 FCFS",
+          "transition_words": 0
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.4276406963091129
+          ],
+          "w": [
+            0.007369168768709142
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904848990965445,
+          "duration": 0.007959293005114887,
+          "ttft_mean": 0.2939232384056532,
+          "blocking_probability": 1.9557688801796758e-12,
+          "accepted_rate": 0.24570024569976517,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.4276406963091129
+          ],
+          "w": [
+            0.007369168768709142
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904848990965445,
+          "duration": 0.003347161997226067,
+          "ttft_mean": 0.2939232384056532,
+          "blocking_probability": 1.9557688801796758e-12,
+          "accepted_rate": 0.24570024569976517,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.4276406963091129
+          ],
+          "w": [
+            0.007369168768709142
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09904848990965445,
+          "duration": 0.003521695005474612,
+          "ttft_mean": 0.2939232384056532,
+          "blocking_probability": 1.9557688801796758e-12,
+          "accepted_rate": 0.24570024569976517,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5449785829739783
+          ],
+          "w": [
+            0.06244704353747425
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4666067445568481,
+          "duration": 0.00745713799551595,
+          "ttft_mean": 0.4035576025684618,
+          "blocking_probability": 6.972310821584671e-06,
+          "accepted_rate": 1.2284926630088187,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5449785829739783
+          ],
+          "w": [
+            0.06244704353747425
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4666067445568481,
+          "duration": 0.0032190150013775565,
+          "ttft_mean": 0.4035576025684618,
+          "blocking_probability": 6.972310821584671e-06,
+          "accepted_rate": 1.2284926630088187,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.5449785829739783
+          ],
+          "w": [
+            0.06244704353747425
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4666067445568481,
+          "duration": 0.0034200849986518733,
+          "ttft_mean": 0.4035576025684618,
+          "blocking_probability": 6.972310821584671e-06,
+          "accepted_rate": 1.2284926630088187,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.7149787197077302
+          ],
+          "w": [
+            0.1810430233941836
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.700112260599305,
+          "duration": 0.007162750996940304,
+          "ttft_mean": 0.5673562457602882,
+          "blocking_probability": 0.0008356097020231212,
+          "accepted_rate": 1.9639594895291927,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.7149787197077302
+          ],
+          "w": [
+            0.1810430233941836
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.700112260599305,
+          "duration": 0.0033114769976236857,
+          "ttft_mean": 0.5673562457602882,
+          "blocking_probability": 0.0008356097020231212,
+          "accepted_rate": 1.9639594895291927,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.7149787197077302
+          ],
+          "w": [
+            0.1810430233941836
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.700112260599305,
+          "duration": 0.0038915870027267374,
+          "ttft_mean": 0.5673562457602882,
+          "blocking_probability": 0.0008356097020231212,
+          "accepted_rate": 1.9639594895291927,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.39684113826126105
+          ],
+          "w": [
+            0.006962932127103799
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09930033253854514,
+          "duration": 0.007313146998058073,
+          "ttft_mean": 0.2741783091892847,
+          "blocking_probability": 3.5333957981720232e-12,
+          "accepted_rate": 0.2666666666657244,
+          "states": 50,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.39684113826126105
+          ],
+          "w": [
+            0.006962932127103799
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09930033253854514,
+          "duration": 0.003361178001796361,
+          "ttft_mean": 0.2741783091892847,
+          "blocking_probability": 3.5333957981720232e-12,
+          "accepted_rate": 0.2666666666657244,
+          "states": 50,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.39684113826126105
+          ],
+          "w": [
+            0.006962932127103799
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09930033253854514,
+          "duration": 0.00352712300082203,
+          "ttft_mean": 0.2741783091892847,
+          "blocking_probability": 3.5333957981720232e-12,
+          "accepted_rate": 0.2666666666657244,
+          "states": 50,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5293097193259281
+          ],
+          "w": [
+            0.06656952517901739
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47467795112652517,
+          "duration": 0.007559055993624497,
+          "ttft_mean": 0.3943933865490252,
+          "blocking_probability": 1.4619344686495062e-05,
+          "accepted_rate": 1.3333138408737513,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5293097193259281
+          ],
+          "w": [
+            0.06656952517901739
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47467795112652517,
+          "duration": 0.003104371004155837,
+          "ttft_mean": 0.3943933865490252,
+          "blocking_probability": 1.4619344686495062e-05,
+          "accepted_rate": 1.3333138408737513,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.5293097193259281
+          ],
+          "w": [
+            0.06656952517901739
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.47467795112652517,
+          "duration": 0.0035014499953831546,
+          "ttft_mean": 0.3943933865490252,
+          "blocking_probability": 1.4619344686495062e-05,
+          "accepted_rate": 1.3333138408737513,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.744111703457788
+          ],
+          "w": [
+            0.21760627153455656
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7216266414020494,
+          "duration": 0.007088393998856191,
+          "ttft_mean": 0.5989114631310544,
+          "blocking_probability": 0.0018123132552805288,
+          "accepted_rate": 2.1294670650554015,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.744111703457788
+          ],
+          "w": [
+            0.21760627153455656
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7216266414020494,
+          "duration": 0.003088400000706315,
+          "ttft_mean": 0.5989114631310544,
+          "blocking_probability": 0.0018123132552805288,
+          "accepted_rate": 2.1294670650554015,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        "reduced": {
+          "v": [
+            0.744111703457788
+          ],
+          "w": [
+            0.21760627153455656
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7216266414020494,
+          "duration": 0.0035014020031667314,
+          "ttft_mean": 0.5989114631310544,
+          "blocking_probability": 0.0018123132552805288,
+          "accepted_rate": 2.1294670650554015,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.38030800676579324
+          ],
+          "w": [
+            0.007095824309285795
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09756811167566344,
+          "duration": 0.1768460489984136,
+          "ttft_mean": 0.32542076952828874,
+          "blocking_probability": 5.728750807065808e-12,
+          "accepted_rate": 0.27307482249980103,
+          "states": 1907,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.38030800676579885
+          ],
+          "w": [
+            0.007095824309285788
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.0975681116756634,
+          "duration": 0.0057680710015119985,
+          "ttft_mean": 0.32542076952828836,
+          "blocking_probability": 5.72708547252887e-12,
+          "accepted_rate": 0.2730748224998015,
+          "states": 141,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.38030800676579885
+          ],
+          "w": [
+            0.007095824309285788
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.0975681116756634,
+          "duration": 0.006331398995826021,
+          "ttft_mean": 0.32542076952828836,
+          "blocking_probability": 5.72708547252887e-12,
+          "accepted_rate": 0.2730748224998015,
+          "states": 141,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 3.885780586188048e-16,
+          "w": 6.938893903907228e-18,
+          "v": 5.6066262743570405e-15,
+          "accepted_rate": 4.440892098500626e-16,
+          "blocking_probability": 1.6653345369377348e-15,
+          "utilization": 4.163336342344337e-17
+        },
+        "reduced": {
+          "ttft_mean": 3.885780586188048e-16,
+          "w": 6.938893903907228e-18,
+          "v": 5.6066262743570405e-15,
+          "accepted_rate": 4.440892098500626e-16,
+          "blocking_probability": 1.6653345369377348e-15,
+          "utilization": 4.163336342344337e-17
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.45862391194171015
+          ],
+          "w": [
+            0.0543370089483157
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4401519346319971,
+          "duration": 0.18506697099655867,
+          "ttft_mean": 0.4003059059369215,
+          "blocking_probability": 9.053938228587022e-06,
+          "accepted_rate": 1.3653617504939533,
+          "states": 1907,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.458623911941712
+          ],
+          "w": [
+            0.0543370089483157
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4401519346319945,
+          "duration": 0.005746722003095783,
+          "ttft_mean": 0.4003059059369217,
+          "blocking_probability": 9.053938228253955e-06,
+          "accepted_rate": 1.3653617504939537,
+          "states": 141,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.458623911941712
+          ],
+          "w": [
+            0.0543370089483157
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4401519346319945,
+          "duration": 0.0071188309957506135,
+          "ttft_mean": 0.4003059059369217,
+          "blocking_probability": 9.053938228253955e-06,
+          "accepted_rate": 1.3653617504939537,
+          "states": 141,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 2.220446049250313e-16,
+          "w": 0.0,
+          "v": 1.8318679906315083e-15,
+          "accepted_rate": 4.440892098500626e-16,
+          "blocking_probability": 3.3306690738754696e-16,
+          "utilization": 2.609024107869118e-15
+        },
+        "reduced": {
+          "ttft_mean": 2.220446049250313e-16,
+          "w": 0.0,
+          "v": 1.8318679906315083e-15,
+          "accepted_rate": 4.440892098500626e-16,
+          "blocking_probability": 3.3306690738754696e-16,
+          "utilization": 2.609024107869118e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5650571067209329
+          ],
+          "w": [
+            0.13528702675491244
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6496848600185158,
+          "duration": 0.18146328399598133,
+          "ttft_mean": 0.5044925305726518,
+          "blocking_probability": 0.000677325305835641,
+          "accepted_rate": 2.183118896109589,
+          "states": 1907,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5650571067209387
+          ],
+          "w": [
+            0.13528702675491253
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.649684860018509,
+          "duration": 0.005568597996898461,
+          "ttft_mean": 0.5044925305726524,
+          "blocking_probability": 0.0006773253058384165,
+          "accepted_rate": 2.1831188961095833,
+          "states": 141,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.5650571067209387
+          ],
+          "w": [
+            0.13528702675491253
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.649684860018509,
+          "duration": 0.006181915996421594,
+          "ttft_mean": 0.5044925305726524,
+          "blocking_probability": 0.0006773253058384165,
+          "accepted_rate": 2.1831188961095833,
+          "states": 141,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 6.661338147750939e-16,
+          "w": 8.326672684688674e-17,
+          "v": 5.773159728050814e-15,
+          "accepted_rate": 5.773159728050814e-15,
+          "blocking_probability": 2.7755575615628914e-15,
+          "utilization": 6.772360450213455e-15
+        },
+        "reduced": {
+          "ttft_mean": 6.661338147750939e-16,
+          "w": 8.326672684688674e-17,
+          "v": 5.773159728050814e-15,
+          "accepted_rate": 5.773159728050814e-15,
+          "blocking_probability": 2.7755575615628914e-15,
+          "utilization": 6.772360450213455e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.3455911895351064
+          ],
+          "w": [
+            0.006636638410764478
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09807028793151562,
+          "duration": 0.1721080860006623,
+          "ttft_mean": 0.29419730824235496,
+          "blocking_probability": 1.342737032672403e-11,
+          "accepted_rate": 0.3039513677770737,
+          "states": 1907,
+          "stationary_residual": 2.220446049250313e-16,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.34559118953510526
+          ],
+          "w": [
+            0.0066366384107644704
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09807028793151523,
+          "duration": 0.005181166998227127,
+          "ttft_mean": 0.2941973082423548,
+          "blocking_probability": 1.342737032672403e-11,
+          "accepted_rate": 0.3039513677770737,
+          "states": 141,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.34559118953510526
+          ],
+          "w": [
+            0.0066366384107644704
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09807028793151523,
+          "duration": 0.006362963998981286,
+          "ttft_mean": 0.2941973082423548,
+          "blocking_probability": 1.342737032672403e-11,
+          "accepted_rate": 0.3039513677770737,
+          "states": 141,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 7.806255641895632e-18,
+          "v": 1.1657341758564144e-15,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 3.885780586188048e-16
+        },
+        "reduced": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 7.806255641895632e-18,
+          "v": 1.1657341758564144e-15,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 3.885780586188048e-16
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.4416735158814347
+          ],
+          "w": [
+            0.0587818954408208
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4514809762332411,
+          "duration": 0.1768830849978258,
+          "ttft_mean": 0.38474555926546583,
+          "blocking_probability": 2.3164445416168356e-05,
+          "accepted_rate": 1.5197216345814344,
+          "states": 1907,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.44167351588143344
+          ],
+          "w": [
+            0.05878189544082083
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4514809762332383,
+          "duration": 0.0058559620010782965,
+          "ttft_mean": 0.38474555926546583,
+          "blocking_probability": 2.316444541594631e-05,
+          "accepted_rate": 1.5197216345814346,
+          "states": 141,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.4416735158814334
+          ],
+          "w": [
+            0.05878189544082082
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45148097623323835,
+          "duration": 0.006552692997502163,
+          "ttft_mean": 0.38474555926546583,
+          "blocking_probability": 2.3164445415613244e-05,
+          "accepted_rate": 1.519721634581435,
+          "states": 141,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 3.469446951953614e-17,
+          "v": 1.27675647831893e-15,
+          "accepted_rate": 2.220446049250313e-16,
+          "blocking_probability": 2.220446049250313e-16,
+          "utilization": 2.831068712794149e-15
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 2.0816681711721685e-17,
+          "v": 1.3322676295501878e-15,
+          "accepted_rate": 6.661338147750939e-16,
+          "blocking_probability": 5.551115123125783e-16,
+          "utilization": 2.7755575615628914e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5835086235087636
+          ],
+          "w": [
+            0.1644721710048879
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.675535748787457,
+          "duration": 0.1709593909981777,
+          "ttft_mean": 0.5228844486625699,
+          "blocking_probability": 0.001697725895785429,
+          "accepted_rate": 2.4274827333841085,
+          "states": 1907,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5835086235087598
+          ],
+          "w": [
+            0.16447217100488767
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6755357487874563,
+          "duration": 0.005165829003090039,
+          "ttft_mean": 0.5228844486625693,
+          "blocking_probability": 0.0016977258957859842,
+          "accepted_rate": 2.4274827333841067,
+          "states": 141,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        "reduced": {
+          "v": [
+            0.5835086235087598
+          ],
+          "w": [
+            0.16447217100488767
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6755357487874563,
+          "duration": 0.006877394996990915,
+          "ttft_mean": 0.5228844486625693,
+          "blocking_probability": 0.0016977258957859842,
+          "accepted_rate": 2.4274827333841067,
+          "states": 141,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 5.551115123125783e-16,
+          "w": 2.220446049250313e-16,
+          "v": 3.885780586188048e-15,
+          "accepted_rate": 1.7763568394002505e-15,
+          "blocking_probability": 5.551115123125783e-16,
+          "utilization": 7.771561172376096e-16
+        },
+        "reduced": {
+          "ttft_mean": 5.551115123125783e-16,
+          "w": 2.220446049250313e-16,
+          "v": 3.885780586188048e-15,
+          "accepted_rate": 1.7763568394002505e-15,
+          "blocking_probability": 5.551115123125783e-16,
+          "utilization": 7.771561172376096e-16
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.421660494391849
+          ],
+          "w": [
+            0.007297765297347985
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745832403230509,
+          "duration": 0.006304709997493774,
+          "ttft_mean": 0.2871314281895983,
+          "blocking_probability": 1.2849721287011562e-12,
+          "accepted_rate": 0.24570024569993,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.421660494391849
+          ],
+          "w": [
+            0.007297765297347985
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745832403230509,
+          "duration": 0.0033546489939908497,
+          "ttft_mean": 0.2871314281895983,
+          "blocking_probability": 1.2849721287011562e-12,
+          "accepted_rate": 0.24570024569993,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.421660494391849
+          ],
+          "w": [
+            0.007297765297347985
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09745832403230509,
+          "duration": 0.00423221499659121,
+          "ttft_mean": 0.2871314281895983,
+          "blocking_probability": 1.2849721287011562e-12,
+          "accepted_rate": 0.24570024569993,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.4951932630351394
+          ],
+          "w": [
+            0.05159067857136564
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4370106460941996,
+          "duration": 0.006636249003349803,
+          "ttft_mean": 0.3503888846468523,
+          "blocking_probability": 1.8215773448515549e-06,
+          "accepted_rate": 1.2284989906912225,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.4951932630351394
+          ],
+          "w": [
+            0.05159067857136564
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4370106460941996,
+          "duration": 0.0031627450007363223,
+          "ttft_mean": 0.3503888846468523,
+          "blocking_probability": 1.8215773448515549e-06,
+          "accepted_rate": 1.2284989906912225,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.4951932630351394
+          ],
+          "w": [
+            0.05159067857136564
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4370106460941996,
+          "duration": 0.00338291499792831,
+          "ttft_mean": 0.3503888846468523,
+          "blocking_probability": 1.8215773448515549e-06,
+          "accepted_rate": 1.2284989906912225,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5822514998569094
+          ],
+          "w": [
+            0.11755113911675946
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411099244267023,
+          "duration": 0.007010557004832663,
+          "ttft_mean": 0.43003617371400105,
+          "blocking_probability": 0.00016922131992580525,
+          "accepted_rate": 1.9652693438428976,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5822514998569094
+          ],
+          "w": [
+            0.11755113911675946
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411099244267023,
+          "duration": 0.0032523780027986504,
+          "ttft_mean": 0.43003617371400105,
+          "blocking_probability": 0.00016922131992580525,
+          "accepted_rate": 1.9652693438428976,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.5822514998569094
+          ],
+          "w": [
+            0.11755113911675946
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411099244267023,
+          "duration": 0.0034845990012399852,
+          "ttft_mean": 0.43003617371400105,
+          "blocking_probability": 0.00016922131992580525,
+          "accepted_rate": 1.9652693438428976,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.39360312730441227
+          ],
+          "w": [
+            0.007000362638171932
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802352187371775,
+          "duration": 0.006813225998484995,
+          "ttft_mean": 0.26969176942625084,
+          "blocking_probability": 2.9490854203118033e-12,
+          "accepted_rate": 0.26666666666588024,
+          "states": 42,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.39360312730441227
+          ],
+          "w": [
+            0.007000362638171932
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802352187371775,
+          "duration": 0.003225671003747266,
+          "ttft_mean": 0.26969176942625084,
+          "blocking_probability": 2.9490854203118033e-12,
+          "accepted_rate": 0.26666666666588024,
+          "states": 42,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.39360312730441227
+          ],
+          "w": [
+            0.007000362638171932
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09802352187371775,
+          "duration": 0.003401674999622628,
+          "ttft_mean": 0.26969176942625084,
+          "blocking_probability": 2.9490854203118033e-12,
+          "accepted_rate": 0.26666666666588024,
+          "states": 42,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.49185216363511275
+          ],
+          "w": [
+            0.057598045715084804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44971816382883895,
+          "duration": 0.006832563994976226,
+          "ttft_mean": 0.35135241937709105,
+          "blocking_probability": 5.472374402404334e-06,
+          "accepted_rate": 1.33332603683413,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.49185216363511275
+          ],
+          "w": [
+            0.057598045715084804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44971816382883895,
+          "duration": 0.003153796002152376,
+          "ttft_mean": 0.35135241937709105,
+          "blocking_probability": 5.472374402404334e-06,
+          "accepted_rate": 1.33332603683413,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.49185216363511275
+          ],
+          "w": [
+            0.057598045715084804
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44971816382883895,
+          "duration": 0.003402776004804764,
+          "ttft_mean": 0.35135241937709105,
+          "blocking_probability": 5.472374402404334e-06,
+          "accepted_rate": 1.33332603683413,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.6213319830152482
+          ],
+          "w": [
+            0.15092622977786246
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6701985580714014,
+          "duration": 0.006204177996551152,
+          "ttft_mean": 0.46820254465956224,
+          "blocking_probability": 0.0005564680690149926,
+          "accepted_rate": 2.1321462014527683,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.6213319830152482
+          ],
+          "w": [
+            0.15092622977786246
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6701985580714014,
+          "duration": 0.003986048002843745,
+          "ttft_mean": 0.46820254465956224,
+          "blocking_probability": 0.0005564680690149926,
+          "accepted_rate": 2.1321462014527683,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        "reduced": {
+          "v": [
+            0.6213319830152482
+          ],
+          "w": [
+            0.15092622977786246
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6701985580714014,
+          "duration": 0.0032613090006634593,
+          "ttft_mean": 0.46820254465956224,
+          "blocking_probability": 0.0005564680690149926,
+          "accepted_rate": 2.1321462014527683,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 0.0,
+          "w": 0.0,
+          "v": 0.0,
+          "accepted_rate": 0.0,
+          "blocking_probability": 0.0,
+          "utilization": 0.0
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.33672276196806544
+          ],
+          "w": [
+            0.007269314194850415
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09750429573742511,
+          "duration": 0.1315992899981211,
+          "ttft_mean": 0.2814804970020071,
+          "blocking_probability": 4.629407968081978e-12,
+          "accepted_rate": 0.30883261272247386,
+          "states": 1270,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.33672276196806633
+          ],
+          "w": [
+            0.0072693141948504125
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09750429573742446,
+          "duration": 0.006739714997820556,
+          "ttft_mean": 0.2814804970020067,
+          "blocking_probability": 4.630518191106603e-12,
+          "accepted_rate": 0.30883261272247353,
+          "states": 104,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.33672276196806644
+          ],
+          "w": [
+            0.007269314194850412
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.0975042957374245,
+          "duration": 0.007380542003375012,
+          "ttft_mean": 0.28148049700200667,
+          "blocking_probability": 4.630518191106603e-12,
+          "accepted_rate": 0.3088326127224736,
+          "states": 97,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 3.885780586188048e-16,
+          "w": 2.6020852139652106e-18,
+          "v": 8.881784197001252e-16,
+          "accepted_rate": 3.3306690738754696e-16,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 6.522560269672795e-16
+        },
+        "reduced": {
+          "ttft_mean": 4.440892098500626e-16,
+          "w": 3.469446951953614e-18,
+          "v": 9.992007221626409e-16,
+          "accepted_rate": 2.7755575615628914e-16,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 6.106226635438361e-16
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.4017128341868695
+          ],
+          "w": [
+            0.04942338702197875
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4379374526522444,
+          "duration": 0.13585908700042637,
+          "ttft_mean": 0.3420079850937292,
+          "blocking_probability": 4.424797164781502e-06,
+          "accepted_rate": 1.5441562310111723,
+          "states": 1270,
+          "stationary_residual": 1.6653345369377348e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.40171283418686676
+          ],
+          "w": [
+            0.0494233870219787
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4379374526522407,
+          "duration": 0.006517811001685914,
+          "ttft_mean": 0.3420079850937295,
+          "blocking_probability": 4.4247971671129704e-06,
+          "accepted_rate": 1.5441562310111687,
+          "states": 104,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.40171283418686676
+          ],
+          "w": [
+            0.0494233870219787
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4379374526522407,
+          "duration": 0.007028218999039382,
+          "ttft_mean": 0.3420079850937295,
+          "blocking_probability": 4.4247971671129704e-06,
+          "accepted_rate": 1.5441562310111687,
+          "states": 97,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 4.85722573273506e-17,
+          "v": 2.7200464103316335e-15,
+          "accepted_rate": 3.552713678800501e-15,
+          "blocking_probability": 2.3314683517128287e-15,
+          "utilization": 3.6637359812630166e-15
+        },
+        "reduced": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 4.85722573273506e-17,
+          "v": 2.7200464103316335e-15,
+          "accepted_rate": 3.552713678800501e-15,
+          "blocking_probability": 2.3314683517128287e-15,
+          "utilization": 3.6637359812630166e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.47890312500325993
+          ],
+          "w": [
+            0.10962571247498426
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6427564876531948,
+          "duration": 0.12954021499899682,
+          "ttft_mean": 0.41637630988398455,
+          "blocking_probability": 0.0003243227622138356,
+          "accepted_rate": 2.4698596102230663,
+          "states": 1270,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.4789031250032613
+          ],
+          "w": [
+            0.10962571247498408
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6427564876531932,
+          "duration": 0.0064014839954325,
+          "ttft_mean": 0.41637630988398433,
+          "blocking_probability": 0.0003243227622128364,
+          "accepted_rate": 2.4698596102230685,
+          "states": 104,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.47890312500326143
+          ],
+          "w": [
+            0.10962571247498412
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6427564876531929,
+          "duration": 0.007010923000052571,
+          "ttft_mean": 0.4163763098839845,
+          "blocking_probability": 0.00032432276221316947,
+          "accepted_rate": 2.469859610223068,
+          "states": 97,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 2.220446049250313e-16,
+          "w": 1.8041124150158794e-16,
+          "v": 1.3877787807814457e-15,
+          "accepted_rate": 2.220446049250313e-15,
+          "blocking_probability": 9.992007221626409e-16,
+          "utilization": 1.6653345369377348e-15
+        },
+        "reduced": {
+          "ttft_mean": 5.551115123125783e-17,
+          "w": 1.3877787807814457e-16,
+          "v": 1.4988010832439613e-15,
+          "accepted_rate": 1.7763568394002505e-15,
+          "blocking_probability": 6.661338147750939e-16,
+          "utilization": 1.887379141862766e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.1,
+      "predictions": {
+        "full": {
+          "v": [
+            0.31318992873137647
+          ],
+          "w": [
+            0.007087896837048166
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800929806636935,
+          "duration": 0.13233358500292525,
+          "ttft_mean": 0.26116892319856977,
+          "blocking_probability": 1.3885226302079445e-11,
+          "accepted_rate": 0.3367003366956615,
+          "states": 1270,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.31318992873137663
+          ],
+          "w": [
+            0.0070878968370481615
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800929806636931,
+          "duration": 0.007259587000589818,
+          "ttft_mean": 0.26116892319856994,
+          "blocking_probability": 1.3884449145962208e-11,
+          "accepted_rate": 0.3367003366956618,
+          "states": 104,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.3131899287313764
+          ],
+          "w": [
+            0.007087896837048159
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.09800929806636934,
+          "duration": 0.007857848002458923,
+          "ttft_mean": 0.26116892319856994,
+          "blocking_probability": 1.388411607905482e-11,
+          "accepted_rate": 0.33670033669566185,
+          "states": 97,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.1,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 4.336808689942018e-18,
+          "v": 1.6653345369377348e-16,
+          "accepted_rate": 2.7755575615628914e-16,
+          "blocking_probability": 7.771561172376096e-16,
+          "utilization": 4.163336342344337e-17
+        },
+        "reduced": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 6.938893903907228e-18,
+          "v": 5.551115123125783e-17,
+          "accepted_rate": 3.3306690738754696e-16,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 1.3877787807814457e-17
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.39936921320143043
+          ],
+          "w": [
+            0.05607581716594683
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4498105796038885,
+          "duration": 0.13078188600047724,
+          "ttft_mean": 0.33998941303118496,
+          "blocking_probability": 1.5200002126847245e-05,
+          "accepted_rate": 1.6834760942725133,
+          "states": 1270,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.3993692132014313
+          ],
+          "w": [
+            0.056075817165946756
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4498105796038886,
+          "duration": 0.007179617998190224,
+          "ttft_mean": 0.33998941303118496,
+          "blocking_probability": 1.5200002125737022e-05,
+          "accepted_rate": 1.6834760942725153,
+          "states": 104,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.39936921320143126
+          ],
+          "w": [
+            0.05607581716594679
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4498105796038887,
+          "duration": 0.00807711499510333,
+          "ttft_mean": 0.339989413031185,
+          "blocking_probability": 1.5200002125848044e-05,
+          "accepted_rate": 1.683476094272515,
+          "states": 97,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.49999999999999994,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 0.0,
+          "w": 7.632783294297951e-17,
+          "v": 8.881784197001252e-16,
+          "accepted_rate": 1.9984014443252818e-15,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 1.1102230246251565e-16
+        },
+        "reduced": {
+          "ttft_mean": 5.551115123125783e-17,
+          "w": 4.163336342344337e-17,
+          "v": 8.326672684688674e-16,
+          "accepted_rate": 1.7763568394002505e-15,
+          "blocking_probability": 9.992007221626409e-16,
+          "utilization": 2.220446049250313e-16
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "costs": [
+        0.07,
+        0.03,
+        0.005
+      ],
+      "load": 0.8,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5137338309146883
+          ],
+          "w": [
+            0.14190477905457097
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6703123466037217,
+          "duration": 0.13532161700277356,
+          "ttft_mean": 0.449652269003231,
+          "blocking_probability": 0.0011053306080101022,
+          "accepted_rate": 2.690625372099636,
+          "states": 1270,
+          "stationary_residual": 1.1102230246251565e-16,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.513733830914691
+          ],
+          "w": [
+            0.14190477905457075
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6703123466037201,
+          "duration": 0.008142452003085054,
+          "ttft_mean": 0.4496522690032309,
+          "blocking_probability": 0.0011053306080103242,
+          "accepted_rate": 2.690625372099635,
+          "states": 104,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 856
+        },
+        "reduced": {
+          "v": [
+            0.5137338309146912
+          ],
+          "w": [
+            0.1419047790545708
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6703123466037201,
+          "duration": 0.008390764996875077,
+          "ttft_mean": 0.4496522690032309,
+          "blocking_probability": 0.0011053306080105463,
+          "accepted_rate": 2.6906253720996345,
+          "states": 97,
+          "stationary_residual": 1.3877787807814457e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 1.1102230246251565e-16,
+          "w": 2.220446049250313e-16,
+          "v": 2.7755575615628914e-15,
+          "accepted_rate": 8.881784197001252e-16,
+          "blocking_probability": 2.220446049250313e-16,
+          "utilization": 1.6653345369377348e-15
+        },
+        "reduced": {
+          "ttft_mean": 1.1102230246251565e-16,
+          "w": 1.6653345369377348e-16,
+          "v": 2.886579864025407e-15,
+          "accepted_rate": 1.3322676295501878e-15,
+          "blocking_probability": 4.440892098500626e-16,
+          "utilization": 1.6653345369377348e-15
+        }
+      }
+    }
+  ],
+  "expanded": [
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.594024003160947
+          ],
+          "w": [
+            0.06414092848881367
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45373023447472927,
+          "duration": 0.03183888800413115,
+          "ttft_mean": 0.4465016801272949,
+          "blocking_probability": 0.00828660533814618,
+          "accepted_rate": 1.0992167974527307,
+          "states": 589,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5940240031609467
+          ],
+          "w": [
+            0.06414092848881364
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45373023447472793,
+          "duration": 0.0041127740041702054,
+          "ttft_mean": 0.44650168012729474,
+          "blocking_probability": 0.00828660533814729,
+          "accepted_rate": 1.0992167974527294,
+          "states": 173,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 781
+        },
+        "reduced": {
+          "v": [
+            0.5940240031609467
+          ],
+          "w": [
+            0.06414092848881364
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45373023447472793,
+          "duration": 0.004736554998089559,
+          "ttft_mean": 0.44650168012729474,
+          "blocking_probability": 0.00828660533814729,
+          "accepted_rate": 1.0992167974527294,
+          "states": 173,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 781
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 2.7755575615628914e-17,
+          "v": 2.220446049250313e-16,
+          "accepted_rate": 1.3322676295501878e-15,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 1.3322676295501878e-15
+        },
+        "reduced": {
+          "ttft_mean": 1.6653345369377348e-16,
+          "w": 2.7755575615628914e-17,
+          "v": 2.220446049250313e-16,
+          "accepted_rate": 1.3322676295501878e-15,
+          "blocking_probability": 1.1102230246251565e-15,
+          "utilization": 1.3322676295501878e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.6059356207398076
+          ],
+          "w": [
+            0.07421972418999052
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4563121319341558,
+          "duration": 0.35474453100323444,
+          "ttft_mean": 0.45820326600402866,
+          "blocking_probability": 0.00043351510717859476,
+          "accepted_rate": 1.1079211758953904,
+          "states": 5449,
+          "stationary_residual": 7.632783294297951e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.6059356207398046
+          ],
+          "w": [
+            0.07421972418999079
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45631213193415304,
+          "duration": 0.007666641999094281,
+          "ttft_mean": 0.4582032660040284,
+          "blocking_probability": 0.00043351510717803965,
+          "accepted_rate": 1.107921175895391,
+          "states": 303,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2182
+        },
+        "reduced": {
+          "v": [
+            0.6059356207398046
+          ],
+          "w": [
+            0.07421972418999079
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45631213193415304,
+          "duration": 0.008921165994252078,
+          "ttft_mean": 0.4582032660040284,
+          "blocking_probability": 0.00043351510717803965,
+          "accepted_rate": 1.107921175895391,
+          "states": 303,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2182
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 2.636779683484747e-16,
+          "v": 2.9976021664879227e-15,
+          "accepted_rate": 6.661338147750939e-16,
+          "blocking_probability": 5.551115123125783e-16,
+          "utilization": 2.7755575615628914e-15
+        },
+        "reduced": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 2.636779683484747e-16,
+          "v": 2.9976021664879227e-15,
+          "accepted_rate": 6.661338147750939e-16,
+          "blocking_probability": 5.551115123125783e-16,
+          "utilization": 2.7755575615628914e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.6069991761528016
+          ],
+          "w": [
+            0.07518685154323353
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45644664499606136,
+          "duration": 0.011131439001474064,
+          "ttft_mean": 0.45925598118336686,
+          "blocking_probability": 2.295256264939205e-05,
+          "accepted_rate": 1.1083762441114504,
+          "states": 433,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 4155
+        },
+        "reduced": {
+          "v": [
+            0.6069991761528016
+          ],
+          "w": [
+            0.07518685154323353
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.45644664499606136,
+          "duration": 0.014002543000970036,
+          "ttft_mean": 0.45925598118336686,
+          "blocking_probability": 2.295256264939205e-05,
+          "accepted_rate": 1.1083762441114504,
+          "states": 433,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 4155
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 2,
+      "budget": 2,
+      "queue": 8,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.607078969908391
+          ],
+          "w": [
+            0.07526152987517568
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4564537741567664,
+          "duration": 0.015665382998122368,
+          "ttft_mean": 0.45933520057539584,
+          "blocking_probability": 1.187177897432612e-06,
+          "accepted_rate": 1.108400368900579,
+          "states": 563,
+          "stationary_residual": 2.0816681711721685e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 6700
+        },
+        "reduced": {
+          "v": [
+            0.607078969908391
+          ],
+          "w": [
+            0.07526152987517568
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4564537741567664,
+          "duration": 0.021067874004074838,
+          "ttft_mean": 0.45933520057539584,
+          "blocking_probability": 1.187177897432612e-06,
+          "accepted_rate": 1.108400368900579,
+          "states": 563,
+          "stationary_residual": 2.0816681711721685e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 6700
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5289843670398603
+          ],
+          "w": [
+            0.05644953841453272
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4417550202915086,
+          "duration": 0.02508601600129623,
+          "ttft_mean": 0.37789886419858987,
+          "blocking_probability": 0.007129553718633552,
+          "accepted_rate": 1.1839618963526908,
+          "states": 456,
+          "stationary_residual": 6.245004513516506e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5289843670398593
+          ],
+          "w": [
+            0.05644953841453271
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4417550202915086,
+          "duration": 0.006260914000449702,
+          "ttft_mean": 0.37789886419859,
+          "blocking_probability": 0.007129553718632886,
+          "accepted_rate": 1.1839618963526914,
+          "states": 140,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 718
+        },
+        "reduced": {
+          "v": [
+            0.5289843670398591
+          ],
+          "w": [
+            0.0564495384145327
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4417550202915088,
+          "duration": 0.0065329460048815235,
+          "ttft_mean": 0.37789886419859015,
+          "blocking_probability": 0.007129553718632331,
+          "accepted_rate": 1.1839618963526921,
+          "states": 137,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 702
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 1.1102230246251565e-16,
+          "w": 1.3877787807814457e-17,
+          "v": 9.992007221626409e-16,
+          "accepted_rate": 6.661338147750939e-16,
+          "blocking_probability": 6.661338147750939e-16,
+          "utilization": 0.0
+        },
+        "reduced": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 2.0816681711721685e-17,
+          "v": 1.2212453270876722e-15,
+          "accepted_rate": 1.3322676295501878e-15,
+          "blocking_probability": 1.2212453270876722e-15,
+          "utilization": 2.220446049250313e-16
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5368579914422297
+          ],
+          "w": [
+            0.06330442852827499
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44377222435781144,
+          "duration": 0.29034629500529263,
+          "ttft_mean": 0.38554087211282717,
+          "blocking_probability": 0.00026006814303891623,
+          "accepted_rate": 1.1921535080574301,
+          "states": 4236,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5368579914422312
+          ],
+          "w": [
+            0.06330442852827489
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4437722243578085,
+          "duration": 0.010807583996211179,
+          "ttft_mean": 0.3855408721128277,
+          "blocking_probability": 0.00026006814303958237,
+          "accepted_rate": 1.1921535080574293,
+          "states": 250,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2065
+        },
+        "reduced": {
+          "v": [
+            0.5368579914422312
+          ],
+          "w": [
+            0.06330442852827489
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44377222435780855,
+          "duration": 0.012143284002377186,
+          "ttft_mean": 0.38554087211282767,
+          "blocking_probability": 0.0002600681430398044,
+          "accepted_rate": 1.1921535080574293,
+          "states": 245,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2022
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 5.551115123125783e-16,
+          "w": 9.71445146547012e-17,
+          "v": 1.5543122344752192e-15,
+          "accepted_rate": 8.881784197001252e-16,
+          "blocking_probability": 6.661338147750939e-16,
+          "utilization": 2.942091015256665e-15
+        },
+        "reduced": {
+          "ttft_mean": 4.996003610813204e-16,
+          "w": 9.71445146547012e-17,
+          "v": 1.5543122344752192e-15,
+          "accepted_rate": 8.881784197001252e-16,
+          "blocking_probability": 8.881784197001252e-16,
+          "utilization": 2.886579864025407e-15
+        }
+      }
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.5373607782522271
+          ],
+          "w": [
+            0.0637695152791311
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4438447261296474,
+          "duration": 0.01583236899750773,
+          "ttft_mean": 0.38603533882739777,
+          "blocking_probability": 9.602957737886442e-06,
+          "accepted_rate": 1.1924521786814477,
+          "states": 360,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3968
+        },
+        "reduced": {
+          "v": [
+            0.5373607782522273
+          ],
+          "w": [
+            0.06376951527913112
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.44384472612964737,
+          "duration": 0.01852025600237539,
+          "ttft_mean": 0.3860353388273976,
+          "blocking_probability": 9.602957738330531e-06,
+          "accepted_rate": 1.1924521786814473,
+          "states": 353,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3886
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 2,
+      "budget": 4,
+      "queue": 8,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.537387379707639
+          ],
+          "w": [
+            0.06379471883805603
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4438473987154004,
+          "duration": 0.022008518004440702,
+          "ttft_mean": 0.38606163350436523,
+          "blocking_probability": 3.4820997774076545e-07,
+          "accepted_rate": 1.1924632146315552,
+          "states": 470,
+          "stationary_residual": 4.85722573273506e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 6427
+        },
+        "reduced": {
+          "v": [
+            0.5373873797076391
+          ],
+          "w": [
+            0.06379471883805607
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4438473987154005,
+          "duration": 0.026154305996897165,
+          "ttft_mean": 0.3860616335043651,
+          "blocking_probability": 3.4820997762974315e-07,
+          "accepted_rate": 1.1924632146315555,
+          "states": 461,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 6294
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 3,
+      "budget": 3,
+      "queue": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5516306123010885
+          ],
+          "w": [
+            0.03617446275153695
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43046651422436705,
+          "duration": 0.11436361300002318,
+          "ttft_mean": 0.3985467447831472,
+          "blocking_probability": 0.00263051390927449,
+          "accepted_rate": 1.1032848297463778,
+          "states": 1898,
+          "stationary_residual": 1.6653345369377348e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5516306123010867
+          ],
+          "w": [
+            0.036174462751536955
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43046651422436416,
+          "duration": 0.0104575239965925,
+          "ttft_mean": 0.3985467447831463,
+          "blocking_probability": 0.0026305139092724916,
+          "accepted_rate": 1.10328482974638,
+          "states": 648,
+          "stationary_residual": 9.020562075079397e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3941
+        },
+        "reduced": {
+          "v": [
+            0.5516306123010863
+          ],
+          "w": [
+            0.03617446275153692
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4304665142243642,
+          "duration": 0.013304111002071295,
+          "ttft_mean": 0.39854674478314633,
+          "blocking_probability": 0.0026305139092719365,
+          "accepted_rate": 1.1032848297463804,
+          "states": 641,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3889
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 9.43689570931383e-16,
+          "w": 6.938893903907228e-18,
+          "v": 1.7763568394002505e-15,
+          "accepted_rate": 2.220446049250313e-15,
+          "blocking_probability": 1.9984014443252818e-15,
+          "utilization": 2.886579864025407e-15
+        },
+        "reduced": {
+          "ttft_mean": 8.881784197001252e-16,
+          "w": 2.7755575615628914e-17,
+          "v": 2.1094237467877974e-15,
+          "accepted_rate": 2.6645352591003757e-15,
+          "blocking_probability": 2.55351295663786e-15,
+          "utilization": 2.831068712794149e-15
+        }
+      }
+    },
+    {
+      "cap": 3,
+      "budget": 3,
+      "queue": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5544342762300445
+          ],
+          "w": [
+            0.03788638630833577
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43108399147020465,
+          "duration": 1.5918878509983188,
+          "ttft_mean": 0.4012108237204219,
+          "blocking_probability": 4.051195824028575e-05,
+          "accepted_rate": 1.1061498761523891,
+          "states": 19757,
+          "stationary_residual": 2.498001805406602e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.554434276230001
+          ],
+          "w": [
+            0.03788638630833665
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43108399147021614,
+          "duration": 0.024827451001328882,
+          "ttft_mean": 0.4012108237204263,
+          "blocking_probability": 4.0511958269484616e-05,
+          "accepted_rate": 1.1061498761523567,
+          "states": 1243,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 13646
+        },
+        "reduced": {
+          "v": [
+            0.5544342762300014
+          ],
+          "w": [
+            0.03788638630833666
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43108399147021614,
+          "duration": 0.035078089000307955,
+          "ttft_mean": 0.40121082372042643,
+          "blocking_probability": 4.051195826959564e-05,
+          "accepted_rate": 1.1061498761523565,
+          "states": 1227,
+          "stationary_residual": 6.245004513516506e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 13486
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 4.440892098500626e-15,
+          "w": 8.81239525796218e-16,
+          "v": 4.3520742565306136e-14,
+          "accepted_rate": 3.241851231905457e-14,
+          "blocking_probability": 2.919886554764162e-14,
+          "utilization": 1.149080830487037e-14
+        },
+        "reduced": {
+          "ttft_mean": 4.551914400963142e-15,
+          "w": 8.951173136040325e-16,
+          "v": 4.3076653355456074e-14,
+          "accepted_rate": 3.26405569239796e-14,
+          "blocking_probability": 2.930988785010413e-14,
+          "utilization": 1.149080830487037e-14
+        }
+      }
+    },
+    {
+      "cap": 3,
+      "budget": 3,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.5545123061310133
+          ],
+          "w": [
+            0.037948622702595435
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4310933588463371,
+          "duration": 0.042471827000554185,
+          "ttft_mean": 0.40128672170640267,
+          "blocking_probability": 1.0508001850872972e-06,
+          "accepted_rate": 1.1061935278759014,
+          "states": 1805,
+          "stationary_residual": 9.71445146547012e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 26827
+        },
+        "reduced": {
+          "v": [
+            0.5545123061310135
+          ],
+          "w": [
+            0.0379486227025955
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4310933588463374,
+          "duration": 0.06150540000089677,
+          "ttft_mean": 0.40128672170640295,
+          "blocking_probability": 1.0508001853093418e-06,
+          "accepted_rate": 1.1061935278759012,
+          "states": 1783,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 26532
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 3,
+      "budget": 3,
+      "queue": 8,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.5545151077847126
+          ],
+          "w": [
+            0.037951015299358876
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.43109360186455936,
+          "duration": 0.06308468199858908,
+          "ttft_mean": 0.4012894680557719,
+          "blocking_probability": 2.7254331458337333e-08,
+          "accepted_rate": 1.10619466011689,
+          "states": 2367,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 43628
+        },
+        "reduced": {
+          "v": [
+            0.5545151077847128
+          ],
+          "w": [
+            0.03795101529935888
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4310936018645593,
+          "duration": 0.09509606299980078,
+          "ttft_mean": 0.40128946805577204,
+          "blocking_probability": 2.7254331902426543e-08,
+          "accepted_rate": 1.1061946601168895,
+          "states": 2339,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 43162
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 3,
+      "budget": 6,
+      "queue": 2,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5114186297699247
+          ],
+          "w": [
+            0.036665563341921434
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42871170901100414,
+          "duration": 0.07803779900132213,
+          "ttft_mean": 0.35501120094153965,
+          "blocking_probability": 0.003027161621450669,
+          "accepted_rate": 1.1888538497240033,
+          "states": 1157,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5114186297699266
+          ],
+          "w": [
+            0.036665563341921406
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42871170901100547,
+          "duration": 0.014401335000002291,
+          "ttft_mean": 0.35501120094154,
+          "blocking_probability": 0.003027161621450336,
+          "accepted_rate": 1.1888538497240038,
+          "states": 449,
+          "stationary_residual": 1.3877787807814457e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3257
+        },
+        "reduced": {
+          "v": [
+            0.5114186297699264
+          ],
+          "w": [
+            0.036665563341921455
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4287117090110054,
+          "duration": 0.016359733999706805,
+          "ttft_mean": 0.35501120094154004,
+          "blocking_probability": 0.003027161621450558,
+          "accepted_rate": 1.1888538497240035,
+          "states": 388,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2805
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 3.3306690738754696e-16,
+          "w": 2.7755575615628914e-17,
+          "v": 1.887379141862766e-15,
+          "accepted_rate": 4.440892098500626e-16,
+          "blocking_probability": 3.3306690738754696e-16,
+          "utilization": 1.3322676295501878e-15
+        },
+        "reduced": {
+          "ttft_mean": 3.885780586188048e-16,
+          "w": 2.0816681711721685e-17,
+          "v": 1.6653345369377348e-15,
+          "accepted_rate": 2.220446049250313e-16,
+          "blocking_probability": 1.1102230246251565e-16,
+          "utilization": 1.27675647831893e-15
+        }
+      }
+    },
+    {
+      "cap": 3,
+      "budget": 6,
+      "queue": 4,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "v": [
+            0.5139304031553995
+          ],
+          "w": [
+            0.038337876551552075
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42933453161824614,
+          "duration": 1.1468267230011406,
+          "ttft_mean": 0.35728908035276147,
+          "blocking_probability": 3.788813749705522e-05,
+          "accepted_rate": 1.192418449633321,
+          "states": 13797,
+          "stationary_residual": 1.3877787807814457e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov"
+        },
+        "queue_only": {
+          "v": [
+            0.5139304031554126
+          ],
+          "w": [
+            0.038337876551551915
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4293345316182439,
+          "duration": 0.036013755001476966,
+          "ttft_mean": 0.3572890803527615,
+          "blocking_probability": 3.7888137488173435e-05,
+          "accepted_rate": 1.1924184496333314,
+          "states": 991,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 13672
+        },
+        "reduced": {
+          "v": [
+            0.5139304031554122
+          ],
+          "w": [
+            0.03833787655155187
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4293345316182438,
+          "duration": 0.04206288100249367,
+          "ttft_mean": 0.3572890803527612,
+          "blocking_probability": 3.788813748684117e-05,
+          "accepted_rate": 1.192418449633333,
+          "states": 836,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 11609
+        }
+      },
+      "absolute_differences": {
+        "queue_only": {
+          "ttft_mean": 5.551115123125783e-17,
+          "w": 1.5959455978986625e-16,
+          "v": 1.3100631690576847e-14,
+          "accepted_rate": 1.0436096431476471e-14,
+          "blocking_probability": 8.881784197001252e-15,
+          "utilization": 2.220446049250313e-15
+        },
+        "reduced": {
+          "ttft_mean": 2.7755575615628914e-16,
+          "w": 2.0816681711721685e-16,
+          "v": 1.2656542480726785e-14,
+          "accepted_rate": 1.199040866595169e-14,
+          "blocking_probability": 1.021405182655144e-14,
+          "utilization": 2.3314683517128287e-15
+        }
+      }
+    },
+    {
+      "cap": 3,
+      "budget": 6,
+      "queue": 6,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.5139864863886632
+          ],
+          "w": [
+            0.03838403093502378
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42934216946199905,
+          "duration": 0.06062113100051647,
+          "ttft_mean": 0.3573422578769539,
+          "blocking_probability": 7.10111847879169e-07,
+          "accepted_rate": 1.1924627830767374,
+          "states": 1467,
+          "stationary_residual": 6.938893903907228e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 27578
+        },
+        "reduced": {
+          "v": [
+            0.5139864863886631
+          ],
+          "w": [
+            0.03838403093502384
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42934216946199877,
+          "duration": 0.07269182500021998,
+          "ttft_mean": 0.35734225787695434,
+          "blocking_probability": 7.101118488783698e-07,
+          "accepted_rate": 1.1924627830767363,
+          "states": 1248,
+          "stationary_residual": 1.1102230246251565e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 23531
+        }
+      },
+      "absolute_differences": {}
+    },
+    {
+      "cap": 3,
+      "budget": 6,
+      "queue": 8,
+      "law": [
+        [
+          1,
+          1,
+          0.3
+        ],
+        [
+          2,
+          2,
+          0.4
+        ],
+        [
+          4,
+          3,
+          0.3
+        ]
+      ],
+      "costs": [
+        0.1,
+        0.02,
+        0.003
+      ],
+      "load": 0.5,
+      "predictions": {
+        "full": {
+          "refusal": "state budget exceeded; reduce support or capacity"
+        },
+        "queue_only": {
+          "v": [
+            0.5139879602166157
+          ],
+          "w": [
+            0.038385320877628054
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.4293423141639818,
+          "duration": 0.08682175099966116,
+          "ttft_mean": 0.35734367678266715,
+          "blocking_probability": 1.2470919408258396e-08,
+          "accepted_rate": 1.1924636149881715,
+          "states": 1943,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 45412
+        },
+        "reduced": {
+          "v": [
+            0.5139879602166151
+          ],
+          "w": [
+            0.03838532087762806
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.42934231416398166,
+          "duration": 0.1071390130018699,
+          "ttft_mean": 0.3573436767826673,
+          "blocking_probability": 1.2470919075191489e-08,
+          "accepted_rate": 1.1924636149881718,
+          "states": 1660,
+          "stationary_residual": 1.3877787807814457e-16,
+          "conservative_load": 0.5,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 38789
+        }
+      },
+      "absolute_differences": {}
+    }
+  ],
+  "refinement": [
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "budget": 2,
+      "load": 0.8,
+      "predictions": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.6406589711731314
+          ],
+          "w": [
+            0.11454620299230417
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6838909828424695,
+          "duration": 0.0017565099988132715,
+          "ttft_mean": 0.4939839795861157,
+          "blocking_probability": 0.035200014134832536,
+          "accepted_rate": 1.8964127486293219,
+          "states": 22,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 50
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.6994404458925756
+          ],
+          "w": [
+            0.16649165833576454
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6980223800401181,
+          "duration": 0.0025682269988465123,
+          "ttft_mean": 0.5519370879038967,
+          "blocking_probability": 0.005299156661766502,
+          "accepted_rate": 1.9551859328515646,
+          "states": 36,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 121
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.7149787197077302
+          ],
+          "w": [
+            0.1810430233941836
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.700112260599305,
+          "duration": 0.00355506400228478,
+          "ttft_mean": 0.5673562457602882,
+          "blocking_probability": 0.0008356097020231212,
+          "accepted_rate": 1.9639594895291927,
+          "states": 50,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 220
+        },
+        {
+          "queue_capacity": 8,
+          "v": [
+            0.718527932143441
+          ],
+          "w": [
+            0.18443750508922763
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7004408985028214,
+          "duration": 0.0045456660009222105,
+          "ttft_mean": 0.5708867977413306,
+          "blocking_probability": 0.00013238563672779424,
+          "accepted_rate": 1.9653417481341962,
+          "states": 64,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 347
+        },
+        {
+          "queue_capacity": 12,
+          "v": [
+            0.7194115405535714
+          ],
+          "w": [
+            0.1852927393577616
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.7005011894118875,
+          "duration": 0.006790911000280175,
+          "ttft_mean": 0.5717669847413219,
+          "blocking_probability": 3.3300783359724306e-06,
+          "accepted_rate": 1.9655954199934427,
+          "states": 92,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 685
+        }
+      ]
+    },
+    {
+      "law": [
+        [
+          2,
+          2,
+          1.0
+        ]
+      ],
+      "budget": 4,
+      "load": 0.8,
+      "predictions": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5507858229072358
+          ],
+          "w": [
+            0.08846418536783576
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6319838018055273,
+          "duration": 0.001612468004168477,
+          "ttft_mean": 0.3994077298752277,
+          "blocking_probability": 0.024342354205637573,
+          "accepted_rate": 1.9177545863279852,
+          "states": 18,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 41
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5781351253991192
+          ],
+          "w": [
+            0.1136176635333572
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6404278401531037,
+          "duration": 0.0024403230054304004,
+          "ttft_mean": 0.42598226311549897,
+          "blocking_probability": 0.002017528803693436,
+          "accepted_rate": 1.9616363070197673,
+          "states": 30,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 101
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5822514998569094
+          ],
+          "w": [
+            0.11755113911675946
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411099244267023,
+          "duration": 0.0033836200018413365,
+          "ttft_mean": 0.43003617371400105,
+          "blocking_probability": 0.00016922131992580525,
+          "accepted_rate": 1.9652693438428976,
+          "states": 42,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 185
+        },
+        {
+          "queue_capacity": 8,
+          "v": [
+            0.5827568110714899
+          ],
+          "w": [
+            0.1180410364967736
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411668126724295,
+          "duration": 0.004486630001338199,
+          "ttft_mean": 0.43053627353752244,
+          "blocking_probability": 1.4180820267162275e-05,
+          "accepted_rate": 1.9655740917537745,
+          "states": 54,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 293
+        },
+        {
+          "queue_capacity": 12,
+          "v": [
+            0.5828184529005034
+          ],
+          "w": [
+            0.11810127649688518
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6411719725711222,
+          "duration": 0.006435814000724349,
+          "ttft_mean": 0.4305974424228998,
+          "blocking_probability": 9.970410774773342e-08,
+          "accepted_rate": 1.9656017696233756,
+          "states": 78,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 581
+        }
+      ]
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "budget": 2,
+      "load": 0.8,
+      "predictions": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.5176140448822466
+          ],
+          "w": [
+            0.09232912125476801
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6363468693170609,
+          "duration": 0.0026688809957704507,
+          "ttft_mean": 0.45732259219833393,
+          "blocking_probability": 0.03312173775896199,
+          "accepted_rate": 2.1122408787352005,
+          "states": 57,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 207
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.5557163166026861
+          ],
+          "w": [
+            0.12648603350276114
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6480736766456091,
+          "duration": 0.0044743620019289665,
+          "ttft_mean": 0.4951836399380966,
+          "blocking_probability": 0.004619824875916945,
+          "accepted_rate": 2.174506117147096,
+          "states": 99,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 558
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.5650571067209387
+          ],
+          "w": [
+            0.13528702675491253
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.649684860018509,
+          "duration": 0.006567024000105448,
+          "ttft_mean": 0.5044925305726524,
+          "blocking_probability": 0.0006773253058384165,
+          "accepted_rate": 2.1831188961095833,
+          "states": 141,
+          "stationary_residual": 4.163336342344337e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1049
+        },
+        {
+          "queue_capacity": 8,
+          "v": [
+            0.567036416796218
+          ],
+          "w": [
+            0.13718735794416792
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6499208840936719,
+          "duration": 0.00887753399729263,
+          "ttft_mean": 0.5064671909514735,
+          "blocking_probability": 9.932044945482055e-05,
+          "accepted_rate": 2.184381604698078,
+          "states": 183,
+          "stationary_residual": 5.551115123125783e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1680
+        },
+        {
+          "queue_capacity": 12,
+          "v": [
+            0.5674860208201434
+          ],
+          "w": [
+            0.13762368730750707
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6499605635542537,
+          "duration": 0.01427857799717458,
+          "ttft_mean": 0.5069160137956245,
+          "blocking_probability": 2.1367388208792804e-06,
+          "accepted_rate": 2.184593912094329,
+          "states": 267,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 3362
+        }
+      ]
+    },
+    {
+      "law": [
+        [
+          1,
+          1,
+          0.6
+        ],
+        [
+          3,
+          2,
+          0.4
+        ]
+      ],
+      "budget": 4,
+      "load": 0.8,
+      "predictions": [
+        {
+          "queue_capacity": 2,
+          "v": [
+            0.44696034633027343
+          ],
+          "w": [
+            0.08021633954804055
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6313362584545774,
+          "duration": 0.0029322370028239675,
+          "ttft_mean": 0.3848001810728361,
+          "blocking_probability": 0.030668982794093247,
+          "accepted_rate": 2.3948882451041547,
+          "states": 37,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 151
+        },
+        {
+          "queue_capacity": 4,
+          "v": [
+            0.47395025115375056
+          ],
+          "w": [
+            0.10490498304223374
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6417298451280907,
+          "duration": 0.004779843002324924,
+          "ttft_mean": 0.411454035998609,
+          "blocking_probability": 0.003106106099685313,
+          "accepted_rate": 2.462986766893921,
+          "states": 67,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 422
+        },
+        {
+          "queue_capacity": 6,
+          "v": [
+            0.47890312500326143
+          ],
+          "w": [
+            0.10962571247498412
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6427564876531929,
+          "duration": 0.007033014997432474,
+          "ttft_mean": 0.4163763098839845,
+          "blocking_probability": 0.00032432276221316947,
+          "accepted_rate": 2.469859610223068,
+          "states": 97,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 801
+        },
+        {
+          "queue_capacity": 8,
+          "v": [
+            0.4796605936497043
+          ],
+          "w": [
+            0.1103588836361853
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.6428632933538025,
+          "duration": 0.009533036005450413,
+          "ttft_mean": 0.4171306206867476,
+          "blocking_probability": 3.3889691714805714e-05,
+          "accepted_rate": 2.470577171854935,
+          "states": 127,
+          "stationary_residual": 2.7755575615628914e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 1288
+        },
+        {
+          "queue_capacity": 12,
+          "v": [
+            0.47977856524021834
+          ],
+          "w": [
+            0.11047404970958895
+          ],
+          "p": null,
+          "pi": null,
+          "utilization": 0.642875613265774,
+          "duration": 0.014968276998843066,
+          "ttft_mean": 0.41724822840625053,
+          "blocking_probability": 3.71061912973758e-07,
+          "accepted_rate": 2.4706599850230684,
+          "states": 187,
+          "stationary_residual": 8.326672684688674e-17,
+          "conservative_load": 0.8,
+          "model": "finite waiting-capacity loss semi-Markov, exact iid reduction",
+          "transition_words": 2586
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "frozen_cases": 48,
+    "expanded_cases": 16,
+    "expanded_full_refusals": 8,
+    "expanded_reduced_refusals": 0,
+    "max_absolute_reward_difference": 4.3520742565306136e-14
+  },
+  "schema_version": 1,
+  "python": "3.12.3",
+  "numpy": "2.2.5",
+  "scipy": "1.13.0"
+}

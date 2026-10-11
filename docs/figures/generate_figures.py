@@ -2078,6 +2078,46 @@ def fig_smdp_batching():
     return fig
 
 
+def fig_heterogeneous_bulk_service():
+    """Shared FCFS, heterogeneous threshold dispatch and exact FP/BP/PH split."""
+    fig, ax = plt.subplots(figsize=(11, 4.8))
+    _clean_axes(ax, (0, 11), (0, 4.8))
+    ax.text(
+        5.5,
+        4.5,
+        t("Heterogeneous bulk service", "Групповое обслуживание разных типов"),
+        ha="center",
+        fontsize=15,
+        fontweight="bold",
+    )
+    draw_queue(ax, 0.8, 3, n_slots=5, occupied=4)
+    ax.text(1.8, 2.45, t("Poisson → shared FCFS", "Пуассон → общая FCFS"), ha="center", fontsize=10)
+    for y, color, label in ((3.6, AQUA, "A"), (2.35, VIOLET, "B")):
+        draw_arrow(ax, 3.1, 3, 4.7, y)
+        draw_server(ax, 5, y, color=color, label=label)
+    ax.text(5.8, 3.6, "Nₐ, μₐ, Tₐ, Bₐ", fontsize=11, va="center")
+    ax.text(5.8, 2.35, "Nᵦ, μᵦ, Tᵦ, Bᵦ", fontsize=11, va="center")
+    ax.text(
+        9,
+        3.1,
+        t("Exp(μ) per batch\nsize-independent", "Exp(μ) на пакет\nне зависит от размера"),
+        fontsize=11,
+        ha="center",
+        va="center",
+    )
+    for x, color, label in (
+        (1.8, BLUE, t("Free period\nfinite chain", "Есть свободные\nконечная цепь")),
+        (5.5, AQUA, t("All busy\nexact geometric Q", "Все заняты\nточный геометрический Q")),
+        (9.1, VIOLET, t("Tagged request\nPH waiting + service", "Помеченная заявка\nPH ожидания + обслуживания")),
+    ):
+        ax.add_patch(FancyBboxPatch((x - 1.6, 0.35), 3.2, 1.2, boxstyle="round,pad=.04", fc="white", ec=color, lw=2))
+        ax.text(x, 0.95, label, ha="center", va="center", fontsize=10)
+    draw_arrow(ax, 3.5, 0.95, 3.85, 0.95)
+    draw_arrow(ax, 7.15, 0.95, 7.45, 0.95)
+    fig.tight_layout()
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -2116,6 +2156,7 @@ FIGURES = {
     "kv_cache_stability": fig_kv_cache_stability,
     "kv_cache_congestion": fig_kv_cache_congestion,
     "smdp_batching": fig_smdp_batching,
+    "heterogeneous_bulk_service": fig_heterogeneous_bulk_service,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,
