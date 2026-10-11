@@ -122,6 +122,42 @@ iid/finite-support/mark-blind/policy прежние; не GPU/SLO certificate.
 в three-seed t95 intervals. [Вывод](../research/phase-aware-stability-validation-2026.md) ·
 [JSON](../research/phase-aware-stability-results-2026.json).
 
+## Уточнение полного возврата через конечное ядро (EPIC-097)
+
+`CoreAwareTtftCalc` сохраняет прежнюю infinite iid queue и rational drift,
+но учитывает фазу после выхода за N и решает auxiliary killed domain h<=K.
+Ни один выход не означает потерю заявки: exterior rewards и повторные
+возвраты до idle явно ограничиваются.
+
+```python
+from most_queue.theory.continuous_batching import CoreAwareTtftCalc
+
+calc = CoreAwareTtftCalc(batch_cap=2, token_budget=4,
+                       truncation=64, core_truncation=8, mode="core")
+calc.set_servers([(1, 1, 0.6), (3, 2, 0.4)], alpha=0.1, beta=0.02, gamma=0.003)
+calc.set_sources(3.0)
+r = calc.run()
+print(r.mean_bounds, r.continuation_diagnostics)
+```
+
+`mode="phase"` — actual exit-phase shifts с прежним clearing bound;
+`mode="core"` дополнительно решает систему возвратов. N и K — целые >=B-1,
+K не physical buffer; B1 остаётся PK без auxiliary solve.
+Budgets20000states/2000000kernel words относятся к **сумме двух count kernels**;
+phase certificate имеет прежний отдельный бюджет. Основные `states` и
+`transition_words` не включают auxiliary kernel; полные значения —
+`continuation_diagnostics.total_count_states/total_count_transition_words`.
+`kernel_storage_bytes`/`total_kernel_storage_bytes` считают CSR arrays,
+не peak RSS, factorization storage или всю память фазового расчёта.
+Сохраняются core bounds, idle/exit probabilities, solve residuals и явные отказы.
+`return_bound_constants` содержит exterior/старые fallback constants;
+используемый новый core vector — `continuation_diagnostics.core_upper`.
+
+При общем N интервалы аналитически вложены в прежние; уменьшение states/runtime
+не гарантировано. Mean arithmetic floating, `roundoff_certified=False`;
+не dependent-input, GPU/SLO или TTFT quantiles.
+[Доказательство и frozen run](../research/core-aware-continuation-validation-2026.md).
+
 ## Бесконечная очередь с оценкой ошибки усечения
 
 ```python

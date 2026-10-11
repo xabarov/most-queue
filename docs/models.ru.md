@@ -14,7 +14,7 @@
 |---|---|
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | Clipping PMF; dynamic/fixed/закрытый elastic; ранний выход, стоимость через максимум/сумму, M/G/1 и общие callback-законы |
 | [Совместные prefill и decode](models/prefill-decode.ru.md) | Три стоимости итерации, effective chunked prefill, точная занятость surrogate и приближённые TTFT/ITL, независимый токеновый DES |
-| [Стадийный средний TTFT](models/stage-aware-ttft.ru.md) | StageAware / Reduced / InfiniteStageAware / PhaseAwareTtftCalc: iid стадии, B1 PK, finite loss либо infinite mean bounds; PhaseAwareStabilityCalc точно проверяет saturated drift, не всю арифметику средних |
+| [Стадийный средний TTFT](models/stage-aware-ttft.ru.md) | StageAware / Reduced / InfiniteStageAware / PhaseAware / CoreAwareTtftCalc: iid стадии, B1 PK, finite loss либо infinite bounds с finite-core continuation; PhaseAwareStabilityCalc проверяет drift, не всю арифметику средних |
 | [KV-вытеснение и congestion](models/kv-cache-congestion.ru.md) | Непрерывные стадии, однородные циклы, конечный спектр, пропорциональный cap; отдельная целая LPF/restart FCFS-имитация |
 | [SMDP запуска пакета](models/smdp-batching.ru.md) | Зависимые от размера фиксированные время/энергия, конечный overflow RVI, явный дрейф хвоста, unbounded FCFS DES |
 | [Гетерогенное групповое обслуживание](models/heterogeneous-bulk-service.ru.md) | Общая FCFS, параметры приборов по типам, точные PH W/V и бесконечный геометрический хвост очереди |

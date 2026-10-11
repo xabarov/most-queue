@@ -41,6 +41,7 @@ class InfiniteStageAwareTtftResults(ReducedStageAwareTtftResults):
     cycle_time_lower: float | None = None
     cycle_time_remainder_upper: float | None = None
     roundoff_certified: bool = False
+    kernel_storage_bytes: int = 0
 
 
 class InfiniteStageAwareTtftCalc(ReducedStageAwareTtftCalc):
@@ -94,6 +95,11 @@ class InfiniteStageAwareTtftCalc(ReducedStageAwareTtftCalc):
         population = waiting + self.batch_cap * duration
         return np.array((duration, population, waiting, population))
 
+    def _exit_remainder(self, survivors, moments, work, probs):
+        """Continuation hook; legacy bounds do not depend on the exit phase."""
+        del survivors
+        return self._remainder(moments, work, probs)
+
     def _killed_kernel(self, probs, work):
         """Build the genuine restricted infinite kernel, rewards and exit bounds."""
         states, index = [((), 0)], {((), 0): 0}
@@ -123,11 +129,14 @@ class InfiniteStageAwareTtftCalc(ReducedStageAwareTtftCalc):
                 mean = self.l * duration
                 if not np.isfinite(mean):
                     raise ValueError("arrival holding product overflow")
-                cache_key = (duration, waiting, vacancies)
+                cache_key = (duration, waiting, vacancies, survivors)
                 if cache_key not in arrival_cache:
                     masses = poisson.pmf(np.arange(last + 1), mean)
                     moments = self._overshoot_moments(mean, last + 1, waiting - vacancies)
-                    arrival_cache[cache_key] = masses, np.r_[moments[0], self._remainder(moments, work, probs)]
+                    arrival_cache[cache_key] = (
+                        masses,
+                        np.r_[moments[0], self._exit_remainder(survivors, moments, work, probs)],
+                    )
                 masses, exit_reward = arrival_cache[cache_key]
                 new_area = self.l * duration**2 / 2
                 unfirst = waiting + sum(q <= self.law[k][0] for k, q in active)
@@ -242,4 +251,5 @@ class InfiniteStageAwareTtftCalc(ReducedStageAwareTtftCalc):
             waiting_tail_upper=float(min(1.0, (visits @ tail_times + remainder[0]) / lower_time)),
             cycle_time_lower=float(lower_time),
             cycle_time_remainder_upper=float(remainder[0]),
+            kernel_storage_bytes=matrix.data.nbytes + matrix.indices.nbytes + matrix.indptr.nbytes,
         )

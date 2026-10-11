@@ -137,6 +137,13 @@ print(f"Среднее ожидание: теория {theory.w[0]:.3f} vs си�
 
 ## Новости
 
+- **2026-10 — Уточнение полного возврата TTFT (EPIC-097)**:
+  `CoreAwareTtftCalc` сохраняет бесконечные excursions и сужает mean intervals.
+  Original48 пройдены; near-critical28/32 вместо24/32. Frozen цель двукратного
+  сокращения total states не достигнута (1/32); low-load overhead сохранён.
+  Floating means, не verified rounding или GPU/SLO.
+  [Вывод, сравнение и fresh DES](docs/research/core-aware-continuation-validation-2026.md).
+
 - **2026-10 — Фазозависимая устойчивость (EPIC-096)**: `PhaseAwareStabilityCalc`
   проверяет все достижимые замкнутые классы и точный рациональный drift;
   `PhaseAwareTtftCalc` даёт floating bounds бесконечных средних. 48/48 исходных

@@ -132,6 +132,13 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
 
+- **2026-10 — Finite-core infinite TTFT continuation (EPIC-097)**:
+  `CoreAwareTtftCalc` retains exterior excursions and tightens mean intervals.
+  Original48 cases pass; near-critical28/32 versus24/32 previously. The frozen
+  twofold total-state target fails (1/32); low-load auxiliary overhead is reported.
+  Floating means, no verified rounding or GPU/SLO claim.
+  [Derivation, ablations and fresh DES](docs/research/core-aware-continuation-validation-2026.md).
+
 - **2026-10 — Phase-aware stability (EPIC-096)**: `PhaseAwareStabilityCalc`
   checks every reachable saturated class with exact rational row drift;
   `PhaseAwareTtftCalc` adds floating infinite mean bounds. 48/48 original cases

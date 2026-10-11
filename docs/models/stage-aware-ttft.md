@@ -189,6 +189,47 @@ fresh high-load cases reach N128, with 12 means inside three-seed t95 intervals.
 [Proof and sources](../research/phase-aware-stability-validation-2026.md) ·
 [complete JSON](../research/phase-aware-stability-results-2026.json).
 
+## Finite core continuation (EPIC-097)
+
+`CoreAwareTtftCalc` keeps the infinite iid queue and exact drift certificate,
+but uses the actual refill-phase shifts and a finite return-system solve to
+tighten full-cycle continuation. It does not discard requests at either boundary.
+
+```python
+from most_queue.theory.continuous_batching import CoreAwareTtftCalc
+
+means = CoreAwareTtftCalc(batch_cap=2, token_budget=4,
+                          truncation=64, core_truncation=8, mode="core")
+means.set_servers([(1, 1, 0.6), (3, 2, 0.4)], alpha=0.1, beta=0.02, gamma=0.003)
+means.set_sources(3.0)
+r = means.run()
+print(r.mean_bounds, r.continuation_diagnostics)
+```
+
+`mode="phase"` isolates the exit-phase improvement with the old core bound;
+`mode="core"` additionally solves the auxiliary killed domain h<=K.
+Both N=`truncation` and K=`core_truncation` must be integers >=B-1.
+The domain solve includes explicit exterior rewards and repeated returns;
+K is **not** a physical loss buffer. B1 still uses PK with no auxiliary solve.
+
+Default20000states/2000000kernel words apply to the **sum of both count-domain
+systems**; the saturated phase construction retains its separate budget.
+`states`/`transition_words` describe the main kernel;
+`continuation_diagnostics.total_count_states/total_count_transition_words`
+include the auxiliary work. `kernel_storage_bytes` counts CSR arrays, not peak
+memory; `total_kernel_storage_bytes` sums the two kernels. Phase/refill mixture
+arithmetic and sparse factorization storage are not part of this byte metric.
+Mode, core bounds, idle/exit absorption probabilities and solve residuals are
+reported. Singular, noncontracting, overflowing or over-budget cases refuse.
+`return_bound_constants` retains exterior/old fallback constants; the actually
+used tightened core vector is `continuation_diagnostics.core_upper`.
+
+Intervals weakly improve the old method at a common N in exact arithmetic;
+state/runtime improvement is not guaranteed. Mean arithmetic is floating and
+`roundoff_certified=False`, even with a rationally verified drift. This does
+not support correlated marks, real-support compression or TTFT quantiles.
+[Derivation and frozen experiment](../research/core-aware-continuation-validation-2026.md).
+
 ## Sources
 
 The methods are known renewal rewards/Little/PK, not a new general theorem.

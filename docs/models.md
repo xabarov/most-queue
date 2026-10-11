@@ -18,7 +18,7 @@ add a figure function and regenerate the PNGs.
 | [KV-cache stability](models/kv-cache-stability.md) | Joint length PMFs, growing memory, necessary upper / conditional sufficient lower bounds, fixed-horizon maximal/free-swap simulator |
 | [Variable token length batching](models/token-batching.md) | Clipped output PMFs; dynamic/fixed/gated elastic service; early completion, conditional maximum/sum costs, M/G/1 clipping, generic callback laws |
 | [Mixed prefill and decode](models/prefill-decode.md) | Three iteration costs, effective chunked prefill, exact surrogate occupancy and approximate TTFT/ITL, independent token-level DES |
-| [Stage-resolved mean TTFT](models/stage-aware-ttft.md) | StageAware / Reduced / InfiniteStageAware / PhaseAwareTtftCalc: iid stages, B1 PK, finite loss or infinite mean bounds; PhaseAwareStabilityCalc verifies saturated drift, not full mean arithmetic |
+| [Stage-resolved mean TTFT](models/stage-aware-ttft.md) | StageAware / Reduced / InfiniteStageAware / PhaseAware / CoreAwareTtftCalc: iid stages, B1 PK, finite loss or infinite mean bounds with finite-core continuation; PhaseAwareStabilityCalc verifies drift, not full mean arithmetic |
 | [Unbounded dynamic batching](models/dynamic-batching.md) | Inoue's all-waiting batch rule, five affine-mean service laws, numerical delay means with truncation diagnostics, deterministic latency bounds and independent DES |
 | [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G approximations |
 | [Size-based scheduling](models/size-based.md) | SRPT/SJF/PSJF/SPJF (with predictions), FB/LAS, PS, LCFS-PR |
