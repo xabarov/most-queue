@@ -483,6 +483,13 @@ res = sim.run(50_000)
 
 ## Prefill и decode на границах итераций
 
+`KvCacheCongestionSim` — независимая [LPF/restart модель](models/kv-cache-congestion.ru.md):
+целые запросы, класс и decode-возраст, Poisson/replay, фиксированный горизонт
+без drain. Cap целый; дробная флюидная скорость не округляется автоматически.
+FCFS-допуск с блокировкой головы не равен пропорциональной карте. Сохраняются
+unfinished jobs, потерянная работа и точные балансы, не censored latency.
+[Независимые проверки Л5](research/kv-cache-congestion-validation-2026.md).
+
 `KvCacheStabilitySim` — отдельная [модель KV-памяти](models/kv-cache-stability.ru.md):
 постоянные слоты, joint lengths, растущий footprint, ongoing-first максимальная
 упаковка и бесплатная выгрузка на CPU. `run(num_of_slots, warmup_slots=...,

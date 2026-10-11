@@ -12,6 +12,7 @@ add a figure function and regenerate the PNGs.
 
 | Family | What's inside |
 |---|---|
+| [KV-cache congestion](models/kv-cache-congestion.md) | Continuous stage-memory dynamics, homogeneous cycles, finite spectrum, proportional caps; independent integer LPF/restart FCFS |
 | [KV-cache stability](models/kv-cache-stability.md) | Joint length PMFs, growing memory, necessary upper / conditional sufficient lower bounds, fixed-horizon maximal/free-swap simulator |
 | [Variable token length batching](models/token-batching.md) | Clipped output PMFs; dynamic/fixed/gated elastic service; early completion, conditional maximum/sum costs, M/G/1 clipping, generic callback laws |
 | [Mixed prefill and decode](models/prefill-decode.md) | Three iteration costs, effective chunked prefill, exact surrogate occupancy and approximate TTFT/ITL, independent token-level DES |
@@ -62,6 +63,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 
 | Model | Calculator class | Simulation | Priorities | Notes |
 |--------|--------------|-----------|------------|-------------|
+| [KV-cache congestion](models/kv-cache-congestion.md) | KvCacheCongestionCalc | KvCacheCongestionSim | LPF eviction | Per iteration; continuous proportional != integer FCFS; no stochastic stability/latency certificate |
 | [KV-cache stability](models/kv-cache-stability.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Constant slots; finite joint lengths with correlation; explicit free-swap/maximal assumptions; no analytic delay/PMF |
 | [Variable-token batching](models/token-batching.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Numerical means for random duration; fixed surrogate explicit; physical dynamic cap in DES only; no analytic tails |
 | [Mixed prefill/decode](models/prefill-decode.md) | PrefillDecodeCalc | PrefillDecodeSim | - | Exact infinite-tail CTMC surrogate; approximate first-token/inter-token means, nonphysical estimates flagged; no analytic TTFT/ITL tails |

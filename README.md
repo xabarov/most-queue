@@ -92,6 +92,7 @@ See the executable comparison of **9 disciplines** in
 | [Unbounded dynamic batching](docs/models/dynamic-batching.md) | All-waiting dispatch; deterministic/exponential/Erlang/gamma/H2 batch durations, affine mean; independent simulator | numerical means with truncation diagnostics |
 | [Variable-token batching](docs/models/token-batching.md) | Output length/max-token clipping; dynamic, fixed and gated elastic service with non-exponential durations; general service callbacks | numerical means; M/G/1 clipping means exact |
 | [Mixed prefill/decode](docs/models/prefill-decode.md) | Three iteration costs, occupancy-dependent effective chunking, continuous boundary admission, independent token-level DES | exact surrogate occupancy; approximate mean TTFT/ITL |
+| [KV-cache congestion](docs/models/kv-cache-congestion.md) | Deterministic stage dynamics, LPF eviction/restart, finite spectrum and admission cap; independent integer FCFS | fluid linear stability is not open-queue recurrence |
 | [KV-cache stability](docs/models/kv-cache-stability.md) | Joint prompt/output lengths, growing KV footprints, constant slots; independent maximal/free-swap simulation | necessary upper and conditional sufficient lower bounds, not an exact threshold |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
@@ -128,6 +129,12 @@ manufacturing lines · telecom traffic · healthcare resource planning ·
 scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
+
+- **2026-10, current source tree** — **KV-cache congestion (L5 / EPIC-088)**:
+  continuous eviction/restart trajectories, homogeneous cycles, finite-input
+  spectrum and rate caps; independent integer FCFS simulation with work/request
+  conservation. Includes rational and exact Schur checks, 48 spectra and 24
+  paired synthetic DES settings. [Model and limits](docs/models/kv-cache-congestion.md).
 
 - **2026-10, current source tree** — **KV-cache stability (L4 / EPIC-087)**:
   joint-length resource-area bounds, correlation-sensitive capacity and strict

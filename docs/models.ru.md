@@ -14,6 +14,7 @@
 |---|---|
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | Clipping PMF; dynamic/fixed/закрытый elastic; ранний выход, стоимость через максимум/сумму, M/G/1 и общие callback-законы |
 | [Совместные prefill и decode](models/prefill-decode.ru.md) | Три стоимости итерации, effective chunked prefill, точная занятость surrogate и приближённые TTFT/ITL, независимый токеновый DES |
+| [KV-вытеснение и congestion](models/kv-cache-congestion.ru.md) | Непрерывные стадии, однородные циклы, конечный спектр, пропорциональный cap; отдельная целая LPF/restart FCFS-имитация |
 | [KV-память и устойчивость](models/kv-cache-stability.ru.md) | Совместные длины, растущая память, необходимые/достаточные границы, конечный горизонт и maximal/free-swap имитация |
 | [Неограниченный динамический батчинг](models/dynamic-batching.ru.md) | Правило Inoue «забрать всех», пять законов с аффинным средним, численные средние задержек с диагностикой усечения, оценки при детерминированном времени и независимый DES |
 | [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G-аппроксимации |
@@ -57,6 +58,7 @@
 
 | Модель | Класс расчета | Симуляция | Приоритеты | Особенности |
 |--------|--------------|-----------|------------|-------------|
+| [KV-вытеснение и congestion](models/kv-cache-congestion.ru.md) | KvCacheCongestionCalc | KvCacheCongestionSim | LPF eviction | Итерационные единицы; непрерывные пропорции != целый FCFS; нет stochastic stability/latency сертификата |
 | [KV-память и устойчивость](models/kv-cache-stability.ru.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Постоянный слот; корреляция длин; явные maximal/free-swap допущения; без задержек и стационарного PMF |
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Численные средние при случайном времени; fixed-подмена средним явно; физический cap dynamic только в DES; без аналитических хвостов |
 | [Совместные prefill/decode](models/prefill-decode.ru.md) | PrefillDecodeCalc | PrefillDecodeSim | - | Точный бесконечный хвост CTMC-surrogate; средние TTFT/ITL приближённо, нефизические оценки помечены; без аналитических хвостов задержек |

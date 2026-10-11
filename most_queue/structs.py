@@ -31,6 +31,61 @@ class QueueResults:
 
 
 @dataclass
+class KvCacheCongestionResults(QueueResults):
+    """Saturated continuous equilibrium/spectrum, not open-queue stability."""
+
+    nominal_throughput: float = 0.0
+    worst_cycle_throughput: float | None = None
+    worst_cycle_ratio: float | None = None
+    fixed_point: list[list[float]] = field(default_factory=list)
+    coefficients: list[float] = field(default_factory=list)
+    limiting_coefficients: list[float] = field(default_factory=list)
+    spectral_radius: float = 0.0
+    limiting_spectral_radius: float = 0.0
+    root_residual: float = 0.0
+    decode_gcd: int = 1
+    linear_stability: str = "near_boundary"
+    diagnostics: list[str] = field(default_factory=list)
+
+
+@dataclass
+class KvCacheFluidResults(QueueResults):
+    """Finite trajectory of continuous proportional saturated admission."""
+
+    final_state: list[list[float]] = field(default_factory=list)
+    throughput: float = 0.0
+    evicted_mass: float = 0.0
+    executed_work: float = 0.0
+    completed_work: float = 0.0
+    discarded_work: float = 0.0
+    remaining_work: float = 0.0
+    initial_work: float = 0.0
+    memory_fraction: float = 0.0
+    iteration_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
+class KvCacheCongestionSimResults(QueueResults):
+    """Integer request accounting; no draining or censored delay statistics."""
+
+    initial_jobs: int = 0
+    arrived: int = 0
+    completed: int = 0
+    unfinished: int = 0
+    throughput: float = 0.0
+    evictions: int = 0
+    executed_work: int = 0
+    completed_work: int = 0
+    discarded_work: int = 0
+    remaining_work: int = 0
+    initial_work: int = 0
+    memory_fraction: float = 0.0
+    final_queue: int = 0
+    final_state: list[list[int]] = field(default_factory=list)
+    iteration_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
 class KvCacheStabilityResults(QueueResults):
     """Conditional stability bounds, not exact capacity or a stationary PMF.
 

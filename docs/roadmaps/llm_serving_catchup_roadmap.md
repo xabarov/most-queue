@@ -28,7 +28,7 @@
 | Л2 | **Переменная длина вывода**: время обслуживания пакета зависит от его размера И от максимальной длины вывода внутри пакета; max-token clipping; три стратегии батчинга | Yang Y., Jiao L., Xu Y., arXiv:2407.05347, 2024 | открыт | **done**, [EPIC-085](../epics/EPIC-085-variable-token-batching.md) |
 | Л3 | **Трёхпараметрическая модель стоимости итерации** + state-dependent цепь по занятости, совмещённое исполнение prefill/decode | Ramani V., Tantawi A.N., arXiv:2609.20957, 2026 | открыт | **done**, [EPIC-086](../epics/EPIC-086-prefill-decode-iteration-cost.md) |
 | Л4 | **Совместное ограничение «вычисления + память KV-cache»**: условия устойчивости | Nie C., Si N., Zhou Z., ICML 2026, arXiv:2605.04595 | открыт | **done**, [EPIC-087](../epics/EPIC-087-kv-cache-stability.md) |
-| Л5 | **Флюидная (детерминированная) модель вытеснения KV-cache**: предельные циклы, потеря throughput | Ao R., Dong J., Luo G., Simchi-Levi D., arXiv:2606.15555, 2026 | открыт | не начато |
+| Л5 | **Флюидная (детерминированная) модель вытеснения KV-cache**: предельные циклы, потеря throughput | Ao R., Dong J., Luo G., Simchi-Levi D., arXiv:2606.15555, 2026 | открыт | **done**, [EPIC-088](../epics/EPIC-088-kv-cache-congestion.md) |
 | Л6 | **Оптимальный момент запуска пакета как SMDP** | Xu Y., Sun J., Zhou S., Niu Z., ICC 2023, arXiv:2301.12865 | открыт | не начато |
 | Л7 | **Распределение приборов между арендаторами** (слой С) | Okuyama R., Inoue Y., IEEE Trans. Cloud Computing 14, 2026, doi:10.1109/tcc.2026.3696613 | **закрыт**, препринта нет | не начато; риск как в Р9 |
 | Л8 | **Групповое обслуживание гетерогенными приборами** | Queueing Systems, 2020, doi:10.1007/s11134-020-09654-y | открыт (hybrid) | не начато |
@@ -128,4 +128,12 @@ chunked prefill, полный геометрический хвост surrogate,
 36 synthetic настроек × 4 репликации. Полная регрессия — 2992 passed,
 fast — 2983 passed; EN/RU документация, README/каталог, эпик и память обновлены.
 [Метод и ограничения](../research/kv-cache-stability-validation-2026.md).
-Следующий пункт — **Л5** (service-induced KV congestion), не начат.
+**Л5 закрыт** в библиотечном контракте: saturated continuous LPF/restart,
+equilibrium/homogeneous cycle, finite spectrum с numerical boundary guard,
+cap и независимый integer FCFS DES. 75 targeted, full 3071 passed,
+fast 3061 passed; 10 trajectories, 48 spectra, 24 DES-settings×4seeds,
+воспроизводимый JSON. EN/RU документация, каталоги, эпик и диссертационные
+карточки/журнал/архив обновлены. Прочитан основной текст и выбранные приложения,
+не выполнен аудит всех proof appendices. Paid wall-clock recovery не реализован.
+[Арбитры и границы](../research/kv-cache-congestion-validation-2026.md).
+Следующий пункт — **Л6**, оптимальный запуск пакета как SMDP, не начат.

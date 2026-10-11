@@ -558,6 +558,14 @@ Its sibling `PrefillDecodeCalc` solves a Markovian surrogate; agreement with
 that approximation is not an exact DES oracle. See the
 [independent M/D/1 and trace checks](research/prefill-decode-validation-2026.md).
 
+`KvCacheCongestionSim` is an independent [LPF eviction/restart model](models/kv-cache-congestion.md).
+It tracks integer requests with class and decode age. Runs accept Poisson
+arrivals or exact integer replay and stop without drain; caps are integers,
+not silently rounded fluid rates. Admission is FCFS with head-of-line blocking,
+not the proportional continuous map. Results include unfinished jobs, discarded
+work and exact request/work conservation, not censored latency estimates.
+See the [L5 independent checks](research/kv-cache-congestion-validation-2026.md).
+
 **See also:**
 
 - [Numerical Methods](calculation.md) — analytical calculations

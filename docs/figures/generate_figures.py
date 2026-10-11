@@ -1993,6 +1993,49 @@ def fig_kv_cache_stability():
     return fig
 
 
+def fig_kv_cache_congestion():
+    """Protocol, memory growth and the lost-progress restart feedback."""
+    fig, ax = plt.subplots(figsize=(12, 3.5))
+    ax.set_xlim(-0.3, 12)
+    ax.set_ylim(-1.8, 1.8)
+    ax.axis("off")
+    labels = [
+        t("Execute one stage\nretire completions", "Выполнить стадию\nзавершённые выходят"),
+        t("Arrivals\njoin waiting queue", "Приходы\nв очередь ожидания"),
+        t("Overflow: LPF\nevict least progress", "Переполнение: LPF\nвытеснить младших"),
+        t("Admission\nFCFS / proportional", "Допуск\nFCFS / пропорции"),
+    ]
+    for index, (label, color) in enumerate(zip(labels, [BLUE, AQUA, RED, VIOLET])):
+        x = 3 * index
+        ax.add_patch(FancyBboxPatch((x, 0), 2.3, 1, boxstyle="round,pad=0.1", fc=color, ec="none"))
+        ax.text(x + 1.15, 0.5, label, ha="center", va="center", color="white", fontsize=11)
+        if index < 3:
+            ax.add_patch(FancyArrowPatch((x + 2.45, 0.5), (x + 2.85, 0.5), arrowstyle="->", mutation_scale=15))
+    ax.annotate(
+        "",
+        xy=(4.15, -0.55),
+        xytext=(7.15, -0.05),
+        arrowprops={"arrowstyle": "->", "color": RED, "connectionstyle": "arc3,rad=-0.25"},
+    )
+    ax.text(
+        5.8,
+        -1.05,
+        t("Discard cache + decode work; restart at age 0", "Потерять cache и decode-работу; перезапуск с возраста 0"),
+        ha="center",
+        fontsize=11,
+        color=RED,
+    )
+    ax.set_title(
+        t(
+            "Growing KV: S+1+j · per-iteration units · no recovery-time model",
+            "Рост KV: S+1+j · единица — итерация · recovery time не задан",
+        ),
+        fontsize=12,
+    )
+    fig.tight_layout()
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -2029,6 +2072,7 @@ FIGURES = {
     "continuous_batching": fig_continuous_batching,
     "prefill_decode": fig_prefill_decode,
     "kv_cache_stability": fig_kv_cache_stability,
+    "kv_cache_congestion": fig_kv_cache_congestion,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,
