@@ -89,6 +89,7 @@ See the executable comparison of **9 disciplines** in
 | Negative customers | M/G/1 and M/G/c with RCS or disasters | exact / Takahashi–Takami |
 | Reliability | M/G/1 and M/M/c with breakdowns & repairs, machine repair problem (spares, R repairmen, 2 heterogeneous repairmen), working breakdowns, disasters with a repair phase, retrial with an unreliable server | Avi-Itzhak–Naor / exact CTMC / birth-death |
 | Matrix-analytic (MAP/PH) | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c, MAP/PH/c — correlated (bursty) arrivals, single- & multi-server; MMPP fitting | QBD, logarithmic reduction |
+| [Unbounded dynamic batching](docs/models/dynamic-batching.md) | All-waiting dispatch; deterministic/exponential/Erlang/gamma/H2 batch durations, affine mean; independent simulator | numerical means with truncation diagnostics |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
@@ -124,6 +125,13 @@ manufacturing lines · telecom traffic · healthcare resource planning ·
 scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
+
+- **2026-10, current source tree** — **Unbounded dynamic batching (L1 / EPIC-084)**:
+  numerical analysis of Inoue's model with deterministic, exponential, Erlang, gamma
+  and H2 batch durations; moment-aware truncation diagnostics, published latency bounds,
+  and an independent event simulator. Includes a reproducible 60-point comparison and
+  checks against closed forms and capped-batch CTMCs. Mean delays only, not analytic tails.
+  [Model and limits](docs/models/dynamic-batching.md).
 
 - **2026-10, current source tree** — **Exact SLA tail for batch-service queues**:
   `get_tail`/`get_cdf` give the exact (not moment-fitted, not an upper bound)

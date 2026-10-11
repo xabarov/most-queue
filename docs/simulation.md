@@ -499,6 +499,14 @@ For a comparison against `QsSim` in `FCFS` mode, see the test `tests/test_size_b
 
 ## Usage Tips
 
+For **unbounded dynamic batching**, use
+[`DynamicBatchingSim`](models/dynamic-batching.md#simulator).
+It supports deterministic, exponential, Erlang, gamma and H2 affine-mean batch
+durations. `run(num_of_jobs=30_000, warmup_fraction=0.2)` collects whole batches
+after warmup; the returned count may exceed the requested minimum.
+All customer, batch and time statistics exclude warmup consistently. Its empirical
+CDF is not an analytical tail guarantee.
+
 1. **Start with simple models** — verify things work on M/M/1 before moving to complex systems
 2. **Use enough jobs** — accurate results require a lot of data
 3. **Check the utilization** — make sure the system is stable

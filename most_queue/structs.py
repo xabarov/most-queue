@@ -31,6 +31,32 @@ class QueueResults:
 
 
 @dataclass
+class DynamicBatchingResults(QueueResults):
+    """Unbounded batching means; diagnostics are not certified error bounds.
+
+    p/pi are unset: batch_distribution is a batch-epoch PMF, not the
+    time/arrival-stationary number of jobs. Only first w/v moments are
+    supported. converged is false for a pinned, unrefined truncation.
+    """
+
+    waiting_mean: float = 0.0
+    latency_mean: float = 0.0
+    service_mean: float = 0.0
+    batch_mean: float = 0.0
+    batch_second_moment: float = 0.0
+    idle_probability: float = 0.0
+    jobs_mean: float = 0.0
+    max_batch: int = 0
+    batch_distribution: object = None
+    boundary_second_moment_fraction: float = 0.0
+    refinement_error: float | None = None
+    flow_residual: float = 0.0
+    moment_residual: float = 0.0
+    stationary_residual: float = 0.0
+    converged: bool = False
+
+
+@dataclass
 class MsjResults(QueueResults):
     """MSJ means and diagnostics; analytical moments contain only the mean."""
 

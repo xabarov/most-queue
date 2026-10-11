@@ -1846,6 +1846,39 @@ def fig_inventory():
     return fig
 
 
+def fig_dynamic_batching():
+    """Completion-gated, all-waiting dispatch with no physical batch cap."""
+    fig, ax = plt.subplots(figsize=(8.2, 3.0), dpi=150)
+    _clean_axes(ax, (-0.4, 10.5), (-1.5, 1.8))
+    _title(
+        ax,
+        t("Dynamic batching: all waiting jobs start together", "Динамический батчинг: все ожидающие стартуют вместе"),
+    )
+    ax.text(0.1, 0.65, t("Poisson arrivals", "Пуассоновский поток"), fontsize=9)
+    for x in (0.1, 0.6, 1.1):
+        draw_customer(ax, x, 0)
+    draw_arrow(ax, 1.4, 0, 2.1, 0)
+    draw_queue(ax, 2.3, 0, n_slots=5, occupied=4)
+    ax.text(3.3, -0.65, t("New arrivals wait", "Новые приходы ждут"), fontsize=9, ha="center")
+    draw_arrow(ax, 4.7, 0, 6.1, 0)
+    ax.text(5.4, 0.5, t("ALL", "ВСЕ"), fontsize=10, ha="center", color=BLUE)
+    ax.add_patch(FancyBboxPatch((6.3, -0.5), 2.3, 1, boxstyle="round,pad=.1", fc=AQUA, ec="none"))
+    ax.text(7.45, 0.1, t("One batch", "Один пакет"), ha="center", color="white", fontsize=11)
+    ax.text(7.45, -0.25, "E[H | b] = αb + τ₀", ha="center", color="white", fontsize=10)
+    draw_arrow(ax, 8.8, 0, 10, 0)
+    ax.text(
+        7.5,
+        -1.1,
+        t(
+            "Next dispatch at completion; if empty, wait for one arrival",
+            "Следующий запуск при завершении; если пусто, ждём первый приход",
+        ),
+        ha="center",
+        fontsize=8,
+    )
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -1877,6 +1910,7 @@ FIGURES = {
     "negative": fig_negative,
     "fork_join": fig_fork_join,
     "batch": fig_batch,
+    "dynamic_batching": fig_dynamic_batching,
     "continuous_batching": fig_continuous_batching,
     "impatience": fig_impatience,
     "engset": fig_engset,
