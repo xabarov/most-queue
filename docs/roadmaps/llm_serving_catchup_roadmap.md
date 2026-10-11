@@ -29,7 +29,7 @@
 | Л3 | **Трёхпараметрическая модель стоимости итерации** + state-dependent цепь по занятости, совмещённое исполнение prefill/decode | Ramani V., Tantawi A.N., arXiv:2609.20957, 2026 | открыт | **done**, [EPIC-086](../epics/EPIC-086-prefill-decode-iteration-cost.md) |
 | Л4 | **Совместное ограничение «вычисления + память KV-cache»**: условия устойчивости | Nie C., Si N., Zhou Z., ICML 2026, arXiv:2605.04595 | открыт | **done**, [EPIC-087](../epics/EPIC-087-kv-cache-stability.md) |
 | Л5 | **Флюидная (детерминированная) модель вытеснения KV-cache**: предельные циклы, потеря throughput | Ao R., Dong J., Luo G., Simchi-Levi D., arXiv:2606.15555, 2026 | открыт | **done**, [EPIC-088](../epics/EPIC-088-kv-cache-congestion.md) |
-| Л6 | **Оптимальный момент запуска пакета как SMDP** | Xu Y., Sun J., Zhou S., Niu Z., ICC 2023, arXiv:2301.12865 | открыт | не начато |
+| Л6 | **Оптимальный момент запуска пакета как SMDP** | Xu Y., Sun J., Zhou S., Niu Z., ICC 2023, arXiv:2301.12865v3 | открыт | **done**, [EPIC-089](../epics/EPIC-089-smdp-batching.md) |
 | Л7 | **Распределение приборов между арендаторами** (слой С) | Okuyama R., Inoue Y., IEEE Trans. Cloud Computing 14, 2026, doi:10.1109/tcc.2026.3696613 | **закрыт**, препринта нет | не начато; риск как в Р9 |
 | Л8 | **Групповое обслуживание гетерогенными приборами** | Queueing Systems, 2020, doi:10.1007/s11134-020-09654-y | открыт (hybrid) | не начато |
 
@@ -136,4 +136,13 @@ fast 3061 passed; 10 trajectories, 48 spectra, 24 DES-settings×4seeds,
 карточки/журнал/архив обновлены. Прочитан основной текст и выбранные приложения,
 не выполнен аудит всех proof appendices. Paid wall-clock recovery не реализован.
 [Арбитры и границы](../research/kv-cache-congestion-validation-2026.md).
-Следующий пункт — **Л6**, оптимальный запуск пакета как SMDP, не начат.
+**Л6 закрыт**: finite overflow SMDP/RVI, независимые occupation LP/перебор/
+квадратура, unbounded event-time FCFS DES и constant-tail drift check.
+66 targeted, slow1, full3141passed, fast3130passed. 10 table rows,
+16 truncation/penalty settings, source LP, 42DES×4seeds и3counter horizons.
+Малый Δ не error/stability certificate; published gain discrepancy≈.0054%
+зафиксирован без утверждения ошибки автора. EN/RU README/models/simulation,
+отчёт, эпик и приватная диссертационная память/архив обновлены.
+[Арбитры и ограничения](../research/smdp-batching-validation-2026.md).
+Следующий пункт — **Л7**, не начат: прежде проверить доступ к закрытому
+первоисточнику; не восстанавливать формулы по abstract вместо полного чтения.

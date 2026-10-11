@@ -31,6 +31,12 @@ kv_cache_stability:
   warmup_slots: 500
   standard_errors: 4.5
   absolute_floor: 0.04
+smdp_batching:
+  replications: 6
+  horizon: 20000
+  warmup: 1000
+  standard_errors: 4.5
+  absolute_floor: 0.02
 kv_cache_congestion:
   replications: 6
   iterations: 4000

@@ -92,6 +92,7 @@ See the executable comparison of **9 disciplines** in
 | [Unbounded dynamic batching](docs/models/dynamic-batching.md) | All-waiting dispatch; deterministic/exponential/Erlang/gamma/H2 batch durations, affine mean; independent simulator | numerical means with truncation diagnostics |
 | [Variable-token batching](docs/models/token-batching.md) | Output length/max-token clipping; dynamic, fixed and gated elastic service with non-exponential durations; general service callbacks | numerical means; M/G/1 clipping means exact |
 | [Mixed prefill/decode](docs/models/prefill-decode.md) | Three iteration costs, occupancy-dependent effective chunking, continuous boundary admission, independent token-level DES | exact surrogate occupancy; approximate mean TTFT/ITL |
+| [SMDP batching control](docs/models/smdp-batching.md) | Wait-next-arrival / launch-size actions; deterministic time/energy; independent unbounded DES | finite overflow optimum, not infinite-queue optimality |
 | [KV-cache congestion](docs/models/kv-cache-congestion.md) | Deterministic stage dynamics, LPF eviction/restart, finite spectrum and admission cap; independent integer FCFS | fluid linear stability is not open-queue recurrence |
 | [KV-cache stability](docs/models/kv-cache-stability.md) | Joint prompt/output lengths, growing KV footprints, constant slots; independent maximal/free-swap simulation | necessary upper and conditional sufficient lower bounds, not an exact threshold |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
@@ -129,6 +130,12 @@ manufacturing lines · telecom traffic · healthcare resource planning ·
 scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
+
+- **2026-10, current source tree** — **SMDP batching control (L6 / EPIC-089)**:
+  deterministic batch times/energies, finite overflow RVI, independent occupation
+  LP and unbounded FCFS DES. Tail drift is checked separately: a small overflow
+  contribution does not certify real-queue stability.
+  [Model and limits](docs/models/smdp-batching.md).
 
 - **2026-10, current source tree** — **KV-cache congestion (L5 / EPIC-088)**:
   continuous eviction/restart trajectories, homogeneous cycles, finite-input

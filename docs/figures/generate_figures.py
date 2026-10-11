@@ -2036,6 +2036,48 @@ def fig_kv_cache_congestion():
     return fig
 
 
+def fig_smdp_batching():
+    """Unequal decision intervals and a separate overflow approximation."""
+    fig, ax = plt.subplots(figsize=(12, 3.5))
+    ax.set_xlim(-0.4, 12)
+    ax.set_ylim(-1.8, 1.8)
+    ax.axis("off")
+    boxes = [
+        (0, 0, BLUE, t("Idle decision\nactual population s", "Решение при простое\nреальное население s")),
+        (4, 0.6, AQUA, t("a = 0: wait arrival\nmean interval 1 / λ", "a = 0: ждать приход\nсредний интервал 1 / λ")),
+        (
+            4,
+            -0.9,
+            VIOLET,
+            t("a > 0: serve a jobs\ndeterministic interval τ_a", "a > 0: обслужить a\nфиксированный интервал τ_a"),
+        ),
+        (8.5, 0, BLUE, t("Next idle decision\narrivals accumulated", "Следующее решение\nприходы накопились")),
+    ]
+    for x, y, color, label in boxes:
+        ax.add_patch(FancyBboxPatch((x, y), 2.8, 0.85, boxstyle="round,pad=0.08", fc=color, ec="none"))
+        ax.text(x + 1.4, y + 0.425, label, ha="center", va="center", color="white", fontsize=10)
+    for start, end in [
+        ((2.9, 0.6), (3.85, 1)),
+        ((2.9, 0.2), (3.85, -0.5)),
+        ((6.9, 1), (8.35, 0.65)),
+        ((6.9, -0.5), (8.35, 0.2)),
+    ]:
+        ax.add_patch(FancyArrowPatch(start, end, arrowstyle="->", mutation_scale=15))
+    ax.text(
+        5.8,
+        -1.55,
+        t(
+            "Finite overflow label ≠ real capacity · cost per TIME, not per decision",
+            "Конечная overflow-метка ≠ ёмкость · стоимость на ВРЕМЯ, не на решение",
+        ),
+        ha="center",
+        fontsize=11,
+        color=RED,
+    )
+    fig.tight_layout()
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -2073,6 +2115,7 @@ FIGURES = {
     "prefill_decode": fig_prefill_decode,
     "kv_cache_stability": fig_kv_cache_stability,
     "kv_cache_congestion": fig_kv_cache_congestion,
+    "smdp_batching": fig_smdp_batching,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,

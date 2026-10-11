@@ -25,7 +25,8 @@ Transactions on Cloud Computing 2026. Вокруг неё — 5–6 работ 2
 
 **Покрытие рассмотренных работ.** Для Inoue, Yang/Jiao/Xu, Ramani/Tantawi и Nie/Si/Zhou прочитаны полные тексты;
 для Ao прочитан основной текст и выбранные приложения в [Л5](kv-cache-congestion-validation-2026.md),
-не все 101 страницы доказательств. Остальные записи требуют проверки при выполнении соответствующих пунктов:
+не все 101 страницы доказательств. Xu–Sun–Zhou–Niu v3 прочитан целиком в
+[Л6](smdp-batching-validation-2026.md); остальные записи требуют проверки при выполнении соответствующих пунктов:
 
 | работа | что даёт | чего НЕ даёт |
 |---|---|---|
@@ -34,6 +35,7 @@ Transactions on Cloud Computing 2026. Вокруг неё — 5–6 работ 2
 | Ramani, Tantawi 2026, arXiv:2609.20957 | **средние** TTFT/ITL через Markovian/mean-occupancy approximation; полный текст проверен в [Л3](prefill-decode-validation-2026.md), опубликованная точность fit не переносится на произвольный DES | распределения TTFT/ITL; token-level и length-mixture approximation |
 | Nie, Si, Zhou 2026 (ICML), arXiv:2605.04595 | **необходимая верхняя и достаточная нижняя границы** для constant-slot/maximal/free-swap модели, joint lengths; полный текст и индексация проверены в [Л4](kv-cache-stability-validation-2026.md) | точного общего порога, распределения задержки и гарантии при платном swap |
 | Ao, Dong, Luo, Simchi-Levi 2026, arXiv:2606.15555 | детерминированные stage/eviction dynamics, homogeneous cycles, finite spectrum и cap; отдельные stochastic experiments, [проверки Л5](kv-cache-congestion-validation-2026.md) | теоремы positive recurrence открытой integer FCFS-очереди и точного latency distribution |
+| Xu, Sun, Zhou, Niu 2023, arXiv:2301.12865v3 | SMDP ожидания/размера пакета, конечная overflow-аппроксимация, RVI для delay/power; [Л6: LP и DES](smdp-batching-validation-2026.md) | доказанной truncation error bound, hard SLO и автоматической устойчивости перенесённого overflow-действия |
 
 Обзор не устанавливает наличие точного распределения ожидания для этих постановок.
 Отсутствие такого результата во всей области из этой выборки не следует.

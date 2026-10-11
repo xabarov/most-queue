@@ -490,6 +490,17 @@ FCFS-допуск с блокировкой головы не равен про�
 unfinished jobs, потерянная работа и точные балансы, не censored latency.
 [Независимые проверки Л5](research/kv-cache-congestion-validation-2026.md).
 
+### SMDP-управление батчингом
+
+`BatchSmdpSim` независимо моделирует [запуск пакета Л6](models/smdp-batching.ru.md)
+в неограниченной event-time FCFS-очереди. Фиксированные время/энергия пакетов,
+Poisson или отсортированный replay, callable реального населения либо явное
+хвостовое расширение конечной политики, горизонт без drain. Приход во время
+обслуживания не вызывает решения. Балансы запросов/площади включают unfinished.
+Энергия начисляется при старте; стоимость без warmup использует area/rate прокси
+отклика, не среднее только завершённых задержек. [Отчёт](research/smdp-batching-validation-2026.md)
+разделяет конечный оптимум, устойчивость хвоста и короткие наблюдения DES.
+
 `KvCacheStabilitySim` — отдельная [модель KV-памяти](models/kv-cache-stability.ru.md):
 постоянные слоты, joint lengths, растущий footprint, ongoing-first максимальная
 упаковка и бесплатная выгрузка на CPU. `run(num_of_slots, warmup_slots=...,

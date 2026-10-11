@@ -31,6 +31,56 @@ class QueueResults:
 
 
 @dataclass
+class BatchSmdpResults(QueueResults):
+    """Finite SMDP rewards and diagnostics; NOT infinite-queue moments/PMF."""
+
+    state_max: int = 0
+    policy: list[int] = field(default_factory=list)
+    decision_pmf: list[float] = field(default_factory=list)
+    interval_time_weights: list[float] = field(default_factory=list)
+    mean_epoch_time: float = 0.0
+    average_cost: float = 0.0
+    response_proxy: float = 0.0
+    power: float = 0.0
+    overflow_cost_rate: float = 0.0
+    overflow_epoch_probability: float = 0.0
+    overflow_time_probability: float = 0.0
+    tail_drift: float = 0.0
+    tail_extension_stable: bool = False
+    balance_residual: float = 0.0
+    bellman_residual: float | None = None
+    iterations: int = 0
+    converged: bool | None = None
+    gain_lower: float | None = None
+    gain_upper: float | None = None
+    uniformization_eta: float | None = None
+    bias: list[float] = field(default_factory=list)
+    diagnostics: list[str] = field(default_factory=list)
+
+
+@dataclass
+class BatchSmdpSimResults(QueueResults):
+    """Fixed-horizon real-queue observations without censored latency moments."""
+
+    arrived: int = 0
+    completed: int = 0
+    unfinished: int = 0
+    initial_jobs: int = 0
+    batch_starts: int = 0
+    energy: float = 0.0
+    power: float = 0.0
+    population_area: float = 0.0
+    total_population_area: float = 0.0
+    completed_residence: float = 0.0
+    unfinished_residence: float = 0.0
+    response_proxy: float = 0.0
+    average_cost: float = 0.0
+    busy_fraction: float = 0.0
+    observation_time: float = 0.0
+    iteration_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
 class KvCacheCongestionResults(QueueResults):
     """Saturated continuous equilibrium/spectrum, not open-queue stability."""
 

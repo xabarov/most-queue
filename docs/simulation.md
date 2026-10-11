@@ -566,6 +566,17 @@ not the proportional continuous map. Results include unfinished jobs, discarded
 work and exact request/work conservation, not censored latency estimates.
 See the [L5 independent checks](research/kv-cache-congestion-validation-2026.md).
 
+### SMDP-controlled batching
+
+`BatchSmdpSim` independently simulates the [L6 launch control](models/smdp-batching.md)
+in an unbounded event-time FCFS queue. Deterministic batch times and energies,
+Poisson or sorted replay arrivals, actual-population callable or finite-policy
+tail extension, fixed horizon without drain. Arrivals during service do not
+trigger decisions. Request and population-area identities include unfinished
+jobs. Energy is charged at start; warmup-excluded cost uses an area/rate response
+proxy, not a completed-only latency mean. The [report](research/smdp-batching-validation-2026.md)
+separates finite optimum, tail-drift stability and short-run observations.
+
 **See also:**
 
 - [Numerical Methods](calculation.md) — analytical calculations
