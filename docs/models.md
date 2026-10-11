@@ -12,6 +12,7 @@ add a figure function and regenerate the PNGs.
 
 | Family | What's inside |
 |---|---|
+| [Variable token length batching](models/token-batching.md) | Clipped output PMFs; dynamic/fixed/gated elastic service; early completion, conditional maximum/sum costs, M/G/1 clipping, generic callback laws |
 | [Unbounded dynamic batching](models/dynamic-batching.md) | Inoue's all-waiting batch rule, five affine-mean service laws, numerical delay means with truncation diagnostics, deterministic latency bounds and independent DES |
 | [FIFO systems (First In First Out discipline)](models/fifo.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G approximations |
 | [Size-based scheduling](models/size-based.md) | SRPT/SJF/PSJF/SPJF (with predictions), FB/LAS, PS, LCFS-PR |
@@ -59,6 +60,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 
 | Model | Calculator class | Simulation | Priorities | Notes |
 |--------|--------------|-----------|------------|-------------|
+| [Variable-token batching](models/token-batching.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Numerical means for random duration; fixed surrogate explicit; physical dynamic cap in DES only; no analytic tails |
 | [Unbounded dynamic batching](models/dynamic-batching.md) | DynamicBatchingCalc | DynamicBatchingSim | - | Poisson, all-waiting dispatch; deterministic/exponential/Erlang/gamma/H2; numerical first w/v moments, not analytic CDFs |
 | M/M/c | MMnrCalc | QsSim | - | Basic model |
 | M/M/n/0 (Erlang B) | ErlangBCalc | QsSim(buffer=0) | - | Loss, M/G/n/0 insensitivity |

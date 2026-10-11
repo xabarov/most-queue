@@ -20,6 +20,11 @@ dynamic_batching:
   jobs_per_replication: 30000
   standard_errors: 4.5
   relative_floor: 0.005
+token_batching:
+  replications: 8
+  jobs_per_replication: 20000
+  standard_errors: 4.5
+  relative_floor: 0.005
 
 arrival:
   rate: 1.0

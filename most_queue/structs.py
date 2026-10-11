@@ -57,6 +57,23 @@ class DynamicBatchingResults(QueueResults):
 
 
 @dataclass
+class FixedTokenBatchingResults(QueueResults):
+    """Departure-epoch queue PMF is not a time-stationary occupancy PMF."""
+
+    batch_size: int = 1
+    queue_distribution: object = None
+    queue_truncation: int = 0
+    idle_probability: float = 0.0
+    boundary_second_moment_fraction: float = 0.0
+    flow_residual: float = 0.0
+    moment_residual: float = 0.0
+    stationary_residual: float = 0.0
+    refinement_error: float | None = None
+    converged: bool = False
+    mean_service_surrogate: bool = False
+
+
+@dataclass
 class MsjResults(QueueResults):
     """MSJ means and diagnostics; analytical moments contain only the mean."""
 

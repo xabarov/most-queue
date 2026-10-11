@@ -1,0 +1,1338 @@
+{
+  "source": "arXiv:2407.05347v1",
+  "cost_coefficients": [
+    0.1,
+    0.2,
+    0.0025,
+    0.004
+  ],
+  "cost_calibration": "synthetic; no measured GPU coefficients claimed",
+  "token_convention": "total output tokens; decode=total-1",
+  "grid": [
+    {
+      "law": "sparse_clipped_16",
+      "rate": 0.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.02654589112892944,
+      "latency_mean": 0.3546771897233616,
+      "utilization": 0.1611216863693985,
+      "converged": true,
+      "flow_residual": 7.67390474582367e-16,
+      "moment_residual": 3.2471247549822642e-12,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.02654589112892944,
+        "envelope_phi0": 0.039689155775344404,
+        "paper_phi1_substitution": 0.14434632442403547,
+        "paper_min_substitution": 0.039689155775344404,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.027077217386732945,
+          0.35538842988614283,
+          0.16287431327951152
+        ],
+        "standard_errors": [
+          0.0004617017531527975,
+          0.00045210191536002785,
+          0.001424030959858548
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 0.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.026511284864741073,
+      "latency_mean": 0.35397011544597823,
+      "utilization": 0.16105311724189708,
+      "converged": true,
+      "flow_residual": 5.810332206659067e-15,
+      "moment_residual": 3.3243996566358396e-11,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.026511284864741073,
+        "envelope_phi0": 0.039689155775344404,
+        "paper_phi1_substitution": 0.14434632442403547,
+        "paper_min_substitution": 0.039689155775344404,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.02703583523787404,
+          0.3546857352372898,
+          0.16280466720426104
+        ],
+        "standard_errors": [
+          0.0004660728030759211,
+          0.0004723988306234949,
+          0.0014243875378022425
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 0.5,
+      "strategy": "fixed",
+      "waiting_mean": 3.0000831984307816,
+      "latency_mean": 3.717908073430782,
+      "utilization": 0.08972810937499998,
+      "converged": true,
+      "flow_residual": 0.0,
+      "moment_residual": 1.6129465777717205e-14,
+      "clipped_fraction": 0.05,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          2.9694276023948207,
+          3.68744340239479,
+          0.09074729715425234
+        ],
+        "standard_errors": [
+          0.02578321602468864,
+          0.02571913346114645,
+          0.0008082044169071215
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 1.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.07981264452939352,
+      "latency_mean": 0.43555488841395523,
+      "utilization": 0.45753710636879674,
+      "converged": true,
+      "flow_residual": 9.983311287599064e-17,
+      "moment_residual": 3.546140798520969e-13,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.07981264452939352,
+        "envelope_phi0": 0.12376973603688142,
+        "paper_phi1_substitution": 0.1785892048468035,
+        "paper_min_substitution": 0.12376973603688142,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.08154477386958742,
+          0.4383399488696678,
+          0.4617501526325654
+        ],
+        "standard_errors": [
+          0.0010060448391872655,
+          0.0018583912138197855,
+          0.0034711112004852324
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 1.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.07886536316456035,
+      "latency_mean": 0.4281861437274965,
+      "utilization": 0.4560508005001388,
+      "converged": true,
+      "flow_residual": 3.9975746066278533e-16,
+      "moment_residual": 6.325514494174343e-13,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.07886536316456035,
+        "envelope_phi0": 0.12376973603688142,
+        "paper_phi1_substitution": 0.1785892048468035,
+        "paper_min_substitution": 0.12376973603688142,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.08058612000875982,
+          0.4308800200088355,
+          0.4602776498137851
+        ],
+        "standard_errors": [
+          0.0008823088149508435,
+          0.0015669670055144015,
+          0.0034268620096722666
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 1.5,
+      "strategy": "fixed",
+      "waiting_mean": 1.00438138973678,
+      "latency_mean": 1.72220626473678,
+      "utilization": 0.26918432812500004,
+      "converged": true,
+      "flow_residual": 2.220446049250313e-16,
+      "moment_residual": 6.462487225355494e-15,
+      "clipped_fraction": 0.05,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.9947386481982542,
+          1.7127544481981722,
+          0.27224246161161175
+        ],
+        "standard_errors": [
+          0.008551855459497772,
+          0.008508538472892698,
+          0.0024244819167886108
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 3.0,
+      "strategy": "dynamic",
+      "waiting_mean": 0.16600322195537281,
+      "latency_mean": 0.6205871883466949,
+      "utilization": 0.780880345591267,
+      "converged": true,
+      "flow_residual": 4.902863873584132e-15,
+      "moment_residual": 5.795076199842647e-13,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.16600322195537281,
+        "envelope_phi0": 0.2856072302767841,
+        "paper_phi1_substitution": 0.2554509508567125,
+        "paper_min_substitution": 0.2554509508567125,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.16862308057020256,
+          0.628350766965592,
+          0.7843489007365432
+        ],
+        "standard_errors": [
+          0.001530402206560845,
+          0.004368819306833205,
+          0.003374696791394666
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 3.0,
+      "strategy": "elastic",
+      "waiting_mean": 0.1575752338453656,
+      "latency_mean": 0.5806612704775658,
+      "utilization": 0.7741620128526276,
+      "converged": true,
+      "flow_residual": 3.6191975344470035e-15,
+      "moment_residual": 4.065665743250585e-13,
+      "clipped_fraction": 0.05,
+      "bounds": {
+        "waiting_mean": 0.1575752338453656,
+        "envelope_phi0": 0.2856072302767841,
+        "paper_phi1_substitution": 0.2554509508567125,
+        "paper_min_substitution": 0.2554509508567125,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.15982983562172987,
+          0.5869835829425699,
+          0.7775988459954926
+        ],
+        "standard_errors": [
+          0.0013125486182858459,
+          0.003434170403400876,
+          0.0032871241249428063
+        ]
+      }
+    },
+    {
+      "law": "sparse_clipped_16",
+      "rate": 3.0,
+      "strategy": "fixed",
+      "waiting_mean": 0.5484406904815472,
+      "latency_mean": 1.2662655654815473,
+      "utilization": 0.5383686562500007,
+      "converged": true,
+      "flow_residual": 1.2212453270876722e-15,
+      "moment_residual": 1.0866232410299007e-14,
+      "clipped_fraction": 0.05,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.5469993731229411,
+          1.2650151731230053,
+          0.5444866338848078
+        ],
+        "standard_errors": [
+          0.003994381396593157,
+          0.004093935805659606,
+          0.004848573513023078
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 0.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.030630679426409735,
+      "latency_mean": 0.38374505980184265,
+      "utilization": 0.1728860640312796,
+      "converged": true,
+      "flow_residual": 7.659332980287372e-16,
+      "moment_residual": 8.947255279125741e-13,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.030630679426409735,
+        "envelope_phi0": 0.039689155775344404,
+        "paper_phi1_substitution": 0.14434632442403547,
+        "paper_min_substitution": 0.039689155775344404,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.031281688387716985,
+          0.38469006338762496,
+          0.17482433844294168
+        ],
+        "standard_errors": [
+          0.0004340860867804685,
+          0.00048449686684516315,
+          0.0015026669778752618
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 0.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.030581019784369484,
+      "latency_mean": 0.38275943879925783,
+      "utilization": 0.17279116119799964,
+      "converged": true,
+      "flow_residual": 2.188429408297729e-15,
+      "moment_residual": 5.492024138147442e-12,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.030581019784369484,
+        "envelope_phi0": 0.039689155775344404,
+        "paper_phi1_substitution": 0.14434632442403547,
+        "paper_min_substitution": 0.039689155775344404,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.031234747739981257,
+          0.38367517273988705,
+          0.17472950316505836
+        ],
+        "standard_errors": [
+          0.0004332933603607393,
+          0.0004867272093632138,
+          0.0015010428568663016
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 0.5,
+      "strategy": "fixed",
+      "waiting_mean": 3.0001128400528163,
+      "latency_mean": 3.7720212873184416,
+      "utilization": 0.09648855590820304,
+      "converged": true,
+      "flow_residual": 2.220446049250313e-16,
+      "moment_residual": 2.924070672378994e-14,
+      "clipped_fraction": 0.0,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          2.969462390376645,
+          3.741425790376633,
+          0.09756515780011671
+        ],
+        "standard_errors": [
+          0.025784349849506265,
+          0.02575848649364468,
+          0.0008572853891981731
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 1.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.09235833606344507,
+      "latency_mean": 0.480489277292987,
+      "utilization": 0.48752570870214984,
+      "converged": true,
+      "flow_residual": 1.9652119957441898e-16,
+      "moment_residual": 2.0143289372676464e-13,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.09235833606344507,
+        "envelope_phi0": 0.12376973603688142,
+        "paper_phi1_substitution": 0.1785892048468035,
+        "paper_min_substitution": 0.12376973603688142,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.09460067392207826,
+          0.4843479739220591,
+          0.4918581177648852
+        ],
+        "standard_errors": [
+          0.001190139623388011,
+          0.0021591461614074454,
+          0.003578405782476662
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 1.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.09103652425402005,
+      "latency_mean": 0.47040466776289164,
+      "utilization": 0.48556540568807394,
+      "converged": true,
+      "flow_residual": 9.840643885309552e-17,
+      "moment_residual": 2.293427421695666e-13,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.09103652425402005,
+        "envelope_phi0": 0.12376973603688142,
+        "paper_phi1_substitution": 0.1785892048468035,
+        "paper_min_substitution": 0.12376973603688142,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.09311238231183043,
+          0.4738981823118213,
+          0.48984359501130764
+        ],
+        "standard_errors": [
+          0.001210377907761615,
+          0.0018823838477267242,
+          0.003516987909950191
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 1.5,
+      "strategy": "fixed",
+      "waiting_mean": 1.0058575021924017,
+      "latency_mean": 1.777765949458027,
+      "utilization": 0.2894656677246096,
+      "converged": true,
+      "flow_residual": 5.551115123125783e-16,
+      "moment_residual": 2.1726253643800566e-14,
+      "clipped_fraction": 0.0,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.9962111895009526,
+          1.768174589501032,
+          0.2926954651174577
+        ],
+        "standard_errors": [
+          0.008506810016120352,
+          0.00848712797062316,
+          0.002571695625541543
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 3.0,
+      "strategy": "dynamic",
+      "waiting_mean": 0.19460182396176576,
+      "latency_mean": 0.7085430328637672,
+      "utilization": 0.8158153839873252,
+      "converged": true,
+      "flow_residual": 3.491142259846313e-15,
+      "moment_residual": 2.7388286544258363e-13,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.19460182396176576,
+        "envelope_phi0": 0.2856072302767841,
+        "paper_phi1_substitution": 0.2554509508567125,
+        "paper_min_substitution": 0.2554509508567125,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.19855414332511737,
+          0.7184353575945821,
+          0.8195968514898355
+        ],
+        "standard_errors": [
+          0.0014930582281605868,
+          0.0047930251633389815,
+          0.0032742977783651655
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 3.0,
+      "strategy": "elastic",
+      "waiting_mean": 0.1832711219575678,
+      "latency_mean": 0.655299587586838,
+      "utilization": 0.8079585099117899,
+      "converged": true,
+      "flow_residual": 6.7314796198946164e-15,
+      "moment_residual": 5.507500413925507e-13,
+      "clipped_fraction": 0.0,
+      "bounds": {
+        "waiting_mean": 0.1832711219575678,
+        "envelope_phi0": 0.2856072302767841,
+        "paper_phi1_substitution": 0.2554509508567125,
+        "paper_min_substitution": 0.2554509508567125,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.18626849384201385,
+          0.6628969235943538,
+          0.8115688413342528
+        ],
+        "standard_errors": [
+          0.0016499798718584173,
+          0.004041077077224924,
+          0.003150081964633997
+        ]
+      }
+    },
+    {
+      "law": "uniform_16",
+      "rate": 3.0,
+      "strategy": "fixed",
+      "waiting_mean": 0.566806228395577,
+      "latency_mean": 1.338714675661202,
+      "utilization": 0.5789313354492195,
+      "converged": true,
+      "flow_residual": 1.2212453270876722e-15,
+      "moment_residual": 9.578235138230067e-15,
+      "clipped_fraction": 0.0,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.566464919398154,
+          1.3384283193981301,
+          0.5853909054243456
+        ],
+        "standard_errors": [
+          0.003681564666641146,
+          0.0037248599760218637,
+          0.0051429102897019964
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 0.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.03516662626408899,
+      "latency_mean": 0.4149786241296705,
+      "utilization": 0.1854699126917848,
+      "converged": true,
+      "flow_residual": 3.2756582172811822e-15,
+      "moment_residual": 1.1393016284729705e-11,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.03516662626408899,
+        "envelope_phi0": 0.06337473758148165,
+        "paper_phi1_substitution": 0.1857168730579455,
+        "paper_min_substitution": 0.06337473758148165,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.03606567946368686,
+          0.4160730294637267,
+          0.1875353111303838
+        ],
+        "standard_errors": [
+          0.0005893839805016794,
+          0.0005848163242573722,
+          0.00161655651713721
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 0.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.03512830464064032,
+      "latency_mean": 0.41425512621195393,
+      "utilization": 0.18540093735318186,
+      "converged": true,
+      "flow_residual": 1.7470474737269289e-15,
+      "moment_residual": 9.268660342095995e-13,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.03512830464064032,
+        "envelope_phi0": 0.06337473758148165,
+        "paper_phi1_substitution": 0.1857168730579455,
+        "paper_min_substitution": 0.06337473758148165,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.036020328652363855,
+          0.41533229115239767,
+          0.18746644817728297
+        ],
+        "standard_errors": [
+          0.0005810446860757303,
+          0.0005886486484094555,
+          0.001613916678823008
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 0.5,
+      "strategy": "fixed",
+      "waiting_mean": 3.000136200303607,
+      "latency_mean": 3.8043709401596275,
+      "utilization": 0.10052934248200251,
+      "converged": true,
+      "flow_residual": 2.220446049250313e-16,
+      "moment_residual": 1.2988077484588786e-14,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          2.969483903167383,
+          3.7737985031673555,
+          0.10165401454488325
+        ],
+        "standard_errors": [
+          0.025783112549402156,
+          0.025721021761753667,
+          0.0008981260474928112
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 1.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.1053028061923428,
+      "latency_mean": 0.5254393356365115,
+      "utilization": 0.5172817587035727,
+      "converged": true,
+      "flow_residual": 5.12261607256167e-15,
+      "moment_residual": 1.927045071302194e-12,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.1053028061923428,
+        "envelope_phi0": 0.20301847700506706,
+        "paper_phi1_substitution": 0.2462162248520511,
+        "paper_min_substitution": 0.20301847700506706,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.1074136126336945,
+          0.5294742251336724,
+          0.5215638346488556
+        ],
+        "standard_errors": [
+          0.0011946521650567149,
+          0.002360023146775445,
+          0.0037332835641658408
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 1.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.10428876458663257,
+      "latency_mean": 0.5179996138046914,
+      "utilization": 0.5159081663781402,
+      "converged": true,
+      "flow_residual": 2.2448765900543676e-14,
+      "moment_residual": 8.780953857347985e-12,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.10428876458663257,
+        "envelope_phi0": 0.20301847700506706,
+        "paper_phi1_substitution": 0.2462162248520511,
+        "paper_min_substitution": 0.20301847700506706,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.10632048473677283,
+          0.521759572236761,
+          0.520081017260856
+        ],
+        "standard_errors": [
+          0.001166425883523053,
+          0.002163682982267573,
+          0.003705290650841558
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 1.5,
+      "strategy": "fixed",
+      "waiting_mean": 1.0069896131842493,
+      "latency_mean": 1.8112243530402696,
+      "utilization": 0.3015880274460081,
+      "converged": true,
+      "flow_residual": 1.2212453270876722e-15,
+      "moment_residual": 3.021510834199229e-14,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.997382861106212,
+          1.8016974611062477,
+          0.30496203351630724
+        ],
+        "standard_errors": [
+          0.008508139305383315,
+          0.00845420648745491,
+          0.002694184389554524
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 3.0,
+      "strategy": "dynamic",
+      "waiting_mean": 0.2192171355759769,
+      "latency_mean": 0.7825760537794215,
+      "utilization": 0.8436788818429743,
+      "converged": true,
+      "flow_residual": 4.8599334884711704e-15,
+      "moment_residual": 4.2629779842321665e-13,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.2192171355759769,
+        "envelope_phi0": 0.5265638439863563,
+        "paper_phi1_substitution": 0.41248789594437796,
+        "paper_min_substitution": 0.41248789594437796,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.22320024940452185,
+          0.7936535974463396,
+          0.8473989895733525
+        ],
+        "standard_errors": [
+          0.00204866272442513,
+          0.006166170772193576,
+          0.00291478204375533
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 3.0,
+      "strategy": "elastic",
+      "waiting_mean": 0.21040301580764206,
+      "latency_mean": 0.7423523740784637,
+      "utilization": 0.8386651038718846,
+      "converged": true,
+      "flow_residual": 7.215971673798832e-15,
+      "moment_residual": 6.863444107282216e-13,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "bounds": {
+        "waiting_mean": 0.21040301580764206,
+        "envelope_phi0": 0.5265638439863563,
+        "paper_phi1_substitution": 0.41248789594437796,
+        "paper_min_substitution": 0.41248789594437796,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.21351041944345955,
+          0.7510771452846764,
+          0.8423206397911802
+        ],
+        "standard_errors": [
+          0.001860190250413771,
+          0.005438270886441241,
+          0.002992296070291393
+        ]
+      }
+    },
+    {
+      "law": "normal_clipped_32",
+      "rate": 3.0,
+      "strategy": "fixed",
+      "waiting_mean": 0.5813595798633653,
+      "latency_mean": 1.3855943197193858,
+      "utilization": 0.6031760548920162,
+      "converged": true,
+      "flow_residual": 1.2212453270876722e-15,
+      "moment_residual": 1.010279004176425e-14,
+      "clipped_fraction": 1.3084311412114857e-11,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.5817989344887208,
+          1.386113534488719,
+          0.6099240366909248
+        ],
+        "standard_errors": [
+          0.0032346548020055926,
+          0.0032783444309675194,
+          0.005387787715845323
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 0.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.032310997052671576,
+      "latency_mean": 0.39405478024516133,
+      "utilization": 0.17685410097799137,
+      "converged": true,
+      "flow_residual": 9.840155553989887e-16,
+      "moment_residual": 6.63443022255931e-13,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.032310997052671576,
+        "envelope_phi0": 0.06337473758148165,
+        "paper_phi1_substitution": 0.1857168730579455,
+        "paper_min_substitution": 0.06337473758148165,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.032987680352005326,
+          0.39498104285199254,
+          0.17880984463980562
+        ],
+        "standard_errors": [
+          0.00047842191488538325,
+          0.0006214244036084176,
+          0.0015724365300695915
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 0.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.032236064722880514,
+      "latency_mean": 0.39270458973731115,
+      "utilization": 0.17672540998035846,
+      "converged": true,
+      "flow_residual": 3.3894987775187222e-15,
+      "moment_residual": 3.951460946864594e-12,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.032236064722880514,
+        "envelope_phi0": 0.06337473758148165,
+        "paper_phi1_substitution": 0.1857168730579455,
+        "paper_min_substitution": 0.06337473758148165,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.032909201628855154,
+          0.39356565162883705,
+          0.17867349153764822
+        ],
+        "standard_errors": [
+          0.00048717870235311464,
+          0.0006143558670958499,
+          0.0015721817174171207
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 0.5,
+      "strategy": "fixed",
+      "waiting_mean": 3.0001718182263852,
+      "latency_mean": 3.823342210809111,
+      "utilization": 0.10289629907284081,
+      "converged": true,
+      "flow_residual": 4.440892098500626e-16,
+      "moment_residual": 2.5866226762104014e-14,
+      "clipped_fraction": 0.018134068974591355,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          2.9695101333776304,
+          3.792838133377636,
+          0.10405860948797793
+        ],
+        "standard_errors": [
+          0.0257864403822873,
+          0.025446485677395256,
+          0.0009788175871665175
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 1.5,
+      "strategy": "dynamic",
+      "waiting_mean": 0.09831471411507438,
+      "latency_mean": 0.5003406917905232,
+      "utilization": 0.4981828038079258,
+      "converged": true,
+      "flow_residual": 7.12282976942377e-15,
+      "moment_residual": 3.0213663447566907e-12,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.09831471411507438,
+        "envelope_phi0": 0.20301847700506706,
+        "paper_phi1_substitution": 0.2462162248520511,
+        "paper_min_substitution": 0.20301847700506706,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.10058439738829825,
+          0.504133297388292,
+          0.5025907115159836
+        ],
+        "standard_errors": [
+          0.0012527661813133356,
+          0.0024147313318460453,
+          0.0037065801684564104
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 1.5,
+      "strategy": "elastic",
+      "waiting_mean": 0.09621538152574285,
+      "latency_mean": 0.48575901014433776,
+      "utilization": 0.49547688107096943,
+      "converged": true,
+      "flow_residual": 1.8482921340729502e-14,
+      "moment_residual": 7.803235282375855e-12,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.09621538152574285,
+        "envelope_phi0": 0.20301847700506706,
+        "paper_phi1_substitution": 0.2462162248520511,
+        "paper_min_substitution": 0.20301847700506706,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.09825654943017437,
+          0.4890922494301733,
+          0.49971107403182935
+        ],
+        "standard_errors": [
+          0.0013268888705301955,
+          0.0022006873228432888,
+          0.003646946905972784
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 1.5,
+      "strategy": "fixed",
+      "waiting_mean": 1.0085076134762265,
+      "latency_mean": 1.8316780060589524,
+      "utilization": 0.3086888972185222,
+      "converged": true,
+      "flow_residual": 0.0,
+      "moment_residual": 1.4105510271462399e-15,
+      "clipped_fraction": 0.018134068974591355,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.998839625622854,
+          1.8221676256228483,
+          0.3121765716368965
+        ],
+        "standard_errors": [
+          0.008547072378643878,
+          0.008282792380662358,
+          0.0029359198269762617
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 3.0,
+      "strategy": "dynamic",
+      "waiting_mean": 0.21681538587132518,
+      "latency_mean": 0.775372609671948,
+      "utilization": 0.8306554717312438,
+      "converged": true,
+      "flow_residual": 4.200418604317045e-15,
+      "moment_residual": 3.9159795347280955e-13,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.21681538587132518,
+        "envelope_phi0": 0.5265638439863563,
+        "paper_phi1_substitution": 0.41248789594437796,
+        "paper_min_substitution": 0.41248789594437796,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.22168042085612777,
+          0.7884906191516373,
+          0.8348881983738344
+        ],
+        "standard_errors": [
+          0.0022757216456581685,
+          0.006723659402818891,
+          0.0033537955245528162
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 3.0,
+      "strategy": "elastic",
+      "waiting_mean": 0.19591986099005684,
+      "latency_mean": 0.6860286662761141,
+      "utilization": 0.8194022103394143,
+      "converged": true,
+      "flow_residual": 7.712036687557493e-15,
+      "moment_residual": 6.116075160442554e-13,
+      "clipped_fraction": 0.018134068974591355,
+      "bounds": {
+        "waiting_mean": 0.19591986099005684,
+        "envelope_phi0": 0.5265638439863563,
+        "paper_phi1_substitution": 0.41248789594437796,
+        "paper_min_substitution": 0.41248789594437796,
+        "phi1_certified": true
+      },
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.19882266987097746,
+          0.6936482570948173,
+          0.8231254508820687
+        ],
+        "standard_errors": [
+          0.0015574279436654194,
+          0.004450672709504603,
+          0.0031607625083035344
+        ]
+      }
+    },
+    {
+      "law": "lognormal_clipped_32",
+      "rate": 3.0,
+      "strategy": "fixed",
+      "waiting_mean": 0.5979750650579788,
+      "latency_mean": 1.4211454576407045,
+      "utilization": 0.6173777944370451,
+      "converged": true,
+      "flow_residual": 1.2212453270876722e-15,
+      "moment_residual": 7.499984910416374e-15,
+      "clipped_fraction": 0.018134068974591355,
+      "des": {
+        "replications": 4,
+        "jobs_minimum": 10000,
+        "means": [
+          0.5991814231479896,
+          1.4225094231479911,
+          0.6243553730000999
+        ],
+        "standard_errors": [
+          0.002433573155335102,
+          0.002779826859079977,
+          0.005870243801433561
+        ]
+      }
+    }
+  ],
+  "fixed_surrogate_and_equation25": [
+    {
+      "batch_size": 1,
+      "mean_service_surrogate": false,
+      "waiting_mean": 0.15530530509795837,
+      "latency_mean": 0.4800053050979584,
+      "paper_eq25_terms20": 0.47885258309776796,
+      "paper_eq25_terms1000": 0.47885258309776796,
+      "formation_mean": 0.0,
+      "service_mean": 0.32470000000000004
+    },
+    {
+      "batch_size": 1,
+      "mean_service_surrogate": true,
+      "waiting_mean": 0.15415258309776797,
+      "latency_mean": 0.478852583097768,
+      "paper_eq25_terms20": 0.47885258309776796,
+      "paper_eq25_terms1000": 0.47885258309776796,
+      "formation_mean": 0.0,
+      "service_mean": 0.32470000000000004
+    },
+    {
+      "batch_size": 2,
+      "mean_service_surrogate": false,
+      "waiting_mean": 0.3667860808056441,
+      "latency_mean": 0.8205610808056442,
+      "paper_eq25_terms20": 0.48655993564779576,
+      "paper_eq25_terms1000": 0.4865596285899765,
+      "formation_mean": 0.3333333333333333,
+      "service_mean": 0.45377500000000004
+    },
+    {
+      "batch_size": 2,
+      "mean_service_surrogate": true,
+      "waiting_mean": 0.36611796192331,
+      "latency_mean": 0.81989296192331,
+      "paper_eq25_terms20": 0.48655993564779576,
+      "paper_eq25_terms1000": 0.4865596285899765,
+      "formation_mean": 0.3333333333333333,
+      "service_mean": 0.45377500000000004
+    },
+    {
+      "batch_size": 4,
+      "mean_service_surrogate": false,
+      "waiting_mean": 1.00438138973678,
+      "latency_mean": 1.72220626473678,
+      "paper_eq25_terms20": 0.7220019624564376,
+      "paper_eq25_terms1000": 0.7220019007463595,
+      "formation_mean": 1.0,
+      "service_mean": 0.7178248750000001
+    },
+    {
+      "batch_size": 4,
+      "mean_service_surrogate": true,
+      "waiting_mean": 1.0041770257463591,
+      "latency_mean": 1.7220019007463594,
+      "paper_eq25_terms20": 0.7220019624564376,
+      "paper_eq25_terms1000": 0.7220019007463595,
+      "formation_mean": 1.0,
+      "service_mean": 0.7178248750000001
+    },
+    {
+      "batch_size": 8,
+      "mean_service_surrogate": false,
+      "waiting_mean": 2.3334711135439603,
+      "latency_mean": 3.5882505564783354,
+      "paper_eq25_terms20": 1.2549038146231708,
+      "paper_eq25_terms1000": 1.254903834477454,
+      "formation_mean": 2.3333333333333335,
+      "service_mean": 1.254779442934375
+    },
+    {
+      "batch_size": 8,
+      "mean_service_surrogate": true,
+      "waiting_mean": 2.3334577248764115,
+      "latency_mean": 3.5882371678107865,
+      "paper_eq25_terms20": 1.2549038146231708,
+      "paper_eq25_terms1000": 1.254903834477454,
+      "formation_mean": 2.3333333333333335,
+      "service_mean": 1.254779442934375
+    }
+  ],
+  "clipping_search": {
+    "best": {
+      "max_tokens": 16,
+      "stable": true,
+      "waiting_mean": 0.1735619469026549,
+      "utility": 0.958,
+      "clipped_fraction": 0.05,
+      "objective": 0.9014219026548671
+    },
+    "candidates": [
+      {
+        "max_tokens": 1,
+        "stable": true,
+        "waiting_mean": 0.008823529411764707,
+        "utility": 0.45883333333333337,
+        "clipped_fraction": 0.7000000000000001,
+        "objective": 0.43545049019607845
+      },
+      {
+        "max_tokens": 2,
+        "stable": true,
+        "waiting_mean": 0.017633228840125394,
+        "utility": 0.6176666666666667,
+        "clipped_fraction": 0.7000000000000001,
+        "objective": 0.585901671891327
+      },
+      {
+        "max_tokens": 3,
+        "stable": true,
+        "waiting_mean": 0.031208053691275175,
+        "utility": 0.7764999999999999,
+        "clipped_fraction": 0.3,
+        "objective": 0.736114597315436
+      },
+      {
+        "max_tokens": 5,
+        "stable": true,
+        "waiting_mean": 0.0492857142857143,
+        "utility": 0.8274999999999999,
+        "clipped_fraction": 0.3,
+        "objective": 0.7836607142857142
+      },
+      {
+        "max_tokens": 8,
+        "stable": true,
+        "waiting_mean": 0.09456521739130437,
+        "utility": 0.9039999999999999,
+        "clipped_fraction": 0.3,
+        "objective": 0.8540717391304347
+      },
+      {
+        "max_tokens": 10,
+        "stable": true,
+        "waiting_mean": 0.14010638297872346,
+        "utility": 0.955,
+        "clipped_fraction": 0.05,
+        "objective": 0.9002446808510637
+      },
+      {
+        "max_tokens": 16,
+        "stable": true,
+        "waiting_mean": 0.1735619469026549,
+        "utility": 0.958,
+        "clipped_fraction": 0.05,
+        "objective": 0.9014219026548671
+      },
+      {
+        "max_tokens": 32,
+        "stable": true,
+        "waiting_mean": 0.3426980198019801,
+        "utility": 0.966,
+        "clipped_fraction": 0.05,
+        "objective": 0.9005650990099009
+      },
+      {
+        "max_tokens": 64,
+        "stable": true,
+        "waiting_mean": 1.213149350649351,
+        "utility": 0.982,
+        "clipped_fraction": 0.05,
+        "objective": 0.8722425324675324
+      },
+      {
+        "max_tokens": 100,
+        "stable": true,
+        "waiting_mean": 4.10925,
+        "utility": 1.0,
+        "clipped_fraction": 0.0,
+        "objective": 0.7445374999999997
+      }
+    ]
+  },
+  "clipping_cost": {
+    "rate": 1.5,
+    "a": 0.05,
+    "c": 0.05,
+    "theta": 0.95
+  },
+  "capped_dynamic_des": [
+    {
+      "physical_cap": 1,
+      "means": [
+        0.1573089240727581,
+        0.4820727865728762,
+        1.0
+      ],
+      "standard_errors": [
+        0.003916205210108786,
+        0.00386763139414564,
+        0.0
+      ]
+    },
+    {
+      "physical_cap": 4,
+      "means": [
+        0.08056704246310817,
+        0.4365579924631845,
+        1.1153929904471678
+      ],
+      "standard_errors": [
+        0.0006490406079836836,
+        0.0013046486664644943,
+        0.001521475871164421
+      ]
+    },
+    {
+      "physical_cap": 8,
+      "means": [
+        0.08038260278136942,
+        0.43661250278144603,
+        1.1155176312322068
+      ],
+      "standard_errors": [
+        0.000614937035086224,
+        0.001299321620511511,
+        0.0015480947177575202
+      ]
+    }
+  ]
+}

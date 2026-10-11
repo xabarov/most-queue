@@ -155,8 +155,20 @@ class DynamicBatchingCalc(BaseQueue):  # pylint: disable=too-many-public-methods
             return [(weight, nbinom(1, 1 / (1 + self.rate * mean / (2 * weight)))) for weight in (p, 1 - p)]
         return [(1.0, nbinom(self.shape, 1 / (1 + self.rate * mean / self.shape)))]
 
-    def _support(self, mean, limit):
-        components = self._count_components(mean)
+    def _batch_service_moments(self, sizes):
+        means = self.alpha * sizes + self.tau0
+        return means, (1 + self.service_scv) * means**2
+
+    def _batch_job_service_means(self, sizes, means):
+        # pylint: disable=unused-argument
+        return means
+
+    def _batch_count_components(self, size, mean):
+        # pylint: disable=unused-argument
+        return self._count_components(mean)
+
+    def _support(self, mean, limit, size=None):
+        components = self._batch_count_components(size, mean)
         low = min(float(dist.ppf(1e-15)) for _, dist in components)
         high = max(float(dist.isf(1e-15)) for _, dist in components)
         if not np.isfinite(low) or not np.isfinite(high):
@@ -167,21 +179,21 @@ class DynamicBatchingCalc(BaseQueue):  # pylint: disable=too-many-public-methods
         if 4 * size > self.max_nonzeros:
             raise MemoryError(f"matrix construction exceeds the entry budget {self.max_nonzeros:,}")
         sizes = np.arange(1, size + 1, dtype=float)
-        means = self.alpha * sizes + self.tau0
+        means, _ = self._batch_service_moments(sizes)
         if not np.all(np.isfinite(self.rate * means)):
             raise ValueError("arrival/service scale overflows floating-point representation")
         supports = []
         # Stop pricing as soon as the budget is exhausted, before allocating P.
         estimate = 2 * size
-        for mean in means:
-            low, high = self._support(mean, size)
+        for batch_size, mean in zip(sizes, means):
+            low, high = self._support(mean, size, int(batch_size))
             estimate += max(0, high - low + 1) + 2
             if estimate > self.max_nonzeros:
                 raise MemoryError(f"matrix construction exceeds the entry budget {self.max_nonzeros:,}")
             supports.append((low, high))
         rows, cols, values, zeros = [], [], [], []
         for index, (mean, (low, high)) in enumerate(zip(means, supports)):
-            components = self._count_components(mean)
+            components = self._batch_count_components(index + 1, mean)
             counts = np.arange(low, high + 1)
             middle = sum(weight * dist.pmf(counts) for weight, dist in components)
             first = sum(weight * dist.cdf(low - 1) for weight, dist in components)
@@ -192,6 +204,8 @@ class DynamicBatchingCalc(BaseQueue):  # pylint: disable=too-many-public-methods
             else:
                 targets = np.concatenate(([0], counts - 1, [size - 1]))
                 weights = np.concatenate(([first], middle, [last]))
+                if not np.all(np.isfinite(weights)) or np.any(weights < 0) or abs(weights.sum() - 1) > 1e-10:
+                    raise ValueError("arrival-count probabilities must be finite, non-negative and sum to one")
                 weights /= weights.sum()
             cols.append(targets)
             rows.append(np.full(targets.size, index))
@@ -226,16 +240,17 @@ class DynamicBatchingCalc(BaseQueue):  # pylint: disable=too-many-public-methods
 
     def _diagnostics(self, pi, sizes, zeros):
         mean, second = float(pi @ sizes), float(pi @ sizes**2)
-        means = self.alpha * sizes + self.tau0
+        means, seconds = self._batch_service_moments(sizes)
         # Untruncated identity: E[B(B-1)] = lambda² E[H²].
         factorial = float(pi @ (sizes * (sizes - 1)))
-        expected = self.rate**2 * (1 + self.service_scv) * float(pi @ means**2)
+        expected = self.rate**2 * float(pi @ seconds)
         flow = abs(mean - self.rate * float(pi @ means) - float(pi @ zeros)) / mean
         moment = abs(factorial - expected) / max(expected, np.finfo(float).tiny)
         upper = sizes >= 0.8 * sizes[-1]
         tail = float(pi[upper] @ sizes[upper] ** 2) / second
         wait = factorial / (2 * self.rate * mean)
-        service = float(pi @ (sizes * means)) / mean
+        job_means = self._batch_job_service_means(sizes, means)
+        service = float(pi @ (sizes * job_means)) / mean
         idle = float(pi @ zeros) / mean  # positive, avoids cancellation in 1-busy
         metrics = np.array([mean, second, wait, service, wait + service])
         return (

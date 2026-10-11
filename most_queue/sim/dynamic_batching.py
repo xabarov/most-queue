@@ -58,6 +58,7 @@ class DynamicBatchingSim:
         self.alpha = self.tau0 = 0.0
         self.shape = 1.0
         self.h2_probability = 0.5
+        self.service_sampler = None
 
     def set_sources(self, rate):
         """Set a finite positive Poisson arrival rate."""
@@ -114,6 +115,8 @@ class DynamicBatchingSim:
         return self.set_servers(alpha, tau0, kind="h2", coev=coev)
 
     def _draw(self, size):
+        if self.kind == "callback":
+            return float(self.service_sampler(size, self.generator))
         mean = self.alpha * size + self.tau0
         if self.kind == "deterministic":
             return mean
@@ -124,6 +127,22 @@ class DynamicBatchingSim:
             weight = p if self.generator.random() < p else 1 - p
             return float(self.generator.exponential(mean / (2 * weight)))
         return float(self.generator.gamma(self.shape, mean / self.shape))
+
+    def set_service_callback(self, sampler, *, mean_bound):
+        """Set sampler(batch_size, rng) and global E[H|b]<=a*b+c certificate.
+
+        Only the sampler drives the trajectory; no analytic count PMF is used.
+        lambda*a<1 is a sufficient stationarity condition, not a proof that
+        the callback obeys the global certificate supplied by its caller.
+        """
+        bound = np.asarray(mean_bound, dtype=float)
+        if not callable(sampler) or bound.shape != (2,) or not np.all(np.isfinite(bound)) or np.any(bound < 0):
+            raise ValueError("require a sampler and two finite non-negative bound coefficients")
+        if bound.sum() <= 0:
+            raise ValueError("service envelope cannot be zero")
+        self.kind, self.service_sampler = "callback", sampler
+        self.alpha, self.tau0 = bound
+        return self
 
     def run(self, total_served=200_000, warmup_fraction=0.2, *, num_of_jobs=None):
         """Collect at least total_served jobs, finishing the last batch.

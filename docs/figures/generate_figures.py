@@ -1879,6 +1879,49 @@ def fig_dynamic_batching():
     return fig
 
 
+def fig_token_batching():
+    """Same three token marks: padded batch versus gated early release."""
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.5), dpi=150, sharey=True)
+    for ax, elastic in zip(axes, (False, True)):
+        completions = (0.5, 0.68, 1.07) if elastic else (1.42, 1.42, 1.42)
+        for row, (length, end, color) in enumerate(zip((1, 3, 9), completions, (BLUE, AQUA, VIOLET))):
+            ax.barh(row, 0.5, height=0.35, color=GRID)
+            ax.barh(row, end - 0.5, left=0.5, height=0.35, color=color)
+            ax.plot(end, row, "o", color=color)
+            ax.text(end + 0.04, row, f"{end:.2f}", va="center", fontsize=9)
+        ax.set_yticks(
+            [0, 1, 2], labels=[t("1 token", "1 токен"), t("3 tokens", "3 токена"), t("9 tokens", "9 токенов")]
+        )
+        ax.set_xlim(0, 1.65)
+        ax.set_xlabel(t("Time since batch start, s", "Время после запуска, с"))
+        ax.set_title(
+            (
+                t("Elastic: early release", "Elastic: ранний выход")
+                if elastic
+                else t("Padded: shared completion", "Padded: общий выход")
+            ),
+            fontsize=11,
+        )
+        ax.axvline(0.5, color=MUTED, lw=1, ls="--")
+        ax.text(0.25, 2.5, t("Prefill", "Prefill"), ha="center", fontsize=9, color=INK2)
+        ax.spines[["top", "right"]].set_visible(False)
+    fig.suptitle(
+        t("Variable output lengths, same gated batch", "Разные длины ответов, один закрытый пакет"), fontsize=12
+    )
+    fig.text(
+        0.5,
+        0.015,
+        t(
+            "New arrivals wait for the last completion; synthetic costs",
+            "Новые приходы ждут последнего выхода; синтетическая стоимость",
+        ),
+        ha="center",
+        fontsize=9,
+    )
+    fig.tight_layout(rect=(0, 0.06, 1, 0.94))
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -1911,6 +1954,7 @@ FIGURES = {
     "fork_join": fig_fork_join,
     "batch": fig_batch,
     "dynamic_batching": fig_dynamic_batching,
+    "token_batching": fig_token_batching,
     "continuous_batching": fig_continuous_batching,
     "impatience": fig_impatience,
     "engset": fig_engset,

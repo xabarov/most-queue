@@ -515,6 +515,18 @@ CDF is not an analytical tail guarantee.
 
 ---
 
+## Variable token lengths and gated elastic batching
+
+[`TokenBatchingSim`](models/token-batching.md) supports dynamic, fixed and gated
+elastic policies. Individual total output lengths are sampled at arrival;
+elastic token iterations release short requests early and shrink the active set.
+`batch_size` is a physical cap for dynamic/elastic, and an exact group size for
+fixed service. No new request joins a running batch. `run(num_of_jobs=30_000)`
+returns empirical moments, actual time occupancy, utilization and a CDF, excluding
+whole-batch warmup consistently. Repeat seeds/run budgets to diagnose uncertainty.
+General non-affine durations can also use
+`DynamicBatchingSim.set_service_callback(sampler, mean_bound=(a,c))`.
+
 **See also:**
 - [Numerical Methods](calculation.md) — analytical calculations
 - [Distributions](distributions.md) — distribution reference
