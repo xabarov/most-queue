@@ -91,6 +91,7 @@ See the executable comparison of **9 disciplines** in
 | Matrix-analytic (MAP/PH) | MAP/PH/1, M/PH/1, PH/PH/1, MAP/M/c, MAP/PH/c — correlated (bursty) arrivals, single- & multi-server; MMPP fitting | QBD, logarithmic reduction |
 | [Unbounded dynamic batching](docs/models/dynamic-batching.md) | All-waiting dispatch; deterministic/exponential/Erlang/gamma/H2 batch durations, affine mean; independent simulator | numerical means with truncation diagnostics |
 | [Variable-token batching](docs/models/token-batching.md) | Output length/max-token clipping; dynamic, fixed and gated elastic service with non-exponential durations; general service callbacks | numerical means; M/G/1 clipping means exact |
+| [Mixed prefill/decode](docs/models/prefill-decode.md) | Three iteration costs, occupancy-dependent effective chunking, continuous boundary admission, independent token-level DES | exact surrogate occupancy; approximate mean TTFT/ITL |
 | Batch Markovian arrivals | BMAP/M/1, BMAP/PH/1 — correlated batch traffic | level truncation |
 | Retrial & abandonment | M/M/1 and M/G/1 retrial (orbit), Erlang-A (M/M/n+M) with staffing | exact / Falin–Templeton |
 | GI/G approximations | GI/G/1, GI/G/m mean waiting time | Kingman, Krämer–Langenbach-Belz, Allen–Cunneen |
@@ -126,6 +127,12 @@ manufacturing lines · telecom traffic · healthcare resource planning ·
 scheduling research (SRPT/LAS with ML size predictions).
 
 ## Recent highlights
+
+- **2026-10, current source tree** — **Mixed prefill/decode (L3 / EPIC-086)**:
+  Ramani–Tantawi iteration costs, exact infinite-tail surrogate occupancy and
+  approximate TTFT/ITL, with a separate token-level simulator. Includes 96
+  published-cost predictions, 28 synthetic DES cases and explicit diagnostics
+  for nonphysical mean-field estimates. [Model and limits](docs/models/prefill-decode.md).
 
 - **2026-10, current source tree** — **Variable-token batching (L2 / EPIC-085)**:
   dynamic, fixed and gated elastic queues retain the randomness of output lengths;

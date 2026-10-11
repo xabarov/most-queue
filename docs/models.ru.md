@@ -13,6 +13,7 @@
 | Семейство | Что внутри |
 |---|---|
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | Clipping PMF; dynamic/fixed/закрытый elastic; ранний выход, стоимость через максимум/сумму, M/G/1 и общие callback-законы |
+| [Совместные prefill и decode](models/prefill-decode.ru.md) | Три стоимости итерации, effective chunked prefill, точная занятость surrogate и приближённые TTFT/ITL, независимый токеновый DES |
 | [Неограниченный динамический батчинг](models/dynamic-batching.ru.md) | Правило Inoue «забрать всех», пять законов с аффинным средним, численные средние задержек с диагностикой усечения, оценки при детерминированном времени и независимый DES |
 | [FIFO системы (дисциплина First In First Out)](models/fifo.ru.md) | M/M/c, Erlang B/C, M/G/1, GI/M/1, GI/G-аппроксимации |
 | [Size-based дисциплины](models/size-based.ru.md) | SRPT/SJF/PSJF/SPJF (с предсказаниями), FB/LAS, PS, LCFS-PR |
@@ -56,6 +57,7 @@
 | Модель | Класс расчета | Симуляция | Приоритеты | Особенности |
 |--------|--------------|-----------|------------|-------------|
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Численные средние при случайном времени; fixed-подмена средним явно; физический cap dynamic только в DES; без аналитических хвостов |
+| [Совместные prefill/decode](models/prefill-decode.ru.md) | PrefillDecodeCalc | PrefillDecodeSim | - | Точный бесконечный хвост CTMC-surrogate; средние TTFT/ITL приближённо, нефизические оценки помечены; без аналитических хвостов задержек |
 | [Неограниченный динамический батчинг](models/dynamic-batching.ru.md) | DynamicBatchingCalc | DynamicBatchingSim | - | Poisson, запуск всех ожидающих; пять законов обслуживания; численные первые моменты w/v, не аналитическая CDF |
 | M/M/c | MMnrCalc | QsSim | - | Базовая модель |
 | M/M/n/0 (Erlang B) | ErlangBCalc | QsSim(buffer=0) | - | Потери, нечувствительность M/G/n/0 |

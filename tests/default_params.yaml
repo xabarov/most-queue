@@ -25,6 +25,11 @@ token_batching:
   jobs_per_replication: 20000
   standard_errors: 4.5
   relative_floor: 0.005
+prefill_decode:
+  replications: 6
+  jobs_per_replication: 12000
+  standard_errors: 4.5
+  absolute_floor: 0.005
 
 arrival:
   rate: 1.0

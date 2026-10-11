@@ -527,7 +527,28 @@ whole-batch warmup consistently. Repeat seeds/run budgets to diagnose uncertaint
 General non-affine durations can also use
 `DynamicBatchingSim.set_service_callback(sampler, mean_bound=(a,c))`.
 
+## Mixed prefill and decode at iteration boundaries
+
+[`PrefillDecodeSim`](models/prefill-decode.md) explicitly tracks individual
+prompt/output tokens, with no exponential service approximation. At each
+boundary it admits FCFS to the active cap, schedules one token per decoder,
+then spends the remaining token budget on FCFS prefills. Arrivals cannot
+interrupt a running iteration. `set_sources`, `set_servers`, `run(num_of_jobs)`
+and `replay(arrivals, inputs, outputs)` support generated traffic and supplied
+traces; an optional length sampler gives individual integer lengths.
+Results contain empirical W/V moments, TTFT and token gaps, timestamp arrays,
+time occupancy and busy fraction. Iteration recording is opt-in.
+
+`itl_mean` measures actual gaps after the first token; `all_decode_mean`
+includes the first decode interval for comparison with the paper convention.
+Warmup is excluded by arrival index; time occupancy ends at the last arrival,
+before drain. Finishing a finite overloaded cohort is not a stability proof.
+Its sibling `PrefillDecodeCalc` solves a Markovian surrogate; agreement with
+that approximation is not an exact DES oracle. See the
+[independent M/D/1 and trace checks](research/prefill-decode-validation-2026.md).
+
 **See also:**
+
 - [Numerical Methods](calculation.md) — analytical calculations
 - [Distributions](distributions.md) — distribution reference
 - [Usage Examples](examples.md) — extended examples

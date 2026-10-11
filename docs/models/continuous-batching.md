@@ -21,8 +21,10 @@ server, as in classical M/M/c); requests beyond the cap wait FCFS. The state-dep
 chain this produces has an exact (closed-form) stationary distribution, and — because occupancy is
 pinned at exactly `k` whenever anyone waits — the waiting time of a newly-arriving request is an
 exact mixture of Erlang distributions, giving exact raw moments *and* an exact tail `P(W>t)`, not
-just the mean (unlike the one directly comparable recent treatment of this exact system class,
-which is explicitly approximate and mean-only).
+just the mean. Exactness is for this exponential-completion queue, not for
+real token-level GPU execution. [Mixed prefill/decode](prefill-decode.md)
+implements Ramani–Tantawi's cost-to-rate mapping: its occupancy chain is also
+solved exactly, while the rate mapping and mean TTFT/ITL remain approximate.
 
 **Calculator class:** `OccupancyDependentQueueCalc`
 (`most_queue.theory.continuous_batching.occupancy_dependent`)

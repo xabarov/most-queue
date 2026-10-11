@@ -31,6 +31,62 @@ class QueueResults:
 
 
 @dataclass
+class PrefillDecodeResults(QueueResults):
+    """Mean-field iteration-cost results; exact occupancy of the CTMC surrogate.
+
+    p is an unrenormalized finite prefix, with omitted probability explicitly
+    recorded. utilization is the saturation load, not busy_probability.
+    Negative paper latency estimates are preserved with metrics_valid=False.
+    """
+
+    ttft_mean: float = 0.0
+    itl_mean: float = 0.0
+    prefill_mean: float = 0.0
+    service_mean: float = 0.0
+    batch_mean: float = 0.0
+    jobs_mean: float = 0.0
+    queue_mean: float = 0.0
+    waiting_probability: float = 0.0
+    queue_nonempty_probability: float = 0.0
+    busy_probability: float = 0.0
+    capacity: float = 0.0
+    effective_prefill_chunks: int = 1
+    tail_ratio: float = 0.0
+    omitted_probability: float = 0.0
+    stationary_residual: float = 0.0
+    metrics_valid: bool = True
+    diagnostics: list[str] = field(default_factory=list)
+
+
+@dataclass
+class PrefillDecodeSimResults(QueueResults):
+    """Arrival-cohort latencies; time occupancy excludes the final draining period.
+
+    ITL averages actual gaps AFTER the first output token (undefined for m=1).
+    first_decode_mean includes the gap from prefill completion to first token.
+    Neither is the analytical mean-occupancy surrogate.
+    """
+
+    ttft_mean: float = 0.0
+    itl_mean: float | None = None
+    prefill_mean: float = 0.0
+    first_decode_mean: float = 0.0
+    all_decode_mean: float = 0.0
+    service_mean: float = 0.0
+    batch_mean: float = 0.0
+    jobs_mean: float = 0.0
+    queue_mean: float = 0.0
+    busy_probability: float = 0.0
+    waiting_probability: float = 0.0
+    observation_time: float = 0.0
+    start_times: list[float] = field(default_factory=list)
+    prefill_end_times: list[float] = field(default_factory=list)
+    completion_times: list[float] = field(default_factory=list)
+    output_times: list[list[float]] = field(default_factory=list)
+    iteration_trace: list[dict] = field(default_factory=list)
+
+
+@dataclass
 class DynamicBatchingResults(QueueResults):
     """Unbounded batching means; diagnostics are not certified error bounds.
 

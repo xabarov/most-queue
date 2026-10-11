@@ -1922,6 +1922,43 @@ def fig_token_batching():
     return fig
 
 
+def fig_prefill_decode():
+    """Hand-computed boundary admission trace with mixed prefill and decode."""
+    fig, ax = plt.subplots(figsize=(12, 3.6))
+    boundaries = [0, 0.169, 0.347, 0.511]
+    for x in boundaries:
+        ax.axvline(x, color=GRID, linewidth=1, zorder=0)
+    bars = [
+        (0, 0.169, 1, BLUE, t("prefill 3", "prefill 3")),
+        (0.169, 0.178, 1, AQUA, t("decode 1", "decode 1")),
+        (0.347, 0.164, 1, AQUA, t("decode 2", "decode 2")),
+        (0.05, 0.119, 0, YELLOW, t("wait", "ждёт")),
+        (0.169, 0.178, 0, BLUE, t("prefill 2", "prefill 2")),
+        (0.347, 0.164, 0, AQUA, t("decode 1", "decode 1")),
+    ]
+    for start, length, row, color, label in bars:
+        ax.broken_barh([(start, length)], (row - 0.22, 0.44), facecolors=color, edgecolors=SURFACE, linewidth=2)
+        ax.text(start + length / 2, row, label, ha="center", va="center", color="white", fontsize=11)
+    ax.annotate(
+        t("arrival B", "приход B"),
+        xy=(0.05, -0.24),
+        xytext=(0.05, -0.62),
+        ha="center",
+        arrowprops={"arrowstyle": "->", "color": INK2},
+        fontsize=10,
+    )
+    ax.set_yticks([0, 1], labels=[t("Request B", "Заявка B"), t("Request A", "Заявка A")])
+    ax.set_xticks(boundaries, labels=["0", ".169", ".347", ".511"])
+    ax.set_xlim(-0.015, 0.535)
+    ax.set_ylim(-0.72, 1.45)
+    ax.set_xlabel(t("Seconds · B=2 slots · M=3 tokens per iteration", "Секунды · B=2 места · M=3 токена за итерацию"))
+    ax.set_title(t("Boundary admission and mixed prefill/decode", "Допуск на границе и совместные prefill/decode"))
+    ax.spines[["top", "right", "left"]].set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    fig.tight_layout()
+    return fig
+
+
 FIGURES = {
     "fifo_mmn": fig_fifo_mmn,
     "machine_repair": fig_machine_repair,
@@ -1956,6 +1993,7 @@ FIGURES = {
     "dynamic_batching": fig_dynamic_batching,
     "token_batching": fig_token_batching,
     "continuous_batching": fig_continuous_batching,
+    "prefill_decode": fig_prefill_decode,
     "impatience": fig_impatience,
     "engset": fig_engset,
     "sla": fig_sla,
