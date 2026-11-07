@@ -1,0 +1,73 @@
+{
+  "source_files_unchanged": 16,
+  "native_math_objects": 478,
+  "display_math_objects": 37,
+  "matrix_dimensions": [
+    [
+      2,
+      [
+        3,
+        3
+      ]
+    ],
+    [
+      3,
+      [
+        2,
+        2,
+        2
+      ]
+    ],
+    [
+      3,
+      [
+        3,
+        3,
+        3
+      ]
+    ],
+    [
+      3,
+      [
+        2,
+        2,
+        2
+      ]
+    ],
+    [
+      3,
+      [
+        1,
+        1,
+        1
+      ]
+    ],
+    [
+      3,
+      [
+        3,
+        3,
+        3
+      ]
+    ]
+  ],
+  "image_objects": 12,
+  "sequence_fields": 9,
+  "reference_fields": 27,
+  "inline_math_preserved_except_two_equivalent_groupings": 441,
+  "display_math_tex_preserved_except_layout": true,
+  "latex_source_matches_original_pdf_text": true,
+  "numeric_tables_verified": 3,
+  "numeric_cells_verified": 120,
+  "bibliography_entries": 18,
+  "all_embedded_images_are_original_figures": true,
+  "pdf_preview_pages": 18,
+  "visual_review": "All 18 pages inspected, including matrices, formula markers, numeric tables, captions and references.",
+  "preview_formula_error_glyphs": 0,
+  "preview_font": "Liberation Serif in a temporary rendering copy; deliverable DOCX uses Times New Roman. Local Times New Roman italic has a Cyrillic glyph mapping defect.",
+  "validation": "OOXML schema validation passed",
+  "final_artifact_sha256": {
+    "negative_queues_editable.docx": "026c8691755ad191eda921ff66fd7f136d01842bc78570125707bc8713008e99",
+    "negative_queues_editable.pdf": "03a2c7d30e2a727a899dffc40f503ec3036651f4860eb6eb203e7564444a87a8"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "section_references": [
+    {
+      "original": "раздел~4",
+      "replacement": "раздел~\\ref{sec:times}",
+      "occurrences": 7
+    },
+    {
+      "original": "раздел~5",
+      "replacement": "раздел~\\ref{sec:results}",
+      "occurrences": 3
+    },
+    {
+      "original": "\\max_i|x[i]^{\\mathrm{new}}-x[i]^{\\mathrm{old}}|<\\varepsilon",
+      "replacement": "\\max_i\\left|{x[i]}^{\\mathrm{new}}-{x[i]}^{\\mathrm{old}}\\right|<\\varepsilon",
+      "occurrences": 1,
+      "reason": "Equivalent mathematical grouping for Word/LibreOffice"
+    },
+    {
+      "original": "T^{* (k)}(0)",
+      "replacement": "\\left(T^*\\right)^{(k)}(0)",
+      "occurrences": 1,
+      "reason": "Equivalent mathematical grouping for Word/LibreOffice"
+    }
+  ],
+  "math_layout": "Long displays and outer arrays split into readable native display paragraphs; mathematical expressions unchanged.",
+  "figure_panels": 12,
+  "captions": [
+    [
+      "fig_1",
+      "1",
+      "Figure"
+    ],
+    [
+      "fig_2",
+      "2",
+      "Figure"
+    ],
+    [
+      "fig_3",
+      "3",
+      "Figure"
+    ],
+    [
+      "fig_4",
+      "4",
+      "Figure"
+    ],
+    [
+      "fig_5",
+      "5",
+      "Figure"
+    ],
+    [
+      "fig_6",
+      "6",
+      "Figure"
+    ],
+    [
+      "tab_1",
+      "1",
+      "Table"
+    ],
+    [
+      "tab_2",
+      "2",
+      "Table"
+    ],
+    [
+      "tab_3",
+      "3",
+      "Table"
+    ]
+  ]
+}

@@ -2,7 +2,6 @@
 Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
 """
 
-import random
 from enum import Enum
 
 from most_queue.random.utils.create import create_distribution
@@ -68,6 +67,7 @@ class QsSimNegatives(QsSim):
         buffer_type: str = "list",
         disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
         rcs_scenario: RcsScenario = RcsScenario.REMOVE,
+        seed: int | None = None,
     ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
         """
         Initialize the queueing system with GI/G/n/r or GI/G/n model.
@@ -83,7 +83,7 @@ class QsSimNegatives(QsSim):
             - REQUEUE: interrupt one random job in service and requeue it to the head
         """
 
-        super().__init__(num_of_channels, buffer, verbose, buffer_type)
+        super().__init__(num_of_channels, buffer, verbose, buffer_type, seed=seed)
 
         self.type_of_negatives = type_of_negatives
         self.disaster_scenario = disaster_scenario
@@ -289,17 +289,16 @@ class QsSimNegatives(QsSim):
 
                 # Put interrupted tasks in FCFS order (by original arrival moment) to the head of the queue.
                 tasks_to_requeue.sort(key=lambda t: t.arr_time)
-                for ts in reversed(tasks_to_requeue):
-                    self.queue.append_left(ts)
-
-                # All servers become free at this instant, then immediately take tasks from the queue.
+                # Restart interrupted jobs immediately; they have already contributed
+                # their initial waiting time to statistics. Do not count them again.
                 self.free_channels = self.n
                 self._free_servers = set(range(self.n))
                 self._mark_servers_time_changed()
-
-                while self.free_channels > 0 and self.queue.size() > 0:
+                for ts in tasks_to_requeue:
                     c = next(iter(self._free_servers))
-                    self.send_head_of_queue_to_channel(c)
+                    self.servers[c].start_service(ts, self.ttek)
+                    self._free_servers.remove(c)
+                    self.free_channels -= 1
 
                 # Note: in_sys does not change; no job leaves the system.
             else:
@@ -366,7 +365,7 @@ class QsSimNegatives(QsSim):
             if not not_free_servers:
                 # No one is in service: RCS has no effect in this instant.
                 return
-            c = random.choice(not_free_servers)
+            c = int(self.generator.choice(not_free_servers))
             if self.rcs_scenario == RcsScenario.RESUME:
                 end_ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=True)
             elif self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING:
@@ -388,12 +387,10 @@ class QsSimNegatives(QsSim):
                 # - REQUEUE_NO_RESAMPLING: preemptive-repeat WITHOUT resampling (sample once; progress lost).
                 if self.rcs_scenario == RcsScenario.REQUEUE and hasattr(end_ts, "service_remaining"):
                     end_ts.service_remaining = None
-                end_ts.start_waiting_time = self.ttek
-                self.queue.append_left(end_ts)
-
-                # No one leaves the system; restart service immediately if possible.
-                if self.queue.size() != 0:
-                    self.send_head_of_queue_to_channel(c)
+                # Instant restart contributes no additional waiting observation.
+                self.servers[c].start_service(end_ts, self.ttek)
+                self._free_servers.remove(c)
+                self.free_channels -= 1
             else:
                 # REMOVE (current behavior): remove the job from system as broken.
                 self.total += 1

@@ -21,6 +21,8 @@ def beff_pls_from_beta(beta_pls: Callable[[float], complex], s: float, r: float)
 
         B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r)).
     """
+    if r == 0:
+        return beta_pls(s)
     sr = s + r
     beta_sr = beta_pls(sr)
     return beta_sr * sr / (s + r * beta_sr)
@@ -31,7 +33,7 @@ def beta_pls_from_moments(mean: float, var: float) -> Callable[[float], float]:
     Build a simple β(s) approximation from the first two moments.
 
     - If variance is available: Gamma approximation with mean/variance match.
-    - Otherwise: exponential (degenerate) fallback with the same mean.
+    - Zero variance: deterministic service with the same mean.
     """
     mean_b = float(mean)
     var_b = float(var)
@@ -110,9 +112,10 @@ def beff_moments_repeat_without_resampling_from_moments(
     var_b = float(var)
     r = float(r)
 
-    if r <= 0.0:
-        # No interruptions: return a Gamma approximation of B moments if possible,
-        # otherwise fall back to exponential with the same mean.
+    if r < 0:
+        raise ValueError("Restart intensity must be nonnegative.")
+    if r == 0.0:
+        # No interruptions: Gamma moment fit, or deterministic at zero variance.
         if var_b > 0.0 and mean_b > 0.0:
             k_b = mean_b * mean_b / var_b
             theta_b = var_b / mean_b
@@ -122,10 +125,17 @@ def beff_moments_repeat_without_resampling_from_moments(
                 prod *= k_b + (m - 1)
                 out.append(float((theta_b**m) * prod))
             return out
-        # Exponential fallback
-        out = []
+        return [mean_b**m for m in range(1, n_mom + 1)]
+
+    if var_b == 0:
+        t1 = math.expm1(r * mean_b) / r
+        t2 = 2 * math.exp(r * mean_b) * (math.expm1(r * mean_b) - r * mean_b) / r**2
+        var_t = t2 - t1 * t1
+        shape, scale = t1 * t1 / var_t, var_t / t1
+        out, prod = [], 1.0
         for m in range(1, n_mom + 1):
-            out.append(float(math.factorial(m) * (mean_b**m)))
+            prod *= shape + m - 1
+            out.append(scale**m * prod)
         return out
 
     # Gamma approximation for B: shape k, scale theta
@@ -152,7 +162,7 @@ def beff_moments_repeat_without_resampling_from_moments(
 
     if 2.0 * theta * r >= 1.0 - 1e-15:
         # Second moment infinite -> variance infinite
-        return [float("inf")] * n_mom
+        return [float(t1)] + [float("inf")] * (n_mom - 1)
 
     m2 = (1.0 - 2.0 * theta * r) ** (-k)  # E[e^{2rB}]
     t2 = (2.0 / (r * r)) * (m2 - m1 - r * ebe)  # E[T^2]
@@ -190,18 +200,30 @@ def beff_moments_repeat_without_resampling_from_h2(
       B ~ H2(y, mu),  beta(s)=Σ y_i * mu_i/(mu_i+s).
       M_B(t)=E[e^{tB}]=Σ y_i * mu_i/(mu_i - t).
 
-    Then:
-      E[e^{rB}], E[e^{2rB}], E[B e^{rB}] are computed in closed form, and we gamma-fit T.
+    Requires a real probability mixture for positive r, with moments evaluated
+    only in their convergence domain. Moments 1 and 2 are computed in closed
+    form; the Gamma fit supplies approximate moments of higher order.
     """
     n_mom = int(num_of_moments)
     if n_mom <= 0:
         return []
 
     r = float(r)
-    if r <= 0.0:
-        # No interruptions: return a gamma-like moment set derived from H2 moments is out of scope here.
-        # Caller should bypass this function for r<=0.
-        return [0.0] * n_mom
+    if r < 0:
+        raise ValueError("Restart intensity must be nonnegative.")
+    if r == 0:
+        return [
+            float(np.real(math.factorial(k) * sum(yi / mui**k for yi, mui in zip(y, mu)))) for k in range(1, n_mom + 1)
+        ]
+
+    if not is_real_h2(y, mu):
+        raise ValueError("Moment existence under fixed-service restart requires a real H2 distribution.")
+    active_rates = [float(np.real(mui)) for yi, mui in zip(y, mu) if float(np.real(yi)) > 0]
+    if r >= min(active_rates):
+        return [float("inf")] * n_mom
+    if 2 * r >= min(active_rates):
+        t1 = float(np.real(sum(yi * mui / (mui - r) for yi, mui in zip(y, mu)) - 1)) / r
+        return [t1] + [float("inf")] * (n_mom - 1)
 
     # Compute MGF terms for H2 mixture.
     m1 = 0.0 + 0.0j  # E[e^{rB}]
@@ -239,3 +261,57 @@ def beff_moments_repeat_without_resampling_from_h2(
         prod *= k_t + (m - 1)
         out.append(float((theta_t**m) * prod))
     return out
+
+
+def is_real_h2(y, mu):
+    """Whether an algebraic two-phase fit is a probability mixture."""
+    return (
+        all(abs(complex(x).imag) < 1e-10 for x in [*y, *mu])
+        and all(0 <= float(np.real(x)) <= 1 for x in y)
+        and all(float(np.real(x)) > 0 for x in mu)
+        and abs(sum(y) - 1) < 1e-10
+    )
+
+
+def effective_service_moments(b, y, mu, r, *, fixed=False, num_of_moments=4):
+    """Real H2 when available, otherwise Gamma matching mean/variance.
+
+    Resampling moments use analytic series division. Fixed-service moments 1 and 2
+    are exact for the selected input law; higher moments are a Gamma closure.
+    """
+    order = num_of_moments
+    if r == 0:
+        return [float(x) for x in b[:order]]
+    if r < 0:
+        raise ValueError("Restart intensity must be nonnegative.")
+    real_h2 = is_real_h2(y, mu)
+    mean, var = float(b[0]), float(b[1] - b[0] ** 2)
+    if fixed:
+        if real_h2:
+            return beff_moments_repeat_without_resampling_from_h2(y, mu, r, num_of_moments=order)
+        return beff_moments_repeat_without_resampling_from_moments(mean, var, r, num_of_moments=order)
+    r = np.longdouble(r)
+    if real_h2:
+        real_y = [np.longdouble(np.real(x)) for x in y]
+        real_mu = [np.longdouble(np.real(x)) for x in mu]
+        c = [
+            sum(yi * mui * (-1) ** k / (mui + r) ** (k + 1) for yi, mui in zip(real_y, real_mu))
+            for k in range(order + 1)
+        ]
+    elif var > 0:
+        shape, scale = np.longdouble(mean * mean / var), np.longdouble(var / mean)
+        c = [(1 + scale * r) ** (-shape)]
+        for k in range(1, order + 1):
+            c.append(-c[-1] * (shape + k - 1) * scale / (k * (1 + scale * r)))
+    else:
+        c = [math.exp(-mean * r) * (-mean) ** k / math.factorial(k) for k in range(order + 1)]
+    numerator = [r * c[k] + (c[k - 1] if k else 0) for k in range(order + 1)]
+    denominator = [r * c[k] + (1 if k == 1 else 0) for k in range(order + 1)]
+    if abs(denominator[0]) < 1e-300:
+        raise ValueError("Effective-service transform is numerically singular.")
+    quotient = []
+    for k in range(order + 1):
+        quotient.append(
+            (numerator[k] - sum(denominator[j] * quotient[k - j] for j in range(1, k + 1))) / denominator[0]
+        )
+    return [float(np.real((-1) ** k * math.factorial(k) * quotient[k])) for k in range(1, order + 1)]

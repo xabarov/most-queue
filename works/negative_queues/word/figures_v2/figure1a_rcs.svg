@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="459.212598pt" height="280.629921pt" viewBox="0 0 459.212598 280.629921" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-07T18:08:56.002782</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 280.629921 
+L 459.212598 280.629921 
+L 459.212598 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 185.527559 55.275591 
+Q 207.992126 41.102362 229.652959 27.436221 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 225.647822 27.834814 
+L 229.652959 27.436221 
+L 227.568751 30.879487 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 282.188976 55.275591 
+Q 259.724409 41.102362 238.063576 27.436221 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 240.147784 30.879487 
+L 238.063576 27.436221 
+L 242.068713 27.834814 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 133.795276 100.629921 
+Q 156.259843 86.456693 177.920676 72.790552 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 173.915539 73.189145 
+L 177.920676 72.790552 
+L 175.836468 76.233817 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 237.259843 100.629921 
+Q 259.724409 86.456693 281.385243 72.790552 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 277.380106 73.189145 
+L 281.385243 72.790552 
+L 279.301035 76.233817 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 230.456693 100.629921 
+Q 207.992126 86.456693 186.331292 72.790552 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 188.415501 76.233817 
+L 186.331292 72.790552 
+L 190.33643 73.189145 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 333.92126 100.629921 
+Q 311.456693 86.456693 289.795859 72.790552 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 291.880067 76.233817 
+L 289.795859 72.790552 
+L 293.800997 73.189145 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 82.062992 145.984252 
+Q 104.527559 131.811024 126.188393 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 122.183255 118.543475 
+L 126.188393 118.144883 
+L 124.104184 121.588148 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 185.527559 145.984252 
+Q 207.992126 131.811024 229.652959 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 225.647822 118.543475 
+L 229.652959 118.144883 
+L 227.568751 121.588148 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 178.724409 145.984252 
+Q 156.259843 131.811024 134.599009 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 136.683217 121.588148 
+L 134.599009 118.144883 
+L 138.604146 118.543475 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 288.992126 145.984252 
+Q 311.456693 131.811024 333.117526 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 329.112389 118.543475 
+L 333.117526 118.144883 
+L 331.033318 121.588148 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 282.188976 145.984252 
+Q 259.724409 131.811024 238.063576 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 240.147784 121.588148 
+L 238.063576 118.144883 
+L 242.068713 118.543475 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 385.653543 145.984252 
+Q 363.188976 131.811024 341.528143 118.144883 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 343.612351 121.588148 
+L 341.528143 118.144883 
+L 345.53328 118.543475 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 78.661417 253.700787 
+Q 78.661417 208.346457 78.661417 163.942455 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 76.861417 167.542455 
+L 78.661417 163.942455 
+L 80.461417 167.542455 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 182.125984 253.700787 
+Q 182.125984 208.346457 182.125984 163.942455 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 180.325984 167.542455 
+L 182.125984 163.942455 
+L 183.925984 167.542455 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 285.590551 253.700787 
+Q 285.590551 208.346457 285.590551 163.942455 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 283.790551 167.542455 
+L 285.590551 163.942455 
+L 287.390551 167.542455 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 389.055118 253.700787 
+Q 389.055118 208.346457 389.055118 163.942455 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 387.255118 167.542455 
+L 389.055118 163.942455 
+L 390.855118 167.542455 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 82.346457 253.700787 
+Q 130.393701 208.346457 177.749874 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 173.896402 164.806684 
+L 177.749874 163.644465 
+L 176.367566 167.424574 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 178.440945 253.700787 
+Q 130.393701 208.346457 83.037528 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 84.419835 167.424574 
+L 83.037528 163.644465 
+L 86.891 164.806684 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_20">
+    <path d="M 185.811024 253.700787 
+Q 233.858268 208.346457 281.214441 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 277.360969 164.806684 
+L 281.214441 163.644465 
+L 279.832133 167.424574 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 281.905512 253.700787 
+Q 233.858268 208.346457 186.502095 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 187.884402 167.424574 
+L 186.502095 163.644465 
+L 190.355567 164.806684 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 289.275591 253.700787 
+Q 337.322835 208.346457 384.679008 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 380.825536 164.806684 
+L 384.679008 163.644465 
+L 383.2967 167.424574 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_23">
+    <path d="M 385.370079 253.700787 
+Q 337.322835 208.346457 289.966662 163.644465 
+" clip-path="url(#pd0a6877aa1)" style="fill: none; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+    <path d="M 291.348969 167.424574 
+L 289.966662 163.644465 
+L 293.820134 164.806684 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #202020; stroke: #202020; stroke-width: 0.85; stroke-linecap: round"/>
+   </g>
+   <g id="patch_24">
+    <path d="M 219.826772 10.062992 
+L 247.889764 10.062992 
+Q 250.440945 10.062992 250.440945 12.614173 
+L 250.440945 24.23622 
+Q 250.440945 26.787402 247.889764 26.787402 
+L 219.826772 26.787402 
+Q 217.275591 26.787402 217.275591 24.23622 
+L 217.275591 12.614173 
+Q 217.275591 10.062992 219.826772 10.062992 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_25">
+    <path d="M 168.094488 55.417323 
+L 196.15748 55.417323 
+Q 198.708661 55.417323 198.708661 57.968504 
+L 198.708661 69.590551 
+Q 198.708661 72.141732 196.15748 72.141732 
+L 168.094488 72.141732 
+Q 165.543307 72.141732 165.543307 69.590551 
+L 165.543307 57.968504 
+Q 165.543307 55.417323 168.094488 55.417323 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_26">
+    <path d="M 271.559055 55.417323 
+L 299.622047 55.417323 
+Q 302.173228 55.417323 302.173228 57.968504 
+L 302.173228 69.590551 
+Q 302.173228 72.141732 299.622047 72.141732 
+L 271.559055 72.141732 
+Q 269.007874 72.141732 269.007874 69.590551 
+L 269.007874 57.968504 
+Q 269.007874 55.417323 271.559055 55.417323 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_27">
+    <path d="M 116.362205 100.771654 
+L 144.425197 100.771654 
+Q 146.976378 100.771654 146.976378 103.322835 
+L 146.976378 114.944882 
+Q 146.976378 117.496063 144.425197 117.496063 
+L 116.362205 117.496063 
+Q 113.811024 117.496063 113.811024 114.944882 
+L 113.811024 103.322835 
+Q 113.811024 100.771654 116.362205 100.771654 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_28">
+    <path d="M 219.826772 100.771654 
+L 247.889764 100.771654 
+Q 250.440945 100.771654 250.440945 103.322835 
+L 250.440945 114.944882 
+Q 250.440945 117.496063 247.889764 117.496063 
+L 219.826772 117.496063 
+Q 217.275591 117.496063 217.275591 114.944882 
+L 217.275591 103.322835 
+Q 217.275591 100.771654 219.826772 100.771654 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_29">
+    <path d="M 323.291339 100.771654 
+L 351.354331 100.771654 
+Q 353.905512 100.771654 353.905512 103.322835 
+L 353.905512 114.944882 
+Q 353.905512 117.496063 351.354331 117.496063 
+L 323.291339 117.496063 
+Q 320.740157 117.496063 320.740157 114.944882 
+L 320.740157 103.322835 
+Q 320.740157 100.771654 323.291339 100.771654 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_30">
+    <path d="M 64.629921 146.125984 
+L 92.692913 146.125984 
+Q 95.244094 146.125984 95.244094 148.677165 
+L 95.244094 160.299213 
+Q 95.244094 162.850394 92.692913 162.850394 
+L 64.629921 162.850394 
+Q 62.07874 162.850394 62.07874 160.299213 
+L 62.07874 148.677165 
+Q 62.07874 146.125984 64.629921 146.125984 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_31">
+    <path d="M 168.094488 146.125984 
+L 196.15748 146.125984 
+Q 198.708661 146.125984 198.708661 148.677165 
+L 198.708661 160.299213 
+Q 198.708661 162.850394 196.15748 162.850394 
+L 168.094488 162.850394 
+Q 165.543307 162.850394 165.543307 160.299213 
+L 165.543307 148.677165 
+Q 165.543307 146.125984 168.094488 146.125984 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_32">
+    <path d="M 271.559055 146.125984 
+L 299.622047 146.125984 
+Q 302.173228 146.125984 302.173228 148.677165 
+L 302.173228 160.299213 
+Q 302.173228 162.850394 299.622047 162.850394 
+L 271.559055 162.850394 
+Q 269.007874 162.850394 269.007874 160.299213 
+L 269.007874 148.677165 
+Q 269.007874 146.125984 271.559055 146.125984 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_33">
+    <path d="M 375.023622 146.125984 
+L 403.086614 146.125984 
+Q 405.637795 146.125984 405.637795 148.677165 
+L 405.637795 160.299213 
+Q 405.637795 162.850394 403.086614 162.850394 
+L 375.023622 162.850394 
+Q 372.472441 162.850394 372.472441 160.299213 
+L 372.472441 148.677165 
+Q 372.472441 146.125984 375.023622 146.125984 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_34">
+    <path d="M 64.629921 253.84252 
+L 92.692913 253.84252 
+Q 95.244094 253.84252 95.244094 256.393701 
+L 95.244094 268.015748 
+Q 95.244094 270.566929 92.692913 270.566929 
+L 64.629921 270.566929 
+Q 62.07874 270.566929 62.07874 268.015748 
+L 62.07874 256.393701 
+Q 62.07874 253.84252 64.629921 253.84252 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_35">
+    <path d="M 168.094488 253.84252 
+L 196.15748 253.84252 
+Q 198.708661 253.84252 198.708661 256.393701 
+L 198.708661 268.015748 
+Q 198.708661 270.566929 196.15748 270.566929 
+L 168.094488 270.566929 
+Q 165.543307 270.566929 165.543307 268.015748 
+L 165.543307 256.393701 
+Q 165.543307 253.84252 168.094488 253.84252 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_36">
+    <path d="M 271.559055 253.84252 
+L 299.622047 253.84252 
+Q 302.173228 253.84252 302.173228 256.393701 
+L 302.173228 268.015748 
+Q 302.173228 270.566929 299.622047 270.566929 
+L 271.559055 270.566929 
+Q 269.007874 270.566929 269.007874 268.015748 
+L 269.007874 256.393701 
+Q 269.007874 253.84252 271.559055 253.84252 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_37">
+    <path d="M 375.023622 253.84252 
+L 403.086614 253.84252 
+Q 405.637795 253.84252 405.637795 256.393701 
+L 405.637795 268.015748 
+Q 405.637795 270.566929 403.086614 270.566929 
+L 375.023622 270.566929 
+Q 372.472441 270.566929 372.472441 268.015748 
+L 372.472441 256.393701 
+Q 372.472441 253.84252 375.023622 253.84252 
+z
+" clip-path="url(#pd0a6877aa1)" style="fill: #ffffff; stroke: #202020; stroke-width: 0.85; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <!-- $i$ -->
+    <g style="fill: #202020" transform="translate(10.365512 10.688856)">
+     <text>
+      <tspan x="0" y="-0.8125" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">i</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 10px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="11.905512" y="21.184572" transform="rotate(-0 11.905512 21.184572)">0</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="233.858268" y="21.598478" transform="rotate(-0 233.858268 21.598478)">00</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="11.905512" y="66.538903" transform="rotate(-0 11.905512 66.538903)">1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="182.125984" y="66.952809" transform="rotate(-0 182.125984 66.952809)">10</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="285.590551" y="66.952809" transform="rotate(-0 285.590551 66.952809)">01</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="11.905512" y="111.893233" transform="rotate(-0 11.905512 111.893233)">2</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="130.393701" y="112.30714" transform="rotate(-0 130.393701 112.30714)">20</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="233.858268" y="112.30714" transform="rotate(-0 233.858268 112.30714)">11</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="337.322835" y="112.30714" transform="rotate(-0 337.322835 112.30714)">02</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="11.905512" y="157.247564" transform="rotate(-0 11.905512 157.247564)">3</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="78.661417" y="157.66147" transform="rotate(-0 78.661417 157.66147)">30</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="182.125984" y="157.66147" transform="rotate(-0 182.125984 157.66147)">21</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="285.590551" y="157.66147" transform="rotate(-0 285.590551 157.66147)">12</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="389.055118" y="157.66147" transform="rotate(-0 389.055118 157.66147)">03</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 10px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="11.905512" y="264.964099" transform="rotate(-0 11.905512 264.964099)">4</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="78.661417" y="265.378006" transform="rotate(-0 78.661417 265.378006)">30</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="182.125984" y="265.378006" transform="rotate(-0 182.125984 265.378006)">21</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="285.590551" y="265.378006" transform="rotate(-0 285.590551 265.378006)">12</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 11.5px; font-family: 'DejaVu Serif'; text-anchor: middle; fill: #202020" x="389.055118" y="265.378006" transform="rotate(-0 389.055118 265.378006)">03</text>
+   </g>
+   <g id="text_21">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(195.824331 39.602242)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_22">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(266.832205 39.602242)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_23">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(144.092047 84.956572)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_24">
+    <!-- $\delta/2$ -->
+    <g style="fill: #202020" transform="translate(243.266614 84.956572)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="5.059998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="8.117996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_25">
+    <!-- $\delta/2$ -->
+    <g style="fill: #202020" transform="translate(210.809921 84.956572)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="5.059998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="8.117996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_26">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(318.564488 84.956572)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_27">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(92.359764 130.310903)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_28">
+    <!-- $2\delta/3$ -->
+    <g style="fill: #202020" transform="translate(188.784331 130.310903)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="10.559998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="13.617996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="5.5" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_29">
+    <!-- $\delta/3$ -->
+    <g style="fill: #202020" transform="translate(159.077638 130.310903)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="5.059998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="8.117996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_30">
+    <!-- $\delta/3$ -->
+    <g style="fill: #202020" transform="translate(294.998898 130.310903)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="5.059998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="8.117996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_31">
+    <!-- $2\delta/3$ -->
+    <g style="fill: #202020" transform="translate(259.792205 130.310903)">
+     <text>
+      <tspan x="0" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="10.559998" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">/</tspan>
+      <tspan x="13.617996" y="-0.5625" style="font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="5.5" y="-0.5625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_32">
+    <!-- $\delta$ -->
+    <g style="fill: #202020" transform="translate(370.296772 130.310903)">
+     <text>
+      <tspan x="0" y="-0.65625" style="font-style: italic; font-size: 11px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_33">
+    <!-- $\delta\,y_1$ -->
+    <g style="fill: #202020" transform="translate(57.229055 211.496379)">
+     <text>
+      <tspan x="0" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="11.779841" y="0.604688" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_34">
+    <!-- $\delta\,\frac{2y_1+y_2}{3}$ -->
+    <g style="fill: #202020" transform="translate(143.443622 211.681457)">
+     <text>
+      <tspan x="0" y="-0.126563" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="17.673853" y="4.675" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="18.623745" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">+</tspan>
+      <tspan x="10.698853" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="25.300405" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="14.273045" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+      <tspan x="28.874596" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+     <rect x="6.673853" y="-2.720313" width="25.389024" height="0.71875"/>
+    </g>
+   </g>
+   <g id="text_35">
+    <!-- $\delta\,\frac{y_1+2y_2}{3}$ -->
+    <g style="fill: #202020" transform="translate(290.692913 211.681457)">
+     <text>
+      <tspan x="0" y="-0.126563" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="25.300405" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="10.248045" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+      <tspan x="28.874596" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="14.598745" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">+</tspan>
+      <tspan x="17.673853" y="4.675" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="21.275405" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+     <rect x="6.673853" y="-2.720313" width="25.389024" height="0.71875"/>
+    </g>
+   </g>
+   <g id="text_36">
+    <!-- $\delta\,y_2$ -->
+    <g style="fill: #202020" transform="translate(394.15748 211.496379)">
+     <text>
+      <tspan x="0" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="11.779841" y="0.604688" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_37">
+    <!-- $\delta\,\frac{y_1}{3}$ -->
+    <g style="fill: #202020" transform="translate(106.619488 176.745709)">
+     <text>
+      <tspan x="0" y="-0.095313" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.292188" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="10.248045" y="-5.179844" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+      <tspan x="7.673853" y="4.70625" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+     </text>
+     <rect x="6.673853" y="-2.689063" width="6.762473" height="0.71875"/>
+    </g>
+   </g>
+   <g id="text_38">
+    <!-- $\delta\,y_2$ -->
+    <g style="fill: #202020" transform="translate(138.527913 177.480631)">
+     <text>
+      <tspan x="0" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="11.779841" y="0.604688" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_39">
+    <!-- $\delta\,\frac{2y_1}{3}$ -->
+    <g style="fill: #202020" transform="translate(208.071555 177.665709)">
+     <text>
+      <tspan x="0" y="-0.126563" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="9.673853" y="4.675" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="10.698853" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="14.273045" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+     </text>
+     <rect x="6.673853" y="-2.720313" width="10.787473" height="0.71875"/>
+    </g>
+   </g>
+   <g id="text_40">
+    <!-- $\delta\,\frac{2y_2}{3}$ -->
+    <g style="fill: #202020" transform="translate(240.66998 177.665709)">
+     <text>
+      <tspan x="0" y="-0.126563" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.323438" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="9.673853" y="4.675" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+      <tspan x="10.698853" y="-6.323438" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="14.273045" y="-5.211094" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+     </text>
+     <rect x="6.673853" y="-2.720313" width="10.787473" height="0.71875"/>
+    </g>
+   </g>
+   <g id="text_41">
+    <!-- $\delta\,y_1$ -->
+    <g style="fill: #202020" transform="translate(312.858622 177.480631)">
+     <text>
+      <tspan x="0" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-0.984375" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="11.779841" y="0.604688" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_42">
+    <!-- $\delta\,\frac{y_2}{3}$ -->
+    <g style="fill: #202020" transform="translate(346.147047 176.745709)">
+     <text>
+      <tspan x="0" y="-0.095313" style="font-style: italic; font-size: 11.5px; font-family: 'STIXGeneral'; fill: #202020">δ</tspan>
+      <tspan x="6.673853" y="-6.292188" style="font-style: italic; font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">y</tspan>
+      <tspan x="10.248045" y="-5.179844" style="font-size: 5.635px; font-family: 'STIXGeneral'; fill: #202020">2</tspan>
+      <tspan x="7.673853" y="4.70625" style="font-size: 8.05px; font-family: 'STIXGeneral'; fill: #202020">3</tspan>
+     </text>
+     <rect x="6.673853" y="-2.689063" width="6.762473" height="0.71875"/>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pd0a6877aa1">
+   <rect x="0" y="0" width="459.212598" height="280.629921"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-07",
+  "python": "3.12.3",
+  "numpy": "2.2.5",
+  "scipy": "1.13.0",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "git_head": "193397236dcb6e991a8c92d431c9384a4666e87f",
+  "working_tree_changes_committed": false,
+  "files": {
+    "most_queue/theory/fifo/mgn_takahasi.py": "aaa493c78de6487c6ca4e591f9ff0e8dbc5a9b593c0af2f2ba8286e2970c19cc",
+    "most_queue/theory/negative/mgn_rcs.py": "545f97fd9995eba29c0d3450462e62d288d2219e9cf2fd5a76f7cddacc956728",
+    "most_queue/theory/negative/mgn_disaster.py": "c217b9c5794a71d068d81e7d6a16b95a2adb9dc8da02fa24d726ff60e6e228be",
+    "most_queue/theory/utils/restarts.py": "813f2e95ac81fa13c224d0804f896c875fe9cc2248598e7f2a8b7477c476cc59",
+    "most_queue/sim/negative.py": "b056f4649aeb959a0fbdcf36959c4bbb81e825bebef9f9c4f91e4de70ccdc825",
+    "tests/units/test_negative_article_revision.py": "b99e7bc5a2abe522fc0efe02fdfac3b4f2bbe8cd01541c1e6f761ed66a6ef116"
+  }
+}

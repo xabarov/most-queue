@@ -1,0 +1,43 @@
+{
+  "base_sha256": "026c8691755ad191eda921ff66fd7f136d01842bc78570125707bc8713008e99",
+  "new_file": "negative_queues_editable_v2.docx",
+  "source_document_unchanged": true,
+  "body_text_unchanged_except_figure1_caption": true,
+  "math_outside_caption_unchanged": true,
+  "native_math_objects": 477,
+  "caption_edit": "One common 0..n+1 level range for both graphs",
+  "lists_fixed": 13,
+  "bibliography_entries": 18,
+  "data_tables": 3,
+  "replaced_images": [
+    "figure1a_rcs",
+    "figure1b_disaster"
+  ],
+  "svg_and_pdf_figure_sources": true,
+  "sent_to_telegram": false,
+  "source_dependencies_unchanged": 16,
+  "previous_docx_and_pdf_unchanged": true,
+  "numeric_cells_verified": 120,
+  "matrix_count": 6,
+  "reference_fields": 27,
+  "sequence_fields": 9,
+  "unchanged_other_figure_panels": 10,
+  "rcs_edges_verified_against_rate_formulas": 22,
+  "rcs_probability_points_checked": [
+    0,
+    0.2,
+    0.5,
+    0.8,
+    1
+  ],
+  "disaster_edges_preserved_from_original_graph": 17,
+  "pdf_pages": 18,
+  "visual_review": "All 18 final pages inspected; detailed checks of figure 1, lists, tables and bibliography.",
+  "ooxml_validation": "All validations PASSED",
+  "preview_formula_error_glyphs": 0,
+  "preview_font": "Liberation Serif substituted only in a temporary rendering copy; deliverable DOCX retains Times New Roman.",
+  "final_sha256": {
+    "negative_queues_editable_v2.docx": "9fb0777b29e3fa0a088c3a77f8e51e3d5a8f03539d595da44616b1501c25d249",
+    "negative_queues_editable_v2.pdf": "822a1a9ae3b8d39513a4e65c7704b9d22a71dbd3a8275f2f8c01b71faad41ded"
+  }
+}

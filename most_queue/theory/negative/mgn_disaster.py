@@ -8,12 +8,7 @@ from most_queue.random.distributions import H2Distribution
 from most_queue.structs import NegativeArrivalsResults
 from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
 from most_queue.theory.utils.derivative import derivative
-from most_queue.theory.utils.restarts import (
-    beff_moments_repeat_without_resampling_from_h2,
-    beff_pls_from_beta,
-    beta_pls_from_moments,
-    raw_moments_from_pls,
-)
+from most_queue.theory.utils.restarts import effective_service_moments
 from most_queue.theory.utils.transforms import lst_exp
 
 
@@ -91,7 +86,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         # params of H2-distribution:
         self.y = [h2_params.p1, 1.0 - h2_params.p1]
         self.mu = [h2_params.mu1, h2_params.mu2]
-        self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
+        self.gamma = 1.0 / b[0]  # Auxiliary rate; artificial holding times are censored.
         self.is_servers_set = True
         self._w0_pls_cache = {}
         self._z0_pls_cache = {}
@@ -103,7 +98,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         Run calculation.
 
         In REQUEUE mode the calculation uses an equivalent M/G/n approximation with
-        effective service moments B_eff (matches the simulator semantics well).
+        effective service moments B_eff; dependence between servers is neglected.
         """
         if self.resume_on_disaster:
             return self._ensure_resume_results(num_of_moments=4)
@@ -138,8 +133,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
             B_eff^*(s) = β(s+δ) * (s+δ) / (s + δ * β(s+δ)).
 
-        Here β(s) is taken from a Gamma approximation based on the first two moments
-        (consistent with simulation defaults).
+        Here β(s) uses a real H2 fit when available, otherwise a Gamma moment fit.
+        Shared disasters correlate servers; the iid M/G/n reduction is approximate.
         """
         if self._requeue_results is not None and len(self._requeue_results.v) >= num_of_moments:
             return self._requeue_results
@@ -149,29 +144,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
         lam = float(self.l_pos)
         delta = float(self.l_neg)
 
-        mean_b = float(self.b[0])
-        var_b = float(self.b[1] - self.b[0] ** 2)
-
-        if delta <= 0:
-            b_eff = [float(x) for x in self.b[:num_of_moments]]
-        else:
-            if self.repeat_without_resampling:
-                # Repeat WITHOUT resampling (fixed service requirement per job).
-                b_eff = beff_moments_repeat_without_resampling_from_h2(
-                    [complex(self.y[0]), complex(self.y[1])],
-                    [complex(self.mu[0]), complex(self.mu[1])],
-                    delta,
-                    num_of_moments=num_of_moments,
-                )
-            else:
-                # Repeat WITH resampling (classic Poisson restart).
-                beta = beta_pls_from_moments(mean_b, var_b)
-
-                def b_eff_pls(s: float) -> float:
-                    return float(beff_pls_from_beta(beta, s, delta))
-
-                dx = 1e-3 / max(mean_b, 1e-9)
-                b_eff = raw_moments_from_pls(b_eff_pls, num_of_moments, dx=dx, order=9)
+        b_eff = effective_service_moments(
+            self.b,
+            self.y,
+            self.mu,
+            delta,
+            fixed=self.repeat_without_resampling,
+            num_of_moments=max(3, num_of_moments),
+        )
+        if not np.all(np.isfinite(b_eff)) or b_eff[0] <= 0:
+            raise ValueError("Effective-service moments do not exist at the specified restart rate.")
+        if self.buffer is None and lam * b_eff[0] >= self.n:
+            raise ValueError("Auxiliary restart approximation is unstable (lambda E[B_eff] >= n).")
 
         # Run a standard MGnCalc with effective service moments
         eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
@@ -307,27 +291,24 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
     def get_utilization(self):
         """
-        Calculate utilization of the queue.
-
-        Note: This is a simplified version that does not fully account for
-        the effect of disasters on utilization. A more accurate calculation
-        would consider the impact of disaster events on system utilization.
+        Stationary fraction of busy servers, with artificial holding times removed.
         """
         if self.requeue_on_disaster:
             return float(self._ensure_requeue_results(num_of_moments=1).utilization)
-        return self.l_pos * self.b[0] / self.n
+        return sum(min(k, self.n) * pk for k, pk in enumerate(self.get_p())) / self.n
 
     def get_p(self) -> list[float]:
         if self.requeue_on_disaster:
             return self._ensure_requeue_results(num_of_moments=4).p
 
-        first_col_sum = 0
-        for i in range(1, self.N):
-            first_col_sum += self.Y[i][0, 0]
-            self.p[i] = np.sum(self.Y[i][0, 1:])
-        self.p[0] += first_col_sum
+        # The trace on ordinary states is the instantaneous-clear process.
+        # Delete artificial holding times rather than adding their mass to idle.
+        ordinary = [self.Y[0][0, 0]] + [np.sum(self.Y[i][0, 1:]) for i in range(1, self.N)]
+        mass = sum(ordinary)
+        return [float((prob / mass).real) for prob in ordinary]
 
-        return [prob.real for prob in self.p]
+    def _ordinary_mass(self):
+        return self.Y[0][0, 0] + sum(np.sum(self.Y[i][0, 1:]) for i in range(1, self.N))
 
     def get_w(self, num_of_moments: int = 4) -> list[float]:
         """
@@ -392,7 +373,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         delta = float(self.l_neg)
         if delta <= 0:
-            raise ValueError("get_v_served() requires l_neg > 0 for disaster model.")
+            return self.get_v(4)
 
         p_served = float(self._z0_pls(delta).real)
         if p_served <= 0:
@@ -419,7 +400,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
 
         delta = float(self.l_neg)
         if delta <= 0:
-            raise ValueError("get_v_broken() requires l_neg > 0 for disaster model.")
+            return [0.0] * 4
 
         p_served = float(self._z0_pls(delta).real)
         p_broken = 1.0 - p_served
@@ -448,9 +429,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
         D 20 11 02
         D 30 21 12 03
 
-        Notice, we can't go from we can't go straight to state 00,
-        we need these artificial states on each layer with high intensity
-        of transition up to state 00
+        Catastrophes enter D on the next lower level; D states descend to 00.
+        Censor their holding times to recover instantaneous system clearing.
         """
         if self.requeue_on_disaster:
             super().fill_cols()
@@ -614,17 +594,16 @@ class MGnNegativeDisasterCalc(MGnCalc):
         p_ext[0, 0] = 1.0
         p_ext[1:, 1:] = p_base
 
-        t = (p_ext * a).T  # iterate powers of (p_ext * a) transposed
-        pa = np.eye(self.n + 2, dtype=self.dt)
+        step = a[:, None] * p_ext  # holding time belongs to the departure's source state
+        waiting = a.copy()
 
         for k in range(self.n, self.N):
             ys = np.array([self.Y[k][0, i] for i in range(self.n + 2)], dtype=self.dt)
-            ys[0] = 0.0  # artificial disaster-state is counted into p[0] already
-            a_pa = a.dot(pa)
-            w_def += ys.dot(a_pa)
-            pa = pa.dot(t)
+            ys[0] = 0.0
+            w_def += ys.dot(waiting)
+            waiting = step @ waiting
 
-        return w_def
+        return w_def / self._ordinary_mass()
 
     def _w0_pls(self, s: float) -> complex:
         """
@@ -636,7 +615,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
         if cached is not None:
             return cached
 
-        # Immediate service if actual number in system < n (includes artificial disaster-mass mapped into p[0]).
+        # Arrival sees the physical distribution with artificial holding times removed.
         p_immediate = sum(float(self.p[k]) for k in range(min(self.n, len(self.p))))
         w0 = p_immediate + self._calc_w0_def_pls(s)
         self._w0_pls_cache[s_key] = w0

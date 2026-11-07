@@ -1,0 +1,14 @@
+{
+  "git_head": "193397236dcb6e991a8c92d431c9384a4666e87f",
+  "files": {
+    "most_queue/theory/fifo/mgn_takahasi.py": "64e84c830240599548af3ee62a1ce72973b13c17336a65f26bb522bb79a24d65",
+    "most_queue/theory/negative/mgn_rcs.py": "b3e7e361528e872d9d68b8451c8b2594d0128504818d9b2b229b085db857a89b",
+    "most_queue/theory/negative/mgn_disaster.py": "eae8d236cc30334832c2ea6d1c36c28a456cf7e92028f55a7de30a1fa18c5f82",
+    "most_queue/theory/utils/restarts.py": "b0f3aeade8e03e873e6cc18fb22759e8d91ec455ad3d7132514542243b124e44",
+    "most_queue/sim/negative.py": "bfc21f53fd4d2ec18d292538b767524b11ce823490475d132d15ba26bd81ec4f",
+    "works/negative_queues/negative_queues_takahasi_takami.tex": "9f04c72835e4526a4a056461bec254fe8ddcf17670adf8c0f20762082668604f",
+    "works/negative_queues/generated_tables_fixed.tex": "8742320520d3f28f690965ce14f655f0e74fa554f02df8eda34de47368013be9",
+    "works/negative_queues/work_mgn_negatives.py": "c2ea91d1840f78fc1dbfc33375e09cd6a43f62b5ea11d27dcf16ce3b2e66fbb5",
+    "works/negative_queues/base_parameters.yaml": "41bb5c481217066295d6eb9acd4b308133f2b1b6e5b81966d4b6b4873fcd89f7"
+  }
+}

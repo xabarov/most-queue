@@ -1,0 +1,744 @@
+diff --git a/most_queue/sim/negative.py b/most_queue/sim/negative.py
+index 2632e6f..94be731 100644
+--- a/most_queue/sim/negative.py
++++ b/most_queue/sim/negative.py
+@@ -2,7 +2,6 @@
+ Simulation model of QS GI/G/n/r and GI/G/n with negative jobs
+ """
+ 
+-import random
+ from enum import Enum
+ 
+ from most_queue.random.utils.create import create_distribution
+@@ -68,6 +67,7 @@ class QsSimNegatives(QsSim):
+         buffer_type: str = "list",
+         disaster_scenario: DisasterScenario = DisasterScenario.CLEAR_SYSTEM,
+         rcs_scenario: RcsScenario = RcsScenario.REMOVE,
++        seed: int | None = None,
+     ):  # pylint: disable=too-many-positional-arguments, too-many-arguments
+         """
+         Initialize the queueing system with GI/G/n/r or GI/G/n model.
+@@ -83,7 +83,7 @@ class QsSimNegatives(QsSim):
+             - REQUEUE: interrupt one random job in service and requeue it to the head
+         """
+ 
+-        super().__init__(num_of_channels, buffer, verbose, buffer_type)
++        super().__init__(num_of_channels, buffer, verbose, buffer_type, seed=seed)
+ 
+         self.type_of_negatives = type_of_negatives
+         self.disaster_scenario = disaster_scenario
+@@ -289,17 +289,16 @@ class QsSimNegatives(QsSim):
+ 
+                 # Put interrupted tasks in FCFS order (by original arrival moment) to the head of the queue.
+                 tasks_to_requeue.sort(key=lambda t: t.arr_time)
+-                for ts in reversed(tasks_to_requeue):
+-                    self.queue.append_left(ts)
+-
+-                # All servers become free at this instant, then immediately take tasks from the queue.
++                # Restart interrupted jobs immediately; they have already contributed
++                # their initial waiting time to statistics. Do not count them again.
+                 self.free_channels = self.n
+                 self._free_servers = set(range(self.n))
+                 self._mark_servers_time_changed()
+-
+-                while self.free_channels > 0 and self.queue.size() > 0:
++                for ts in tasks_to_requeue:
+                     c = next(iter(self._free_servers))
+-                    self.send_head_of_queue_to_channel(c)
++                    self.servers[c].start_service(ts, self.ttek)
++                    self._free_servers.remove(c)
++                    self.free_channels -= 1
+ 
+                 # Note: in_sys does not change; no job leaves the system.
+             else:
+@@ -366,7 +365,7 @@ class QsSimNegatives(QsSim):
+             if not not_free_servers:
+                 # No one is in service: RCS has no effect in this instant.
+                 return
+-            c = random.choice(not_free_servers)
++            c = int(self.generator.choice(not_free_servers))
+             if self.rcs_scenario == RcsScenario.RESUME:
+                 end_ts = self.servers[c].preempt_service(self.ttek, preserve_remaining=True)
+             elif self.rcs_scenario == RcsScenario.REQUEUE_NO_RESAMPLING:
+@@ -388,12 +387,10 @@ class QsSimNegatives(QsSim):
+                 # - REQUEUE_NO_RESAMPLING: preemptive-repeat WITHOUT resampling (sample once; progress lost).
+                 if self.rcs_scenario == RcsScenario.REQUEUE and hasattr(end_ts, "service_remaining"):
+                     end_ts.service_remaining = None
+-                end_ts.start_waiting_time = self.ttek
+-                self.queue.append_left(end_ts)
+-
+-                # No one leaves the system; restart service immediately if possible.
+-                if self.queue.size() != 0:
+-                    self.send_head_of_queue_to_channel(c)
++                # Instant restart contributes no additional waiting observation.
++                self.servers[c].start_service(end_ts, self.ttek)
++                self._free_servers.remove(c)
++                self.free_channels -= 1
+             else:
+                 # REMOVE (current behavior): remove the job from system as broken.
+                 self.total += 1
+diff --git a/most_queue/theory/fifo/mgn_takahasi.py b/most_queue/theory/fifo/mgn_takahasi.py
+index 0d3ce9b..0e593bb 100755
+--- a/most_queue/theory/fifo/mgn_takahasi.py
++++ b/most_queue/theory/fifo/mgn_takahasi.py
+@@ -751,7 +751,7 @@ class MGnCalc(BaseQueue):
+ 
+         for k in range(self.n, self.N):
+ 
+-            Pa = np.linalg.matrix_power(up_transition_mrx * a, k - self.n)  # n+1 x n+1
++            Pa = np.linalg.matrix_power(a[:, None] * up_transition_mrx, k - self.n)  # n+1 x n+1
+ 
+             Ys = [self.Y[k][0, i] for i in range(self.n + 1)]
+             aPa = np.dot(Pa, a)
+diff --git a/most_queue/theory/negative/mgn_disaster.py b/most_queue/theory/negative/mgn_disaster.py
+index 5dae1f5..3d7dd70 100644
+--- a/most_queue/theory/negative/mgn_disaster.py
++++ b/most_queue/theory/negative/mgn_disaster.py
+@@ -8,12 +8,7 @@ from most_queue.random.distributions import H2Distribution
+ from most_queue.structs import NegativeArrivalsResults
+ from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+ from most_queue.theory.utils.derivative import derivative
+-from most_queue.theory.utils.restarts import (
+-    beff_moments_repeat_without_resampling_from_h2,
+-    beff_pls_from_beta,
+-    beta_pls_from_moments,
+-    raw_moments_from_pls,
+-)
++from most_queue.theory.utils.restarts import effective_service_moments
+ from most_queue.theory.utils.transforms import lst_exp
+ 
+ 
+@@ -91,7 +86,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         # params of H2-distribution:
+         self.y = [h2_params.p1, 1.0 - h2_params.p1]
+         self.mu = [h2_params.mu1, h2_params.mu2]
+-        self.gamma = 1e3 * b[0]  # disaster artifitial states intensity
++        self.gamma = 1.0 / b[0]  # Auxiliary rate; artificial holding times are censored.
+         self.is_servers_set = True
+         self._w0_pls_cache = {}
+         self._z0_pls_cache = {}
+@@ -103,7 +98,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         Run calculation.
+ 
+         In REQUEUE mode the calculation uses an equivalent M/G/n approximation with
+-        effective service moments B_eff (matches the simulator semantics well).
++        effective service moments B_eff; dependence between servers is neglected.
+         """
+         if self.resume_on_disaster:
+             return self._ensure_resume_results(num_of_moments=4)
+@@ -138,8 +133,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
+ 
+             B_eff^*(s) = β(s+δ) * (s+δ) / (s + δ * β(s+δ)).
+ 
+-        Here β(s) is taken from a Gamma approximation based on the first two moments
+-        (consistent with simulation defaults).
++        Here β(s) uses a real H2 fit when available, otherwise a Gamma moment fit.
++        Shared disasters correlate servers; the iid M/G/n reduction is approximate.
+         """
+         if self._requeue_results is not None and len(self._requeue_results.v) >= num_of_moments:
+             return self._requeue_results
+@@ -149,29 +144,18 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         lam = float(self.l_pos)
+         delta = float(self.l_neg)
+ 
+-        mean_b = float(self.b[0])
+-        var_b = float(self.b[1] - self.b[0] ** 2)
+-
+-        if delta <= 0:
+-            b_eff = [float(x) for x in self.b[:num_of_moments]]
+-        else:
+-            if self.repeat_without_resampling:
+-                # Repeat WITHOUT resampling (fixed service requirement per job).
+-                b_eff = beff_moments_repeat_without_resampling_from_h2(
+-                    [complex(self.y[0]), complex(self.y[1])],
+-                    [complex(self.mu[0]), complex(self.mu[1])],
+-                    delta,
+-                    num_of_moments=num_of_moments,
+-                )
+-            else:
+-                # Repeat WITH resampling (classic Poisson restart).
+-                beta = beta_pls_from_moments(mean_b, var_b)
+-
+-                def b_eff_pls(s: float) -> float:
+-                    return float(beff_pls_from_beta(beta, s, delta))
+-
+-                dx = 1e-3 / max(mean_b, 1e-9)
+-                b_eff = raw_moments_from_pls(b_eff_pls, num_of_moments, dx=dx, order=9)
++        b_eff = effective_service_moments(
++            self.b,
++            self.y,
++            self.mu,
++            delta,
++            fixed=self.repeat_without_resampling,
++            num_of_moments=max(3, num_of_moments),
++        )
++        if not np.all(np.isfinite(b_eff)) or b_eff[0] <= 0:
++            raise ValueError("Effective-service moments do not exist at the specified restart rate.")
++        if self.buffer is None and lam * b_eff[0] >= self.n:
++            raise ValueError("Auxiliary restart approximation is unstable (lambda E[B_eff] >= n).")
+ 
+         # Run a standard MGnCalc with effective service moments
+         eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+@@ -307,27 +291,24 @@ class MGnNegativeDisasterCalc(MGnCalc):
+ 
+     def get_utilization(self):
+         """
+-        Calculate utilization of the queue.
+-
+-        Note: This is a simplified version that does not fully account for
+-        the effect of disasters on utilization. A more accurate calculation
+-        would consider the impact of disaster events on system utilization.
++        Stationary fraction of busy servers, with artificial holding times removed.
+         """
+         if self.requeue_on_disaster:
+             return float(self._ensure_requeue_results(num_of_moments=1).utilization)
+-        return self.l_pos * self.b[0] / self.n
++        return sum(min(k, self.n) * pk for k, pk in enumerate(self.get_p())) / self.n
+ 
+     def get_p(self) -> list[float]:
+         if self.requeue_on_disaster:
+             return self._ensure_requeue_results(num_of_moments=4).p
+ 
+-        first_col_sum = 0
+-        for i in range(1, self.N):
+-            first_col_sum += self.Y[i][0, 0]
+-            self.p[i] = np.sum(self.Y[i][0, 1:])
+-        self.p[0] += first_col_sum
++        # The trace on ordinary states is the instantaneous-clear process.
++        # Delete artificial holding times rather than adding their mass to idle.
++        ordinary = [self.Y[0][0, 0]] + [np.sum(self.Y[i][0, 1:]) for i in range(1, self.N)]
++        mass = sum(ordinary)
++        return [float((prob / mass).real) for prob in ordinary]
+ 
+-        return [prob.real for prob in self.p]
++    def _ordinary_mass(self):
++        return self.Y[0][0, 0] + sum(np.sum(self.Y[i][0, 1:]) for i in range(1, self.N))
+ 
+     def get_w(self, num_of_moments: int = 4) -> list[float]:
+         """
+@@ -392,7 +373,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
+ 
+         delta = float(self.l_neg)
+         if delta <= 0:
+-            raise ValueError("get_v_served() requires l_neg > 0 for disaster model.")
++            return self.get_v(4)
+ 
+         p_served = float(self._z0_pls(delta).real)
+         if p_served <= 0:
+@@ -419,7 +400,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
+ 
+         delta = float(self.l_neg)
+         if delta <= 0:
+-            raise ValueError("get_v_broken() requires l_neg > 0 for disaster model.")
++            return [0.0] * 4
+ 
+         p_served = float(self._z0_pls(delta).real)
+         p_broken = 1.0 - p_served
+@@ -448,9 +429,8 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         D 20 11 02
+         D 30 21 12 03
+ 
+-        Notice, we can't go from we can't go straight to state 00,
+-        we need these artificial states on each layer with high intensity
+-        of transition up to state 00
++        Catastrophes enter D on the next lower level; D states descend to 00.
++        Censor their holding times to recover instantaneous system clearing.
+         """
+         if self.requeue_on_disaster:
+             super().fill_cols()
+@@ -614,17 +594,16 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         p_ext[0, 0] = 1.0
+         p_ext[1:, 1:] = p_base
+ 
+-        t = (p_ext * a).T  # iterate powers of (p_ext * a) transposed
+-        pa = np.eye(self.n + 2, dtype=self.dt)
++        step = a[:, None] * p_ext  # holding time belongs to the departure's source state
++        waiting = a.copy()
+ 
+         for k in range(self.n, self.N):
+             ys = np.array([self.Y[k][0, i] for i in range(self.n + 2)], dtype=self.dt)
+-            ys[0] = 0.0  # artificial disaster-state is counted into p[0] already
+-            a_pa = a.dot(pa)
+-            w_def += ys.dot(a_pa)
+-            pa = pa.dot(t)
++            ys[0] = 0.0
++            w_def += ys.dot(waiting)
++            waiting = step @ waiting
+ 
+-        return w_def
++        return w_def / self._ordinary_mass()
+ 
+     def _w0_pls(self, s: float) -> complex:
+         """
+@@ -636,7 +615,7 @@ class MGnNegativeDisasterCalc(MGnCalc):
+         if cached is not None:
+             return cached
+ 
+-        # Immediate service if actual number in system < n (includes artificial disaster-mass mapped into p[0]).
++        # Arrival sees the physical distribution with artificial holding times removed.
+         p_immediate = sum(float(self.p[k]) for k in range(min(self.n, len(self.p))))
+         w0 = p_immediate + self._calc_w0_def_pls(s)
+         self._w0_pls_cache[s_key] = w0
+diff --git a/most_queue/theory/negative/mgn_rcs.py b/most_queue/theory/negative/mgn_rcs.py
+index 3af0fb3..303d0de 100644
+--- a/most_queue/theory/negative/mgn_rcs.py
++++ b/most_queue/theory/negative/mgn_rcs.py
+@@ -3,7 +3,6 @@ Calculate M/H2/n queue with negative jobs with RCS discipline,
+ (remove customer from service)
+ """
+ 
+-import math
+ import time
+ 
+ import numpy as np
+@@ -12,7 +11,7 @@ from most_queue.random.distributions import H2Distribution
+ from most_queue.structs import NegativeArrivalsResults
+ from most_queue.theory.fifo.mgn_takahasi import MGnCalc, TakahashiTakamiParams
+ from most_queue.theory.utils.derivative import derivative
+-from most_queue.theory.utils.restarts import beff_moments_repeat_without_resampling_from_h2
++from most_queue.theory.utils.restarts import effective_service_moments
+ from most_queue.theory.utils.transforms import lst_exp
+ 
+ 
+@@ -147,207 +146,42 @@ class MGnNegativeRCSCalc(MGnCalc):
+ 
+     def _ensure_requeue_results(self, num_of_moments: int = 4) -> NegativeArrivalsResults:
+         """
+-        REQUEUE scenario for RCS: negative arrivals interrupt service and force restart,
+-        but the customer remains in the system (no "broken" jobs).
+-
+-        Approximation: model it as a standard M/G/n (no negative departures) with an
+-        effective service time B_eff that accounts for Poisson restarts.
+-
+-        For service time B with LST β(s) and restart rate r (during service):
+-
+-            B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r)).
+-
+-        If repeat_without_resampling=True, we use *repeat without resampling* semantics:
+-        B is sampled once per job and reused on every restart, so the above LST does not
+-        apply; instead we approximate moments of B_eff using a Gamma fit (see restarts.py).
+-
+-        Here the restart intensity depends on the number of busy servers m:
+-        r(m)=l_neg/m (uniform selection among busy servers). To better match
+-        finite-load regimes (where m can be noticeably smaller than n), we use a
+-        simple self-consistent closure:
+-
+-          m ≈ n * utilization,
+-          r = l_neg / max(1, m),
+-
+-        where utilization is taken from the auxiliary M/G/n run with B_eff, and
+-        the fixed point is refined by a few iterations.
++        Approximate restart by iid effective services and the heuristic closure
++        r = delta * E[M] / E[M**2], M=min(number in system, n).
++        This closure is not an exact reduction of the state-dependent restart clock.
++        Invalid moments, instability or nonconvergence are reported explicitly.
+         """
+         if self._requeue_results is not None and len(self._requeue_results.v) >= num_of_moments:
+             return self._requeue_results
+-
+         self._check_if_servers_and_sources_set()
+-
+-        lam = float(self.l_pos)
+-        delta = float(self.l_neg)
+-        r = 0.0 if self.n <= 0 else delta / float(self.n)
+-
+-        mean_b = float(self.b[0])
+-        var_b = float(self.b[1] - self.b[0] ** 2)
+-
+-        # Gamma approximation parameters for β(s) by mean/variance
+-        if var_b > 0 and mean_b > 0:
+-            k = mean_b * mean_b / var_b
+-            theta = var_b / mean_b
+-
+-        def get_b_eff(service_restart_rate: float) -> list[float]:
+-            """
+-            Compute raw moments of the effective service time under Poisson restarts.
+-
+-            Instead of numerically differentiating B_eff^*(s) at s=0, compute the Taylor
+-            series of
+-
+-              B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r))
+-
+-            using β-derivatives at s=r. For Gamma/Exp β(s) used here, these derivatives
+-            are analytic and this approach is much more stable for large CV.
+-            """
+-            if service_restart_rate <= 0:
+-                return [float(x) for x in self.b[:num_of_moments]]
+-
+-            r_loc = float(service_restart_rate)
+-            order = int(num_of_moments)
+-
+-            if self.repeat_without_resampling:
+-                return beff_moments_repeat_without_resampling_from_h2(
+-                    [complex(self.y[0]), complex(self.y[1])],
+-                    [complex(self.mu[0]), complex(self.mu[1])],
+-                    r_loc,
+-                    num_of_moments=order,
+-                )
+-
+-            # β^(n)(s0) for n=0..order at s0=r_loc
+-            s0 = r_loc
+-            beta_derivs: list[float] = [0.0] * (order + 1)
+-
+-            if var_b > 0 and mean_b > 0:
+-                # β(s)=(1+θ s)^(-k)
+-                base = 1.0 + theta * s0
+-
+-                # rising factorial (k)_n = k (k+1) ... (k+n-1)
+-                rf = 1.0
+-                for n in range(order + 1):
+-                    if n == 0:
+-                        rf = 1.0
+-                    elif n == 1:
+-                        rf = float(k)
+-                    else:
+-                        rf *= float(k + (n - 1))
+-                    beta_derivs[n] = float(((-1.0) ** n) * (theta**n) * rf * (base ** (-(k + n))))
+-            else:
+-                # β(s)=exp(-mean_b * s)
+-                e0 = float(np.exp(-mean_b * s0))
+-                for n in range(order + 1):
+-                    beta_derivs[n] = float(((-mean_b) ** n) * e0)
+-
+-            # Convert to ordinary power-series coefficients for f(s)=β(s+r_loc):
+-            # f(s)=Σ c_f[n] s^n, where c_f[n]=β^(n)(r_loc)/n!
+-            c_f = [beta_derivs[n] / float(math.factorial(n)) for n in range(order + 1)]
+-
+-            # Numerator N(s)=(r+s)f(s) = r f(s) + s f(s)
+-            c_N = [0.0] * (order + 1)
+-            for n in range(order + 1):
+-                c_N[n] += r_loc * c_f[n]
+-                if n > 0:
+-                    c_N[n] += c_f[n - 1]
+-
+-            # Denominator D(s)=s + r f(s)
+-            c_D = [0.0] * (order + 1)
+-            for n in range(order + 1):
+-                c_D[n] += r_loc * c_f[n]
+-            if order >= 1:
+-                c_D[1] += 1.0
+-
+-            # Series division T(s)=N(s)/D(s) up to s^order
+-            c_T = [0.0] * (order + 1)
+-            d0 = float(c_D[0])
+-            if not np.isfinite(d0) or abs(d0) <= 1e-300:
+-                # Extremely small/invalid denominator -> treat as no restarts.
+-                return [float(x) for x in self.b[:num_of_moments]]
+-
+-            c_T[0] = float(c_N[0]) / d0
+-            for n in range(1, order + 1):
+-                acc = float(c_N[n])
+-                for k2 in range(1, n + 1):
+-                    acc -= float(c_D[k2]) * float(c_T[n - k2])
+-                c_T[n] = acc / d0
+-
+-            # Moments from Laplace series: T(s)=Σ (-1)^n E[T^n] s^n / n!
+-            moments: list[float] = []
+-            for n in range(1, order + 1):
+-                mom = ((-1.0) ** n) * float(math.factorial(n)) * float(c_T[n])
+-                moments.append(float(mom))
+-            return moments
+-
+-        # Self-consistent refinement of r using the auxiliary M/G/n run.
+-        #
+-        # Important: for some parameter combinations, a too aggressive r-update may lead
+-        # to an unstable effective model (ρ_eff >= 1) and numerical overflow inside MGnCalc.
+-        # We therefore use a damped fixed-point iteration and fall back to the last
+-        # successful auxiliary run.
+-        eff_res = None
+-        last_good_eff_res = None
+-        max_iter = 8
+-        tol = 1e-6
+-        damping = 0.5
+-        for _ in range(max_iter):
+-            b_eff = get_b_eff(r)
+-            # Basic sanity checks to avoid passing unstable/invalid moments to MGnCalc.
+-            if (not np.all(np.isfinite(b_eff))) or b_eff[0] <= 0:
+-                r *= 0.5
+-                continue
+-            # If the auxiliary M/G/n would be unstable (ρ_eff >= 1), back off on r.
+-            if lam * float(b_eff[0]) >= 0.999 * float(self.n):
+-                r *= 0.5
+-                continue
+-
++        lam, delta = float(self.l_pos), float(self.l_neg)
++        r = delta / self.n
++        for _ in range(100):
++            b_eff = effective_service_moments(
++                self.b,
++                self.y,
++                self.mu,
++                r,
++                fixed=self.repeat_without_resampling,
++                num_of_moments=max(3, num_of_moments),
++            )
++            if not np.all(np.isfinite(b_eff)) or b_eff[0] <= 0:
++                raise ValueError("Effective-service moments do not exist at the specified restart rate.")
++            if self.buffer is None and lam * b_eff[0] >= self.n:
++                raise ValueError("Auxiliary restart approximation is unstable (lambda E[B_eff] >= n).")
+             eff = MGnCalc(n=self.n, buffer=self.buffer, calc_params=self.calc_params)
+             eff.set_sources(l=lam)
+             eff.set_servers(b=b_eff)
+-            try:
+-                eff_res = eff.run()
+-            except Exception:  # pylint: disable=broad-exception-caught
+-                # Back off: keep the last good result, and reduce r to regain stability.
+-                if last_good_eff_res is not None:
+-                    eff_res = last_good_eff_res
+-                    break
+-                r *= 0.5
+-                continue
+-
+-            last_good_eff_res = eff_res
+-
+-            # Approximate restart intensity for a job in service.
+-            #
+-            # A naive closure uses r ≈ δ / E[M | M>0] (M = number of busy servers).
+-            # However, for high-variance service times, restart phenomena can reduce the
+-            # *effective* completion time (stochastic restart effect), and empirical
+-            # agreement improves if we bias the estimate towards larger M values.
+-            #
+-            # Heuristic: r ≈ δ * E[M] / E[M^2], where moments are taken under the auxiliary
+-            # M/G/n stationary distribution (with M = min(n, level)).
+-            p = [float(x) for x in getattr(eff_res, "p", [])]
+-            if p:
+-                m1 = 0.0
+-                m2 = 0.0
+-                for k, pk in enumerate(p):
+-                    m = min(float(self.n), float(k))
+-                    w = max(0.0, pk)
+-                    m1 += m * w
+-                    m2 += (m * m) * w
+-                if m2 <= 1e-12:
+-                    target_r = delta / float(self.n)
+-                else:
+-                    target_r = delta * (m1 / m2)
+-            else:
+-                target_r = delta / float(self.n)
+-            if abs(target_r - r) <= tol * max(1.0, abs(r)):
+-                r = target_r
++            eff_res = eff.run()
++            m1 = sum(min(k, self.n) * pk for k, pk in enumerate(eff_res.p))
++            m2 = sum(min(k, self.n) ** 2 * pk for k, pk in enumerate(eff_res.p))
++            target_r = delta * m1 / m2 if m2 > 0 else delta / self.n
++            if abs(target_r - r) <= 1e-9 * max(1.0, r):
++                self.effective_restart_rate = r
+                 break
+-
+-            r = (1.0 - damping) * r + damping * target_r
+-            r = max(0.0, min(delta, r))
+-
+-        assert last_good_eff_res is not None
+-        eff_res = last_good_eff_res
++            r = 0.5 * (r + target_r)
++        else:
++            raise RuntimeError("RCS effective-restart fixed point did not converge.")
+ 
+         v = [float(x) for x in eff_res.v[:num_of_moments]]
+         w = [float(x) for x in eff_res.w[:num_of_moments]]
+@@ -433,15 +267,11 @@ class MGnNegativeRCSCalc(MGnCalc):
+ 
+     def get_utilization(self):
+         """
+-        Calculate utilization of the queue.
+-
+-        Note: This is a simplified version that does not fully account for
+-        the effect of disasters on utilization. A more accurate calculation
+-        would consider the impact of disaster events on system utilization.
++        Stationary fraction of busy servers, including the effect of removals.
+         """
+         if self.requeue_on_disaster:
+             return float(self._ensure_requeue_results(num_of_moments=1).utilization)
+-        return self.l_pos * self.b[0] / self.n
++        return sum(min(k, self.n) * pk for k, pk in enumerate(self.get_p())) / self.n
+ 
+     def get_p(self) -> list[float]:
+         """
+@@ -472,6 +302,8 @@ class MGnNegativeRCSCalc(MGnCalc):
+             E[e^{-s min(B,Y)}] = r/(s+r) + s/(s+r) * β(s+r)
+         Here β(s+r) is passed as beta_at for convenience.
+         """
++        if r == 0:
++            return beta_at
+         return r / (s + r) + (s / (s + r)) * beta_at
+ 
+     def _calc_w_def_pls(self, s: float) -> complex:
+@@ -504,7 +336,7 @@ class MGnNegativeRCSCalc(MGnCalc):
+         up_transition_mrx = self.calc_up_probs(self.n + 1)  # (n+1 x n+1)
+ 
+         for k in range(self.n, self.N):
+-            pa = np.linalg.matrix_power(up_transition_mrx * a, k - self.n)  # (n+1 x n+1)
++            pa = np.linalg.matrix_power(a[:, None] * up_transition_mrx, k - self.n)
+             ys = np.array([self.Y[k][0, i] for i in range(self.n + 1)], dtype=self.dt)
+             a_pa = np.dot(pa, a)
+             w_def += ys.dot(a_pa)
+@@ -626,6 +458,8 @@ class MGnNegativeRCSCalc(MGnCalc):
+         if self.requeue_on_disaster:
+             return [0.0] * num_of_moments
+         delta = float(self.l_neg)
++        if delta == 0:
++            return [0.0] * num_of_moments
+ 
+         def served_prob() -> float:
+             p = 0.0
+diff --git a/most_queue/theory/utils/restarts.py b/most_queue/theory/utils/restarts.py
+index b6c21b2..3e36364 100644
+--- a/most_queue/theory/utils/restarts.py
++++ b/most_queue/theory/utils/restarts.py
+@@ -21,6 +21,8 @@ def beff_pls_from_beta(beta_pls: Callable[[float], complex], s: float, r: float)
+ 
+         B_eff^*(s) = β(s+r) * (s+r) / (s + r * β(s+r)).
+     """
++    if r == 0:
++        return beta_pls(s)
+     sr = s + r
+     beta_sr = beta_pls(sr)
+     return beta_sr * sr / (s + r * beta_sr)
+@@ -31,7 +33,7 @@ def beta_pls_from_moments(mean: float, var: float) -> Callable[[float], float]:
+     Build a simple β(s) approximation from the first two moments.
+ 
+     - If variance is available: Gamma approximation with mean/variance match.
+-    - Otherwise: exponential (degenerate) fallback with the same mean.
++    - Zero variance: deterministic service with the same mean.
+     """
+     mean_b = float(mean)
+     var_b = float(var)
+@@ -110,9 +112,10 @@ def beff_moments_repeat_without_resampling_from_moments(
+     var_b = float(var)
+     r = float(r)
+ 
+-    if r <= 0.0:
+-        # No interruptions: return a Gamma approximation of B moments if possible,
+-        # otherwise fall back to exponential with the same mean.
++    if r < 0:
++        raise ValueError("Restart intensity must be nonnegative.")
++    if r == 0.0:
++        # No interruptions: Gamma moment fit, or deterministic at zero variance.
+         if var_b > 0.0 and mean_b > 0.0:
+             k_b = mean_b * mean_b / var_b
+             theta_b = var_b / mean_b
+@@ -122,10 +125,17 @@ def beff_moments_repeat_without_resampling_from_moments(
+                 prod *= k_b + (m - 1)
+                 out.append(float((theta_b**m) * prod))
+             return out
+-        # Exponential fallback
+-        out = []
++        return [mean_b**m for m in range(1, n_mom + 1)]
++
++    if var_b == 0:
++        t1 = math.expm1(r * mean_b) / r
++        t2 = 2 * math.exp(r * mean_b) * (math.expm1(r * mean_b) - r * mean_b) / r**2
++        var_t = t2 - t1 * t1
++        shape, scale = t1 * t1 / var_t, var_t / t1
++        out, prod = [], 1.0
+         for m in range(1, n_mom + 1):
+-            out.append(float(math.factorial(m) * (mean_b**m)))
++            prod *= shape + m - 1
++            out.append(scale**m * prod)
+         return out
+ 
+     # Gamma approximation for B: shape k, scale theta
+@@ -152,7 +162,7 @@ def beff_moments_repeat_without_resampling_from_moments(
+ 
+     if 2.0 * theta * r >= 1.0 - 1e-15:
+         # Second moment infinite -> variance infinite
+-        return [float("inf")] * n_mom
++        return [float(t1)] + [float("inf")] * (n_mom - 1)
+ 
+     m2 = (1.0 - 2.0 * theta * r) ** (-k)  # E[e^{2rB}]
+     t2 = (2.0 / (r * r)) * (m2 - m1 - r * ebe)  # E[T^2]
+@@ -190,18 +200,30 @@ def beff_moments_repeat_without_resampling_from_h2(
+       B ~ H2(y, mu),  beta(s)=Σ y_i * mu_i/(mu_i+s).
+       M_B(t)=E[e^{tB}]=Σ y_i * mu_i/(mu_i - t).
+ 
+-    Then:
+-      E[e^{rB}], E[e^{2rB}], E[B e^{rB}] are computed in closed form, and we gamma-fit T.
++    Requires a real probability mixture for positive r, with moments evaluated
++    only in their convergence domain. Moments 1 and 2 are computed in closed
++    form; the Gamma fit supplies approximate moments of higher order.
+     """
+     n_mom = int(num_of_moments)
+     if n_mom <= 0:
+         return []
+ 
+     r = float(r)
+-    if r <= 0.0:
+-        # No interruptions: return a gamma-like moment set derived from H2 moments is out of scope here.
+-        # Caller should bypass this function for r<=0.
+-        return [0.0] * n_mom
++    if r < 0:
++        raise ValueError("Restart intensity must be nonnegative.")
++    if r == 0:
++        return [
++            float(np.real(math.factorial(k) * sum(yi / mui**k for yi, mui in zip(y, mu)))) for k in range(1, n_mom + 1)
++        ]
++
++    if not is_real_h2(y, mu):
++        raise ValueError("Moment existence under fixed-service restart requires a real H2 distribution.")
++    active_rates = [float(np.real(mui)) for yi, mui in zip(y, mu) if float(np.real(yi)) > 0]
++    if r >= min(active_rates):
++        return [float("inf")] * n_mom
++    if 2 * r >= min(active_rates):
++        t1 = float(np.real(sum(yi * mui / (mui - r) for yi, mui in zip(y, mu)) - 1)) / r
++        return [t1] + [float("inf")] * (n_mom - 1)
+ 
+     # Compute MGF terms for H2 mixture.
+     m1 = 0.0 + 0.0j  # E[e^{rB}]
+@@ -239,3 +261,57 @@ def beff_moments_repeat_without_resampling_from_h2(
+         prod *= k_t + (m - 1)
+         out.append(float((theta_t**m) * prod))
+     return out
++
++
++def is_real_h2(y, mu):
++    """Whether an algebraic two-phase fit is a probability mixture."""
++    return (
++        all(abs(complex(x).imag) < 1e-10 for x in [*y, *mu])
++        and all(0 <= float(np.real(x)) <= 1 for x in y)
++        and all(float(np.real(x)) > 0 for x in mu)
++        and abs(sum(y) - 1) < 1e-10
++    )
++
++
++def effective_service_moments(b, y, mu, r, *, fixed=False, num_of_moments=4):
++    """Real H2 when available, otherwise Gamma matching mean/variance.
++
++    Resampling moments use analytic series division. Fixed-service moments 1 and 2
++    are exact for the selected input law; higher moments are a Gamma closure.
++    """
++    order = num_of_moments
++    if r == 0:
++        return [float(x) for x in b[:order]]
++    if r < 0:
++        raise ValueError("Restart intensity must be nonnegative.")
++    real_h2 = is_real_h2(y, mu)
++    mean, var = float(b[0]), float(b[1] - b[0] ** 2)
++    if fixed:
++        if real_h2:
++            return beff_moments_repeat_without_resampling_from_h2(y, mu, r, num_of_moments=order)
++        return beff_moments_repeat_without_resampling_from_moments(mean, var, r, num_of_moments=order)
++    r = np.longdouble(r)
++    if real_h2:
++        real_y = [np.longdouble(np.real(x)) for x in y]
++        real_mu = [np.longdouble(np.real(x)) for x in mu]
++        c = [
++            sum(yi * mui * (-1) ** k / (mui + r) ** (k + 1) for yi, mui in zip(real_y, real_mu))
++            for k in range(order + 1)
++        ]
++    elif var > 0:
++        shape, scale = np.longdouble(mean * mean / var), np.longdouble(var / mean)
++        c = [(1 + scale * r) ** (-shape)]
++        for k in range(1, order + 1):
++            c.append(-c[-1] * (shape + k - 1) * scale / (k * (1 + scale * r)))
++    else:
++        c = [math.exp(-mean * r) * (-mean) ** k / math.factorial(k) for k in range(order + 1)]
++    numerator = [r * c[k] + (c[k - 1] if k else 0) for k in range(order + 1)]
++    denominator = [r * c[k] + (1 if k == 1 else 0) for k in range(order + 1)]
++    if abs(denominator[0]) < 1e-300:
++        raise ValueError("Effective-service transform is numerically singular.")
++    quotient = []
++    for k in range(order + 1):
++        quotient.append(
++            (numerator[k] - sum(denominator[j] * quotient[k - j] for j in range(1, k + 1))) / denominator[0]
++        )
++    return [float(np.real((-1) ** k * math.factorial(k) * quotient[k])) for k in range(1, order + 1)]

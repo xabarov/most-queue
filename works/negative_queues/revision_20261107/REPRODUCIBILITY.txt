@@ -1,0 +1,18 @@
+Packaging for the repository, 2026-11-07
+
+The baseline snapshot is stored in baseline.zip. Unzip it in this directory
+to restore baseline/. Every member is checked against baseline-manifest.json.
+An archive preserves the original bytes through repository formatting hooks.
+
+AUDIT_REPORT.txt and environment.json describe the state when the scientific
+review was completed, before the later request to deliver and commit it.
+The Word v4, PDF v4 and audit report were subsequently sent to the owner's
+configured private Telegram chat. Their contents were not changed for commit.
+
+The repository includes versions v1 and v2 for comparison, the final v4,
+generation scripts, vector figure sources, all 96 simulation replications,
+independent reference checks and test results. The intermediate v3 document,
+Python caches and temporary LaTeX build files are left out.
+
+Formatting of Python helper scripts for the commit was checked to preserve
+their abstract syntax trees. The tested numerical code remains unchanged.

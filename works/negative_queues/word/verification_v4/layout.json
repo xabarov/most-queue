@@ -1,0 +1,90 @@
+[
+  {
+    "group": "A1= / B2=",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "B1= / C1=",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "λw1= / λv1=",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "W=min / V=min",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "Rj= / aj(",
+    "formula_count": 2,
+    "widths_cm": [
+      10,
+      6.5
+    ]
+  },
+  {
+    "group": "(i,j)→(i+1,j): / (i,j)→(i+1,j+1):",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "(i,j)→(i−1,j): / (i,j)→(i−1,j−1):",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "W*(s)=δ / V*(s)=δ",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "Vзав* / Vуд*",
+    "formula_count": 2,
+    "widths_cm": [
+      8.25,
+      8.25
+    ]
+  },
+  {
+    "group": "E[T∣B=b] / E[T2∣B=b]",
+    "formula_count": 2,
+    "widths_cm": [
+      6.5,
+      10
+    ]
+  },
+  {
+    "group": "E[T]= / E[T2]=",
+    "formula_count": 2,
+    "widths_cm": [
+      5.5,
+      11
+    ]
+  }
+]

@@ -751,7 +751,7 @@ class MGnCalc(BaseQueue):
 
         for k in range(self.n, self.N):
 
-            Pa = np.linalg.matrix_power(up_transition_mrx * a, k - self.n)  # n+1 x n+1
+            Pa = np.linalg.matrix_power(a[:, None] * up_transition_mrx, k - self.n)  # n+1 x n+1
 
             Ys = [self.Y[k][0, i] for i in range(self.n + 1)]
             aPa = np.dot(Pa, a)

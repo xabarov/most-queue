@@ -1,0 +1,10 @@
+__pycache__/
+baseline/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
