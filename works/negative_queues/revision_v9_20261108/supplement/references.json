@@ -1,0 +1,72 @@
+{
+  "tab:ttcheck": [
+    "tab_1",
+    "1",
+    ""
+  ],
+  "tab:lawfull": [
+    "tab_2",
+    "2",
+    ""
+  ],
+  "tab:grids": [
+    "tab_3",
+    "3",
+    ""
+  ],
+  "tab:correction": [
+    "tab_4",
+    "4",
+    ""
+  ],
+  "tab:jseq": [
+    "tab_5",
+    "5",
+    ""
+  ],
+  "tab:oldsim": [
+    "tab_6",
+    "6",
+    ""
+  ],
+  "tab:sensitivity": [
+    "tab_7",
+    "7",
+    ""
+  ],
+  "tab:parameters": [
+    "tab_8",
+    "8",
+    ""
+  ],
+  "tab:studymeans": [
+    "tab_9",
+    "9",
+    ""
+  ],
+  "tab:studystd": [
+    "tab_10",
+    "10",
+    ""
+  ],
+  "tab:cost": [
+    "tab_11",
+    "11",
+    ""
+  ],
+  "tab:ph": [
+    "tab_12",
+    "12",
+    ""
+  ],
+  "tab:erlang": [
+    "tab_13",
+    "13",
+    ""
+  ],
+  "fig:convergence": [
+    "fig_1",
+    "1",
+    ""
+  ]
+}

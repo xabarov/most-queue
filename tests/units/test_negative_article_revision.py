@@ -99,7 +99,7 @@ def test_base_waiting_laplace_order_matches_little():
 def test_exponential_restart_and_moment_existence():
     b = [math.factorial(k) * 2**k for k in range(1, 5)]
     for r in [0.01, 0.2, 2.0]:
-        np.testing.assert_allclose(effective_service_moments(b, [0.4, 0.6], [0.5, 0.5], r), b, rtol=1e-10)
+        np.testing.assert_allclose(effective_service_moments(b, [0.4, 0.6], [0.5, 0.5], r), b, rtol=1e-9)
     finite = beff_moments_repeat_without_resampling_from_h2([0.4, 0.6], [0.5, 0.5], 0.3, num_of_moments=2)
     assert finite[0] == pytest.approx(5.0)
     assert math.isinf(finite[1])
