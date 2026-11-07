@@ -185,11 +185,12 @@ def main(supplement=False):
                 for cell in row.cells:
                     for p in cell.paragraphs:
                         p.paragraph_format.keep_with_next = True
-    for shape in doc.inline_shapes:
-        if shape.width < Cm(10):  # panels of a two-column figure keep their cell width
-            continue
+    wide = [s for s in doc.inline_shapes if s.width >= Cm(10)]
+    for k, shape in enumerate(wide):
+        # panels of a two-column figure keep their cell width; figure 1 (first two
+        # wide shapes of the article) is slightly narrower so that text follows it
         ratio = shape.height / shape.width
-        shape.width = Cm(15.3 if supplement else 16.2)
+        shape.width = Cm(15.3 if supplement else (12.6 if k < 2 else 16.2))
         shape.height = int(shape.width * ratio)
     for tbl in doc.tables:
         if not list(tbl._tbl.iter(qn("w:drawing"))):
