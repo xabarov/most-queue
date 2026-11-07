@@ -1,0 +1,189 @@
+[
+ {
+  "source": [
+   1,
+   0
+  ],
+  "target": [
+   0,
+   0
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   1,
+   1
+  ],
+  "target": [
+   0,
+   0
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   1,
+   "D"
+  ],
+  "target": [
+   0,
+   0
+  ],
+  "rate": "gamma"
+ },
+ {
+  "source": [
+   2,
+   0
+  ],
+  "target": [
+   1,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   2,
+   1
+  ],
+  "target": [
+   1,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   2,
+   2
+  ],
+  "target": [
+   1,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   2,
+   "D"
+  ],
+  "target": [
+   1,
+   "D"
+  ],
+  "rate": "gamma"
+ },
+ {
+  "source": [
+   3,
+   0
+  ],
+  "target": [
+   2,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   3,
+   1
+  ],
+  "target": [
+   2,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   3,
+   2
+  ],
+  "target": [
+   2,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   3,
+   3
+  ],
+  "target": [
+   2,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   3,
+   "D"
+  ],
+  "target": [
+   2,
+   "D"
+  ],
+  "rate": "gamma"
+ },
+ {
+  "source": [
+   4,
+   0
+  ],
+  "target": [
+   3,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   4,
+   1
+  ],
+  "target": [
+   3,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   4,
+   2
+  ],
+  "target": [
+   3,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   4,
+   3
+  ],
+  "target": [
+   3,
+   "D"
+  ],
+  "rate": "delta"
+ },
+ {
+  "source": [
+   4,
+   "D"
+  ],
+  "target": [
+   3,
+   "D"
+  ],
+  "rate": "gamma"
+ }
+]

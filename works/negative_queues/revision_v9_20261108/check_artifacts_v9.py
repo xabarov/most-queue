@@ -65,7 +65,7 @@ def check(supplement=False):
     tex = (source / "negative_queues_takahasi_takami.tex").read_text()
     matrices = len(root.xpath("//m:m", namespaces=NS))
     assert matrices == tex.count(r"\begin{pmatrix}") + tex.count(r"\begin{bmatrix}"), matrices
-    assert len(images) == (0 if supplement else 4)
+    assert len(images) == (0 if supplement else 6)
     bookmarks = set(root.xpath("//w:bookmarkStart/@w:name", namespaces=NS))
     for instr in root.xpath("//w:fldSimple/@w:instr", namespaces=NS):
         if instr.strip().startswith("REF "):

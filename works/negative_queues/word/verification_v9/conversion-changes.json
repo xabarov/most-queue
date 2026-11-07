@@ -24,7 +24,7 @@
     }
   ],
   "math_layout": "Long displays and outer arrays split into readable native display paragraphs; mathematical expressions unchanged.",
-  "figure_panels": 4,
+  "figure_panels": 6,
   "captions": [
     [
       "fig_1",
@@ -34,6 +34,11 @@
     [
       "fig_2",
       "2",
+      "Figure"
+    ],
+    [
+      "fig_3",
+      "3",
       "Figure"
     ],
     [

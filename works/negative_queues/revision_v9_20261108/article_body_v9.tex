@@ -5,7 +5,7 @@
 
 \begin{otherlanguage}{english}
 \bigskip
-\begin{center}\textbf{Calculation of Multiserver Queues with Negative Customers}\end{center}
+\begin{center}\textbf{Calculation of Multiserver Queues with Negative Customers and Service Restart}\end{center}
 \textbf{Abstract.} Multiserver queues with Poisson arrivals and negative events are considered. An event affects a randomly chosen customer in service or all busy servers at once; customer removal and service restart with resampled or retained service requirements are studied. For removal and system clearing with two-phase service, stationary probabilities are computed by the Takahashi--Takami method. The two-phase law matches three moments of the original one; for a coefficient of variation below one its parameters may be complex. Waiting and sojourn moments of a tagged customer are obtained from linear equations that account for the changing number of busy servers. Restarts are treated by a joint phase model of the servers, and retained work by its finite approximation with a correction of the quadrature error computed from the system without negative events. The error of replacing a gamma distribution by the two-phase law is assessed. Results are compared with simulation for several loads, event rates and server counts.
 
 \textbf{Keywords:} queueing theory, negative customers, catastrophes, service restart, Takahashi--Takami method, phase-type distribution, tagged customer.
@@ -209,6 +209,29 @@ v_2=w_2+2w_1\mathbb E[T]+\mathbb E[T^2],
 %%TABLE tab:law
 
 Погрешность замены закона проявляется главным образом во времени ожидания и растёт с уменьшением коэффициента вариации. В трёх рассмотренных режимах (\(n=3\), \(\rho=0{,}7\) и \(0{,}84\); \(n=2\), \(\rho=0{,}63\)) она не превышает по среднему ожиданию 0,22\% при \(\mathrm{CV}=0{,}8\), 0,48\% при \(\mathrm{CV}=0{,}6\) и 1,10\% при \(\mathrm{CV}=0{,}5\); по среднему пребыванию --- 0,02\%, 0,04\% и 0,09\% соответственно. Наибольшие значения относятся к очищению. При \(\mathrm{CV}\ge0{,}6\) погрешность двухфазного закона меньше статистической неопределённости основных имитационных оценок; при меньших коэффициентах вариации и для точных расчётов ожидания следует использовать положительное фазовое представление исходного закона.
+
+\subsection{Зависимость от интенсивности воздействий и стоимость расчёта}\label{sec:delta}
+Метод Такахаси--Таками позволяет быстро просчитывать серии вариантов. На рисунке~\ref{fig:delta} показаны среднее ожидание и вероятность завершения обслуживания \(q\) при удалении и очищении для \(\delta\) от \(0{,}05\) до \(1{,}5\) при \(n=3\), \(\rho=0{,}7\). Обе характеристики монотонно убывают с ростом \(\delta\). При малых \(\delta\) ожидание при \(\mathrm{CV}=1{,}2\) больше, чем при \(\mathrm{CV}=0{,}8\), как и в системе без воздействий; при удалении кривые пересекаются между \(\delta=0{,}2\) и \(0{,}3\), при очищении --- между \(0{,}1\) и \(0{,}2\), и далее большая вариация даёт меньшее ожидание. Вероятность завершения при \(\mathrm{CV}=1{,}2\) выше при всех \(\delta\): при удалении \(q=1-\delta(1-p_0)/\lambda\), а доля времени с занятыми каналами при большей вариации меньше, поскольку воздействия обрывают преимущественно длинные обслуживания.
+
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}[t]{0.49\linewidth}
+\centering
+\maybeincludegraphics[width=\linewidth]{figures/figure3a_waiting.png}
+\caption{Среднее время ожидания.}
+\label{fig:delta_waiting}
+\end{subfigure}
+\begin{subfigure}[t]{0.49\linewidth}
+\centering
+\maybeincludegraphics[width=\linewidth]{figures/figure3b_completion.png}
+\caption{Вероятность завершения обслуживания.}
+\label{fig:delta_q}
+\end{subfigure}
+\caption{Зависимость от интенсивности воздействий при \(n=3\), \(\rho=0{,}7\): удаление RCS и очищение, расчёт методом Такахаси--Таками с \(H_2\) по трём моментам гамма-распределения.}
+\label{fig:delta}
+\end{figure}
+
+Для двухфазного закона уровень содержит \(n+1\) микросостояние, и расчёт одного варианта удаления RCS --- стационарных вероятностей и первых двух моментов ожидания и пребывания при \(N=240\), \(H=80\) --- занимает на использованной машине около \(0{,}3\)~с при \(n=3\), 5 и 8. Для совместной модели с девятью положительными фазами гамма-распределения насыщенный уровень содержит \(\binom{n+8}{8}\) микросостояний: 165 при \(n=3\), 1287 при \(n=5\) и 12\,870 при \(n=8\); расчёт при \(n=3\) и 5 занимает \(0{,}35\) и \(1{,}7\)~с, а при \(n=8\) требует уже миллионов состояний. Таким образом, двухфазный расчёт пригоден для больших \(n\) и для серий вариантов, а положительное фазовое представление --- для уточнения отдельных значений при малом коэффициенте вариации и для повторов. Приведённые времена характеризуют выполненные расчёты, а не сравнительный тест аппаратуры.
 
 \section{Заключение}
 Метод Такахаси--Таками распространён на многоканальные системы с выборочным удалением и очищением. Для очищения используется цепочка вспомогательных состояний с последующим исключением их массы. Моменты времени ожидания и пребывания меченой заявки находятся из линейных уравнений по найденным стационарным вероятностям; это устраняет численное дифференцирование ПЛС и учитывает изменение интенсивности выборочного воздействия во время обслуживания. Расчёт сохраняет работоспособность при комплексных параметрах двухфазного закона; погрешность замены гамма-распределения таким законом количественно оценена.

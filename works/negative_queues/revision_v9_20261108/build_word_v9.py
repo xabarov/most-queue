@@ -115,7 +115,7 @@ def main(supplement=False):
             f = p.paragraph_format
             f.left_indent = Cm(0.75)
             f.first_line_indent = Cm(-0.75)
-            f.space_after = Pt(4)
+            f.space_after = Pt(2)
             f.line_spacing = 1.05
     for p in doc.paragraphs:
         if p.style.name in ["Normal", "Body Text", "First Paragraph", "Compact"]:
@@ -331,6 +331,8 @@ def main(supplement=False):
         sec.right_margin = Cm(1.5)
     if supplement:
         doc.core_properties.title = "Дополнительные материалы к статье о СМО с отрицательными заявками"
+    else:
+        doc.core_properties.title = "Расчёт многоканальных СМО с отрицательными заявками и повторным обслуживанием"
     doc.save(path)
     (build.CHECKS / "layout.json").write_text(
         json.dumps(

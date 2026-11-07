@@ -26,3 +26,5 @@
 цитируется англоязычная версия, русское название не подтверждено.
   cv_effect.py, make_figure2.py — рисунок 2 (влияние CV): cv-effect.json, figures/figure2*.
   diagnostics/effective_occupation.py — проверка формул времени занятия канала.
+  delta_effect.py, make_figure3.py — рисунок 3 (зависимость от δ, стоимость расчёта): delta-effect.json.
+  figure1_disaster.py — рисунок 1б (ось i не накладывается на метку уровня 0).
