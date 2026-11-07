@@ -1,0 +1,33 @@
+{
+  "delivered_at_utc": "2026-11-07T20:42:19.906159+00:00",
+  "files": [
+    {
+      "file": "negative_queues_editable_v8.docx",
+      "sha256": "974b7c6512b50829766a8d05b87427a5478d06bdd75b6be2f6cbaa82f33f09d6",
+      "message_id": 214,
+      "telegram_filename": "negative_queues_editable_v8.docx",
+      "telegram_file_size": 335563
+    },
+    {
+      "file": "negative_queues_editable_v8.pdf",
+      "sha256": "95ab3db70fc8f3a4bb21c56ddc5a41adf9dd84811c00f0dc8ea3f2a84a6256f0",
+      "message_id": 215,
+      "telegram_filename": "negative_queues_editable_v8.pdf",
+      "telegram_file_size": 466355
+    },
+    {
+      "file": "negative_queues_supplement_v8.docx",
+      "sha256": "1e6463d9bbe2412da8d4149b606c4ab36cbe701c7e1706ff17f0dcc6b3d793f0",
+      "message_id": 216,
+      "telegram_filename": "negative_queues_supplement_v8.docx",
+      "telegram_file_size": 150857
+    },
+    {
+      "file": "negative_queues_supplement_v8.pdf",
+      "sha256": "098bcf7ee9954fa5faf11039ce35e07ecdea3c2d723714a0e786dc358d438869",
+      "message_id": 217,
+      "telegram_filename": "negative_queues_supplement_v8.pdf",
+      "telegram_file_size": 468637
+    }
+  ]
+}

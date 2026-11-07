@@ -1,0 +1,14 @@
+__pycache__/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+!tests-expanded.log
+!word-validation.log
+!supplement-validation.log

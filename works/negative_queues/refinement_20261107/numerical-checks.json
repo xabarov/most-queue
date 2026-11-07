@@ -1,0 +1,153 @@
+{
+  "original_simulation_values_unchanged": true,
+  "independent_replications": 80,
+  "unique_seeds": 80,
+  "refined_cases": 6,
+  "refined_statistics_inside_independent_ci95": 24,
+  "finite_chain_checks": [
+    {
+      "file": "cv0.8-j3-k12-n100.json",
+      "embedded_residual": 3.031832443566148e-11,
+      "tail": 3.5146655734388226e-14,
+      "admitted_flow_service_residual": 9.226166053366569e-09
+    },
+    {
+      "file": "cv0.8-j3-k2-n100.json",
+      "embedded_residual": 1.0029629916433e-11,
+      "tail": 7.0715382086134145e-12,
+      "admitted_flow_service_residual": 1.3350995864414017e-09
+    },
+    {
+      "file": "cv0.8-j3-k4-n100.json",
+      "embedded_residual": 1.8495876661464614e-11,
+      "tail": 3.4502021260211763e-13,
+      "admitted_flow_service_residual": 2.9231577158839173e-09
+    },
+    {
+      "file": "cv0.8-j3-k8-n100.json",
+      "embedded_residual": 1.672319478033721e-11,
+      "tail": 6.052173265025161e-14,
+      "admitted_flow_service_residual": 4.742611192654067e-09
+    },
+    {
+      "file": "cv0.8-j4-k12-n100.json",
+      "embedded_residual": 4.4829010272394426e-11,
+      "tail": 1.0991235159330036e-13,
+      "admitted_flow_service_residual": 1.1078325812263756e-08
+    },
+    {
+      "file": "cv0.8-j4-k2-n100.json",
+      "embedded_residual": 7.571151818584464e-12,
+      "tail": 9.686962572957675e-12,
+      "admitted_flow_service_residual": 9.42845357343458e-10
+    },
+    {
+      "file": "cv0.8-j4-k4-n100.json",
+      "embedded_residual": 1.3615308922258387e-11,
+      "tail": 6.16916966850045e-13,
+      "admitted_flow_service_residual": 2.488681705159479e-09
+    },
+    {
+      "file": "cv0.8-j4-k8-n100.json",
+      "embedded_residual": 3.9100132771752084e-11,
+      "tail": 1.5516139274804455e-13,
+      "admitted_flow_service_residual": 7.1665637868534304e-09
+    },
+    {
+      "file": "cv1.2-j3-k12-n100.json",
+      "embedded_residual": 4.720254187048258e-11,
+      "tail": 1.1843806887293715e-08,
+      "admitted_flow_service_residual": 1.8901175291574646e-08
+    },
+    {
+      "file": "cv1.2-j3-k2-n100.json",
+      "embedded_residual": 5.606315782325068e-12,
+      "tail": 5.5276702220338333e-08,
+      "admitted_flow_service_residual": 4.865974290169106e-10
+    },
+    {
+      "file": "cv1.2-j3-k4-n100.json",
+      "embedded_residual": 6.374388398799639e-12,
+      "tail": 1.9517592925539073e-08,
+      "admitted_flow_service_residual": 8.585616662060147e-10
+    },
+    {
+      "file": "cv1.2-j3-k8-n100.json",
+      "embedded_residual": 6.620881483732492e-12,
+      "tail": 1.2718888938533046e-08,
+      "admitted_flow_service_residual": 1.5383108120659017e-09
+    },
+    {
+      "file": "cv1.2-j4-k12-n100.json",
+      "embedded_residual": 2.564737043379705e-10,
+      "tail": 2.09032794444465e-08,
+      "admitted_flow_service_residual": 1.8527979150917417e-10
+    },
+    {
+      "file": "cv1.2-j4-k2-n100.json",
+      "embedded_residual": 5.76641940162939e-12,
+      "tail": 6.6681067150897e-08,
+      "admitted_flow_service_residual": 5.007394499045859e-10
+    },
+    {
+      "file": "cv1.2-j4-k4-n100.json",
+      "embedded_residual": 6.2138165325113475e-12,
+      "tail": 2.9437733092166667e-08,
+      "admitted_flow_service_residual": 8.374856363957406e-10
+    },
+    {
+      "file": "cv1.2-j4-k8-n100-krylov.json",
+      "embedded_residual": 2.3743197419456957e-10,
+      "tail": 2.1958436345888935e-08,
+      "admitted_flow_service_residual": 8.035015319762806e-09
+    },
+    {
+      "file": "cv1.2-j4-k8-n100.json",
+      "embedded_residual": 6.661555023785273e-12,
+      "tail": 2.197952217976759e-08,
+      "admitted_flow_service_residual": 1.5491745664064638e-09
+    },
+    {
+      "file": "cv1.2-j4-k8-n160.json",
+      "embedded_residual": 3.04881847729282e-11,
+      "tail": 1.1067381449773496e-11,
+      "admitted_flow_service_residual": 1.0536048922205055e-08
+    },
+    {
+      "file": "cv1.2-j5-k2-n100.json",
+      "embedded_residual": 5.7911761271147855e-12,
+      "tail": 6.613240815293514e-08,
+      "admitted_flow_service_residual": 5.027152027992088e-10
+    },
+    {
+      "file": "cv1.2-j5-k4-n100.json",
+      "embedded_residual": 6.286402802569094e-12,
+      "tail": 2.9952496533913674e-08,
+      "admitted_flow_service_residual": 8.470975032537353e-10
+    },
+    {
+      "file": "cv1.2-j5-k8-n100.json",
+      "embedded_residual": 6.6374423300121226e-12,
+      "tail": 2.3117912539314464e-08,
+      "admitted_flow_service_residual": 1.5437842115773037e-09
+    }
+  ],
+  "extrapolation_sensitivity": [
+    {
+      "cv": 0.8,
+      "mean_relative": 0.005293539821443871,
+      "std_relative": 0.009287084792127143
+    },
+    {
+      "cv": 1.2,
+      "mean_relative": 0.002912476382760487,
+      "std_relative": 0.003936409337160107
+    }
+  ],
+  "tests": "19 passed; pytest-combined.log",
+  "sha256": {
+    "experiment-results.json": "bf9ea38f75b4dfd852e9662fa0c723482cdf276a1f0b663f4fd5c5cc573cce45",
+    "independent-replications.jsonl": "c63dc928bf8e24f59e05f18d09c324fcad7a3dfe7966c0db6e0ce652fc846c07",
+    "full-work-results.json": "ccded3b8dbb4f4fd2721175c2debac61f2ea42f445fc9b3b6d94f5ad34f6c0a0"
+  }
+}

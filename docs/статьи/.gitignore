@@ -1,0 +1,14 @@
+# LaTeX intermediates; final PDF, Word, figures and result files are retained.
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+# Retain saved validation evidence, not routine compiler logs.
+!verification/*.log

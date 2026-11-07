@@ -1,0 +1,354 @@
+% Общая база литературы для личных статей (docs/статьи/).
+%
+% Назначение: не искать заново одну и ту же литературу для каждой новой
+% статьи. Каждая статья подключает этот файл через \addbibresource и
+% цитирует нужное ей подмножество записей через \cite{<ключ>} -- неиспользуемые
+% в конкретной статье записи просто не попадают в её список литературы
+% (biblatex печатает только процитированные, если не используется \nocite{*}).
+%
+% Все записи ниже проверены веб-поиском на дату добавления (октябрь 2026):
+% название, авторы, год, том/номер/страницы сверены с издателем (Springer,
+% Elsevier, MDPI, Taylor & Francis, ACL Anthology, USENIX). DOI указан только
+% там, где подтверждён поиском -- лучше отсутствующий DOI, чем угаданный.
+%
+% encoding: UTF-8
+
+@article{medhi1975,
+  author = {Medhi, J.},
+  title = {Waiting Time Distribution in a Poisson Queue with a General Bulk Service Rule},
+  journaltitle = {Management Science},
+  year = {1975}, volume = {21}, number = {7}, pages = {777--782},
+  doi = {10.1287/mnsc.21.7.777}, langid = {english},
+}
+
+@article{neuts1967,
+  author = {Neuts, Marcel F.},
+  title = {A General Class of Bulk Queues with Poisson Input},
+  journaltitle = {The Annals of Mathematical Statistics},
+  year = {1967}, volume = {38}, number = {3}, pages = {759--770},
+  doi = {10.1214/aoms/1177698869}, langid = {english},
+}
+
+@article{vanommer2020,
+  author = {van Ommeren, Jan-Kees and Baer, Niek and Mishra, Nishant and Roy, Debjit},
+  title = {Batch service systems with heterogeneous servers},
+  journaltitle = {Queueing Systems},
+  year = {2020}, volume = {95}, pages = {251--269},
+  doi = {10.1007/s11134-020-09654-y}, langid = {english},
+}
+
+@article{inoue2021,
+  author       = {Inoue, Yoshiaki},
+  title        = {Queueing analysis of {GPU}-based inference servers with dynamic batching: a closed-form characterization},
+  journaltitle = {Performance Evaluation},
+  year         = {2021},
+  volume       = {147},
+  pages          = {102183},
+  doi          = {10.1016/j.peva.2020.102183},
+  langid       = {english},
+}
+
+% Publisher abstract and BibTeX checked on 2026-10-12; used only for the
+% application context of batching in large language model serving.
+@inproceedings{yu2022orca,
+  author       = {Yu, Gyeong-In and Jeong, Joo Seong and Kim, Geon-Woo and Kim, Soojeong and Chun, Byung-Gon},
+  title        = {{Orca}: A Distributed Serving System for {Transformer-Based} Generative Models},
+  booktitle    = {16th USENIX Symposium on Operating Systems Design and Implementation (OSDI 22)},
+  year         = {2022},
+  pages        = {521--538},
+  publisher    = {USENIX Association},
+  url          = {https://www.usenix.org/conference/osdi22/presentation/yu},
+  urldate      = {2026-10-12},
+  langid       = {english},
+}
+
+@inproceedings{quartz2026,
+  author       = {Liu, Zhipeng and Zheng, Yifan and Kong, Fanqi and Zhao, Ziming},
+  title        = {{QUARTZ}: Quantile-Aware Routing and Queueing for {TTFT} {SLO}s in {LLM} Serving},
+  booktitle    = {Findings of the Association for Computational Linguistics: ACL 2026},
+  year         = {2026},
+  pages        = {37886--37896},
+  doi          = {10.18653/v1/2026.findings-acl.1888},
+  langid       = {english},
+}
+
+@inproceedings{jitserve2026,
+  author       = {Zhang, Wei and Wu, Zhiyu and Mu, Yi and Ning, Rui and Liu, Banruo and Sarda, Nikhil and Lee, Myungjin and Lai, Fan},
+  title        = {{JITServe}: {SLO}-aware {LLM} Serving with Imprecise Request Information},
+  booktitle    = {Proceedings of the 23rd USENIX Symposium on Networked Systems Design and Implementation (NSDI 2026)},
+  year         = {2026},
+  eprint       = {2504.20068},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@article{bailey1954,
+  author       = {Bailey, Norman T. J.},
+  title        = {On queueing processes with bulk service},
+  journaltitle = {Journal of the Royal Statistical Society. Series B},
+  year         = {1954},
+  volume       = {16},
+  pages        = {80--87},
+  langid       = {english},
+}
+
+@book{neuts1989,
+  author       = {Neuts, Marcel F.},
+  title        = {Structured Stochastic Matrices of {M/G/1} Type and Their Applications},
+  year         = {1989},
+  publisher    = {Marcel Dekker},
+  location     = {New York},
+  langid       = {english},
+}
+
+@article{banerjee2012,
+  author       = {Banerjee, A. and Gupta, U. C.},
+  title        = {Reducing congestion in bulk-service finite-buffer queueing system using batch-size-dependent service},
+  journaltitle = {Performance Evaluation},
+  year         = {2012},
+  volume       = {69},
+  number       = {1},
+  pages        = {53--70},
+  langid       = {english},
+}
+
+@article{pradhan2016,
+  author       = {Pradhan, S. and Gupta, U. C. and Samanta, S. K.},
+  title        = {Queue-length distribution of a batch service queue with random capacity and batch size dependent service: {M/G}\textsuperscript{Y}\textsubscript{r}{/1}},
+  journaltitle = {OPSEARCH},
+  year         = {2016},
+  volume       = {53},
+  pages        = {329--343},
+  doi          = {10.1007/s12597-015-0231-8},
+  langid       = {english},
+}
+
+@article{banerjee2015,
+  author       = {Banerjee, A. and Gupta, U. C. and Chakravarthy, S. R.},
+  title        = {Analysis of a finite-buffer bulk-service queue under {M}arkovian arrival process with batch-size-dependent service},
+  journaltitle = {Computers \& Operations Research},
+  year         = {2015},
+  volume       = {60},
+  pages        = {138--149},
+  doi          = {10.1016/j.cor.2015.02.012},
+  langid       = {english},
+}
+
+@inproceedings{gupta2018,
+  author       = {Gupta, G. K. and Banerjee, A.},
+  title        = {On {M/G}\textsuperscript{(a,b)}{/1/N} queue with batch size- and queue length-dependent service},
+  booktitle    = {Mathematics and Computing (ICMC 2018)},
+  series       = {Springer Proceedings in Mathematics \& Statistics},
+  volume       = {253},
+  year         = {2018},
+  pages        = {249--262},
+  publisher    = {Springer},
+  location     = {Singapore},
+  doi          = {10.1007/978-981-13-2095-8_20},
+  langid       = {english},
+}
+
+@article{pradhan2024,
+  author       = {Pradhan, S. and Nandy, N. and Gupta, U. C.},
+  title        = {Performance analysis of a versatile bulk-service queue with group-arrival, batch-size-dependent service time and queue-length-dependent vacation},
+  journaltitle = {Quality Technology \& Quantitative Management},
+  year         = {2024},
+  volume       = {22},
+  number       = {4},
+  pages        = {683--726},
+  doi          = {10.1080/16843703.2024.2391673},
+  langid       = {english},
+}
+
+@article{chaudhry2023,
+  author       = {Chaudhry, Mohan L. and Datta Banik, Abhijit and Barik, Sitaram and Goswami, Veena},
+  title        = {A Novel Computational Procedure for the Waiting-Time Distribution (In the Queue) for Bulk-Service Finite-Buffer Queues with {P}oisson Input},
+  journaltitle = {Mathematics},
+  year         = {2023},
+  volume       = {11},
+  number       = {5},
+  pages          = {1142},
+  doi          = {10.3390/math11051142},
+  langid       = {english},
+}
+
+@article{banik2025,
+  author       = {Datta Banik, Abhijit and Chaudhry, Mohan L. and Barik, Sitaram and Singh, Gagandeep},
+  title        = {On the Heuristic Computational Procedures of the Virtual Waiting-Time Distribution in a Non-renewal Input Finite-Buffer Bulk-Service Queues: {MAP/R}\textsuperscript{(a,b)}{/1/N}},
+  journaltitle = {Journal of the Indian Society for Probability and Statistics},
+  year         = {2025},
+  volume       = {26},
+  pages        = {585--630},
+  doi          = {10.1007/s41096-025-00232-0},
+  langid       = {english},
+}
+
+@inproceedings{bench360_2026,
+  author       = {Stuhlmann, Linus and Fadel Argerich, Mauricio and F{\"u}rst, Jonathan},
+  title        = {Bench360: Benchmarking Local {LLM} Inference from 360 Degrees},
+  booktitle    = {arXiv preprint},
+  year         = {2025},
+  eprint       = {2511.16682},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@article{claeys2013,
+  author       = {Claeys, Dieter and Steyaert, Bart and Walraevens, Joris and Laevens, Koenraad and Bruneel, Herwig},
+  title        = {Tail probabilities of the delay in a batch-service queueing model with batch-size dependent service times and a timer mechanism},
+  journaltitle = {Computers \& Operations Research},
+  year         = {2013},
+  volume       = {40},
+  number       = {5},
+  pages        = {1497--1505},
+  langid       = {english},
+}
+
+@article{garnett2002,
+  author       = {Garnett, Ofer and Mandelbaum, Avishai and Reiman, Martin},
+  title        = {Designing a Call Center with Impatient Customers},
+  journaltitle = {Manufacturing \& Service Operations Management},
+  year         = {2002},
+  volume       = {4},
+  number       = {3},
+  pages        = {208--227},
+  doi          = {10.1287/msom.4.3.208.7753},
+  langid       = {english},
+}
+
+@article{vijayalaxmi2020,
+  author       = {{P. Vijaya Laxmi} and George, Andwilile Abrahamu},
+  title        = {Transient Analysis of Batch Service Queue with Second Optional Service and Reneging},
+  journaltitle = {International Research Journal on Advanced Science Hub},
+  year         = {2020},
+  volume       = {2},
+  number       = {10},
+  pages        = {29--38},
+  doi          = {10.47392/irjash.2020.185},
+  langid       = {english},
+}
+
+@article{morrison1989,
+  author       = {Morrison, J. A.},
+  title        = {Sojourn and waiting times in a single-server system with state-dependent mean service rate},
+  journaltitle = {Queueing Systems},
+  year         = {1989},
+  volume       = {4},
+  pages        = {213--235},
+  doi          = {10.1007/BF02100267},
+  langid       = {english},
+}
+
+@phdthesis{bekker2005,
+  author       = {Bekker, Ren{\'e}},
+  title        = {Queues with state-dependent rates},
+  institution  = {Technische Universiteit Eindhoven},
+  year         = {2005},
+  doi          = {10.6100/IR598926},
+  langid       = {english},
+}
+
+@inproceedings{yang2024,
+  author       = {Yang, Yuqing and Xu, Yuedong and Jiao, Lei},
+  title        = {A Queueing Theoretic Perspective on Low-Latency {LLM} Inference with Variable Token Length},
+  booktitle    = {arXiv preprint},
+  year         = {2024},
+  eprint       = {2407.05347},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@inproceedings{nie2026,
+  author       = {Nie, Chengyi and Si, Nian and Zhou, Zijie},
+  title        = {A Queueing-Theoretic Framework for Stability Analysis of {LLM} Inference with {KV} Cache Memory Constraints},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2026},
+  eprint       = {2605.04595},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@inproceedings{ao2026,
+  author       = {Ao, Ruicheng and Dong, Jing and Luo, Gan and Simchi-Levi, David},
+  title        = {Service-Induced Congestion in Memory-Constrained {LLM} Serving},
+  booktitle    = {arXiv preprint},
+  year         = {2026},
+  eprint       = {2606.15555},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@inproceedings{ramani2026,
+  author       = {Ramani, Vishakha and Tantawi, Asser N.},
+  title        = {An Approximate Queueing Model of {LLM} Inference Serving for {SLO}-Driven Autoscaling},
+  booktitle    = {arXiv preprint},
+  year         = {2026},
+  eprint       = {2609.20957},
+  eprinttype   = {arxiv},
+  langid       = {english},
+}
+
+@book{ryzhikov2018,
+  author       = {Рыжиков, Ю. И.},
+  title        = {Численные методы теории очередей: учебное пособие},
+  year         = {2018},
+  publisher    = {Лань},
+  location     = {СПб.},
+  pages        = {512},
+  langid       = {russian},
+}
+
+@article{yashkov1987,
+  author       = {Yashkov, Sergey F.},
+  title        = {Processor-sharing queues: Some progress in analysis},
+  journaltitle = {Queueing Systems},
+  year         = {1987},
+  volume       = {2},
+  pages        = {1--17},
+  doi          = {10.1007/BF01182931},
+  langid       = {english},
+}
+
+@article{bruneel2026,
+  author       = {Bruneel, Herwig},
+  title        = {Two parallel queues with geometric batch servers},
+  journaltitle = {Queueing Systems},
+  year         = {2026},
+  volume       = {110},
+  number       = {1},
+  doi          = {10.1007/s11134-026-09970-9},
+  langid       = {english},
+}
+
+@software{mostqueue2026,
+  author       = {Хабаров, Р. С.},
+  title        = {most-queue: библиотека точных и приближённых методов теории очередей},
+  year         = {2026},
+  url          = {https://github.com/xabarov/most-queue},
+  urldate      = {2026-10-06},
+  langid       = {russian},
+}
+
+@unpublished{khabarovmulti2026,
+  author       = {Хабаров, Р. С.},
+  title        = {Точная вероятность нарушения SLA в многоканальных системах пакетного обслуживания с общей очередью: нетерпеливые заявки},
+  note         = {рукопись в подготовке},
+  year         = {2026},
+  langid       = {russian},
+}
+
+@unpublished{khabarovsingle2026,
+  author       = {Хабаров, Р. С. and Лохвицкий, В. А.},
+  title        = {Точная вероятность нарушения SLA в одноканальных системах пакетного обслуживания с пороговым запуском пакета: нетерпеливые заявки},
+  note         = {рукопись в подготовке},
+  year         = {2026},
+  langid       = {russian},
+}
+
+@unpublished{khabarovoccupancy2026,
+  author       = {Хабаров, Р. С.},
+  title        = {Точное распределение времени ожидания в occupancy-зависимой системе массового обслуживания с потолком занятости},
+  note         = {рукопись в подготовке},
+  year         = {2026},
+  langid       = {russian},
+}

@@ -1,0 +1,14 @@
+{
+  "native_equations": 216,
+  "source_math_nodes": 216,
+  "matrices": 2,
+  "images": 2,
+  "numeric_cells_checked": 72,
+  "pdf_pages": 9,
+  "broken_reference_fields": 0,
+  "cv_group_headers_10pt": 4,
+  "uppercase_abbreviation_paragraphs": 4,
+  "table_math_10pt": true,
+  "docx_sha256": "974b7c6512b50829766a8d05b87427a5478d06bdd75b6be2f6cbaa82f33f09d6",
+  "pdf_sha256": "95ab3db70fc8f3a4bb21c56ddc5a41adf9dd84811c00f0dc8ea3f2a84a6256f0"
+}

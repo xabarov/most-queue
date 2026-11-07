@@ -1,0 +1,2 @@
+Все пять пунктов завершены. Активных расчётов этой задачи нет.
+Итоги: STEP1_REPORT.txt, STEP2_REPORT.txt, STEP3_REPORT.txt, STEP4_REPORT.txt, FINAL_REPORT.txt.

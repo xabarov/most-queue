@@ -1,23 +1,10 @@
-"""EPIC-066: exact batch-service SLA tail vs Inoue's (2021) mean bound and vs
-fit-based SLA approximation.
+"""Historical EPIC-066 scenario, corrected metric and Inoue formula.
 
-    python -m examples.batch_service_sla_exact_tail_comparison
-
-Pure synthetic numerical study (no external data, no randomness): deterministic
-given the prescribed parameters below, so no hashing/manifest machinery is
-needed for reproducibility (identical code -> identical output).
-
-Reuses Inoue Y., "Queueing Analysis of GPU-Based Inference Servers with
-Dynamic Batching: A Closed-Form Characterization", Performance Evaluation 147
-(2021), doi:10.1016/j.peva.2020.102183 (open, arXiv:1912.06322) -- Theorem 2's
-closed-form upper bound phi(lambda, alpha, tau0) for E[W], derived under an
-UNBOUNDED max batch size and a DETERMINISTIC, linear-in-batch-size processing
-time H^[b] = alpha*b + tau0. We keep the SAME mean function (so the comparison
-isolates the effect of a bounded [1, b_max] window and of nonzero service
-variance, not a different mean model) but use our exact, phase-type
-(Erlang-fitted) CTMC to get the TRUE E[W] and the EXACT SLA tail P(W>D) under
-a REALISTIC bounded window -- something Inoue's own closed form cannot do (his
-Fig. 8 shows it is only a good approximation for large b_max).
+Inoue's W denotes SOJOURN, not queue waiting. Its upper bound applies only to
+unbounded deterministic affine batch service. Finite-cap PH waiting values
+below are different quantities, NOT tests or violations of that bound.
+A finite stationary truncation is not an exact infinite-queue calculation.
+Use examples.bulk_sla_revision for matched metrics and convergence diagnostics.
 """
 
 import json
@@ -39,11 +26,11 @@ QUEUE_TRUNCATION = 400
 
 
 def inoue_phi(lam, alpha, tau0):
-    """Theorem 2 (Inoue 2021): closed-form upper bound for E[W], b_max = infinity."""
+    """Theorem 2 (Inoue 2021): upper bound for mean SOJOURN, unbounded deterministic affine service."""
     rho = lam * alpha
     if rho >= 1:
         raise ValueError("unstable: lambda * alpha must be < 1")
-    phi0 = (alpha + tau0) / (2 * (1 - rho)) * (1 + 2 * lam * tau0 + (1 - lam * tau0) / (1 + lam * tau0))
+    phi0 = (alpha + tau0) / (2 * (1 - rho)) * (1 + 2 * lam * tau0 + (1 - lam * tau0) / (1 + lam * alpha))
     phi1 = 1.5 * tau0 / (1 - rho) + 0.5 * alpha * (rho + 2) / (1 - rho**2)
     return min(phi0, phi1)
 
@@ -121,19 +108,17 @@ def main():
             "b_max_values": list(B_MAX_VALUES),
             "deadlines": list(DEADLINES),
         },
-        "inoue_2021_bound_e_w": inoue_bound,
+        "inoue_2021_bound_mean_sojourn": inoue_bound,
         "erlang_low_variance": erlang_rows,
         "h2_high_variance": h2_rows,
-        "interpretation": "Same mean function (alpha*b+tau0) as Inoue (2021) Theorem 2; bounded "
-        "[1,b_max] window and phase-type variance are the only things this adds relative to his "
-        "unbounded, deterministic assumption. Not a production GPU/LLM latency claim -- a controlled "
-        "comparison of two closed-form treatments of the same mean model.",
+        "interpretation": "Inoue bound is for unbounded deterministic SOJOURN. PH finite-cap "
+        "WAITING results have a different metric and model; do not compare as an inequality.",
     }
     print(json.dumps(result, indent=2))
 
     output_dir = Path("works/batch_service_sla_exact_tail")
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "comparison.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    (output_dir / "comparison_corrected_metrics.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,58 @@
+{
+  "original_files_unchanged": 103,
+  "unchanged_full_tables": 6,
+  "unchanged_scientific_figures": [
+    "revision_outcomes.pdf",
+    "revision_tails.pdf",
+    "revision_queue.png",
+    "revision_feasible.png",
+    "revision_outcomes.png",
+    "revision_queue.pdf",
+    "revision_threshold.pdf",
+    "revision_threshold.png",
+    "revision_tails.png",
+    "revision_conditional.png",
+    "revision_conditional.pdf",
+    "revision_feasible.pdf"
+  ],
+  "tagged_diagram_change": "Only two labels: «помеченной» per author preference",
+  "selected_table_rows_verified": 2,
+  "bound_and_proof_preserved_except_term": true,
+  "appendix_display_formulas_identical": true,
+  "main": {
+    "pages_pdf": 7,
+    "word": {
+      "tables": 2,
+      "figures": 2,
+      "native_math": 95
+    },
+    "references_resolved": 4,
+    "latex_warnings": 0,
+    "pages_word_libreoffice": 8
+  },
+  "appendix": {
+    "pages_pdf": 12,
+    "word": {
+      "tables": 6,
+      "figures": 5,
+      "native_math": 322
+    },
+    "references_resolved": 13,
+    "latex_warnings": 0,
+    "pages_word_libreoffice": 12
+  },
+  "original_pages_pdf": 17,
+  "visual_review": {
+    "latex_main_pages": 7,
+    "latex_appendix_pages": 12,
+    "word_main_pages": 8,
+    "word_appendix_pages": 12,
+    "status": "all pages inspected; no clipped formulas, figures or tables"
+  },
+  "final_artifact_sha256": {
+    "latex/main.pdf": "30142bc687538f257121c53fe685b377d2d198e5d174386054d4d296f303184f",
+    "latex/appendix.pdf": "567ee9f13ad426a4f755b28310d127348c716795865dc22ef75770e119a9811e",
+    "word/main.docx": "95908cd1f662cd0ca61653b02a37ed3b52e6ff492cd276c18d461c31077e65b6",
+    "word/appendix.docx": "a0d3410a284c982b8723af098b50cd7be7e812c05fb4fd297325300b11eaf527"
+  }
+}

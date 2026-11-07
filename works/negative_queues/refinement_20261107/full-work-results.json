@@ -1,0 +1,176 @@
+{
+  "results": [
+    {
+      "cv": 0.8,
+      "mode": "disaster",
+      "scenario": "fixed",
+      "calculation": {
+        "w": [
+          1.271101924291588,
+          6.263306467426027
+        ],
+        "v": [
+          3.445807468226806,
+          20.03142435809692
+        ],
+        "sw": 2.155830783129383,
+        "sv": 2.8561924392465734,
+        "q": 1.0,
+        "method": "joint retained-work process, positive Erlang approximation, raw-moment extrapolation",
+        "classes": 4,
+        "stages": [
+          4,
+          8,
+          12
+        ],
+        "levels": 100,
+        "extrapolation_weights": [
+          0.49999999999999994,
+          -3.9999999999999996,
+          4.499999999999999
+        ],
+        "service_moments": [
+          2.174705543935218,
+          8.239573087343611
+        ],
+        "stage_check_abs": [
+          -0.00020022496428140357,
+          0.009769110899235045
+        ],
+        "quadrature_check_abs": [
+          0.0010891440347240433,
+          0.0005968493900638805
+        ],
+        "alternative_extrapolation_w": [
+          1.2643732956382365,
+          6.332972480793245
+        ],
+        "extrapolation_sensitivity_abs": [
+          0.006728628653351443,
+          -0.06966601336721823
+        ]
+      },
+      "comparison": {
+        "w": {
+          "previous_error_percent": -3.2169676950427384,
+          "refined_error_percent": 0.4490005547897802,
+          "independent_mean": 1.2654201806600027,
+          "half_ci95": 0.01675792314877434,
+          "inside_ci95": true
+        },
+        "v": {
+          "previous_error_percent": -1.204757945201762,
+          "refined_error_percent": 0.14344406667390341,
+          "independent_mean": 3.440871741871233,
+          "half_ci95": 0.018964752152526205,
+          "inside_ci95": true
+        },
+        "sw": {
+          "previous_error_percent": -5.840954934526832,
+          "refined_error_percent": 0.6326696837823054,
+          "independent_mean": 2.1422772444611105,
+          "half_ci95": 0.035444240459487075,
+          "inside_ci95": true
+        },
+        "sv": {
+          "previous_error_percent": -3.2802430826867846,
+          "refined_error_percent": 0.34446885343413225,
+          "independent_mean": 2.846387520789418,
+          "half_ci95": 0.029844106730893934,
+          "inside_ci95": true
+        }
+      }
+    },
+    {
+      "cv": 1.2,
+      "mode": "disaster",
+      "scenario": "fixed",
+      "calculation": {
+        "w": [
+          2.2067541463684606,
+          19.926818097254454
+        ],
+        "v": [
+          4.42054419828367,
+          43.20285674778735
+        ],
+        "sw": 3.8803420254843592,
+        "sv": 4.864323769940477,
+        "q": 1.0,
+        "method": "joint retained-work process, positive Erlang approximation, raw-moment extrapolation",
+        "classes": 4,
+        "stages": [
+          4,
+          8,
+          12
+        ],
+        "levels": 100,
+        "extrapolation_weights": [
+          0.49999999999999994,
+          -3.9999999999999996,
+          4.499999999999999
+        ],
+        "service_moments": [
+          2.2137900519152094,
+          13.505457898026622
+        ],
+        "stage_check_abs": [
+          0.0002818418595618155,
+          0.04092662881390652
+        ],
+        "quadrature_check_abs": [
+          0.005388523967555514,
+          0.013696418115628717
+        ],
+        "alternative_extrapolation_w": [
+          2.2003270270346036,
+          20.017268032249092
+        ],
+        "extrapolation_sensitivity_abs": [
+          0.006427119333856979,
+          -0.09044993499463772
+        ]
+      },
+      "comparison": {
+        "w": {
+          "previous_error_percent": -5.906323811580572,
+          "refined_error_percent": -1.0050542832652165,
+          "independent_mean": 2.229158398331659,
+          "half_ci95": 0.05034048977512117,
+          "inside_ci95": true
+        },
+        "v": {
+          "previous_error_percent": -2.992890092852374,
+          "refined_error_percent": -0.5345264027458163,
+          "independent_mean": 4.44430015603495,
+          "half_ci95": 0.053268037801545674,
+          "inside_ci95": true
+        },
+        "sw": {
+          "previous_error_percent": -10.556439530116613,
+          "refined_error_percent": -0.5372671938752682,
+          "independent_mean": 3.9013024436479338,
+          "half_ci95": 0.09784433602503324,
+          "inside_ci95": true
+        },
+        "sv": {
+          "previous_error_percent": -6.684892664960696,
+          "refined_error_percent": -0.42696524031725636,
+          "independent_mean": 4.8851817981448615,
+          "half_ci95": 0.0859665022119259,
+          "inside_ci95": true
+        }
+      }
+    }
+  ],
+  "queue_truncation_change": {
+    "w": [
+      6.0431365529467485e-06,
+      0.0006763656880295343
+    ],
+    "v": [
+      6.082439091947833e-06,
+      0.0007029328291920933
+    ]
+  }
+}

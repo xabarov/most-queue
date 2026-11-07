@@ -1,0 +1,3823 @@
+{
+  "decision_counts": {
+    "conditional_ordinary_gamma_tails": {
+      "agree": 1971,
+      "false_reject": 61,
+      "false_accept": 20
+    },
+    "conditional_atom_gamma_tails": {
+      "agree": 1998,
+      "false_accept": 34,
+      "false_reject": 20
+    },
+    "all_arrivals_ordinary_gamma_tails": {
+      "agree": 2045,
+      "false_reject": 6,
+      "false_accept": 1
+    },
+    "all_arrivals_atom_gamma_tails": {
+      "agree": 2048,
+      "false_accept": 1,
+      "false_reject": 3
+    }
+  },
+  "configuration_minima": [
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": 5,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": 10,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": 6,
+        "atom_gamma_tails": 5
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 5,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": 6
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": 5
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 7,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.001,
+      "minima": {
+        "tails": 7,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "conditional",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.0001,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 2,
+        "ordinary_gamma_tails": 2,
+        "atom_gamma_tails": 2
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": 6,
+        "ordinary_gamma_tails": 8,
+        "atom_gamma_tails": 6
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": 6,
+        "ordinary_gamma_tails": 5,
+        "atom_gamma_tails": 5
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 5,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "E3",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 8,
+        "ordinary_gamma_tails": 8,
+        "atom_gamma_tails": 8
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 6,
+        "ordinary_gamma_tails": 6,
+        "atom_gamma_tails": 6
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": 6,
+        "atom_gamma_tails": 6
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 3,
+        "ordinary_gamma_tails": 3,
+        "atom_gamma_tails": 3
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": 5,
+        "ordinary_gamma_tails": 6,
+        "atom_gamma_tails": 7
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": 4,
+        "ordinary_gamma_tails": 4,
+        "atom_gamma_tails": 4
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.0,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 1,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 2,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 3,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 5,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 10,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.1,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.05,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    },
+    {
+      "metric": "all_arrivals",
+      "family": "H2",
+      "gamma": 0.1,
+      "a": 4,
+      "deadline": 20,
+      "target": 0.01,
+      "minima": {
+        "tails": null,
+        "ordinary_gamma_tails": null,
+        "atom_gamma_tails": null
+      }
+    }
+  ],
+  "patience_pointwise_t95_misses": [
+    {
+      "case": {
+        "a": 2,
+        "b": 8,
+        "family": "H2",
+        "gamma": 0.02,
+        "lambda": 0.8
+      },
+      "metric": "mean_wait",
+      "prediction": 2.4863600185515025,
+      "interval": [
+        2.4866050634018144,
+        2.540306139247426
+      ]
+    },
+    {
+      "case": {
+        "a": 2,
+        "b": 8,
+        "family": "H2",
+        "gamma": 0.02,
+        "lambda": 0.8
+      },
+      "metric": "on_time",
+      "prediction": 0.8110453780774949,
+      "interval": [
+        0.8076214910297512,
+        0.8109318423035823
+      ]
+    }
+  ],
+  "statuses": {
+    "patience": {
+      "converged_diagnostic": 12
+    },
+    "load": {
+      "converged_diagnostic": 33,
+      "unresolved": 3
+    },
+    "decision": {
+      "converged_diagnostic": 228
+    },
+    "inoue": {
+      "simulation": 10
+    }
+  },
+  "data_sha256": {
+    "docs/research/bulk-sla-revision-decision-2026.json": "94f2e1d4378b2d0e8d9ac8e0a4da5f9fddd68dad7b49086ce57bff8a89ccfe07",
+    "docs/research/bulk-sla-revision-inoue-2026.json": "fe0c79ae2603206bb218c5fc1b2d2974b5dbe0db83f7030c4e97bd8bf7eab7aa",
+    "docs/research/bulk-sla-revision-load-2026.json": "0a46a6668bfd06739c0f16d140a4d3af2f7cca680e10ec3a39fdde38bc6ba1d3",
+    "docs/research/bulk-sla-revision-patience-2026.json": "e0050bf7fa088772bf3755783148f4b08f99c24b9a093b3cfd1b00bafb1f08e1"
+  }
+}

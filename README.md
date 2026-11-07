@@ -18,6 +18,15 @@
 
 </div>
 
+Bulk-service correction (2026-10-12): all-customer abandonment now includes
+departures behind the tagged customer; the new `get_tagged_wait()` exposes local
+truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means
+and earlier Inoue/cap comparisons are corrected. Stationary truncation remains
+diagnostic, not certified. [Report and reproducible experiments](docs/research/bulk-sla-revision-2026.md).
+
+[Article materials and setup on another computer](docs/статьи/README.md):
+LaTeX sources, editable Word documents, PDFs, saved data and build instructions.
+
 ## Why Most-Queue?
 
 - **Analytics and simulation together.** Nearly every analytical calculator ships with a paired

@@ -1,0 +1,15 @@
+{
+  "pdf": "negative_queues_editable_v6.pdf",
+  "pdf_sha256": "4a6faabfb0743a44a09c605688ed8300f2e7984eb935ac7b189b5cc25f8bea29",
+  "docx_sha256": "e3bc2f92fc8c7fe8e55411ccd001273a0dd114a096d6978a72f5c86bb6b9447a",
+  "pdf_pages": 14,
+  "all_pages_visually_reviewed": true,
+  "final_text_changes_on_pages_3_and_11_rechecked": true,
+  "ooxml_validation": "passed: 17 XML files validated, 0 new XSD errors",
+  "source_docx_font": "Times New Roman",
+  "pdf_render_font": "Liberation Serif; temporary copy only, local Times New Roman italic Cyrillic is defective",
+  "native_equations": 303,
+  "numeric_cells_checked": 144,
+  "formula_continuations_without_indent": 27,
+  "previous_versions_unchanged": true
+}

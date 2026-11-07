@@ -1,0 +1,266 @@
+{
+  "base_document": "negative_queues_editable_v4.docx",
+  "base_sha256": "06ef9792d83a251a63faea20e520a686b10f9ff0d832c48e55dc12c9893882ff",
+  "base_unchanged": true,
+  "document": "negative_queues_editable_v5.docx",
+  "docx_sha256": "d430758bf2745a3c6b0357e48937d764ec4a16adc1b035d524d7f63e3718069a",
+  "changed_paragraphs": 23,
+  "native_equations": 261,
+  "only_reviewed_first_line_indents_changed": true,
+  "all_other_docx_parts_byte_identical": true,
+  "changes": [
+    {
+      "body_index": 29,
+      "text": "При yℓ≥0 и μℓ>0 это распределение H2: фаза выбирается при начале обслуживания и не меняется до его завершения. Если согласование моментов приводит к комплексным параметрам, те же формулы используются алгебраически. Комплексные коэффициенты не являются вероятностями и интенсивностями переходов цепи Маркова; точность такой аппроксимации требует отдельной проверки. Совпадение первых трёх моментов само по себе не гарантирует точности распределения или его хвоста.",
+      "reason": "Conditions and interpretation of the service transform.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 36,
+      "text": "При i≥n поступление в очередь не меняет фазы занятых каналов: (i,j)→(i+1,j) с интенсивностью λ.",
+      "reason": "Second case of the arrival-transition rule.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 39,
+      "text": "При i>n освободившийся канал сразу занимает заявка из очереди, поэтому ненулевые элементы строки j матрицы Bi имеют вид",
+      "reason": "Second case of the service-completion rule.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 42,
+      "text": "Элементы с индексами вне диапазона 0,…,n отсутствуют. Диагональ определяется суммой выходящих интенсивностей:",
+      "reason": "Index limits for the preceding transition block.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 44,
+      "text": "Например, при n≥2:",
+      "reason": "Example of the transition blocks just defined.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 53,
+      "text": "Итерации Такахаси–Таками определяют нормированные векторы уровней ti и отношения xi=pi+1/pi. Используются матрицы (Di−Ci)−1 и произведения с соседними блоками; после сходимости вероятности восстанавливаются рекуррентно и нормируются [6,7].",
+      "reason": "Solution of the preceding balance equations.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 57,
+      "text": "При бесконечной сумме равенство точное, если соответствующий момент конечен. Для удаления и очищения временные характеристики вычисляются по ПЛС, описанным ниже. Независимую проверку первых моментов даёт закон Литтла:",
+      "reason": "Exactness conditions for the preceding moment formula.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 59,
+      "text": "где учитываются все поступившие заявки, включая удалённые.",
+      "reason": "Continuation of the sentence introducing Little's law.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 68,
+      "text": "Для непустых уровней DiRCS=Dibase+δI, а Ci=0. В пустом состоянии диагональ остаётся равной λ. Переходы показаны на рисунке 1a. Из баланса потока положительных заявок следует",
+      "reason": "Remaining blocks of the same RCS model.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 76,
+      "text": "Для i≥2 первый столбец Bi содержит γ в строке Di и δ во всех обычных строках; оставшаяся часть совпадает с базовым блоком обслуживания. Все Ci равны нулю. Диагональный элемент вспомогательного состояния равен γ, обычного состояния — базовой интенсивности выхода плюс δ.",
+      "reason": "Remaining levels of the auxiliary-state construction.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 80,
+      "text": "Это соответствует удалению времени пребывания во вспомогательных состояниях: при наблюдении только обычных состояний вся цепочка после катастрофы становится мгновенным переходом в пустую систему. Поэтому для вещественной фазовой модели нормировка восстанавливает исходный процесс при любом γ>0. Масса вспомогательных состояний не прибавляется к вероятности пустой системы. Время ожидания и пребывания также вычисляется только по физическим состояниям. Для комплексной аппроксимации эта операция применяется к алгебраическим весам.",
+      "reason": "Interpretation of the physical-probability normalization.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 91,
+      "text": "Пусть P — матрица вероятностей изменения фаз после освобождения канала и начала обслуживания очередной заявки. Она получается нормировкой строк Bn+1RCS. Если перед поступлением помеченной заявки в системе было k≥n заявок, до её обслуживания нужны k−n+1 освобождений. Поэтому",
+      "reason": "Transition probabilities in the same waiting-time derivation.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 93,
+      "text": "Вектор a здесь является столбцом. Сначала учитывается время пребывания в текущем состоянии, затем переход; этим определяется порядок матриц. Положительные приходы после помеченной заявки на её ожидание не влияют.",
+      "reason": "Notation and multiplication order in the waiting transform.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 96,
+      "text": "В расчёте принимается m=k+1, если заявка поступила при k<n, и m=n, если она ожидала. При обозначении положительной части ПЛС ожидания через W+*(s) получаем:",
+      "reason": "Choice of the parameter in the preceding transform.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 98,
+      "text": "Для n>1 это приближение сохраняет число занятых каналов на момент начала обслуживания. Оно не является точным преобразованием времени пребывания. Среднее v1 можно независимо проверить по закону Литтла; при n=1 интенсивность удаления во время обслуживания постоянна, и указанное ограничение исчезает.",
+      "reason": "Scope and limits of the preceding sojourn approximation.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 105,
+      "text": "Величина Y независима от W0 и Z0. ПЛС W0* вычисляется по формуле предыдущего подраздела с физическими стационарными весами модели с катастрофами, но без δ в интенсивностях освобождения каналов и в матрице P. При этом Z0*(s)=W0*(s)β(s).",
+      "reason": "Independence and transforms of the variables just introduced.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 108,
+      "text": "Следовательно,",
+      "reason": "Link between successive formulas in one derivation.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 110,
+      "text": "Вероятность завершения обслуживания равна q=Z0*(δ). При 0<q<1 условные преобразования имеют вид",
+      "reason": "Conditional transforms derived from the same model.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 112,
+      "text": "Индексы обозначают завершение обслуживания и удаление. Эти соотношения точны для заданной вероятностной модели; фазовая аппроксимация и усечение пространства состояний вносят отдельные погрешности.",
+      "reason": "Explanation of the preceding transform subscripts.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 119,
+      "text": "При r=0 используются исходное распределение и его моменты. Для нескольких каналов замена системы обычной M/G/n с независимыми длительностями Beff является приближением. При одновременных прерываниях r=δ, но общий поток прерываний создаёт зависимость между временами завершения на разных каналах. При RCS индивидуальная интенсивность зависит от числа занятых каналов.",
+      "reason": "Zero-rate case and limits of the effective-service formula.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 123,
+      "text": "где распределение i берётся из вспомогательной системы M/G/n с эффективным обслуживанием. Это правило не следует из точного усреднения интенсивности удаления и не даёт гарантии точности. Начальное значение r=δ/n уточняется итерациями с усреднением старого и нового значений. Расчёт прекращается при изменении менее 10−9; при отсутствии сходимости за 100 шагов, бесконечных моментах или неустойчивости вспомогательной системы результат не выдаётся. В устойчивом режиме без удалений q=1.",
+      "reason": "Continuation of the sentence defining the closure.",
+      "previous_block": "p",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 129,
+      "text": "Поэтому при MB(t)=E[etB]",
+      "reason": "Averaging the preceding conditional moments.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    },
+    {
+      "body_index": 131,
+      "text": "Для вещественного H2 первый момент конечен при r<minyℓ>0μℓ, второй — при 2r<minyℓ>0μℓ. Для гамма-распределения с масштабом θ соответствующие условия имеют вид rθ<1 и 2rθ<1. Подстановка за полюсом рационального выражения для MB не определяет существующий момент.",
+      "reason": "Existence conditions for the preceding moments.",
+      "previous_block": "tbl",
+      "first_line_before_twips": 709,
+      "first_line_after_twips": 0,
+      "original_indent_attributes": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}firstLine": "709"
+      }
+    }
+  ]
+}

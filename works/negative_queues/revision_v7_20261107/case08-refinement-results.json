@@ -1,0 +1,366 @@
+{
+  "primary_unchanged": true,
+  "original_case": "case08",
+  "results": [
+    {
+      "classes": 3,
+      "stages": [
+        4,
+        8,
+        12
+      ],
+      "weights": [
+        0.49999999999999994,
+        -3.9999999999999996,
+        4.499999999999999
+      ],
+      "calculation": {
+        "w": [
+          0.7065114216235533,
+          2.789679475201604
+        ],
+        "v": [
+          2.9036772378350637,
+          14.413705775109271
+        ],
+        "sw": 1.5134467570142893,
+        "sv": 2.4458872160399805,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7065114216235533,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -1.085688826228215,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.0
+        },
+        "v": {
+          "calculation": 2.9036772378350637,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.3532537710229877,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.0
+        },
+        "sw": {
+          "calculation": 1.5134467570142893,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.5653827337875006,
+          "inside_ci95": true,
+          "change_from_primary_percent": 0.0
+        },
+        "sv": {
+          "calculation": 2.4458872160399805,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.2118692212267903,
+          "inside_ci95": true,
+          "change_from_primary_percent": 0.0
+        }
+      }
+    },
+    {
+      "classes": 3,
+      "stages": [
+        8,
+        12,
+        16
+      ],
+      "weights": [
+        1.9999999999999998,
+        -9.000000000000002,
+        8.000000000000002
+      ],
+      "calculation": {
+        "w": [
+          0.7063552805428301,
+          2.7903425925972627
+        ],
+        "v": [
+          2.9035407577558097,
+          14.413511184242594
+        ],
+        "sw": 1.5137386862488922,
+        "sv": 2.446009454661493,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7063552805428301,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -1.1075491769217183,
+          "inside_ci95": false,
+          "change_from_primary_percent": -0.022100291084370394
+        },
+        "v": {
+          "calculation": 2.9035407577558097,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.357937416865417,
+          "inside_ci95": false,
+          "change_from_primary_percent": -0.0047002496515680114
+        },
+        "sw": {
+          "calculation": 1.5137386862488922,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.5462027582931461,
+          "inside_ci95": true,
+          "change_from_primary_percent": 0.01928903235279833
+        },
+        "sv": {
+          "calculation": 2.446009454661493,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.2068820887581646,
+          "inside_ci95": true,
+          "change_from_primary_percent": 0.004997721101407393
+        }
+      }
+    },
+    {
+      "classes": 4,
+      "stages": [
+        4,
+        8,
+        12
+      ],
+      "weights": [
+        0.49999999999999994,
+        -3.9999999999999996,
+        4.499999999999999
+      ],
+      "calculation": {
+        "w": [
+          0.7076898024476277,
+          2.790285468251991
+        ],
+        "v": [
+          2.9049012338080917,
+          14.419215773170805
+        ],
+        "sw": 1.513096365656738,
+        "sv": 2.4455601802022846,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7076898024476277,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -0.9207109873054509,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.16678864460060172
+        },
+        "v": {
+          "calculation": 2.9049012338080917,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.31124937242097417,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.042153306747705344
+        },
+        "sw": {
+          "calculation": 1.513096365656738,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.5884037157744992,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.02315187871178015
+        },
+        "sv": {
+          "calculation": 2.4455601802022846,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.22521173952744222,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.013370847010085729
+        }
+      }
+    },
+    {
+      "classes": 4,
+      "stages": [
+        8,
+        12,
+        16
+      ],
+      "weights": [
+        1.9999999999999998,
+        -9.000000000000002,
+        8.000000000000002
+      ],
+      "calculation": {
+        "w": [
+          0.7075725299821531,
+          2.7910604686130327
+        ],
+        "v": [
+          2.9047991925614554,
+          14.419226112048591
+        ],
+        "sw": 1.5134072761248665,
+        "sv": 2.445683496068718,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7075725299821531,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -0.937129582655849,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.1501898378601485
+        },
+        "v": {
+          "calculation": 2.9047991925614554,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.3147511659660651,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.038639099131687615
+        },
+        "sw": {
+          "calculation": 1.5134072761248665,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.567976658622249,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.0026086738261432707
+        },
+        "sv": {
+          "calculation": 2.445683496068718,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.22018065725756264,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.008329082793623321
+        }
+      }
+    },
+    {
+      "classes": 5,
+      "stages": [
+        4,
+        8,
+        12
+      ],
+      "weights": [
+        0.49999999999999994,
+        -3.9999999999999996,
+        4.499999999999999
+      ],
+      "calculation": {
+        "w": [
+          0.7081624262776676,
+          2.7905842084447716
+        ],
+        "v": [
+          2.9053636971016346,
+          14.421308814955985
+        ],
+        "sw": 1.5129739543208598,
+        "sv": 2.4454387341579236,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7081624262776676,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -0.8545418367979174,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.23368407128085966
+        },
+        "v": {
+          "calculation": 2.9053636971016346,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.2953788197812335,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.058080121461023815
+        },
+        "sw": {
+          "calculation": 1.5129739543208598,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.5964462347965105,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.031240127294751563
+        },
+        "sv": {
+          "calculation": 2.4454387341579236,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.23016653616637628,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.01833616362667545
+        }
+      }
+    },
+    {
+      "classes": 5,
+      "stages": [
+        8,
+        12,
+        16
+      ],
+      "weights": [
+        1.9999999999999998,
+        -9.000000000000002,
+        8.000000000000002
+      ],
+      "calculation": {
+        "w": [
+          0.7080795090425704,
+          2.7914218354278475
+        ],
+        "v": [
+          2.905291717871904,
+          14.42149610989837
+        ],
+        "sw": 1.5132895441064411,
+        "sv": 2.4455625414131794,
+        "q": 1.0
+      },
+      "comparison": {
+        "w": {
+          "calculation": 0.7080795090425704,
+          "simulation": 0.7142661291775669,
+          "half_ci95": 0.005200003326308515,
+          "difference_percent": -0.8661505680130688,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.22194792200438407
+        },
+        "v": {
+          "calculation": 2.905291717871904,
+          "simulation": 2.9139709501028164,
+          "half_ci95": 0.006288743809475587,
+          "difference_percent": -0.29784896210465206,
+          "inside_ci95": false,
+          "change_from_primary_percent": 0.05560122233296827
+        },
+        "sw": {
+          "calculation": 1.5132895441064411,
+          "simulation": 1.522052177223548,
+          "half_ci95": 0.010461175699858964,
+          "difference_percent": -0.5757117428846104,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.010387739583150868
+        },
+        "sv": {
+          "calculation": 2.4455625414131794,
+          "simulation": 2.4510803007848967,
+          "half_ci95": 0.009108634952312282,
+          "difference_percent": -0.22511540604974734,
+          "inside_ci95": true,
+          "change_from_primary_percent": -0.013274308998056927
+        }
+      }
+    }
+  ]
+}

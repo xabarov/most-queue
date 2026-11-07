@@ -1,0 +1,42 @@
+{
+  "tab:methods": [
+    "tab_1",
+    "1",
+    ""
+  ],
+  "tab:results": [
+    "tab_2",
+    "2",
+    ""
+  ],
+  "tab:results_fixed": [
+    "tab_3",
+    "3",
+    ""
+  ],
+  "fig:rcs_transitions": [
+    "fig_1",
+    "1",
+    "а"
+  ],
+  "fig:disaster_transitions": [
+    "fig_1",
+    "1",
+    "б"
+  ],
+  "fig:negative_transitions": [
+    "fig_1",
+    "1",
+    ""
+  ],
+  "sec:times": [
+    "sec_4",
+    "4",
+    ""
+  ],
+  "sec:results": [
+    "sec_5",
+    "5",
+    ""
+  ]
+}

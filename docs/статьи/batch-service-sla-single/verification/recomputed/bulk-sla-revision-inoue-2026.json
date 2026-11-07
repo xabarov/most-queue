@@ -1,0 +1,3913 @@
+{
+  "panel": "inoue",
+  "date": "2026-10-12",
+  "deadlines": [
+    5.0,
+    10.0,
+    20.0
+  ],
+  "protocol_sha256": "0ec7d864aa832034049eb2015b72a4ad9a556140c950c0d6c6bab68a83c7a343",
+  "code_sha256": {
+    "/home/roman/pyprojects/most-queue-git/most-queue/examples/bulk_sla_revision.py": "2fde9d94cea48cbc5261f53c0329748b750b1e70c89291ac89ce57c3808233a4",
+    "most_queue/theory/batch/_tagged_batch.py": "e2b9ee4a278e7d6e1c04c44e40e9618be78ac91c037c8386fe48900d199944e6",
+    "most_queue/theory/batch/dynamic_batching.py": "d5d02f226227a4618993c1986924602ebce4ae6698b2077f446b99f301419a2b",
+    "most_queue/theory/batch/smdp_batching.py": "c514577bf070525a5d6b4d9fd446b6f9ab86ea0d2bbac23118b5ec196c17ba38",
+    "most_queue/theory/batch/callback_batching.py": "172c1e7ea1e568b8b478466c3a42b3c34485ed178250717c5bc0bce4e8196026",
+    "most_queue/theory/batch/__init__.py": "80e933e861787769334693573912fa9ab6c473a22878f5564871b7bf80feabca",
+    "most_queue/theory/batch/bulk_service_erlang.py": "dbb99e73c20ae31f135ee21ad95f62b694d766398f19af94f871ff8fc5765729",
+    "most_queue/theory/batch/map_ph_finite_buffer.py": "f9e92cee9b661ae5293c3ead2b9f2e454144a92fe41a2ee40ae22f8203d15208",
+    "most_queue/theory/batch/mm1.py": "56e26735f1564366969d837ea7eceb0316fc93c674ebe92faeb1a9f9ba5fc68a",
+    "most_queue/theory/batch/token_service.py": "b3af5fd7dba7eed7fdc35454a2f1e66dfc50a35eb5877426424cf31533ebe446",
+    "most_queue/theory/batch/_tagged_boundary.py": "2297abcab8b37e33b95ec584caf368ee9e36da043949c8870f23e376f2412633",
+    "most_queue/theory/batch/heterogeneous_bulk_service.py": "75ade7353584e22fe77c86c094ab1f2c553f01b6c8d57b340aedecc9e3763aa3",
+    "most_queue/theory/batch/bulk_service_multiserver.py": "83f8a3830e560e92f5dd43a6e658e52bf7fb72a47487da227ea58b47a3ab17e9",
+    "most_queue/theory/batch/bulk_service.py": "339ca2bc6215a1eb4873511f965a03d4fa06c3e7a6fabeab87f07fcd42d431d8",
+    "most_queue/theory/batch/bulk_service_h2.py": "3df8a0ff0f26a6f9cd30cd1286f5743beb1aa63e5da383fde1cebf09c742d373",
+    "most_queue/theory/batch/bulk_service_general.py": "a10dd7c33bed23c801ef776b952bd891392ab5229a007f0f8cb323b0c718daa4",
+    "most_queue/theory/batch/_idle_refill.py": "cb2aa20a70c619ec4c41fe6c72497f5212ff66cffc38a6fcbd33381ccca77438",
+    "most_queue/theory/batch/token_batching.py": "168362aa3666a3b4e99bc4108ff550f758854d91a7fff22e8e4049a31da8138c"
+  },
+  "versions": {
+    "python": "3.12.3",
+    "numpy": "2.2.5",
+    "scipy": "1.13.0"
+  },
+  "cases": [
+    {
+      "case": {
+        "a": 1,
+        "b": 4,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.2
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38799322494106075,
+            "mean_sojourn": 2.441404572938936,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62043,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3882047460208967,
+            "mean_sojourn": 2.4415844580187644,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61947,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38918149839500155,
+            "mean_sojourn": 2.44272514239287,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61919,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3878046792642123,
+            "mean_sojourn": 2.440729983262076,
+            "abandoned": 0.0,
+            "atom_conditional": 0.6207,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.384441176497587,
+            "mean_sojourn": 2.4376483284954737,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62197,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.39146564696197167,
+            "mean_sojourn": 2.444465726959835,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61891,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3885398420588927,
+            "mean_sojourn": 2.441577310056774,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62026,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.387598645836316,
+            "mean_sojourn": 2.4410099938341907,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62143,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3890988032407462,
+            "mean_sojourn": 2.4421679072386104,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62099,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3881340066870535,
+            "mean_sojourn": 2.4412390606849126,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62085,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3906498143680618,
+            "mean_sojourn": 2.444573090365941,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61801,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3863344374074781,
+            "mean_sojourn": 2.439734281405347,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62071,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.3882872101399399,
+            "lower": 0.38712768112812573,
+            "upper": 0.38944673915175404
+          },
+          "mean_sojourn": {
+            "mean": 2.441571654637811,
+            "lower": 2.4403752722879357,
+            "upper": 2.442768036987686
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.6202433333333334,
+            "lower": 0.6195201764882141,
+            "upper": 0.6209664901784526
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 7.1621713069907855
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 8,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.2
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38787728494106327,
+            "mean_sojourn": 2.441331772938937,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62043,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3881373004384493,
+            "mean_sojourn": 2.441545772436317,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61948,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.389071169335078,
+            "mean_sojourn": 2.442655077332946,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61921,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38760973381027214,
+            "mean_sojourn": 2.440595433808135,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62074,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3842724224898248,
+            "mean_sojourn": 2.43752846648771,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62199,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3913060523216365,
+            "mean_sojourn": 2.4443665283194997,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61894,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38849059005889214,
+            "mean_sojourn": 2.441551066056773,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62026,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38736169957139066,
+            "mean_sojourn": 2.4408650795692655,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62146,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38892631494870017,
+            "mean_sojourn": 2.4420615669465646,
+            "abandoned": 0.0,
+            "atom_conditional": 0.621,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38797416584260586,
+            "mean_sojourn": 2.4411338638404656,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62088,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.39044854146166036,
+            "mean_sojourn": 2.444437965459539,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61802,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3861110828603615,
+            "mean_sojourn": 2.4395914548582303,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62076,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.38813219650666125,
+            "lower": 0.3869666166366775,
+            "upper": 0.38929777637664503
+          },
+          "mean_sojourn": {
+            "mean": 2.4414720040045323,
+            "lower": 2.440271159463211,
+            "upper": 2.4426728485458535
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.6202641666666666,
+            "lower": 0.6195385975564238,
+            "upper": 0.6209897357769094
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.734371779006324
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 16,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.2
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38787728494106327,
+            "mean_sojourn": 2.441331772938937,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62043,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3881373004384493,
+            "mean_sojourn": 2.441545772436317,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61948,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.389071169335078,
+            "mean_sojourn": 2.442655077332946,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61921,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38760973381027214,
+            "mean_sojourn": 2.440595433808135,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62074,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3842724224898248,
+            "mean_sojourn": 2.43752846648771,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62199,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3913060523216365,
+            "mean_sojourn": 2.4443665283194997,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61894,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38849059005889214,
+            "mean_sojourn": 2.441551066056773,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62026,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38736169957139066,
+            "mean_sojourn": 2.4408650795692655,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62146,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38892631494870017,
+            "mean_sojourn": 2.4420615669465646,
+            "abandoned": 0.0,
+            "atom_conditional": 0.621,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38797416584260586,
+            "mean_sojourn": 2.4411338638404656,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62088,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.39044854146166036,
+            "mean_sojourn": 2.444437965459539,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61802,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3861110828603615,
+            "mean_sojourn": 2.4395914548582303,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62076,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.38813219650666125,
+            "lower": 0.3869666166366775,
+            "upper": 0.38929777637664503
+          },
+          "mean_sojourn": {
+            "mean": 2.4414720040045323,
+            "lower": 2.440271159463211,
+            "upper": 2.4426728485458535
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.6202641666666666,
+            "lower": 0.6195385975564238,
+            "upper": 0.6209897357769094
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.728036371001508
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 32,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.2
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38787728494106327,
+            "mean_sojourn": 2.441331772938937,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62043,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3881373004384493,
+            "mean_sojourn": 2.441545772436317,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61948,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.389071169335078,
+            "mean_sojourn": 2.442655077332946,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61921,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38760973381027214,
+            "mean_sojourn": 2.440595433808135,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62074,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3842724224898248,
+            "mean_sojourn": 2.43752846648771,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62199,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3913060523216365,
+            "mean_sojourn": 2.4443665283194997,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61894,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38849059005889214,
+            "mean_sojourn": 2.441551066056773,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62026,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38736169957139066,
+            "mean_sojourn": 2.4408650795692655,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62146,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38892631494870017,
+            "mean_sojourn": 2.4420615669465646,
+            "abandoned": 0.0,
+            "atom_conditional": 0.621,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38797416584260586,
+            "mean_sojourn": 2.4411338638404656,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62088,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.39044854146166036,
+            "mean_sojourn": 2.444437965459539,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61802,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3861110828603615,
+            "mean_sojourn": 2.4395914548582303,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62076,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.38813219650666125,
+            "lower": 0.3869666166366775,
+            "upper": 0.38929777637664503
+          },
+          "mean_sojourn": {
+            "mean": 2.4414720040045323,
+            "lower": 2.440271159463211,
+            "upper": 2.4426728485458535
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.6202641666666666,
+            "lower": 0.6195385975564238,
+            "upper": 0.6209897357769094
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 6.196585215002415
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": null,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.2
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38787728494106327,
+            "mean_sojourn": 2.441331772938937,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62043,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3881373004384493,
+            "mean_sojourn": 2.441545772436317,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61948,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.389071169335078,
+            "mean_sojourn": 2.442655077332946,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61921,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38760973381027214,
+            "mean_sojourn": 2.440595433808135,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62074,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3842724224898248,
+            "mean_sojourn": 2.43752846648771,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62199,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3913060523216365,
+            "mean_sojourn": 2.4443665283194997,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61894,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38849059005889214,
+            "mean_sojourn": 2.441551066056773,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62026,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38736169957139066,
+            "mean_sojourn": 2.4408650795692655,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62146,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38892631494870017,
+            "mean_sojourn": 2.4420615669465646,
+            "abandoned": 0.0,
+            "atom_conditional": 0.621,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.38797416584260586,
+            "mean_sojourn": 2.4411338638404656,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62088,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.39044854146166036,
+            "mean_sojourn": 2.444437965459539,
+            "abandoned": 0.0,
+            "atom_conditional": 0.61802,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.3861110828603615,
+            "mean_sojourn": 2.4395914548582303,
+            "abandoned": 0.0,
+            "atom_conditional": 0.62076,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.38813219650666125,
+            "lower": 0.3869666166366775,
+            "upper": 0.38929777637664503
+          },
+          "mean_sojourn": {
+            "mean": 2.4414720040045323,
+            "lower": 2.440271159463211,
+            "upper": 2.4426728485458535
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.6202641666666666,
+            "lower": 0.6195385975564238,
+            "upper": 0.6209897357769094
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "unbounded_mean_wait": 0.388626913206689,
+      "unbounded_mean_sojourn": 2.4421807332543373,
+      "inoue_sojourn_upper_bound": 2.46786997898529,
+      "elapsed_s": 6.1629359670041595
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 4,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.8
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0519220231488438,
+            "mean_sojourn": 3.291284027150311,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09409,
+            "conditional_tails": [
+              0.00013,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99987,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00013,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0597528079303695,
+            "mean_sojourn": 3.3007268099318985,
+            "abandoned": 0.0,
+            "atom_conditional": 0.0923,
+            "conditional_tails": [
+              0.00021,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99979,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00021,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0573837377910915,
+            "mean_sojourn": 3.2981420397925767,
+            "abandoned": 0.0,
+            "atom_conditional": 0.0923,
+            "conditional_tails": [
+              0.00027,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99973,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00027,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 5
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0598529533802437,
+            "mean_sojourn": 3.3000216753817373,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09049,
+            "conditional_tails": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99986,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0570141312471184,
+            "mean_sojourn": 3.297341033248592,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09076,
+            "conditional_tails": [
+              0.00021,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99979,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00021,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0583634363396714,
+            "mean_sojourn": 3.2991778203411233,
+            "abandoned": 0.0,
+            "atom_conditional": 0.08967,
+            "conditional_tails": [
+              9e-05,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99991,
+              1.0,
+              1.0
+            ],
+            "late": [
+              9e-05,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.053453849446788,
+            "mean_sojourn": 3.2928820014483073,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09237,
+            "conditional_tails": [
+              0.0001,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.9999,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0001,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.056484997951657,
+            "mean_sojourn": 3.296629273953131,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09186,
+            "conditional_tails": [
+              0.0002,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.9998,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0002,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.055486724944619,
+            "mean_sojourn": 3.29451798894604,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09036,
+            "conditional_tails": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99986,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0610932898042207,
+            "mean_sojourn": 3.3013022758057313,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09124,
+            "conditional_tails": [
+              0.0002,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.9998,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0002,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0620210812816622,
+            "mean_sojourn": 3.302946191283214,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09135,
+            "conditional_tails": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99986,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00014,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 1.0554631973365989,
+            "mean_sojourn": 3.2953831453381017,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09182,
+            "conditional_tails": [
+              0.00013,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              0.99987,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.00013,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 1.0573576858835736,
+            "lower": 1.0554282994243287,
+            "upper": 1.0592870723428185
+          },
+          "mean_sojourn": {
+            "mean": 3.2975295235517303,
+            "lower": 3.2952772183527457,
+            "upper": 3.299781828750715
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.09155083333333335,
+            "lower": 0.09080266779580022,
+            "upper": 0.09229899887086647
+          },
+          "conditional_tails": {
+            "mean": [
+              0.00016333333333333334,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.00012924299401056568,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.000197423672656101,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              0.9998366666666666,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              0.9998025763273438,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              0.9998707570059894,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.00016333333333333334,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.00012924299401056568,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.000197423672656101,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.198642278002808
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 8,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.8
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9798593113513887,
+            "mean_sojourn": 3.2356173913523256,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09683,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9848561899846199,
+            "mean_sojourn": 3.2429337639855653,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09476,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9824536312988837,
+            "mean_sojourn": 3.2403802152998495,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09503,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9856945368158234,
+            "mean_sojourn": 3.2425656288167817,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09318,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9848099390123538,
+            "mean_sojourn": 3.2415286030133226,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09339,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9862613287529194,
+            "mean_sojourn": 3.2432244527538256,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09239,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9831555532180272,
+            "mean_sojourn": 3.2390516812190406,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09505,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9823813817589808,
+            "mean_sojourn": 3.239678121759895,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09423,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9821466365830483,
+            "mean_sojourn": 3.2375135805839284,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09289,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9869709334670745,
+            "mean_sojourn": 3.2441166834680164,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09385,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9845370529447508,
+            "mean_sojourn": 3.243468798945724,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09419,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9839195499443449,
+            "mean_sojourn": 3.240416761945274,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09455,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.9839205037610178,
+            "lower": 0.9826393499870333,
+            "upper": 0.9852016575350023
+          },
+          "mean_sojourn": {
+            "mean": 3.2408746402619624,
+            "lower": 3.2392218622346913,
+            "upper": 3.2425274182892334
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.09419499999999999,
+            "lower": 0.09343892948775087,
+            "upper": 0.0949510705122491
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.28151060899836
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 16,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.8
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9796245553513875,
+            "mean_sojourn": 3.235474667352324,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09683,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9847113099846161,
+            "mean_sojourn": 3.242852155985561,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09476,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9823044372988847,
+            "mean_sojourn": 3.2403029212998535,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09503,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9854860248158223,
+            "mean_sojourn": 3.2424721568167785,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09318,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9845786170144739,
+            "mean_sojourn": 3.2413893130154423,
+            "abandoned": 0.0,
+            "atom_conditional": 0.0934,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9861498827529194,
+            "mean_sojourn": 3.243184906753824,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09239,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9831095365913141,
+            "mean_sojourn": 3.2390286725923296,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09506,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9822785637589792,
+            "mean_sojourn": 3.239629947759892,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09423,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9820598165830475,
+            "mean_sojourn": 3.237487156583927,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09289,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9867581074670747,
+            "mean_sojourn": 3.2440275254680175,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09385,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9842807269447483,
+            "mean_sojourn": 3.2433476449457213,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09419,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9838167319443383,
+            "mean_sojourn": 3.24036858794527,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09455,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.9837631925423005,
+            "lower": 0.982488737762656,
+            "upper": 0.985037647321945
+          },
+          "mean_sojourn": {
+            "mean": 3.240797138043245,
+            "lower": 3.239146690821445,
+            "upper": 3.242447585265045
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.09419666666666666,
+            "lower": 0.09344056784006344,
+            "upper": 0.09495276549326989
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.479258670995478
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": 32,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.8
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9796245553513875,
+            "mean_sojourn": 3.235474667352324,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09683,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9847113099846161,
+            "mean_sojourn": 3.242852155985561,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09476,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9823044372988847,
+            "mean_sojourn": 3.2403029212998535,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09503,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9854860248158223,
+            "mean_sojourn": 3.2424721568167785,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09318,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9845786170144739,
+            "mean_sojourn": 3.2413893130154423,
+            "abandoned": 0.0,
+            "atom_conditional": 0.0934,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9861498827529194,
+            "mean_sojourn": 3.243184906753824,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09239,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9831095365913141,
+            "mean_sojourn": 3.2390286725923296,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09506,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9822785637589792,
+            "mean_sojourn": 3.239629947759892,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09423,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9820598165830475,
+            "mean_sojourn": 3.237487156583927,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09289,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9867581074670747,
+            "mean_sojourn": 3.2440275254680175,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09385,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9842807269447483,
+            "mean_sojourn": 3.2433476449457213,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09419,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9838167319443383,
+            "mean_sojourn": 3.24036858794527,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09455,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.9837631925423005,
+            "lower": 0.982488737762656,
+            "upper": 0.985037647321945
+          },
+          "mean_sojourn": {
+            "mean": 3.240797138043245,
+            "lower": 3.239146690821445,
+            "upper": 3.242447585265045
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.09419666666666666,
+            "lower": 0.09344056784006344,
+            "upper": 0.09495276549326989
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "elapsed_s": 5.334163635008736
+    },
+    {
+      "case": {
+        "a": 1,
+        "b": null,
+        "family": "D",
+        "gamma": 0.0,
+        "lambda": 0.8
+      },
+      "simulation": {
+        "replicates": [
+          {
+            "seed": 13000,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9796245553513875,
+            "mean_sojourn": 3.235474667352324,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09683,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13001,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9847113099846161,
+            "mean_sojourn": 3.242852155985561,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09476,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13002,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9823044372988847,
+            "mean_sojourn": 3.2403029212998535,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09503,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13003,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9854860248158223,
+            "mean_sojourn": 3.2424721568167785,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09318,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13004,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9845786170144739,
+            "mean_sojourn": 3.2413893130154423,
+            "abandoned": 0.0,
+            "atom_conditional": 0.0934,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13005,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9861498827529194,
+            "mean_sojourn": 3.243184906753824,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09239,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13006,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9831095365913141,
+            "mean_sojourn": 3.2390286725923296,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09506,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13007,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9822785637589792,
+            "mean_sojourn": 3.239629947759892,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09423,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          },
+          {
+            "seed": 13008,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9820598165830475,
+            "mean_sojourn": 3.237487156583927,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09289,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 2
+          },
+          {
+            "seed": 13009,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9867581074670747,
+            "mean_sojourn": 3.2440275254680175,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09385,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13010,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9842807269447483,
+            "mean_sojourn": 3.2433476449457213,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09419,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 1
+          },
+          {
+            "seed": 13011,
+            "customers": 100000,
+            "warmup": 20000,
+            "mean_wait": 0.9838167319443383,
+            "mean_sojourn": 3.24036858794527,
+            "abandoned": 0.0,
+            "atom_conditional": 0.09455,
+            "conditional_tails": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "on_time": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "late": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "extra_arrivals": 0
+          }
+        ],
+        "t95": {
+          "mean_wait": {
+            "mean": 0.9837631925423005,
+            "lower": 0.982488737762656,
+            "upper": 0.985037647321945
+          },
+          "mean_sojourn": {
+            "mean": 3.240797138043245,
+            "lower": 3.239146690821445,
+            "upper": 3.242447585265045
+          },
+          "abandoned": {
+            "mean": 0.0,
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "atom_conditional": {
+            "mean": 0.09419666666666666,
+            "lower": 0.09344056784006344,
+            "upper": 0.09495276549326989
+          },
+          "conditional_tails": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "on_time": {
+            "mean": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "lower": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "upper": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "late": {
+            "mean": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "lower": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "upper": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      },
+      "unbounded_mean_wait": 0.9851485049139492,
+      "unbounded_mean_sojourn": 3.243011472924551,
+      "inoue_sojourn_upper_bound": 3.3532385550504302,
+      "elapsed_s": 5.143077543005347
+    }
+  ]
+}

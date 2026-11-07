@@ -1,0 +1,39 @@
+% Alternative concise edition, 2026-10-21. Original edition remains unchanged.
+% Main article and separate mathematical appendix.
+\documentclass[12pt,a4paper]{article}
+\usepackage{geometry}
+\geometry{top=2.5cm,bottom=2.5cm,left=3cm,right=2cm}
+\usepackage{fontspec}
+\setmainfont{PT Serif}
+\newfontfamily\cyrillicfonttt{DejaVu Sans Mono}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage[variant=american]{english}
+\addto\captionsrussian{\renewcommand{\figurename}{Рисунок}\renewcommand{\tablename}{Таблица}}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,array,caption,indentfirst}
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\captionsetup[figure]{labelsep=period,justification=centering,font=small}
+\captionsetup[table]{labelsep=period,font={small,bf},justification=raggedright}
+\setlength{\parindent}{1.25cm}
+\linespread{1.10}
+\usepackage[backend=biber,style=gost-numeric,sorting=none]{biblatex}
+\DeclareBibliographyAlias{software}{misc}
+\addbibresource{../bibliography/library.bib}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\renewcommand{\topfraction}{.9}
+\renewcommand{\bottomfraction}{.8}
+\renewcommand{\textfraction}{.08}
+\renewcommand{\floatpagefraction}{.85}
+\begin{document}
+\renewcommand{\figurename}{Рисунок}
+\renewcommand{\tablename}{Таблица}
+\input{article.tex}
+\printbibliography[title={Список литературы}]
+\end{document}

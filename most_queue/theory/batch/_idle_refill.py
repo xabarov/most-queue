@@ -20,6 +20,8 @@ branch is active), see ``bulk_service_h2.py``.
 import numpy as np
 import scipy.sparse as sp
 
+from most_queue.theory.batch._tagged_boundary import behind_cap
+
 
 def race_subgen(service_rates: np.ndarray, lam: float, need: int):
     """
@@ -93,6 +95,7 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
     lam: float,
     gamma: float,
     start_idle: bool = False,
+    behind_limit: int | None = None,
 ):
     """
     EPIC-068: race-aware absorbing chain for a tagged customer's wait when
@@ -122,10 +125,12 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
 
     State: (segment in {first, ahead}, phase within that segment's k-cycle,
     R = surviving originally-ahead count 0..j, K = new arrivals behind the
-    tagged customer accumulated so far, capped at ``a-1``), plus idle/refill
+    tagged customer still waiting, numerically capped with a bound from
+    ``_tagged_boundary``), plus idle/refill
     states (R, K) with no phase. R decreases via abandonment (rate R*gamma)
     and via being swept into a full ``b``-sized batch; K increases via new
-    arrivals (rate lam) and resets implicitly whenever consumed into a batch
+    arrivals (rate lam), decreases by abandonment (rate K*gamma), and resets
+    implicitly whenever consumed into a batch
     that reaches the tagged customer (irrelevant once absorbed).
 
     :return: ``(subgen, m, start, serve_rate)`` -- the sparse subgenerator
@@ -138,20 +143,24 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
         (divide by ``P(served) = 1 - P(abandon)`` for the conditional
         moments).
     """
-    n_states_per_phase = (j + 1) * a
+    cap = behind_cap(a, lam, gamma) if behind_limit is None else behind_limit
+    if cap < a - 1:
+        raise ValueError("behind_limit must be at least a-1")
+    width = cap + 1
+    n_states_per_phase = (j + 1) * width
 
     def idx_first(phase, r_val, k_val):
-        return phase * n_states_per_phase + r_val * a + k_val
+        return phase * n_states_per_phase + r_val * width + k_val
 
     base_ahead = n_first * n_states_per_phase
 
     def idx_ahead(phase, r_val, k_val):
-        return base_ahead + phase * n_states_per_phase + r_val * a + k_val
+        return base_ahead + phase * n_states_per_phase + r_val * width + k_val
 
     base_idle = base_ahead + k * n_states_per_phase
 
     def idx_idle(r_val, k_val):
-        return base_idle + r_val * a + k_val
+        return base_idle + r_val * width + k_val
 
     m = base_idle + n_states_per_phase
     rows, cols, vals = [], [], []
@@ -167,7 +176,7 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
     def build_segment(idx_fn, n_phases, rate, next_idx_fn):
         for phase in range(n_phases):  # pylint: disable=too-many-nested-blocks
             for r_val in range(j + 1):
-                for k_val in range(a):
+                for k_val in range(width):
                     s = idx_fn(phase, r_val, k_val)
                     if phase < n_phases - 1:
                         add(s, idx_fn(phase + 1, r_val, k_val), rate)
@@ -184,20 +193,24 @@ def abandonment_chain(  # pylint: disable=too-many-arguments, too-many-positiona
                             add(s, idx_idle(r_val, k_val), rate)
                     if r_val >= 1:
                         add(s, idx_fn(phase, r_val - 1, k_val), r_val * gamma)
-                    if k_val < a - 1:
+                    if k_val >= 1 and gamma > 0:
+                        add(s, idx_fn(phase, r_val, k_val - 1), k_val * gamma)
+                    if k_val < cap:
                         add(s, idx_fn(phase, r_val, k_val + 1), lam)
 
     build_segment(idx_first, n_first, rate_first, idx_ahead)
     build_segment(idx_ahead, k, rate_ahead, idx_ahead)
 
     for r_val in range(j + 1):
-        for k_val in range(a):
+        for k_val in range(width):
             s = idx_idle(r_val, k_val)
             total = r_val + 1 + k_val
             if total < a:
                 if r_val >= 1:
                     add(s, idx_idle(r_val - 1, k_val), r_val * gamma)
-                if k_val < a - 1:
+                if k_val >= 1 and gamma > 0:
+                    add(s, idx_idle(r_val, k_val - 1), k_val * gamma)
+                if k_val < cap:
                     if r_val + 1 + (k_val + 1) >= a:
                         out_rate[s] += lam
                         serve_rate[s] += lam

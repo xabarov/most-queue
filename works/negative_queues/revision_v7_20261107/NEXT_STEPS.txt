@@ -1,0 +1,40 @@
+Remaining authorized work after step 2:
+3. Broader parameters: independent event simulation generalized to n, lambda,
+   delta, gamma CV<1 and the original H2 CV>1, deletion/clearing and both resets.
+   Suggested 12 additional cases (mean B=2.1):
+   remove RCS: n2 rho.45 cv.8 delta.3; n3 rho.85 cv1.2 delta.6;
+   clearing: n2 rho.9 cv.8 delta.15; n4 rho1.2 cv1.2 delta.3;
+   resample RCS: n2 rho.5 cv.8 delta.6; n4 rho.85 cv1.2 delta.6;
+   resample common: n2 rho.4 cv.8 delta.6; n3 rho.85 cv1.2 delta.6;
+   retained RCS: n2 rho.5 cv.8 delta.04; n3 rho.85 cv1.2 delta.04;
+   retained common: n2 rho.5 cv.8 delta.04; n3 rho.8 cv1.2 delta.04.
+   Finalize protocol BEFORE computing/comparing, 8 seeds each, warm50k sample250k
+   or500k, record actual CPU seconds and process peakRSS. For fixed work use
+   predetermined quadrature/stage extrapolations and tail refinements; no fitting
+   to simulation. Broader fixed queues may need N=240/400. Gamma/H2 fifth
+   retained-service moments finite at these deltas (check actual thresholds).
+4. Positive PH input for CV<1. Important possible finding to VERIFY:
+   v6 CV=.8 algebraic H2 has real y1>1,y2<0 but the same rational transform can
+   be represented as a legitimate 2-stage Coxian: a=mu1,b=mu2,
+   p=1-(y1*a+(1-y1)*b)/a, S=[[-a,a*p],[0,-b]], alpha=[1,0].
+   Do not conflate nonprobabilistic H2 coefficients with absence of any PH law.
+   Compare higher positive PH approximations of the original Gamma law:
+   alpha_shape=m+r, theta=mean/alpha_shape. Gamma(r,theta), 0<r<1, has a mixture
+   of exponentials with rates 1/(theta*x), x~Beta(r,1-r); Gauss-Jacobi quadrature
+   (x in[0,1]) gives positive J-exponential mixture, first 2J-1 moments exact.
+   Prepend m Exp(1/theta) stages; integer shapes are exact Erlang.
+   Compare J=2,4,8 for Gamma CV=.8 in four deletion/resampling cases;
+   CV=.5 is exact Erlang4 and a useful additional test vs complex H2 fit.
+   Verify moments, transforms and Coxian equivalence independently; use primary
+   sources for claims, not invented novelty. Add a small independent MC study
+   at CV=.5 if needed (resample RCS/common), with a predefined protocol.
+5. Rewrite article v7 with model/method/remaining-approximation table. Move long
+   numerical protocols/convergence matrices and some matrix examples to an
+   appendix. Update all main tables from saved data; retain simulation CIs
+   transparently, report any misses. Clarify scientific contribution and compare
+   with Pal/Reuveni2017, Bonomo/Pal/Reuveni2022 service-resetting paper (verify
+   actual authors/metadata), original negative-arrival literature. Literature
+   check must not overclaim novelty (2024 resetting perspective also exists).
+   Build editable Word v7 and PDF with prior style/indent conventions; render
+   all pages, schema and numeric/OMML checks; previous v6 unchanged. No automatic
+   Telegram or push; earlier send/commit tasks already completed.

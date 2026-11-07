@@ -1,0 +1,43 @@
+{
+  "snapshot_sha256": "b614b082787b3cdcc6fbd063a9ab51152be01d9f1e0b47e247c5b91dae10a232",
+  "display_equation_blocks_unchanged": 9,
+  "numbered_equations": 12,
+  "preserved_files_sha256": {
+    "latex/tables/inoue.tex": "5fba573e311bad4bacc6e9d046d64a623eeb15baa27fec36278ebb3b15099468",
+    "latex/tables/diagnostics.tex": "57d3b573bdd7cc7edd3b4712f3c33975bfcba30845440e99364894fe20b3fca9",
+    "latex/tables/decisions.tex": "3ab2dfb9d5171e7f28c240dcc94814522156fe5e40579d9eae892eed263263dc",
+    "latex/tables/caps.tex": "60547020ea2e192a60c4a25d6335390f49691689808c499edb9a7a07587f3550",
+    "latex/tables/local_bounds.tex": "05cdbab1624b4a4a78ea19576ec3939f08ad04415d7dad8b1c4e3e0be730cb89",
+    "latex/tables/validation.tex": "b24b0bca833e68e57643fe6edcde1e72804f260edf6167538ae9740fb8210879",
+    "word/main_v1_editable.docx": "e34278d54c615cd49e77e43ad997d8d86b0884432595a71b060ec2e5c6405087",
+    "word/main_v2_snapshot.docx": "c7c15bf8e98a27d9a2624c50848e3c261e8ba7a13b15c11bd17440932345e5be",
+    "figures/revision_outcomes.pdf": "6dd64948e958773bd8435aa9a0da522b8483fbe9ab4ba54f0157d0c2e3d0ed69",
+    "figures/revision_tails.pdf": "8fb84d3f67978b8a987089c2c8760780897b20355c5e53e83df8334054f795d8",
+    "figures/revision_queue.png": "a56bb5dc59715514fd3384c0735e9a600ec80d656d82ba7ee09468d8e749333a",
+    "figures/revision_feasible.png": "7d959903ba83594a0cbac1b72b69181a8f2be48968ee0499a964be6bae634783",
+    "figures/revision_outcomes.png": "f5c73374694a09ff76b27f4522bbe262db410148a220469aa3776ed3ac1d47f3",
+    "figures/revision_queue.pdf": "f52f100b862b4bba7697a523606edc4018f321e2e3cc77562eab7c0f4524a17d",
+    "figures/revision_threshold.pdf": "2011d8b1049783e96ed91c26e0c46ca9a9591072bb3173b3bd4a2c5c9f35d9f7",
+    "figures/revision_threshold.png": "65e4181894fd4ce5e0fe47936eaef55486670deb6e8d06ca79627c9c00e4b90c",
+    "figures/revision_tails.png": "2d12f4406439137f3991d41ecfe30fcde31a1445cd986f4da931e3d08228d59b",
+    "figures/revision_tagged.png": "9d7bbe1b8df44f8dc0041a42ab280d28b32c7a53b7310a77cce30affcda787c3",
+    "figures/revision_tagged.pdf": "fc41e7d5c7e631f42467b1a9d889af10070eae9cf3dee91eb3ac57725feeb9c8",
+    "figures/revision_conditional.png": "cc00edf09177450bf183eadcd3fe72c0baf37d4433f410c25946fd1aac8b2f95",
+    "figures/revision_conditional.pdf": "26e0d3a43c5ce207201a6ae2ad7a5bd3c61665962568aacab27419f378109390",
+    "figures/revision_feasible.pdf": "1954e96f3e86a49064155e77fe2cb0c2cfb3a7c2eb07183a4b15a65987d49f64",
+    "revision_results.json": "42ccdaf067bb546f502194c37f708b66ee10bd646f3cd0331a420a3726b0959f"
+  },
+  "experiment_and_protocol_sha256": {
+    "decision": "94f2e1d4378b2d0e8d9ac8e0a4da5f9fddd68dad7b49086ce57bff8a89ccfe07",
+    "inoue": "fe0c79ae2603206bb218c5fc1b2d2974b5dbe0db83f7030c4e97bd8bf7eab7aa",
+    "load": "0a46a6668bfd06739c0f16d140a4d3af2f7cca680e10ec3a39fdde38bc6ba1d3",
+    "patience": "e0050bf7fa088772bf3755783148f4b08f99c24b9a093b3cfd1b00bafb1f08e1",
+    "protocol": "0ec7d864aa832034049eb2015b72a4ad9a556140c950c0d6c6bab68a83c7a343"
+  },
+  "configuration_minima": 288,
+  "journal_prefix_bytes": 110938,
+  "journal_prefix_preserved": true,
+  "native_word_math_objects": 369,
+  "word_tables": 7,
+  "word_figures": 7
+}

@@ -1,0 +1,25 @@
+{
+  "pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "pdf_sha256": "95ab3db70fc8f3a4bb21c56ddc5a41adf9dd84811c00f0dc8ea3f2a84a6256f0",
+  "reviewed": [
+    "formulas and matrices",
+    "table font sizes and uppercase ИМ/ДИ",
+    "repeated table headers",
+    "figure boundaries and captions",
+    "decimal commas",
+    "paragraph indents and continuations after equations",
+    "references and page breaks"
+  ],
+  "page_7": "No large bottom gap; experiment conditions fit before results.",
+  "page_8": "Table 2 at the top of the results section; tables 2 and 3 fit together."
+}

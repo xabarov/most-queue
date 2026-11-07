@@ -163,11 +163,10 @@ cython_debug/
 .vscode
 
 # works/negative_queues (article sources, figures, scripts)
-# keep sources in git, ignore generated artifacts and bulky results
+# Keep article sources, saved numerical results and reviewed documents in git.
 works/negative_queues/*.zip
 works/negative_queues_takahasi_takami_sources.zip
 works/negative_queues/build/
-works/negative_queues/results/
 works/negative_queues/__pycache__/
 works/negative_queues/*.aux
 works/negative_queues/*.bbl
@@ -195,7 +194,18 @@ works/vacations/results/*
 docs/negative_queues_takahasi_takami.md
 docs/negative_queues_figures/
 docs/books/
-docs/статьи/
+# Author manuscripts are included for work on another computer (07.11.2026).
+# Keep downloaded third-party PDFs outside git; allow only manuscript folders.
+docs/статьи/*
+!docs/статьи/.gitignore
+!docs/статьи/README.md
+!docs/статьи/bibliography/
+!docs/статьи/batch-service-sla/
+!docs/статьи/batch-service-sla-multi/
+!docs/статьи/batch-service-sla-single/
+!docs/статьи/batch-service-sla-single-short/
+!docs/статьи/continuous-batching-occupancy-sla/
+!docs/статьи/batch-v1.zip
 docs/диссертация/
 works/queueing_systems_review/SRPT/pdf/
 works/experiments/rabbitmq_prefetch/

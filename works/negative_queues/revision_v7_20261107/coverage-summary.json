@@ -1,0 +1,25 @@
+{
+  "main_misses": [],
+  "extended_misses": [
+    [
+      "case07",
+      "w"
+    ],
+    [
+      "case07",
+      "v"
+    ],
+    [
+      "case07",
+      "sw"
+    ],
+    [
+      "case08",
+      "w"
+    ],
+    [
+      "case08",
+      "v"
+    ]
+  ]
+}

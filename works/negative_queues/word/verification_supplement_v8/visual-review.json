@@ -1,0 +1,20 @@
+{
+  "pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "pdf_sha256": "098bcf7ee9954fa5faf11039ce35e07ecdea3c2d723714a0e786dc358d438869",
+  "reviewed": [
+    "formulas and matrices",
+    "table font sizes and uppercase ИМ/ДИ",
+    "repeated table headers",
+    "figure boundaries and captions",
+    "decimal commas",
+    "paragraph indents and continuations after equations",
+    "references and page breaks"
+  ]
+}

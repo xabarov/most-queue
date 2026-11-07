@@ -1,0 +1,29 @@
+{
+  "pre_style_archive_sha256": "460e6cb8051e0a12263817d94c4674fcb8b7918ba26b9f189a02e333acfd7d78",
+  "displayed_equation_environments_unchanged": 9,
+  "displayed_numbered_equations_unchanged": 12,
+  "numeric_table_rows_unchanged": {
+    "caps.tex": 9,
+    "decisions.tex": 4,
+    "diagnostics.tex": 3,
+    "inoue.tex": 6,
+    "local_bounds.tex": 2,
+    "validation.tex": 6
+  },
+  "frozen_data_sha256": {
+    "docs/research/bulk-sla-revision-decision-2026.json": "94f2e1d4378b2d0e8d9ac8e0a4da5f9fddd68dad7b49086ce57bff8a89ccfe07",
+    "docs/research/bulk-sla-revision-inoue-2026.json": "fe0c79ae2603206bb218c5fc1b2d2974b5dbe0db83f7030c4e97bd8bf7eab7aa",
+    "docs/research/bulk-sla-revision-load-2026.json": "0a46a6668bfd06739c0f16d140a4d3af2f7cca680e10ec3a39fdde38bc6ba1d3",
+    "docs/research/bulk-sla-revision-patience-2026.json": "e0050bf7fa088772bf3755783148f4b08f99c24b9a093b3cfd1b00bafb1f08e1"
+  },
+  "protocol_unchanged": true,
+  "previous_word_versions_unchanged": true,
+  "all_other_derived_fields_unchanged": true,
+  "minima_export": {
+    "previous_entries": 3,
+    "corrected_entries": 288,
+    "independent_test": "test_revision_export.py::test_export_contains_every_minimum"
+  },
+  "journal_original_prefix_bytes": 107726,
+  "journal_original_prefix_sha256": "ef281259c5df2f792771dbbfaefcf231bb5a00e25cc042b65cdc5425ef7f2ac0"
+}

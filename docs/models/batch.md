@@ -2,6 +2,25 @@
 
 [🇷🇺 Русская версия](batch.ru.md) · [← Model catalog](../models.md)
 
+## Correction: impatient bulk service and numerical scope
+
+The [2026-10-12 revision](../research/bulk-sla-revision-2026.md) supersedes the
+earlier all-customer abandonment construction: customers behind the tag can
+also leave, and saturation at a−1 is not exact when a>1 and gamma>0. Numerical
+chains now use a hitting-probability bound for this count. H2 customer waiting
+means without abandonment use E[Lq]/lambda, not busy-time service weights.
+“Exact” below describes conditional Markov formulas, **not** a certified
+infinite-stationary-queue numerical answer. Refine N separately.
+
+All three single-server calculators expose `calc.get_tagged_wait()`:
+`moments(2)`, `tail(D)`, `outcomes(D)`, `atom`, `served`, `abandoned`,
+`boundary_mass`, `cap`, `bound`, `omitted_mass`, and `moment_error_bounds(2)`.
+Moments/tails are conditional on dispatch; outcomes are all-arrival on-time,
+late and abandonment probabilities, with omitted mass kept separate.
+Moment bounds are for unnormalized moments, not conditional ratios; no verified
+rounding or overall stationary error enclosure is claimed. Calling setters
+invalidates both stationary and tagged caches.
+
 ![Batch arrivals diagram](../figures/batch.png)
 
 **In plain words:** jobs arrive not one at a time but in batches of random size — a bus full of
@@ -32,10 +51,10 @@ results = calc.run()
 
 **Description:** The server serves customers in **batches**: it starts once at least `a` are queued
 and takes up to `b` of them, finishing the whole batch after one exponential batch-service time. This
-is the base model for **request batching in LLM inference serving** — the batch-service rate may
-depend on the batch size (a bigger batch is slower per batch but amortises fixed cost across
-requests, so there is an optimal maximum batch size). Solved as an exact CTMC on (batch-in-service,
-number waiting).
+is an atomic, gated batching model motivated by inference serving; it is not continuous LLM
+batching, and waiting for dispatch is not TTFT. The batch-service rate may depend on batch size.
+Neither a universal optimum nor monotonicity follows just from amortising fixed costs.
+The CTMC uses (batch-in-service, number waiting), with numerical stationary truncation.
 
 **Calculator class:** `BulkServiceMM1Calc` (`most_queue.theory.batch.bulk_service`) ·
 **Simulator:** `BulkServiceSim` (`most_queue.sim.bulk_service`)
@@ -185,19 +204,14 @@ calc3.set_sources(1.0)
 calc3.set_servers(lambda size: 0.3 + 0.1 * size, mu1=1.5, mu2=3.0)
 ```
 
-**Accuracy and scope:** exact given the H2-fitted family (mean-only via `run()`; no exact `get_w()`
-for H2, unlike Erlang/MM1 -- a reserve item, independent of `a`). `get_tail(D)`/`get_cdf(D)`
-(EPIC-066, generalized to any `1<=a<=b` by EPIC-067) give the EXACT `P(W>D)`: the one place this
-case is harder than Erlang's — each full batch AHEAD independently redraws its own H2 phase (a
-genuine branch, not Erlang's sequential phase advance), so the phase-type sub-generator is built
-explicitly rather than reusing a simple bidiagonal chain (and the idle-refill race, when needed,
-only branches at the LAST layer before the tagged customer's own batch); reduces exactly to
-`BulkServiceMM1Calc.get_tail` at `p1=1`. See
-[batch-service exact tail](../research/batch-service-sla-exact-tail-results-2026.md). Not covered
-(reserve): exact raw MOMENTS beyond the mean (needs a PASTA argument that also tracks which phase
-an arrival finds the batch in — a different derivation than the tail); batch-size-dependent
-branch COUNT (the two-branch structure itself stays fixed — EPIC-042 only made the per-branch
-probability/rates batch-size-dependent).
+**Accuracy and scope:** calculations are for the chosen H2 family, subject to the numerical
+limits above. Every preceding full batch independently redraws its H2 branch at start;
+branching is not confined to the last layer. `get_tail(D)`/`get_cdf(D)` support any `1<=a<=b`
+and reduce to the exponential calculation at `p1=1`. Without abandonment, `run()` reports the
+mean waiting time as `E[Lq]/lambda`; the legacy `get_w()` still raises `NotImplementedError`,
+but `get_tagged_wait().moments(num)` now supplies higher moments from the same tagged chain.
+See the [current correction and experiments](../research/bulk-sla-revision-2026.md).
+Batch-size-dependent branch counts remain unsupported: this family always has two branches.
 
 ### Impatient customers (abandonment / reneging)
 
@@ -207,34 +221,27 @@ customers independently reneges at rate `gamma` (same convention as
 parameter on `BulkServiceMM1Calc`/`BulkServiceErlangCalc`/`BulkServiceH2Calc`
 (`gamma=0.0` by default -- no behavior change). At `gamma>0`:
 
-- `get_abandonment_prob()` (MM1, Erlang) -- exact probability that a PASTA-arriving
-  tagged customer abandons before their own batch starts.
-- `get_w()`/`get_tail()` (MM1, Erlang) switch to the variant CONDITIONAL on "served"
-  (normalized by `1 - get_abandonment_prob()`); use both together for the full
-  unconditional picture.
-- `BulkServiceH2Calc` ([EPIC-071](../epics/EPIC-071-bulk-service-h2-impatience.md))
-  also supports `get_abandonment_prob()` and served-conditional `get_w()`/`get_tail()`
-  at `gamma>0`, via a dedicated H2-branching construction
-  (`_h2_abandonment_chain`): unlike MM1/Erlang's sequential phase chain, each batch
-  ahead of the tagged customer independently RE-CHOOSES its branch when it starts,
-  so the chain carries 3 segments per `(R,K)` pair ("first" -- the batch already
-  observed, resolved to one definite phase by PASTA -- and "ahead" phase 0/phase 1,
-  each looping back into itself) instead of a phase count that grows with the
-  number of batches ahead. At `gamma==0`, `get_w()` still raises
-  `NotImplementedError` -- exact moments for the no-abandonment case remain a
-  separate, unrelated reserve (see the "General (Erlang/H₂)" section above).
+- `get_abandonment_prob()` computes the probability of departure before dispatch.
+- `get_w()`/`get_tail()` are conditional on dispatch, not on all arrivals.
+- All three solvers use the shared `_tagged_batch.TaggedBatchWait`; H2 redraws its
+  branch independently for each new preceding batch. The separate per-state
+  helpers remain useful as independent regression implementations.
+- `get_tagged_wait().outcomes(D)` separates on-time dispatch, late dispatch and
+  abandonment. Omitted initial mass is reported separately, so normalization is
+  by `served`, not silently by `1 - abandoned` when that mass is nonzero.
 
 **Why the naive hypothesis failed:** the count of customers ahead of the tagged one
 (`R`) becomes a genuine death process under abandonment (each of the `R` survivors
 reneges independently) running CONCURRENTLY with batch formation, not a fixed
 quantity as in EPIC-067's pure race construction without abandonment. The simple
 hypothesis ("EPIC-067's race chain + a standalone competing gamma exit") was off by
-17-38% on different states. The correct construction
-(`most_queue.theory.batch._idle_refill.abandonment_chain`) adds `R` and `K` (new
-arrivals behind the tagged customer) as explicit state dimensions; see
-[EPIC-068](../epics/EPIC-068-bulk-service-impatience.md) for the full derivation,
-including a real bug (a missing `(-A)^-1` application in the moment formula) caught
-by a DES test before shipping.
+17-38% on different states in the historical investigation. That was not the
+last correction: the 2026-10-12 review also found that the live count behind
+the tag, `K`, must decrease at rate `K*gamma`. Saturation at `a-1` is not exact
+under abandonment. The current implementation retains these deaths and chooses
+a numerical cap using a local hitting-before-patience bound. See the
+[revision report](../research/bulk-sla-revision-2026.md), which supersedes the
+affected accuracy claims of [EPIC-068](../epics/EPIC-068-bulk-service-impatience.md).
 
 ```python
 from most_queue.theory.batch.bulk_service import BulkServiceMM1Calc
@@ -243,7 +250,7 @@ calc = BulkServiceMM1Calc(a=2, b=4, gamma=0.4)   # patience rate
 calc.set_sources(0.6)
 calc.set_servers(1.5)
 
-p_abandon = calc.get_abandonment_prob()   # exact probability of abandoning before batch starts
+p_abandon = calc.get_abandonment_prob()   # numerical probability; refine stationary N separately
 w_given_served = calc.get_w(num=1)[0]     # E[W | served]
 ```
 

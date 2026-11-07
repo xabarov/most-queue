@@ -1,0 +1,133 @@
+{
+  "relative_tolerance": 1e-10,
+  "absolute_tolerance": 1e-12,
+  "excluded_case_fields": [
+    "elapsed_s"
+  ],
+  "panels": {
+    "patience": {
+      "cases": 12,
+      "scientific_fields_match": true,
+      "original_sha256": "e0050bf7fa088772bf3755783148f4b08f99c24b9a093b3cfd1b00bafb1f08e1",
+      "recomputed_sha256": "912f664daa01b9f6a81aecd3310ec7d6da07b786a9f849f0d098e77401844b6c",
+      "recomputed_versions": {
+        "python": "3.12.3",
+        "numpy": "2.2.5",
+        "scipy": "1.13.0"
+      },
+      "recomputed_code_sha256": {
+        "/home/roman/pyprojects/most-queue-git/most-queue/examples/bulk_sla_revision.py": "2fde9d94cea48cbc5261f53c0329748b750b1e70c89291ac89ce57c3808233a4",
+        "most_queue/theory/batch/_tagged_batch.py": "e2b9ee4a278e7d6e1c04c44e40e9618be78ac91c037c8386fe48900d199944e6",
+        "most_queue/theory/batch/dynamic_batching.py": "d5d02f226227a4618993c1986924602ebce4ae6698b2077f446b99f301419a2b",
+        "most_queue/theory/batch/smdp_batching.py": "c514577bf070525a5d6b4d9fd446b6f9ab86ea0d2bbac23118b5ec196c17ba38",
+        "most_queue/theory/batch/callback_batching.py": "172c1e7ea1e568b8b478466c3a42b3c34485ed178250717c5bc0bce4e8196026",
+        "most_queue/theory/batch/__init__.py": "80e933e861787769334693573912fa9ab6c473a22878f5564871b7bf80feabca",
+        "most_queue/theory/batch/bulk_service_erlang.py": "dbb99e73c20ae31f135ee21ad95f62b694d766398f19af94f871ff8fc5765729",
+        "most_queue/theory/batch/map_ph_finite_buffer.py": "f9e92cee9b661ae5293c3ead2b9f2e454144a92fe41a2ee40ae22f8203d15208",
+        "most_queue/theory/batch/mm1.py": "56e26735f1564366969d837ea7eceb0316fc93c674ebe92faeb1a9f9ba5fc68a",
+        "most_queue/theory/batch/token_service.py": "b3af5fd7dba7eed7fdc35454a2f1e66dfc50a35eb5877426424cf31533ebe446",
+        "most_queue/theory/batch/_tagged_boundary.py": "2297abcab8b37e33b95ec584caf368ee9e36da043949c8870f23e376f2412633",
+        "most_queue/theory/batch/heterogeneous_bulk_service.py": "75ade7353584e22fe77c86c094ab1f2c553f01b6c8d57b340aedecc9e3763aa3",
+        "most_queue/theory/batch/bulk_service_multiserver.py": "83f8a3830e560e92f5dd43a6e658e52bf7fb72a47487da227ea58b47a3ab17e9",
+        "most_queue/theory/batch/bulk_service.py": "339ca2bc6215a1eb4873511f965a03d4fa06c3e7a6fabeab87f07fcd42d431d8",
+        "most_queue/theory/batch/bulk_service_h2.py": "3df8a0ff0f26a6f9cd30cd1286f5743beb1aa63e5da383fde1cebf09c742d373",
+        "most_queue/theory/batch/bulk_service_general.py": "a10dd7c33bed23c801ef776b952bd891392ab5229a007f0f8cb323b0c718daa4",
+        "most_queue/theory/batch/_idle_refill.py": "cb2aa20a70c619ec4c41fe6c72497f5212ff66cffc38a6fcbd33381ccca77438",
+        "most_queue/theory/batch/token_batching.py": "168362aa3666a3b4e99bc4108ff550f758854d91a7fff22e8e4049a31da8138c"
+      }
+    },
+    "load": {
+      "cases": 36,
+      "scientific_fields_match": true,
+      "original_sha256": "0a46a6668bfd06739c0f16d140a4d3af2f7cca680e10ec3a39fdde38bc6ba1d3",
+      "recomputed_sha256": "aefa67a18377faccd298c1ccbb50f5df2a280ce7e6723fc50412617e13a07503",
+      "recomputed_versions": {
+        "python": "3.12.3",
+        "numpy": "2.2.5",
+        "scipy": "1.13.0"
+      },
+      "recomputed_code_sha256": {
+        "/home/roman/pyprojects/most-queue-git/most-queue/examples/bulk_sla_revision.py": "2fde9d94cea48cbc5261f53c0329748b750b1e70c89291ac89ce57c3808233a4",
+        "most_queue/theory/batch/_tagged_batch.py": "e2b9ee4a278e7d6e1c04c44e40e9618be78ac91c037c8386fe48900d199944e6",
+        "most_queue/theory/batch/dynamic_batching.py": "d5d02f226227a4618993c1986924602ebce4ae6698b2077f446b99f301419a2b",
+        "most_queue/theory/batch/smdp_batching.py": "c514577bf070525a5d6b4d9fd446b6f9ab86ea0d2bbac23118b5ec196c17ba38",
+        "most_queue/theory/batch/callback_batching.py": "172c1e7ea1e568b8b478466c3a42b3c34485ed178250717c5bc0bce4e8196026",
+        "most_queue/theory/batch/__init__.py": "80e933e861787769334693573912fa9ab6c473a22878f5564871b7bf80feabca",
+        "most_queue/theory/batch/bulk_service_erlang.py": "dbb99e73c20ae31f135ee21ad95f62b694d766398f19af94f871ff8fc5765729",
+        "most_queue/theory/batch/map_ph_finite_buffer.py": "f9e92cee9b661ae5293c3ead2b9f2e454144a92fe41a2ee40ae22f8203d15208",
+        "most_queue/theory/batch/mm1.py": "56e26735f1564366969d837ea7eceb0316fc93c674ebe92faeb1a9f9ba5fc68a",
+        "most_queue/theory/batch/token_service.py": "b3af5fd7dba7eed7fdc35454a2f1e66dfc50a35eb5877426424cf31533ebe446",
+        "most_queue/theory/batch/_tagged_boundary.py": "2297abcab8b37e33b95ec584caf368ee9e36da043949c8870f23e376f2412633",
+        "most_queue/theory/batch/heterogeneous_bulk_service.py": "75ade7353584e22fe77c86c094ab1f2c553f01b6c8d57b340aedecc9e3763aa3",
+        "most_queue/theory/batch/bulk_service_multiserver.py": "83f8a3830e560e92f5dd43a6e658e52bf7fb72a47487da227ea58b47a3ab17e9",
+        "most_queue/theory/batch/bulk_service.py": "339ca2bc6215a1eb4873511f965a03d4fa06c3e7a6fabeab87f07fcd42d431d8",
+        "most_queue/theory/batch/bulk_service_h2.py": "3df8a0ff0f26a6f9cd30cd1286f5743beb1aa63e5da383fde1cebf09c742d373",
+        "most_queue/theory/batch/bulk_service_general.py": "a10dd7c33bed23c801ef776b952bd891392ab5229a007f0f8cb323b0c718daa4",
+        "most_queue/theory/batch/_idle_refill.py": "cb2aa20a70c619ec4c41fe6c72497f5212ff66cffc38a6fcbd33381ccca77438",
+        "most_queue/theory/batch/token_batching.py": "168362aa3666a3b4e99bc4108ff550f758854d91a7fff22e8e4049a31da8138c"
+      }
+    },
+    "decision": {
+      "cases": 228,
+      "scientific_fields_match": true,
+      "original_sha256": "94f2e1d4378b2d0e8d9ac8e0a4da5f9fddd68dad7b49086ce57bff8a89ccfe07",
+      "recomputed_sha256": "b5d431b26081d075b58efbd917d1380692e06b806ab43e25dc2148a759af4bb6",
+      "recomputed_versions": {
+        "python": "3.12.3",
+        "numpy": "2.2.5",
+        "scipy": "1.13.0"
+      },
+      "recomputed_code_sha256": {
+        "/home/roman/pyprojects/most-queue-git/most-queue/examples/bulk_sla_revision.py": "2fde9d94cea48cbc5261f53c0329748b750b1e70c89291ac89ce57c3808233a4",
+        "most_queue/theory/batch/_tagged_batch.py": "e2b9ee4a278e7d6e1c04c44e40e9618be78ac91c037c8386fe48900d199944e6",
+        "most_queue/theory/batch/dynamic_batching.py": "d5d02f226227a4618993c1986924602ebce4ae6698b2077f446b99f301419a2b",
+        "most_queue/theory/batch/smdp_batching.py": "c514577bf070525a5d6b4d9fd446b6f9ab86ea0d2bbac23118b5ec196c17ba38",
+        "most_queue/theory/batch/callback_batching.py": "172c1e7ea1e568b8b478466c3a42b3c34485ed178250717c5bc0bce4e8196026",
+        "most_queue/theory/batch/__init__.py": "80e933e861787769334693573912fa9ab6c473a22878f5564871b7bf80feabca",
+        "most_queue/theory/batch/bulk_service_erlang.py": "dbb99e73c20ae31f135ee21ad95f62b694d766398f19af94f871ff8fc5765729",
+        "most_queue/theory/batch/map_ph_finite_buffer.py": "f9e92cee9b661ae5293c3ead2b9f2e454144a92fe41a2ee40ae22f8203d15208",
+        "most_queue/theory/batch/mm1.py": "56e26735f1564366969d837ea7eceb0316fc93c674ebe92faeb1a9f9ba5fc68a",
+        "most_queue/theory/batch/token_service.py": "b3af5fd7dba7eed7fdc35454a2f1e66dfc50a35eb5877426424cf31533ebe446",
+        "most_queue/theory/batch/_tagged_boundary.py": "2297abcab8b37e33b95ec584caf368ee9e36da043949c8870f23e376f2412633",
+        "most_queue/theory/batch/heterogeneous_bulk_service.py": "75ade7353584e22fe77c86c094ab1f2c553f01b6c8d57b340aedecc9e3763aa3",
+        "most_queue/theory/batch/bulk_service_multiserver.py": "83f8a3830e560e92f5dd43a6e658e52bf7fb72a47487da227ea58b47a3ab17e9",
+        "most_queue/theory/batch/bulk_service.py": "339ca2bc6215a1eb4873511f965a03d4fa06c3e7a6fabeab87f07fcd42d431d8",
+        "most_queue/theory/batch/bulk_service_h2.py": "3df8a0ff0f26a6f9cd30cd1286f5743beb1aa63e5da383fde1cebf09c742d373",
+        "most_queue/theory/batch/bulk_service_general.py": "a10dd7c33bed23c801ef776b952bd891392ab5229a007f0f8cb323b0c718daa4",
+        "most_queue/theory/batch/_idle_refill.py": "cb2aa20a70c619ec4c41fe6c72497f5212ff66cffc38a6fcbd33381ccca77438",
+        "most_queue/theory/batch/token_batching.py": "168362aa3666a3b4e99bc4108ff550f758854d91a7fff22e8e4049a31da8138c"
+      }
+    },
+    "inoue": {
+      "cases": 10,
+      "scientific_fields_match": true,
+      "original_sha256": "fe0c79ae2603206bb218c5fc1b2d2974b5dbe0db83f7030c4e97bd8bf7eab7aa",
+      "recomputed_sha256": "71d43130d29087ac47035ead0aa483f1823ba4f2b60eda23761970fb6198f33e",
+      "recomputed_versions": {
+        "python": "3.12.3",
+        "numpy": "2.2.5",
+        "scipy": "1.13.0"
+      },
+      "recomputed_code_sha256": {
+        "/home/roman/pyprojects/most-queue-git/most-queue/examples/bulk_sla_revision.py": "2fde9d94cea48cbc5261f53c0329748b750b1e70c89291ac89ce57c3808233a4",
+        "most_queue/theory/batch/_tagged_batch.py": "e2b9ee4a278e7d6e1c04c44e40e9618be78ac91c037c8386fe48900d199944e6",
+        "most_queue/theory/batch/dynamic_batching.py": "d5d02f226227a4618993c1986924602ebce4ae6698b2077f446b99f301419a2b",
+        "most_queue/theory/batch/smdp_batching.py": "c514577bf070525a5d6b4d9fd446b6f9ab86ea0d2bbac23118b5ec196c17ba38",
+        "most_queue/theory/batch/callback_batching.py": "172c1e7ea1e568b8b478466c3a42b3c34485ed178250717c5bc0bce4e8196026",
+        "most_queue/theory/batch/__init__.py": "80e933e861787769334693573912fa9ab6c473a22878f5564871b7bf80feabca",
+        "most_queue/theory/batch/bulk_service_erlang.py": "dbb99e73c20ae31f135ee21ad95f62b694d766398f19af94f871ff8fc5765729",
+        "most_queue/theory/batch/map_ph_finite_buffer.py": "f9e92cee9b661ae5293c3ead2b9f2e454144a92fe41a2ee40ae22f8203d15208",
+        "most_queue/theory/batch/mm1.py": "56e26735f1564366969d837ea7eceb0316fc93c674ebe92faeb1a9f9ba5fc68a",
+        "most_queue/theory/batch/token_service.py": "b3af5fd7dba7eed7fdc35454a2f1e66dfc50a35eb5877426424cf31533ebe446",
+        "most_queue/theory/batch/_tagged_boundary.py": "2297abcab8b37e33b95ec584caf368ee9e36da043949c8870f23e376f2412633",
+        "most_queue/theory/batch/heterogeneous_bulk_service.py": "75ade7353584e22fe77c86c094ab1f2c553f01b6c8d57b340aedecc9e3763aa3",
+        "most_queue/theory/batch/bulk_service_multiserver.py": "83f8a3830e560e92f5dd43a6e658e52bf7fb72a47487da227ea58b47a3ab17e9",
+        "most_queue/theory/batch/bulk_service.py": "339ca2bc6215a1eb4873511f965a03d4fa06c3e7a6fabeab87f07fcd42d431d8",
+        "most_queue/theory/batch/bulk_service_h2.py": "3df8a0ff0f26a6f9cd30cd1286f5743beb1aa63e5da383fde1cebf09c742d373",
+        "most_queue/theory/batch/bulk_service_general.py": "a10dd7c33bed23c801ef776b952bd891392ab5229a007f0f8cb323b0c718daa4",
+        "most_queue/theory/batch/_idle_refill.py": "cb2aa20a70c619ec4c41fe6c72497f5212ff66cffc38a6fcbd33381ccca77438",
+        "most_queue/theory/batch/token_batching.py": "168362aa3666a3b4e99bc4108ff550f758854d91a7fff22e8e4049a31da8138c"
+      }
+    }
+  }
+}

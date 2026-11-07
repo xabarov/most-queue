@@ -1,0 +1,19 @@
+{
+  "pages_reviewed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "pdf_sha256": "79af6ad5cd15c8a7d3a524676934f5473a60b2d2b52e605a8b1c30919cec4aad",
+  "reviewed": [
+    "formulas and matrices",
+    "tables and repeated headers",
+    "figure boundaries and captions",
+    "font consistency",
+    "continuations after equations",
+    "references and page breaks"
+  ]
+}

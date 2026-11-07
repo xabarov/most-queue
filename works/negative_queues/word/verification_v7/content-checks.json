@@ -1,0 +1,11 @@
+{
+  "native_equations": 250,
+  "source_math_nodes": 250,
+  "matrices": 2,
+  "images": 2,
+  "numeric_cells_checked": 72,
+  "pdf_pages": 11,
+  "broken_reference_fields": 0,
+  "docx_sha256": "dd7ecd48fa7ec76c9fbf053cf521e0ffb49a348782eec8f1e3e1a89c8dae4b72",
+  "pdf_sha256": "a4b50f5f46dbd23ffdabd9a45b746b67a04b0e9e7d0e9a6f5e573737eddc81d4"
+}

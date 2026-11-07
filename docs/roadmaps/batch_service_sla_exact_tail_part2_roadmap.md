@@ -1,5 +1,7 @@
 # Roadmap: усиление научной новизны EPIC-066 (batch-service SLA exact tail) — часть 2
 
+> Исторический материал. [Ревизия 12.10.2026](../research/bulk-sla-revision-2026.md) исправляет нетерпение позади заявки, среднее H2, метрику/формулу Inoue и выбор целого cap; прежний вывод о скорости хвоста и surrogate «полюса» отозваны. Данные ниже сохраняются для истории, не как актуально подтверждённые результаты.
+
 > Контекст: EPIC-066 (`docs/epics/EPIC-066-batch-service-sla-exact-tail.md`) уже дал точный
 > `get_tail(t)` для `BulkServiceMM1Calc`/`BulkServiceErlangCalc`/`BulkServiceH2Calc` при `a=1`.
 > На базе этого результата готовится личная статья (`docs/статьи/batch-service-sla/`, в гитигноре).

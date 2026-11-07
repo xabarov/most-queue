@@ -1,0 +1,10 @@
+{
+  "pdf": "negative_queues_editable_v5.pdf",
+  "pdf_sha256": "c228cb5f6e5c7bbe72e5a03ad771ea7a5c5ea063d195e2f38830e77f4cdad84a",
+  "pdf_pages": 11,
+  "all_pages_visually_reviewed": true,
+  "ooxml_validation": "passed",
+  "source_docx_font": "Times New Roman",
+  "pdf_render_font": "Liberation Serif (same temporary preview substitution as v4; local Times New Roman italic Cyrillic is defective)",
+  "source_docx_fonts_unchanged": true
+}

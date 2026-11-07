@@ -1,4 +1,9 @@
 """
+Numerical scope (2026-10-12): "exact" conditional Markov formulas do not
+certify the infinite stationary queue. get_tagged_wait() reports the local
+behind-counter bound separately from stationary truncation diagnostics.
+See docs/research/bulk-sla-revision-2026.md for corrections and verification.
+
 M/M^[a,b]/1 bulk-service (batch-service) queue.
 
 A single server serves customers in **batches**: it starts a service only when at
@@ -70,6 +75,7 @@ import scipy.sparse.linalg as spla
 from most_queue.structs import QueueResults
 from most_queue.theory.base_queue import BaseQueue
 from most_queue.theory.batch._idle_refill import abandonment_chain, race_subgen
+from most_queue.theory.batch._tagged_batch import tagged_wait
 from most_queue.theory.utils.conv import conv_moments
 
 
@@ -96,10 +102,13 @@ class BulkServiceMM1Calc(BaseQueue):
         self.mu_fn: Callable[[int], float] | None = None
         self.boundary_mass = None
         self._pi: np.ndarray | None = None
+        self._tagged_wait = None
 
     def set_sources(self, l: float):  # pylint: disable=arguments-differ
         """:param l: arrival rate (Poisson)."""
         self.l = l
+        self._pi = None
+        self._tagged_wait = None
         self.is_sources_set = True
 
     def set_servers(self, mu):  # pylint: disable=arguments-differ
@@ -112,6 +121,8 @@ class BulkServiceMM1Calc(BaseQueue):
             self.mu_fn = mu
         else:
             self.mu_fn = lambda _i, _mu=float(mu): _mu
+        self._pi = None
+        self._tagged_wait = None
         self.is_servers_set = True
 
     def _index(self, i, j):
@@ -186,54 +197,16 @@ class BulkServiceMM1Calc(BaseQueue):
         return abandonment_chain(rate_first, n_first, mu(b), k, j, self.a, b, lam, gamma, start_idle=start_idle)
 
     def get_abandonment_prob(self) -> float:
-        """
-        EPIC-068: exact probability that a PASTA-arriving (tagged) customer
-        abandons (Markovian patience, rate ``gamma``, same convention as
-        ``most_queue.theory.impatience.mm1.MM1Impatience``) before their own
-        batch starts service. 0.0 when ``gamma == 0``.
+        """PASTA abandonment probability, with controlled tagged truncation.
 
-        Ahead-of-tagged customers can ALSO abandon while the tagged customer
-        waits -- this is NOT a simple competing-exponential add-on to the
-        EPIC-067 chain (confirmed numerically wrong, ~5-30% error depending
-        on state); see ``most_queue.theory.batch._idle_refill.abandonment_chain``
-        for the correct construction (the ahead-of-tagged count becomes an
-        explicit state dimension, a pure-death process racing against batch
-        formation and new arrivals).
+        Stationary queue truncation is a separate, uncertified error source.
+        See get_tagged_wait() for local error diagnostics.
         """
-        if self.gamma <= 0:
-            return 0.0
-        pi = self._solve_pi()
-        a, mu = self.a, self.mu_fn
-        cache: dict[tuple, float] = {}
-        p_abandon = 0.0
-        for idx, p in enumerate(pi):
-            if p <= 0:
-                continue
-            i, j = divmod(idx, self.N + 1)
-            if i == 0:
-                if j == a - 1:
-                    continue  # W=0 deterministically, can't abandon
-                key = ("idle", j)
-                cached = cache.get(key)
-                if cached is None:
-                    subgen, m, start, _ = self._abandon_chain_for_state(0.0, j, start_idle=True)
-                    alpha = np.zeros(m)
-                    alpha[start] = 1.0
-                    x = spla.spsolve((-subgen).tocsc(), np.ones(m))
-                    cached = self.gamma * float(alpha @ x)
-                    cache[key] = cached
-            else:
-                key = ("busy", mu(i), j)
-                cached = cache.get(key)
-                if cached is None:
-                    subgen, m, start, _ = self._abandon_chain_for_state(mu(i), j)
-                    alpha = np.zeros(m)
-                    alpha[start] = 1.0
-                    x = spla.spsolve((-subgen).tocsc(), np.ones(m))
-                    cached = self.gamma * float(alpha @ x)
-                    cache[key] = cached
-            p_abandon += p * cached
-        return p_abandon
+        return 0.0 if self.gamma == 0 else self.get_tagged_wait().abandoned
+
+    def get_tagged_wait(self):
+        """Reusable PH representation, zero atom and local truncation diagnostics."""
+        return tagged_wait(self)
 
     def get_w(self, num: int = 4) -> list[float]:
         """
@@ -303,50 +276,8 @@ class BulkServiceMM1Calc(BaseQueue):
         return list(w_moments)
 
     def _get_w_with_abandonment(self, num: int = 4) -> list[float]:
-        """EPIC-068: exact raw moments of W conditional on being served, gamma > 0."""
-        pi = self._solve_pi()
-        a, mu = self.a, self.mu_fn
-        cache: dict[tuple, list[float]] = {}
-        numerator = np.zeros(num)
-        p_served_total = 0.0
-        for idx, p in enumerate(pi):
-            if p <= 0:
-                continue
-            i, j = divmod(idx, self.N + 1)
-            if i == 0 and j == a - 1:
-                p_served_total += p  # W=0 deterministically, no abandonment possible
-                continue
-            key = ("idle", j) if i == 0 else ("busy", mu(i), j)
-            cached = cache.get(key)
-            if cached is None:
-                if i == 0:
-                    subgen, m, start, serve_rate = self._abandon_chain_for_state(0.0, j, start_idle=True)
-                else:
-                    subgen, m, start, serve_rate = self._abandon_chain_for_state(mu(i), j)
-                alpha = np.zeros(m)
-                alpha[start] = 1.0
-                neg_a = (-subgen).tocsc()
-                # E[W^n; served] = n! * alpha @ (-A)^-(n+1) @ serve_rate -- one MORE
-                # application of (-A)^-1 than the gamma==0 "time to absorption" moment
-                # formula (n! * alpha @ (-A)^-n @ 1) needs, since serve_rate is itself a
-                # rate vector (not the terminal "1" reward); a first version omitted this
-                # extra application and silently computed alpha @ (-A)^-1 @ serve_rate ==
-                # p_served_state for every moment -- caught via a full-system DES
-                # cross-check (get_w() off by ~2x at a=1) before shipping.
-                x = spla.spsolve(neg_a, serve_rate)
-                moments = []
-                for n in range(1, num + 1):
-                    x = spla.spsolve(neg_a, x)
-                    moments.append(math.factorial(n) * float(alpha @ x))
-                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
-                cached = (moments, p_served_state)
-                cache[key] = cached
-            moments, p_served_state = cached
-            numerator += p * np.array(moments)
-            p_served_total += p * p_served_state
-        if p_served_total <= 0:
-            return [0.0] * num
-        return list(numerator / p_served_total)
+        """Waiting moments conditional on dispatch; see get_tagged_wait()."""
+        return self.get_tagged_wait().moments(num)
 
     def get_tail(self, t: float) -> float:
         """
@@ -415,39 +346,8 @@ class BulkServiceMM1Calc(BaseQueue):
         return tail
 
     def _get_tail_with_abandonment(self, t: float) -> float:
-        """EPIC-068: exact P(W > t AND served) / P(served), gamma > 0."""
-        pi = self._solve_pi()
-        a, mu = self.a, self.mu_fn
-        cache: dict[tuple, tuple] = {}
-        numerator = 0.0
-        p_served_total = 0.0
-        for idx, p in enumerate(pi):
-            if p <= 0:
-                continue
-            i, j = divmod(idx, self.N + 1)
-            if i == 0 and j == a - 1:
-                p_served_total += p
-                continue
-            key = ("idle", j) if i == 0 else ("busy", mu(i), j)
-            cached = cache.get(key)
-            if cached is None:
-                if i == 0:
-                    subgen, m, start, serve_rate = self._abandon_chain_for_state(0.0, j, start_idle=True)
-                else:
-                    subgen, m, start, serve_rate = self._abandon_chain_for_state(mu(i), j)
-                alpha = np.zeros(m)
-                alpha[start] = 1.0
-                neg_a = (-subgen).tocsc()
-                v = spla.spsolve(neg_a, serve_rate)  # (-A)^-1 . serve_rate
-                p_served_state = 1.0 - self.gamma * float(alpha @ spla.spsolve(neg_a, np.ones(m)))
-                cached = (subgen, v, start, p_served_state)
-                cache[key] = cached
-            subgen, v, start, p_served_state = cached
-            numerator += p * float(spla.expm_multiply(subgen * t, v)[start])
-            p_served_total += p * p_served_state
-        if p_served_total <= 0:
-            return 0.0
-        return numerator / p_served_total
+        """Conditional waiting tail; see get_tagged_wait() for error diagnostics."""
+        return self.get_tagged_wait().tail(t)
 
     def get_cdf(self, t: float) -> float:
         """Exact P(W <= t) -- see ``get_tail`` for scope (a=1 only)."""

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "case00",
+    "action": "remove",
+    "mode": "rcs",
+    "n": 2,
+    "rho": 0.45,
+    "cv": 0.8,
+    "delta": 0.3,
+    "mean": 2.1,
+    "lam": 0.42857142857142855
+  },
+  {
+    "id": "case01",
+    "action": "remove",
+    "mode": "rcs",
+    "n": 3,
+    "rho": 0.85,
+    "cv": 1.2,
+    "delta": 0.6,
+    "mean": 2.1,
+    "lam": 1.2142857142857142
+  },
+  {
+    "id": "case02",
+    "action": "remove",
+    "mode": "disaster",
+    "n": 2,
+    "rho": 0.9,
+    "cv": 0.8,
+    "delta": 0.15,
+    "mean": 2.1,
+    "lam": 0.8571428571428571
+  },
+  {
+    "id": "case03",
+    "action": "remove",
+    "mode": "disaster",
+    "n": 4,
+    "rho": 1.2,
+    "cv": 1.2,
+    "delta": 0.3,
+    "mean": 2.1,
+    "lam": 2.2857142857142856
+  },
+  {
+    "id": "case04",
+    "action": "restart",
+    "mode": "rcs",
+    "n": 2,
+    "rho": 0.5,
+    "cv": 0.8,
+    "delta": 0.6,
+    "mean": 2.1,
+    "lam": 0.47619047619047616
+  },
+  {
+    "id": "case05",
+    "action": "restart",
+    "mode": "rcs",
+    "n": 4,
+    "rho": 0.85,
+    "cv": 1.2,
+    "delta": 0.6,
+    "mean": 2.1,
+    "lam": 1.6190476190476188
+  },
+  {
+    "id": "case06",
+    "action": "restart",
+    "mode": "disaster",
+    "n": 2,
+    "rho": 0.4,
+    "cv": 0.8,
+    "delta": 0.6,
+    "mean": 2.1,
+    "lam": 0.38095238095238093
+  },
+  {
+    "id": "case07",
+    "action": "restart",
+    "mode": "disaster",
+    "n": 3,
+    "rho": 0.85,
+    "cv": 1.2,
+    "delta": 0.6,
+    "mean": 2.1,
+    "lam": 1.2142857142857142
+  },
+  {
+    "id": "case08",
+    "action": "fixed",
+    "mode": "rcs",
+    "n": 2,
+    "rho": 0.5,
+    "cv": 0.8,
+    "delta": 0.04,
+    "mean": 2.1,
+    "lam": 0.47619047619047616
+  },
+  {
+    "id": "case09",
+    "action": "fixed",
+    "mode": "rcs",
+    "n": 3,
+    "rho": 0.85,
+    "cv": 1.2,
+    "delta": 0.04,
+    "mean": 2.1,
+    "lam": 1.2142857142857142
+  },
+  {
+    "id": "case10",
+    "action": "fixed",
+    "mode": "disaster",
+    "n": 2,
+    "rho": 0.5,
+    "cv": 0.8,
+    "delta": 0.04,
+    "mean": 2.1,
+    "lam": 0.47619047619047616
+  },
+  {
+    "id": "case11",
+    "action": "fixed",
+    "mode": "disaster",
+    "n": 3,
+    "rho": 0.8,
+    "cv": 1.2,
+    "delta": 0.04,
+    "mean": 2.1,
+    "lam": 1.142857142857143
+  }
+]
