@@ -21,7 +21,7 @@ def main():
         "tab:methods": ["tab_1", "1", ""], "tab:results": ["tab_2", "2", ""], "tab:results_fixed": ["tab_3", "3", ""],
         "tab:sd": ["tab_4", "4", ""], "tab:law": ["tab_5", "5", ""],
         "fig:rcs_transitions": ["fig_1", "1", "а"], "fig:disaster_transitions": ["fig_1", "1", "б"],
-        "fig:negative_transitions": ["fig_1", "1", ""], "sec:times": ["sec_4", "4", ""], "sec:results": ["sec_5", "5", ""],
+        "fig:negative_transitions": ["fig_1", "1", ""], "fig:cv": ["fig_2", "2", ""], "fig:cv_occupation": ["fig_2", "2", "а"], "fig:cv_waiting": ["fig_2", "2", "б"], "sec:times": ["sec_4", "4", ""], "sec:results": ["sec_5", "5", ""],
     }
     (ROOT / "references.json").write_text(json.dumps(refs, ensure_ascii=False, indent=2) + "\n")
     used = set(re.findall(r"\\ref\{([^}]+)\}", body))

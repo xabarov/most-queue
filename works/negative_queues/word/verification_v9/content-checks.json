@@ -1,14 +1,14 @@
 {
-  "native_equations": 318,
-  "source_math_nodes": 318,
+  "native_equations": 342,
+  "source_math_nodes": 342,
   "matrices": 1,
-  "images": 2,
+  "images": 4,
   "numeric_cells_checked": 186,
-  "pdf_pages": 12,
+  "pdf_pages": 13,
   "broken_reference_fields": 0,
   "cv_group_headers_10pt": 6,
   "uppercase_abbreviation_paragraphs": 6,
   "table_math_10pt": true,
-  "docx_sha256": "506a9da431852d4498cac33abba4b7edda116e2f8f411e080e8e7ef7380a25b4",
-  "pdf_sha256": "cdc2c90354ddc1d8c6975092e074990b370aa6b0e4da1cb061b0e59b0411792a"
+  "docx_sha256": "bb57aa45e00d5ec7109f97adc8ffd1e7586dbde72300d0e5d32d676fd57596f1",
+  "pdf_sha256": "65f8e631bfc2d65d1c1c045138daa29d70a35c2ad796abb36b38380c7fe045cd"
 }

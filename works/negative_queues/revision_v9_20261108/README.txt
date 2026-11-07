@@ -24,3 +24,5 @@
 (платформенный шум 4,6e-10). Добавлен tests/units/test_negative_tt_v9.py.
 Источники новых ссылок проверены по Crossref/OpenAlex (08.11.2026); для Бочарова и др. (2007)
 цитируется англоязычная версия, русское название не подтверждено.
+  cv_effect.py, make_figure2.py — рисунок 2 (влияние CV): cv-effect.json, figures/figure2*.
+  diagnostics/effective_occupation.py — проверка формул времени занятия канала.

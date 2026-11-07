@@ -186,6 +186,8 @@ def main(supplement=False):
                     for p in cell.paragraphs:
                         p.paragraph_format.keep_with_next = True
     for shape in doc.inline_shapes:
+        if shape.width < Cm(10):  # panels of a two-column figure keep their cell width
+            continue
         ratio = shape.height / shape.width
         shape.width = Cm(15.3 if supplement else 16.2)
         shape.height = int(shape.width * ratio)
