@@ -1,6 +1,6 @@
 {
-  "native_equations": 409,
-  "source_math_nodes": 409,
+  "native_equations": 408,
+  "source_math_nodes": 408,
   "matrices": 1,
   "images": 6,
   "numeric_cells_checked": 186,
@@ -9,6 +9,6 @@
   "cv_group_headers_10pt": 6,
   "uppercase_abbreviation_paragraphs": 6,
   "table_math_10pt": true,
-  "docx_sha256": "f9bc83b67a2ffd4a8b4e8dd6f27a9edc5d1eba92032b52e9ae64e5c83490cfd6",
-  "pdf_sha256": "1b7572b2ea1c01f53504adf183213f57f472c767af3f96ad0666edb2737a120d"
+  "docx_sha256": "b9f6d715edb03b3034f883f835b8c654b278077b17d87e2864e2fefc82b5de84",
+  "pdf_sha256": "9e18a1194d1fdeb7e8b4f94dab831aae6eee7a0bf6e16ab9ccbf12d2faf26a38"
 }
