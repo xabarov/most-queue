@@ -115,8 +115,8 @@ def main(supplement=False):
             f = p.paragraph_format
             f.left_indent = Cm(0.75)
             f.first_line_indent = Cm(-0.75)
-            f.space_after = Pt(2)
-            f.line_spacing = 1.05
+            f.space_after = Pt(1)
+            f.line_spacing = 1.0
     for p in doc.paragraphs:
         if p.style.name in ["Normal", "Body Text", "First Paragraph", "Compact"]:
             p.paragraph_format.line_spacing = body_spacing
