@@ -31,3 +31,6 @@
 
 Сопроводительные материалы (supplement/) не публикуются: в статье они не упоминаются,
 сохраняются в репозитории (решение автора 08.11.2026).
+Заметка supplement/ph_gamma_notes.md (PH-представление гаммы, погрешность и стоимость замены на H_2):
+  notes_data.py -> notes-data.json; notes_cost.py -> notes-cost.json; make_notes_figures.py -> figures/notes_*.png;
+  make_notes_md.py -> ph_gamma_notes.md (все с PYTHONPATH=., один процесс).
