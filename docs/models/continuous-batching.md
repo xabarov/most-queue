@@ -2,6 +2,10 @@
 
 [🇷🇺 Русская версия](continuous-batching.ru.md) · [← Model catalog](../models.md)
 
+For a changing arrival rate and recovery after a burst, see the
+[transient occupancy model](transient-occupancy.md), including a runnable example
+and bounds on queue-delay probabilities.
+
 ![Occupancy-dependent continuous batching diagram](../figures/continuous_batching.png)
 
 **In plain words:** modern LLM-inference engines (vLLM/SGLang-style "continuous batching")

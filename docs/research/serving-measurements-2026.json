@@ -1,0 +1,523 @@
+{
+  "source_repository": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+  "source_commit": "fcdded55d1415d2a9b9256e58666d7c993cb5c2a",
+  "protocol": "docs/epics/EPIC-099-serving-measurements.md",
+  "fit": {
+    "client_offset": 0.27707984408101916,
+    "alpha": 0.010300845162359433,
+    "beta": 5.1245009728206875e-05,
+    "gamma": 0.0,
+    "scaled_condition": 2.1583981819413482,
+    "training_requests": 30,
+    "input_range": [
+      87,
+      30830
+    ],
+    "output_range": [
+      1,
+      497
+    ],
+    "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1",
+    "latency_basis": "stream_span"
+  },
+  "validation": {
+    "requests": 15,
+    "scope": "isolated client timings; no queue or loaded-serving validation",
+    "ttft": {
+      "mae_seconds": 0.22737070988255725,
+      "median_absolute_relative_error": 0.6340451711277704,
+      "p90_absolute_relative_error": 2.403454684372754,
+      "observed": [
+        0.9162206510009128,
+        0.3325946280019707,
+        0.2397132309997687,
+        1.1016693120036507,
+        0.14244716199755203,
+        0.13519415100017795,
+        0.2149105700009386,
+        0.0767428219987778,
+        0.30537183999695117,
+        0.4861792660012725,
+        0.37520888299332,
+        1.4758873259997927,
+        1.2698349540005438,
+        0.47513645800063387,
+        0.07066582200059202
+      ],
+      "predicted": [
+        0.3352953715462419,
+        0.30608571600116397,
+        0.32781360012592364,
+        0.34267465294710364,
+        0.3372426819159137,
+        0.3467742537253602,
+        0.4503404183860663,
+        0.3040871606217639,
+        0.5031740234158476,
+        0.6609061633592683,
+        0.589726844846789,
+        1.4867707401390504,
+        1.3134601172382547,
+        0.6611111433981811,
+        0.33001713554423656
+      ]
+    },
+    "tpot": {
+      "mae_seconds": 0.0006807173103474357,
+      "median_absolute_relative_error": 0.09176901354097841,
+      "p90_absolute_relative_error": 0.10204010289897768,
+      "observed": [
+        0.010320690541216681,
+        0.010562146375485625,
+        0.00948159724166544,
+        0.01015017218415229,
+        0.010407197241482374,
+        0.009347285575440421,
+        0.009567187137910313,
+        0.009461862148389392,
+        0.00948194173281424,
+        0.009624645575747832,
+        0.009515558854978278,
+        0.009417823968543421,
+        0.009377468949969625,
+        0.009458515000005718,
+        0.009426826943886836
+      ],
+      "predicted": [
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639,
+        0.010352090172087639
+      ]
+    },
+    "outside_training_length_range": 3
+  },
+  "diagnostic_target": {
+    "max_median_relative_error_per_metric": 0.15,
+    "passed": false
+  },
+  "runs": [
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r1.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 4,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.6666666666666666,
+        0.6666666666666666
+      ],
+      "observed_goodput": 0.16115361378669835,
+      "duration": 24.821038176000002,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.3759745683334283,
+        "p50": 0.29522532900227816,
+        "p90": 0.7716494504966249,
+        "p99": 0.9143344348460233
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.012855225192958527,
+        "p50": 0.013459269805195934,
+        "p90": 0.014374219065947824,
+        "p99": 0.01463513692021804
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r2.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 4,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.6666666666666666,
+        0.6666666666666666
+      ],
+      "observed_goodput": 0.21577714696413536,
+      "duration": 18.537644306998118,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.4769364881673634,
+        "p50": 0.3627034854980593,
+        "p90": 0.9683322485034296,
+        "p99": 1.0863195768524747
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.011393995126509167,
+        "p50": 0.011646527524445057,
+        "p90": 0.011898715388674368,
+        "p99": 0.011983579931878926
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r3.json",
+      "split": "heldout",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 4,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.6666666666666666,
+        0.6666666666666666
+      ],
+      "observed_goodput": 0.18930875895874483,
+      "duration": 21.12950305100094,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.47111036700031644,
+        "p50": 0.2861539295008697,
+        "p90": 1.0089449815022817,
+        "p99": 1.092396878953514
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.010356231998446912,
+        "p50": 0.010363943891349528,
+        "p90": 0.010888867391082345,
+        "p99": 0.011182916305119394
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r1.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 6,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        1.0,
+        1.0
+      ],
+      "observed_goodput": 0.3517466950353881,
+      "duration": 17.057729567000933,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.31905675066809636,
+        "p50": 0.3523399755031278,
+        "p90": 0.46568448550169705,
+        "p99": 0.4871004944510787
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.009623575290595142,
+        "p50": 0.009564667634122429,
+        "p90": 0.009804322875053867,
+        "p99": 0.009857739808109294
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r2.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 5,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.8333333333333334,
+        0.8333333333333334
+      ],
+      "observed_goodput": 0.29644579938506854,
+      "duration": 16.866489626001567,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.21251430766642443,
+        "p50": 0.10690366699782317,
+        "p90": 0.45343515550121083,
+        "p99": 0.5748077195519727
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.00948506776878486,
+        "p50": 0.009458057166587156,
+        "p90": 0.009593979676963744,
+        "p99": 0.00963845406157416
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r3.json",
+      "split": "heldout",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 6,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        1.0,
+        1.0
+      ],
+      "observed_goodput": 0.4663076588819155,
+      "duration": 12.8670415029992,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.20908016716566635,
+        "p50": 0.17505236050055828,
+        "p90": 0.3957755529991118,
+        "p99": 0.47713889470105647
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.009467758068997452,
+        "p50": 0.009471901940601817,
+        "p90": 0.009595916356829073,
+        "p99": 0.009621772653855956
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r1.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 1,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.16666666666666666,
+        0.16666666666666666
+      ],
+      "observed_goodput": 0.03855167626481172,
+      "duration": 25.9392093130009,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 1.3140587811673565,
+        "p50": 1.4833579949990963,
+        "p90": 1.964825576000294,
+        "p99": 2.007124236803429
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.009511233815253399,
+        "p50": 0.009497783738223187,
+        "p90": 0.009546057311340556,
+        "p99": 0.009565027752431662
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r2.json",
+      "split": "train",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 1,
+      "joint_passed": 1,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.16666666666666666,
+        0.16666666666666666
+      ],
+      "observed_goodput": 0.053841046821176734,
+      "duration": 18.573190140996303,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.9250166991684333,
+        "p50": 0.911668318502052,
+        "p90": 1.540079123002215,
+        "p99": 1.581624767303947
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 5,
+        "mean": 0.009488912735658276,
+        "p50": 0.009457882901145685,
+        "p90": 0.009624396441264038,
+        "p99": 0.009713027533406705
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r3.json",
+      "split": "heldout",
+      "offered": 6,
+      "completed": 6,
+      "failed": 0,
+      "cancelled": 0,
+      "pending": 0,
+      "single_token_completed": 0,
+      "joint_passed": 4,
+      "joint_unknown": 0,
+      "joint_fraction_bounds": [
+        0.6666666666666666,
+        0.6666666666666666
+      ],
+      "observed_goodput": 0.23687104733802208,
+      "duration": 16.886825321002107,
+      "ttft_limit": 0.5,
+      "tpot_limit": 0.02,
+      "completed_ttft_seconds": {
+        "count": 6,
+        "mean": 0.629575488166059,
+        "p50": 0.42517267049697693,
+        "p90": 1.3728611400001682,
+        "p99": 1.4655847073998303
+      },
+      "completed_multitoken_tpot_seconds": {
+        "count": 6,
+        "mean": 0.009467456883457485,
+        "p50": 0.009442670971946277,
+        "p90": 0.009562053219169657,
+        "p99": 0.0096038981469419
+      },
+      "server_queue_observed": 0,
+      "server_ttft_observed": 0,
+      "latency_basis": "stream_span",
+      "uncertainty": "pending-outcome bounds; no iid confidence interval"
+    }
+  ],
+  "calibration_excluded_per_run": [
+    0
+  ],
+  "server_queue_calibration": "unavailable: no server queue observations in this fixture",
+  "loaded_serving_validation": false,
+  "synthetic_slo_replications": {
+    "kind": "synthetic independent seeded DES; not GPU calibration",
+    "seeds": [
+      99100,
+      99101,
+      99102,
+      99103,
+      99104,
+      99105,
+      99106,
+      99107,
+      99108,
+      99109,
+      99110,
+      99111
+    ],
+    "jobs_per_replication": 500,
+    "initial_state": "empty; full finite cohort drained",
+    "ttft_limit": 0.05,
+    "tpot_limit": 0.012,
+    "goodput": {
+      "mean": 2.9887822599487333,
+      "replicate_t95": [
+        2.9203672615141545,
+        3.057197258383312
+      ],
+      "replicates": [
+        2.959957047300283,
+        3.10135695356115,
+        2.9554183488889243,
+        2.858841492422435,
+        2.9968866296201804,
+        2.9755725182575556,
+        3.0918572579946555,
+        3.048096229403999,
+        3.096857330511253,
+        2.72971854756367,
+        3.03480805767092,
+        3.0160167061897734
+      ]
+    },
+    "joint_fraction": {
+      "mean": 0.9948333333333332,
+      "replicate_t95": [
+        0.9914296863424106,
+        0.9982369803242559
+      ],
+      "replicates": [
+        0.998,
+        0.998,
+        0.996,
+        0.996,
+        0.986,
+        0.984,
+        0.994,
+        1.0,
+        0.99,
+        0.998,
+        1.0,
+        0.998
+      ]
+    },
+    "uncertainty": "Student t interval across independent runs, not iid requests or a steady-state guarantee"
+  }
+}

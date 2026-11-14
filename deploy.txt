@@ -1,3 +1,9 @@
-1. Change version in pyproject.toml and setup.py
-2. hatch build
-3. upload to PyPI: twine upload dist/*
+Release instructions: docs/releases/publishing.md
+
+Local checks (no publication):
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+
+Publish manually with .github/workflows/publish.yml and PyPI Trusted Publishing.
+Update pyproject.toml and CITATION.cff together. Never move an existing release tag.

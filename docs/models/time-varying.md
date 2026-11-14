@@ -12,6 +12,11 @@ the load, and you need a formula that captures that lag.
 
 ### PSA and MOL approximations for Mₜ/M/c
 
+For piecewise-constant arrivals, the [transient shared-pool calculator](transient-occupancy.md)
+propagates the state distribution with explicit truncation bounds. It supports
+occupancy-dependent exponential completions, a specified initial state, and
+temporary overload in an infinite FCFS queue.
+
 **Description:** For a time-varying arrival rate λ(t) and c servers, two approximations of the
 blocking probability (loss, `kind="loss"`, Erlang B) or waiting probability (delay, `kind="delay"`,
 Erlang C):

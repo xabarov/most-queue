@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "source_repository": "https://github.com/MarcoPizeta/flash-next-rtxpro6000-bench",
+  "source_commit": "fcdded55d1415d2a9b9256e58666d7c993cb5c2a",
+  "source_readme_url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/README.md",
+  "source_readme_sha256": "1a9c7188d9b9dc0c64182e459b399707619e89b9c6a828d9192df51494bc1e5b",
+  "license": {
+    "spdx_id": "MIT",
+    "filename": "LICENSE",
+    "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/LICENSE",
+    "sha256": "f46a8f029477bf3a20c5a8f1907fdac3c2092920fe918bed3c87da2400268ea7"
+  },
+  "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1",
+  "measurement_metadata": {
+    "gpu_count": 1,
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "gpu_memory_gb": 96,
+    "server_engine": "vLLM",
+    "server_image": "vllm/vllm-openai:qwen38-flash-next",
+    "server_image_build_date": "2026-08-26",
+    "vllm_version": "0.1.dev20073+g8e685d198",
+    "client": "sglang.benchmark.serving",
+    "model": "primitive-ai/Qwen3.8-Flash-Next-mixed-NVFP4-FP8",
+    "ple": "INT4 CPU offload",
+    "mtp": "OFF",
+    "max_concurrency": 1,
+    "random_input_lengths": [
+      1024,
+      8192,
+      32768
+    ],
+    "random_output_length": 512,
+    "cpu": "AMD Ryzen Threadripper 9960X",
+    "cpu_physical_cores": 24,
+    "cpu_logical_threads": 48,
+    "cpu_max_clock_ghz": 4.5,
+    "cpu_clock_cap_scope": "Every run from v3 onward, as reported in the pinned upstream README.",
+    "host_ram_gb": 64,
+    "host_ram": "DDR5-4800 ECC RDIMM (2 x 32 GB, dual channel; 60.9 GiB usable)",
+    "gpu_power_w": 600,
+    "gpu_driver": "595.84",
+    "gpu_interconnect": "PCIe 5.0 x16",
+    "os": "Ubuntu 26.04.1 LTS",
+    "kernel": "7.0.0-30",
+    "docker_version": "29.7.2",
+    "model_revision": "adf14c6b",
+    "torch_version": "2.13.0+cu130",
+    "server_image_digest_reported_prefix": "sha256:fc120ece",
+    "server_image_full_digest": null,
+    "server_image_digest_note": "Only this prefix is reported in the pinned README; the full digest is unknown.",
+    "client_image": "lmsysorg/sglang:dev-cu13",
+    "client_immutable_revision": null,
+    "client_revision_note": "An immutable client revision is unavailable in the pinned provenance."
+  },
+  "selection": {
+    "included_directory": "results/",
+    "excluded_directory": "results-v1-seed42/",
+    "distinct_seeds": true,
+    "train_runs": [
+      1,
+      2
+    ],
+    "heldout_runs": [
+      3
+    ],
+    "requests_per_file": 6,
+    "total_requests": 54
+  },
+  "calibration_policy": {
+    "excluded_request_indices": [
+      0
+    ],
+    "reason": "Two warm-up requests use the first prompt; request index 0 has understated TTFT even in current distinct-seed runs.",
+    "train_request_count": 30,
+    "heldout_request_count": 15,
+    "original_json_unchanged": true
+  },
+  "slo_policy": {
+    "included_request_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "total_requests": 54
+  },
+  "limitations": [
+    "No server queue timings.",
+    "No per-request full HTTP end-to-end latencies; aggregate end-to-end summary fields are present.",
+    "TTFT + sum(ITL) is a streaming span, not HTTP end-to-end latency.",
+    "Original files contain non-standard JSON Infinity for request_rate.",
+    "generated_texts was replaced with a publication placeholder upstream."
+  ],
+  "files": [
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r1.json",
+      "original_path": "results/vllm_mtp-off_in1024_out512_c1_r1.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in1024_out512_c1_r1.json",
+      "sha256": "1f10942ae64e43dc0777472fc871a4887f6752deeb793855394e6e95a9efe1a3",
+      "size_bytes": 38489,
+      "request_count": 6,
+      "run": 1,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r2.json",
+      "original_path": "results/vllm_mtp-off_in1024_out512_c1_r2.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in1024_out512_c1_r2.json",
+      "sha256": "0500c7c90ec9c73d13846cf528136677c846232a7e5eb731c5352a78edb26cfe",
+      "size_bytes": 32233,
+      "request_count": 6,
+      "run": 2,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in1024_out512_c1_r3.json",
+      "original_path": "results/vllm_mtp-off_in1024_out512_c1_r3.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in1024_out512_c1_r3.json",
+      "sha256": "bbbcfaa2c027d5a9bc36f1cee9b0b3750b656eaa4c93aa54e548117c6bf46499",
+      "size_bytes": 40769,
+      "request_count": 6,
+      "run": 3,
+      "split": "heldout",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r1.json",
+      "original_path": "results/vllm_mtp-off_in8192_out512_c1_r1.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in8192_out512_c1_r1.json",
+      "sha256": "3794489a4237305d292d3b3e3f502a01eb3d512a6defed9a1d3144e6804ba072",
+      "size_bytes": 36234,
+      "request_count": 6,
+      "run": 1,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r2.json",
+      "original_path": "results/vllm_mtp-off_in8192_out512_c1_r2.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in8192_out512_c1_r2.json",
+      "sha256": "23d6de01c27da20532e179ce1dcf9e7047aaeb5a1a5de81e0b75e01f089743b8",
+      "size_bytes": 37619,
+      "request_count": 6,
+      "run": 2,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in8192_out512_c1_r3.json",
+      "original_path": "results/vllm_mtp-off_in8192_out512_c1_r3.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in8192_out512_c1_r3.json",
+      "sha256": "b50d2e0e891598402e409752d608b6c7e81520192e277ae2170063f6375aa435",
+      "size_bytes": 28718,
+      "request_count": 6,
+      "run": 3,
+      "split": "heldout",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r1.json",
+      "original_path": "results/vllm_mtp-off_in32768_out512_c1_r1.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in32768_out512_c1_r1.json",
+      "sha256": "bff22541181160552bda3606520ed3b4ce9ec66de7a8e98176f50e75eefc1183",
+      "size_bytes": 43347,
+      "request_count": 6,
+      "run": 1,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r2.json",
+      "original_path": "results/vllm_mtp-off_in32768_out512_c1_r2.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in32768_out512_c1_r2.json",
+      "sha256": "994d711268852c42d6b67ed9fc5be3e0280a18e661f4898ae079b9029fdc55bd",
+      "size_bytes": 29959,
+      "request_count": 6,
+      "run": 2,
+      "split": "train",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    },
+    {
+      "filename": "vllm_mtp-off_in32768_out512_c1_r3.json",
+      "original_path": "results/vllm_mtp-off_in32768_out512_c1_r3.json",
+      "url": "https://raw.githubusercontent.com/MarcoPizeta/flash-next-rtxpro6000-bench/fcdded55d1415d2a9b9256e58666d7c993cb5c2a/results/vllm_mtp-off_in32768_out512_c1_r3.json",
+      "sha256": "a99148025011c2ef0bfde83227ce81e69b80148acf3b6c2dbade8a764d07f291",
+      "size_bytes": 32117,
+      "request_count": 6,
+      "run": 3,
+      "split": "heldout",
+      "measurement_profile": "flash_next_rtx_pro6000_blackwell96gb_vllm_qwen38_20260826_nvfp4_fp8_int4_ple_mtp_off_sglang_client_c1"
+    }
+  ]
+}

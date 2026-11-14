@@ -18,11 +18,18 @@
 - **[Numerical Methods](calculation.md)** — computing queueing system characteristics with analytical methods (including the *Size-based M/G/1 calculators* section)
 - **[Distributions](distributions.md)** — reference for supported distributions
 - **[Queueing Models](models.md)** — catalog of supported queueing system types
+- **[LLM serving: burst recovery](models/transient-occupancy.md)** — runnable example,
+  queue-delay probabilities, and truncation bounds; no GPU required
+- **[Serving measurements and joint SLOs](serving_measurements.md)** — detailed
+  benchmark imports, real GPU data, isolated calibration and held-out checks
 
 ### For Developers
 - **[Project Overview](PROJECT.md)** (in Russian) — repository layout, conventions, where to find the theory
 - **[Infrastructure](INFRASTRUCTURE.md)** (in Russian) — building, testing, code quality, publishing
 - **[Definition of Done](DOD.md)** (in Russian) — task completion criteria
+- **[Contributing](../CONTRIBUTING.md)** — development setup and first contributions
+- **[LLM/GPU development roadmap](roadmaps/llm_gpu_growth_roadmap.md)** (in Russian) —
+  useful examples, calibration, SLOs, and distribution
 - **[Epics](epics/README.md)** (in Russian) — planning of major development directions
 - **[Model Gap Analysis](models_gap_analysis.md)** (in Russian) — what is implemented, what is missing, priorities (EPIC-001)
 

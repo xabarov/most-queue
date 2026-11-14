@@ -1,0 +1,27 @@
+name: Model or example request
+description: A queueing model, LLM/GPU scenario, or practical example
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: What question should this answer?
+      description: Describe the decision or result you need. English or Russian is welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: model
+    attributes:
+      label: Model and desired metrics
+      description: Arrival/service laws, discipline, resources, buffer, initial state, and waiting/TTFT/TPOT or other metrics. State what is unknown.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sources and validation
+      description: Paper/DOI and relevant equation, known special case, simulator, or redistributable measurements. Existing model/example links also help.
+  - type: textarea
+    id: contribution
+    attributes:
+      label: How could you help?
+      description: For example, try an implementation, explain the source, or share a small benchmark fixture. Optional.

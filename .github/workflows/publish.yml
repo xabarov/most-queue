@@ -1,0 +1,135 @@
+name: Publish to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without v (for example, 2.11)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.distributions.outputs.artifact-id }}
+    steps:
+      - name: Validate version input
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo 'Expected a numeric release version such as 2.11 or 2.11.1' >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/v${{ inputs.version }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Check tag and package versions
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          python -m pip install --upgrade build twine PyYAML
+          python - <<'PY'
+          import os
+          import pathlib
+          import subprocess
+          import tomllib
+          import yaml
+
+          version = os.environ["RELEASE_VERSION"]
+          tag_commit = subprocess.check_output(
+              ["git", "rev-parse", "--verify", f"refs/tags/v{version}^{{commit}}"], text=True
+          ).strip()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          assert head == tag_commit, "Checkout does not match the release tag"
+          project = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]
+          citation = yaml.safe_load(pathlib.Path("CITATION.cff").read_text())
+          assert project["version"] == version, "pyproject.toml version differs from tag"
+          assert str(citation["version"]) == version, "CITATION.cff version differs from tag"
+          PY
+
+      - name: Build and validate distributions
+        run: |
+          rm -rf dist
+          python -m build
+          python -m twine check dist/*
+
+      - name: Smoke test installed wheel outside checkout
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          smoke_dir="$(mktemp -d "$RUNNER_TEMP/wheel-smoke.XXXXXX")"
+          python -m venv "$smoke_dir/venv"
+          "$smoke_dir/venv/bin/python" -m pip install "$GITHUB_WORKSPACE"/dist/*.whl
+          cd "$smoke_dir"
+          "$smoke_dir/venv/bin/python" -I - <<'PY'
+          import importlib.metadata
+          import math
+          import os
+          from pathlib import Path
+          import most_queue
+          from most_queue.theory.fifo.mmnr import MMnrCalc
+          from most_queue.theory.continuous_batching import TransientOccupancyQueueCalc
+
+          assert importlib.metadata.version("most_queue") == os.environ["RELEASE_VERSION"]
+          assert not Path(most_queue.__file__).resolve().is_relative_to(Path(os.environ["GITHUB_WORKSPACE"]).resolve())
+          classic = MMnrCalc(n=2, r=3)
+          classic.set_sources(1.0)
+          classic.set_servers(1.0)
+          assert math.isclose(sum(classic.run().p), 1.0, abs_tol=1e-10)
+          transient = TransientOccupancyQueueCalc(k=2, queue_truncation=10)
+          transient.set_sources(1.0)
+          transient.set_servers(1.0)
+          result = transient.run([0.0, 1.0])
+          assert result.state_probabilities.shape == (2, 11)
+          for kept, escape in zip(result.state_probabilities, result.escape_probability):
+              assert math.isclose(float(kept.sum() + escape), 1.0, abs_tol=1e-10)
+          print("Installed wheel imports and calculations passed")
+          PY
+
+      - name: Save checked distributions
+        id: distributions
+        uses: actions/upload-artifact@v7
+        with:
+          name: checked-distributions
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/most-queue
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+      - name: Download the checked distributions
+        uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: dist
+          digest-mismatch: error
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist

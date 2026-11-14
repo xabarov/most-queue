@@ -90,6 +90,11 @@ infinite_stage_aware_ttft:
   mean_rel: 0.035
   wait_abs: 0.007
 
+transient_occupancy:
+  replications: 4000
+  # At p=0.5 the largest binomial SE is 0.00791; 0.03 is about 3.8 SE.
+  probability_atol: 0.03
+
 phase_aware_stability:
   # Same 3.5% mean tolerance as EPIC-095, not fitted to fresh seeds.
   mean_rel: 0.035

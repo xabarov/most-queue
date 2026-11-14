@@ -2,7 +2,7 @@
 
 # Most-Queue
 
-**Queueing theory in Python: exact analytical solvers paired with discrete-event simulation — for 50+ models from M/M/1 to multiserver-jobs, RDR priorities, SRPT scheduling, age of information, vacations and queueing networks.**
+**Queueing theory in Python: analytical and numerical methods, approximations, and discrete-event simulation — from M/M/1 to LLM serving, GPU job scheduling, and queueing networks.**
 
 [🇷🇺 Русская версия](README.ru.md)
 
@@ -18,6 +18,29 @@
 
 </div>
 
+## LLM serving: how long does a burst affect latency?
+
+A traffic spike ends at 5 seconds. In this **synthetic** serving pool, the risk of
+waiting over 0.5 seconds for an active slot stays above 5% until about 10.25 seconds
+with four slots, or 6.35 seconds with eight. A stationary estimate at the new
+arrival rate misses this recovery period.
+
+<img src="https://raw.githubusercontent.com/xabarov/most-queue/main/docs/figures/llm_burst_recovery.png" alt="Transient queue-delay risk stays elevated after a traffic burst" width="720"/>
+
+**[Run the example and inspect the model](docs/models/transient-occupancy.md)** —
+no GPU required; produces a plot and JSON with explicit truncation bounds.
+The metric is queue-to-slot delay; predicting GPU TTFT requires a model of
+prefill/decode and measured service costs.
+
+Also available: [token-level prefill/decode simulation](docs/models/prefill-decode.md),
+[stage-aware mean TTFT](docs/models/stage-aware-ttft.md), and
+[GPU job scheduling](docs/models/msj.md).
+
+Have serving benchmark results? [Evaluate joint TTFT/TPOT SLOs and test a latency
+model](docs/serving_measurements.md) with detailed vLLM/SGLang imports, public GPU
+measurements and a held-out calibration report. The report retains failed model
+validation as well as successful checks.
+
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local
 truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means
@@ -29,10 +52,10 @@ LaTeX sources, editable Word documents, PDFs, saved data and build instructions.
 
 ## Why Most-Queue?
 
-- **Analytics and simulation together.** Nearly every analytical calculator ships with a paired
-  discrete-event simulator, and the test suite cross-validates them against each other. You get
-  fast exact numbers *and* a way to check them.
-- **Models you won't find elsewhere in open source**: size-based scheduling analytics
+- **Analytical methods and simulation together.** Tests use known special cases and
+  discrete-event simulation to check calculations. Model pages explain assumptions,
+  approximations, and numerical limitations.
+- **A broad model catalog**: size-based scheduling analytics
   (SRPT, SJF, PSJF, SPJF with ML-style size predictions, FB/LAS), M/G/1 vacation models,
   negative customers (RCS / disasters), unreliable servers, multi-server phase-type systems
   solved by the Takahashi–Takami method (including CV < 1 via complex-fit H₂).
@@ -47,6 +70,20 @@ pip install most-queue
 ```
 
 Requires Python ≥ 3.10. For network visualization you may also need the system `graphviz` package.
+
+Examples and their data live in the source repository. For the serving examples,
+use a checkout of version 2.11 or later:
+
+```bash
+git clone https://github.com/xabarov/most-queue.git
+cd most-queue
+python -m pip install -e .
+python -m examples.llm_burst_recovery
+python -m examples.serving_measurements
+```
+
+The command prints the output directory. See [Contributing](CONTRIBUTING.md) for
+development dependencies and tests.
 
 ## Quick start: theory vs simulation in 20 lines
 
@@ -92,6 +129,7 @@ See the executable comparison of **9 disciplines** in
 | Load balancing (mean-field) | dispatching over a large pool — power-of-d / JSQ / JIQ / random | mean-field fixed point |
 | Polling systems | one server touring Q queues with switchover — exhaustive / gated | pseudo-conservation law (Boxma–Groenevelt) |
 | Non-stationary Mt/M/c | time-varying arrival rate λ(t) — blocking & waiting probability | PSA & MOL approximations |
+| [Transient shared serving pool](docs/models/transient-occupancy.md) | piecewise Poisson bursts, occupancy-dependent completion, queue-delay tails | finite state projection with truncation bounds |
 | Age of Information | M/M/1, M/G/1, preemptive-LCFS — average & peak AoI | closed-form + simulation |
 | SLA / deadline-violation probability | `P(W > D)` and SLO quantile from raw moments — works on top of any model in this table; LLM-serving TTFT SLO example | H2/Gamma tail fit, M/M/1 exact anchor |
 | Vacations & warm-up | M/G/1 multiple vacations, N-policy, warm-up/cooling/delay (M/Ph/c) | Fuhrmann–Cooper, Takahashi–Takami |
@@ -521,6 +559,7 @@ scheduling research (SRPT/LAS with ML size predictions).
 
 Issues and pull requests are welcome! Open an [issue](https://github.com/xabarov/most-queue/issues)
 for bugs or model requests. Development conventions: [docs/PROJECT.md](docs/PROJECT.md),
+setup and first contributions: [CONTRIBUTING.md](CONTRIBUTING.md),
 definition of done: [docs/DOD.md](docs/DOD.md).
 
 ## Citation

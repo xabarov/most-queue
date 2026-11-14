@@ -24,6 +24,7 @@ from most_queue.theory.continuous_batching.phase_aware_ttft import PhaseAwareTtf
 from most_queue.theory.continuous_batching.prefill_decode import PrefillDecodeCalc
 from most_queue.theory.continuous_batching.reduced_stage_aware_ttft import ReducedStageAwareTtftCalc
 from most_queue.theory.continuous_batching.stage_aware_ttft import StageAwareTtftCalc
+from most_queue.theory.continuous_batching.transient_occupancy import TransientOccupancyQueueCalc
 
 __all__ = [
     "OccupancyDependentQueueCalc",
@@ -37,4 +38,5 @@ __all__ = [
     "CoreAwareTtftCalc",
     "KvCacheStabilityCalc",
     "KvCacheCongestionCalc",
+    "TransientOccupancyQueueCalc",
 ]

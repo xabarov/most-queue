@@ -137,6 +137,9 @@
 | [EPIC-094](EPIC-094-stage-aware-ttft-reduction.md) | Продолжение ГЛ3: exact iid waiting-count reduction и decoder symmetry; mixed13x меньше states,18–27x быстрее full, finite limits сохранены | done (research pilot) |
 | [EPIC-095](EPIC-095-infinite-stage-aware-ttft.md) | Infinite count kernel, service-credit domination и analytic truncation bounds;45/48 grid,3 conservative refusals; rounding not verified | done (research pilot) |
 | [EPIC-096](EPIC-096-phase-aware-stability.md) | Reachable saturated classes, rational drift и phase-aware full-cycle continuation;48/48, все3 отказа сняты; critical unresolved | done (research pilot) |
+| [EPIC-097](EPIC-097-core-aware-continuation.md) | Уточнение полного возврата через конечное ядро; near-critical 28/32, целевой выигрыш числа состояний не достигнут | done (research pilot) |
+| [EPIC-098](EPIC-098-transient-serving-pool.md) | Нестационарный пул: всплески, хвост ожидания слота и оценки усечения; пример без GPU и план развития | done |
+| [EPIC-099](EPIC-099-serving-measurements.md) | Подробные измерения serving, совместный SLO и изолированная калибровка; TTFT target не пройден, серверная очередь требует измерений | done |
 
 Направления EPIC-010…013 (первая волна) и EPIC-014…016 (вторая волна) выбраны по обзору трендов
 сообщества: [../research/queueing-trends-2026.md](../research/queueing-trends-2026.md);

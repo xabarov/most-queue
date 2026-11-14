@@ -43,6 +43,7 @@ add a figure function and regenerate the PNGs.
 | [Multiserver-job systems (MSJ)](models/msj.md) | PH-FCFS analytics; general-service backfilling, forecasts, FirstFit/MSF/Quickswap, zero-cost ServerFilling, checkpoint/resume costs and useful-service protection |
 | [Load balancing / dispatching (mean-field)](models/load-balancing.md) | power-of-d / JSQ / JIQ dispatching, mean-field |
 | [Non-stationary Mₜ/M/c queues (time-varying load)](models/time-varying.md) | non-stationary Mₜ/M/c: PSA and MOL |
+| [Transient shared serving pool](models/transient-occupancy.md) | piecewise Poisson bursts, occupancy-dependent completions, infinite FCFS queue, and queue-delay truncation bounds |
 | [Age of Information (AoI)](models/aoi.md) | Age of Information: average and peak age |
 | [SLA / deadline-violation probability](models/sla.md) | Horizontal utility: fit-based `P(W > D)` / SLO quantile from raw moments, any model; LLM-serving TTFT SLO example |
 | [EDF scheduling](models/edf.md) | Earliest-Deadline-First as the actual service discipline (not post-hoc SLA); DES-exact, no closed-form (open problem) |
@@ -165,6 +166,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | Load balancing (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Mean-field dispatching over a large pool |
 | Polling (cyclic server) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, pseudo-conservation law |
 | Non-stationary Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Time-varying load, PSA & MOL approximations |
+| [Transient shared serving pool](models/transient-occupancy.md) | TransientOccupancyQueueCalc | Event-driven test oracle | - | Piecewise Poisson input, occupancy-dependent exponential completions; infinite FCFS queue, finite state projection and queue-delay tail bounds |
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Average and peak AoI |
 | M/M^[a,b]/1 bulk service | BulkServiceMM1Calc | BulkServiceSim | - | Batch service, LLM inference batching; exact N/W moments and exact SLA tail `get_tail`/`get_cdf` at a=1 |
 | M/Erlang(k)^[a,b]/1 bulk service | BulkServiceErlangCalc | - | - | General (Erlang-fitted, CV≤1) batch-service time; reduces to k=1 above; exact `get_tail`/`get_cdf` at a=1 |

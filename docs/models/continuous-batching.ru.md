@@ -2,6 +2,10 @@
 
 [🇬🇧 English version](continuous-batching.md) · [← Каталог моделей](../models.ru.md)
 
+Переменная интенсивность поступления и восстановление после всплеска рассмотрены
+в [нестационарной модели](transient-occupancy.ru.md): есть исполняемый пример
+и оценки ошибки расчёта вероятностей длительного ожидания.
+
 ![Диаграмма occupancy-зависимого continuous batching](../figures/continuous_batching.ru.png)
 
 **Простыми словами:** современные инференс-движки для LLM (в стиле vLLM/SGLang,

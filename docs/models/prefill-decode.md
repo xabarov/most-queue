@@ -1,5 +1,9 @@
 # Mixed prefill and decode iteration costs
 
+For request-level measurements, isolated cost fitting and joint TTFT/TPOT SLOs,
+see [serving measurements](../serving_measurements.md). The public-data pilot
+rejects a simple TTFT fit; it does not validate this surrogate under GPU load.
+
 The three-parameter model of [Ramani and Tantawi](https://arxiv.org/html/2609.20957v1)
 predicts mean first-token and inter-token latency from prompt length, output
 length, arrival rate and accelerator costs. The occupancy calculation is exact

@@ -43,6 +43,7 @@
 | [Multiserver-job системы (MSJ)](models/msj.ru.md) | PH-FCFS аналитика; general-service backfilling, прогнозы, FirstFit/MSF/Quickswap, бесплатный ServerFilling, цена checkpoint/resume и защита полезного интервала |
 | [Балансировка нагрузки / диспетчеризация (mean-field)](models/load-balancing.ru.md) | диспетчеризация power-of-d / JSQ / JIQ, mean-field |
 | [Нестационарные очереди Mₜ/M/c (переменная нагрузка)](models/time-varying.ru.md) | нестационарные Mₜ/M/c: PSA и MOL |
+| [Нестационарный пул обслуживания](models/transient-occupancy.ru.md) | всплески пуассоновского потока, завершения с учётом занятости, бесконечная очередь FCFS и оценки усечения хвоста ожидания |
 | [Age of Information (AoI, свежесть информации)](models/aoi.ru.md) | Age of Information: средний и пиковый возраст |
 | [SLA / вероятность нарушения дедлайна](models/sla.ru.md) | Горизонтальная утилита: `P(W > D)` / SLO-квантиль по моментам из fit, для любой модели; пример LLM-serving TTFT SLO |
 | [EDF-планирование](models/edf.ru.md) | Earliest-Deadline-First как реальная дисциплина обслуживания (не post-hoc SLA); точна по построению (DES), точной теории нет (открытая задача) |
@@ -160,6 +161,7 @@
 | Балансировка нагрузки (power-of-d, JSQ, JIQ) | LoadBalancingMeanField | LoadBalancingSim | - | Диспетчеризация по большому пулу (mean-field) |
 | Polling (циклический сервер) | PollingCalc | PollingSim | - | Switchover, exhaustive/gated, псевдо-закон сохранения |
 | Нестационарная Mₜ/M/c | TimeVaryingMMcCalc | TimeVaryingMMcSim | - | Переменная нагрузка, приближения PSA и MOL |
+| [Нестационарный пул обслуживания](models/transient-occupancy.ru.md) | TransientOccupancyQueueCalc | Событийная проверка в тестах | - | Кусочно-постоянная интенсивность пуассоновского потока, экспоненциальные завершения с учётом занятости; бесконечная очередь FCFS и оценки ошибки усечения хвоста ожидания |
 | Age of Information | AoICalc, LcfsPreemptiveAoICalc | AoISim | - | Средний и пиковый AoI |
 | M/M^[a,b]/1 групповое обслуживание | BulkServiceMM1Calc | BulkServiceSim | - | Пакетное обслуживание, батчинг LLM; точные моменты N/W при a=1 |
 | M/Erlang(k)^[a,b]/1 групповое обслуживание | BulkServiceErlangCalc | - | - | Общее (Erlang-подогнанное, CV≤1) время обслуживания батча; сводится к k=1 выше |
