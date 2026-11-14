@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-14",
+  "purpose": "Controlled measurement and cleanup smoke test; not model calibration or stationary load validation",
+  "profile": "../../configs/runpod/serving-profile.json",
+  "fixture": "../../tests/fixtures/serving_measurements/runpod_qwen3_8b_a40_20261114/",
+  "raw_requests_sha256": "4f50ab2551820f4b489ea85ceab9a35b31083419a0d8fe56759b46603764aeec",
+  "runtime": {
+    "cuda": "13.0",
+    "gpu": "NVIDIA A40",
+    "memory_bytes": 47699722240,
+    "torch": "2.13.0+cu130",
+    "vllm": "0.32.0"
+  },
+  "warmup_requests": 3,
+  "measured_requests": 78,
+  "checks": {
+    "measured_successful": 78,
+    "exact_token_lengths": true,
+    "done_received": true,
+    "finite_nonnegative_server_timings": true,
+    "client_ttft_at_least_queue_plus_scheduled_to_first": true,
+    "server_tpot_identity": true
+  },
+  "group_means": [
+    {
+      "input_tokens": 128,
+      "client_concurrency": 1,
+      "n": 2,
+      "client_ttft_ms_mean": 94.80573801556602,
+      "server_queue_ms_mean": 0.046964967623353004,
+      "server_scheduled_to_first_ms_mean": 59.56757004605606,
+      "server_tpot_ms_mean": 29.54573311391983
+    },
+    {
+      "input_tokens": 128,
+      "client_concurrency": 4,
+      "n": 8,
+      "client_ttft_ms_mean": 154.69246100110468,
+      "server_queue_ms_mean": 0.024645531084388494,
+      "server_scheduled_to_first_ms_mean": 79.32620371866506,
+      "server_tpot_ms_mean": 30.207596981428622
+    },
+    {
+      "input_tokens": 128,
+      "client_concurrency": 8,
+      "n": 16,
+      "client_ttft_ms_mean": 2142.370760877384,
+      "server_queue_ms_mean": 1951.8224100174848,
+      "server_scheduled_to_first_ms_mean": 91.19381102209445,
+      "server_tpot_ms_mean": 30.2513720935525
+    },
+    {
+      "input_tokens": 1024,
+      "client_concurrency": 1,
+      "n": 2,
+      "client_ttft_ms_mean": 194.0868424717337,
+      "server_queue_ms_mean": 0.03470346564427018,
+      "server_scheduled_to_first_ms_mean": 154.49885104317218,
+      "server_tpot_ms_mean": 29.94475915742026
+    },
+    {
+      "input_tokens": 1024,
+      "client_concurrency": 4,
+      "n": 8,
+      "client_ttft_ms_mean": 535.1689748931676,
+      "server_queue_ms_mean": 0.03183701483067125,
+      "server_scheduled_to_first_ms_mean": 444.8158998566214,
+      "server_tpot_ms_mean": 31.958594449954365
+    },
+    {
+      "input_tokens": 1024,
+      "client_concurrency": 8,
+      "n": 16,
+      "client_ttft_ms_mean": 2822.033632946841,
+      "server_queue_ms_mean": 2247.4710443493677,
+      "server_scheduled_to_first_ms_mean": 461.9521364074899,
+      "server_tpot_ms_mean": 32.050489945239555
+    },
+    {
+      "input_tokens": 4096,
+      "client_concurrency": 1,
+      "n": 2,
+      "client_ttft_ms_mean": 654.715858050622,
+      "server_queue_ms_mean": 0.04707498010247946,
+      "server_scheduled_to_first_ms_mean": 604.9930125009269,
+      "server_tpot_ms_mean": 30.86715473199454
+    },
+    {
+      "input_tokens": 4096,
+      "client_concurrency": 4,
+      "n": 8,
+      "client_ttft_ms_mean": 1995.0950506463414,
+      "server_queue_ms_mean": 0.03362247662153095,
+      "server_scheduled_to_first_ms_mean": 1901.5044089319417,
+      "server_tpot_ms_mean": 37.6614945903778
+    },
+    {
+      "input_tokens": 4096,
+      "client_concurrency": 8,
+      "n": 16,
+      "client_ttft_ms_mean": 5383.86431462277,
+      "server_queue_ms_mean": 3240.8272709944868,
+      "server_scheduled_to_first_ms_mean": 1940.3186377312522,
+      "server_tpot_ms_mean": 37.657011148733396
+    }
+  ],
+  "client_minus_server_queue_and_first_ms": {
+    "min": 33.157960046082735,
+    "mean": 114.84017746093181,
+    "max": 656.1268900986761
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "started_utc": "2026-11-14T13:32:34.876773+00:00",
+      "confirmed_absent_utc": "2026-11-14T13:32:43.162203+00:00",
+      "accounted_seconds": 9,
+      "successful_measurement": false,
+      "cleanup_confirmed": true,
+      "error": "ApiError: Runpod API request failed (HTTP 409)"
+    },
+    {
+      "number": 2,
+      "started_utc": "2026-11-14T13:35:07.582954+00:00",
+      "confirmed_absent_utc": "2026-11-14T13:39:27.221774+00:00",
+      "accounted_seconds": 260,
+      "successful_measurement": true,
+      "cleanup_confirmed": true,
+      "error": null
+    }
+  ],
+  "ledger": {
+    "active_pod_ids": [],
+    "allocated_seconds": 269,
+    "allocations": 2,
+    "spent_usd": 0.044917
+  },
+  "billing_status": "Provider returned no billing records yet; ledger cost is a conservative rate-duration estimate, not a zero-spend claim",
+  "closed": true,
+  "limits_of_evidence": [
+    "One GPU and image/model profile",
+    "Two burst repetitions per length/concurrency; no steady-state or Poisson input",
+    "Client runs inside the same pod",
+    "Eager mode and per-request timing enabled",
+    "No fitted queueing model, held-out accuracy test or GPU iteration trace"
+  ]
+}

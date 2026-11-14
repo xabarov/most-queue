@@ -153,3 +153,10 @@ Server queue times are absent. Calibrating queueing delay and validating the
 model under offered load remain open and require server timings/iteration
 profiles and fresh validation runs. This limitation is retained in the report,
 roadmap and release notes.
+
+A subsequent [controlled A40/Qwen3-8B pilot](research/runpod-serving-pilot-2026-11-14.md)
+collected 78 measured requests with per-request server queue and first-token
+timings. Its [raw streaming fixture](../tests/fixtures/serving_measurements/runpod_qwen3_8b_a40_20261114/README.md)
+uses an explicitly documented schema, separate from the benchmark importers
+above. The burst measurements verify data collection; queue-model calibration
+and validation under a prescribed arrival process remain open.

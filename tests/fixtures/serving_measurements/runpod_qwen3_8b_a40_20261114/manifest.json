@@ -1,0 +1,17 @@
+{
+  "measurement_date": "2026-11-14",
+  "schema_version": 1,
+  "sha256": {
+    "LICENSE": "d9b9bdb8569b419dd891bfd269253fb946c08f6fa1b5ce96250992ffae6a0f4d",
+    "README.md": "b545cfe4ed4e1bbd9b85a3dce92ae09188fc84658a282a5b2c618e196617f82b",
+    "profile.json": "84eeba1d6e7deb082be4c60a2132ef071c119124ee0bf15fdbfffa423931233d",
+    "requests.jsonl.gz": "db26f3959b7fbd2d13670278df0ba3a72bd512db0b51ba345c04818a60760518",
+    "runtime.json": "5de1c291fff4f954da71213917d7550b73f808122bb24de928199c02daef64b7",
+    "summary.json": "eab6adfd22a125ab3e54293477c665ab0cf7c233a54930913aa187ee2a886bc6"
+  },
+  "source": "self-generated synthetic serving pilot",
+  "source_export_checksums_verified": true,
+  "uncompressed_requests_bytes": 6299192,
+  "uncompressed_requests_sha256": "4f50ab2551820f4b489ea85ceab9a35b31083419a0d8fe56759b46603764aeec",
+  "workload_source_sha256": "75c8c48eac614ec208428159d0b48c75cbcfd27289dc8467662caf93c6f066b2"
+}

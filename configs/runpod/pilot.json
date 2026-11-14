@@ -1,5 +1,5 @@
 {
-  "authorized": true,
+  "authorized": false,
   "campaign_budget_usd": 5.0,
   "max_compute_usd_per_hour": 0.75,
   "max_total_usd_per_hour": 0.77,
