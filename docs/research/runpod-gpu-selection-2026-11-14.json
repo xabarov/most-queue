@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-14 12:57:56 UTC",
+  "source": "Runpod MCP get_gpu_type / list_gpu_types; POD product, count=1",
+  "note": "Catalog rates and availability, not a reservation or benchmark. Re-read before paid allocation. No account identifiers or credentials.",
+  "offers": [
+    {
+      "cloud": "SECURE",
+      "min_cuda_version": "12.8",
+      "availability": "LOW",
+      "community": false,
+      "cudaVersions": [
+        {
+          "available": false,
+          "version": "12.8"
+        },
+        {
+          "available": true,
+          "version": "13.2"
+        }
+      ],
+      "dataCenters": [
+        {
+          "availability": "LOW",
+          "id": "CA-MTL-1",
+          "name": "CA-MTL-1"
+        },
+        {
+          "availability": "LOW",
+          "id": "EU-SE-1",
+          "name": "EU-SE-1"
+        }
+      ],
+      "id": "NVIDIA A40",
+      "manufacturer": "NVIDIA",
+      "maxCount": {
+        "community": 1,
+        "secure": 10
+      },
+      "memory": 48,
+      "minRam": 50,
+      "minVcpuCount": 9,
+      "name": "A40",
+      "pool": "AMPERE_48",
+      "price": {
+        "community": 0.35,
+        "secure": 0.59,
+        "serverless": 1.22
+      },
+      "secure": true
+    },
+    {
+      "cloud": "SECURE",
+      "min_cuda_version": "12.8",
+      "availability": "LOW",
+      "community": true,
+      "cudaVersions": [
+        {
+          "available": true,
+          "version": "13.2"
+        }
+      ],
+      "dataCenters": [
+        {
+          "availability": "LOW",
+          "id": "EU-SE-1",
+          "name": "EU-SE-1"
+        }
+      ],
+      "id": "NVIDIA RTX A6000",
+      "manufacturer": "NVIDIA",
+      "maxCount": {
+        "community": 2,
+        "secure": 10
+      },
+      "memory": 48,
+      "minRam": 50,
+      "minVcpuCount": 9,
+      "name": "RTX A6000",
+      "pool": "AMPERE_48",
+      "price": {
+        "community": 0.33,
+        "secure": 0.69,
+        "serverless": 1.22
+      },
+      "secure": true
+    },
+    {
+      "cloud": "COMMUNITY",
+      "min_cuda_version": "12.8",
+      "availability": "LOW",
+      "community": true,
+      "cudaVersions": [
+        {
+          "available": false,
+          "version": "12.8"
+        },
+        {
+          "available": false,
+          "version": "12.9"
+        },
+        {
+          "available": true,
+          "version": "13.0"
+        },
+        {
+          "available": false,
+          "version": "13.2"
+        },
+        {
+          "available": false,
+          "version": "13.4"
+        }
+      ],
+      "id": "NVIDIA GeForce RTX 4090",
+      "manufacturer": "NVIDIA",
+      "maxCount": {
+        "community": 8,
+        "secure": 8
+      },
+      "memory": 24,
+      "minRam": 125,
+      "minVcpuCount": 25,
+      "name": "RTX 4090",
+      "pool": "ADA_24",
+      "price": {
+        "community": 0.34,
+        "secure": 0.89,
+        "serverless": 1.34
+      },
+      "secure": true
+    },
+    {
+      "cloud": "SECURE",
+      "availability": "LOW",
+      "community": true,
+      "cudaVersions": [
+        {
+          "available": true,
+          "version": "13.2"
+        }
+      ],
+      "dataCenters": [
+        {
+          "availability": "LOW",
+          "id": "US-MO-1",
+          "name": "US-MO-1"
+        }
+      ],
+      "id": "NVIDIA L40S",
+      "manufacturer": "NVIDIA",
+      "maxCount": {
+        "community": 8,
+        "secure": 8
+      },
+      "memory": 48,
+      "minRam": 125,
+      "minVcpuCount": 16,
+      "name": "L40S",
+      "pool": "ADA_48_PRO",
+      "price": {
+        "community": 0.79,
+        "secure": 1.09,
+        "serverless": 1.89
+      },
+      "secure": true
+    }
+  ]
+}

@@ -26,6 +26,8 @@
 ### For Developers
 - **[Project Overview](PROJECT.md)** (in Russian) — repository layout, conventions, where to find the theory
 - **[Infrastructure](INFRASTRUCTURE.md)** (in Russian) — building, testing, code quality, publishing
+- **[Runpod operating rules](runpod_operations.md)** (in Russian) — GPU selection,
+  campaign budgets, bounded autonomy, and verified cleanup
 - **[Definition of Done](DOD.md)** (in Russian) — task completion criteria
 - **[Contributing](../CONTRIBUTING.md)** — development setup and first contributions
 - **[LLM/GPU development roadmap](roadmaps/llm_gpu_growth_roadmap.md)** (in Russian) —

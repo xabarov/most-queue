@@ -1,0 +1,11 @@
+{
+  "gpu_id": "NVIDIA A40",
+  "cloud": "SECURE",
+  "gpu_count": 1,
+  "compute_usd_per_hour": 0.59,
+  "storage_usd_per_hour": 0.011112,
+  "work_seconds": 2700,
+  "container_disk_gb": 80,
+  "persistent_disk_gb": 0,
+  "network_volume_ids": []
+}
