@@ -265,3 +265,10 @@ series. Recorded pre-engine intervals grow when other requests are present;
 the internal source of that delay still requires instrumentation. The report
 also exposes queue-error accumulation at high load. These diagnostics retain
 the frozen predictions and perform no fitting or new GPU measurements.
+
+The separate [frontend measurement plan](research/serving-frontend-v1-plan.md)
+is prepared locally: repeated identical requests, tracing on/off pairs and
+four open-loop series. Its ASGI and completion-handler timestamps distinguish
+observable frontend intervals while retaining the original client/engine
+definitions. The 613-request campaign awaits spending authorization; no new
+model-accuracy result is claimed by this preparation.

@@ -1,0 +1,37 @@
+{
+  "checked_epoch": 1794681496.8169572,
+  "read_only": true,
+  "gpu_id": "NVIDIA A40",
+  "availability": "LOW",
+  "compute_usd_per_hour": 0.59,
+  "plan": {
+    "gpu_id": "NVIDIA A40",
+    "cloud": "SECURE",
+    "gpu_count": 1,
+    "compute_usd_per_hour": 0.59,
+    "storage_usd_per_hour": 0.011112,
+    "work_seconds": 4500,
+    "container_disk_gb": 80,
+    "persistent_disk_gb": 0,
+    "network_volume_ids": []
+  },
+  "ledger_for_new_campaign": {
+    "spent_usd": 0,
+    "allocated_seconds": 0,
+    "allocations": 0,
+    "active_pod_ids": []
+  },
+  "actual_policy_check": {
+    "allowed": false,
+    "reasons": [
+      "Explicit authorization is required"
+    ],
+    "projected_total_usd": 0.901668
+  },
+  "projection_if_explicitly_authorized": {
+    "allowed": true,
+    "reasons": [],
+    "projected_total_usd": 0.901668
+  },
+  "active_most_queue_pods": []
+}

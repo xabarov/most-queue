@@ -1,0 +1,972 @@
+{
+  "seed": 2026111404,
+  "expected_requests": 613,
+  "expected_series": 108,
+  "schedule_sha256": "51cfe70b9b1ef7c683c6f1d75b6dde08aaf81f32888d46e7d1440affde0be67e",
+  "series": [
+    {
+      "series_id": "s0001-warmup",
+      "duration_s": 0,
+      "block_id": null,
+      "condition": "warmup",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0002-warmup",
+      "duration_s": 0,
+      "block_id": null,
+      "condition": "warmup",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0003-warmup",
+      "duration_s": 0,
+      "block_id": null,
+      "condition": "warmup",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0004-warmup",
+      "duration_s": 0,
+      "block_id": null,
+      "condition": "warmup",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0005-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-2",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0006-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-2",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0007-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-7",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0008-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-7",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0009-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-0",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0010-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-0",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0011-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-3",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0012-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-3",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0013-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-5",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0014-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-5",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0015-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-6",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0016-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-6",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0017-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-3",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0018-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-3",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0019-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-1",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0020-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-1",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0021-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-7",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0022-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-7",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0023-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-8",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0024-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-8",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0025-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-1",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0026-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-1",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0027-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-2",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0028-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-2",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0029-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-5",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0030-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-5",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0031-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-4",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0032-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-4",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0033-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-9",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0034-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-9",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0035-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-0",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0036-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-0",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0037-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-8",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0038-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-8",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0039-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-4",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0040-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-4",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0041-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-9",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0042-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-128-9",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0043-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-6",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0044-idle",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "idle",
+      "pair_id": "a-idle-1024-6",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0045-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-1024-4",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0046-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-128-0",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0047-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-1024-3",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0048-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-128-4",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0049-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-128-2",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0050-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-1024-2",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0051-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-1024-1",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0052-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-128-3",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0053-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-1024-0",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0054-loaded",
+      "duration_s": 0,
+      "block_id": "a",
+      "condition": "loaded",
+      "pair_id": "a-loaded-128-1",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0055-open_loop",
+      "duration_s": 180,
+      "block_id": "a",
+      "condition": "open_loop",
+      "requests": 91,
+      "trace_enabled": 91
+    },
+    {
+      "series_id": "s0056-open_loop",
+      "duration_s": 180,
+      "block_id": "a",
+      "condition": "open_loop",
+      "requests": 143,
+      "trace_enabled": 143
+    },
+    {
+      "series_id": "s0057-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-4",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0058-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-4",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0059-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-9",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0060-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-9",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0061-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-2",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0062-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-2",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0063-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-3",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0064-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-3",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0065-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-5",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0066-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-5",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0067-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-2",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0068-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-2",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0069-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-0",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0070-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-0",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0071-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-3",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0072-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-3",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0073-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-8",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0074-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-8",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0075-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-8",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0076-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-8",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0077-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-7",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0078-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-7",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0079-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-5",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0080-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-5",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0081-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-0",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0082-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-0",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0083-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-1",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0084-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-1",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0085-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-6",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0086-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-6",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0087-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-4",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0088-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-128-4",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0089-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-6",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0090-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-6",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0091-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-9",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0092-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-9",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0093-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-1",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0094-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-1",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0095-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-7",
+      "requests": 1,
+      "trace_enabled": 0
+    },
+    {
+      "series_id": "s0096-idle",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "idle",
+      "pair_id": "b-idle-1024-7",
+      "requests": 1,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0097-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-1024-0",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0098-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-128-2",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0099-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-128-3",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0100-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-128-1",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0101-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-1024-1",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0102-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-128-4",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0103-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-1024-3",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0104-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-1024-4",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0105-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-128-0",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0106-loaded",
+      "duration_s": 0,
+      "block_id": "b",
+      "condition": "loaded",
+      "pair_id": "b-loaded-1024-2",
+      "requests": 3,
+      "trace_enabled": 1
+    },
+    {
+      "series_id": "s0107-open_loop",
+      "duration_s": 180,
+      "block_id": "b",
+      "condition": "open_loop",
+      "requests": 148,
+      "trace_enabled": 148
+    },
+    {
+      "series_id": "s0108-open_loop",
+      "duration_s": 180,
+      "block_id": "b",
+      "condition": "open_loop",
+      "requests": 87,
+      "trace_enabled": 87
+    }
+  ]
+}
