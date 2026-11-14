@@ -72,6 +72,7 @@
 | [KV-память и устойчивость](models/kv-cache-stability.ru.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Постоянный слот; корреляция длин; явные maximal/free-swap допущения; без задержек и стационарного PMF |
 | [Батчинг с переменной длиной вывода](models/token-batching.ru.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Численные средние при случайном времени; fixed-подмена средним явно; физический cap dynamic только в DES; без аналитических хвостов |
 | [Совместные prefill/decode](models/prefill-decode.ru.md) | PrefillDecodeCalc | PrefillDecodeSim | - | Точный бесконечный хвост CTMC-surrogate; средние TTFT/ITL приближённо, нефизические оценки помечены; без аналитических хвостов задержек |
+| [Входной опрос и запланированные итерации](research/serving-input-admission-development.md) | - | IterationAdmissionSim | - | Экспериментальные FCFS-очереди входа/слотов и одна/две подготовленные GPU-итерации; критерий точности разработки не пройден |
 | [Неограниченный динамический батчинг](models/dynamic-batching.ru.md) | DynamicBatchingCalc | DynamicBatchingSim | - | Poisson, запуск всех ожидающих; пять законов обслуживания; численные первые моменты w/v, не аналитическая CDF |
 | M/M/c | MMnrCalc | QsSim | - | Базовая модель |
 | M/M/n/0 (Erlang B) | ErlangBCalc | QsSim(buffer=0) | - | Потери, нечувствительность M/G/n/0 |

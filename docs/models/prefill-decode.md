@@ -12,6 +12,12 @@ The [fresh evaluation](../research/serving-reservation-v2-results.md) meets 13/1
 criteria and retains the failed target. The policy does not reproduce vLLM's
 full asynchronous pipeline.
 
+The experimental `IterationAdmissionSim` adds input polling before QUEUED and
+a queue of one/two planned iterations. Its [1978-request development study](../research/serving-input-admission-development.md)
+improves tight-SLO fractions but increases loaded TTFT error and fails the
+recorded decision gate. It remains a discipline-research tool; the original
+policies and coefficients are retained.
+
 The three-parameter model of [Ramani and Tantawi](https://arxiv.org/html/2609.20957v1)
 predicts mean first-token and inter-token latency from prompt length, output
 length, arrival rate and accelerator costs. The occupancy calculation is exact

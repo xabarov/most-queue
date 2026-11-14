@@ -77,6 +77,7 @@ daily VC GPU counts do not establish intraday hard quotas or actual placement.
 | [KV-cache stability](models/kv-cache-stability.md) | KvCacheStabilityCalc | KvCacheStabilitySim | - | Constant slots; finite joint lengths with correlation; explicit free-swap/maximal assumptions; no analytic delay/PMF |
 | [Variable-token batching](models/token-batching.md) | TokenBatchingCalc / FixedTokenBatchingCalc / TokenClippingCalc / CallbackBatchingCalc | TokenBatchingSim | - | Numerical means for random duration; fixed surrogate explicit; physical dynamic cap in DES only; no analytic tails |
 | [Mixed prefill/decode](models/prefill-decode.md) | PrefillDecodeCalc | PrefillDecodeSim | - | Exact infinite-tail CTMC surrogate; approximate first-token/inter-token means, nonphysical estimates flagged; no analytic TTFT/ITL tails |
+| [Input polling and planned iterations](research/serving-input-admission-development.md) | - | IterationAdmissionSim | - | Experimental FCFS input/slot queues and one/two planned GPU batches; failed development accuracy gate, not an established serving predictor |
 | [Unbounded dynamic batching](models/dynamic-batching.md) | DynamicBatchingCalc | DynamicBatchingSim | - | Poisson, all-waiting dispatch; deterministic/exponential/Erlang/gamma/H2; numerical first w/v moments, not analytic CDFs |
 | M/M/c | MMnrCalc | QsSim | - | Basic model |
 | M/M/n/0 (Erlang B) | ErlangBCalc | QsSim(buffer=0) | - | Loss, M/G/n/0 insensitivity |

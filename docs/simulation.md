@@ -580,6 +580,16 @@ Hand-computed traces and B=1 Lindley recursion validate the implementation.
 The [joint-SLO example](../examples/serving_reservation_slo.py) replays saved
 measurements without a GPU.
 
+`IterationAdmissionSim` adds an experimental input-polling discipline with one
+or two planned GPU batches. An arrival means ready for the input queue;
+`engine_entry_times` marks its next poll, `start_times` marks slot reservation,
+and `first_compute_times` marks execution. W includes input and slot waiting;
+the time population includes unpolled arrivals. CPU operations are instantaneous,
+GPU work is serial, planned actions stay fixed, and terminal results release slots.
+The same finite-cohort `set_sources` / `set_servers` / `run` / `replay` API and
+unchunked envelope apply. [Method, hand checks and development results](research/serving-input-admission-development.md)
+report the failed accuracy gate; this is not an established vLLM predictor.
+
 `KvCacheCongestionSim` is an independent [LPF eviction/restart model](models/kv-cache-congestion.md).
 It tracks integer requests with class and decode age. Runs accept Poisson
 arrivals or exact integer replay and stop without drain; caps are integers,

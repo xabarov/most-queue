@@ -295,3 +295,26 @@ admission before `QUEUED`, with finer input-queue and client-setup timestamps.
 One allocation used 1597 seconds, estimated $0.266660 including disk; the pod
 is confirmed absent and the campaign is closed. Export recovery and its original
 controller error are retained in the report.
+
+## CPU input-admission prototype: mixed development result
+
+The subsequent [local development study](research/serving-input-admission-development.md)
+replays all 1978 nonwarmup requests in 233 series from three compatible campaigns.
+`IterationAdmissionSim` explicitly separates input polling, slot reservation and
+one/two planned iterations. Server costs remain frozen; common ready/delivery
+costs use only 40 idle probes. New predictions consume client arrivals and lengths.
+
+Across all 16 open-loop series, the primary candidate reduces maximum 250-ms /
+35-ms SLO fraction error from 42.86 to 25.27 points, but increases request-level
+client-TTFT MAE from 193.630 to 364.584 ms. The prespecified gate fails: this
+candidate is not promoted as a replacement for v2, and no new paid evaluation
+is prepared. These are development results, not fresh validation.
+
+```bash
+PYTHONPATH=. python examples/serving_input_admission.py
+python docs/figures/plot_input_admission.py
+```
+
+The report includes every variant and series, a complete request-level gzip
+archive, failed checks and original-data provenance. APIs are available in the
+source checkout; they are not part of the previously published 2.12 wheel.

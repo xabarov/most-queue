@@ -12,6 +12,12 @@ TTFT и ITL по длинам входа/вывода, интенсивност�
 
 [English](prefill-decode.md) · [Каталог моделей](../models.ru.md)
 
+Экспериментальный `IterationAdmissionSim` добавляет входной опрос до QUEUED
+и одну/две заранее запланированные итерации. [Сравнение на 1978 запросах](../research/serving-input-admission-development.md)
+улучшило доли жёсткого SLO, но увеличило ошибку TTFT под нагрузкой и не прошло
+заданный критерий продолжения. Модель остаётся инструментом исследования
+дисциплины; прежние политики и коэффициенты сохранены.
+
 Отдельный [стадийный mean TTFT calculator](stage-aware-ttft.ru.md) учитывает
 достигнутые токены и остатки итераций. Он не меняет literal Л3: B=1 — PK,
 B>1 — finite-loss либо отдельный infinite calculator с analytic truncation

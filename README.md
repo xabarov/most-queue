@@ -62,6 +62,11 @@ locates the added delay under load between request preparation and scheduler
 paired controls and offline plots are included. Fixed-v2 tight-SLO fraction
 errors still reach 42.86 percentage points; no new model was fitted.
 
+The [CPU input-admission prototype](docs/research/serving-input-admission-development.md)
+now covers 1978 saved requests. It improves tight-SLO fractions but increases
+loaded TTFT error and fails its recorded acceptance gate. All variants and
+offline reproduction are retained; it is not promoted as a replacement for v2.
+
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local
 truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means
