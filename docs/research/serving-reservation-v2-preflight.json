@@ -1,0 +1,61 @@
+{
+  "epoch": 1794671183.0253487,
+  "offer": {
+    "availability": "LOW",
+    "community": false,
+    "cudaVersions": [
+      {
+        "available": true,
+        "version": "13.2"
+      }
+    ],
+    "dataCenters": [
+      {
+        "availability": "LOW",
+        "id": "CA-MTL-1",
+        "name": "CA-MTL-1"
+      },
+      {
+        "availability": "LOW",
+        "id": "EU-SE-1",
+        "name": "EU-SE-1"
+      }
+    ],
+    "id": "NVIDIA A40",
+    "manufacturer": "NVIDIA",
+    "maxCount": {
+      "community": 1,
+      "secure": 10
+    },
+    "memory": 48,
+    "minRam": 50,
+    "minVcpuCount": 9,
+    "name": "A40",
+    "pool": "AMPERE_48",
+    "price": {
+      "community": 0.35,
+      "secure": 0.59,
+      "serverless": 1.22
+    },
+    "secure": true
+  },
+  "plan": {
+    "gpu_id": "NVIDIA A40",
+    "cloud": "SECURE",
+    "gpu_count": 1,
+    "compute_usd_per_hour": 0.59,
+    "storage_usd_per_hour": 0.011112,
+    "work_seconds": 4500,
+    "container_disk_gb": 80,
+    "persistent_disk_gb": 0,
+    "network_volume_ids": []
+  },
+  "decision": {
+    "allowed": false,
+    "reasons": [
+      "Explicit authorization is required"
+    ],
+    "projected_total_usd": 0.901668
+  },
+  "owned_active_pods": 0
+}

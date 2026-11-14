@@ -267,6 +267,8 @@ class PrefillDecodeSimResults(QueueResults):
 
     ITL averages actual gaps AFTER the first output token (undefined for m=1).
     first_decode_mean includes the gap from prefill completion to first token.
+    first_compute_times marks first model execution, separately from admission
+    start_times; advance reservation may precede the first compute iteration.
     Neither is the analytical mean-occupancy surrogate.
     """
 
@@ -287,6 +289,7 @@ class PrefillDecodeSimResults(QueueResults):
     completion_times: list[float] = field(default_factory=list)
     output_times: list[list[float]] = field(default_factory=list)
     iteration_trace: list[dict] = field(default_factory=list)
+    first_compute_times: list[float] = field(default_factory=list)
 
 
 @dataclass

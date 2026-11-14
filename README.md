@@ -46,6 +46,12 @@ now includes 721 raw requests, exact server arrivals and an offline replay examp
 Frozen isolated and prescribed-arrival checks passed; burst errors and stage-timing
 limitations are published alongside the results. Reproduce from source without renting a GPU.
 
+The new [joint client-SLO example](examples/serving_reservation_slo.py) compares
+two scheduling policies and reports which requests meet **both TTFT and TPOT**.
+Run `PYTHONPATH=. python examples/serving_reservation_slo.py` from the checkout.
+Its [development results and limits](docs/research/serving-v2-model-audit.md)
+are explicit; fresh validation of the revised policy is pending.
+
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local
 truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means

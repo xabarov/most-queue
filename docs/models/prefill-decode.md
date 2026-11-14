@@ -4,6 +4,13 @@ For request-level measurements, isolated cost fitting and joint TTFT/TPOT SLOs,
 see [serving measurements](../serving_measurements.md). The public-data pilot
 rejects a simple TTFT fit; it does not validate this surrogate under GPU load.
 
+The separate `AdvanceReservationSim` reserves available slots during an ongoing
+iteration and emits the first token at prefill completion. It retains this
+model as its baseline; see the [source audit and A40 development comparison](../research/serving-v2-model-audit.md)
+and [joint client-SLO example](../../examples/serving_reservation_slo.py).
+The revised policy still requires fresh validation and does not reproduce
+vLLM's full asynchronous pipeline.
+
 The three-parameter model of [Ramani and Tantawi](https://arxiv.org/html/2609.20957v1)
 predicts mean first-token and inter-token latency from prompt length, output
 length, arrival rate and accelerator costs. The occupancy calculation is exact

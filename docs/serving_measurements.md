@@ -212,3 +212,25 @@ stage timing remained approximate. Near-zero queue wait passed an absolute
 tolerance induced by the 50-ms denominator floor; ordinary relative accuracy
 near zero is not established. All six loaded series and all 36 burst results,
 including these discrepancies, are retained in the report and raw fixture.
+
+## Advance reservation and a joint client SLO
+
+The source checkout adds `AdvanceReservationSim`, `fit_advance_reservation`
+and `replay_advance_reservation`. Completed prefill emits the first token;
+available slots can be reserved while an earlier iteration runs. This makes
+reservation and compute start separate timestamps. The original simulator and
+fit are retained. [Policy, equations and source audit](research/serving-v2-model-audit.md).
+
+```bash
+PYTHONPATH=. python examples/serving_reservation_slo.py \
+  --frozen-fit configs/runpod/reservation-v2-fit.json
+```
+
+The example compares both policies using exact engine arrivals and shows paired
+client TTFT/TPOT pass fractions, including false passes and false failures.
+Server costs and the affine client residual are fitted separately on the
+original 27 isolated training requests. The other v1 observations became
+development data when selecting this new policy; the displayed improvements
+are not fresh validation. [Fresh-validation plan](research/serving-reservation-v2-plan.md).
+Small-prompt burst client TTFT remains a weak point (up to 33.2% mean error).
+The example makes no stationary capacity or production SLO guarantee.

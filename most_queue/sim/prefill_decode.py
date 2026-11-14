@@ -28,6 +28,9 @@ class PrefillDecodeSim:
     replay() accepts individual integer lengths and an ordered arrival trace.
     """
 
+    _reserve_on_arrival = False
+    _emit_on_prefill = False
+
     def __init__(self, batch_cap=256, token_budget=8192, seed=None, max_iterations=2_000_000):
         if isinstance(batch_cap, bool) or not isinstance(batch_cap, int) or batch_cap < 1:
             raise ValueError("batch_cap must be a positive integer")
@@ -112,6 +115,7 @@ class PrefillDecodeSim:
         inputs, outputs = np.asarray(inputs, dtype=int), np.asarray(outputs, dtype=int)
         count = len(arrivals)
         starts, pref_end, completes = np.zeros(count), np.zeros(count), np.zeros(count)
+        first_compute = np.full(count, np.nan)
         processed = np.zeros(count, dtype=int)
         tokens = [[] for _ in range(count)]
         queued, active = deque(), []
@@ -133,22 +137,27 @@ class PrefillDecodeSim:
             busy_area += dt * bool(active)
             now = target
 
+        def admit():
+            while queued and len(active) < self.batch_cap:
+                job = queued.popleft()
+                starts[job] = now
+                active.append(job)
+
         def accept_until(boundary):
             nonlocal cursor
             while cursor < count and arrivals[cursor] <= boundary:
                 advance(float(arrivals[cursor]))
                 queued.append(cursor)
                 cursor += 1
+                if self._reserve_on_arrival:
+                    admit()
             advance(boundary)
 
         iterations = 0
         while cursor < count or active or queued:
             if not active and not queued:
                 accept_until(float(arrivals[cursor]))
-            while queued and len(active) < self.batch_cap:
-                job = queued.popleft()
-                starts[job] = now
-                active.append(job)
+            admit()
             decoders = [j for j in active if processed[j] >= inputs[j]]
             prefills = [j for j in active if processed[j] < inputs[j]]
             remaining = math.inf if self.token_budget is None else self.token_budget - len(decoders)
@@ -173,6 +182,9 @@ class PrefillDecodeSim:
             iterations += 1
             if iterations > self.max_iterations:
                 raise RuntimeError("max_iterations exhausted; increase the explicit simulation budget")
+            for job, _, _ in actions:
+                if np.isnan(first_compute[job]):
+                    first_compute[job] = now
             if record_iterations:
                 trace.append(
                     {
@@ -190,7 +202,8 @@ class PrefillDecodeSim:
                 if stage == "prefill":
                     if processed[job] == inputs[job]:
                         pref_end[job] = finish
-                else:
+                emits = stage == "decode" or (self._emit_on_prefill and processed[job] == inputs[job])
+                if emits:
                     tokens[job].append(finish)
                     if len(tokens[job]) == outputs[job]:
                         completes[job] = finish
@@ -226,6 +239,7 @@ class PrefillDecodeSim:
             waiting_probability=float(np.mean(waits > 0)),
             observation_time=float(observation),
             start_times=starts.tolist(),
+            first_compute_times=first_compute.tolist(),
             prefill_end_times=pref_end.tolist(),
             completion_times=completes.tolist(),
             output_times=tokens,

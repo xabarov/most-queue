@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "frozen_at_utc": "2026-11-14T15:56:54.263545+00:00",
+  "base_commit": "34b322eeb3a40d9c410cbd114b945f3dc3b6dd90",
+  "scope": "Exact working-tree files frozen before new measurements; base_commit predates this change. No paid resources allocated.",
+  "files": {
+    "configs/runpod/reservation-v2-fit.json": "0960900cce097706e4c2a963035ced0b8004d2f88c9159a4df175b420cb80776",
+    "configs/runpod/reservation-v2-profile.json": "7667d986a783120c7bb61e63be041e37774df698a4e53dd57e97b893cf65fda4",
+    "configs/runpod/reservation-v2-workload.json": "b729bd4887ed5b4ee141800e4d90d57b6d5d8c5b0aca3708550202f76e4e7308",
+    "most_queue/sim/prefill_decode.py": "29d3a4b55478a1614509cee13a03c33baa7c50f10e5863409ce4e747db8c6708",
+    "most_queue/sim/advance_reservation.py": "3d46f43f6d676d92dee4760099929a942013ea98e21b52d4f1b494e181e7a221",
+    "most_queue/structs.py": "8ffac00179b7677aa8c861d8008e7860980c74b89cdd0a1e43257c88f52dfcc6",
+    "most_queue/theory/continuous_batching/serving_calibration.py": "7ebe923dfc826a638b5d000db4bbc5df6cbc7e0520dd0153619eadc1b24f633b",
+    "most_queue/theory/continuous_batching/serving_validation.py": "db0f84d14921c3a4bea3565db83dee675dd693bfe1293c9fe61caace5348bd43",
+    "most_queue/theory/continuous_batching/advance_reservation_calibration.py": "9adb1bb771891dd86e759301124176e702ac84224ec70f2df2f38ab13b7e0d46",
+    "most_queue/theory/continuous_batching/advance_reservation_validation.py": "c5c93b07b103d069ccb1a3ffc8986d18c5f19fbe303e279d2e8a8bc242d22902",
+    "most_queue/io/runpod.py": "30ae2224fb45e2181fe8484fd50b9e75d34d733c0fddf485eb7b6057ac626401",
+    "most_queue/io/serving.py": "62832b82d859c0149f3c939ef91fa87ef720d1726cf9752253a68070b701f31f",
+    "examples/serving_reservation_slo.py": "cbe1ea48c7babf517924d2e6ca050ab01cb47f0c3a07a4715c5860074b46d3e1",
+    "tools/audit_reservation_validation.py": "edb95294286f9ec5ed7ffddeef0f3f414b5fc145dc365637bf108f316c17ab81",
+    "tools/runpod_calibration_workload.py": "aca50b36b3eeee8b47c60eead775f69afaca554505aff9cdf40ba8b95a740022",
+    "tools/runpod_vllm_server.py": "d1a8b740d9fb65d1163046766e0e85027e7fb5bdf74c9cb4e3f178dfb28295a2",
+    "tools/runpod_workload.py": "75c8c48eac614ec208428159d0b48c75cbcfd27289dc8467662caf93c6f066b2",
+    "docs/research/serving-reservation-v2-plan.md": "7b14a3a9b91a7180f585d5df63c16a7229be52b58ddc5353a209c98f9f74d5be"
+  }
+}

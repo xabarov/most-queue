@@ -1,0 +1,18 @@
+{
+  "authorized": false,
+  "campaign_budget_usd": 5.0,
+  "max_compute_usd_per_hour": 0.75,
+  "max_total_usd_per_hour": 0.77,
+  "max_campaign_seconds": 14400,
+  "cleanup_reserve_seconds": 900,
+  "max_allocations": 2,
+  "max_concurrent_pods": 1,
+  "allowed_gpu_ids": [
+    "NVIDIA A40"
+  ],
+  "allowed_cloud": "SECURE",
+  "gpu_count": 1,
+  "max_container_disk_gb": 80,
+  "max_persistent_disk_gb": 0,
+  "allow_network_volume": false
+}

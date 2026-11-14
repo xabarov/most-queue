@@ -566,6 +566,20 @@ Its sibling `PrefillDecodeCalc` solves a Markovian surrogate; agreement with
 that approximation is not an exact DES oracle. See the
 [independent M/D/1 and trace checks](research/prefill-decode-validation-2026.md).
 
+`AdvanceReservationSim` uses the same generated/replay interface with a distinct
+policy: free active slots are reserved immediately on arrival, running actions
+remain fixed, and completed prefill emits the first output token. It reports
+`start_times` for reservation and `first_compute_times` for actual model execution.
+`first_decode_mean` is zero; `all_decode_mean` retains normalization by total
+output count, including the token emitted by prefill. Its conservative
+`batch_cap * max(input_tokens) <= token_budget` envelope prevents chunking.
+The original simulator's policy is unchanged. This is an approximation of
+advance scheduling, not exact vLLM execution; see the
+[source audit, equations and development comparison](research/serving-v2-model-audit.md).
+Hand-computed traces and B=1 Lindley recursion validate the implementation.
+The [joint-SLO example](../examples/serving_reservation_slo.py) replays saved
+measurements without a GPU.
+
 `KvCacheCongestionSim` is an independent [LPF eviction/restart model](models/kv-cache-congestion.md).
 It tracks integer requests with class and decode age. Runs accept Poisson
 arrivals or exact integer replay and stop without drain; caps are integers,
