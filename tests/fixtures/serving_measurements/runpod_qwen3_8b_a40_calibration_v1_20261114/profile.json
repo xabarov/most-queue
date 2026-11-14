@@ -1,0 +1,42 @@
+{
+  "campaign_id": "serving-calibration-v1-2026-11-14",
+  "container_disk_gb": 80,
+  "image": "vllm/vllm-openai@sha256:6ee133356d49ed24cee03dd0cda3d3980279a11c107ce3e752c89e76540f41c9",
+  "image_tag": "vllm/vllm-openai:v0.32.0",
+  "measurement_timeout_seconds": 2700,
+  "min_cuda_version": "13.0",
+  "model": "Qwen/Qwen3-8B",
+  "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+  "schema_version": 1,
+  "seed": 2026111402,
+  "server_args": [
+    "--dtype",
+    "bfloat16",
+    "--max-model-len",
+    "4608",
+    "--max-num-seqs",
+    "4",
+    "--max-num-batched-tokens",
+    "18432",
+    "--tensor-parallel-size",
+    "1",
+    "--gpu-memory-utilization",
+    "0.85",
+    "--no-enable-prefix-caching",
+    "--no-enable-chunked-prefill",
+    "--enforce-eager",
+    "--enable-per-request-metrics",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8000"
+  ],
+  "server_bootstrap": "tools/runpod_vllm_server.py",
+  "storage_usd_per_hour": 0.011112,
+  "work_seconds": 4500,
+  "workload_config": "configs/runpod/calibration-workload.json",
+  "workload_script": "tools/runpod_calibration_workload.py",
+  "workload_support": [
+    "tools/runpod_workload.py"
+  ]
+}

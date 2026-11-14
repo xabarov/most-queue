@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "input_lengths": [
+    128,
+    1024,
+    4096
+  ],
+  "output_lengths": [
+    32,
+    128,
+    512
+  ],
+  "train_repetitions": [
+    1,
+    2,
+    3
+  ],
+  "isolated_validation_repetitions": [
+    4
+  ],
+  "burst_concurrencies": [
+    2,
+    4
+  ],
+  "burst_repetitions": [
+    1,
+    2
+  ],
+  "open_loop_rates": [
+    0.2,
+    0.5,
+    0.8
+  ],
+  "open_loop_seconds": 180,
+  "open_loop_seeds": [
+    54101,
+    54102
+  ],
+  "workload_timeout_seconds": 2700,
+  "request_timeout_seconds": 120,
+  "max_in_flight": 64,
+  "max_requests": 1000
+}

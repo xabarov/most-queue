@@ -7,6 +7,12 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
         args: ['--maxkb', '2048']  # allow assets (banner images up to ~2MB)
+        exclude: ^tests/fixtures/serving_measurements/runpod_qwen3_8b_a40_calibration_v1_20261114/requests\.jsonl\.gz$
+      # This audited 721-request trace is ~2.3 MiB; retain a separate 3-MiB cap.
+      - id: check-added-large-files
+        name: Check serving calibration trace size
+        args: ['--maxkb', '3072']
+        files: ^tests/fixtures/serving_measurements/runpod_qwen3_8b_a40_calibration_v1_20261114/requests\.jsonl\.gz$
       - id: check-json
       - id: check-toml
 

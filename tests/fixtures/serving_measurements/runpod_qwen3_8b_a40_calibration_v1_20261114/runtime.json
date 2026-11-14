@@ -1,0 +1,1 @@
+{"cuda": "13.0", "gpu": "NVIDIA A40", "memory_bytes": 47699722240, "torch": "2.13.0+cu130", "vllm": "0.32.0"}

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "measurement_date": "2026-11-14",
+  "source": "self-generated synthetic serving calibration v1",
+  "measurement_profile": "runpod-qwen3-8b-a40-timestamps-calibration-v1-20261114",
+  "source_export_checksums_verified": true,
+  "cleanup_confirmed_before_packaging": true,
+  "checkpoint_prefix_verified": true,
+  "uncompressed_requests_bytes": 62658828,
+  "uncompressed_requests_sha256": "20225a34005812456129eb0fbc840f70a7e1ed2bf7c73ecb0b337b73f43f7a88",
+  "analysis_frozen_epoch": 1794666692.995528,
+  "pre_measurement_source_sha256": {
+    "docs/research/serving-calibration-v1-plan.md": "b3e78c58609d3d65b5367c5c89147e3c86f75ffa0591d1bdf1726ad2042c86de",
+    "configs/runpod/calibration-profile.json": "50a47fc8e1f81827c1320f39c9909932310eba183c184fbb2ca0f3a1c7b50cd4",
+    "configs/runpod/calibration-workload.json": "33d1cabef16f873ab23c2d662256f00a2afcb447533e482cbe9eb87962c395c0",
+    "configs/runpod/calibration-policy.json": "d4d8eaecca5481a0c97b87fd9df69f5154cdf8b03f10afa9424ad270808019f1",
+    "tools/runpod_workload.py": "75c8c48eac614ec208428159d0b48c75cbcfd27289dc8467662caf93c6f066b2",
+    "tools/runpod_calibration_workload.py": "aca50b36b3eeee8b47c60eead775f69afaca554505aff9cdf40ba8b95a740022",
+    "tools/runpod_vllm_server.py": "d1a8b740d9fb65d1163046766e0e85027e7fb5bdf74c9cb4e3f178dfb28295a2",
+    "tools/runpod_pilot.py": "705188abcf561c4a343a155512fe3238bb3695fd5083355b6a4cc5b89ce3ee44",
+    "examples/runpod_serving_calibration.py": "1ddb6420b1941b5e0d2de655de6ce344876cce9589b04952f268069d0366e41b",
+    "most_queue/io/runpod.py": "30ae2224fb45e2181fe8484fd50b9e75d34d733c0fddf485eb7b6057ac626401",
+    "most_queue/io/serving.py": "62832b82d859c0149f3c939ef91fa87ef720d1726cf9752253a68070b701f31f",
+    "most_queue/theory/continuous_batching/serving_calibration.py": "7ebe923dfc826a638b5d000db4bbc5df6cbc7e0520dd0153619eadc1b24f633b",
+    "most_queue/theory/continuous_batching/serving_validation.py": "db0f84d14921c3a4bea3565db83dee675dd693bfe1293c9fe61caace5348bd43"
+  },
+  "analysis_correction": {
+    "epoch": 1794667486.6077516,
+    "scope": "legacy-pilot offline example only",
+    "correction": "The six legacy isolated observations with varying input lengths have design rank4 and scaled condition3.0220937576758495 despite constant output128. An exploratory fit is identifiable. No prespecified holdout or exact engine arrival timestamps exist in that legacy pilot.",
+    "new_campaign_unchanged": [
+      "27-request training selection",
+      "NNLS estimator",
+      "DES replay method",
+      "validation split",
+      "acceptance thresholds",
+      "request schedule"
+    ]
+  },
+  "sha256": {
+    "LICENSE": "ec423cc5506eea1ffbfc9955c3ec8f86139996963d84ff306a5ee41eda8a4ff1",
+    "README.md": "2b5d5420b577a05ffc55b4ee41c8a95ebd451f14774daca48b1291fa0f34d1aa",
+    "analysis-plan.md": "b3e78c58609d3d65b5367c5c89147e3c86f75ffa0591d1bdf1726ad2042c86de",
+    "plan.json": "0b08e34ad929e5ce667de851764b0c5f852d892ee16ae059b93d33912f6478a3",
+    "profile.json": "9316b43ec97101511b4398f90033b3e4ed7ea87ed64d82bacc5c49bb720c10a7",
+    "requests.jsonl.gz": "b407d000e2b4e8d82b7f05c3b5c08598e7f2acbe6988cdb5e570f5e31cd18582",
+    "runtime.json": "5de1c291fff4f954da71213917d7550b73f808122bb24de928199c02daef64b7",
+    "series.json": "6e34b67e06a2ff427c71cf5e499ba2b7fb93b10340a98880ea7c3a75169e3255",
+    "server_timestamps.jsonl.gz": "a1788f7c04e532966c48ed02dd68b800d109b2bb5d1eadcab820671fa05a63ff",
+    "summary.json": "9c26dde46507f099e3c0735767b3597650d9cf348bd78918e6646b411d759dbe"
+  },
+  "uncompressed_server_timestamps_bytes": 217084,
+  "uncompressed_server_timestamps_sha256": "4b2a8d9cd6088a611e73d079290d0a65919ff92bf066f484cc60d57a8cf60705",
+  "analysis_used_source_sha256": {
+    "examples/runpod_serving_calibration.py": "64ae45eebbaa2d025542382ddd1ddf17f900f2506f4bef7135081abcf50c8ee8",
+    "most_queue/io/runpod.py": "30ae2224fb45e2181fe8484fd50b9e75d34d733c0fddf485eb7b6057ac626401",
+    "most_queue/io/serving.py": "62832b82d859c0149f3c939ef91fa87ef720d1726cf9752253a68070b701f31f",
+    "most_queue/theory/continuous_batching/serving_calibration.py": "7ebe923dfc826a638b5d000db4bbc5df6cbc7e0520dd0153619eadc1b24f633b",
+    "most_queue/theory/continuous_batching/serving_validation.py": "db0f84d14921c3a4bea3565db83dee675dd693bfe1293c9fe61caace5348bd43",
+    "most_queue/sim/prefill_decode.py": "a71e1c1ae6ec84ab4b45c7a4eb6907fef3695458eb3e2e887114d120b1b1307a"
+  }
+}

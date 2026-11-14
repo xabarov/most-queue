@@ -40,6 +40,36 @@ REMOTE = "/tmp/most-queue-pilot"
 POD_FIELDS = ("id", "name", "image", "cost", "gpu", "cloud", "disk", "mounts", "cudaVersion", "dataCenterId")
 
 
+def workload_files(profile):
+    """Resolve the public files locally, preserving legacy workload.py naming."""
+    script = profile.get("workload_script", "tools/runpod_workload.py")
+    sources = [(script, Path(script).name if "workload_script" in profile else "workload.py")]
+    support = profile.get("workload_support", [])
+    if not isinstance(support, list):
+        raise LifecycleError("workload_support must be a list of repository paths")
+    sources.extend((source, Path(source).name) for source in support)
+    for field in ("workload_config", "server_bootstrap"):
+        if field in profile:
+            sources.append((profile[field], Path(profile[field]).name))
+    files = {}
+    for source, remote_name in sources:
+        path = (ROOT / source).resolve()
+        if not path.is_relative_to(ROOT.resolve()) or not path.is_file():
+            raise LifecycleError("Workload files must exist inside the repository")
+        if remote_name in files and files[remote_name] != path:
+            raise LifecycleError("Workload files have colliding remote base names")
+        files[remote_name] = path
+    return [(source, remote_name) for remote_name, source in files.items()]
+
+
+def measurement_timeout(profile):
+    """Validate the measurement window before allocation, defaulting to legacy."""
+    seconds = profile.get("measurement_timeout_seconds", 900)
+    if type(seconds) not in (int, float) or not math.isfinite(seconds) or seconds <= 0:
+        raise LifecycleError("measurement_timeout_seconds must be finite and positive")
+    return seconds
+
+
 def event(message, **values):
     """Print only deliberate non-secret operational facts."""
     print(json.dumps({"event": message, **values}), flush=True)
@@ -268,27 +298,35 @@ class Pilot:
             time.sleep(5)
 
     def upload_workload(self):
-        """Upload only the public measurement program, with a checksum."""
-        raw = (ROOT / "tools/runpod_workload.py").read_bytes()
-        encoded = base64.b64encode(raw).decode()
+        """Upload the listed public workload files, verifying each checksum."""
         script = (
             "import base64,hashlib,pathlib,sys; p=pathlib.Path(sys.argv[1]); "
             "p.parent.mkdir(parents=True,exist_ok=True); b=base64.b64decode(''.join(sys.argv[3:])); "
             "assert hashlib.sha256(b).hexdigest()==sys.argv[2]; p.write_bytes(b)"
         )
-        self.remote(
-            ["python3", "-c", script, REMOTE + "/workload.py", hashlib.sha256(raw).hexdigest()]
-            + [encoded[i : i + 4000] for i in range(0, len(encoded), 4000)]
-        )
+        for source, remote_name in workload_files(self.attempt["profile"]):
+            raw = source.read_bytes()
+            encoded = base64.b64encode(raw).decode()
+            self.remote(
+                ["python3", "-c", script, REMOTE + "/" + remote_name, hashlib.sha256(raw).hexdigest()]
+                + [encoded[i : i + 4000] for i in range(0, len(encoded), 4000)]
+            )
 
     def start_server(self):
         """Start pinned vLLM on loopback with no externally accessible endpoint."""
         self.set_stage("model_load_and_warmup", 1200)
         self.upload_workload()
         profile = self.attempt["profile"]
-        command = [
-            "vllm",
-            "serve",
+        command = ["vllm", "serve"]
+        if "server_bootstrap" in profile:
+            command = [
+                "python3",
+                REMOTE + "/" + Path(profile["server_bootstrap"]).name,
+                "--trace-path",
+                REMOTE + "/server_timestamps.jsonl",
+                "--",
+            ]
+        command += [
             profile["model"],
             "--revision",
             profile["revision"],
@@ -341,22 +379,29 @@ print(json.dumps({'healthy':healthy,'log_tail':tail,'log_size':log.stat().st_siz
         return data
 
     def measure(self):
-        """Collect warmup and fixed burst batches, preserving every result."""
-        self.set_stage("measurements", 950)
+        """Run the configured measurements within work and wrapper deadlines."""
         profile = self.attempt["profile"]
+        seconds = measurement_timeout(profile)
+        self.set_stage("measurements", seconds + 50)
+        remote_name = Path(profile["workload_script"]).name if "workload_script" in profile else "workload.py"
         command = [
             "python3",
-            REMOTE + "/workload.py",
+            REMOTE + "/" + remote_name,
             REMOTE + "/measurements",
             "--model",
             profile["model"],
             "--seed",
             str(profile["seed"]),
         ]
+        if "workload_config" in profile:
+            command += ["--config", REMOTE + "/" + Path(profile["workload_config"]).name]
+        if "server_bootstrap" in profile:
+            command += ["--server-trace", REMOTE + "/server_timestamps.jsonl"]
         wrapper = (
             "import json,pathlib,subprocess,sys; p=pathlib.Path(sys.argv[1]); "
             "f=(p/'workload.log').open('wb'); r=subprocess.run(json.loads(sys.argv[2]),"
-            "stdout=f,stderr=subprocess.STDOUT,timeout=930); (p/'workload.exit').write_text(str(r.returncode))"
+            f"stdout=f,stderr=subprocess.STDOUT,timeout={seconds + 30!r}); "
+            "(p/'workload.exit').write_text(str(r.returncode))"
         )
         launcher = (
             "import subprocess,sys; subprocess.Popen(['python3','-c',sys.argv[1],sys.argv[2],sys.argv[3]],"
@@ -514,6 +559,8 @@ def prepare_attempt(state, policy, profile, plan, offer, ledger):
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments
 def run_campaign(client, state, policy, profile, project_env, perform=False):
     """Preflight without side effects on Runpod; allocate only in explicit run mode."""
+    workload_files(profile)
+    measurement_timeout(profile)
     state.mkdir(parents=True, exist_ok=True, mode=0o700)
     with (state / "campaign.lock").open("a") as lock:
         try:
@@ -615,6 +662,7 @@ def main():
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--project-env", type=Path, default=ROOT / ".env")
     parser.add_argument("--profile", type=Path, default=ROOT / "configs/runpod/serving-profile.json")
+    parser.add_argument("--policy", type=Path, default=ROOT / "configs/runpod/pilot.json")
     args = parser.parse_args()
     if args.command == "stop":
         stop_campaign(args.state_dir)
@@ -629,7 +677,7 @@ def main():
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
     try:
-        policy = read_json(ROOT / "configs/runpod/pilot.json")
+        policy = read_json(args.policy)
         profile = read_json(args.profile)
         if "@sha256:" not in profile["image"]:
             raise LifecycleError("Container image must be pinned by digest")

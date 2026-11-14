@@ -41,6 +41,11 @@ model](docs/serving_measurements.md) with detailed vLLM/SGLang imports, public G
 measurements and a held-out calibration report. The report retains failed model
 validation as well as successful checks.
 
+[Measured A40/Qwen3-8B calibration](docs/research/serving-calibration-v1-results.md)
+now includes 721 raw requests, exact server arrivals and an offline replay example.
+Frozen isolated and prescribed-arrival checks passed; burst errors and stage-timing
+limitations are published alongside the results. Reproduce from source without renting a GPU.
+
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local
 truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means

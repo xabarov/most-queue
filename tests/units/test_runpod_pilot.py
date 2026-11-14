@@ -1,6 +1,8 @@
 """Offline controller contracts: accounting, immutable bounds and safe artifacts."""
 
+import base64
 import copy
+import hashlib
 import io
 import json
 import math
@@ -352,3 +354,197 @@ def test_existing_most_queue_pod_blocks_preflight(inputs, tmp_path):
     with pytest.raises(LifecycleError, match="existing Most-Queue"):
         pilot.run_campaign(client, tmp_path, policy, profile, tmp_path / "unused.env", perform=False)
     assert not any(path.startswith("/catalog/") for _, path in client.calls)
+
+
+@pytest.fixture(name="serving_profile")
+def fixture_serving_profile():
+    """Read the prepared public calibration profile for offline command checks."""
+    return json.loads((pilot.ROOT / "configs/runpod/calibration-profile.json").read_text())
+
+
+@pytest.mark.parametrize("configured", [False, True])
+def test_upload_preserves_configured_base_names_and_legacy_name(tmp_path, monkeypatch, serving_profile, configured):
+    """Every public source is sent once with a matching content checksum."""
+    profile = serving_profile if configured else {}
+    instance = pilot.Pilot(None, tmp_path, {"profile": profile, "work_deadline_epoch": 1e20})
+    commands = []
+    monkeypatch.setattr(instance, "remote", commands.append)
+    instance.upload_workload()
+    expected_names = (
+        {"runpod_calibration_workload.py", "runpod_workload.py", "calibration-workload.json", "runpod_vllm_server.py"}
+        if configured
+        else {"workload.py"}
+    )
+    assert {command[3].rsplit("/", 1)[1] for command in commands} == expected_names
+    files = {name: source for source, name in pilot.workload_files(profile)}
+    for command in commands:
+        assert command[:2] == ["python3", "-c"]
+        assert command[3].startswith(pilot.REMOTE + "/")
+        content = base64.b64decode("".join(command[5:]), validate=True)
+        assert hashlib.sha256(content).hexdigest() == command[4]
+        assert content == files[command[3].rsplit("/", 1)[1]].read_bytes()
+        compile(command[2], "<upload>", "exec")
+
+
+@pytest.mark.parametrize("configured", [False, True])
+def test_server_argv_bootstrap_or_legacy(tmp_path, monkeypatch, serving_profile, configured):
+    """Bootstrap wraps the same pinned model/revision/server args on loopback."""
+    profile = copy.deepcopy(serving_profile)
+    if not configured:
+        for field in (
+            "workload_script",
+            "workload_support",
+            "workload_config",
+            "server_bootstrap",
+            "measurement_timeout_seconds",
+        ):
+            profile.pop(field)
+    instance = pilot.Pilot(None, tmp_path, {"profile": profile, "work_deadline_epoch": 1e20})
+    commands = []
+    stages = []
+    monkeypatch.setattr(instance, "remote", commands.append)
+    monkeypatch.setattr(instance, "set_stage", lambda name, seconds: stages.append((name, seconds)))
+    monkeypatch.setattr(instance, "probe", lambda: {"healthy": True})
+    instance.start_server()
+    command = json.loads(commands[-1][4])
+    if configured:
+        assert command[:6] == [
+            "python3",
+            pilot.REMOTE + "/runpod_vllm_server.py",
+            "--trace-path",
+            pilot.REMOTE + "/server_timestamps.jsonl",
+            "--",
+            profile["model"],
+        ]
+        assert "serve" not in command
+    else:
+        assert command[:3] == ["vllm", "serve", profile["model"]]
+    assert command[-len(profile["server_args"]) :] == profile["server_args"]
+    assert command[command.index("--revision") + 1] == profile["revision"]
+    assert command[command.index("--tokenizer-revision") + 1] == profile["revision"]
+    assert command[command.index("--seed") + 1] == str(profile["seed"])
+    assert stages == [("model_load_and_warmup", 1200)]
+
+
+@pytest.mark.parametrize("configured", [False, True])
+def test_measurement_argv_and_bounded_margins(tmp_path, monkeypatch, serving_profile, configured):
+    """Calibration gets 2700 seconds; old profiles keep 930/950 wrapper/stage."""
+    profile = copy.deepcopy(serving_profile)
+    if not configured:
+        for field in (
+            "workload_script",
+            "workload_support",
+            "workload_config",
+            "server_bootstrap",
+            "measurement_timeout_seconds",
+        ):
+            profile.pop(field)
+    instance = pilot.Pilot(None, tmp_path, {"profile": profile, "work_deadline_epoch": 1e20})
+    commands = []
+    stages = []
+    monkeypatch.setattr(instance, "remote", commands.append)
+    monkeypatch.setattr(instance, "set_stage", lambda name, seconds: stages.append((name, seconds)))
+    monkeypatch.setattr(instance, "probe", lambda: {"workload_exit": "0"})
+    assert instance.measure()
+    launch = commands[0]
+    command = json.loads(launch[5])
+    assert command[:2] == [
+        "python3",
+        pilot.REMOTE + ("/runpod_calibration_workload.py" if configured else "/workload.py"),
+    ]
+    assert command[2:7] == [pilot.REMOTE + "/measurements", "--model", profile["model"], "--seed", str(profile["seed"])]
+    if configured:
+        assert command[7:] == [
+            "--config",
+            pilot.REMOTE + "/calibration-workload.json",
+            "--server-trace",
+            pilot.REMOTE + "/server_timestamps.jsonl",
+        ]
+        assert "timeout=2730" in launch[3]
+        assert stages == [("measurements", 2750)]
+    else:
+        assert len(command) == 7
+        assert "timeout=930" in launch[3]
+        assert stages == [("measurements", 950)]
+    compile(launch[2], "<launcher>", "exec")
+    compile(launch[3], "<runtime-wrapper>", "exec")
+
+
+def test_configured_stage_still_clips_to_existing_work_deadline(tmp_path, serving_profile):
+    """Configurable duration cannot expand the immutable spending work window."""
+    instance = pilot.Pilot(None, tmp_path, {"profile": serving_profile, "work_deadline_epoch": 1.0})
+    instance.set_stage("measurements", pilot.measurement_timeout(serving_profile) + 50)
+    assert instance.stage_deadline == 1.0
+    assert json.loads((tmp_path / "stage.json").read_text())["deadline_epoch"] == 1.0
+
+
+@pytest.mark.parametrize("seconds", [None, True, 0, -1, float("nan"), float("inf"), "2700"])
+def test_invalid_measurement_window_fails_before_provider_reads(inputs, tmp_path, seconds):
+    """Invalid local settings cannot reach paid operations or provider calls."""
+    policy, profile, _, _ = inputs
+    profile["measurement_timeout_seconds"] = seconds
+    client = FakeClient()
+    with pytest.raises(LifecycleError, match="finite and positive"):
+        pilot.run_campaign(client, tmp_path, policy, profile, tmp_path / "unused.env", perform=True)
+    assert not client.calls
+
+
+def test_missing_workload_fails_before_provider_reads(inputs, tmp_path):
+    """All configured source files must be present before allocation."""
+    policy, profile, _, _ = inputs
+    profile["workload_script"] = "tools/does-not-exist.py"
+    client = FakeClient()
+    with pytest.raises(LifecycleError, match="exist inside"):
+        pilot.run_campaign(client, tmp_path, policy, profile, tmp_path / "unused.env", perform=True)
+    assert not client.calls
+
+
+def test_upload_rejects_outside_source_and_colliding_base_names(tmp_path, monkeypatch):
+    """Base-name uploads cannot overwrite another configured source."""
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    (repository / "one").mkdir()
+    (repository / "two").mkdir()
+    (repository / "one/script.py").write_text("one")
+    (repository / "two/script.py").write_text("two")
+    (tmp_path / "outside.py").write_text("outside")
+    monkeypatch.setattr(pilot, "ROOT", repository)
+    with pytest.raises(LifecycleError, match="colliding"):
+        pilot.workload_files({"workload_script": "one/script.py", "workload_support": ["two/script.py"]})
+    with pytest.raises(LifecycleError, match="exist inside"):
+        pilot.workload_files({"workload_script": "../outside.py"})
+
+
+@pytest.mark.parametrize("configured", [False, True])
+def test_policy_cli_explicit_or_legacy_default(tmp_path, monkeypatch, serving_profile, configured):
+    """The selected policy reaches the same controller authorization checks."""
+    selected = tmp_path / "policy.json" if configured else pilot.ROOT / "configs/runpod/pilot.json"
+    profile_path = tmp_path / "profile.json"
+    policy = {"authorized": False}
+    paths = []
+    calls = []
+
+    def read(path):
+        paths.append(path)
+        return policy if path == selected else serving_profile
+
+    # Preserve the controller's independent inputs in the CLI test double.
+    # pylint: disable-next=too-many-arguments,too-many-positional-arguments
+    def run(client, state, selected_policy, profile, project_env, perform):
+        calls.append((client, state, selected_policy, profile, project_env, perform))
+        return 0
+
+    argv = ["runpod_pilot.py", "preflight", "--state-dir", str(tmp_path / "state"), "--profile", str(profile_path)]
+    if configured:
+        argv += ["--policy", str(selected)]
+    monkeypatch.setattr(pilot.sys, "argv", argv)
+    monkeypatch.setattr(pilot.signal, "signal", lambda *_args: None)
+    monkeypatch.setattr(pilot, "read_json", read)
+    monkeypatch.setattr(pilot, "load_api_key", lambda _path: "synthetic-key")
+    monkeypatch.setattr(pilot, "RestClient", lambda _key: "fake-client")
+    monkeypatch.setattr(pilot, "run_campaign", run)
+    assert pilot.main() == 0
+    assert paths == [selected, profile_path]
+    assert calls[0][2] is policy
+    assert calls[0][3] is serving_profile
+    assert calls[0][-1] is False

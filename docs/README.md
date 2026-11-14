@@ -22,6 +22,9 @@
   queue-delay probabilities, and truncation bounds; no GPU required
 - **[Serving measurements and joint SLOs](serving_measurements.md)** — detailed
   benchmark imports, real GPU data, isolated calibration and held-out checks
+- **[Measured A40/Qwen3-8B calibration](research/serving-calibration-v1-results.md)**
+  (in Russian) — 721 raw requests, server-arrival replay, frozen acceptance checks
+  and explicit burst limitations; offline reproduction from source
 
 ### For Developers
 - **[Project Overview](PROJECT.md)** (in Russian) — repository layout, conventions, where to find the theory

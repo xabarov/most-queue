@@ -160,3 +160,55 @@ timings. Its [raw streaming fixture](../tests/fixtures/serving_measurements/runp
 uses an explicitly documented schema, separate from the benchmark importers
 above. The burst measurements verify data collection; queue-model calibration
 and validation under a prescribed arrival process remain open.
+
+## Import and replay our Runpod traces
+
+These helpers are available in the current source checkout; PyPI 2.11 predates
+the Runpod import and replay extension.
+
+`most_queue.io.runpod.read_runpod_trace` reads the raw JSONL or gzip fixture,
+keeps failed offers, validates actual token counts, and groups complete series.
+Its `server_ttft` includes queue wait; the raw vLLM 0.32.0 metric
+`time_to_first_token_ms` begins only at scheduling. The separate
+`server_scheduled_to_first_token` and `server_generation_time` fields retain
+these boundaries, and `server_tpot` divides the generation span by output
+tokens minus one. Stream event counts never substitute for token counts.
+
+From a source checkout, the offline smoke-pilot report is:
+
+```bash
+PYTHONPATH=. python examples/runpod_serving_calibration.py --output smoke-report.json
+```
+
+The smoke pilot uses only 128-token outputs, but its varying input lengths give
+the four-parameter calibration matrix full rank. The example reports an
+exploratory fit on its six measured isolated requests. There was no prespecified
+training/validation split, and exact engine arrival timestamps were not saved,
+so neither held-out accuracy nor queue replay is claimed for this pilot. The
+[next frozen experiment plan](research/serving-calibration-v1-plan.md) varies
+input and output lengths and separates 27 training requests from held-out
+isolated, burst and prescribed-arrival series before collecting any new data.
+
+`replay_serving_cohort` in `theory.continuous_batching.serving_validation` uses
+fixed fitted coefficients and exact server queue-entry timestamps. These are
+collected by the pinned observational wrapper; client timestamps are not used
+as a replacement. It reorders requests by server arrival, replays from an empty
+server, and restores the original order for paired errors. Queue wait, client
+TTFT and server TPOT are evaluated separately. The trained client offset is
+added only to predicted client TTFT. No coefficient is fitted on these series.
+
+The replay is a test of the specified `PrefillDecodeSim` approximation. Passing
+a finite-cohort criterion would not prove equivalence to vLLM, stationarity,
+or a production tail-latency guarantee. Failed or incomplete cohorts remain
+auditable and cannot be used as complete validation samples.
+
+The [completed A40/Qwen3-8B campaign](research/serving-calibration-v1-results.md)
+contains 721 successful requests: 21 warmup, 27 training, and 673 held out.
+The frozen isolated and prescribed-arrival criteria passed: isolated median
+TTFT/TPOT errors were 6.099%/0.348%, and loaded mean client-TTFT error was at most
+17.42%. This is bounded validation for the recorded profile. Burst mean client
+TTFT errors reached 35.39%, short-output server TPOT errors reached 28.15%, and
+stage timing remained approximate. Near-zero queue wait passed an absolute
+tolerance induced by the 50-ms denominator floor; ordinary relative accuracy
+near zero is not established. All six loaded series and all 36 burst results,
+including these discrepancies, are retained in the report and raw fixture.

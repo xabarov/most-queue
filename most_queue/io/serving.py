@@ -32,6 +32,8 @@ class ServingRequest:
     client_queue_time: float | None = None
     server_queue_time: float | None = None
     server_ttft: float | None = None
+    server_scheduled_to_first_token: float | None = None
+    server_generation_time: float | None = None
 
     def __post_init__(self):
         if self.status not in {"completed", "failed", "cancelled", "pending"}:
@@ -39,7 +41,15 @@ class ServingRequest:
         for count in (self.input_tokens, self.output_tokens):
             if isinstance(count, bool) or not isinstance(count, (int, np.integer)) or count < 0:
                 raise ValueError("token counts must be nonnegative integers")
-        for value in (self.ttft, self.latency, self.client_queue_time, self.server_queue_time, self.server_ttft):
+        for value in (
+            self.ttft,
+            self.latency,
+            self.client_queue_time,
+            self.server_queue_time,
+            self.server_ttft,
+            self.server_scheduled_to_first_token,
+            self.server_generation_time,
+        ):
             if value is not None and (not math.isfinite(value) or value < 0):
                 raise ValueError("measured durations must be finite and nonnegative, or None")
         if self.status == "completed":
@@ -56,6 +66,13 @@ class ServingRequest:
         if self.status != "completed" or self.output_tokens <= 1:
             return None
         return (self.latency - self.ttft) / (self.output_tokens - 1)
+
+    @property
+    def server_tpot(self):
+        """Server generation span per token after the first, when observed."""
+        if self.status != "completed" or self.output_tokens <= 1 or self.server_generation_time is None:
+            return None
+        return self.server_generation_time / (self.output_tokens - 1)
 
 
 @dataclass(frozen=True)
