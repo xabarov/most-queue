@@ -274,12 +274,29 @@ class Pilot:
         event("allocated", pod_id=self.pod["id"], compute_usd_per_hour=self.pod.get("cost"))
 
     def wait_running(self):
-        """Wait at most ten minutes for container readiness."""
+        """Wait at most ten minutes, allowing thirty seconds for initial visibility.
+
+        GET absence and exec404 share one monotonic grace window; neither
+        renews the stage or progress deadlines or relaxes exact ownership.
+        """
+        visibility_deadline = time.monotonic() + 30
         self.set_stage("infrastructure_ready", 600)
+
+        def wait_visibility():
+            remaining = visibility_deadline - time.monotonic()
+            if remaining <= 0:
+                return False
+            self.check()
+            time.sleep(min(10, remaining))
+            self.check()
+            return True
+
         while True:
             self.check()
             pod = exact_pod(self.client, self.pod["id"], self.attempt["name"], self.attempt["image"])
             if pod is None:
+                if wait_visibility():
+                    continue
                 raise LifecycleError("Pod disappeared before readiness")
             if pod.get("status") == "RUNNING":
                 try:
@@ -289,9 +306,15 @@ class Pilot:
                         raise LifecycleError("Container readiness probe returned unexpected output")
                     return pod
                 except ApiError as error:
+                    if error.status == 404:
+                        if wait_visibility():
+                            continue
+                        raise
                     if error.status not in (None, 409, 429, 503):
                         raise
+                    self.check()
                     time.sleep(error.retry_after if error.retry_after is not None else 5)
+                    self.check()
                     continue
             if pod.get("status") in ("EXITED", "FAILED", "ERROR"):
                 raise LifecycleError("Pod failed before readiness")

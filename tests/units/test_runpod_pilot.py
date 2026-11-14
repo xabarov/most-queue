@@ -687,3 +687,125 @@ def test_generic_mutating_remote_is_never_retried(probe_instance):
         instance.remote(["python3", "-c", "print('mutation-capable')"])
     assert len(calls) == 1 and calls[0][0][0] == "POST"
     assert not sleeps and not events
+
+
+@pytest.fixture(name="readiness_instance")
+def fixture_readiness_instance(inputs, tmp_path, monkeypatch):
+    """Use independently controlled monotonic grace and real lifecycle guards."""
+    attempt, pod = allocation(inputs, tmp_path)
+    clock = {"wall": 1000.0, "monotonic": 50.0}
+    monkeypatch.setattr(pilot.time, "time", lambda: clock["wall"])
+    monkeypatch.setattr(pilot.time, "monotonic", lambda: clock["monotonic"])
+    instance = pilot.Pilot(None, tmp_path, attempt)
+    instance.pod = dict(pod, status="RUNNING")
+    instance.supervisor = type("Supervisor", (), {"poll": lambda _self: None})()
+    atomic_json(tmp_path / "watchdog.json", {"status": "monitoring"})
+    sleeps = []
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        clock["wall"] += seconds
+        clock["monotonic"] += seconds
+
+    monkeypatch.setattr(pilot.time, "sleep", sleep)
+    return instance, clock, sleeps
+
+
+def readiness_reads(instance, monkeypatch, pods, responses):
+    """Count every exact ownership read and harmless exec separately."""
+    reads, execs = [], []
+
+    def exact(client, pod_id, name, image):
+        assert pod_id == instance.pod["id"]
+        assert name == instance.attempt["name"] and image == instance.attempt["image"]
+        reads.append(client)
+        result = pods[min(len(reads) - 1, len(pods) - 1)]
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    def remote(command, timeout):
+        instance.check()
+        assert command == ["python3", "-c", "print('ready')"] and timeout == 10
+        execs.append(command)
+        result = responses[min(len(execs) - 1, len(responses) - 1)]
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    monkeypatch.setattr(pilot, "exact_pod", exact)
+    monkeypatch.setattr(instance, "remote", remote)
+    return reads, execs
+
+
+def test_readiness_early_exec404_then_ready(readiness_instance, monkeypatch):
+    """Exec propagation gets a bounded grace while ownership is rechecked."""
+    instance, clock, sleeps = readiness_instance
+    reads, execs = readiness_reads(instance, monkeypatch, [instance.pod], [pilot.ApiError(status=404), "ready\n"])
+    assert instance.wait_running() == instance.pod
+    assert len(reads) == len(execs) == 2 and sleeps == [10]
+    assert clock["monotonic"] == 60
+    assert instance.stage_deadline == 1600 and instance.last_progress == 1000
+
+
+def test_readiness_early_missing_get_then_owned_ready(readiness_instance, monkeypatch):
+    """Initial GET absence can propagate without changing exact ownership rules."""
+    instance, _, sleeps = readiness_instance
+    reads, execs = readiness_reads(instance, monkeypatch, [None, instance.pod], ["ready"])
+    assert instance.wait_running() == instance.pod
+    assert len(reads) == 2 and len(execs) == 1 and sleeps == [10]
+
+
+@pytest.mark.parametrize("pattern", ["exec404", "absent", "mixed"])
+def test_readiness_visibility_grace_never_renews(readiness_instance, monkeypatch, pattern):
+    """Continual absence exhausts thirty seconds with at most four owned reads."""
+    instance, clock, sleeps = readiness_instance
+    pods = [None] if pattern == "absent" else [instance.pod]
+    if pattern == "mixed":
+        pods = [None, instance.pod, None, instance.pod]
+    reads, _ = readiness_reads(instance, monkeypatch, pods, [pilot.ApiError(status=404)])
+    with pytest.raises(LifecycleError):
+        instance.wait_running()
+    assert len(reads) == 4 and sleeps == [10, 10, 10]
+    assert clock["monotonic"] == 80
+    assert instance.stage_deadline == 1600 and instance.last_progress == 1000
+
+
+def test_readiness_owned_pod_disappearing_after_grace_is_fatal(readiness_instance, monkeypatch):
+    """A previously observed allocation cannot regain grace after a slow boot."""
+    instance, _, sleeps = readiness_instance
+    reads, execs = readiness_reads(
+        instance, monkeypatch, [instance.pod, None], [pilot.ApiError(status=409, retry_after=35)]
+    )
+    with pytest.raises(LifecycleError, match="disappeared"):
+        instance.wait_running()
+    assert len(reads) == 2 and len(execs) == 1 and sleeps == [35]
+
+
+def test_readiness_identity_mismatch_stays_fatal(readiness_instance, monkeypatch):
+    """An ownership rejection is never treated as propagation absence."""
+    instance, _, sleeps = readiness_instance
+    reads, execs = readiness_reads(instance, monkeypatch, [LifecycleError("identity mismatch")], ["ready"])
+    with pytest.raises(LifecycleError, match="identity mismatch"):
+        instance.wait_running()
+    assert len(reads) == 1 and not execs and not sleeps
+
+
+@pytest.mark.parametrize("guard", ["deadline", "watchdog"])
+def test_readiness_visibility_sleep_honors_lifecycle_guard(readiness_instance, monkeypatch, guard):
+    """No follow-up GET/exec occurs after a deadline or cleanup-supervisor change."""
+    instance, _, sleeps = readiness_instance
+    reads, execs = readiness_reads(instance, monkeypatch, [instance.pod], [pilot.ApiError(status=404)])
+    original_sleep = pilot.time.sleep
+
+    def lose_guard(seconds):
+        original_sleep(seconds)
+        if guard == "deadline":
+            instance.stage_deadline = 1005
+        else:
+            atomic_json(instance.directory / "watchdog.json", {"status": "cleanup_requested"})
+
+    monkeypatch.setattr(pilot.time, "sleep", lose_guard)
+    with pytest.raises(LifecycleError):
+        instance.wait_running()
+    assert len(reads) == len(execs) == 1 and sleeps == [10]
