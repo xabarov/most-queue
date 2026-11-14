@@ -56,6 +56,12 @@ The example's default invocation still uses explicitly labeled development data.
 [Trace-level diagnosis](docs/research/serving-slo-v2-diagnostics.md) explains
 the tight-SLO failures and remaining timing limitations using the saved data.
 
+A [613-request frontend timing study](docs/research/serving-frontend-v1-results.md)
+locates the added delay under load between request preparation and scheduler
+`QUEUED` registration, potentially within EngineCore's input path. Raw traces,
+paired controls and offline plots are included. Fixed-v2 tight-SLO fraction
+errors still reach 42.86 percentage points; no new model was fitted.
+
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local
 truncation bounds and all-arrival SLA outcomes. H2 size-dependent waiting means

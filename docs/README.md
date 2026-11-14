@@ -25,6 +25,9 @@
 - **[Measured A40/Qwen3-8B calibration](research/serving-calibration-v1-results.md)**
   (in Russian) — 721 raw requests, server-arrival replay, frozen acceptance checks
   and explicit burst limitations; offline reproduction from source
+- **[Frontend timing and TTFT repeatability](research/serving-frontend-v1-results.md)**
+  (in Russian) — 613 requests, paired tracing controls, admission-delay diagnostics
+  and fixed-model SLO errors; raw traces and offline plots
 
 ### For Developers
 - **[Project Overview](PROJECT.md)** (in Russian) — repository layout, conventions, where to find the theory

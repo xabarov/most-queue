@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "prepared_at_utc": "2026-11-14T19:02:52.253601+00:00",
+  "base_commit": "111b67853c6a9bce27f5432bb0d92a94523ef5f9",
+  "scope": "Exact prepared working-tree measurement files before any frontend-v1 paid allocation; base_commit predates these new files. No fit or new model validation. Public policy authorization is operational state. Retain this manifest if any later amendment is needed.",
+  "files": {
+    "configs/runpod/frontend-v1-profile.json": "a74b77f5c32643bc0512b34672d0328c4256744e56f0de8686686086a4571fc0",
+    "configs/runpod/frontend-v1-workload.json": "4503715284af10dc22ababbcfc129b4d73d39525129e77217182a6fc28aea535",
+    "configs/runpod/reservation-v2-fit.json": "0960900cce097706e4c2a963035ced0b8004d2f88c9159a4df175b420cb80776",
+    "configs/runpod/reservation-v2-freeze.json": "af3d1655fa8b925d8851ea4198b2385c986832558ff49515704dfebd0befdf64",
+    "tools/runpod_frontend_server.py": "29042c70d8e4393d40fb93b949815e79e8f879eb2e5e4519e1aa7b3d4a2ce8c3",
+    "tools/runpod_frontend_trace.py": "c4adfe6f98318e1cc534278c3e823a689a4cc65a434ffddfca5f6c5e6dbf552b",
+    "tools/runpod_frontend_workload.py": "cb8388af4fdebaf0d4594f2569f6d40174bc4295d1108fb96db0ed38c70bdb17",
+    "tools/audit_frontend_measurements.py": "b1eed7842ccb1fade60d838f25b9b9cf00bd9eabd583baa7f912fc617e280c11",
+    "tools/runpod_vllm_server.py": "d1a8b740d9fb65d1163046766e0e85027e7fb5bdf74c9cb4e3f178dfb28295a2",
+    "tools/runpod_calibration_workload.py": "aca50b36b3eeee8b47c60eead775f69afaca554505aff9cdf40ba8b95a740022",
+    "tools/runpod_workload.py": "75c8c48eac614ec208428159d0b48c75cbcfd27289dc8467662caf93c6f066b2",
+    "docs/research/serving-frontend-v1-plan.md": "e49de380970d45381a0ce95460e684ba6e212ee7df73e5e6f8ecb72c2a66ee22",
+    "docs/research/serving-frontend-v1-schedule.json": "de05711ace09dbcb7ae5e7b2cc85895f3c0901e6e2720270a580cbdcfd9065b0"
+  },
+  "operational_sha256": {
+    "tools/runpod_pilot.py": "e842ad1c26aabaaae1aeb9306b15dd9a1f1d0607ea778b422d8d2203db5dba09",
+    "tools/runpod_lifecycle.py": "dac47a216c81dfbe7f5a44d34c3091f1995a476018d0425b81983d705ddaac82",
+    "tools/runpod_budget.py": "9abd865439bc63d120e4b029f485da7edaade31498e4cebcc8ca378a0f317b17"
+  },
+  "vllm_source_contract": {
+    "version": "0.32.0",
+    "completion_module": "vllm.entrypoints.openai.completion.serving",
+    "class": "OpenAIServingCompletion",
+    "async_methods": [
+      "create_completion",
+      "render_completion_request"
+    ],
+    "completion_source_sha256": "bf3a2167da91e1e70d55b86345e9debdb5bd936837a583c318302457a27a9d88",
+    "middleware_register_source_sha256": "cff2d2c00e16f45a942eb1c1ef591834cb58d34ec9eefb3269f9134c4b1087bf"
+  }
+}

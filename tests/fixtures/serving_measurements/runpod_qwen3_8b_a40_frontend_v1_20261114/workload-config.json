@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "input_lengths": [
+    128,
+    1024
+  ],
+  "probe_output_tokens": 32,
+  "idle_pairs_per_block": 10,
+  "loaded_pairs_per_block": 5,
+  "background_input_tokens": 1024,
+  "background_output_tokens": 512,
+  "probe_offsets_s": [
+    1.5,
+    5.5
+  ],
+  "open_loop_rates": [
+    0.5,
+    0.8
+  ],
+  "open_loop_seconds": 180,
+  "blocks": [
+    {
+      "block_id": "a",
+      "arrival_seed": 75101
+    },
+    {
+      "block_id": "b",
+      "arrival_seed": 75102
+    }
+  ],
+  "warmup_cells": [
+    [
+      128,
+      32
+    ],
+    [
+      1024,
+      32
+    ],
+    [
+      4096,
+      32
+    ],
+    [
+      1024,
+      512
+    ]
+  ],
+  "workload_timeout_seconds": 2400,
+  "request_timeout_seconds": 120,
+  "max_in_flight": 64,
+  "max_requests": 1000
+}

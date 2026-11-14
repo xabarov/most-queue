@@ -266,9 +266,32 @@ the internal source of that delay still requires instrumentation. The report
 also exposes queue-error accumulation at high load. These diagnostics retain
 the frozen predictions and perform no fitting or new GPU measurements.
 
-The separate [frontend measurement plan](research/serving-frontend-v1-plan.md)
-is prepared locally: repeated identical requests, tracing on/off pairs and
-four open-loop series. Its ASGI and completion-handler timestamps distinguish
-observable frontend intervals while retaining the original client/engine
-definitions. The 613-request campaign awaits spending authorization; no new
-model-accuracy result is claimed by this preparation.
+## Frontend timing and short-request repeatability
+
+The [613-request diagnostic study](research/serving-frontend-v1-results.md)
+is complete: all engine and 533 frontend records passed the audit, including
+background-presence checks. Identical-prompt repetitions, tracing on/off pairs
+and four open-loop series are available as a public fixture. Reproduce without
+GPU access:
+
+```bash
+PYTHONPATH=. python examples/serving_frontend_diagnostics.py \
+  --output frontend-v1-results.json
+python docs/figures/plot_frontend_diagnostics.py --report frontend-v1-results.json
+```
+
+Under background generation, the mean interval from request preparation to
+`QUEUED` grows from 1.863 to 15.029 ms for 128-token probes and from 2.274 to
+9.728 ms for 1024-token probes. This interval may include EngineCore's input
+queue before scheduler admission. The field `outside_engine` means outside
+QUEUED-to-first-token timing; it does not identify a process boundary.
+No paired group crosses the declared tracing-warning threshold, which does
+not establish zero overhead.
+
+The fixed v2 comparison still produces 72/91 joint successes instead of 33/91
+in one 250-ms/35-ms cohort, a 42.86-point fraction error. No costs were refitted
+and these diagnostic data do not validate v3. The next model step is explicit
+admission before `QUEUED`, with finer input-queue and client-setup timestamps.
+One allocation used 1597 seconds, estimated $0.266660 including disk; the pod
+is confirmed absent and the campaign is closed. Export recovery and its original
+controller error are retained in the report.

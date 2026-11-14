@@ -1,0 +1,9 @@
+{
+  "sha256": {
+    "plan.json": "f87dfcac3f5dbae23ae2a98dac2f9cde9e83def8014cae2a4b0877cc8b2fe21a",
+    "progress.json": "dc0e2523fd634ab08794eb47365423ec7f0df04234854179c5b9ca36d740a64a",
+    "requests.jsonl": "1f1aef3a12af8a9139d6af538a67d219a11e2ca295d9ff126e6b1d5113dce225",
+    "series.json": "51dd7c7588610c3b89d284df0f076473f13314704a2ed8151fc0d234d36aec78",
+    "summary.json": "240629b7ad36e2c9fc6da01942e54e59a9bce3762e3fca257dfefb16a4ba5c87"
+  }
+}

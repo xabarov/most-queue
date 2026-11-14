@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "training_trace_sha256": "b407d000e2b4e8d82b7f05c3b5c08598e7f2acbe6988cdb5e570f5e31cd18582",
+  "training_series": [
+    "s0013-train-isolated",
+    "s0014-train-isolated",
+    "s0015-train-isolated",
+    "s0016-train-isolated",
+    "s0017-train-isolated",
+    "s0018-train-isolated",
+    "s0019-train-isolated",
+    "s0020-train-isolated",
+    "s0021-train-isolated",
+    "s0022-train-isolated",
+    "s0023-train-isolated",
+    "s0024-train-isolated",
+    "s0025-train-isolated",
+    "s0026-train-isolated",
+    "s0027-train-isolated",
+    "s0028-train-isolated",
+    "s0029-train-isolated",
+    "s0030-train-isolated",
+    "s0031-train-isolated",
+    "s0032-train-isolated",
+    "s0033-train-isolated",
+    "s0034-train-isolated",
+    "s0035-train-isolated",
+    "s0036-train-isolated",
+    "s0037-train-isolated",
+    "s0038-train-isolated",
+    "s0039-train-isolated"
+  ],
+  "profile": {
+    "image": "vllm/vllm-openai@sha256:6ee133356d49ed24cee03dd0cda3d3980279a11c107ce3e752c89e76540f41c9",
+    "model": "Qwen/Qwen3-8B",
+    "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+    "server_args": [
+      "--dtype",
+      "bfloat16",
+      "--max-model-len",
+      "4608",
+      "--max-num-seqs",
+      "4",
+      "--max-num-batched-tokens",
+      "18432",
+      "--tensor-parallel-size",
+      "1",
+      "--gpu-memory-utilization",
+      "0.85",
+      "--no-enable-prefix-caching",
+      "--no-enable-chunked-prefill",
+      "--enforce-eager",
+      "--enable-per-request-metrics",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "8000"
+    ]
+  },
+  "baseline": {
+    "client_offset": 0.0034006776385397675,
+    "alpha": 0.029358316322048897,
+    "beta": 0.00014712964285062052,
+    "gamma": 3.0573321411149154e-07,
+    "scaled_condition": 3.0411476028963325,
+    "training_requests": 27,
+    "input_range": [
+      128,
+      4096
+    ],
+    "output_range": [
+      32,
+      512
+    ],
+    "measurement_profile": "qwen3-8b-a40-vllm032-b4-unchunked",
+    "latency_basis": "client_to_done"
+  },
+  "advance_reservation": {
+    "alpha": 0.029310447061486434,
+    "beta": 0.00014269909197733518,
+    "gamma": 3.555559247404009e-07,
+    "client_intercept": 0.036821697246414674,
+    "client_per_input_token": 3.5361078172927513e-06,
+    "server_scaled_condition": 2.593280072840907,
+    "client_scaled_condition": 2.464748884799559,
+    "training_requests": 27,
+    "input_range": [
+      128,
+      4096
+    ],
+    "output_range": [
+      32,
+      512
+    ],
+    "measurement_profile": "qwen3-8b-a40-vllm032-b4-unchunked",
+    "latency_basis": "client_to_done"
+  },
+  "slo_ttft_seconds": [
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "slo_tpot_seconds": [
+    0.03,
+    0.035,
+    0.04
+  ],
+  "accuracy_targets": [
+    [
+      "isolated",
+      "server_ttft",
+      "maximum",
+      0.15
+    ],
+    [
+      "isolated",
+      "server_tpot",
+      "maximum",
+      0.05
+    ],
+    [
+      "burst",
+      "server_ttft",
+      "median",
+      0.15
+    ],
+    [
+      "burst",
+      "server_ttft",
+      "maximum",
+      0.35
+    ],
+    [
+      "burst",
+      "client_ttft",
+      "median",
+      0.15
+    ],
+    [
+      "burst",
+      "client_ttft",
+      "maximum",
+      0.4
+    ],
+    [
+      "burst",
+      "server_tpot",
+      "maximum",
+      0.1
+    ],
+    [
+      "open_loop",
+      "client_ttft",
+      "maximum",
+      0.2
+    ],
+    [
+      "open_loop",
+      "server_ttft",
+      "maximum",
+      0.2
+    ],
+    [
+      "open_loop",
+      "server_tpot",
+      "maximum",
+      0.05
+    ],
+    [
+      "open_loop",
+      "server_queue_wait",
+      "maximum",
+      0.25
+    ]
+  ],
+  "primary_slo": {
+    "ttft": 1.0,
+    "tpot": 0.035,
+    "maximum_fraction_error": 0.1
+  },
+  "baseline_burst_error_ratio_target": 0.5
+}

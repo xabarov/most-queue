@@ -1,0 +1,101 @@
+{
+  "count_definitions": {
+    "completed": "number of raw request records, including failed records",
+    "failed": "number of raw request records with success false",
+    "offered": "number of raw request records with offer_status OFFERED",
+    "planned": "number of request specifications in saved plan",
+    "successful": "number of raw request records with success true",
+    "trace_enabled_completed": "number of raw request records with trace_enabled true",
+    "trace_enabled_planned": "number of plan specifications with trace_enabled true"
+  },
+  "measurement_code_commit": "64bbecf",
+  "raw_counts": {
+    "by_condition": {
+      "idle": {
+        "completed": 80,
+        "failed": 0,
+        "offered": 80,
+        "planned": 80,
+        "successful": 80,
+        "trace_enabled_completed": 40,
+        "trace_enabled_planned": 40
+      },
+      "loaded": {
+        "completed": 60,
+        "failed": 0,
+        "offered": 60,
+        "planned": 60,
+        "successful": 60,
+        "trace_enabled_completed": 20,
+        "trace_enabled_planned": 20
+      },
+      "open_loop": {
+        "completed": 469,
+        "failed": 0,
+        "offered": 469,
+        "planned": 469,
+        "successful": 469,
+        "trace_enabled_completed": 469,
+        "trace_enabled_planned": 469
+      },
+      "warmup": {
+        "completed": 4,
+        "failed": 0,
+        "offered": 4,
+        "planned": 4,
+        "successful": 4,
+        "trace_enabled_completed": 4,
+        "trace_enabled_planned": 4
+      }
+    },
+    "completed": 613,
+    "engine_rows": 613,
+    "failed": 0,
+    "frontend_rows": 533,
+    "offered": 613,
+    "planned": 613,
+    "successful": 613,
+    "trace_enabled_completed": 533,
+    "trace_enabled_planned": 533
+  },
+  "schema_version": 1,
+  "scope": "diagnostic; no fitting; no v3 validation",
+  "sha256": {
+    "LICENSE": "ec423cc5506eea1ffbfc9955c3ec8f86139996963d84ff306a5ee41eda8a4ff1",
+    "README.md": "1ee1bfd9fdfbcb205162a38a165be8b099552812e8c58739d18498e7753d96b8",
+    "analysis-plan.md": "e49de380970d45381a0ce95460e684ba6e212ee7df73e5e6f8ecb72c2a66ee22",
+    "completion.json": "4b9dd66145713711dc548e3ede7a26f045916e49a1191830390573c844e26cbe",
+    "frontend_timestamps.jsonl.gz": "a1e33ba778310fbce1a83f516184247c230c78cf2caa8f334577896e5a746613",
+    "frozen-v2-fit.json": "0960900cce097706e4c2a963035ced0b8004d2f88c9159a4df175b420cb80776",
+    "plan.json": "f87dfcac3f5dbae23ae2a98dac2f9cde9e83def8014cae2a4b0877cc8b2fe21a",
+    "producer-manifest.json": "f6090173f29e6012404ae37db89a30afa071b0868b271387b5f5d017efd36046",
+    "profile.json": "a74b77f5c32643bc0512b34672d0328c4256744e56f0de8686686086a4571fc0",
+    "progress.json": "dc0e2523fd634ab08794eb47365423ec7f0df04234854179c5b9ca36d740a64a",
+    "requests.jsonl.gz": "968b58947655c7e7503b6ecad10e364b88594e866b6bf749b0c295ae19944671",
+    "runtime.json": "5b53074a00430c3267048698cd9dc481e69acfa5b931f114bce7ecc900558a0a",
+    "scientific-freeze.json": "5b222da4c2ac17eaec8a73c3cef0e6d766c735f833d93238b81dbd67e4e00d59",
+    "series.json": "51dd7c7588610c3b89d284df0f076473f13314704a2ed8151fc0d234d36aec78",
+    "server_timestamps.jsonl.gz": "81112f8b20abed479b65ccb4b642b83b9f43df08d5fdfe022d4a19acf44d7cf6",
+    "summary.json": "240629b7ad36e2c9fc6da01942e54e59a9bce3762e3fca257dfefb16a4ba5c87",
+    "workload-config.json": "4503715284af10dc22ababbcfc129b4d73d39525129e77217182a6fc28aea535"
+  },
+  "traces": {
+    "frontend_timestamps.jsonl.gz": {
+      "rows": 533,
+      "uncompressed_bytes": 205298,
+      "uncompressed_sha256": "1e438c0bd7cc17da62cffed94c13181949b8e573fa433db4d1aab2a6a6058ff1"
+    },
+    "requests.jsonl.gz": {
+      "rows": 613,
+      "uncompressed_bytes": 44987296,
+      "uncompressed_sha256": "1f1aef3a12af8a9139d6af538a67d219a11e2ca295d9ff126e6b1d5113dce225"
+    },
+    "server_timestamps.jsonl.gz": {
+      "rows": 613,
+      "uncompressed_bytes": 185687,
+      "uncompressed_sha256": "f237b6acf0583d9ae5efd65314c59061f0814eb0d7f743c37dc253b58e4c6748"
+    }
+  },
+  "completion_evidence": "completion.json: verified fallback export, independent audit, fresh exact and inventory absence; original controller failure retained",
+  "audit_status": "complete_success"
+}

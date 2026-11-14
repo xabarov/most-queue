@@ -1,0 +1,62 @@
+{
+  "attempts": [
+    {
+      "allocated_seconds": 1597,
+      "allocated_vcpu_count": 9,
+      "cleanup": {
+        "absent_from_inventory": true,
+        "checked_epoch": 1794685120.115292,
+        "exact_absent": true,
+        "pod_id": "vnk3a4ng5aabs2"
+      },
+      "created_epoch": 1794683416.2466342,
+      "estimated_cost_usd": 0.2666599622222222,
+      "export": {
+        "sha256": "60304821c5c9f6e8d947e38b9302084adbb07e19237470188c3d7fe70922f610",
+        "size": 1815968
+      },
+      "outcome": {
+        "error": "ApiError: Runpod API request failed (HTTP None)",
+        "successful": false
+      },
+      "pod_id": "vnk3a4ng5aabs2"
+    }
+  ],
+  "campaign_id": "serving-frontend-v1-2026-11-14",
+  "closed": true,
+  "completion_reconciliation": {
+    "audit_sha256": "08f1a6436c1488f587481ca105b276fb72835c805b53b9d2f0e4a47f875d4901",
+    "audit_status": "complete_success",
+    "export": {
+      "sha256": "60304821c5c9f6e8d947e38b9302084adbb07e19237470188c3d7fe70922f610",
+      "size": 1815968
+    },
+    "fresh_absence": {
+      "absent_from_inventory": true,
+      "checked_epoch": 1794685059.135239,
+      "exact_absent": true,
+      "pod_id": "vnk3a4ng5aabs2"
+    },
+    "frontend_records": 533,
+    "original_controller_outcome": {
+      "error": "ApiError: Runpod API request failed (HTTP None)",
+      "successful": false
+    },
+    "reason": "Initial export API read failed; fallback export checksum/size verified and independent audit proves all613requests/533frontendtraces complete. No measurement or accuracy retry.",
+    "reconciled_epoch": 1794685118.9425178,
+    "shell_exit_cause": "Not established; original result is retained. Completion established by artifact/audit/provider evidence.",
+    "shell_reported_exit_code": 143,
+    "successful_measurement_requests": 613
+  },
+  "cost_basis": "Conservative local allocation-time estimate including container disk; not a finalized provider invoice.",
+  "fixed_measurement_files": 13,
+  "ledger": {
+    "active_pod_ids": [],
+    "allocated_seconds": 1597,
+    "allocations": 1,
+    "spent_usd": 0.26666
+  },
+  "measurement_code_commit": "64bbecf",
+  "provider_billing_records_when_checked": 0,
+  "provider_billing_note": "The provider records array was empty when read after cleanup; this is not proof of zero cost."
+}
