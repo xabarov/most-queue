@@ -190,3 +190,12 @@ A development sdist and wheel were built and passed `twine check`. Installation
 outside the checkout verified imports, isolated timing and known-coefficient
 recovery, and checked archive contents. This development build retains version
 2.11 for local checking only; no new release is claimed here.
+
+
+## Subsequent fresh evaluation
+
+The separate [fresh 690-request evaluation](serving-reservation-v2-results.md)
+is complete: 13/14 criteria pass, with the isolated TTFT maximum target failing.
+The primary joint SLO has at most 3.52 percentage points error, but the tighter
+250-ms TTFT grid reaches 31.87 points. These new results do not change the
+role or values of the development observations above.

@@ -234,3 +234,25 @@ development data when selecting this new policy; the displayed improvements
 are not fresh validation. [Fresh-validation plan](research/serving-reservation-v2-plan.md).
 Small-prompt burst client TTFT remains a weak point (up to 33.2% mean error).
 The example makes no stationary capacity or production SLO guarantee.
+
+
+## Fresh v2 evaluation
+
+The [fresh 690-request campaign](research/serving-reservation-v2-results.md)
+completed with all measurements retained: 13/14 frozen criteria pass. Median
+burst server-TTFT error is 7.69% (baseline 43.05%); primary joint client-SLO
+fraction error is at most 3.52 percentage points. Isolated server-TTFT maximum
+error is 20.68%, failing the 15% target. At TTFT ≤250 ms the full diagnostic grid
+shows errors up to 31.87 points; the primary-threshold result is not a general
+SLO guarantee. No refitting or accuracy-based retry followed these outcomes.
+
+```bash
+PYTHONPATH=. python examples/serving_reservation_slo.py \
+  --evaluation-fixture tests/fixtures/serving_measurements/runpod_qwen3_8b_a40_reservation_v2_20261114 \
+  --frozen-fit configs/runpod/reservation-v2-fit.json \
+  --output reservation-v2-results.json
+```
+
+This complete evaluation writes its report and returns exit status 1 because
+one frozen accuracy target fails. The default example remains development-only.
+APIs are included in release 2.12; examples and fixtures require the source checkout.

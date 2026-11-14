@@ -46,11 +46,13 @@ now includes 721 raw requests, exact server arrivals and an offline replay examp
 Frozen isolated and prescribed-arrival checks passed; burst errors and stage-timing
 limitations are published alongside the results. Reproduce from source without renting a GPU.
 
-The new [joint client-SLO example](examples/serving_reservation_slo.py) compares
-two scheduling policies and reports which requests meet **both TTFT and TPOT**.
-Run `PYTHONPATH=. python examples/serving_reservation_slo.py` from the checkout.
-Its [development results and limits](docs/research/serving-v2-model-audit.md)
-are explicit; fresh validation of the revised policy is pending.
+The [joint client-SLO example](examples/serving_reservation_slo.py) now has
+[fresh 690-request A40 results](docs/research/serving-reservation-v2-results.md):
+13/14 frozen criteria pass; median burst server-TTFT error falls from 43.05% to
+7.69%. Primary joint-SLO error is at most 3.52 percentage points. The isolated
+TTFT target fails, and a tighter 250-ms SLO has errors up to 31.87 points;
+these limits and offline reproduction commands are included in the report.
+The example's default invocation still uses explicitly labeled development data.
 
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local

@@ -67,5 +67,28 @@ the private policy and campaign metadata now allow at most three allocations.
 The original authorization, prior attempt evidence and ledger are retained.
 Keep the existing
 scientific plan, seed, 690 requests, frozen fits and gates unchanged. Completion
-requires export, exact termination proof, completeness audit and all gate
-outcomes; release publication remains pending those results.
+was required to include export, exact termination proof, completeness audit
+and all gate outcomes before release publication; the final outcome follows.
+
+
+## Final outcome
+
+The approved third allocation, `e1tya23ne00ouo`, completed all 690 requests.
+It ran for 2065 s, estimated $0.344805 including disk; the aggregate ledger is
+**3329 s / $0.555862 / three allocations**, with no active pod IDs. Exact GET
+and inventory absence for all three IDs was checked again after completion.
+The campaign is closed and its private authorization is now false.
+One transient observational read was recovered by the bounded probe retry.
+
+The shell runner reported exit code 143 after durable success, verified export,
+cleanup and accounting. Its cause was not established; success is substantiated
+separately by the closed campaign record, matching full export SHA256/size,
+provider absence and the complete 690-request audit. The shell code is retained
+in the sanitized completion evidence rather than interpreted as a successful
+process exit.
+
+All 18 scientific hashes remain unchanged. The
+[full result](serving-reservation-v2-results.md) records 13/14 criteria passed,
+the failed isolated TTFT target and all diagnostic SLO errors. No additional
+allocation or refitting followed those accuracy results. Provider billing reads
+for all three IDs still returned no records; reported costs remain estimates.

@@ -1,0 +1,72 @@
+{
+  "attempts": [
+    {
+      "allocated_seconds": 1256,
+      "cleanup": {
+        "absent_from_inventory": true,
+        "checked_epoch": 1794677457.622982,
+        "exact_absent": true,
+        "pod_id": "85ithanoh2ot7r"
+      },
+      "created_epoch": 1794673030.6868129,
+      "estimated_cost_usd": 0.2097212977777778,
+      "outcome": {
+        "error": "ApiError: Runpod API request failed (HTTP None)",
+        "successful": false
+      },
+      "pod_id": "85ithanoh2ot7r"
+    },
+    {
+      "allocated_seconds": 8,
+      "cleanup": {
+        "absent_from_inventory": true,
+        "checked_epoch": 1794677458.4002485,
+        "exact_absent": true,
+        "pod_id": "gh1squify1rwr8"
+      },
+      "created_epoch": 1794674697.775382,
+      "estimated_cost_usd": 0.0013358044444444445,
+      "outcome": {
+        "error": "ApiError: Runpod API request failed (HTTP 404)",
+        "export_incomplete": true,
+        "successful": false
+      },
+      "pod_id": "gh1squify1rwr8"
+    },
+    {
+      "allocated_seconds": 2065,
+      "cleanup": {
+        "absent_from_inventory": true,
+        "checked_epoch": 1794677459.139116,
+        "exact_absent": true,
+        "pod_id": "e1tya23ne00ouo"
+      },
+      "created_epoch": 1794675377.0366468,
+      "estimated_cost_usd": 0.34480452222222224,
+      "outcome": {
+        "error": null,
+        "successful": true
+      },
+      "pod_id": "e1tya23ne00ouo"
+    }
+  ],
+  "campaign_id": "serving-reservation-v2-2026-11-14",
+  "closed": true,
+  "controller_code_commit": "c0e4571",
+  "cost_basis": "Conservative local allocation-time estimate including disk; not a finalized provider invoice.",
+  "final_export": {
+    "sha256": "53d14207de2f5dca8cb4104ffe6bc0a41013ec58209da7c89b6d35eba7a7370b",
+    "size": 2340114
+  },
+  "final_pod_id": "e1tya23ne00ouo",
+  "ledger": {
+    "active_pod_ids": [],
+    "allocated_seconds": 3329,
+    "allocations": 3,
+    "spent_usd": 0.555862
+  },
+  "measurement_code_commit": "5924091",
+  "scientific_files_unchanged": 18,
+  "local_shell_reported_exit_code": 143,
+  "local_shell_exit_note": "Shell runner reported 143 after durable success/export/cleanup/accounting; campaign closed flag, full export hashes, fresh provider absence and independent completeness audit are checked separately. No inferred cause."
+}

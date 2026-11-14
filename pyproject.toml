@@ -45,7 +45,7 @@ max-line-length = 120
 
 [project]
 name = "most_queue"
-version = "2.11"
+version = "2.12"
 authors = [{ name = "Xabarov Roman", email = "xabarov1985@gmail.com" }]
 description = "Software package for calculation and simulation of queuing systems"
 readme = "README.md"
@@ -85,7 +85,7 @@ dev = [
 "Homepage" = "https://github.com/xabarov/most-queue"
 "Documentation" = "https://github.com/xabarov/most-queue/blob/main/docs/README.md"
 "Issues" = "https://github.com/xabarov/most-queue/issues"
-"Changelog" = "https://github.com/xabarov/most-queue/blob/main/docs/releases/2.11.md"
+"Changelog" = "https://github.com/xabarov/most-queue/blob/main/docs/releases/2.12.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["most_queue"]

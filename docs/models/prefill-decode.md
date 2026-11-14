@@ -8,8 +8,9 @@ The separate `AdvanceReservationSim` reserves available slots during an ongoing
 iteration and emits the first token at prefill completion. It retains this
 model as its baseline; see the [source audit and A40 development comparison](../research/serving-v2-model-audit.md)
 and [joint client-SLO example](../../examples/serving_reservation_slo.py).
-The revised policy still requires fresh validation and does not reproduce
-vLLM's full asynchronous pipeline.
+The [fresh evaluation](../research/serving-reservation-v2-results.md) meets 13/14
+criteria and retains the failed target. The policy does not reproduce vLLM's
+full asynchronous pipeline.
 
 The three-parameter model of [Ramani and Tantawi](https://arxiv.org/html/2609.20957v1)
 predicts mean first-token and inter-token latency from prompt length, output
@@ -153,3 +154,10 @@ See [method and validation report](../research/prefill-decode-validation-2026.md
 [experiment JSON](../research/prefill-decode-results-2026.json),
 [experiment script](../../examples/prefill_decode_experiment.py) and
 [EPIC-086](../epics/EPIC-086-prefill-decode-iteration-cost.md).
+
+
+The separate advance-reservation policy has a
+[fresh 690-request A40 evaluation](../research/serving-reservation-v2-results.md):
+13/14 criteria pass. The isolated server-TTFT maximum target fails, and a tight
+250-ms joint-SLO threshold produces errors up to 31.87 percentage points.
+The recorded improvement in burst means is not a general SLO guarantee.

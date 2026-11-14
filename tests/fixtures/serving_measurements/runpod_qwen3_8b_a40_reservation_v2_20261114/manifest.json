@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "measurement_date": "2026-11-14",
+  "source": "self-generated synthetic reservation-v2 held-out validation",
+  "measurement_profile": "qwen3-8b-a40-vllm032-b4-unchunked",
+  "measurement_code_commit": "5924091",
+  "data_role": "complete fresh evaluation; fixed fits; 13/14 targets met, isolated server-TTFT maximum target failed",
+  "raw_counts": {
+    "planned": 690,
+    "completed": 690,
+    "offered": 690,
+    "successful": 690,
+    "failed": 0,
+    "by_status": {
+      "succeeded": 690
+    },
+    "by_split_mode": {
+      "warmup": {
+        "isolated": {
+          "completed": 9,
+          "successful": 9,
+          "failed": 0
+        },
+        "burst": {
+          "completed": 12,
+          "successful": 12,
+          "failed": 0
+        }
+      },
+      "validation": {
+        "isolated": {
+          "completed": 9,
+          "successful": 9,
+          "failed": 0
+        },
+        "burst": {
+          "completed": 108,
+          "successful": 108,
+          "failed": 0
+        },
+        "open_loop": {
+          "completed": 552,
+          "successful": 552,
+          "failed": 0
+        }
+      }
+    },
+    "engine_records": 690
+  },
+  "saved_summary_experiment_valid": true,
+  "source_sha256": {
+    "tools/runpod_calibration_workload.py": "aca50b36b3eeee8b47c60eead775f69afaca554505aff9cdf40ba8b95a740022",
+    "tools/runpod_workload.py": "75c8c48eac614ec208428159d0b48c75cbcfd27289dc8467662caf93c6f066b2",
+    "tools/runpod_vllm_server.py": "d1a8b740d9fb65d1163046766e0e85027e7fb5bdf74c9cb4e3f178dfb28295a2"
+  },
+  "cleanup_verification": "Fresh exact GET and inventory absence for all three campaign pod IDs; see completion.json.",
+  "uncompressed_requests_bytes": 58909679,
+  "uncompressed_requests_sha256": "fbaf47c71ea036aaec2a5af113f2380051594e6dbe652c3224ac69b980a7cf9e",
+  "uncompressed_server_timestamps_bytes": 207774,
+  "uncompressed_server_timestamps_sha256": "c47a0595d911a5d95db8ad866186716abcc922b570d62adea9e9784f3ef06ecb",
+  "sha256": {
+    "LICENSE": "ec423cc5506eea1ffbfc9955c3ec8f86139996963d84ff306a5ee41eda8a4ff1",
+    "README.md": "ef655a08d34b103a7da98738b1bffb9c6f47429aae19f4a93eeb54aed35c67da",
+    "analysis-plan.md": "7b14a3a9b91a7180f585d5df63c16a7229be52b58ddc5353a209c98f9f74d5be",
+    "completion.json": "ed7a87481b43a8a17db2f6badf56e0e00e7b7f09e1425cbfe951bcac9822a6e4",
+    "frozen-fit.json": "0960900cce097706e4c2a963035ced0b8004d2f88c9159a4df175b420cb80776",
+    "plan.json": "cfce80a0f99febf3d1c538825bc501a7df8b121b1010087953da3288857d413d",
+    "profile.json": "7667d986a783120c7bb61e63be041e37774df698a4e53dd57e97b893cf65fda4",
+    "requests.jsonl.gz": "15c5027dc9a6ca74b8baa03a86b442db1f96dec8469950e3e3bc22506b5ea31e",
+    "runtime.json": "5de1c291fff4f954da71213917d7550b73f808122bb24de928199c02daef64b7",
+    "scientific-freeze.json": "af3d1655fa8b925d8851ea4198b2385c986832558ff49515704dfebd0befdf64",
+    "series.json": "53be1f9bbc0ab34d3c317fe1c05622f0cce29eeabfe694f55e077b4cdc82fc0e",
+    "server_timestamps.jsonl.gz": "980b36021dcf0dc4aedd1bba4df222c68507d950406d5d6ed14a51631a3e16d0",
+    "summary.json": "a161be898dfd4b52f18203178721591ab8b046eb06a143d9b5ac8e4c531cbde3"
+  },
+  "controller_code_commit": "c0e4571"
+}
