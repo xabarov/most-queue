@@ -53,6 +53,8 @@ The [joint client-SLO example](examples/serving_reservation_slo.py) now has
 TTFT target fails, and a tighter 250-ms SLO has errors up to 31.87 points;
 these limits and offline reproduction commands are included in the report.
 The example's default invocation still uses explicitly labeled development data.
+[Trace-level diagnosis](docs/research/serving-slo-v2-diagnostics.md) explains
+the tight-SLO failures and remaining timing limitations using the saved data.
 
 Bulk-service correction (2026-10-12): all-customer abandonment now includes
 departures behind the tagged customer; the new `get_tagged_wait()` exposes local

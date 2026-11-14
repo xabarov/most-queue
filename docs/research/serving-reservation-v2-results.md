@@ -14,6 +14,11 @@ server-TPOT error is **4.75% versus 28.44%**. For the primary joint client SLO
 series is **3.52 percentage points**, below the prespecified 10-point limit.
 These observations support this bounded comparison, not universal SLO accuracy.
 
+A subsequent [retrospective diagnostic report](serving-slo-v2-diagnostics.md)
+decomposes the saved errors for all evaluation requests and every false pass
+in the selected 250-ms SLO series. It preserves this report and its fixed fits;
+it performs no fitting or new validation.
+
 ![All burst timing means and primary joint SLO outcomes](../figures/serving_reservation_v2_fresh.png)
 
 ## What was fixed before measurement

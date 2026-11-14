@@ -256,3 +256,12 @@ PYTHONPATH=. python examples/serving_reservation_slo.py \
 This complete evaluation writes its report and returns exit status 1 because
 one frozen accuracy target fails. The default example remains development-only.
 APIs are included in release 2.12; examples and fixtures require the source checkout.
+
+The [retrospective SLO diagnosis](research/serving-slo-v2-diagnostics.md) traces
+all 29 false passes in the selected series to TTFT and quantifies queue,
+post-scheduling and outside-engine errors separately. The outside residual is
+underpredicted in every false pass at 250 ms / 35 ms across all six loaded
+series. Recorded pre-engine intervals grow when other requests are present;
+the internal source of that delay still requires instrumentation. The report
+also exposes queue-error accumulation at high load. These diagnostics retain
+the frozen predictions and perform no fitting or new GPU measurements.
