@@ -84,6 +84,8 @@ def run_sim_fj(k: int, mu: float):
     Run Fork-Join (n,k) simulation for M/M/n systems.
     """
     qs = ForkJoinSim(NUM_OF_CHANNELS, k, False)
+    # Seed the owned Generator before constructing arrival/service distributions.
+    qs.generator = np.random.default_rng(42)
 
     # Set the input stream. The method needs to be passed distribution
     # parameters and type of distribution. M - exponential
@@ -106,6 +108,7 @@ def run_sim_sj(service_params: GammaParams):
     # third parameter True, otherwise by default - Fork-Join
 
     qs = ForkJoinSim(NUM_OF_CHANNELS, NUM_OF_CHANNELS, True)
+    qs.generator = np.random.default_rng(42)
 
     qs.set_sources(ARRIVAL_RATE, "M")
     qs.set_servers(service_params, "Gamma")
