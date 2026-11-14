@@ -218,7 +218,7 @@ class MMcDelayDependentServiceCalc(BaseQueue):
 
     # ------------------------------------------------------------------- solution
     def _solve(self) -> dict:  # pylint: disable=too-many-locals,too-many-statements
-        """Run the whole Theorem 3 / 5 / 6 chain once and cache it."""
+        """Solve the paper's matching/boundary equations in a bounded basis."""
         if self._sol is not None:
             return self._sol
         self._check_if_servers_and_sources_set()
@@ -272,62 +272,46 @@ class MMcDelayDependentServiceCalc(BaseQueue):
         m1 = np.linalg.inv(lam * (b2 - dt2) + np.diag(psi_c))  # (33)
         m2 = np.linalg.inv((c * mu1 + lam) * (c * mu1 * eye - dt2) + lam * b2)  # (34)
 
+        # Anchor the non-negative modes at k, not zero. Forward exp(U1p*k)
+        # amplifies round-off exponentially for large thresholds. This is the
+        # same Theorem 3 solution with rescaled coefficients:
+        # F(x) = a exp(U1m*x) + b exp(U1p*(x-k)) + alpha0 M0.
         exp_1m = sla.expm(u1m * k)
-        exp_1p = sla.expm(u1p * k)
-        inv_gap = np.linalg.inv(u1p - u1m)
-
-        # F(k) = F'(0) h3 + delta_{c-1} h4            (69)
-        h1 = inv_gap @ (exp_1p - exp_1m)
-        h2 = m0 @ (eye - exp_1m + u1m @ h1)
-        h3 = h1 + dt1 @ h2
-        h4 = -lam * b1 @ h2
-        # F'(k) = F'(0) h7 + delta_{c-1} h8           (70)
-        h5 = inv_gap @ (u1p @ exp_1p - u1m @ exp_1m)
-        h6 = m0 @ (u1m @ exp_1m - u1m @ h5)
-        h7 = h5 - dt1 @ h6
-        h8 = lam * b1 @ h6
-
+        exp_back_1p = sla.expm(-u1p * k)
+        boundary_maps, boundary_rate = self._boundary_maps(deltas)
+        cross = b1 @ np.linalg.solve(dt1, dt2) - b2
         dt_gap_m2 = (dt1 - dt2) @ m2
-        h9 = dt_gap_m2 @ u2m + dt1 @ dt_gap_m2
         b2_dt2_inv = b2 @ np.linalg.inv(dt2)
-        h10 = u2m - lam * (eye - b2_dt2_inv) @ h9
-        h11 = m1 @ u2m + np.linalg.solve(dt2, h9)
-        cross = b1 @ np.linalg.solve(dt1, dt2) - b2  # B1 Dt1^{-1} Dt2 - B2
-        h12 = h10 + lam * cross @ h11
-        h13 = dt2 @ h11
-        h14 = lam * b1 @ np.linalg.solve(dt1, dt2 @ h11)
 
-        # F'(0) = delta_{c-1} h16 - b_c psi_c h15     (73)-(75)
-        h15 = u2m @ np.linalg.inv(h7 - h7 @ h9 - h3 @ h12 + h13)
-        h16 = (h14 + h4 @ h12 - h8 + h8 @ h9) @ np.linalg.solve(u2m, h15)
-        # F(inf) = delta_{c-1} h20 + b_c psi_c h19    (76)-(77)
-        h17 = dt2 @ m1 - lam * h3 @ cross @ m1
-        h18 = lam * b1 @ np.linalg.solve(dt1, dt2 @ m1) + lam * h4 @ cross @ m1
-        h19 = eye - h15 @ h17
-        h20 = h16 @ h17 - h18
+        def components(unknown):
+            a, b, delta = np.split(unknown[: 3 * c], 3)
+            bc = unknown[-1]
+            fp0 = delta @ boundary_rate
+            al0 = fp0 @ dt1 - lam * delta @ b1
+            fk = a @ exp_1m + b + al0 @ m0
+            fpk = a @ u1m @ exp_1m + b @ u1p
+            al1 = al0 @ np.linalg.solve(dt1, dt2) - lam * fk @ cross
+            al2 = al1 @ np.linalg.inv(dt2) - fpk + lam * fk @ (eye - b2_dt2_inv)
+            finf = bc * psi_c + al1 @ m1
+            return a, b, delta, bc, fp0, al0, fk, fpk, al1, al2, finf
 
-        c_hats = self._boundary_recursion(deltas, h15, h16)
-        h_hats = [None] * c
-        h_hats[c - 1] = c_hats[c - 1]
-        for n in range(c - 2, -1, -1):
-            h_hats[n] = h_hats[n + 1] @ c_hats[n]
+        def equations(unknown):
+            a, b, delta, _bc, fp0, al0, fk, fpk, _al1, al2, finf = components(unknown)
+            # F(0)=0; boundary flux F'(0); continuity of F' at k;
+            # total probability. F itself is continuous by construction.
+            at_zero = a + b @ exp_back_1p + al0 @ m0
+            flux = a @ u1m + b @ u1p @ exp_back_1p - fp0
+            matching = (fk - finf - al2 @ dt_gap_m2) @ u2m - al2 @ dt1 @ dt_gap_m2 - fpk
+            mass = sum(float((delta @ mapping).sum()) for mapping in boundary_maps) + float(finf.sum())
+            return np.concatenate((at_zero, flux, matching, [mass]))
 
-        # (46): normalisation fixes the single remaining scalar.
-        total = (h19 + h_hats[c - 1] @ h20) @ np.ones(c)
-        for n in range(c):
-            total = total + h_hats[n] @ np.ones(n + 1)
-        b_c = 1.0 / float(psi_c @ total)
-
-        deltas_prob = [b_c * (psi_c @ h_hats[n]) for n in range(c)]
-        delta_cm1 = deltas_prob[c - 1]
-        f_prime0 = delta_cm1 @ h16 - b_c * psi_c @ h15
-        f_k = f_prime0 @ h3 + delta_cm1 @ h4
-        f_inf = delta_cm1 @ h20 + b_c * psi_c @ h19
-
-        alpha0 = f_prime0 @ dt1 - lam * delta_cm1 @ b1  # (11)
-        alpha1 = alpha0 @ np.linalg.solve(dt1, dt2) - lam * f_k @ cross  # (12)
-        f_prime_k = f_prime0 @ h7 + delta_cm1 @ h8
-        alpha2 = alpha1 @ np.linalg.inv(dt2) - f_prime_k + lam * f_k @ (eye - b2_dt2_inv)  # (13)
+        basis = np.eye(3 * c + 1)
+        matrix = np.column_stack([equations(column) for column in basis])
+        target = np.zeros(3 * c + 1)
+        target[-1] = 1.0
+        unknown = np.linalg.solve(matrix, target)
+        lower_a, lower_b, delta_cm1, b_c, f_prime0, alpha0, f_k, _f_prime_k, alpha1, alpha2, f_inf = components(unknown)
+        deltas_prob = [delta_cm1 @ mapping for mapping in boundary_maps]
 
         self._sol = {
             "u1m": u1m,
@@ -347,21 +331,21 @@ class MMcDelayDependentServiceCalc(BaseQueue):
             "alpha0": alpha0,
             "alpha1": alpha1,
             "alpha2": alpha2,
-            "inv_gap": inv_gap,
+            "lower_a": lower_a,
+            "lower_b": lower_b,
         }
         return self._sol
 
-    def _boundary_recursion(self, deltas, h15, h16):
-        """
-        The ``C_hat`` chain of Theorem 6: ``delta_n = delta_{n+1} C_hat_n`` expresses
-        every boundary (zero-delay) probability vector in terms of the next one, so
-        the whole boundary collapses onto ``delta_{c-1}`` and thence onto ``b_c``.
-        ``I_hat`` below is ``(0 | I)`` -- it shifts a vector one slot right, which is
-        how an arrival moves the busy-server count up by one.
+    def _boundary_maps(self, deltas):
+        """Boundary balance maps delta_n = delta_(c-1) H_n, equations (78)-(79).
+
+        The last balance equation gives F'(0) = delta_(c-1) R. Keeping this
+        flux relation explicit avoids the exponentially growing H matrices in
+        the eliminated form of Theorem 6.
         """
         c, lam = self.c, self.l
-        c_hats: list[np.ndarray] = [None] * c  # type: ignore[list-item]
-        prev_shifted = None  # C_hat_{n-1} I_hat, absent at n = 0
+        c_hats = []
+        prev_shifted = np.zeros((c, c))
         for n in range(c - 1):
             b_hat = np.zeros((n + 2, n + 1))
             for i in range(n + 1):
@@ -369,16 +353,16 @@ class MMcDelayDependentServiceCalc(BaseQueue):
             for i in range(1, n + 2):
                 b_hat[i, i - 1] = i * self.mu1
             if n == 0:
-                c_hats[0] = b_hat / lam  # (78)
+                current = b_hat / lam
             else:
-                c_hats[n] = b_hat @ np.linalg.inv(lam * (np.eye(n + 1) - prev_shifted) + deltas[n])  # (79)
-            i_hat = np.hstack([np.zeros((n + 1, 1)), np.eye(n + 1)])
-            prev_shifted = c_hats[n] @ i_hat
-        tail = lam * np.eye(c) + deltas[c - 1] - h16
-        if prev_shifted is not None:
-            tail = tail - lam * prev_shifted
-        c_hats[c - 1] = -h15 @ np.linalg.inv(tail)  # (80)
-        return c_hats
+                current = b_hat @ np.linalg.inv(lam * (np.eye(n + 1) - prev_shifted) + deltas[n])
+            c_hats.append(current)
+            prev_shifted = current @ np.hstack([np.zeros((n + 1, 1)), np.eye(n + 1)])
+        maps = [None] * c
+        maps[-1] = np.eye(c)
+        for n in range(c - 2, -1, -1):
+            maps[n] = maps[n + 1] @ c_hats[n]
+        return maps, lam * np.eye(c) + deltas[c - 1] - lam * prev_shifted
 
     # -------------------------------------------------------------------- results
     def _f_vector(self, x: float) -> np.ndarray:
@@ -387,9 +371,10 @@ class MMcDelayDependentServiceCalc(BaseQueue):
         if x <= 0:
             return np.zeros(self.c)
         if x <= self.k:
-            head = (s["f_prime0"] + s["alpha0"] @ s["m0"] @ s["u1m"]) @ s["inv_gap"]
-            return head @ (sla.expm(s["u1p"] * x) - sla.expm(s["u1m"] * x)) + s["alpha0"] @ s["m0"] @ (
-                np.eye(self.c) - sla.expm(s["u1m"] * x)
+            return (
+                s["lower_a"] @ sla.expm(s["u1m"] * x)
+                + s["lower_b"] @ sla.expm(s["u1p"] * (x - self.k))
+                + s["alpha0"] @ s["m0"]
             )
         y = x - self.k
         exp_2m = sla.expm(s["u2m"] * y)
@@ -408,10 +393,9 @@ class MMcDelayDependentServiceCalc(BaseQueue):
         if x < 0:
             raise ValueError(f"x must be non-negative, got {x}")
         if x <= self.k:
-            head = (s["f_prime0"] + s["alpha0"] @ s["m0"] @ s["u1m"]) @ s["inv_gap"]
-            return head @ (s["u1p"] @ sla.expm(s["u1p"] * x) - s["u1m"] @ sla.expm(s["u1m"] * x)) - s["alpha0"] @ s[
-                "m0"
-            ] @ s["u1m"] @ sla.expm(s["u1m"] * x)
+            return s["lower_a"] @ s["u1m"] @ sla.expm(s["u1m"] * x) + s["lower_b"] @ s["u1p"] @ sla.expm(
+                s["u1p"] * (x - self.k)
+            )
         y = x - self.k
         gap_m2 = (s["dt1"] - s["dt2"]) @ s["m2"]
         const = s["f_k"] - s["b_c"] * s["psi_c"] - s["alpha1"] @ s["m1"] - s["alpha2"] @ gap_m2
@@ -454,9 +438,10 @@ class MMcDelayDependentServiceCalc(BaseQueue):
         k, ones = self.k, np.ones(self.c)
         eye = np.eye(self.c)
 
-        head = (s["f_prime0"] + s["alpha0"] @ s["m0"] @ s["u1m"]) @ s["inv_gap"]
-        below = head @ _integral_x_exp(0.0, k, s["u1p"]) @ ones
-        below -= (head + s["alpha0"] @ s["m0"]) @ _integral_x_exp(0.0, k, s["u1m"]) @ ones
+        below = s["lower_a"] @ _integral_x_exp(0.0, k, s["u1m"]) @ ones
+        # Integration by parts with the positive modes anchored at k:
+        # int_0^k x U exp(U(x-k)) dx = k I + int_0^(-k) exp(Uy) dy.
+        below += s["lower_b"] @ (k * eye + _integral_exp(s["u1p"], -k)) @ ones
 
         gap_m2 = (s["dt1"] - s["dt2"]) @ s["m2"]
         const = s["f_k"] - s["b_c"] * s["psi_c"] - s["alpha1"] @ s["m1"] - s["alpha2"] @ gap_m2

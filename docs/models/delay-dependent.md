@@ -61,9 +61,16 @@ by continuity at `k`. Their solution is a **mixture of matrix exponentials**, an
 constants collapse through a recursion over the boundary states onto a single scalar fixed by
 normalisation.
 
-**Two numerical points worth knowing** (both found while implementing, neither spelled out in the
-paper):
+**Numerical implementation:**
 
+- The non-negative exponential modes below the threshold are anchored at `k`:
+  `F(x) = a exp(U₁⁻ x) + b exp(U₁⁺ (x-k)) + α₀ M₀`. Boundary balance,
+  continuity and normalization determine the coefficients together. Thus all
+  exponentials used on `0 ≤ x ≤ k` have non-positive spectral growth. This
+  replaces the forward `exp(U₁⁺ k)` elimination, whose rounding errors could
+  produce a huge incorrect mean for large `k` on some numerical backends.
+  Recompute such results from versions before 2.12. Regression checks cover
+  `c=1,2,4`, `k=40,400,2000`, the Erlang-C limit and finite-threshold time scaling.
 - One of the matrices whose integral the mean requires is *always* singular — the spectrum
   contains `min(0, λ - c·μ₁)` in one group and `max(0, λ - c·μ₁)` in the other, so a zero
   eigenvalue sits in one of them whenever `λ ≠ c·μ₁`. The integral itself is finite; only its

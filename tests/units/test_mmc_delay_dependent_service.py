@@ -164,16 +164,33 @@ def test_sojourn_splits_into_wait_and_the_pasta_weighted_service():
     assert np.isclose(calc.get_v()[0], calc.get_w()[0] + calc.get_service_time_mean())
 
 
-def test_large_threshold_is_an_mmc_with_the_fast_rate():
+@pytest.mark.parametrize("c", [1, 2, 4])
+@pytest.mark.parametrize("k", [40.0, 400.0, 2000.0])
+def test_large_threshold_is_an_mmc_with_the_fast_rate(c, k):
     """
     As k -> inf nobody crosses the threshold, so every customer is served at
     mu1 and the system becomes an ordinary M/M/c with rate mu1. This only makes
     sense when lam < c*mu1, which is the regime tested.
     """
-    c, lam, mu1 = 2, 1.0, 1.2
-    calc = _calc(c, 400.0, lam, mu1, 0.9)
+    lam, mu1 = 0.5 * c, 1.2
+    calc = _calc(c, k, lam, mu1, 0.9)
     a = lam / mu1
-    assert np.isclose(calc.get_w()[0], _erlang_c(c, a) / (c * mu1 - lam), rtol=1e-6)
+    waiting_probability = _erlang_c(c, a)
+    decay = c * mu1 - lam
+    assert np.isclose(calc.get_w()[0], waiting_probability / decay, rtol=1e-6)
+    assert np.isclose(calc.get_p0_wait(), 1.0 - waiting_probability, rtol=0.0, atol=1e-10)
+    for x in (0.0, 0.1, 1.0, 5.0, k):
+        assert np.isclose(calc.get_tail(x), waiting_probability * math.exp(-decay * x), rtol=0.0, atol=1e-10)
+
+
+def test_finite_threshold_obeys_time_scaling():
+    """Changing time units preserves the CDF and scales the waiting mean."""
+    factor = 100.0
+    calc = _calc(2, 0.45, 2.0, 0.75, 1.12)
+    scaled = _calc(2, 0.45 * factor, 2.0 / factor, 0.75 / factor, 1.12 / factor)
+    assert np.isclose(scaled.get_w()[0], factor * calc.get_w()[0], rtol=1e-6)
+    for x in (0.0, 0.1, 0.45, 1.0, 5.0):
+        assert np.isclose(scaled.get_cdf(x * factor), calc.get_cdf(x), rtol=0.0, atol=1e-10)
 
 
 def test_zero_threshold_charges_mu1_only_to_customers_who_do_not_wait():
