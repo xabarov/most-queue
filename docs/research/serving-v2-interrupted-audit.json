@@ -1,0 +1,78 @@
+{
+  "data_role": "incomplete or failed; accuracy evaluation refused",
+  "audit": {
+    "status": "incomplete_or_failed",
+    "planned": 690,
+    "completed": 361,
+    "offered": 361,
+    "successful": 361,
+    "failed": 0,
+    "counts_by_split_mode": {
+      "warmup": {
+        "isolated": {
+          "planned": 9,
+          "completed": 9,
+          "successful": 9,
+          "failed": 0
+        },
+        "burst": {
+          "planned": 12,
+          "completed": 12,
+          "successful": 12,
+          "failed": 0
+        }
+      },
+      "validation": {
+        "isolated": {
+          "planned": 9,
+          "completed": 9,
+          "successful": 9,
+          "failed": 0
+        },
+        "burst": {
+          "planned": 108,
+          "completed": 108,
+          "successful": 108,
+          "failed": 0
+        },
+        "open_loop": {
+          "planned": 552,
+          "completed": 223,
+          "successful": 223,
+          "failed": 0
+        }
+      }
+    },
+    "errors": [
+      "raw records: 329 missing or mismatched request specs",
+      "Not every planned request was offered",
+      "summary: completed differs from raw records/plan (expected 361)",
+      "summary: successful differs from raw records/plan (expected 361)",
+      "summary: offered differs from raw records/plan (expected 361)",
+      "summary: not_offered differs from raw records/plan (expected 329)",
+      "summary: measured_completed differs from raw records/plan (expected 340)",
+      "summary: measured_successful differs from raw records/plan (expected 340)",
+      "summary: experiment_valid differs from raw records/plan (expected False)",
+      "summary: series missing, duplicated or unplanned"
+    ],
+    "failure_details": [],
+    "sha256files": {
+      "LICENSE": "ec423cc5506eea1ffbfc9955c3ec8f86139996963d84ff306a5ee41eda8a4ff1",
+      "README.md": "a92a04882e5ff0d9b0819a968be46aea4d677115ea260bd59ae271a5b7814f8d",
+      "analysis-plan.md": "7b14a3a9b91a7180f585d5df63c16a7229be52b58ddc5353a209c98f9f74d5be",
+      "frozen-fit.json": "0960900cce097706e4c2a963035ced0b8004d2f88c9159a4df175b420cb80776",
+      "interruption.json": "2fecff60c990a628fdcc8e9462d7994c0b759a13f4a45af97714f9357f089d12",
+      "manifest.json": "822934f3f6bc84a896d4fe32285694152a8a76c7e7984dc95224790dfe57b8b0",
+      "plan.json": "893894df209bccd287c9ff52dfc3f8c6a807f66764d5e2fd68092b0a1c01d240",
+      "profile.json": "7667d986a783120c7bb61e63be041e37774df698a4e53dd57e97b893cf65fda4",
+      "requests.jsonl.gz": "10132e75a0f8fc35cd1a7c38cd55365a4d7081cf422062afa1168533603d1cc6",
+      "runtime.json": "5de1c291fff4f954da71213917d7550b73f808122bb24de928199c02daef64b7",
+      "scientific-freeze.json": "af3d1655fa8b925d8851ea4198b2385c986832558ff49515704dfebd0befdf64",
+      "series.json": "be8b528c114e60125aa65f115d0f14b62e35f053fd6cbc70bf53bb031f22983f",
+      "server_timestamps.jsonl.gz": "39e2ac5f5a8c962d91803c7c4668c1b5ed2656138f26c082b5ef91a29948fe60",
+      "summary.json": "39d6fbfa3d964181209a67c8791ed154c8d4d8a54c6482b8cac566ced7eb6898"
+    }
+  },
+  "summary": {},
+  "cohorts": []
+}

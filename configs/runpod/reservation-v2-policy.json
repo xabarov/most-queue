@@ -5,7 +5,7 @@
   "max_total_usd_per_hour": 0.77,
   "max_campaign_seconds": 14400,
   "cleanup_reserve_seconds": 900,
-  "max_allocations": 2,
+  "max_allocations": 3,
   "max_concurrent_pods": 1,
   "allowed_gpu_ids": [
     "NVIDIA A40"

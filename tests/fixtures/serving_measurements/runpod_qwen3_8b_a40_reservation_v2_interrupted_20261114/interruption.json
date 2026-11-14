@@ -1,0 +1,17 @@
+{
+  "outcome": {
+    "error": "ApiError: Runpod API request failed (HTTP None)",
+    "successful": false
+  },
+  "fresh_absence": {
+    "absent_from_inventory": true,
+    "checked_epoch": 1794674345.1618032,
+    "exact_absent": true,
+    "pod_id": "85ithanoh2ot7r"
+  },
+  "allocated_seconds": 1256,
+  "estimated_cost_usd": 0.209722,
+  "exported_archive_sha256": "727d181a2bfe0e67f18fd6e28d70683acc147cf6119e6c5ce9eca22d429dd31f",
+  "snapshot_finalized": false,
+  "accuracy_evaluation": "refused; incomplete non-atomic snapshot"
+}
