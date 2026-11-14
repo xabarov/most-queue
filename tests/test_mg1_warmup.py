@@ -44,8 +44,6 @@ def test_mg1_warm():
     Compare theoretical and simulated moments.
     """
 
-    np.random.seed(42)  # the simulator draws from the global RNG stream
-
     b1 = UTILIZATION_FACTOR / ARRIVAL_RATE
     b_s = gamma_moments_by_mean_and_cv(b1, SERVICE_TIME_CV)
     service_params = GammaDistribution.get_params(b_s)
@@ -57,6 +55,8 @@ def test_mg1_warm():
 
     # Initialize the Vacation Queueing System Simulator
     simulator = VacationQueueingSystemSimulator(1, is_service_on_warm_up=True)
+    # BaseSimulationCore owns a Generator; the global numpy seed does not seed it.
+    simulator.generator = np.random.default_rng(42)
 
     # Set warm-up phase parameters
     simulator.set_servers(service_params, "Gamma")
