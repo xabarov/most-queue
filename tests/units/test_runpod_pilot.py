@@ -548,3 +548,142 @@ def test_policy_cli_explicit_or_legacy_default(tmp_path, monkeypatch, serving_pr
     assert calls[0][2] is policy
     assert calls[0][3] is serving_profile
     assert calls[0][-1] is False
+
+
+@pytest.fixture(name="probe_instance")
+def fixture_probe_instance(tmp_path, monkeypatch):
+    """Keep real deadline/watchdog checks active for bounded read retries."""
+    clock = [1000.0]
+    monkeypatch.setattr(pilot.time, "time", lambda: clock[0])
+    instance = pilot.Pilot(None, tmp_path, {"profile": {}, "work_deadline_epoch": 5000})
+    instance.stage_name = "measurements"
+    instance.stage_deadline = 2000
+    instance.progress = {"completed": 3}
+    instance.last_progress = 900
+    instance.supervisor = type("Supervisor", (), {"poll": lambda _self: None})()
+    atomic_json(tmp_path / "watchdog.json", {"status": "monitoring"})
+    events, sleeps = [], []
+    monkeypatch.setattr(pilot, "event", lambda name, **fields: events.append((name, fields)))
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        clock[0] += seconds
+
+    monkeypatch.setattr(pilot.time, "sleep", sleep)
+    return instance, clock, events, sleeps
+
+
+def probe_sequence(instance, monkeypatch, responses):
+    """Replace only the read call while preserving its guard and count."""
+    calls = []
+
+    def remote(command, timeout):
+        instance.check()
+        assert command[:2] == ["python3", "-c"] and timeout == 10
+        calls.append(command)
+        response = responses[len(calls) - 1]
+        if isinstance(response, Exception):
+            raise response
+        return response
+
+    monkeypatch.setattr(instance, "remote", remote)
+    return calls
+
+
+def test_probe_transient_recovers_without_deadline_extension(probe_instance, monkeypatch):
+    """A failed read cannot move deadlines; unchanged observed progress cannot either."""
+    instance, _, events, sleeps = probe_instance
+    payload = {"progress": {"completed": 3}, "log_size": 0, "healthy": True}
+    calls = probe_sequence(instance, monkeypatch, [pilot.ApiError(status=None), json.dumps(payload)])
+    assert instance.probe() == payload
+    assert len(calls) == 2 and sleeps == [2]
+    assert instance.stage_deadline == 2000 and instance.last_progress == 900
+    assert events == [("probe_read_retry", {"attempt": 1, "http_status": None, "delay_seconds": 2})]
+
+
+@pytest.mark.parametrize("status", [None, 408, 429, 500, 502, 503, 504])
+def test_probe_exactly_three_attempts_leave_progress_unchanged(probe_instance, monkeypatch, status):
+    """Repeated transient failures stop at three reads and never save new progress."""
+    instance, _, events, sleeps = probe_instance
+    instance.save_stage()
+    saved = (instance.directory / "stage.json").read_bytes()
+    error = pilot.ApiError("synthetic sensitive provider body", status=status)
+    calls = probe_sequence(instance, monkeypatch, [error] * 3)
+    with pytest.raises(pilot.ApiError) as caught:
+        instance.probe()
+    assert caught.value is error
+    assert len(calls) == 3 and sleeps == [2, 5]
+    assert instance.last_progress == 900 and instance.stage_deadline == 2000
+    assert (instance.directory / "stage.json").read_bytes() == saved
+    assert len(events) == 2 and "sensitive" not in json.dumps(events)
+
+
+@pytest.mark.parametrize("error", [pilot.ApiError(status=s) for s in (401, 403, 404, 422)] + [LifecycleError("fatal")])
+def test_probe_permanent_error_is_immediate(probe_instance, monkeypatch, error):
+    """Authorization/contract/lifecycle errors cannot enter the transient loop."""
+    instance, _, events, sleeps = probe_instance
+    calls = probe_sequence(instance, monkeypatch, [error])
+    with pytest.raises(type(error)):
+        instance.probe()
+    assert len(calls) == 1 and not sleeps and not events
+
+
+@pytest.mark.parametrize("retry_after,expected", [(-10, [2, 5]), (0, [2, 5]), (4, [4, 5]), (60, [10, 10])])
+def test_probe_retry_after_is_bounded(probe_instance, monkeypatch, retry_after, expected):
+    """Retry-After can increase backoff only up to ten seconds per retry."""
+    instance, _, _, sleeps = probe_instance
+    calls = probe_sequence(instance, monkeypatch, [pilot.ApiError(status=429, retry_after=retry_after)] * 3)
+    with pytest.raises(pilot.ApiError):
+        instance.probe()
+    assert len(calls) == 3 and sleeps == expected
+
+
+@pytest.mark.parametrize("guard", ["deadline", "watchdog"])
+def test_probe_guard_after_sleep_blocks_next_read(probe_instance, monkeypatch, guard):
+    """A retry wait cannot bypass stage deadlines or loss of cleanup supervision."""
+    instance, _, _, sleeps = probe_instance
+    calls = probe_sequence(instance, monkeypatch, [pilot.ApiError(status=503)] * 3)
+    if guard == "deadline":
+        instance.stage_deadline = 1001
+    else:
+        original_sleep = pilot.time.sleep
+
+        def stop_watchdog(seconds):
+            original_sleep(seconds)
+            atomic_json(instance.directory / "watchdog.json", {"status": "cleanup_requested"})
+
+        monkeypatch.setattr(pilot.time, "sleep", stop_watchdog)
+    with pytest.raises(LifecycleError):
+        instance.probe()
+    assert len(calls) == 1 and sleeps == [2]
+
+
+@pytest.mark.parametrize("payload", ["not json", "{}"])
+def test_probe_payload_contract_errors_are_not_retried(probe_instance, monkeypatch, payload):
+    """Parsing and required-field failures remain fatal after the successful read."""
+    instance, _, events, sleeps = probe_instance
+    calls = probe_sequence(instance, monkeypatch, [payload])
+    with pytest.raises((ValueError, KeyError)):
+        instance.probe()
+    assert len(calls) == 1 and not sleeps and not events
+
+
+def test_generic_mutating_remote_is_never_retried(probe_instance):
+    """The generic exec method still issues exactly one mutation-capable request."""
+    instance, _, events, sleeps = probe_instance
+    calls = []
+
+    class FailingClient:
+        """Record one provider call, then simulate a transient failure."""
+
+        def request(self, *args, **kwargs):
+            """Reject exec while preserving the complete call count."""
+            calls.append((args, kwargs))
+            raise pilot.ApiError(status=503)
+
+    instance.client = FailingClient()
+    instance.pod = {"id": "test-pod"}
+    with pytest.raises(pilot.ApiError):
+        instance.remote(["python3", "-c", "print('mutation-capable')"])
+    assert len(calls) == 1 and calls[0][0][0] == "POST"
+    assert not sleeps and not events

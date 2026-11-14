@@ -368,7 +368,21 @@ print(json.dumps({'healthy':healthy,'log_tail':tail,'log_size':log.stat().st_siz
  'progress':json.loads(progress.read_text()) if progress.exists() else None,
  'workload_exit':(p/'workload.exit').read_text().strip() if (p/'workload.exit').exists() else None}))
 """
-        data = json.loads(self.remote(["python3", "-c", script], timeout=10))
+        for attempt in range(1, 4):
+            try:
+                payload = self.remote(["python3", "-c", script], timeout=10)
+                break
+            except ApiError as error:
+                if attempt == 3 or error.status not in {None, 408, 429, 500, 502, 503, 504}:
+                    raise
+                delay = (2, 5)[attempt - 1]
+                if error.retry_after is not None:
+                    delay = max(delay, min(max(0, error.retry_after), 10))
+                event("probe_read_retry", attempt=attempt, http_status=error.status, delay_seconds=delay)
+                self.check()
+                time.sleep(delay)
+                self.check()
+        data = json.loads(payload)
         atomic_json(self.directory / "remote-progress.json", data)
         # During measurements only completed requests count as progress; logs cannot mask a stalled workload.
         observed = data["progress"] if self.stage_name == "measurements" else data["log_size"]
